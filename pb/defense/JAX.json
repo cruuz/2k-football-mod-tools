@@ -1,0 +1,1066 @@
+{
+  "team": "JAX",
+  "status": "DESIGN",
+  "fit": {
+    "loss": 0.05696799053993376,
+    "target": {
+      "COVER_0": 0.04261363636363636,
+      "COVER_1": 0.16193181818181818,
+      "2_MAN": 0.03409090909090909,
+      "COVER_2": 0.2599431818181818,
+      "COVER_3": 0.296875,
+      "COVER_4": 0.09801136363636363,
+      "COVER_6": 0.10653409090909091,
+      "blitz": 0.25779,
+      "man": 0.23796,
+      "replacement_design": 0.128895,
+      "split_family": 0.497167
+    },
+    "scope": "DESIGN weighted fit to native header curve under neutral matchup; not live CPU rates"
+  },
+  "formations": {
+    "24": {
+      "name": "4-3 Wide",
+      "positions": [
+        [
+          411,
+          46
+        ],
+        [
+          -411,
+          46
+        ],
+        [
+          150,
+          0
+        ],
+        [
+          -150,
+          0
+        ],
+        [
+          402,
+          365
+        ],
+        [
+          0,
+          457
+        ],
+        [
+          -402,
+          365
+        ],
+        [
+          640,
+          1188
+        ],
+        [
+          -640,
+          1097
+        ],
+        [
+          1371,
+          365
+        ],
+        [
+          -1371,
+          365
+        ]
+      ],
+      "native_personnel": [
+        "DE2",
+        "DE",
+        "DT2",
+        "DT",
+        "OLB2",
+        "MLB",
+        "OLB",
+        "FS",
+        "SS",
+        "CB2",
+        "CB"
+      ],
+      "category_code": 13
+    },
+    "25": {
+      "name": "Nickel",
+      "positions": [
+        [
+          365,
+          0
+        ],
+        [
+          -365,
+          0
+        ],
+        [
+          150,
+          0
+        ],
+        [
+          -150,
+          0
+        ],
+        [
+          244,
+          457
+        ],
+        [
+          -244,
+          457
+        ],
+        [
+          -914,
+          548
+        ],
+        [
+          640,
+          1188
+        ],
+        [
+          -640,
+          1097
+        ],
+        [
+          1371,
+          365
+        ],
+        [
+          -1371,
+          365
+        ]
+      ],
+      "native_personnel": [
+        "DE2",
+        "DE",
+        "DT2",
+        "DT",
+        "OLB",
+        "MLB",
+        "CB3",
+        "FS",
+        "SS",
+        "CB2",
+        "CB"
+      ],
+      "category_code": 14
+    },
+    "26": {
+      "name": "Dime",
+      "positions": [
+        [
+          365,
+          0
+        ],
+        [
+          -365,
+          0
+        ],
+        [
+          150,
+          0
+        ],
+        [
+          -150,
+          0
+        ],
+        [
+          822,
+          457
+        ],
+        [
+          0,
+          457
+        ],
+        [
+          -914,
+          548
+        ],
+        [
+          640,
+          1188
+        ],
+        [
+          -640,
+          1097
+        ],
+        [
+          1371,
+          365
+        ],
+        [
+          -1371,
+          365
+        ]
+      ],
+      "native_personnel": [
+        "DE2",
+        "DE",
+        "DT2",
+        "DT",
+        "CB4",
+        "MLB",
+        "CB3",
+        "FS",
+        "SS",
+        "CB2",
+        "CB"
+      ],
+      "category_code": 15
+    },
+    "27": {
+      "name": "Bear",
+      "positions": [
+        [
+          365,
+          0
+        ],
+        [
+          -365,
+          0
+        ],
+        [
+          150,
+          0
+        ],
+        [
+          -150,
+          0
+        ],
+        [
+          640,
+          182
+        ],
+        [
+          244,
+          365
+        ],
+        [
+          -274,
+          365
+        ],
+        [
+          0,
+          1097
+        ],
+        [
+          -731,
+          274
+        ],
+        [
+          1371,
+          152
+        ],
+        [
+          -1371,
+          152
+        ]
+      ],
+      "native_personnel": [
+        "DE2",
+        "DE",
+        "DT2",
+        "DT",
+        "OLB2",
+        "MLB",
+        "OLB",
+        "FS",
+        "SS",
+        "CB2",
+        "CB"
+      ],
+      "category_code": 13
+    }
+  },
+  "plays": [
+    {
+      "play": 0,
+      "concept": "Front 0",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 1,
+      "concept": "Front 1",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 2,
+      "concept": "Front 2",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 3,
+      "concept": "Front 3",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 4,
+      "concept": "Front 4",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 5,
+      "concept": "Front 5",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 6,
+      "concept": "Front 6",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 7,
+      "concept": "Front 7",
+      "coverage": null,
+      "component": "front",
+      "formations": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "preview_front": 0,
+      "donor": 0,
+      "spy_slots": []
+    },
+    {
+      "play": 8,
+      "concept": "Three Sky X",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 9,
+      "concept": "Sim Two",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 10,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 11,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 12,
+      "concept": "Fire Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 13,
+      "concept": "One Robber",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 8,
+      "spy_slots": []
+    },
+    {
+      "play": 14,
+      "concept": "Four Spot",
+      "coverage": "COVER_4",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 15,
+      "concept": "Two Hard",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 16,
+      "concept": "Fire Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 18,
+      "spy_slots": []
+    },
+    {
+      "play": 17,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 12,
+      "spy_slots": []
+    },
+    {
+      "play": 18,
+      "concept": "Three Cloud",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 19,
+      "concept": "Zero",
+      "coverage": "COVER_0",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 13,
+      "spy_slots": []
+    },
+    {
+      "play": 20,
+      "concept": "Three Sky",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 21,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 12,
+      "spy_slots": []
+    },
+    {
+      "play": 22,
+      "concept": "Zero",
+      "coverage": "COVER_0",
+      "component": "coverage",
+      "formations": [
+        24,
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 13,
+      "spy_slots": []
+    },
+    {
+      "play": 23,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        24,
+        25
+      ],
+      "preview_front": 0,
+      "donor": 12,
+      "spy_slots": []
+    },
+    {
+      "play": 24,
+      "concept": "Sim Two",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        24,
+        25
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 25,
+      "concept": "Three Sky",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        25
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 26,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 27,
+      "concept": "Creeper Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        25
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 28,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        25
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 29,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        25
+      ],
+      "preview_front": 0,
+      "donor": 12,
+      "spy_slots": []
+    },
+    {
+      "play": 30,
+      "concept": "Two Soft",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 31,
+      "concept": "Two Soft",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        25
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 32,
+      "concept": "Four Spot",
+      "coverage": "COVER_4",
+      "component": "coverage",
+      "formations": [
+        25,
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 33,
+      "concept": "Sim Two",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 34,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 35,
+      "concept": "Three Sky X",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 36,
+      "concept": "Two Soft",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 37,
+      "concept": "Fire Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 39,
+      "spy_slots": []
+    },
+    {
+      "play": 38,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 12,
+      "spy_slots": []
+    },
+    {
+      "play": 39,
+      "concept": "Creeper Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        26
+      ],
+      "preview_front": 0,
+      "donor": 17,
+      "spy_slots": []
+    },
+    {
+      "play": 40,
+      "concept": "Two Hard",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        24
+      ],
+      "preview_front": 0,
+      "donor": 19,
+      "spy_slots": []
+    },
+    {
+      "play": 192,
+      "concept": "Two Soft",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 200,
+      "spy_slots": []
+    },
+    {
+      "play": 193,
+      "concept": "Three Sky X",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 194,
+      "concept": "Creeper Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 195,
+      "concept": "Three Sky X",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 196,
+      "concept": "Fire Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 197,
+      "concept": "Three Cloud",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 198,
+      "concept": "Creeper Three",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 199,
+      "concept": "Two Soft",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 200,
+      "spy_slots": []
+    },
+    {
+      "play": 200,
+      "concept": "Three Cloud",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 201,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 195,
+      "spy_slots": []
+    },
+    {
+      "play": 202,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 203,
+      "concept": "Two Heat",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 200,
+      "spy_slots": []
+    },
+    {
+      "play": 204,
+      "concept": "Two Man",
+      "coverage": "2_MAN",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 192,
+      "spy_slots": []
+    },
+    {
+      "play": 205,
+      "concept": "Two Heat",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 200,
+      "spy_slots": []
+    },
+    {
+      "play": 206,
+      "concept": "Six Split",
+      "coverage": "COVER_6",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 217,
+      "concept": "Zero",
+      "coverage": "COVER_0",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 193,
+      "spy_slots": []
+    },
+    {
+      "play": 218,
+      "concept": "Four Spot",
+      "coverage": "COVER_4",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 219,
+      "concept": "Four Spot",
+      "coverage": "COVER_4",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 220,
+      "concept": "Three Sky",
+      "coverage": "COVER_3",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 196,
+      "spy_slots": []
+    },
+    {
+      "play": 221,
+      "concept": "Sim Two",
+      "coverage": "COVER_2",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 200,
+      "spy_slots": []
+    },
+    {
+      "play": 222,
+      "concept": "One Heat",
+      "coverage": "COVER_1",
+      "component": "coverage",
+      "formations": [
+        27
+      ],
+      "preview_front": 0,
+      "donor": 195,
+      "spy_slots": []
+    }
+  ]
+}

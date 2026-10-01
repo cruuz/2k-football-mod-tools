@@ -1,0 +1,41 @@
+test_build_option_off_does_not_call_owner_or_change_bytes (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_build_option_off_does_not_call_owner_or_change_bytes) ... ok
+test_build_option_on_installs_layout (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_build_option_on_installs_layout) ... ok
+test_code_budget_and_full_manifest_site_reservations (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_code_budget_and_full_manifest_site_reservations) ... ok
+test_each_data_word_and_hook_rejects_mixed_states (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_each_data_word_and_hook_rejects_mixed_states) ... ok
+test_every_source_guard_refuses_mutation (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_every_source_guard_refuses_mutation) ... ok
+test_exact_sites_and_idempotence (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_exact_sites_and_idempotence) ... ok
+test_measured_clearance_respects_native_menu_clip_boundary (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_measured_clearance_respects_native_menu_clip_boundary) ... ok
+test_native_initializers_animation_cameras_and_viewports (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_native_initializers_animation_cameras_and_viewports) ... ok
+test_null_and_foreign_count_scenes_are_not_written (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_null_and_foreign_count_scenes_are_not_written) ... ok
+test_retail_playcalling_escape_keeps_all_layout_bytes (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_retail_playcalling_escape_keeps_all_layout_bytes) ... ok
+test_tailcall_preserves_native_abi_flags_and_registers (tests.mod_editor.test_nfl2k5_playcall_layout.PatchTests.test_tailcall_preserves_native_abi_flags_and_registers) ... ok
+test_budget (tests.mod_editor.test_nfl2k5_scorebug_broadcast_states.LayoutTests.test_budget) ... ok
+test_both_builds_apply_and_recognize_only_themselves (tests.mod_editor.test_nfl2k5_scorebug_broadcast_states.PlayCallBuildTests.test_both_builds_apply_and_recognize_only_themselves) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 16.715s
+
+OK
+	Command being timed: "python3 -m unittest tests.mod_editor.test_nfl2k5_playcall_layout tests.mod_editor.test_nfl2k5_scorebug_broadcast_states.LayoutTests.test_budget tests.mod_editor.test_nfl2k5_scorebug_broadcast_states.PlayCallBuildTests -v"
+	User time (seconds): 16.65
+	System time (seconds): 0.68
+	Percent of CPU this job got: 101%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:17.05
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 200520
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 118978
+	Voluntary context switches: 45
+	Involuntary context switches: 45995
+	Swaps: 0
+	File system inputs: 168
+	File system outputs: 296
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

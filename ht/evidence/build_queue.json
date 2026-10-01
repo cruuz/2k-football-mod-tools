@@ -1,0 +1,13 @@
+{
+  "label": "PROVED OFFLINE",
+  "time_utc": "2026-09-27T22:33:29Z",
+  "lock_occupied": true,
+  "space_bytes": {
+    "/media/noah/Storage": 25653215232,
+    "/home/noah": 115628879872
+  },
+  "disc_exists": false,
+  "receipt_exists": false,
+  "workflow_session": 98614,
+  "log_tail": "PROVED OFFLINE: starting space {'/media/noah/Storage': 30913351680, '/home/noah': 110092398592}"
+}

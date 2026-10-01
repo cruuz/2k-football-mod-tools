@@ -3795,7 +3795,7 @@ class RosterEditorPanel(QWidget):
         if destination in protected or receipt_path in protected:
             raise rr.RosterRecordError("The edits and receipt must be separate from the source disc and save.")
         target = rr.load_image(target_path, detect=True)
-        result = save_import.compare(target, source)
+        result = save_import.compare(target, source, replace_roster=True)
         result.write_receipt(destination)
         self.save_edits_to(destination, document=result.edits)
         self._set_status(result.summary)
@@ -3831,8 +3831,9 @@ class RosterEditorPanel(QWidget):
         box.setIcon(QMessageBox.Information)
         box.setText(result.summary)
         box.setInformativeText(f"Disc: {disc_path}\nEdits: {chosen}\n"
-                               "See details for skipped players, reasons and team counts. "
-                               "A franchise save uses its roster arena; season progress stays in the save.")
+                               "Build replaces the disc's player roster with this saved snapshot. "
+                               "Load the disc roster in the game to use it. "
+                               "Season progress still needs the franchise save on the HDD.")
         box.setDetailedText(result.details)
         box.exec_()
 

@@ -253,8 +253,11 @@ def suggested_playbook_filename(book: Nfl2k5Playbook) -> str:
 #: the same structure proved in APF's SPLB.  Group 3 exists in the format and is what the
 #: tutorial book uses.  What an audible slot *does* at the line is the format's structure,
 #: not a witnessed runtime claim.
+#: A formation lists a play once: the writer keeps a slot the formation already has for the play, and puts a new
+#: play in group 3 unless a group is chosen (vb2, 2026-09-23: a second slot for the same play made the play call's
+#: list of that formation endless and hung the game).
 AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
-    ("Inherit", None),
+    ("Default (group 3)", None),
     ("Audible 1", 0),
     ("Audible 2", 1),
     ("Audible 3", 2),
@@ -802,8 +805,11 @@ class PlaybooksPanel(QWidget):
         self.create_link_button = QPushButton("List Selected Play in Selected Formation")
         self.create_link_button.setToolTip(
             "Writes the selected play into the selected formation's first empty "
-            "menu slot (0x1FF). The selection group is inherited from the "
-            "formation's existing slots; group-bit gameplay meaning is unproved."
+            "menu slot (0x1FF), in group 3 unless you choose one. A play the "
+            "formation already lists keeps its slot: a formation lists a play once. "
+            "Groups 0-2 are the three audible slots, one play each: choosing one "
+            "moves the play that held it to group 3. Group-bit gameplay meaning is "
+            "unproved."
         )
         name_row.addWidget(self.custom_name_edit, 1)
         self.link_group_combo = QComboBox()
@@ -1537,7 +1543,8 @@ class PlaybooksPanel(QWidget):
         if link_ok:
             link_tip = (
                 "List the selected play in the selected formation's first empty "
-                "menu slot (0x1FF). Group inherits the formation's existing slots."
+                "menu slot (0x1FF), in group 3 unless you choose one. A play the "
+                "formation already lists keeps its slot."
             )
             link_block = ""
         elif not self.host.source_ready:
@@ -1938,7 +1945,7 @@ class PlaybooksPanel(QWidget):
         try:
             body = self.host.playbook_raw_body(book.asset_id)
             pack = pk.modern_defense_pack(book, body, book.book_name)
-            report = pk.check_pack(pack, book, body)
+            report = pk.check_pack(pack, book, body, xbe=self.host.source_path)
             if not report.ok:
                 raise ValueError("; ".join(report.errors))
             path = pk.save_pack(pack, destination)

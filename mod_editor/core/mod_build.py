@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Any
 
 from . import nfl2k5_throw_tuning as tt
+from . import nfl2k5_official_marks as official
 
 ProgressSink = Callable[[str, int, int], None]
 ROOT = Path(__file__).resolve().parents[2]
@@ -99,6 +100,7 @@ class BuildPlan:
     draft_ai: bool = False
     returner_fix: bool = False
     progression: bool = False
+    franchise_economy: bool = False  # DESIGN: requires the matching 1:4 contract fragment
     scheme_labels: bool = False   # depth-chart slot labels by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT
     camera: bool = False          # Standard default, Far and Broadcast session choices; experimental
     kick_rules: bool = False      # kickoff 35 / touchback 35 (2026) / PAT 15, FG ceiling ~70 yd for elite legs
@@ -131,6 +133,9 @@ class BuildPlan:
     my_career_setup: str | None = None
     franchise_autosave: bool = False
     trim_intro_videos: bool = False  # output-only boot movie cut; off in every preset
+    # b76-i1: path of a Sofdec movie made by tools/nfl2k5_intro_encode.py that replaces the boot
+    # intro (outer 4296); "" = off.  Output-only, in no preset, EXPERIMENTAL / UNWITNESSED.
+    custom_intro: str = ""
     crib_reclaim: bool = False
     screen_hooks: bool = False
     coverage_trail: bool = False
@@ -147,6 +152,18 @@ class BuildPlan:
     decided_clock_margin: int = 17
     decided_clock_seconds: int = 60
     cpu_scrambles: str = "retail"
+    historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
+    kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
+    espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
+    historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
+    espn25_named_previews: bool = False  # e2: known 50-row text and historic venue profile
+    espn25_more_moments: bool = False  # b76-m1: 25 more 25th Anniversary moments with their own team-seasons; experimental, needs an image
+    # b76-k1: 128 MB memory on stock xemu (K128, R1's late form: a 226-byte startup patch that teaches xemu's
+    # Xbox kernel to manage 128 MB after the game built its arena; asleep at 64 MB and on any other kernel; needs
+    # xemu System memory 128 MB) and, with it, the roster block in the game's >64 MB extra heap. Experimental.
+    k128_memory: bool = False
+    k128_roster_heap: bool = False
+    k128_early: bool = False              # b76-k1: the early form (pages at the entry: the graphics memory grows by 14.9 MB)
     accelerated_clock: bool = False      # Madden-style accelerated clock; ADVANCED classification, off in every preset until witnessed
     accelerated_clock_minimum_seconds: int = 20   # minimum play clock after the huddle break: 25 / 20 / 15 / 10 / 5
     franchise_edit_player: bool = False   # Edit Player on Franchise Player Contracts (needs Position row + allocator); experimental, off in every preset
@@ -182,7 +199,7 @@ class BuildPlan:
     depth_chart_rows: bool = False
     # 2026 season: real 2026 schedule template in pack 0 (17 games, 18 weeks, one bye; the real 3-game
     # preseason after it) + year/calendar/season-length/14-team-playoffs/preseason executable patches
-    # (rookie birth years and the DOB line follow the year); needs a disc image
+    # (draft/CAP birth years, CAP limits and the DOB line follow the year); needs a disc image
     season_cap: bool = False  # combined 128-season franchise option; experimental/unwitnessed
     season_2026: bool = False
     team_names_2026: bool = False
@@ -217,6 +234,17 @@ class BuildPlan:
     # the game's own Edit Player cycles all sixteen elbow pads, not the first ten (four .text spans,
     # eight bytes: the two cycle caps and the two backward wraps). Unwitnessed in game.
     elbow_options: bool = False
+    # the1wam's lineman rating adjustment: while the game computes a C/G/T overall, 326 lb and up
+    # counts as 294 lb and 325 lb and down as 317 lb (one retargeted call plus a 47-byte cave).
+    # The stored weight and every gameplay reader of it are untouched. Unwitnessed in game.
+    the1wam_lineman_rating: bool = False
+    # b76-z2 xemu display-list stability fix: the frame display list's release callback (a NOP 7
+    # software method) is raised from the D3D ring right after the list returns, not from the end
+    # of the list, so xemu's pusher never waits inside a buffer the game is already rewriting
+    # (the pregame-intro "Reserved pb command" abort, retail included). Same GPU methods in the
+    # same order; two pinned .text spans, 94 changed bytes with the section digest, no growth.
+    xemu_display_list_fix: bool = False
+    resource_load_guard: bool = False
     # penalties at NFL rates + a working Chop Block toggle: "" = off, "nfl" = the ESTIMATED first-cut profile
     # (seven .rdata slider->factor curve tables re-knotted in place, incidental face mask 5 -> 15 yd, the dead
     # Chop Block toggle wired through a 10-byte stub); room for a user .json profile path later; unwitnessed
@@ -269,11 +297,63 @@ class BuildPlan:
     espn25_plan: str = ""
     weather_plan: str = ""  # Saved nfl2k5.weather.edits.v1 JSON; EXPERIMENTAL, OFF
     weather_haze: bool = False  # Existing dry-weather coefficient; EXPERIMENTAL, OFF
+    # b76-k2: a jersey 1 inside a two-digit number moves toward the other digit (the number binder rewritten in
+    # place); EXPERIMENTAL / UNWITNESSED, off in every preset
+    number_kerning: bool = False
     modern_color: bool = False  # Broadcast light rigs and grass re-grade; EXPERIMENTAL, OFF
     modern_color_settings: dict = field(default_factory=dict)  # Project recipe; {} means v2.1
     modern_arrowhead: bool = False  # Kansas City home packages toward the 2026 look; EXPERIMENTAL, OFF
+    modern_metlife: bool = False  # Giants/Jets packages become MetLife Stadium; EXPERIMENTAL, OFF
+    # b76-u4: folder of 2026 team venue art (<team>/venue/manifest.json, metlife_team_art/v1, plus _league marks)
+    # written into every team's home stadium packages; "" = off. EXPERIMENTAL / UNWITNESSED, off in every preset
+    modern_venues_2026: str = ""
+    modern_metlife_model: bool = False  # b76-u5: MetLife Stadium as a new model (needs the skin); EXPERIMENTAL, OFF
+    # b76-hm: modern helmets and facemasks (the Revolution helmet C with the modern Riddell details, 15 modern Riddell
+    # masks in slots 12-26; the Standard shell and masks 0-11 stay retail for the classic scenarios). EXPERIMENTAL, OFF
+    # in every preset
+    modern_helmets: bool = False
+    modern_sofi: bool = False  # b76-u6: SoFi Stadium for the Rams (s23) and Chargers (s24); EXPERIMENTAL, OFF
+    modern_highmark: bool = False  # b76-st: the new Highmark Stadium for the Bills (s03); EXPERIMENTAL, OFF
+    modern_att: bool = False  # b76-st2: AT&T Stadium for the Cowboys (s07); EXPERIMENTAL, OFF
+    modern_levis: bool = False  # b76-st2: Levi's Stadium for the 49ers (s25); EXPERIMENTAL, OFF
+    modern_allegiant: bool = False  # b76-st2: Allegiant Stadium for the Raiders (s20); EXPERIMENTAL, OFF
+    modern_mercedes_benz: bool = False  # b76-st2: Mercedes-Benz Stadium for the Falcons (s01); EXPERIMENTAL, OFF
+    modern_usbank: bool = False  # b76-st3: U.S. Bank Stadium for the Vikings (s15); EXPERIMENTAL, OFF
+    modern_lucas_oil: bool = False  # b76-st3: Lucas Oil Stadium for the Colts (s11); EXPERIMENTAL, OFF
+    modern_state_farm: bool = False  # b76-st3: State Farm Stadium for the Cardinals (s00); EXPERIMENTAL, OFF
+    modern_hard_rock: bool = False  # b76-st4: Hard Rock Stadium for the Dolphins (s14); EXPERIMENTAL, OFF
+    modern_gillette: bool = False  # b76-st4: Gillette Stadium for the Patriots (s16); EXPERIMENTAL, OFF
+    modern_lambeau: bool = False  # b76-st4: Lambeau Field for the Packers (s10); EXPERIMENTAL, OFF
+    modern_everbank: bool = False  # b76-st4: EverBank Stadium for the Jaguars (s12); EXPERIMENTAL, OFF
+    #: b76-st4: its 2026 construction (on by default: the season as it stands; off: the 2025 stadium); only read
+    #: when modern_everbank is on
+    modern_everbank_construction: bool = True
+    #: b76-st5: the modern stadium boards (the tier 2 board kit) on the retail stadiums the teams still play in
+    #: (Superdome, NRG, Huntington Bank Field, Empower Field); EXPERIMENTAL, OFF
+    modern_board_kit: bool = False
+    # b76-pf: a modern outdoor NFL practice facility in the practice field every practice mode loads (s32); EXPERIMENTAL,
+    # OFF in every preset
+    modern_practice_field: bool = False
+    # b76-pf P1: with the practice facility, the practicing team's logo at midfield (the field's midfield material named
+    # teamlogo and the executable's field swap given an eighth pair, an allocator owner); EXPERIMENTAL, OFF in every
+    # preset
+    modern_practice_field_team_logo: bool = False
+    # b76-tf: every home field gets its 2026 surface (modern synthetic turf or natural grass), repainted after every
+    # stadium writer; the turf word stays retail. EXPERIMENTAL / UNWITNESSED, off in every preset
+    modern_surfaces: bool = False
+    # four standalone GAMEDATA marks (shield_espn, nfl_chiclet, espnLogo1, z_ESPN_bug) redrawn from the 2026
+    # MNF broadcast stills and refit in their retail spans; EXPERIMENTAL / UNWITNESSED, off in every preset
+    official_marks_pack: str = ""
+    espn_marks_2026: bool = False
+    # b76-p2: the replay transition, two wipes, the pause scoreboard, the helmet bumper monitor and the player card
+    # shield repainted to the 2026 MNF package in their retail allocations; EXPERIMENTAL / UNWITNESSED, off in every preset
+    espn_wipes_boards_2026: bool = False
+    # b76-km: the kick meter, its aim arrow and the wind arrow redrawn in the 2026 ESPN bar's look (data only, three
+    # gamedata.iff scenes refit in their retail spans); EXPERIMENTAL / UNWITNESSED, off in every preset
+    kick_meter_2026: bool = False
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
+    historic_rosters_2026: bool = False  # source-gated season roster work; incomplete data must refuse
     # community playbook packs (.2k5book recipes) installed into the copy's team books.
     # A recipe, not retail bytes: the same formation/play/link rows the designers stage, so
     # Build compiles them against the user's own disc.  Never in a preset -- a community book
@@ -311,12 +391,12 @@ class BuildPlan:
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
-                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
+                or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or self.elbow_options or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -344,12 +424,12 @@ PRESETS: dict[str, dict[str, Any]] = {
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
-        "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
+        "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False, "franchise_economy": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -365,12 +445,12 @@ PRESETS: dict[str, dict[str, Any]] = {
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
-        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
+        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
@@ -387,21 +467,75 @@ PRESETS: dict[str, dict[str, Any]] = {
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
-        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
+        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
-        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False,
+        "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
         "decided_clock_margin": 17, "decided_clock_seconds": 60,
         "cpu_scrambles": "retail",
     },
 }
 PRESETS["softdrink_experimental"]["modern_naming"] = tt.modern_naming_patch.preset_enabled("experimental")
+# b76 p1: ESPN presentation marks (2026) are experimental and unwitnessed: off in every preset.
+for _preset in PRESETS.values():
+    _preset["espn_marks_2026"] = False
+del _preset
+# b76-p2: ESPN 2026 wipes and boards are experimental and unwitnessed: off in every preset.
+for _preset in PRESETS.values():
+    _preset["espn_wipes_boards_2026"] = False
+# b76-km: the 2026 kick meter is experimental and unwitnessed: off in every preset.
+for _preset in PRESETS.values():
+    _preset["kick_meter_2026"] = False
+del _preset
+# b76-h1: historic teams in Quick Game are off in basic and advanced (a 2004 game keeps its menus).
+for _preset in PRESETS.values():
+    _preset["historic_teams_quick_game"] = False
+    _preset["historic_rosters_2026"] = False
+del _preset
+# b76-vb3 E1: the return blocking rule is Noah's feel test; off in every preset.
+for _preset in PRESETS.values():
+    _preset["kickoff_return_blocking"] = False
+del _preset
+# b76-m1: 25 more Anniversary moments are off in every preset until witnessed (the ultimate recipe turns them on).
+for _preset in PRESETS.values():
+    _preset["espn25_more_moments"] = False
+    _preset["historic_stock_books"] = False
+    _preset["espn25_named_previews"] = False
+    _preset["espn25_era_rules"] = False
+del _preset
+# b76-k2: the jersey number kerning is experimental and unwitnessed: off in every preset.
+for _preset in PRESETS.values():
+    _preset["number_kerning"] = False
+del _preset
+# b76-k1: 128 MB memory (K128) and the roster block in the extra heap are experimental: off in every preset.
+for _preset in PRESETS.values():
+    _preset["k128_memory"] = False
+    _preset["k128_roster_heap"] = False
+    _preset["k128_early"] = False
+del _preset
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}
+
+
+# b76-i1: Custom intro video is in no preset; choosing a preset clears a chosen movie.
+for _preset_values in PRESETS.values():
+    _preset_values.setdefault("custom_intro", "")
+# b76-u4: the 2026 venue art is in no preset; choosing a preset clears a chosen art folder.
+for _preset_values in PRESETS.values():
+    _preset_values.setdefault("modern_venues_2026", "")
+
+# b76-z2: the xemu display-list stability fix is on in all three presets. It changes no gameplay
+# and no picture: the GPU receives the same methods in the same order, only the place where
+# xemu's pusher waits for the list-release callback moves into the ring. It fits "basic" (the
+# fixes a 2K5 update would have shipped) as a crash fix for the runtime most players use.
+for _preset_values in PRESETS.values():
+    _preset_values["xemu_display_list_fix"] = True
+    # b76-dn: allocation failure is a skipped resource, not an asynchronous read into NULL.
+    _preset_values["resource_load_guard"] = True
 
 
 def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
@@ -437,7 +571,22 @@ def _team_names_available() -> bool:
         return False
 
 
-def availability() -> dict[str, bool]:
+def _espn_marks_available(marks_pack=None) -> bool:
+    module = _core_module("nfl2k5_espn_marks")
+    return module is not None and module.available(marks_pack)  # the pins and the shipped art must agree
+
+
+def _espn_wipes_boards_available(marks_pack=None) -> bool:  # b76-p2
+    module = _core_module("nfl2k5_espn_wipes_boards")
+    return module is not None and module.available(marks_pack)  # the pins and the shipped art must agree
+
+
+def _kick_meter_available() -> bool:  # b76-km
+    module = _core_module("nfl2k5_kick_meter_2026")
+    return module is not None and module.available()  # the pins, the art and the geometry must agree
+
+
+def availability(official_marks_pack=None) -> dict[str, bool]:
     """Which optional patch modules are present in this build."""
 
     return {
@@ -445,8 +594,35 @@ def availability() -> dict[str, bool]:
         "helmet_finish": _core_module("nfl2k5_helmet_finish") is not None,
         "weather_plan": _core_module("nfl2k5_weather") is not None,
         "weather_haze": _core_module("nfl2k5_weather_haze") is not None,
+        "number_kerning": _core_module("nfl2k5_number_kerning") is not None,  # b76-k2
         "modern_color": _core_module("nfl2k5_modern_color") is not None,
         "modern_arrowhead": _core_module("nfl2k5_modern_arrowhead") is not None,
+        "modern_metlife": _core_module("nfl2k5_modern_metlife") is not None,
+        "modern_venues_2026": _core_module("nfl2k5_modern_venues_2026") is not None,  # b76-u4
+        "modern_metlife_model": _core_module("nfl2k5_metlife_model") is not None,
+        "modern_helmets": _core_module("nfl2k5_modern_helmets") is not None,  # b76-hm
+        "modern_sofi": _core_module("nfl2k5_sofi_model") is not None,  # b76-u6
+        "modern_highmark": _core_module("nfl2k5_highmark_model") is not None,  # b76-st
+        "modern_att": _core_module("nfl2k5_att_model") is not None,  # b76-st2
+        "modern_levis": _core_module("nfl2k5_levis_model") is not None,  # b76-st2
+        "modern_allegiant": _core_module("nfl2k5_allegiant_model") is not None,  # b76-st2
+        "modern_mercedes_benz": _core_module("nfl2k5_mercedes_benz_model") is not None,  # b76-st2
+        "modern_usbank": _core_module("nfl2k5_usbank_model") is not None,  # b76-st3
+        "modern_lucas_oil": _core_module("nfl2k5_lucas_oil_model") is not None,  # b76-st3
+        "modern_state_farm": _core_module("nfl2k5_state_farm_model") is not None,  # b76-st3
+        "modern_hard_rock": _core_module("nfl2k5_hard_rock_model") is not None,  # b76-st4
+        "modern_gillette": _core_module("nfl2k5_gillette_model") is not None,  # b76-st4
+        "modern_lambeau": _core_module("nfl2k5_lambeau_model") is not None,  # b76-st4
+        "modern_everbank": _core_module("nfl2k5_everbank_model") is not None,  # b76-st4
+        "modern_everbank_construction": _core_module("nfl2k5_everbank_model") is not None,  # b76-st4
+        "modern_board_kit": _core_module("nfl2k5_board_kit") is not None,  # b76-st5
+        "modern_practice_field": _core_module("nfl2k5_practice_field_model") is not None,  # b76-pf
+        "modern_practice_field_team_logo": (_core_module("nfl2k5_practice_field_model") is not None
+                                            and _core_module("nfl2k5_team_logo_swap") is not None),  # b76-pf P1
+        "modern_surfaces": _core_module("nfl2k5_modern_surfaces") is not None,  # b76-tf
+        "espn_marks_2026": _espn_marks_available(official_marks_pack),
+        "espn_wipes_boards_2026": _espn_wipes_boards_available(official_marks_pack),  # b76-p2
+        "kick_meter_2026": _kick_meter_available(),  # b76-km
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -462,6 +638,12 @@ def availability() -> dict[str, bool]:
                                ("coin_defer", "nfl2k5_coin_defer"),
                                ("decided_clock", "nfl2k5_decided_clock"),
                                ("cpu_scrambles", "nfl2k5_cpu_scrambles"),
+                               ("historic_teams_quick_game", "nfl2k5_historic_teams_quick_game"),
+                               ("kickoff_return_blocking", "nfl2k5_kickoff_blocking"),
+                               ("espn25_more_moments", "nfl2k5_espn25_more_moments"),
+                               ("historic_stock_books", "nfl2k5_stock_books"),
+                               ("espn25_era_rules", "nfl2k5_era_rules"),
+                               ("k128_memory", "nfl2k5_k128"), ("k128_roster_heap", "nfl2k5_k128"), ("k128_early", "nfl2k5_k128"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
                                ("playbook_pair", "nfl2k5_playbook_pair"),
                                ("deep_zone_facing", "nfl2k5_deep_zone"), ("deep_zone_bail", "nfl2k5_deep_zone"),
@@ -475,6 +657,8 @@ def availability() -> dict[str, bool]:
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
         "trim_intro_videos": _core_module("nfl2k5_intro_videos") is not None,
+        "custom_intro": (_core_module("nfl2k5_custom_intro") is not None
+                         and _core_module("nfl2k5_sofdec") is not None),
         "crib_reclaim": _core_module("nfl2k5_crib_reclaim") is not None,
         "modern_naming": tt.modern_naming_patch.all_strings_fit(),
         "xbe_space": _core_module("nfl2k5_xbe_space") is not None,
@@ -499,6 +683,7 @@ def availability() -> dict[str, bool]:
         "season_cap": all(_core_module(name) is not None for name in ("nfl2k5_season_cap", "nfl2k5_calendar_engine", "nfl2k5_xbe_space")),
         "returner_fix": _core_module("nfl2k5_returner_fix") is not None,
         "progression": _core_module("nfl2k5_progression") is not None,
+        "franchise_economy": _core_module("nfl2k5_franchise_economy") is not None,
         "scheme_labels": _core_module("nfl2k5_modern_positions") is not None,
         "camera": _core_module("nfl2k5_camera") is not None,
         "kick_rules": _core_module("nfl2k5_kick_rules") is not None,
@@ -515,6 +700,9 @@ def availability() -> dict[str, bool]:
         "position_row": _core_module("nfl2k5_position_row") is not None,
         "probowl_order": _core_module("nfl2k5_probowl_order") is not None,
         "elbow_options": _core_module("nfl2k5_elbow_options") is not None,
+        "the1wam_lineman_rating": _core_module("nfl2k5_lineman_rating") is not None,
+        "xemu_display_list_fix": _core_module("nfl2k5_display_list_stability") is not None,
+        "resource_load_guard": _core_module("nfl2k5_resource_load_guard") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
         "kick_laces": _core_module("nfl2k5_kick_laces") is not None,
@@ -530,6 +718,7 @@ def availability() -> dict[str, bool]:
         # the image with Catalog.load and reports available / foreign (a bare XBE: requires image)
         "espn25_plan": _core_module("nfl2k5_espn25_scenarios") is not None,
         "espn25_rosters": _espn25_rosters_available(),
+        "historic_rosters_2026": _core_module("nfl2k5_historic_rosters") is not None,
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -592,11 +781,15 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "throw": report["settings"], "catch_slider": report.get("catch_slider"),
         "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
+        "franchise_economy": report.get("franchise_economy", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
         "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "elbow_options": report.get("elbow_options", "unknown"),
+        "the1wam_lineman_rating": report.get("the1wam_lineman_rating", "unknown"),
+        "xemu_display_list_fix": report.get("xemu_display_list_fix", "unknown"),
+        "resource_load_guard": report.get("resource_load_guard", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
         "uniform_choice_mode": report.get("uniform_choice_mode"),
@@ -606,12 +799,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "practice_reserves": report.get("practice_reserves", "unknown"),
         "depth_locks": report.get("depth_locks", "unknown"),
         "season_cap": report.get("season_cap", "unknown"),
+        "modern_practice_field_team_logo": report.get("team_logo_swap", "unknown"),  # b76-pf P1: the executable's table
         **{key: report.get(key, "unknown") for key in
            ("momentum", "momentum_contact", "momentum_collisions", "momentum_settings",
             "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
+            "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "k128_settings",
             "reserves_16", "created_teams_extra", "roster_arena_growth", "roster_arena_settings", "roster_arena_resource", "defensive_try", "zone_drop_cap", "zone_drop_settings", "all_stadiums", "coverage_slider", "scramble_tuning",
             "flatter_deep_ball", "chop_block_toggle", "chop_block_evidence",
             "music_shuffle", "music_shuffle_state", "practice_squad_screen", "abilities", "abilities_settings", "qb_spy", "calendar_engine")},
@@ -638,6 +833,18 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "depth_roles": "n/a",
     }
     if report.get("container") == "xiso":
+        moments = _core_module("nfl2k5_espn25_more_moments")
+        stock = _core_module("nfl2k5_stock_books")
+        try:
+            out["espn25_named_previews"] = moments.named_image_status(source)
+            if out["espn25_named_previews"] != report.get("espn25_named_previews"):
+                out["espn25_named_previews"] = "foreign"
+            bank_state = stock.image_status(source)
+            if bank_state != out["historic_stock_books"]:
+                out["historic_stock_books"] = "foreign"
+        except (OSError, ValueError):
+            out["espn25_named_previews"] = "foreign"
+            out["historic_stock_books"] = "foreign"
         out["modern_naming"] = tt.modern_naming_patch.image_status(source)
         try:
             out["modern_naming_details"] = tt.modern_naming_patch.image_preview(source)
@@ -654,7 +861,11 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         names_2026 = _core_module("nfl2k5_team_names_2026")
         if names_2026 is not None:
             try:
-                out["team_names_2026"] = names_2026.image_status(source)
+                rost_state = names_2026.image_status(source)
+                xbe_state = names_2026.xbe_status(_xbe_bytes(source))
+                # u3: the names (ROST) and their engine key paths (XBE) are one option: both or neither
+                out["team_names_2026"] = rost_state if rost_state == xbe_state else "foreign"
+                out["team_names_2026_xbe"] = xbe_state
                 manifest = names_2026.manifest()
                 out["team_names_2026_details"] = {"teams": manifest["teams"], "strg_audit": manifest["strg_audit"]}
             except (OSError, ValueError):
@@ -700,6 +911,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             try:
                 pools_xbe = _xbe_bytes(source)
                 out["position_pools"] = pools.status(pools_xbe)
+                out["position_pool_lineup"] = pools.lineup_status(pools_xbe)
                 out["position_pool_filters"] = pools.filter_list_status(pools_xbe)
             except Exception:  # noqa: BLE001
                 out["position_pools"] = "foreign"
@@ -770,6 +982,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                 out["espn25_rosters"] = rosters.image_status(source)
             except Exception:  # noqa: BLE001
                 out["espn25_rosters"] = "foreign"
+        seasons = _core_module("nfl2k5_historic_rosters")
+        if seasons is not None:
+            out["historic_rosters_2026"] = seasons.image_status(source)
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -792,6 +1007,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["weather_haze"] = haze.status(_xbe_bytes(source))
         except (OSError, ValueError):
             out["weather_haze"] = "unknown"
+    kerning = _core_module("nfl2k5_number_kerning")  # b76-k2
+    if kerning is None:
+        out["number_kerning"] = "unavailable"
+    else:
+        try:
+            out["number_kerning"] = kerning.status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["number_kerning"] = "unknown"
     modern = _core_module("nfl2k5_modern_color")
     if modern is None:
         out["modern_color"] = "unavailable"
@@ -818,6 +1041,247 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_arrowhead"] = arrowhead.image_status(source)
         except (OSError, ValueError):
             out["modern_arrowhead"] = "unknown"
+    metlife = _core_module("nfl2k5_modern_metlife")
+    if metlife is None:
+        out["modern_metlife"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_metlife"] = "needs_image"
+    else:
+        try:
+            out["modern_metlife"] = metlife.image_status(source)
+        except (OSError, ValueError):
+            out["modern_metlife"] = "unknown"
+    venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+    if venues26 is None:
+        out["modern_venues_2026"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_venues_2026"] = "needs_image"
+    else:
+        try:
+            out["modern_venues_2026"] = venues26.image_status(source)
+        except (OSError, ValueError):
+            out["modern_venues_2026"] = "unknown"
+    helmets = _core_module("nfl2k5_modern_helmets")  # b76-hm
+    if helmets is None:
+        out["modern_helmets"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_helmets"] = "needs_image"
+    else:
+        try:
+            out["modern_helmets"] = helmets.image_status(source)
+        except (OSError, ValueError):
+            out["modern_helmets"] = "unknown"
+    metlife_model = _core_module("nfl2k5_metlife_model")
+    if metlife_model is None:
+        out["modern_metlife_model"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_metlife_model"] = "needs_image"
+    else:
+        try:
+            out["modern_metlife_model"] = metlife_model.image_status(source)
+        except (OSError, ValueError):
+            out["modern_metlife_model"] = "unknown"
+    sofi = _core_module("nfl2k5_sofi_model")  # b76-u6
+    if sofi is None:
+        out["modern_sofi"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_sofi"] = "needs_image"
+    else:
+        try:
+            out["modern_sofi"] = sofi.image_status(source)
+        except (OSError, ValueError):
+            out["modern_sofi"] = "unknown"
+    highmark = _core_module("nfl2k5_highmark_model")  # b76-st
+    if highmark is None:
+        out["modern_highmark"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_highmark"] = "needs_image"
+    else:
+        try:
+            out["modern_highmark"] = highmark.image_status(source)
+        except (OSError, ValueError):
+            out["modern_highmark"] = "unknown"
+    att = _core_module("nfl2k5_att_model")  # b76-st2
+    if att is None:
+        out["modern_att"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_att"] = "needs_image"
+    else:
+        try:
+            out["modern_att"] = att.image_status(source)
+        except (OSError, ValueError):
+            out["modern_att"] = "unknown"
+    levis = _core_module("nfl2k5_levis_model")  # b76-st2
+    if levis is None:
+        out["modern_levis"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_levis"] = "needs_image"
+    else:
+        try:
+            out["modern_levis"] = levis.image_status(source)
+        except (OSError, ValueError):
+            out["modern_levis"] = "unknown"
+    allegiant = _core_module("nfl2k5_allegiant_model")  # b76-st2
+    if allegiant is None:
+        out["modern_allegiant"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_allegiant"] = "needs_image"
+    else:
+        try:
+            out["modern_allegiant"] = allegiant.image_status(source)
+        except (OSError, ValueError):
+            out["modern_allegiant"] = "unknown"
+    mercedes_benz = _core_module("nfl2k5_mercedes_benz_model")  # b76-st2
+    if mercedes_benz is None:
+        out["modern_mercedes_benz"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_mercedes_benz"] = "needs_image"
+    else:
+        try:
+            out["modern_mercedes_benz"] = mercedes_benz.image_status(source)
+        except (OSError, ValueError):
+            out["modern_mercedes_benz"] = "unknown"
+    usbank = _core_module("nfl2k5_usbank_model")  # b76-st3
+    if usbank is None:
+        out["modern_usbank"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_usbank"] = "needs_image"
+    else:
+        try:
+            out["modern_usbank"] = usbank.image_status(source)
+        except (OSError, ValueError):
+            out["modern_usbank"] = "unknown"
+    lucas_oil = _core_module("nfl2k5_lucas_oil_model")  # b76-st3
+    if lucas_oil is None:
+        out["modern_lucas_oil"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_lucas_oil"] = "needs_image"
+    else:
+        try:
+            out["modern_lucas_oil"] = lucas_oil.image_status(source)
+        except (OSError, ValueError):
+            out["modern_lucas_oil"] = "unknown"
+    state_farm = _core_module("nfl2k5_state_farm_model")  # b76-st3
+    if state_farm is None:
+        out["modern_state_farm"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_state_farm"] = "needs_image"
+    else:
+        try:
+            out["modern_state_farm"] = state_farm.image_status(source)
+        except (OSError, ValueError):
+            out["modern_state_farm"] = "unknown"
+    hard_rock = _core_module("nfl2k5_hard_rock_model")  # b76-st4
+    if hard_rock is None:
+        out["modern_hard_rock"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_hard_rock"] = "needs_image"
+    else:
+        try:
+            out["modern_hard_rock"] = hard_rock.image_status(source)
+        except (OSError, ValueError):
+            out["modern_hard_rock"] = "unknown"
+    gillette = _core_module("nfl2k5_gillette_model")  # b76-st4
+    if gillette is None:
+        out["modern_gillette"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_gillette"] = "needs_image"
+    else:
+        try:
+            out["modern_gillette"] = gillette.image_status(source)
+        except (OSError, ValueError):
+            out["modern_gillette"] = "unknown"
+    lambeau = _core_module("nfl2k5_lambeau_model")  # b76-st4
+    if lambeau is None:
+        out["modern_lambeau"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_lambeau"] = "needs_image"
+    else:
+        try:
+            out["modern_lambeau"] = lambeau.image_status(source)
+        except (OSError, ValueError):
+            out["modern_lambeau"] = "unknown"
+    everbank = _core_module("nfl2k5_everbank_model")  # b76-st4
+    if everbank is None:
+        out["modern_everbank"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_everbank"] = "needs_image"
+    else:
+        try:
+            out["modern_everbank"] = everbank.image_status(source)
+        except (OSError, ValueError):
+            out["modern_everbank"] = "unknown"
+    if everbank is None:  # b76-st4: the construction sub-option: retail (still to choose), on, off, mixed or foreign
+        out["modern_everbank_construction"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_everbank_construction"] = "needs_image"
+    else:
+        try:
+            out["modern_everbank_construction"] = everbank.construction_status(source)
+        except (OSError, ValueError):
+            out["modern_everbank_construction"] = "unknown"
+    board_kit = _core_module("nfl2k5_board_kit")  # b76-st5
+    if board_kit is None:
+        out["modern_board_kit"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_board_kit"] = "needs_image"
+    else:
+        try:
+            out["modern_board_kit"] = board_kit.image_status(source)
+        except (OSError, ValueError):
+            out["modern_board_kit"] = "unknown"
+    practice = _core_module("nfl2k5_practice_field_model")  # b76-pf
+    if practice is None:
+        out["modern_practice_field"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_practice_field"] = "needs_image"
+    else:
+        try:
+            out["modern_practice_field"] = practice.image_status(source)
+        except (OSError, ValueError):
+            out["modern_practice_field"] = "unknown"
+    surfaces = _core_module("nfl2k5_modern_surfaces")  # b76-tf
+    if surfaces is None:
+        out["modern_surfaces"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_surfaces"] = "needs_image"
+    else:
+        try:
+            out["modern_surfaces"] = surfaces.image_status(source)
+        except (OSError, ValueError):
+            out["modern_surfaces"] = "unknown"
+    marks = _core_module("nfl2k5_espn_marks")
+    if marks is None:
+        out["espn_marks_2026"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["espn_marks_2026"] = "needs_image"
+    else:
+        try:
+            out["espn_marks_2026"] = marks.image_status(source)
+        except (OSError, ValueError):
+            out["espn_marks_2026"] = "unknown"
+    # b76-p2: ESPN 2026 wipes and boards (six scene resources in wipe.cdf and the menu and bumper scenes)
+    wipes = _core_module("nfl2k5_espn_wipes_boards")
+    if wipes is None:
+        out["espn_wipes_boards_2026"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["espn_wipes_boards_2026"] = "needs_image"
+    else:
+        try:
+            out["espn_wipes_boards_2026"] = wipes.image_status(source)
+        except (OSError, ValueError):
+            out["espn_wipes_boards_2026"] = "unknown"
+    # b76-km: the 2026 kick meter (KickArrow, KickMeter and windmeter in gamedata.iff)
+    kick_meter = _core_module("nfl2k5_kick_meter_2026")
+    if kick_meter is None:
+        out["kick_meter_2026"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["kick_meter_2026"] = "needs_image"
+    else:
+        try:
+            out["kick_meter_2026"] = kick_meter.image_status(source)
+        except (OSError, ValueError):
+            out["kick_meter_2026"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -829,7 +1293,33 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     intro = _core_module("nfl2k5_intro_videos")
     out["trim_intro_videos"] = (intro.image_status(source) if intro is not None and report.get("container") == "xiso"
                                 else "requires image")
+    custom_intro = _core_module("nfl2k5_custom_intro")
+    out["custom_intro"] = (custom_intro.image_status(source)
+                           if custom_intro is not None and report.get("container") == "xiso" else "requires image")
     return out
+
+
+def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
+    """Refuse the build when any PLAY book on the image has a formation play menu the game cannot walk to its end
+    (``nfl2k5_playbook_inspector.menu_link_problems``: a play listed twice in one formation, which makes the play
+    call's list endless, a repeated selection group 0-2, an unreachable or out-of-range link). None when the
+    modules are not part of this build."""
+    inspector = _core_module("nfl2k5_playbook_inspector")
+    packs = _core_module("nfl2k5_playbook_pack")
+    if inspector is None or packs is None or not hasattr(inspector, "menu_link_problems"):
+        return None
+    progress("Checking every playbook's play menus", 0, 0)
+    books, problems = 0, []
+    with packs._outer_image().OuterImage(target) as archive:
+        for entry in archive.entries_with_head(b"PLAY"):
+            books += 1
+            problems += [f"book {entry.index}: {problem}"
+                         for problem in inspector.menu_link_problems(archive.read_entry(entry.index))]
+    if problems:
+        raise RuntimeError("A playbook on this build has a formation play menu the game cannot use, so picking that "
+                           "formation would hang the play call: " + "; ".join(problems[:4])
+                           + (f"; and {len(problems) - 4} more" if len(problems) > 4 else ""))
+    return {"books": books, "problems": 0}
 
 
 def _xbe_bytes(source: Path) -> bytes:
@@ -842,6 +1332,24 @@ def _xbe_bytes(source: Path) -> bytes:
         finally:
             os.close(fd)
     return source.read_bytes()
+
+
+def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[str, Any]:
+    """Fail closed on every final PLAY, after all book writers, before publication."""
+    from . import nfl2k5_play_scoring as scoring
+    packs = _core_module("nfl2k5_playbook_pack")
+    if packs is None:
+        raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
+    payload = _xbe_bytes(target)
+    rows = []
+    with packs._outer_image().OuterImage(target) as archive:
+        for entry in archive.entries_with_head(b"PLAY"):
+            progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
+            row = scoring.require_safe(archive.read_entry(entry.index), payload)
+            rows.append({"entry": entry.index, **row})
+    if not rows:
+        raise RuntimeError("Native PLAY scoring found no books in the build")
+    return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
 
 
 def _pack0_extent(descriptor: int) -> tuple[int, int]:
@@ -977,10 +1485,28 @@ PLAYBOOK_OPTION_LABELS = {
 
 
 def validate_plan(plan: BuildPlan) -> list[str]:
-    """Report incompatible choices before reading inputs or copying a disc."""
-    if plan.trim_intro_videos and plan.crib_reclaim:
-        return ["Choose Trim intro videos or Crib movie cut. Their combined shrink exceeds "
-                "the current archive writer's final-pack capacity; build from the original source."]
+    """Report incompatible choices before reading game inputs or copying a disc."""
+    if type(plan.official_marks_pack) is not str:
+        return ["official_marks_pack must be a folder path (text)"]
+    if plan.historic_rosters_2026:
+        from . import nfl2k5_historic_rosters
+        try:
+            nfl2k5_historic_rosters.require_build_ready()
+        except nfl2k5_historic_rosters.HistoricRostersError as exc:
+            return [str(exc)]
+    # b76-f2: the Crib movie cut composes with Trim intro videos and with the Custom
+    # intro video: a shrink larger than the movie archive's final pack spills into
+    # the packs before it (nfl2k5_music_archive.pack_sizes).
+    if plan.custom_intro and plan.trim_intro_videos:
+        return ["Choose Custom intro video or Trim intro videos. The trim skips every startup movie, "
+                "so the custom intro would never play."]
+    # b76-u3: both rewrite the jersey colour rule at 0x6160F (when the Cowboys wear white).
+    if plan.team_names_2026 and plan.uniform_choice:
+        return ["Choose 2026 team names or Uniform choice. Both rewrite the game's jersey colour rule "
+                "(when the Cowboys wear white), so one would undo the other."]
+    # b76-pf P1: the eighth field swap pair only reaches the practice facility's field (its midfield named teamlogo).
+    if plan.modern_practice_field_team_logo is True and plan.modern_practice_field is not True:
+        return ["The practicing team's logo at midfield needs the Modern practice facility: turn it on too."]
     return []
 
 
@@ -1001,7 +1527,7 @@ def require_build_source(source: Path | str) -> Path:
     build to a fresh target reads only the source named here.
     """
 
-    source = Path(source)
+    source = platform_compat.io_path(source)
     try:
         found = source.is_file()
     except OSError:  # an unreadable parent, a dead network share
@@ -1099,13 +1625,12 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         if blockers:
             raise ValueError("\n".join(blockers))
         r62 = _validated_r62_plan_options(plan)
+        platform_compat.validate_output_path(plan.target)
         require_build_source(plan.source)
-        source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
-        if source == target.resolve():
+        source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
+        if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
         from .image_use import check_image_destination, publish_image
-        if target.exists() and os.path.samefile(source, target):
-            raise ValueError("target must not be the source")
         previous_target = check_image_destination(target, overwrite=plan.overwrite)
         with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
             directory = Path(folder)
@@ -1168,16 +1693,36 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     _digest(directory / target.name))
             else:
                 receipt["outcome"] = measure(source, directory / target.name)
+            # The public digest describes the final compact image, including when
+            # an earlier resource pass recorded its own intermediate digest.
+            if "disc_compaction" in receipt:
+                receipt["result"].update(image_size=receipt["outcome"]["output"]["size"],
+                                        image_sha256=receipt["outcome"]["output"]["sha256"])
             if progress:
                 progress(receipt["outcome"]["message"], 0, 0)
             progress("Publishing the verified disc", 0, 0)
             from . import nfl2k5_modern_color as colour
             colour_receipt = colour.read_image_receipt(directory / target.name)
+            venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+            venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+            # b76-tf: the Modern surfaces receipt travels with the disc too (its status reads it)
+            surfaces = _core_module("nfl2k5_modern_surfaces")
+            surfaces_receipt = surfaces.read_receipt(directory / target.name) if surfaces is not None else None
             publish_image(directory / target.name, target, previous_target)
             if colour_receipt is not None:
                 colour._save_image_receipt(target, colour_receipt)
             else:
                 colour.receipt_path(target).unlink(missing_ok=True)
+            if venues26 is not None:
+                if venues_receipt is not None:
+                    venues26._save_receipt(target, venues_receipt)
+                else:
+                    venues26.receipt_path(target).unlink(missing_ok=True)
+            if surfaces is not None:
+                if surfaces_receipt is not None:
+                    surfaces.save_receipt(target, surfaces_receipt)
+                else:
+                    surfaces.receipt_path(target).unlink(missing_ok=True)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
@@ -1236,7 +1781,7 @@ def _preview_play_intents(source, paths):
                 return len(payload)
 
         packs.apply_packs_to_archive(PreviewArchive(), [(str(path), packs.load_pack(path)) for path in paths],
-                                     book_entries=recode.BOOK_ENTRIES, collector=pairs)
+                                     book_entries=recode.BOOK_ENTRIES, collector=pairs, xbe=_xbe_bytes(source))
     return pairs
 
 
@@ -1257,8 +1802,28 @@ def _verify_play_intents(source, pairs):
 
 
 def _r62_plan_options(plan, frozen_setup=None):
-    return {key: (None if key == "read_option_intent_table" else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+    # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
+    derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
+               "team_logo_swap"}
+    return {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
             for key in tt.R62_RUNTIME_KEYS}
+
+
+def _anniversary_kickoff_wanted(plan, is_image):
+    """b76-vb3: the ESPN 25th Anniversary moments keep the retail kickoff whenever the 2026 kickoff is built into a
+    disc image (the gate is an allocator owner and reads the disc's retail special-teams data)."""
+    return bool(plan.dynamic_kickoff and is_image and _core_module("nfl2k5_anniversary_kickoff") is not None)
+
+
+def _widescreen_menus_wanted(plan, is_image):
+    """b76-vb3 D2: widescreen builds keep 4:3 menus whenever the disc image can carry the small allocator owner."""
+    return bool(plan.widescreen and is_image and _core_module("nfl2k5_widescreen_menus") is not None)
+
+
+def _team_logo_swap_wanted(plan, is_image):
+    """b76-pf P1: the field swap's eighth pair rides with the practice facility's team-logo sub-option on disc images."""
+    return bool(plan.modern_practice_field and plan.modern_practice_field_team_logo and is_image
+                and _core_module("nfl2k5_team_logo_swap") is not None)
 
 
 def _validated_r62_plan_options(plan):
@@ -1277,6 +1842,18 @@ def _validated_r62_plan_options(plan):
         # inline); an explicit MyCareer.json keeps the legacy prepared-save route.
         if plan.my_career_setup:
             r62["my_career_setup"] = tt.my_career_patch.read_setup(plan.my_career_setup)
+            tier = int.from_bytes(r62["my_career_setup"][212:216], "little")
+            if plan.the1wam_lineman_rating and tier:
+                # The Studio rates a prepared prospect tier against the retail overall. the1wam's lineman
+                # rating changes a C/G/T overall, so a prepared lineman could miss its floor in the game.
+                from . import nfl2k5_my_career_prospects as prospects
+                goal = prospects.TIERS[tier][1]
+                shown = prospects.prepared_overall(r62["my_career_setup"], lineman=True)
+                if shown != goal:
+                    raise ValueError(f"The prepared MyCareer prospect was rated to overall {goal} "
+                                     f"({prospects.TIERS[tier][0]}) without the1wam's lineman rating; with it he "
+                                     f"reads {shown}. Create MyPlayer in the game (leave the MyCareer setup empty), "
+                                     "or build without the lineman rating.")
         else:
             r62["my_career_setup"] = None
     elif plan.my_career_setup is not None:
@@ -1284,6 +1861,50 @@ def _validated_r62_plan_options(plan):
     return r62
 
 
+def _apply_roster_history(plan, target, receipt, progress):
+    """Apply identities, counters, then TEAM, with one history owner."""
+    epoch = 2026 if plan.season_2026 else 2004
+    modern_history = None
+    if plan.roster_edits:
+        # Replacement identities and their owned history precede optional history imports.
+        records = _core_module("nfl2k5_roster_records")
+        if records is None:
+            raise RuntimeError("the roster records module is not available in this build")
+        modern_history = records.read_edits(Path(plan.roster_edits)).get("franchise_history")
+        if modern_history:
+            if modern_history.get("base_year") != epoch:
+                raise ValueError("franchise history epoch differs from the build season")
+            if plan.career_stats:
+                raise ValueError("embedded franchise history and a career CSV have conflicting ownership")
+        progress("Applying the roster edits", 0, 0)
+        # the reclassify pass above retires the OLB code, so an edit authored on a retail roster
+        # must not write it back: tell the writer which scheme the disc it is landing on is on
+        edits_receipt = records.apply(target, Path(plan.roster_edits),
+                                      progress=lambda msg: progress(msg, 0, 0),
+                                      scheme="one_pool" if plan.position_pools else None)
+        receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
+                                 "scheme": "one_pool" if plan.position_pools else "auto",
+                                 **{k: v for k, v in edits_receipt.items() if k != "log"},
+                                 "log_lines": len(edits_receipt.get("log", []))})
+    if plan.career_stats:
+        if modern_history:
+            raise ValueError("embedded franchise history and a career CSV have conflicting ownership")
+        career = _core_module("nfl2k5_career_stats")
+        career_receipt = career.apply(target, plan.career_stats, base_year=epoch,
+                                      progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "career_stats", **career_receipt})
+    if plan.team_history and not modern_history:
+        history = _core_module("nfl2k5_team_history")
+        history_receipt = history.apply(target, plan.team_history, base_year=epoch,
+                                        progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
+                                 "log_lines": len(history_receipt.get("log", []))})
+    elif modern_history:
+        receipt["steps"].append({"step": "team_history", "status": "owned_by_franchise_history",
+                                 "base_year": epoch, "retail_fallback": False})
+
+
+@official.build_scope
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     blockers = validate_plan(plan)
@@ -1339,16 +1960,111 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     colour.normalize_settings(plan.modern_color_settings)
     if type(plan.trim_intro_videos) is not bool:
         raise ValueError("Trim intro videos must be Off or On.")
+    if type(plan.custom_intro) is not str:
+        raise ValueError("Custom intro video must be the path of a movie file, or empty.")
+    plan = replace(plan, custom_intro=plan.custom_intro.strip())
     if type(plan.modern_arrowhead) is not bool:
         raise ValueError("Modern Arrowhead must be Off or On.")
+    if type(plan.modern_metlife) is not bool:
+        raise ValueError("Modern MetLife Stadium must be Off or On.")
+    if type(plan.modern_venues_2026) is not str:
+        raise ValueError("2026 venue art must be the folder of team venue art, or empty.")
+    plan = replace(plan, modern_venues_2026=plan.modern_venues_2026.strip())
+    if type(plan.modern_metlife_model) is not bool:
+        raise ValueError("Modern MetLife model must be Off or On.")
+    if type(plan.modern_helmets) is not bool:
+        raise ValueError("Modern helmets must be Off or On.")
+    if plan.modern_helmets and plan.guardian_cap:
+        raise ValueError("Modern helmets add details to helmet C; turn the Guardian helmet C trial off (the Guardian "
+                         "overlay works with Modern helmets).")
+    if type(plan.modern_sofi) is not bool:
+        raise ValueError("SoFi Stadium must be Off or On.")
+    if type(plan.modern_highmark) is not bool:
+        raise ValueError("Highmark Stadium must be Off or On.")
+    if type(plan.modern_att) is not bool:
+        raise ValueError("AT&T Stadium must be Off or On.")
+    if type(plan.modern_levis) is not bool:
+        raise ValueError("Levi's Stadium must be Off or On.")
+    if type(plan.modern_allegiant) is not bool:
+        raise ValueError("Allegiant Stadium must be Off or On.")
+    if type(plan.modern_mercedes_benz) is not bool:
+        raise ValueError("Mercedes-Benz Stadium must be Off or On.")
+    if type(plan.modern_usbank) is not bool:
+        raise ValueError("U.S. Bank Stadium must be Off or On.")
+    if type(plan.modern_lucas_oil) is not bool:
+        raise ValueError("Lucas Oil Stadium must be Off or On.")
+    if type(plan.modern_state_farm) is not bool:
+        raise ValueError("State Farm Stadium must be Off or On.")
+    if type(plan.modern_hard_rock) is not bool:
+        raise ValueError("Hard Rock Stadium must be Off or On.")
+    if type(plan.modern_gillette) is not bool:
+        raise ValueError("Gillette Stadium must be Off or On.")
+    if type(plan.modern_lambeau) is not bool:
+        raise ValueError("Lambeau Field must be Off or On.")
+    if type(plan.modern_everbank) is not bool:
+        raise ValueError("EverBank Stadium must be Off or On.")
+    if type(plan.modern_everbank_construction) is not bool:
+        raise ValueError("EverBank Stadium's 2026 construction must be Off or On.")
+    if type(plan.modern_board_kit) is not bool:
+        raise ValueError("Modern stadium boards must be Off or On.")
+    if type(plan.modern_practice_field) is not bool:
+        raise ValueError("Modern practice facility must be Off or On.")
+    if type(plan.modern_practice_field_team_logo) is not bool:
+        raise ValueError("The practicing team's logo at midfield must be Off or On.")
+    if plan.modern_practice_field_team_logo and not plan.modern_practice_field:
+        raise ValueError("The practicing team's logo at midfield needs the Modern practice facility.")
+    if type(plan.modern_surfaces) is not bool:
+        raise ValueError("Modern playing surfaces must be Off or On.")
+    if type(plan.espn_marks_2026) is not bool:
+        raise ValueError("ESPN presentation marks (2026) must be Off or On.")
+    if (plan.espn_marks_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
+            and "scorebug" in plan.hires_families):
+        # b76 c1: still a real conflict. The family rewrites shield_espn (one of the four marks) and score_buga
+        # (chunk 53); the Hi-res writer re-lays gamedata.iff around the new score_buga, which moves z_ESPN_bug
+        # (chunk 57) and changes the outer's size even at 1x, while the marks are pinned to the retail layout.
+        raise ValueError("ESPN presentation marks (2026) and the Hi-res scorebug family cannot be combined: both "
+                         "rewrite shield_espn, and the Hi-res scorebug re-lays GAMEDATA, which moves the marks off "
+                         "their retail positions. Select one.")
+    if type(plan.espn_wipes_boards_2026) is not bool:  # b76-p2
+        raise ValueError("ESPN 2026 wipes and boards must be Off or On.")
+    if type(plan.kick_meter_2026) is not bool:  # b76-km
+        raise ValueError("Kick meter (2026 ESPN style) must be Off or On.")
+    if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
+            and "scorebug" in plan.hires_families):
+        # The Hi-res scorebug family re-lays gamedata.iff around a larger score_buga (chunk 53), which moves the
+        # three kick meter scenes (chunks 75 to 77) off the retail positions their pins name.
+        raise ValueError("Kick meter (2026 ESPN style) and the Hi-res scorebug family cannot be combined: the Hi-res "
+                         "scorebug re-lays GAMEDATA, which moves the kick meter scenes off their retail positions. "
+                         "Select one.")
     plan = replace(plan, weather_plan=plan.weather_plan.strip())
     if type(plan.espn25_plan) is not str:
         raise ValueError("espn25_plan must be text: the path of a saved ESPN Anniversary plan, or empty")
     plan = replace(plan, espn25_plan=plan.espn25_plan.strip())
     if type(plan.espn25_rosters) is not bool:
         raise ValueError("espn25_rosters must be boolean")
+    if type(plan.historic_rosters_2026) is not bool:
+        raise ValueError("historic_rosters_2026 must be boolean")
+    if plan.historic_rosters_2026:
+        from . import nfl2k5_historic_rosters
+        nfl2k5_historic_rosters.require_build_ready()
+        if not plan.historic_teams_quick_game:
+            raise ValueError('Historic season rosters require historic local Team Select')
     if plan.espn25_rosters and plan.espn25_plan:
         raise ValueError("Choose Historic moment rosters or a saved ESPN Anniversary plan, not both")
+    if type(plan.espn25_era_rules) is not bool:
+        raise ValueError("espn25_era_rules must be boolean")
+    if plan.historic_stock_books and plan.playbook_pair:
+        raise ValueError("Stock historical books cannot be combined with separate offensive and defensive book selections")
+    if plan.espn25_era_rules and not (plan.espn25_more_moments and plan.dynamic_kickoff and plan.defensive_try and plan.overtime):
+        raise ValueError("Era rules require all 50 moments, dynamic kickoff, defensive tries and modern overtime as the base")
+    if type(plan.historic_stock_books) is not bool or type(plan.espn25_named_previews) is not bool:
+        raise ValueError("historical book and preview options must be boolean")
+    if plan.espn25_named_previews and not plan.espn25_more_moments:
+        raise ValueError("Named Anniversary previews require all 50 moments")
+    if type(plan.espn25_more_moments) is not bool:
+        raise ValueError("espn25_more_moments must be boolean")
+    if plan.espn25_more_moments and plan.espn25_plan:
+        raise ValueError("Choose 25 more Anniversary moments or a saved ESPN Anniversary plan, not both")
     tt._validate_lever_flags(plan.coverage_slider, plan.scramble_tuning, plan.flatter_deep_ball, plan.chop_block_toggle)
     if plan.flatter_deep_ball:
         if plan.arc or plan.realistic_flight or plan.arc_by_distance:
@@ -1398,7 +2114,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if momentum_on:
         plan = replace(plan, accel_ramp=False)
     if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
-            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave):
+            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave
+            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or plan.k128_memory):
         plan = replace(plan, xbe_space=True)
     if plan.franchise_edit_player:
         plan = replace(plan, position_row=True, xbe_space=True)
@@ -1424,8 +2141,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.dynamic_kickoff:
         # record the effective dependencies in the recipe: the modern spots, never the power-only variant, the line-up
         plan = replace(plan, kick_rules=True, kick_power=False, kickoff_alignment=True)
-    source, target = require_build_source(plan.source), Path(plan.target)
-    if target.exists() and target.resolve() == source.resolve():
+    source, target = require_build_source(plan.source), platform_compat.io_path(plan.target)
+    if platform_compat.paths_alias(target, source):
         raise ValueError("target must not be the source")
     if target.exists() and not plan.overwrite:
         raise FileExistsError(f"{target} exists")
@@ -1437,6 +2154,34 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     except (OSError, ValueError):
         # The selected writer owns malformed/missing executable refusal.
         installed_xbe = None
+    if r62.get("anniversary_kickoff") is None:
+        r62["anniversary_kickoff"] = _anniversary_kickoff_wanted(plan, is_image)
+    if r62["anniversary_kickoff"]:
+        if not (plan.dynamic_kickoff and is_image):
+            raise ValueError("The 25th Anniversary retail kickoff gate needs the dynamic kickoff and a disc image")
+        gate = tt.anniversary_kickoff_patch
+        try:
+            # A source whose executable already carries the gate keeps its tables (a rebuild over a built disc);
+            # otherwise the retail Kickoff/Kick Return records and return chains are read once from the source
+            # (never distributed).
+            tables = gate.installed_tables(installed_xbe) if installed_xbe is not None else None
+            r62["anniversary_kickoff_tables"] = tables if tables is not None else gate.disc_tables(source)
+        except Exception as exc:  # noqa: BLE001 - a source without retail special-teams data builds as before
+            # e.g. a built disc as the source (its return plays already carry the 2026 chains): the 25th Anniversary
+            # then keeps the 2026 kickoff, exactly as before this gate existed, and the receipt says why.
+            r62["anniversary_kickoff"], r62["anniversary_kickoff_tables"] = False, None
+            receipt["anniversary_kickoff"] = {"status": "skipped", "reason": f"{type(exc).__name__}: {exc}"}
+            progress(f"25th Anniversary retail kickoff not installed: {exc}", 0, 0)
+    if r62.get("widescreen_menus") is None:
+        r62["widescreen_menus"] = _widescreen_menus_wanted(plan, is_image)
+    if r62.get("team_logo_swap") is None:
+        r62["team_logo_swap"] = _team_logo_swap_wanted(plan, is_image)
+    if plan.modern_practice_field_team_logo and not r62["team_logo_swap"]:
+        raise ValueError("The practicing team's logo at midfield needs the Modern practice facility on a disc image.")
+    if plan.kickoff_return_blocking and not r62.get("anniversary_kickoff"):
+        # E1 lives in the 25th Anniversary gate's allocation: the dynamic kickoff on a disc image from a retail source.
+        raise ValueError("Return blockers claiming distinct men need the dynamic kickoff on a disc image built from "
+                         "the retail disc (the rule rides with the 25th Anniversary kickoff gate)")
     if installed_xbe is not None:
         tt._check_installed_runtime_settings(installed_xbe, r62)
     if (plan.xbe_space or plan.kickoff_relocated) and not is_image:
@@ -1457,6 +2202,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not is_image:
             raise ValueError("Crib movie cut needs a disc image")
         tt.crib_reclaim_patch.plan(source)
+    if plan.custom_intro:
+        if not is_image:
+            raise ValueError("Custom intro video needs a disc image")
+        custom_intro = _core_module("nfl2k5_custom_intro")
+        if custom_intro is None:
+            raise RuntimeError("Custom intro video is unavailable in this build")
+        custom_intro.preflight(source, plan.custom_intro)
     if plan.hires_pack:
         if plan.hires_target != "xemu-64":
             raise ValueError("128 MiB support has not been proved")
@@ -1485,8 +2237,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.espn25_rosters:
         if not is_image:
             raise ValueError("Historic moment rosters need a disc image")
-        if plan.position_pools:
-            raise ValueError("Historic moment rosters need the retail position layout. Turn off One-pool positions.")
+        # e1 (2026-09-23): One-pool positions no longer conflict. The pools step reclassifies the historic ROSTs
+        # before the final roster pass, and that pass compiles onto the reclassified layout (pinned per resource).
         module = _core_module("nfl2k5_espn25_rosters")
         if module is None:
             raise RuntimeError("Historic moment rosters are unavailable in this build")
@@ -1501,6 +2253,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("2026 team names need a disc image; existing saves keep their names")
         if names.image_status(source) not in ("retail", "applied"):
             raise ValueError("2026 team names need the original names or this exact grouped patch")
+        if names.xbe_status(_xbe_bytes(source)) not in ("retail", "applied"):
+            raise ValueError("2026 team names need the original team lookups in default.xbe or this exact patch")
     if plan.music_library:
         if not is_image:
             raise ValueError("Music libraries need a disc image")
@@ -1585,6 +2339,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         haze = _core_module("nfl2k5_weather_haze")
         if haze is None or haze.status(_xbe_bytes(source)) not in ("retail", "applied"):
             raise ValueError("The dry-weather haze reader is not recognized. Turn this option off or rebuild from a supported USA source.")
+    if plan.number_kerning:  # b76-k2
+        kerning = _core_module("nfl2k5_number_kerning")
+        if kerning is None or kerning.status(_xbe_bytes(source)) not in ("retail", "applied"):
+            raise ValueError("The jersey number binder is not recognized. Turn number kerning off or rebuild from a supported USA source.")
     if plan.modern_color:
         modern = _core_module("nfl2k5_modern_color")
         if modern is None or not is_image:
@@ -1617,6 +2375,270 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"Modern Arrowhead cannot read the stadium packages: {exc}") from exc
         if arrowhead_state not in ("retail", "applied"):
             raise ValueError("The Arrowhead packages are not the supported retail or already-modern set. Turn Modern Arrowhead off or rebuild from a supported USA source.")
+    if plan.modern_metlife:
+        metlife = _core_module("nfl2k5_modern_metlife")
+        if metlife is None or not is_image:
+            raise ValueError("Modern MetLife Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Giants Stadium and Jets Stadium packages", 0, 0)
+        try:
+            metlife_state = metlife.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern MetLife Stadium cannot read the stadium packages: {exc}") from exc
+        if metlife_state not in ("retail", "applied"):
+            raise ValueError("The Giants Stadium and Jets Stadium packages are not the supported retail or already-MetLife set. Turn Modern MetLife Stadium off or rebuild from a supported USA source.")
+    if plan.modern_venues_2026:
+        venues26 = _core_module("nfl2k5_modern_venues_2026")
+        if venues26 is None or not is_image:
+            raise ValueError("2026 venue art needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the 2026 venue art and the home stadium packages", 0, 0)
+        try:
+            venues26.check_request(source, plan.modern_venues_2026, modern_arrowhead=plan.modern_arrowhead,
+                                   sofi=plan.modern_sofi, highmark=plan.modern_highmark, att=plan.modern_att,
+                                   levis=plan.modern_levis, allegiant=plan.modern_allegiant,
+                                   mercedes_benz=plan.modern_mercedes_benz,
+                                   usbank=plan.modern_usbank,
+                                   lucas_oil=plan.modern_lucas_oil, state_farm=plan.modern_state_farm,
+                                   hard_rock=plan.modern_hard_rock, gillette=plan.modern_gillette,
+                                   lambeau=plan.modern_lambeau, everbank=plan.modern_everbank)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2026 venue art: {exc}") from exc
+    if plan.modern_metlife_model:
+        # b76-u5: the model is written over the skin's stadium scene, so the skin runs first in the same build
+        # (or the source already carries it).
+        metlife_model = _core_module("nfl2k5_metlife_model")
+        if metlife_model is None or not is_image:
+            raise ValueError("Modern MetLife model needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the MetLife model's packages", 0, 0)
+        try:
+            model_state = metlife_model.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern MetLife model cannot read the stadium packages: {exc}") from exc
+        if model_state == "retail" and not plan.modern_metlife:
+            raise ValueError("Modern MetLife model needs Modern MetLife Stadium in the same build.")
+        if model_state not in ("retail", "skin", "applied"):
+            raise ValueError("The Giants and Jets packages are not a supported retail, MetLife or MetLife model set. Turn Modern MetLife model off or rebuild from a supported USA source.")
+    if plan.modern_helmets:
+        # b76-hm: same-size writes in the common player group (outer 3) and the historic team files; the Guardian
+        # overlay may be on the source already or come in the same build (the two edits commute).
+        helmets = _core_module("nfl2k5_modern_helmets")
+        if helmets is None or not is_image:
+            raise ValueError("Modern helmets needs a disc image (the player models live in the archive packs).")
+        progress("Checking the player models for Modern helmets", 0, 0)
+        helmets_state = helmets.image_status(source)
+        if helmets_state not in ("retail", "applied"):
+            raise ValueError("The player models are not a supported retail, Modern helmets or Guardian overlay set. "
+                             "Turn Modern helmets off or rebuild from a supported USA source.")
+    if plan.modern_sofi:
+        # b76-u6: SoFi Stadium writes the Rams and Chargers packages whole (field, stadium, cameras) and their two
+        # stadium rows; the 2026 venue art leaves those two venues to it.
+        sofi = _core_module("nfl2k5_sofi_model")
+        if sofi is None or not is_image:
+            raise ValueError("SoFi Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Rams and Chargers stadium packages", 0, 0)
+        try:
+            sofi.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"SoFi Stadium: {exc}") from exc
+    if plan.modern_highmark:
+        # b76-st: Highmark Stadium writes the Bills' nine packages whole (field, stadium, cameras, cityscape) and the
+        # s03 stadium row; the 2026 venue art leaves s03 to it and lends it the Bills' field art from its folder.
+        highmark = _core_module("nfl2k5_highmark_model")
+        if highmark is None or not is_image:
+            raise ValueError("Highmark Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Bills' stadium packages", 0, 0)
+        try:
+            highmark.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Highmark Stadium: {exc}") from exc
+    if plan.modern_att:
+        # b76-st2: AT&T Stadium writes the Cowboys' nine packages whole (field, stadium, cameras) and the s07 stadium
+        # row; the 2026 venue art leaves s07 to it and lends it the Cowboys' field art from its folder.
+        att = _core_module("nfl2k5_att_model")
+        if att is None or not is_image:
+            raise ValueError("AT&T Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Cowboys' stadium packages", 0, 0)
+        try:
+            att.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"AT&T Stadium: {exc}") from exc
+    if plan.modern_levis:
+        # b76-st2: Levi's Stadium writes the 49ers' nine packages whole (field, collapsed cityscape, stadium, cameras)
+        # and the s25 stadium row; the 2026 venue art leaves s25 to it and lends it the 49ers' field art from its folder.
+        levis = _core_module("nfl2k5_levis_model")
+        if levis is None or not is_image:
+            raise ValueError("Levi's Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the 49ers' stadium packages", 0, 0)
+        try:
+            levis.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Levi's Stadium: {exc}") from exc
+    if plan.modern_allegiant:
+        # b76-st2: Allegiant Stadium writes the Raiders' nine packages whole (field, collapsed cityscape, stadium, cameras)
+        # and the s20 stadium row; the 2026 venue art leaves s20 to it and lends it the Raiders' field art.
+        allegiant = _core_module("nfl2k5_allegiant_model")
+        if allegiant is None or not is_image:
+            raise ValueError("Allegiant Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Raiders' stadium packages", 0, 0)
+        try:
+            allegiant.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Allegiant Stadium: {exc}") from exc
+    if plan.modern_mercedes_benz:
+        # b76-st2: Mercedes-Benz Stadium writes the Falcons' nine packages whole (field, stadium, cameras)
+        # and the s01 stadium row; the 2026 venue art leaves s01 to it and lends it the Falcons' field art.
+        mercedes_benz = _core_module("nfl2k5_mercedes_benz_model")
+        if mercedes_benz is None or not is_image:
+            raise ValueError("Mercedes-Benz Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Falcons' stadium packages", 0, 0)
+        try:
+            mercedes_benz.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Mercedes-Benz Stadium: {exc}") from exc
+    if plan.modern_usbank:
+        # b76-st3: U.S. Bank Stadium writes the Vikings' nine packages whole (field, stadium, cameras) and the s15
+        # stadium row; the 2026 venue art leaves s15 to it and lends it the Vikings' field art from its folder.
+        usbank = _core_module("nfl2k5_usbank_model")
+        if usbank is None or not is_image:
+            raise ValueError("U.S. Bank Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Vikings' stadium packages", 0, 0)
+        try:
+            usbank.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"U.S. Bank Stadium: {exc}") from exc
+    if plan.modern_lucas_oil:
+        # b76-st3: Lucas Oil Stadium writes the Colts' nine packages whole (field, stadium, cameras) and the s11 stadium
+        # row; the 2026 venue art leaves s11 to it and lends it the Colts' field art from its folder.
+        lucas_oil = _core_module("nfl2k5_lucas_oil_model")
+        if lucas_oil is None or not is_image:
+            raise ValueError("Lucas Oil Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Colts' stadium packages", 0, 0)
+        try:
+            lucas_oil.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Lucas Oil Stadium: {exc}") from exc
+    if plan.modern_state_farm:
+        # b76-st3: State Farm Stadium writes the Cardinals' nine packages whole (field, collapsed cityscape, stadium,
+        # cameras) and the s00 stadium row; the 2026 venue art leaves s00 to it and lends it the Cardinals' field art.
+        state_farm = _core_module("nfl2k5_state_farm_model")
+        if state_farm is None or not is_image:
+            raise ValueError("State Farm Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Cardinals' stadium packages", 0, 0)
+        try:
+            state_farm.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"State Farm Stadium: {exc}") from exc
+    if plan.modern_hard_rock:
+        # b76-st4: Hard Rock Stadium writes the Dolphins' nine packages whole (field, collapsed cityscape, stadium,
+        # cameras) and the s14 stadium row; the 2026 venue art leaves s14 to it and lends it the Dolphins' field art.
+        hard_rock = _core_module("nfl2k5_hard_rock_model")
+        if hard_rock is None or not is_image:
+            raise ValueError("Hard Rock Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Dolphins' stadium packages", 0, 0)
+        try:
+            hard_rock.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Hard Rock Stadium: {exc}") from exc
+    if plan.modern_gillette:
+        # b76-st4: Gillette Stadium writes the Patriots' nine packages whole (field, collapsed cityscape, stadium,
+        # cameras) and the s16 stadium row; the 2026 venue art leaves s16 to it and lends it the Patriots' field art.
+        gillette = _core_module("nfl2k5_gillette_model")
+        if gillette is None or not is_image:
+            raise ValueError("Gillette Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Patriots' stadium packages", 0, 0)
+        try:
+            gillette.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Gillette Stadium: {exc}") from exc
+    if plan.modern_lambeau:
+        # b76-st4: Lambeau Field writes the Packers' nine packages whole (field, collapsed cityscape, stadium,
+        # cameras) and the s10 stadium row; the 2026 venue art leaves s10 to it and lends it the Packers' field art.
+        lambeau = _core_module("nfl2k5_lambeau_model")
+        if lambeau is None or not is_image:
+            raise ValueError("Lambeau Field needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Packers' stadium packages", 0, 0)
+        try:
+            lambeau.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Lambeau Field: {exc}") from exc
+    if plan.modern_everbank:
+        # b76-st4: EverBank Stadium writes the Jaguars' nine packages whole (field, collapsed cityscape, stadium,
+        # cameras) and the s12 stadium row; the 2026 venue art leaves s12 to it and lends it the Jaguars' field art.
+        everbank = _core_module("nfl2k5_everbank_model")
+        if everbank is None or not is_image:
+            raise ValueError("EverBank Stadium needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the Jaguars' stadium packages", 0, 0)
+        try:
+            everbank.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"EverBank Stadium: {exc}") from exc
+    if plan.modern_board_kit:
+        # b76-st5: the modern stadium boards renovate the stadium scenes of the teams still in their 2004 buildings
+        board_kit = _core_module("nfl2k5_board_kit")
+        if board_kit is None or not is_image:
+            raise ValueError("Modern stadium boards need a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the renovated stadiums' packages", 0, 0)
+        try:
+            board_kit.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern stadium boards: {exc}") from exc
+    if plan.modern_practice_field:
+        # b76-pf: the practice facility writes the nine practice field packages (s32): the field, the detail normal and
+        # divots, the collapsed cityscape, the stadium and camera stretch; the row stays retail.
+        practice = _core_module("nfl2k5_practice_field_model")
+        if practice is None or not is_image:
+            raise ValueError("Modern practice facility needs a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the practice field packages", 0, 0)
+        try:
+            practice.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern practice facility: {exc}") from exc
+    if plan.modern_surfaces:
+        # b76-tf: repaints the playing surface of all 288 home-venue packages after every stadium writer
+        surfaces = _core_module("nfl2k5_modern_surfaces")
+        if surfaces is None or not is_image:
+            raise ValueError("Modern playing surfaces need a disc image (the stadium packages live in the archive packs).")
+        progress("Checking the home-venue field packages", 0, 0)
+        try:
+            surfaces.check_request(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Modern playing surfaces: {exc}") from exc
+    if plan.espn_marks_2026:
+        marks = _core_module("nfl2k5_espn_marks")
+        if marks is None or not is_image:
+            raise ValueError("ESPN presentation marks (2026) need a disc image (the marks live in the archive packs).")
+        progress("Checking the ESPN presentation marks", 0, 0)
+        try:
+            marks.validate_art(plan.official_marks_pack)
+            # b76 c1: a source that already carries the sprite scorebug reads through its appended resources
+            marks_state = marks.image_status(source, sprite_folder=(plan.scorebug_folder or None) if plan.scorebug_runtime else None)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"ESPN presentation marks (2026) cannot read the GAMEDATA marks: {exc}") from exc
+        if marks_state not in ("retail", "applied"):
+            raise ValueError("The four GAMEDATA marks are not the supported retail or already-2026 set, or GAMEDATA carries resources other than the sprite scorebug's. Turn ESPN presentation marks (2026) off or rebuild from a supported USA source.")
+    if plan.espn_wipes_boards_2026:  # b76-p2
+        wipes = _core_module("nfl2k5_espn_wipes_boards")
+        if wipes is None or not is_image:
+            raise ValueError("ESPN 2026 wipes and boards need a disc image (the wipes and boards live in the archive packs).")
+        progress("Checking the ESPN wipes and boards", 0, 0)
+        try:
+            wipes.validate_art(plan.official_marks_pack)
+            wipes_state = wipes.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"ESPN 2026 wipes and boards cannot read the presentation scenes: {exc}") from exc
+        if wipes_state not in ("retail", "applied"):
+            raise ValueError("The replay wipe, the pause scoreboard and the other four scenes are not the supported retail or already-2026 set. Turn ESPN 2026 wipes and boards off or rebuild from a supported USA source.")
+    if plan.kick_meter_2026:  # b76-km
+        kick_meter = _core_module("nfl2k5_kick_meter_2026")
+        if kick_meter is None or not is_image:
+            raise ValueError("Kick meter (2026 ESPN style) needs a disc image (the kick meter lives in the archive packs).")
+        progress("Checking the kick meter scenes", 0, 0)
+        try:
+            # a source that already carries the sprite scorebug reads through its appended resources
+            kick_state = kick_meter.image_status(source, sprite_folder=(plan.scorebug_folder or None) if plan.scorebug_runtime else None)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Kick meter (2026 ESPN style) cannot read the kick meter scenes: {exc}") from exc
+        if kick_state not in ("retail", "applied"):
+            raise ValueError("The kick meter, its aim arrow and the wind arrow are not the supported retail or already-2026 set, or GAMEDATA carries resources other than the sprite scorebug's. Turn Kick meter (2026 ESPN style) off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -1631,7 +2653,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if rows.status(source_xbe) == "foreign":
             raise ValueError("the depth-chart row sites are neither retail nor this patch; refusing")
         pool_state = pools.status(source_xbe)
-        if pool_state not in ("retail", "applied"):
+        if pool_state not in ("retail", "applied", "needs_fix"):
             raise ValueError("the position-pool sites are neither retail nor this patch; refusing")
         if pool_state != "applied" and not plan.position_pools:
             raise ValueError("depth-chart rows need the one-pool positions (tick them, or build on a disc that has them)")
@@ -1647,26 +2669,45 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not role_states or any(state == "foreign" for state in role_states.values()):
             raise ValueError("the source disc's playbooks carry foreign personnel data; depth roles refuse to guess")
 
+    stock_bank, stock_receipt = None, None
+    if plan.historic_stock_books:
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Stock historical books")
+        stock_bank, stock_receipt = _core_module("nfl2k5_stock_books").preserve(retail, one_pool=plan.position_pools)
+
     # Defense v2 recipes require native personnel fingerprints before the pool recode.
     # Keep offense recipes in their original later position relative to other PLAY writers.
     defense_packs: list[Path] = []
     option_packs: list[Path] = []
     offense_packs: list[Path] = []
+    complete_offense_packs: list[Path] = []
     if plan.playbook_packs:
         packs = _core_module("nfl2k5_playbook_pack")
         if packs is None:
             raise RuntimeError("the playbook pack module is not available in this build")
         for path in dict.fromkeys(Path(p) for p in plan.playbook_packs):
             pack = packs.load_pack(path)
-            (option_packs if any(p.option_intent for p in pack.plays) else
+            (complete_offense_packs if pack.schema == packs.OFFENSE_SCHEMA else
+             option_packs if any(p.option_intent for p in pack.plays) else
              defense_packs if pack.schema == packs.DEFENSE_SCHEMA else offense_packs).append(path)
 
-    if option_packs and offense_packs:
+    for complete_path in complete_offense_packs:
+        complete = packs.load_pack(complete_path)
+        for other_path in (*complete_offense_packs, *option_packs, *offense_packs):
+            if other_path == complete_path:
+                continue
+            other = packs.load_pack(other_path)
+            overlap = set(complete.book.resolved_targets()) & set(other.book.resolved_targets())
+            if overlap:
+                raise ValueError("A complete offense owns every ordinary offensive play for "
+                                 + ", ".join(sorted(overlap))
+                                 + "; select one offensive pack for each of those teams")
+
+    if option_packs and (offense_packs or complete_offense_packs):
         for option_path in option_packs:
             option = packs.load_pack(option_path)
             protected_plays = {p.replace_index for p in option.plays}
             protected_formations = {p.link_formation for p in option.plays}
-            for other_path in offense_packs:
+            for other_path in (*complete_offense_packs, *offense_packs):
                 other = packs.load_pack(other_path)
                 if option.book.team == other.book.team and (
                         protected_plays & {p.replace_index for p in other.plays}
@@ -1675,7 +2716,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      "; select one stock seed or author a reviewed combined pack")
 
     if plan.read_option_runtime or plan.qb_spy:
-        preview_pairs = _preview_play_intents(source, [*option_packs, *defense_packs, *offense_packs])
+        preview_pairs = _preview_play_intents(source, [*complete_offense_packs, *option_packs, *defense_packs, *offense_packs])
         if plan.read_option_runtime:
             _, read_preview = tt.read_option_patch.compile_intent_table(preview_pairs)
             if not read_preview["count"]:
@@ -1730,18 +2771,21 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False).wants_xbe_patch() or plan.edge_rename:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
                                   "catch_slider": plan.catch_slider, "accel_ramp": plan.accel_ramp,
                                   "draft_ai": plan.draft_ai, "edge_rename": plan.edge_rename,
-                                  "returner_fix": plan.returner_fix, "progression": plan.progression,
+                                  "returner_fix": plan.returner_fix, "progression": plan.progression, "franchise_economy": plan.franchise_economy,
                                   "scheme_labels": plan.scheme_labels or plan.position_pools,
                                   "camera": plan.camera if not tt.is_disc_image(source) else False, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
                                   "overtime": plan.overtime, "team_column": plan.team_column, "seven_on_seven": plan.seven_on_seven,
                                   "position_row": plan.position_row, "probowl_order": plan.probowl_order,
                                   "elbow_options": plan.elbow_options,
+                                  "the1wam_lineman_rating": plan.the1wam_lineman_rating,
+                                  "xemu_display_list_fix": plan.xemu_display_list_fix,
+                                  "resource_load_guard": plan.resource_load_guard,
                                   "flatter_deep_ball": plan.flatter_deep_ball, "chop_block_toggle": plan.chop_block_toggle,
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
                                   "kick_laces": plan.kick_laces, "franchise_practice": plan.franchise_practice, "practice_squad": plan.practice_squad,
@@ -1756,7 +2800,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["source_sha256"] = step.get("source_sha256")
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -1788,6 +2832,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError(f"the ESPN scorebug could not be written: {exc}") from exc
         receipt["steps"].append({"step": "scorebug", **rec})
     spy_pairs: list = []  # (exact PLAY replacement, compiler report) pairs for the QB spy lookup
+    if complete_offense_packs:
+        # PROVED OFFLINE: v4 pins the original full resource. Install before
+        # defensive personnel/kickoff writers; those compose on its stable IDs.
+        progress("Installing complete offensive playbooks", 0, 0)
+        rec = packs.apply_packs_to_image(target, complete_offense_packs,
+                                        progress=lambda msg: progress(msg, 0, 0), collector=spy_pairs)
+        receipt["steps"].append({"step": "playbook_packs", **rec})
     if option_packs:
         progress("Installing experimental option playbook packs", 0, 0)
         rec = packs.apply_packs_to_image(target, option_packs, progress=lambda msg: progress(msg, 0, 0), collector=spy_pairs)
@@ -1886,6 +2937,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         step = module.apply_to_image(target, level=level,
                                      progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": key, **step})
+    if (complete_offense_packs or option_packs or defense_packs or offense_packs or plan.position_pools or plan.kickoff_alignment
+            or plan.dynamic_kickoff or plan.seven_on_seven or plan.depth_roles or plan.screen_timing is not None):
+        # After the last playbook writer: every book's formation play menus must be ones the play call can walk to
+        # the end. A play listed twice in one formation hangs the game when that formation is picked (vb2,
+        # 2026-09-23, Noah's Practice hang on the modern_gun_core book); no writer may ship one.
+        menus = _check_playbook_menus(target, progress)
+        if menus is not None:
+            receipt["playbook_menus"] = menus
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")
@@ -1895,7 +2954,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         xbe = _xbe_bytes(target)
         state = season.simple_status(xbe)
         if state == "retail":
-            xbe, season_receipt = season.apply(xbe)
+            xbe, season_receipt = season.apply(
+                xbe, super_bowl_venue=season.SOFI_SB_VENUE if plan.modern_sofi else "s44_los_angeles")
             _write_xbe_bytes(target, xbe)
         elif state == "applied":
             season_receipt = {"already_applied": True}
@@ -1966,26 +3026,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "season_2026", "xbe": {k: v for k, v in season_receipt.items() if k != "edits"},
                                  "schedule": {"weeks": info["validation"]["weeks"], "games": len(template) // 8,
                                               "preseason_games": preseason_info.get("games", 0), **pack_receipt}})
-    if plan.team_history:
-        # after the position-pool reclassify and the 2026 schedule: both hash or write the roster header and
-        # records this step changes (the pool used count and every +0x2C pointer), neither touches the pool
-        history = _core_module("nfl2k5_team_history")
-        if history is None:
-            raise RuntimeError("the team history module is not available in this build")
-        progress("Writing the real team history into the roster template", 0, 0)
-        history_receipt = history.apply(target, plan.team_history, progress=lambda msg: progress(msg, 0, 0))
-        receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
-                                 "log_lines": len(history_receipt.get("log", []))})
-    if plan.career_stats:
-        # right after the team history: both rebuild the stat pool and the +0x2C pointers. This pass only
-        # changes the counters a user CSV names (and inserts the season words it needs), decodes every
-        # written value back, and refuses to grow past the pool; the later passes leave the pool alone.
-        career = _core_module("nfl2k5_career_stats")
-        if career is None:
-            raise RuntimeError("the career stats module is not available in this build")
-        progress("Importing the career stats CSV into the roster template", 0, 0)
-        career_receipt = career.apply(target, plan.career_stats, progress=lambda msg: progress(msg, 0, 0))
-        receipt["steps"].append({"step": "career_stats", **career_receipt})
+    if plan.modern_sofi:
+        # u6's neutral LXI model lives in s40. Also repair the older s44 calendar when reusing a build.
+        season = _core_module("nfl2k5_season_length")
+        xbe, route_receipt = season.route_sofi_super_bowl(_xbe_bytes(target))
+        if not route_receipt["already_applied"]:
+            _write_xbe_bytes(target, xbe)
+        receipt["steps"].append({"step": "sofi_super_bowl_route", **route_receipt})
     if plan.prospect_names:
         # after every other roster pass: the name pool (entry array + string span) is outside what the
         # reclassify, schedule and team-history gates hash, and none of them writes it. The executable half
@@ -2013,30 +3060,22 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             tags_receipt = {**tags_receipt, "note": "player_star is off: the tags are written but nothing draws them"}
         receipt["steps"].append({"step": "player_tags", **{k: v for k, v in tags_receipt.items() if k != "log"},
                                  "log_lines": len(tags_receipt.get("log", []))})
-    if plan.roster_edits:
-        # after every other roster pass. The star tag is +0x53, the team history rebuilds the stat
-        # pool and the +0x2C pointers, the prospect names own the generated-name pool and the
-        # reclassify hashes position/order: this pass writes named record fields and shared name
-        # strings, and preserves all four, so running it last leaves every earlier gate intact.
-        records = _core_module("nfl2k5_roster_records")
-        if records is None:
-            raise RuntimeError("the roster records module is not available in this build")
-        progress("Applying the roster edits", 0, 0)
-        # the reclassify pass above retires the OLB code, so an edit authored on a retail roster
-        # must not write it back: tell the writer which scheme the disc it is landing on is on
-        edits_receipt = records.apply(target, Path(plan.roster_edits),
-                                      progress=lambda msg: progress(msg, 0, 0),
-                                      scheme="one_pool" if plan.position_pools else None)
-        receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
-                                 "scheme": "one_pool" if plan.position_pools else "auto",
-                                 **{k: v for k, v in edits_receipt.items() if k != "log"},
-                                 "log_lines": len(edits_receipt.get("log", []))})
+    _apply_roster_history(plan, target, receipt, progress)
     if plan.team_names_2026:
         module = _core_module("nfl2k5_team_names_2026")
         if module is None:
             raise RuntimeError("The 2026 team-name module is unavailable")
         names_receipt = module.apply_to_image(target, progress=lambda message: progress(message, 0, 0))
-        receipt["steps"].append({"step": "team_names_2026", **names_receipt})
+        # u3: the renamed abbreviation and nickname keep working as keys through the in-place XBE key paths
+        # (schedule, Thanksgiving hosts, saved playbooks, ESPN25 moments); old saves use the same paths.
+        progress("Team lookups for the 2026 names", 0, 0)
+        # The 2026 menu colour rows go in with them; the scorebug's guard on the team colour table (scorebar v3
+        # reads it) recognizes these rows, so the scorebug runtime installs over them in either order.
+        keyed, keys_receipt = module.apply_xbe(_xbe_bytes(target))
+        _write_xbe_bytes(target, keyed)
+        if module.xbe_status(_xbe_bytes(target)) != "applied":
+            raise RuntimeError("2026 team-name key paths did not read back")
+        receipt["steps"].append({"step": "team_names_2026", **names_receipt, "xbe": keys_receipt})
     for swap in plan.commentary:
         cs = _tools_module("nfl2k5_commentary_swap")
         if cs is None:
@@ -2105,7 +3144,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
             or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
-            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave):
+            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
+            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or plan.k128_memory):
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -2179,6 +3219,22 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             _write_xbe_bytes(target, patched)
             haze.verify(_xbe_bytes(target), enabled=plan.weather_haze)
             receipt["steps"].append({"step": "weather_haze", **haze_receipt})
+    # b76-k2: the number binder rewritten in place (no allocation), after the other executable owners
+    kerning = _core_module("nfl2k5_number_kerning")
+    if kerning is not None:
+        try:
+            current = _xbe_bytes(target)
+        except (OSError, ValueError):
+            if plan.number_kerning:
+                raise
+            current = None
+        # Off leaves an already-kerned source as it is (the retail routine is not stored).
+        if current is not None and plan.number_kerning:
+            progress("Jersey numbers: kerning the 1 in two-digit numbers", 0, 0)
+            patched, kerning_receipt = kerning.apply(current, enabled=True)
+            _write_xbe_bytes(target, patched)
+            kerning.verify(_xbe_bytes(target), enabled=True)
+            receipt["steps"].append({"step": "number_kerning", **kerning_receipt})
     modern = _core_module("nfl2k5_modern_color")
     if modern is not None:
         try:
@@ -2269,6 +3325,50 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["espn25_rosters"] = module.image_status(target)
         if receipt["result"]["espn25_rosters"] != "applied":
             raise ValueError("the historic moment rosters failed their read-back on the copy")
+    if plan.espn25_more_moments:
+        # b76-m1: rows 26 to 50 and their team-season files, after every relocating pass; the executable half was
+        # installed with the allocator owners. On a One-pool positions build the new files get the same historic
+        # 4-3 reclassification the pools option gave the retail 75.
+        progress("Adding 25 more Anniversary moments", 0, 0)
+        module = _core_module("nfl2k5_espn25_more_moments")
+        pools_now = _core_module("nfl2k5_position_pools")
+        one_pool = bool(pools_now is not None and pools_now.status(_xbe_bytes(target)) == "applied")
+        moments_receipt = module.apply_to_image(target, one_pool=one_pool, named=plan.espn25_named_previews)
+        receipt["steps"].append({"step": "espn25_more_moments", **moments_receipt})
+        receipt["result"]["espn25_more_moments"] = module.image_status(target)
+        if receipt["result"]["espn25_more_moments"] != "applied" or module.status(_xbe_bytes(target)) != "applied":
+            raise ValueError("the 25 more Anniversary moments failed their read-back on the copy")
+        if plan.espn25_named_previews:
+            receipt["result"]["espn25_named_previews"] = module.named_image_status(target)
+            if (receipt["result"]["espn25_named_previews"] != "applied"
+                    or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
+                raise ValueError("the named Anniversary previews failed their read-back")
+            receipt["steps"].append({"step": "espn25_named_previews", "status": "applied", "rows": 50})
+        # b76-m1: historic and moment teams on style 0 move to a spare style holding the RETAIL style-0 art, so the
+        # 2026 art a project writes to style 0 (the project copy runs before these steps) shows on the current teams
+        # only. The copies come from the retail source, never from the copy.
+        progress("Keeping the historic teams' retail uniforms and logos", 0, 0)
+        styles = _core_module("nfl2k5_historic_styles")
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
+        styles_receipt = styles.apply_to_image(target, retail)
+        receipt["steps"].append({"step": "historic_styles", **styles_receipt})
+        receipt["result"]["historic_styles"] = styles.image_status(target, retail)
+        if receipt["result"]["historic_styles"] != "applied":
+            raise ValueError("the historic team styles failed their read-back on the copy")
+    if stock_bank is not None:
+        progress("Preserving stock books for historic teams", 0, 0)
+        module = _core_module("nfl2k5_stock_books")
+        bank_receipt = module.apply_to_image(target, stock_bank)
+        receipt["steps"].append({"step": "historic_stock_books", **stock_receipt, **bank_receipt})
+        receipt["result"]["historic_stock_books"] = module.image_status(target, stock_bank)
+        if module.status(_xbe_bytes(target)) != "applied":
+            raise ValueError("stock book resolver failed its read-back")
+    if plan.historic_rosters_2026:
+        seasons = _core_module("nfl2k5_historic_rosters")
+        progress("Writing the 75 historic season rosters", 0, 0)
+        season_receipt = seasons.apply_to_image(target)
+        receipt["steps"].append({"step": "historic_rosters_2026", **season_receipt})
+        receipt["result"]["historic_rosters_2026"] = seasons.image_status(target)
     if loaded_espn25_plan is not None:
         # last of all: the music, hi-res, naming, arena and crib passes above may have relocated packs,
         # so the plan resolves SITU and the historic ROSTs through the copy's own XDVDFS/outer tables
@@ -2310,6 +3410,271 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=retail)
         receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
         receipt["result"]["modern_arrowhead"] = "applied"
+    if plan.modern_metlife:
+        # Same source rule as Arrowhead: a colour build composes the MetLife field art with the retail field
+        # read from the disc the user chose. The venue name is written into the copy's own main ROST after
+        # every roster owner above.
+        metlife = _core_module("nfl2k5_modern_metlife")
+        progress("Modern MetLife Stadium: Giants and Jets packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Modern MetLife Stadium")
+        metlife_receipt = metlife.apply_to_image(target, progress=progress, retail_source=retail)
+        receipt["steps"].append({"step": "modern_metlife", **{k: v for k, v in metlife_receipt.items() if k != "edits"}})
+        receipt["result"]["modern_metlife"] = "applied"
+    if plan.modern_venues_2026:
+        # b76-u4: every team's 2026 field and wall art in its home stadium. Same source rule as Arrowhead and
+        # MetLife: on a colour build the field art is composed with the retail field read from the disc the user
+        # chose; the Giants and Jets packages stay MetLife's, and Kansas City needs Modern Arrowhead off.
+        venues26 = _core_module("nfl2k5_modern_venues_2026")
+        progress("2026 venue art: home stadium packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "2026 venue art")
+        venues_receipt = venues26.apply_to_image(target, plan.modern_venues_2026, progress=progress, retail_source=retail,
+                                                 modern_arrowhead=plan.modern_arrowhead, sofi=plan.modern_sofi,
+                                                 highmark=plan.modern_highmark, att=plan.modern_att,
+                                                 levis=plan.modern_levis, allegiant=plan.modern_allegiant,
+                                                 mercedes_benz=plan.modern_mercedes_benz,
+                                                 usbank=plan.modern_usbank,
+                                                 lucas_oil=plan.modern_lucas_oil, state_farm=plan.modern_state_farm,
+                                                 hard_rock=plan.modern_hard_rock, gillette=plan.modern_gillette,
+                                                 lambeau=plan.modern_lambeau, everbank=plan.modern_everbank)
+        receipt["steps"].append({"step": "modern_venues_2026", **venues_receipt})
+        receipt["result"]["modern_venues_2026"] = "applied"
+    if plan.modern_metlife_model:
+        # b76-u5: after the skin: the model stretch (stadium and intro cameras) of the eighteen bundles and the
+        # 2026 superfans, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        metlife_model = _core_module("nfl2k5_metlife_model")
+        progress("Modern MetLife model: Giants and Jets packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Modern MetLife model")
+        model_receipt = metlife_model.apply_to_image(target, progress=progress, retail_source=retail)
+        receipt["steps"].append({"step": "modern_metlife_model", **{k: v for k, v in model_receipt.items()
+                                                                    if k not in ("bundles", "crowd")}})
+        receipt["result"]["modern_metlife_model"] = "applied"
+    if plan.modern_sofi:
+        # b76-u6: after Modern colour and the 2026 venue art: the eighteen Rams and Chargers packages (the field art
+        # composed before the colour grade, the stadium, cameras and cityscape stretch) and the two stadium rows,
+        # same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        sofi = _core_module("nfl2k5_sofi_model")
+        progress("SoFi Stadium: Rams and Chargers packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "SoFi Stadium")
+        sofi_receipt = sofi.apply_to_image(target, progress=progress, retail_source=retail,
+                                             art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_sofi", **sofi_receipt})
+        receipt["result"]["modern_sofi"] = "applied"
+    if plan.modern_highmark:
+        # b76-st: after Modern colour and the 2026 venue art: the nine Bills packages (the field composed before the
+        # colour grade with the venue art folder's Bills end zones and midfield, the stadium, cameras and cityscape
+        # stretch) and the s03 row, same-size writes compiled from the retail disc the user chose (the Arrowhead source
+        # rule).
+        highmark = _core_module("nfl2k5_highmark_model")
+        progress("Highmark Stadium: Bills packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Highmark Stadium")
+        highmark_receipt = highmark.apply_to_image(target, progress=progress, retail_source=retail,
+                                                   art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_highmark", **highmark_receipt})
+        receipt["result"]["modern_highmark"] = "applied"
+    if plan.modern_att:
+        # b76-st2: after Modern colour and the 2026 venue art: the nine Cowboys packages (the field composed before the
+        # colour grade with the venue art folder's Cowboys end zones and midfield, the stadium and camera stretch) and the
+        # s07 row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        att = _core_module("nfl2k5_att_model")
+        progress("AT&T Stadium: Cowboys packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "AT&T Stadium")
+        att_receipt = att.apply_to_image(target, progress=progress, retail_source=retail,
+                                         art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_att", **att_receipt})
+        receipt["result"]["modern_att"] = "applied"
+    if plan.modern_levis:
+        # b76-st2: after Modern colour and the 2026 venue art: the nine 49ers packages (the field composed before the
+        # colour grade with the venue art folder's 49ers end zones and midfield, the collapsed cityscape, the stadium and
+        # camera stretch) and the s25 row, same-size writes compiled from the retail disc the user chose.
+        levis = _core_module("nfl2k5_levis_model")
+        progress("Levi's Stadium: 49ers packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Levi's Stadium")
+        levis_receipt = levis.apply_to_image(target, progress=progress, retail_source=retail,
+                                             art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_levis", **levis_receipt})
+        receipt["result"]["modern_levis"] = "applied"
+    if plan.modern_allegiant:
+        # b76-st2: after Modern colour and the 2026 venue art: the nine Raiders packages (the field composed before the
+        # colour grade with the venue art folder's Raiders end zones and midfield, the stadium and camera stretch) and
+        # the s20 row, same-size writes compiled from the retail disc the user chose.
+        allegiant = _core_module("nfl2k5_allegiant_model")
+        progress("Allegiant Stadium: Raiders packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Allegiant Stadium")
+        allegiant_receipt = allegiant.apply_to_image(target, progress=progress, retail_source=retail,
+                                                     art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_allegiant", **allegiant_receipt})
+        receipt["result"]["modern_allegiant"] = "applied"
+    if plan.modern_mercedes_benz:
+        # b76-st2: after Modern colour and the 2026 venue art: the nine Falcons packages (the field composed before the
+        # colour grade with the venue art folder's Falcons end zones and midfield, the stadium and camera stretch) and
+        # the s01 row, same-size writes compiled from the retail disc the user chose.
+        mercedes_benz = _core_module("nfl2k5_mercedes_benz_model")
+        progress("Mercedes-Benz Stadium: Falcons packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Mercedes-Benz Stadium")
+        mercedes_benz_receipt = mercedes_benz.apply_to_image(target, progress=progress, retail_source=retail,
+                                                             art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_mercedes_benz", **mercedes_benz_receipt})
+        receipt["result"]["modern_mercedes_benz"] = "applied"
+    if plan.modern_usbank:
+        # b76-st3: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Vikings packages (the
+        # field composed before the colour grade with the venue art folder's Vikings end zones and midfield head, its
+        # turf and apron on the Modern surfaces palette; the stadium and camera stretch) and the s15 row, same-size
+        # writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        usbank = _core_module("nfl2k5_usbank_model")
+        progress("U.S. Bank Stadium: Vikings packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "U.S. Bank Stadium")
+        usbank_receipt = usbank.apply_to_image(target, progress=progress, retail_source=retail,
+                                               art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_usbank", **usbank_receipt})
+        receipt["result"]["modern_usbank"] = "applied"
+    if plan.modern_lucas_oil:
+        # b76-st3: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Colts packages (the field
+        # composed before the colour grade with the venue art folder's Colts end zones and midfield, its turf and apron on
+        # the Modern surfaces palette; the stadium and camera stretch) and the s11 row, same-size writes compiled from the
+        # retail disc the user chose (the Arrowhead source rule).
+        lucas_oil = _core_module("nfl2k5_lucas_oil_model")
+        progress("Lucas Oil Stadium: Colts packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Lucas Oil Stadium")
+        lucas_oil_receipt = lucas_oil.apply_to_image(target, progress=progress, retail_source=retail,
+                                                     art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_lucas_oil", **lucas_oil_receipt})
+        receipt["result"]["modern_lucas_oil"] = "applied"
+    if plan.modern_state_farm:
+        # b76-st3: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Cardinals packages (the
+        # field composed before the colour grade with the venue art folder's Cardinals end zones and midfield, its grass
+        # and apron on the Modern surfaces palette; the collapsed cityscape, the stadium and camera stretch) and the s00
+        # row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        state_farm = _core_module("nfl2k5_state_farm_model")
+        progress("State Farm Stadium: Cardinals packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "State Farm Stadium")
+        state_farm_receipt = state_farm.apply_to_image(target, progress=progress, retail_source=retail,
+                                                       art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_state_farm", **state_farm_receipt})
+        receipt["result"]["modern_state_farm"] = "applied"
+    if plan.modern_hard_rock:
+        # b76-st4: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Dolphins packages (the
+        # field composed before the colour grade with the venue art folder's Dolphins end zones and midfield, its grass
+        # and apron on the Modern surfaces palette; the collapsed cityscape, the stadium and camera stretch) and the s14
+        # row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        hard_rock = _core_module("nfl2k5_hard_rock_model")
+        progress("Hard Rock Stadium: Dolphins packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Hard Rock Stadium")
+        hard_rock_receipt = hard_rock.apply_to_image(target, progress=progress, retail_source=retail,
+                                                     art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_hard_rock", **hard_rock_receipt})
+        receipt["result"]["modern_hard_rock"] = "applied"
+    if plan.modern_gillette:
+        # b76-st4: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Patriots packages (the
+        # field composed before the colour grade with the venue art folder's Patriots end zones and midfield, its grass
+        # and apron on the Modern surfaces palette; the collapsed cityscape, the stadium and camera stretch) and the s16
+        # row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        gillette = _core_module("nfl2k5_gillette_model")
+        progress("Gillette Stadium: Patriots packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Gillette Stadium")
+        gillette_receipt = gillette.apply_to_image(target, progress=progress, retail_source=retail,
+                                                   art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_gillette", **gillette_receipt})
+        receipt["result"]["modern_gillette"] = "applied"
+    if plan.modern_lambeau:
+        # b76-st4: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Packers packages (the
+        # field composed before the colour grade with the venue art folder's Packers end zones and midfield, its grass
+        # and apron on the Modern surfaces palette; the collapsed cityscape, the stadium and camera stretch) and the s10
+        # row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule).
+        lambeau = _core_module("nfl2k5_lambeau_model")
+        progress("Lambeau Field: Packers packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Lambeau Field")
+        lambeau_receipt = lambeau.apply_to_image(target, progress=progress, retail_source=retail,
+                                                 art_root=plan.modern_venues_2026 or None)
+        receipt["steps"].append({"step": "modern_lambeau", **lambeau_receipt})
+        receipt["result"]["modern_lambeau"] = "applied"
+    if plan.modern_everbank:
+        # b76-st4: after Modern colour and the 2026 venue art, before Modern surfaces: the nine Jaguars packages (the
+        # field composed before the colour grade with the venue art folder's Jaguars end zones and midfield, its grass
+        # and apron on the Modern surfaces palette; the collapsed cityscape, the stadium and camera stretch) and the s12
+        # row, same-size writes compiled from the retail disc the user chose (the Arrowhead source rule); the 2026
+        # construction (modern_everbank_construction, on by default) or the 2025 stadium.
+        everbank = _core_module("nfl2k5_everbank_model")
+        progress("EverBank Stadium: Jaguars packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "EverBank Stadium")
+        everbank_receipt = everbank.apply_to_image(target, progress=progress, retail_source=retail,
+                                                   art_root=plan.modern_venues_2026 or None,
+                                                   construction=plan.modern_everbank_construction)
+        receipt["steps"].append({"step": "modern_everbank", **everbank_receipt})
+        receipt["result"]["modern_everbank"] = "applied"
+        # The construction sub-option is read back from the copy now: the build's inspection ran before this step, on
+        # the retail Jaguars packages, so the receipt (and the summary) said "retail" for a disc built with the 2026
+        # construction on (candidate E, 2026-09-28; the disc itself reads on).
+        receipt["result"]["modern_everbank_construction"] = everbank.construction_status(target)
+    if plan.modern_board_kit:
+        # b76-st5: after Modern colour and the 2026 venue art (which may repaint these stadium scenes' textures): the
+        # stadium scenes of the kit's venues renovated in place (geometry only; every texture keeps its index and
+        # bytes), and both options' receipts take the new bundle hashes
+        board_kit = _core_module("nfl2k5_board_kit")
+        progress("Modern stadium boards", 0, 0)
+        board_receipt = board_kit.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_board_kit", **board_receipt})
+        receipt["result"]["modern_board_kit"] = "applied"
+    if plan.modern_practice_field:
+        # b76-pf: after Modern colour and before Modern playing surfaces (which leaves s32 alone): the nine practice
+        # field packages (s32): the stadium, cityscape and camera stretch compiled from the retail disc the user chose,
+        # the practice field composed on the retail field (its art, then Modern colour's grade, then job tf's G-A surface
+        # with tf's detail normal and divots), the 2026 venue art folder's current NFL shield at midfield when that
+        # folder is given (league marks never ship), the colour receipt kept reading applied. Same-size writes; the row
+        # is not written.
+        practice = _core_module("nfl2k5_practice_field_model")
+        progress("Modern practice facility: practice field packages", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Modern practice facility")
+        practice_receipt = practice.apply_to_image(target, progress=progress, retail_source=retail,
+                                                   art_root=plan.modern_venues_2026 or None,
+                                                   team_logo=plan.modern_practice_field_team_logo)
+        receipt["steps"].append({"step": "modern_practice_field", **practice_receipt})
+        receipt["result"]["modern_practice_field"] = "applied"
+    if plan.modern_surfaces:
+        # b76-tf: LAST of the stadium writers (after Modern colour, Arrowhead, MetLife and its model, the 2026 venue art,
+        # SoFi and Highmark): repaints each home field's surface over whatever they left, refits every field in its
+        # fixed span and keeps their receipts reading applied. Same-size writes on the copy; no retail source needed.
+        surfaces = _core_module("nfl2k5_modern_surfaces")
+        progress("Modern playing surfaces: home-venue fields", 0, 0)
+        surfaces_receipt = surfaces.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_surfaces", **surfaces_receipt})
+        receipt["result"]["modern_surfaces"] = surfaces_receipt["state"]
+    if plan.espn_marks_2026:
+        # Four fixed-span GAMEDATA resources, compiled from the copy's own retail spans and resolved through
+        # its own XDVDFS and outer tables, so a relocating pass above cannot misplace them.
+        # b76 c1: with the sprite scorebug (installed above) the marks accept its appended resources and it accepts
+        # the marks; the layout folder lets the marks recognize a scorebug built from the user's own layout.
+        marks = _core_module("nfl2k5_espn_marks")
+        progress("ESPN presentation marks (2026)", 0, 0)
+        marks_receipt = marks.apply_to_image(target, progress=progress, marks_pack=plan.official_marks_pack,
+                                             sprite_folder=(plan.scorebug_folder or None) if plan.scorebug_runtime else None)
+        receipt["steps"].append({"step": "espn_marks_2026", **marks_receipt})
+        receipt["result"]["espn_marks_2026"] = marks_receipt["state"]
+    if plan.espn_wipes_boards_2026:  # b76-p2
+        # Six fixed-span scene resources (three raw MRKS wipes, three VC-LZ scenes), compiled from the copy's own
+        # retail spans and resolved through its own XDVDFS and outer tables after every relocating pass above.
+        wipes = _core_module("nfl2k5_espn_wipes_boards")
+        progress("ESPN 2026 wipes and boards", 0, 0)
+        wipes_receipt = wipes.apply_to_image(target, progress=progress, marks_pack=plan.official_marks_pack)
+        receipt["steps"].append({"step": "espn_wipes_boards_2026", **wipes_receipt})
+        receipt["result"]["espn_wipes_boards_2026"] = wipes_receipt["state"]
+    if plan.kick_meter_2026:  # b76-km
+        # Three fixed-span gamedata.iff scenes (KickArrow, KickMeter, windmeter), compiled from the copy's own retail
+        # spans and resolved through its own XDVDFS and outer tables after every relocating pass above. With the
+        # sprite scorebug (installed above) they accept its appended resources and it accepts them.
+        kick_meter = _core_module("nfl2k5_kick_meter_2026")
+        progress("Kick meter (2026 ESPN style)", 0, 0)
+        kick_receipt = kick_meter.apply_to_image(target, progress=progress,
+                                                 sprite_folder=(plan.scorebug_folder or None) if plan.scorebug_runtime else None)
+        receipt["steps"].append({"step": "kick_meter_2026", **kick_receipt})
+        receipt["result"]["kick_meter_2026"] = kick_receipt["state"]
+    if plan.modern_helmets:
+        # b76-hm: after every relocating pass, the historic rosters, One-pool positions and the Guardian overlay (the
+        # historic fix is field level, the player scenes commute with the overlay's shell B).
+        helmets = _core_module("nfl2k5_modern_helmets")
+        progress("Modern helmets and facemasks", 0, 0)
+        helmets_receipt = helmets.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_helmets", **helmets_receipt})
+        receipt["result"]["modern_helmets"] = helmets_receipt["status"]
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
@@ -2322,6 +3687,56 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"].update(trim_intro_videos="applied",
             image_size=cut["verification"]["output_bytes"],
             image_sha256=cut["verification"]["output_sha256"])
+    if plan.custom_intro:
+        custom_intro = _core_module("nfl2k5_custom_intro")
+        progress("Writing the custom intro video", 0, 0)
+        intro = custom_intro.finish_output(target, plan.custom_intro, progress)
+        planned = {k: v for k, v in intro["plan"].items() if k != "layout"}
+        planned["layout_packs"] = intro["plan"]["layout"]["packs"]
+        receipt["steps"].append({"step": "custom_intro", **{k: v for k, v in intro.items() if k != "plan"},
+                                 "plan": planned})
+        receipt["custom_intro_before"] = intro["plan"]["before"]
+        receipt["custom_intro_after"] = intro["plan"]["after"]
+        receipt["custom_intro_archive_delta_bytes"] = intro["plan"]["archive_delta_bytes"]
+        receipt["result"].update(custom_intro="applied",
+            image_size=intro["verification"]["output_bytes"],
+            image_sha256=intro["verification"]["output_sha256"])
+    if plan.espn25_more_moments and (plan.trim_intro_videos or plan.custom_intro):
+        # b76-m1: the intro passes lay the outer archive out again after the moments step (the new team files are
+        # outer entries in the last pack), so read the moments back once more on the finished copy.
+        if _core_module("nfl2k5_espn25_more_moments").image_status(target) != "applied":
+            raise ValueError("the 25 more Anniversary moments did not survive the intro video pass on the copy")
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
+        if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
+            raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+    if tt.is_disc_image(target):
+        # DESIGN: all growth writers have finished. Compact only this disposable
+        # build copy, then run the publication gates through its new directory.
+        from .xdvdfs_compact import finish_private
+        compacted = finish_private(target, original=_retail_source or source, progress=progress)
+        receipt["disc_compaction"] = compacted
+        receipt["result"]["image_size"] = compacted["output_bytes"]
+        if plan.trim_intro_videos:
+            # The final 64 KiB alignment can consume some staged trim savings.
+            # Keep the step plan intact, but report the finished disc reduction.
+            receipt["intro_video_disc_bytes_freed"] = cut["plan"]["source_bytes"] - compacted["output_bytes"]
+        # build() records the final image digest in its existing single hash pass.
+        receipt["result"].pop("image_sha256", None)
+    # Publication gate: inspect the actual finished archive and executable,
+    # including full archive rewrites and the last paired owner updates.
+    if stock_bank is not None:
+        receipt["result"]["historic_stock_books"] = _core_module("nfl2k5_stock_books").image_status(target, stock_bank)
+        if receipt["result"]["historic_stock_books"] != "applied":
+            raise ValueError("stock books did not survive the final resource passes")
+    if plan.espn25_named_previews:
+        receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)
+        if (receipt["result"]["espn25_named_previews"] != "applied"
+                    or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
+            raise ValueError("named previews did not survive the final resource passes")
+    if is_image:
+        from .nfl2k5_disc_extents import validate_image
+        receipt["disc_extents"] = validate_image(target)
+        receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
     return receipt
 
 

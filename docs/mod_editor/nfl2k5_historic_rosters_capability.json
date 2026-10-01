@@ -1,0 +1,64 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_historic_rosters",
+    "module": "mod_editor/core/nfl2k5_historic_rosters.py",
+    "operation": "inspect"
+  },
+  "classification": "read-only-mapped",
+  "evidence": [
+    "ht/HT_REPORT.md",
+    "ht/TEAM_AUDIT.md",
+    "tests/mod_editor/test_nfl2k5_historic_rosters.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "view",
+    "reason": "The source inspection is read-only. The separately selected Build option writes isolated season aliases on a private disc copy."
+  },
+  "id": "nfl2k5.rosters.historic_season_audit",
+  "input_constraints": [
+    "All 75 compact rosters require per-value source or INFERRED/DESIGN labels.",
+    "Season aliases require historic local Team Select; canonical moment resources retain their existing owner.",
+    "No unresolved row, duplicate identity or invalid encoded value is accepted."
+  ],
+  "portme": [
+    "Main-only xemu acceptance and player-specific gameplay calibration."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source only. Decoded retail slot audits and draft retail rating vectors are private research data and excluded from the release allowlist. Attributed source facts retain their source licenses.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "ht/evidence/phase2_native.json"
+    ],
+    "scope": "Bounded native imports, exports and personnel; no xemu gameplay.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "boolean; false in every preset; source-validated isolated writer when true",
+        "name": "historic_rosters_2026",
+        "required": true
+      }
+    ],
+    "notes": "Requires historic_teams_quick_game. Adds 75 HTS resources and one filler."
+  },
+  "source_container": {
+    "format": "uncompressed ROST resources in XDVDFS outer archive",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "75 historic ROST files enumerated by the retail main roster",
+    "retail_file": "user-owned NFL 2K5 USA disc or extraction"
+  },
+  "summary": "PROVED OFFLINE: 75 compact source-labelled season rosters and isolated HTS archive writer. DESIGN: individual ratings priors and live gameplay acceptance.",
+  "surface": "players_rosters",
+  "title": "Historic season roster sources and Build option",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_historic_rosters"
+}

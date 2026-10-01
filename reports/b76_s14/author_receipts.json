@@ -1,0 +1,330 @@
+{
+  "base": "30db13952",
+  "steps": [
+    "wingcell",
+    "display",
+    "marks"
+  ],
+  "wingcell": {
+    "previous_a2": 0.6,
+    "a2": 0.45
+  },
+  "display": {
+    "SF": {
+      "source": "fitted",
+      "parent": "#AA0000",
+      "sourced": "#C44C4C",
+      "shade": "#FF2323"
+    },
+    "CHI": {
+      "source": "fitted",
+      "parent": "#0B162A",
+      "sourced": "#545C6A",
+      "shade": "#568CEE"
+    },
+    "CIN": {
+      "source": "fitted",
+      "parent": "#FB4F14",
+      "sourced": "#BC3B0F",
+      "shade": "#E75E2F"
+    },
+    "BUF": {
+      "source": "fitted",
+      "parent": "#00338D",
+      "sourced": "#00338D",
+      "shade": "#2373FF"
+    },
+    "DEN": {
+      "source": "measured",
+      "parent": "#0A2343",
+      "sourced": "#1E69C9",
+      "shade": "#458AF5"
+    },
+    "CLE": {
+      "source": "fitted",
+      "parent": "#311D00",
+      "sourced": "#6F614C",
+      "shade": "#C47E18"
+    },
+    "TB": {
+      "source": "fitted",
+      "parent": "#A71930",
+      "sourced": "#A71930",
+      "shade": "#F6415F"
+    },
+    "ARI": {
+      "source": "fitted",
+      "parent": "#97233F",
+      "sourced": "#97233F",
+      "shade": "#EB4F74"
+    },
+    "LAC": {
+      "source": "fitted",
+      "parent": "#0080C6",
+      "sourced": "#006094",
+      "shade": "#1D98DC"
+    },
+    "KC": {
+      "source": "measured",
+      "parent": "#E31837",
+      "sourced": "#E31837",
+      "shade": "#FF2866"
+    },
+    "IND": {
+      "source": "fitted",
+      "parent": "#013369",
+      "sourced": "#013369",
+      "shade": "#258EFF"
+    },
+    "DAL": {
+      "source": "fitted",
+      "parent": "#002244",
+      "sourced": "#264360",
+      "shade": "#2390FC"
+    },
+    "MIA": {
+      "source": "fitted",
+      "parent": "#008E97",
+      "sourced": "#006A71",
+      "shade": "#14A2AB"
+    },
+    "PHI": {
+      "source": "fitted",
+      "parent": "#004851",
+      "sourced": "#26636B",
+      "shade": "#15A1B2"
+    },
+    "ATL": {
+      "source": "fitted",
+      "parent": "#A71930",
+      "sourced": "#B43C4F",
+      "shade": "#F6415F"
+    },
+    "NYG": {
+      "source": "measured",
+      "parent": "#0B2265",
+      "sourced": "#0B2265",
+      "shade": "#3567FF"
+    },
+    "JAX": {
+      "source": "fitted",
+      "parent": "#006778",
+      "sourced": "#267E8C",
+      "shade": "#16A0B7"
+    },
+    "NYJ": {
+      "source": "fitted",
+      "parent": "#115740",
+      "sourced": "#35705D",
+      "shade": "#30A67F"
+    },
+    "DET": {
+      "source": "fitted",
+      "parent": "#0076B6",
+      "sourced": "#0076B6",
+      "shade": "#1D99DC"
+    },
+    "GB": {
+      "source": "fitted",
+      "parent": "#203731",
+      "sourced": "#203731",
+      "shade": "#629D8D"
+    },
+    "CAR": {
+      "source": "fitted",
+      "parent": "#0085CF",
+      "sourced": "#00649B",
+      "shade": "#1D98DD"
+    },
+    "NE": {
+      "source": "fitted",
+      "parent": "#002244",
+      "sourced": "#264360",
+      "shade": "#2390FC"
+    },
+    "LV": {
+      "source": "measured",
+      "parent": "#C8C7C7",
+      "sourced": "#646464",
+      "shade": "#FFFFFF"
+    },
+    "LAR": {
+      "source": "measured",
+      "parent": "#003594",
+      "sourced": "#003594",
+      "shade": "#317BFF"
+    },
+    "BAL": {
+      "source": "fitted",
+      "parent": "#24135F",
+      "sourced": "#665A8F",
+      "shade": "#774FFF"
+    },
+    "WAS": {
+      "source": "fitted",
+      "parent": "#5A1414",
+      "sourced": "#8C5A5A",
+      "shade": "#F04F4F"
+    },
+    "NO": {
+      "source": "fitted",
+      "parent": "#D3BC8D",
+      "sourced": "#6A5E46",
+      "shade": "#9D8D6E"
+    },
+    "SEA": {
+      "source": "fitted",
+      "parent": "#002244",
+      "sourced": "#4C647C",
+      "shade": "#2390FC"
+    },
+    "PIT": {
+      "source": "fitted",
+      "parent": "#FFB612",
+      "sourced": "#805B09",
+      "shade": "#B48721"
+    },
+    "HOU": {
+      "source": "measured",
+      "parent": "#EB0028",
+      "sourced": "#EB0028",
+      "shade": "#FF1554"
+    },
+    "TEN": {
+      "source": "fitted",
+      "parent": "#4495D2",
+      "sourced": "#33709E",
+      "shade": "#5296C9"
+    },
+    "MIN": {
+      "source": "fitted",
+      "parent": "#4F2683",
+      "sourced": "#4F2683",
+      "shade": "#A863FF"
+    }
+  },
+  "marks": {
+    "dal": {
+      "team": "DAL",
+      "keyline": "#FFFFFF",
+      "keyline_texels": 1,
+      "treatment": "white outer keyline around the unchanged navy border, white stripe and navy star",
+      "sources": [
+        "https://a.espncdn.com/i/teamlogos/nfl/500-dark/dal.png (ESPN on-dark logo: white outer keyline)",
+        "https://www.youtube.com/channel/UCC0BPKJxAyxjQoRTYbpW0FQ (Dallas Cowboys channel mark: white outer keyline on navy)"
+      ],
+      "ink_before": 1541,
+      "ink_after": 1541
+    },
+    "ind": {
+      "team": "IND",
+      "map": [
+        [
+          "#013369",
+          "#A5ACAF"
+        ],
+        [
+          "#FFFFFF",
+          "#013369"
+        ]
+      ],
+      "keyline": "#A5ACAF",
+      "keyline_texels": 2,
+      "treatment": "Facemask Gray horseshoe, Speed Blue grommets, no white outline",
+      "sources": [
+        "https://www.youtube.com/channel/UCyYn26HPC4HIedifGnNbjBw (Indianapolis Colts channel mark: gray horseshoe, dark grommets, on black)",
+        "https://www.colts.com/team/brand/ (Speed Blue #013369, Facemask Gray #A5ACAF, Pantone 429 C)"
+      ],
+      "ink_before": 2104,
+      "ink_after": 2104
+    },
+    "jax": {
+      "team": "JAX",
+      "keyline": "#FFFFFF",
+      "keyline_texels": 1,
+      "treatment": "light outer keyline outside the black outline (the channel mark draws it cream, about #E8E0C8; the official White trim is used, the mark's own light fur colour)",
+      "sources": [
+        "https://www.youtube.com/channel/UCsGacW6z0GedR-Wv45SBRZg (Jacksonville Jaguars channel mark: light outer keyline around the black outline, on black)"
+      ],
+      "ink_before": 1966,
+      "ink_after": 1966
+    },
+    "no": {
+      "team": "NO",
+      "keyline": "#FFFFFF",
+      "keyline_texels": 1,
+      "treatment": "white outer keyline outside the black border, gold fleur unchanged",
+      "sources": [
+        "https://www.youtube.com/channel/UCwuddf1JrodMlc5fYpVlrQA (New Orleans Saints channel mark: gold, black border, white outer keyline, on black)"
+      ],
+      "ink_before": 1670,
+      "ink_after": 1670
+    },
+    "nyj": {
+      "team": "NYJ",
+      "fill": "#FFFFFF",
+      "treatment": "white mark on the team green",
+      "sources": [
+        "https://a.espncdn.com/i/teamlogos/nfl/500-dark/nyj.png (ESPN on-dark logo: white)",
+        "https://www.youtube.com/channel/UCROj9vBjc4ZW3AL4cd_BjHg (New York Jets channel mark: white on green)"
+      ],
+      "ink_before": 756,
+      "ink_after": 756
+    }
+  },
+  "outputs": {
+    "data/nfl2k5_scorebug_mnf/logos/dal.png": {
+      "sha256": "ad06ddb6d287ae7e42a9a0a0ce6d37ef1a90269b0e2853d06c0d0401ded65dc5",
+      "size": 3716,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/ind.png": {
+      "sha256": "6eee30d6c39d52676319a4772c4d8ad94df84d748dbb10ad58671b5e67310276",
+      "size": 2223,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/jax.png": {
+      "sha256": "e4d282a253e3278f7c9cf63cd51bae0da1a87ef0173055f79f9a7225192e9f01",
+      "size": 6140,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/no.png": {
+      "sha256": "2b73d5a03322d6cad675e3925fda88e760c526719887adcfcdee60028100bd5d",
+      "size": 5277,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/nyj.png": {
+      "sha256": "36515a25b4c2c7fb9f6221dd0dab3a38596e5b6bb83385df4710da1f2650deb2",
+      "size": 1140,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_sprite/template.png": {
+      "sha256": "577e1362986d02d7ca40ceb8c5ff70095b7f7c426319e19728de75cc7565099a",
+      "size": 22301,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_sprite/layout.json": {
+      "sha256": "13eb775ca9fb10d8194be7d5a761d23b222a5a74b1464bd491d593bdc571456a",
+      "size": 29608,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_sprite/team_accents.json": {
+      "sha256": "baa260a45d0518cc6827bf96fb26bf6cc69ac3769e56bb8208b419ae1e686cd6",
+      "size": 380981,
+      "changed": true
+    }
+  },
+  "wing": {
+    "a1": 0.8761,
+    "d1": 41.19,
+    "v1": 0.2879,
+    "a2": 0.45,
+    "d2": 13.82,
+    "d3": 461.6,
+    "a3": 1.5,
+    "d4": 2.839,
+    "d5": 83.55,
+    "gamma": 1.0,
+    "floor": 0.0
+  }
+}

@@ -1,0 +1,916 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "JAX",
+  "name": "Jacksonville Jaguars",
+  "asset_code": "12",
+  "season": 2026,
+  "status": "Phase B job d3 (2026-09-23). Sort: redesigned (2013 identity and logo, 2018 uniforms: teal home with black collar and cuffs, chest jaguar, plain pants, black helmet). Colours sourced; albedo INFERRED from 2026 week 1 photos (teal median (2,122,145) in daylight) with u1's lab calibration.",
+  "sources": {
+    "uniform_history": "https://en.wikipedia.org/w/index.php?title=Jacksonville_Jaguars&action=raw (Logos and uniforms)",
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Jacksonville_Jaguars_Uniforms_(2026).png (CC BY 4.0, TheGoodGeneral 1, 2026-08-25)",
+    "uniform_schedule": "https://www.colorwaysports.com/stories/jaguars-uniform-schedule-2026 (teal at home, white on the road)",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (JAX: NFL logo file)",
+    "home_photos": "https://www.jaguars.com/photos/frames-of-the-game-photos-week-1-browns-vs-jaguars (2026-09-13)",
+    "road_photos": "https://www.jaguars.com/photos/game-action-jaguars-vs-broncos-2026-season-week-2 (2026-09-20, white jersey, white pants, black socks)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "teal": "#006778",
+    "black": "#000000",
+    "gold": "#D7A22A",
+    "dark_gold": "#9F792C",
+    "white": "#FFFFFF"
+  },
+  "albedo": {
+    "jersey_teal": "#00798F",
+    "black": "#101010",
+    "white": "#FFFFFF",
+    "gold": "#D7A22A",
+    "retail_helmet_black": "#080808",
+    "retail_card_teal": "#084858",
+    "retail_card_teal2": "#085878",
+    "retail_card_gold": "#C8A040",
+    "retail_atlas_teal": "#084868",
+    "retail_atlas_teal2": "#185878",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A",
+    "field_teal": "#00798F",
+    "retail_atlas_gold": "#9D8311",
+    "logo_gold": "#D2AA41",
+    "logo_teal": "#00839C"
+  },
+  "marks": {
+    "team_logo": "jaguar_head_full.png",
+    "head_white": "head_white.png",
+    "head_black": "head_black.png",
+    "head_gold": "head_gold.png",
+    "head_teal": "head_teal.png",
+    "jaguars_word": "jaguars_word.png",
+    "ez_south": "ez_south_jacksonville.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "12H0",
+      "note": "2026 home: teal jersey, black collar and black sleeve cuffs, jaguar head on the left chest, white block numbers, white swooshes, plain white pants, teal socks, black helmet with the 2013 jaguar head and teal back numbers",
+      "torso": {
+        "base_colour": "jersey_teal",
+        "neck_donor": "12H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "black",
+            "width": 3
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "white"
+        },
+        "decorations": [
+          {
+            "mark": "team_logo",
+            "center": [
+              228,
+              86
+            ],
+            "width": 24
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "jersey_teal",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "rect": [
+              0,
+              46,
+              128,
+              64
+            ],
+            "colour": "black"
+          },
+          {
+            "rect": [
+              0,
+              110,
+              128,
+              128
+            ],
+            "colour": "black"
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [],
+        "swoosh_colour": "jersey_teal"
+      },
+      "socks": {
+        "colour": "jersey_teal"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "white"
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "jersey_teal"
+      },
+      "nameplate": {
+        "glyph_donor": "12H0",
+        "fill": "white"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_black",
+        "shell": "retail_helmet_black",
+        "decal": {
+          "mark": "team_logo",
+          "erase": "box",
+          "boxes": {
+            "upper": [
+              38,
+              50,
+              114,
+              108
+            ],
+            "lower": [
+              38,
+              147,
+              114,
+              204
+            ]
+          },
+          "centres": {
+            "upper": [
+              76.5,
+              83.5
+            ],
+            "lower": [
+              76.5,
+              171.5
+            ]
+          },
+          "sizes": {
+            "upper": [
+              72,
+              58
+            ],
+            "lower": [
+              72,
+              58
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_teal",
+            "to": "jersey_teal",
+            "region": "jersey",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_teal2",
+            "to": "jersey_teal",
+            "region": "jersey",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_gold",
+            "to": "white",
+            "region": "jersey",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_card_teal",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_gold",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.25
+          }
+        ],
+        "logo": {
+          "mark": "team_logo",
+          "scale": 1.0
+        }
+      },
+      "outer_index": 3710,
+      "splayer": {
+        "torso_donor_outer": 3710,
+        "torso_donor": "12H0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_teal",
+            "to": "jersey_teal",
+            "region": "torso",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_atlas_teal2",
+            "to": "jersey_teal",
+            "region": "torso",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_teal",
+            "to": "jersey_teal",
+            "region": "sleeve",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_atlas_teal2",
+            "to": "jersey_teal",
+            "region": "sleeve",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_gold",
+            "to": "jersey_teal",
+            "region": "sleeve",
+            "tolerance": 0.3
+          }
+        ],
+        "logo": {
+          "mark": "team_logo",
+          "scale": 1.0
+        }
+      }
+    },
+    "away": {
+      "selector": "12A0",
+      "note": "2026 road (week 2 at Denver): white jersey, black collar and cuffs, jaguar head on the left chest, black block numbers, teal swooshes, plain white pants, black socks, the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "12H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "black",
+            "width": 3
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "jersey_teal"
+        },
+        "decorations": [
+          {
+            "mark": "team_logo",
+            "center": [
+              228,
+              86
+            ],
+            "width": 24
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "rect": [
+              0,
+              46,
+              128,
+              64
+            ],
+            "colour": "black"
+          },
+          {
+            "rect": [
+              0,
+              110,
+              128,
+              128
+            ],
+            "colour": "black"
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [],
+        "swoosh_colour": "jersey_teal"
+      },
+      "socks": {
+        "colour": "black"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "black"
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "jersey_teal"
+      },
+      "nameplate": {
+        "glyph_donor": "12A0",
+        "fill": "black"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_black",
+        "shell": "retail_helmet_black",
+        "decal": {
+          "mark": "team_logo",
+          "erase": "box",
+          "boxes": {
+            "upper": [
+              38,
+              50,
+              114,
+              108
+            ],
+            "lower": [
+              38,
+              147,
+              114,
+              204
+            ]
+          },
+          "centres": {
+            "upper": [
+              76.5,
+              83.5
+            ],
+            "lower": [
+              76.5,
+              171.5
+            ]
+          },
+          "sizes": {
+            "upper": [
+              72,
+              58
+            ],
+            "lower": [
+              72,
+              58
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_teal",
+            "to": "black",
+            "region": "jersey",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_teal2",
+            "to": "black",
+            "region": "jersey",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_gold",
+            "to": "black",
+            "region": "jersey",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_card_teal",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_teal2",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_gold",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.25
+          }
+        ],
+        "logo": {
+          "mark": "team_logo",
+          "scale": 1.0
+        }
+      },
+      "outer_index": 4027,
+      "splayer": {
+        "torso_donor_outer": 4027,
+        "torso_donor": "12A0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_teal",
+            "to": "black",
+            "region": "torso",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_gold",
+            "to": "white",
+            "region": "sleeve",
+            "tolerance": 0.3
+          }
+        ],
+        "logo": {
+          "mark": "team_logo",
+          "scale": 1.0
+        }
+      }
+    }
+  },
+  "venue": {
+    "prefix": "s12",
+    "notes": "EverBank Stadium (2K5 venue s12). 2026 week 1 photos: unpainted grass end zones with large plain white letters (JAGUARS and JACKSONVILLE); the 2013 jaguar head painted at midfield (2025 field-painting gallery). JAGUARS uses the official 2013 wordmark letters; JACKSONVILLE keeps the retail letter shapes with the 2004 gold and black outline removed (no vector of the full word in the current face: INFERRED). No NFL shield or AFC mark in the end zones (none seen in 2026 photos: INFERRED). Midfield is a hand step (full-colour club mark, see SOURCES.md).",
+    "sources": [
+      "https://www.jaguars.com/photos/game-action-browns-vs-jaguars-2026-season-week-1",
+      "https://www.jaguars.com/photos/k000490-everbank-stadium-field-painting-2025-jaguars-home-opener-edition",
+      "https://en.wikipedia.org/wiki/File:Jacksonville_Jaguars_wordmark.svg",
+      "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg"
+    ],
+    "endzone": {
+      "paint": "white",
+      "paint_alpha": 0.0,
+      "marks": [
+        {
+          "mark": "jaguars_word",
+          "colour": "white",
+          "center": [
+            384,
+            64
+          ],
+          "height": 80,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "endzone_south": {
+      "paint": "white",
+      "paint_alpha": 0.0,
+      "marks": [
+        {
+          "mark": "ez_south",
+          "colour": "white",
+          "center": [
+            366.625,
+            67.125
+          ],
+          "height": 66.25,
+          "stretch": 1.0
+        }
+      ]
+    },
+    "center_logo": {
+      "fill_mark": "head_teal",
+      "fill": "logo_teal",
+      "width_frac": 0.92
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "jersey_teal",
+            "items": [
+              {
+                "text": "DUUUVAL!",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#16\nLAWRENCE",
+                "colour": "jersey_teal",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 16
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "GO JAGS!",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "head_white",
+                "colour": "white",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 58
+              },
+              {
+                "mark": "head_black",
+                "colour": "black",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 58
+              },
+              {
+                "mark": "head_gold",
+                "colour": "logo_gold",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 58
+              },
+              {
+                "mark": "head_teal",
+                "colour": "logo_teal",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 58
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#12\nHUNTER",
+                "colour": "black",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "jersey_teal",
+            "items": [
+              {
+                "text": "#7 BTJ\nON THE PROWL",
+                "colour": "white",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "JAX",
+                "colour": "jersey_teal",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 24
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "#41\nHINES-ALLEN",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "jagwall03": {
+        "alpha": "items",
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "head_white",
+                "colour": "white",
+                "center": [
+                  64,
+                  36
+                ],
+                "width": 84
+              },
+              {
+                "mark": "head_black",
+                "colour": "black",
+                "center": [
+                  64,
+                  36
+                ],
+                "width": 84
+              },
+              {
+                "mark": "head_gold",
+                "colour": "logo_gold",
+                "center": [
+                  64,
+                  36
+                ],
+                "width": 84
+              },
+              {
+                "mark": "head_teal",
+                "colour": "logo_teal",
+                "center": [
+                  64,
+                  36
+                ],
+                "width": 84
+              },
+              {
+                "mark": "jaguars_word",
+                "colour": "white",
+                "center": [
+                  64,
+                  100
+                ],
+                "width": 120
+              }
+            ]
+          }
+        ]
+      },
+      "jagwall04": {
+        "alpha": "items",
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "DUUUVAL",
+                "colour": "white",
+                "center": [
+                  64,
+                  64
+                ],
+                "height": 30,
+                "max_width": 124
+              }
+            ]
+          }
+        ]
+      },
+      "jagwall02": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "bg": "black",
+            "items": []
+          }
+        ]
+      },
+      "jagwall01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "bg": "jersey_teal",
+            "items": []
+          }
+        ]
+      }
+    }
+  },
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "4-3",
+    "note": "nflverse roster_2026 week 3 active list; 2026 depth charts list a 4-3 front (LDE, LDT, RDT, RDE, WLB, MLB, SLB).",
+    "head_coach": "Liam Coen",
+    "depth_since": "2026-09-09"
+  },
+  "part_intents": {
+    "home": {
+      "torso": "teal jersey body with a black collar band, a small full-colour jaguar head on the left chest, small NFL shield at the collar, white maker swooshes on the shoulders; the light grey patch is the neck opening",
+      "sleeve": "teal sleeve with a black cuff band",
+      "pants": "plain white pants with a teal maker mark",
+      "helmet": "black shell with the gold, black and teal jaguar head logo, grey and white hardware, flag and shield decals",
+      "digit_jersey": "plain white block numbers",
+      "digit_arm": "plain white block numbers",
+      "digit_helmet": "teal numbers for the back of a black helmet",
+      "nameplate": "white letters",
+      "socks00": "solid teal",
+      "splayer": "far-away player atlas: white pants, teal torso, black helmet with the jaguar head, teal socks, skin and glove patches",
+      "team-select_unif": "menu render: teal jersey with a white number, white pants, black helmet with the jaguar head, dark shading",
+      "team-select_helm": "menu render: black helmet with the gold jaguar head, a dark bar and yellow UI strip below"
+    },
+    "away": {
+      "torso": "white jersey body with a black collar band, a small full-colour jaguar head on the left chest, small NFL shield at the collar, teal maker swooshes; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with a black cuff band",
+      "pants": "plain white pants with a teal maker mark",
+      "helmet": "black shell with the gold, black and teal jaguar head logo, grey and white hardware, flag and shield decals",
+      "digit_jersey": "plain black block numbers",
+      "digit_arm": "plain black block numbers",
+      "digit_helmet": "teal numbers for the back of a black helmet",
+      "nameplate": "black letters",
+      "socks00": "solid black",
+      "splayer": "far-away player atlas: white pants, white torso, black helmet with the jaguar head, black socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with a black number, white pants, black helmet with the jaguar head, grey and dark shading",
+      "team-select_helm": "menu render: black helmet with the gold jaguar head, a dark bar and yellow UI strip below"
+    },
+    "venue": {
+      "endzone": "grass end zones with large plain white letters (JAGUARS at one end, JACKSONVILLE at the other); transparent elsewhere",
+      "center_logo": "the gold, black, white and teal jaguar head painted at midfield",
+      "banner": "cloth fan banners in Jaguars teal, black and white with white, teal or black text and a jaguar head",
+      "jagwall03": "cut-out wall sign: the jaguar head over the white JAGUARS wordmark",
+      "jagwall04": "cut-out wall sign: white DUUUVAL letters",
+      "jagwall02": "plain black wall pad",
+      "jagwall01": "plain teal wall pad"
+    }
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Albert Regis": 5,
+      "Ameer Abdullah": 3,
+      "Anton Harrison": 4,
+      "Antonio Johnson": 3,
+      "Arik Armstead": 4,
+      "Bhayshul Tuten": 4,
+      "Branson Combs": 0,
+      "Brenton Strange": 2,
+      "Brian Thomas": 5,
+      "Bryan Thomas": 4,
+      "C.J. Williams": 2,
+      "Caleb Ransaw": 4,
+      "Cam Little": 0,
+      "Christian Braswell": 3,
+      "Christopher Rodriguez": 3,
+      "Cole Van Lanen": 0,
+      "DaVon Hamilton": 4,
+      "Daniel Faalele": 2,
+      "Danny Striggow": 0,
+      "Dennis Gardeck": 0,
+      "Emmanuel Pregnon": 5,
+      "Eric Murray": 4,
+      "Ezra Cleveland": 0,
+      "Foye Oluokun": 4,
+      "Jack Kiser": 0,
+      "Jahlani Tavai": 2,
+      "Jakobi Meyers": 3,
+      "Jalen Huskey": 3,
+      "Jarrian Jones": 4,
+      "Jonah Monheim": 0,
+      "Josh Cameron": 3,
+      "Josh Hines-Allen": 4,
+      "Jourdan Lewis": 4,
+      "LeQuint Allen": 3,
+      "Logan Cooke": 0,
+      "Matt Dickerson": 2,
+      "Montaric Brown": 4,
+      "Nate Boerkircher": 0,
+      "Parker Washington": 2,
+      "Quinn Ewers": 0,
+      "Quintin Morris": 4,
+      "Rayuan Lane": 4,
+      "Robert Hainsey": 0,
+      "Ross Matiscik": 0,
+      "Ruke Orhorhoro": 5,
+      "Tanner Koziol": 0,
+      "Travis Hunter": 4,
+      "Travon Walker": 4,
+      "Trevor Lawrence": 0,
+      "Ventrell Miller": 4,
+      "Walker Little": 0,
+      "Wesley Williams": 4,
+      "Wyatt Milum": 0
+    },
+    "dreads": [
+      "Anton Harrison",
+      "Bhayshul Tuten",
+      "Brian Thomas",
+      "Christian Braswell",
+      "DaVon Hamilton",
+      "Eric Murray",
+      "Jakobi Meyers",
+      "Josh Cameron",
+      "LeQuint Allen",
+      "Montaric Brown"
+    ],
+    "hair_by_eye": {
+      "Trevor Lawrence": "#A88A60"
+    },
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads flag by eye for locs, braids and twists; Lawrence's long light-brown hair set by eye."
+  }
+}

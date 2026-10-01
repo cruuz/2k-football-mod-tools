@@ -14,6 +14,7 @@ from .errors import ValidationError
 from . import nfl2k5_play_library as library
 from . import nfl2k5_playbook_pack as packs
 from .nfl2k5_formation_play_writer import PlayCreateRequest, REPORT_SCHEMA
+from .nfl2k5_complete_offense import REPORT_SCHEMA as OFFENSE_REPORT_SCHEMA
 
 
 class PlayIntentError(ValidationError):
@@ -32,7 +33,7 @@ def intent_requests(resource, report):
     asset = report.get("asset_id")
     _require(isinstance(asset, str) and asset.startswith("book:"),
              "Authored intent needs an exact book:<team> asset id")
-    _require(report.get("schema") in (REPORT_SCHEMA, packs.FINAL_INTENT_REPORT_SCHEMA),
+    _require(report.get("schema") in (REPORT_SCHEMA, packs.FINAL_INTENT_REPORT_SCHEMA, OFFENSE_REPORT_SCHEMA),
              f"{asset}: unknown PLAY compiler report schema")
     _require(hashlib.sha256(resource).hexdigest() == report.get("replacement_sha256"),
              f"{asset}: stale retained PLAY resource/report pairing")
@@ -48,6 +49,10 @@ def intent_requests(resource, report):
         _require(isinstance(intent, Mapping) and set(intent) == {"schema", "records"}
                  and intent["schema"] == schema and isinstance(intent["records"], list),
                  f"{asset}: expected versioned {key} compiler records")
+        # PROVED OFFLINE: complete offenses forbid option/Spy authoring.
+        # Accept their explicit empty contract without granting them intent authority.
+        _require(report.get("schema") != OFFENSE_REPORT_SCHEMA or not intent["records"],
+                 f"{asset}: complete offense cannot declare {key}")
         for record in intent["records"]:
             _require(isinstance(record, Mapping), f"{asset}: invalid {key} record")
             pi = record.get("play_index")

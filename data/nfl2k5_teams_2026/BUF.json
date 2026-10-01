@@ -1,0 +1,1224 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "BUF",
+ "name": "Buffalo Bills",
+ "asset_code": "03",
+ "season": 2026,
+ "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); authored albedo INFERRED from 2026 game photos; kit layout from the Wikipedia 2026 diagram and the week 1 and 2 galleries.",
+ "sort": "recoloured: the 2011-2026 look is the retail 1976-83 set (03H4/03A4) brought to 2026 (new logo art, blue-red-blue helmet stripe, royal pants on the road); built from those donor sets",
+ "sources": {
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Buffalo_Bills_Uniforms_2026.png (Wikipedia 2026 season infobox)",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Buffalo_Bills&action=raw",
+  "alternates_2026": "https://www.buffalobills.com/news/buffalo-bills-unveil-new-nickel-city-uniforms-leading-into-the-inaugural-season-of-highmark-stadium (Nickel City gray alternate, 2 games)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (BUF: Royal #00338D, Red #C60C30, White, Navy #00274D; 2026 Record and Fact Book p.50)",
+  "home_photos": "https://www.buffalobills.com/photos/bills-win-must-see-photos-from-buffalo-s-victory-over-the-detroit-lions (2026 week 2, Highmark Stadium)",
+  "road_photos": "https://www.buffalobills.com/photos/bills-win-must-see-photos-from-buffalo-s-victory-over-the-houston-texans (2026 week 1)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/BUF.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/File:Buffalo_Bills_wordmark.svg",
+  "league_marks": "https://en.wikipedia.org/wiki/File:National_Football_League_logo.svg, https://en.wikipedia.org/wiki/File:American_Football_Conference_logo.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "royal": "#00338D",
+  "red": "#C60C30",
+  "white": "#FFFFFF",
+  "navy": "#00274D"
+ },
+ "albedo": {
+  "jersey_royal": "#0B3A9E",
+  "helmet_royal": "#00338D",
+  "red": "#C8102E",
+  "white": "#FFFFFF",
+  "helmet_white": "#F3F4F7",
+  "navy": "#00274D",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_red": "#B4202D",
+  "banner_red": "#C8102E",
+  "retail_helmet_white": "#F1F2F6",
+  "retail_stripe_navy": "#142C86",
+  "retail_stripe_red": "#930000",
+  "retail_card_royal": "#00006A",
+  "retail_atlas_royal": "#001072",
+  "retail_atlas_red": "#780000",
+  "wall_royal": "#0B3A9E",
+  "retail_atlas_navy_pants": "#001D38",
+  "retail_atlas_red2": "#902020"
+ },
+ "marks": {
+  "logo_full": "buf_logo_full.png",
+  "logo_mask": "buf_logo_mask.png",
+  "logo_white": "buf_logo_white.png",
+  "logo_royal": "buf_logo_royal.png",
+  "logo_red": "buf_logo_red.png",
+  "wordmark": "bills_wordmark.png",
+  "nfl_white": "nfl_white.png",
+  "nfl_navy": "nfl_navy.png",
+  "nfl_red": "nfl_red.png",
+  "afc_disk": "afc_disk.png",
+  "afc_red": "afc_red.png",
+  "afc_white": "afc_white.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "03H0",
+   "outer_index": 3640,
+   "note": "2026 home: royal blue jersey, white numbers outlined in red, white-red-white-red-white sleeve stripes, white pants with a royal-red-royal stripe, royal socks, white helmet with the royal-red-royal centre stripe and the charging buffalo",
+   "torso": {
+    "base_colour": "jersey_royal",
+    "neck_donor": "18H6",
+    "collar_trim": [
+     {
+      "colour": "white",
+      "width": 1.4
+     },
+     {
+      "colour": "red",
+      "width": 1.0
+     }
+    ],
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      161,
+      93
+     ],
+     "width": 17
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_royal",
+    "decorations": [
+     {
+      "rect": [
+       0,
+       36.0,
+       128,
+       40.5
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       40.5,
+       128,
+       43.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       43.0,
+       128,
+       47.5
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       47.5,
+       128,
+       50.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       50.0,
+       128,
+       54.5
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       100.0,
+       128,
+       104.5
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       104.5,
+       128,
+       107.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       107.0,
+       128,
+       111.5
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       111.5,
+       128,
+       114.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       114.0,
+       128,
+       118.5
+      ],
+      "colour": "white"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "jersey_royal",
+      5
+     ],
+     [
+      "red",
+      8
+     ],
+     [
+      "jersey_royal",
+      5
+     ]
+    ],
+    "swoosh_colour": "jersey_royal"
+   },
+   "socks": {
+    "colour": "jersey_royal"
+   },
+   "digits": {
+    "glyph_donor": "03H4",
+    "fill": "white",
+    "outline": "red",
+    "outline_frac": 0.03
+   },
+   "helmet_digits": {
+    "glyph_donor": "03H0",
+    "fill": "helmet_white"
+   },
+   "nameplate": {
+    "glyph_donor": "03H4",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "recolour": [
+     {
+      "from": "retail_stripe_navy",
+      "to": "helmet_royal",
+      "tolerance": 0.22
+     },
+     {
+      "from": "retail_stripe_red",
+      "to": "red",
+      "tolerance": 0.22
+     }
+    ],
+    "decal": {
+     "mark": "logo_full",
+     "boxes": {
+      "upper": [
+       36,
+       46,
+       134,
+       114
+      ],
+      "lower": [
+       36,
+       142,
+       134,
+       211
+      ]
+     },
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_royal",
+      "to": "jersey_royal",
+      "region": "jersey",
+      "tolerance": 0.25
+     }
+    ],
+    "logo": {
+     "mark": "logo_full",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3644,
+    "torso_donor": "03H4",
+    "sleeve_from_donor": true,
+    "recolour": [
+     {
+      "from": "retail_atlas_royal",
+      "to": "jersey_royal",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_royal",
+      "to": "jersey_royal",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_red",
+      "to": "helmet_white",
+      "region": "helmet",
+      "tolerance": 0.6
+     },
+     {
+      "from": "retail_atlas_red2",
+      "to": "helmet_white",
+      "region": "helmet",
+      "tolerance": 0.6
+     }
+    ],
+    "logo": {
+     "mark": "logo_full",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      110,
+      114.5
+     ],
+     "size": [
+      22,
+      17
+     ]
+    }
+   }
+  },
+  "away": {
+   "selector": "03A0",
+   "outer_index": 3957,
+   "note": "2026 away: white jersey, royal numbers outlined in red, royal-red-royal-red-royal sleeve stripes, royal pants with a white-red-white stripe, white socks, the same white helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "18H6",
+    "collar_trim": [
+     {
+      "colour": "jersey_royal",
+      "width": 1.4
+     },
+     {
+      "colour": "red",
+      "width": 1.0
+     }
+    ],
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "jersey_royal",
+     "center": [
+      161,
+      93
+     ],
+     "width": 17
+    },
+    "sleeve_swooshes": {
+     "colour": "jersey_royal"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "decorations": [
+     {
+      "rect": [
+       0,
+       36.0,
+       128,
+       40.5
+      ],
+      "colour": "jersey_royal"
+     },
+     {
+      "rect": [
+       0,
+       40.5,
+       128,
+       43.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       43.0,
+       128,
+       47.5
+      ],
+      "colour": "jersey_royal"
+     },
+     {
+      "rect": [
+       0,
+       47.5,
+       128,
+       50.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       50.0,
+       128,
+       54.5
+      ],
+      "colour": "jersey_royal"
+     },
+     {
+      "rect": [
+       0,
+       100.0,
+       128,
+       104.5
+      ],
+      "colour": "jersey_royal"
+     },
+     {
+      "rect": [
+       0,
+       104.5,
+       128,
+       107.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       107.0,
+       128,
+       111.5
+      ],
+      "colour": "jersey_royal"
+     },
+     {
+      "rect": [
+       0,
+       111.5,
+       128,
+       114.0
+      ],
+      "colour": "red"
+     },
+     {
+      "rect": [
+       0,
+       114.0,
+       128,
+       118.5
+      ],
+      "colour": "jersey_royal"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "jersey_royal",
+    "stripe": [
+     [
+      "white",
+      5
+     ],
+     [
+      "red",
+      8
+     ],
+     [
+      "white",
+      5
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "03A4",
+    "fill": "jersey_royal",
+    "outline": "red",
+    "outline_frac": 0.03
+   },
+   "helmet_digits": {
+    "glyph_donor": "03A0",
+    "fill": "helmet_white"
+   },
+   "nameplate": {
+    "glyph_donor": "03A4",
+    "fill": "jersey_royal"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "recolour": [
+     {
+      "from": "retail_stripe_navy",
+      "to": "helmet_royal",
+      "tolerance": 0.22
+     },
+     {
+      "from": "retail_stripe_red",
+      "to": "red",
+      "tolerance": 0.22
+     }
+    ],
+    "decal": {
+     "mark": "logo_full",
+     "boxes": {
+      "upper": [
+       36,
+       46,
+       134,
+       114
+      ],
+      "lower": [
+       36,
+       142,
+       134,
+       211
+      ]
+     },
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "logo_full",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3961,
+    "torso_donor": "03A4",
+    "sleeve_from_donor": true,
+    "recolour": [
+     {
+      "from": "retail_atlas_red",
+      "to": "helmet_white",
+      "region": "helmet",
+      "tolerance": 0.6
+     },
+     {
+      "from": "retail_atlas_navy_pants",
+      "to": "jersey_royal",
+      "region": "pants",
+      "tolerance": 0.35
+     },
+     {
+      "from": "retail_atlas_red2",
+      "to": "helmet_white",
+      "region": "helmet",
+      "tolerance": 0.6
+     }
+    ],
+    "logo": {
+     "mark": "logo_full",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      110,
+      114.5
+     ],
+     "size": [
+      22,
+      17
+     ]
+    }
+   }
+  }
+ },
+ "venue": {
+  "prefix": "s03",
+  "notes": "2026 home venue: the new Highmark Stadium (opened 2026). The game keeps the retail Ralph Wilson Stadium model (Noah: keep the stadiums); its team art becomes 2026. End zones (2026 week 2 photos): red paint, white BILLS wordmark, the AFC logo on a white disk at the left and the NFL shield at the right (reading orientation), the same at both ends. Midfield: the charging buffalo in full colour.",
+  "sources": [
+   "https://www.buffalobills.com/photos/bills-win-must-see-photos-from-buffalo-s-victory-over-the-detroit-lions (field and end zone, 2026 week 2)"
+  ],
+  "endzone": {
+   "paint": "field_red",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 74,
+     "stretch": 1.12
+    },
+    {
+     "mark": "afc_disk",
+     "colour": "white",
+     "center": [
+      86,
+      64
+     ],
+     "height": 66,
+     "stretch": 1.12
+    },
+    {
+     "mark": "afc_red",
+     "colour": "field_red",
+     "center": [
+      86,
+      64
+     ],
+     "height": 50,
+     "stretch": 1.12
+    },
+    {
+     "mark": "afc_white",
+     "colour": "white",
+     "center": [
+      86,
+      64
+     ],
+     "height": 50,
+     "stretch": 1.12
+    },
+    {
+     "mark": "nfl_white",
+     "colour": "white",
+     "center": [
+      682,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "nfl_navy",
+     "colour": "shield_navy",
+     "center": [
+      682,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "nfl_red",
+     "colour": "shield_red",
+     "center": [
+      682,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "logo_mask",
+   "outline": "white",
+   "fill_mark": "logo_royal",
+   "fill": "helmet_royal",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "helmet_royal",
+      "items": [
+       {
+        "mark": "wordmark",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "width": 100
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BILLS\nMAFIA",
+        "colour": "red",
+        "center": [
+         64,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO\nBILLS!",
+        "colour": "helmet_royal",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "#17\nJOSH ALLEN",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "helmet_royal",
+      "items": [
+       {
+        "text": "#4 COOK\nRUNS WILD",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         192,
+         96
+        ],
+        "width": 76
+       },
+       {
+        "mark": "logo_royal",
+        "colour": "helmet_royal",
+        "center": [
+         192,
+         96
+        ],
+        "width": 76
+       },
+       {
+        "mark": "logo_red",
+        "colour": "red",
+        "center": [
+         192,
+         96
+        ],
+        "width": 76
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "LET'S GO\nBUFFALO!",
+        "colour": "helmet_royal",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#15 ROUSSEAU\nSACK CITY",
+        "colour": "red",
+        "center": [
+         64,
+         96
+        ],
+        "height": 13
+       }
+      ]
+     }
+    ]
+   },
+   "billswall_01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "wall_royal",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         64,
+         64
+        ],
+        "width": 112
+       },
+       {
+        "mark": "logo_royal",
+        "colour": "helmet_royal",
+        "center": [
+         64,
+         64
+        ],
+        "width": 112
+       },
+       {
+        "mark": "logo_red",
+        "colour": "red",
+        "center": [
+         64,
+         64
+        ],
+        "width": 112
+       }
+      ]
+     }
+    ]
+   },
+   "billswall_02": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         64,
+         64
+        ],
+        "width": 120
+       },
+       {
+        "mark": "logo_royal",
+        "colour": "helmet_royal",
+        "center": [
+         64,
+         64
+        ],
+        "width": 120
+       },
+       {
+        "mark": "logo_red",
+        "colour": "red",
+        "center": [
+         64,
+         64
+        ],
+        "width": 120
+       }
+      ]
+     }
+    ]
+   },
+   "billswall_03": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "nfl_white",
+        "colour": "white",
+        "center": [
+         64,
+         64
+        ],
+        "width": 92
+       },
+       {
+        "mark": "nfl_navy",
+        "colour": "shield_navy",
+        "center": [
+         64,
+         64
+        ],
+        "width": 92
+       },
+       {
+        "mark": "nfl_red",
+        "colour": "shield_red",
+        "center": [
+         64,
+         64
+        ],
+        "width": 92
+       }
+      ]
+     }
+    ]
+   },
+   "billswall_05": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "wall_royal",
+      "items": [
+       {
+        "mark": "wordmark",
+        "colour": "white",
+        "center": [
+         64,
+         48
+        ],
+        "width": 108
+       },
+       {
+        "text": "ORCHARD PARK, N.Y.",
+        "colour": "white",
+        "center": [
+         64,
+         92
+        ],
+        "height": 9
+       }
+      ]
+     }
+    ]
+   },
+   "stadium_name": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       16
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "HIGHMARK STADIUM",
+        "colour": "white",
+        "center": [
+         32,
+         8
+        ],
+        "height": 6,
+        "max_width": 60
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       16,
+       64,
+       32
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "HIGHMARK STADIUM",
+        "colour": "white",
+        "center": [
+         32,
+         24
+        ],
+        "height": 6,
+        "max_width": 60
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       32,
+       64,
+       48
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "HIGHMARK STADIUM",
+        "colour": "white",
+        "center": [
+         32,
+         40
+        ],
+        "height": 6,
+        "max_width": 60
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       48,
+       64,
+       64
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "HIGHMARK STADIUM",
+        "colour": "white",
+        "center": [
+         32,
+         56
+        ],
+        "height": 6,
+        "max_width": 60
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Joe Brady",
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense_note": "nflverse depth_charts_2026 (ESPN) lists the BUF base defense as 'Base 3-4 D' since 2026-09-09",
+  "head_coach_source": "https://www.buffalobills.com/team/coaches-roster/joe-brady (named Jan 27, 2026); nflverse games.csv still lists Sean McDermott, relieved Jan 19, 2026 (https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach)",
+  "coach_portrait_id": 7003
+ },
+ "part_intents": {
+  "home": {
+   "torso": "royal blue jersey body, small white BILLS wordmark under the collar, NFL shield at the collar, white-red collar trim, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "royal blue with white-red-white-red-white stripes",
+   "pants": "white with a royal-red-royal side stripe, royal maker mark",
+   "helmet": "white shell, royal-red-royal centre stripe, royal buffalo with a red streak, hardware and decals",
+   "digit_jersey": "white numbers outlined in red",
+   "digit_arm": "white numbers outlined in red",
+   "digit_helmet": "white (the Bills wear no helmet numbers)",
+   "nameplate": "white letters",
+   "socks00": "solid royal blue",
+   "splayer": "far-away player atlas: white pants with a royal-red stripe, royal torso, white helmet, royal socks, skin and glove patches",
+   "team-select_unif": "menu render: royal jersey with a white number outlined in red, white pants, white helmet with the buffalo, dark shading",
+   "team-select_helm": "menu render: white helmet with the royal and red buffalo and the royal-red-royal stripe, grey facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, small royal BILLS wordmark, NFL shield at the collar, royal-red collar trim, royal maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with royal-red-royal-red-royal stripes",
+   "pants": "royal blue with a white-red-white side stripe, white maker mark",
+   "helmet": "white shell, royal-red-royal centre stripe, royal buffalo with a red streak, hardware and decals",
+   "digit_jersey": "royal numbers outlined in red",
+   "digit_arm": "royal numbers outlined in red",
+   "digit_helmet": "white (the Bills wear no helmet numbers)",
+   "nameplate": "royal letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: royal pants with a white-red stripe, white torso, white helmet, white socks",
+   "team-select_unif": "menu render: white jersey with a royal number outlined in red, royal pants, white helmet",
+   "team-select_helm": "menu render: white helmet with the royal and red buffalo, grey facemask, dark bar and yellow UI strip"
+  },
+  "venue": {
+   "endzone": "red painted end zone with the white BILLS wordmark, the AFC logo and the NFL shield",
+   "center_logo": "royal and red charging buffalo with a white outline",
+   "banner": "cloth fan banners and wall pads in royal, red and white with Bills text and the buffalo logo"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Alec Anderson": 0,
+   "Ar'maj Reed-Adams": 5,
+   "Austin Corbett": 0,
+   "Bradley Chubb": 3,
+   "C.J. Gardner-Johnson": 4,
+   "Christian Benford": 4,
+   "Cole Bishop": 0,
+   "Connor McGovern": 0,
+   "DJ Moore": 3,
+   "Dalton Kincaid": 0,
+   "Damar Hamlin": 4,
+   "Davison Igbinosun": 4,
+   "Dawson Knox": 0,
+   "DeWayne Carter": 3,
+   "Dee Alford": 4,
+   "Deone Walker": 4,
+   "Dion Dawkins": 3,
+   "Dorian Williams": 4,
+   "Ed Oliver": 4,
+   "Greg Gaines": 0,
+   "Greg Rousseau": 4,
+   "Jackson Hawes": 0,
+   "Jalon Kilgore": 4,
+   "James Cook": 4,
+   "Javon Solomon": 4,
+   "Joe Andreessen": 0,
+   "Jordan Hancock": 2,
+   "Josh Allen": 0,
+   "Josh Palmer": 4,
+   "Jude Bowry": 5,
+   "Kaleb Elarms-Orr": 3,
+   "Keleki Latu": 1,
+   "Keon Coleman": 4,
+   "Khalil Shakir": 2,
+   "Kyle Allen": 0,
+   "Landon Jackson": 0,
+   "Lloyd Cushenberry": 5,
+   "Maxwell Hairston": 4,
+   "Michael Danna": 3,
+   "Michael Hoecht": 0,
+   "O'Cyrus Torrence": 4,
+   "Ray Davis": 4,
+   "Reid Ferguson": 0,
+   "Sam Franklin": 4,
+   "Skyler Bell": 4,
+   "Spencer Brown": 0,
+   "T.J. Sanders": 4,
+   "TJ Parker": 3,
+   "Terrel Bernard": 1,
+   "Thomas Doman": 0,
+   "Ty Johnson": 3,
+   "Tylan Grable": 4,
+   "Tyler Bass": 0
+  },
+  "dreads": [
+   "Damar Hamlin",
+   "Davison Igbinosun",
+   "Dorian Williams",
+   "Greg Rousseau",
+   "Jalon Kilgore",
+   "James Cook",
+   "Javon Solomon",
+   "Jude Bowry",
+   "Maxwell Hairston",
+   "Michael Danna",
+   "O'Cyrus Torrence",
+   "Skyler Bell",
+   "T.J. Sanders"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) and dreadlocks, by eye from the official 2026 headshots (INFERRED); the automatic cheek estimate stays in faces.json as skin_lab. Kincaid and Rousseau wear headbands in their headshots, so their hair colour is set by eye (the automatic sample read the headband).",
+  "hair_by_eye": {
+   "Dalton Kincaid": "#6A4A30",
+   "Greg Rousseau": "#15110E"
+  }
+ }
+}

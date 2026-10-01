@@ -28,12 +28,13 @@ SCOREBUG_HELP = (
     "Retail: Uses the original scoreboard. Patch: Uses each team's primary "
     "color on its panel with readable white scores and yellow possession highlighting; "
     "each outline uses a team colour that differs from its panel, or silver when no "
-    "suitable colour is available, and the centre and decorative timeout marks stay neutral. "
-    "The red down box and separate clock cells stay visible through the play "
+    "suitable colour is available, and the centre and timeout marks stay neutral. "
+    "Timeout marks dim as each team uses its three timeouts and reset with the game at halftime. "
+    "The red down box matches the info row's width, and the separate clock cells stay visible through the play "
     "with live values. The play clock shows -- when unavailable. Ball-on "
     "and event labels replace the down text while the clock cells stay visible. "
-    "A scorebar folder selects your painted template (the v10 layout). Moves the kick meter up and hides the "
-    "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline revision is unwitnessed); rebuild from a clean source.")
+    "A scorebar folder selects your painted template (the v10 layout, without live timeout marks). Moves the kick meter up and hides the "
+    "lineup strip. EXPERIMENTAL / UNWITNESSED (the outline and live timeout revisions are unwitnessed); rebuild from a clean source.")
 SCOREBUG_RUNTIME_HELP = (
     "Draw the scorebug from one PNG and JSON design, with live scores, clocks, downs, "
     "timeout ticks and team colours. Preview it over a screenshot from Scorebar Studio. "
@@ -97,10 +98,28 @@ OPTIONS += (
     ("coin_defer", tt.coin_defer_patch.BUILD_CAPTION, tt.coin_defer_patch.HELP_TEXT),
     ("decided_clock", tt.decided_clock_patch.BUILD_CAPTION, tt.decided_clock_patch.HELP_TEXT),
 )
+# b76-h1: Quick Game Team Select continues into the historic teams (an allocator owner, like the rows above).
+OPTIONS += (
+    ("historic_teams_quick_game", tt.historic_quick_game_patch.UI_LABEL, tt.historic_quick_game_patch.HELP_TEXT),
+)
+# b76-vb3 E1: the kickoff return blocking rule (carried by the 25th Anniversary gate; Noah's feel test).
+OPTIONS += (
+    ("kickoff_return_blocking", tt.anniversary_kickoff_patch.blocking.UI_LABEL, tt.anniversary_kickoff_patch.blocking.HELP_TEXT),
+)
+# b76-m1: 25 more ESPN 25th Anniversary moments (an allocator owner plus resources; needs a disc image).
+OPTIONS += (
+    ("espn25_more_moments", tt.more_moments_patch.UI_LABEL, tt.more_moments_patch.HELP_TEXT),
+)
+# b76-k1: 128 MB memory (K128) and the roster block in the extra heap (one allocator owner, two rows).
+OPTIONS += (
+    ("k128_memory", tt.k128_patch.UI_LABEL, tt.k128_patch.HELP_TEXT),
+    ("k128_roster_heap", tt.k128_patch.ROSTER_HEAP_LABEL, tt.k128_patch.ROSTER_HEAP_HELP),
+    ("k128_early", tt.k128_patch.EARLY_LABEL, tt.k128_patch.EARLY_HELP),
+)
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
 # Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
-CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember")}
+CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (

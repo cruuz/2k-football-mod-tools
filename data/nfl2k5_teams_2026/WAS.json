@@ -1,0 +1,652 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "WAS",
+ "name": "Washington Commanders",
+ "asset_code": "29",
+ "season": 2026,
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Dan Quinn",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 53 active. 3-4 labels (DC Daronte Jones, 2026)."
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Amik Robertson": 4,
+   "Andrew Wylie": 0,
+   "Antonio Williams": 3,
+   "Athan Kaliakmanis": 0,
+   "Ben Sinnott": 0,
+   "Brandon Coleman": 2,
+   "Charles Omenihu": 4,
+   "Chig Okonkwo": 4,
+   "Chris Paul": 3,
+   "Colson Yankoff": 0,
+   "Daron Payne": 3,
+   "Dorance Armstrong": 4,
+   "Drew Stevens": 0,
+   "Dyami Brown": 4,
+   "Fabian Moreau": 4,
+   "Frankie Luvu": 2,
+   "Isaac Yiadom": 5,
+   "Jacory Croskey-Merritt": 4,
+   "Javon Kinlaw": 4,
+   "Javontae Jean-Baptiste": 4,
+   "Jayden Daniels": 3,
+   "Jaylin Lane": 3,
+   "Jeremy Reaves": 4,
+   "John Bates": 0,
+   "Joshua Josephs": 4,
+   "K'Lavon Chaisson": 3,
+   "Kain Medrano": 1,
+   "Kaytron Allen": 4,
+   "Leo Chenal": 0,
+   "Lucas Patrick": 0,
+   "Luke McCaffrey": 0,
+   "Marcus Mariota": 1,
+   "Matt Gulbin": 0,
+   "Mike Sainristil": 4,
+   "Nick Allegretti": 0,
+   "Nick Cross": 3,
+   "Odafe Oweh": 4,
+   "Percy Butler": 3,
+   "Quan Martin": 4,
+   "Rachaad White": 3,
+   "Rasul Douglas": 3,
+   "Sam Cosmi": 0,
+   "Shy Tuttle": 3,
+   "Sonny Styles": 3,
+   "Stefon Diggs": 3,
+   "Tanoa Togiai": 1,
+   "Terry McLaurin": 3,
+   "Tim Settle": 4,
+   "Tress Way": 0,
+   "Treylon Burks": 4,
+   "Tyler Ott": 0,
+   "Tyler Owens": 3,
+   "Joshua Conerly": 4
+  },
+  "dreads": [
+   "Chig Okonkwo",
+   "Dyami Brown",
+   "Frankie Luvu",
+   "Jacory Croskey-Merritt",
+   "Javontae Jean-Baptiste",
+   "Jaylin Lane",
+   "Joshua Josephs",
+   "Nick Cross",
+   "Rasul Douglas",
+   "Stefon Diggs",
+   "Tim Settle",
+   "Tyler Owens"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), by eye from the official 2026 headshots on a labelled sheet (INFERRED, +/-1 possible). Dreads and twists by eye."
+ },
+ "status": "Phase B (job d5, 2026-09-23). Sort: REDESIGNED (the Commanders' 2026 closet, Super Bowl era inspired): new W helmet decal, three-stripe gloss burgundy helmet with a gold facemask, block numbers, gold and white (home) or burgundy and gold (road) sleeve stripes, a burgundy collar on the white jersey, white pants in both 2026 games so far. The kit geometry follows the retail 2004 sets, which share the Super Bowl era layout. Albedo INFERRED from the official flat diagrams and 2026 game photos.",
+ "sources": {
+  "uniform_reveal": "https://www.commanders.com/news/commanders-2026-uniform-inspired-franchise-history",
+  "jersey_schedule": "https://www.commanders.com/news/commanders-announce-2026-jersey-schedule",
+  "photos_week1": "https://www.commanders.com/photos/photos-commanders-vs-eagles-week-1-2026 (white jersey, white pants)",
+  "week2": "burgundy jerseys with white pants at Dallas (week 2 uniform reports; commanders.com week 2 gallery)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (WAS: Burgundy #5A1414 PMS 483 C, Gold #FFB612 PMS 1235 C)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/WAS.svg",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Washington_Commanders_wordmark.svg (public domain)",
+  "head_coach": "https://www.commanders.com/team/coaches-roster/dan-quinn (Dan Quinn, head coach, third season)",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "defense": "3-4 personnel labels in nflverse 2026 (DC Daronte Jones, 2026)"
+ },
+ "palette": {
+  "burgundy": "#5A1414",
+  "gold": "#FFB612",
+  "white": "#FFFFFF",
+  "black": "#000000"
+ },
+ "albedo": {
+  "burgundy": "#5E1519",
+  "helmet_burgundy": "#5B0F12",
+  "gold": "#FFB612",
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "gray": "#A5ACAF",
+  "ez_burgundy": "#5E1519",
+  "label_blue": "#DDE3F0",
+  "label_navy": "#1B2A5A",
+  "board_burgundy": "#6A1A20"
+ },
+ "marks": {
+  "w": "w_full.png",
+  "mid_w_outline": "mid_w_outline.png",
+  "mid_w_fill": "mid_w_fill.png",
+  "ez_cmd_fill": "ez_cmd_fill.png",
+  "ez_cmd_outline": "ez_cmd_outline.png",
+  "sleeve_29H0": "sleeve_29H0.png",
+  "sleeve_29A0": "sleeve_29A0.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "29H0",
+   "outer_index": 3859,
+   "note": "2026 Primary Burgundy (nine games; week 2 at Dallas with white pants): burgundy jersey, white block numbers with a gold outline, gold and white sleeve stripes, white pants with a gold and burgundy stripe, burgundy socks, gloss burgundy helmet with the white-gold-white stripe, the gold W and a gold facemask.",
+   "torso": {
+    "base_colour": "burgundy",
+    "neck_donor": "29H3",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "burgundy",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_29H0",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "gold",
+      10
+     ],
+     [
+      "burgundy",
+      9
+     ]
+    ],
+    "swoosh_colour": "burgundy"
+   },
+   "socks": {
+    "colour": "burgundy"
+   },
+   "digits": {
+    "glyph_donor": "29H0",
+    "fill": "white",
+    "outline": "gold",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "29H0",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "29H0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell": "helmet_burgundy",
+    "shell_from": "#5F070C",
+    "recolour": [
+     {
+      "from": "#F5A500",
+      "to": "gold",
+      "tolerance": 0.18
+     }
+    ],
+    "decal": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#77021E",
+      "to": "burgundy",
+      "region": "jersey",
+      "tolerance": 0.2
+     },
+     {
+      "from": "#6B070D",
+      "to": "helmet_burgundy",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3859,
+    "torso_donor": "29H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#6F0E2C",
+      "to": "burgundy",
+      "region": "torso",
+      "tolerance": 0.22
+     },
+     {
+      "from": "#6A0C29",
+      "to": "burgundy",
+      "region": "sleeve",
+      "tolerance": 0.22
+     },
+     {
+      "from": "#5B070B",
+      "to": "helmet_burgundy",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   }
+  },
+  "away": {
+   "selector": "29A0",
+   "outer_index": 4176,
+   "note": "2026 Primary White (six games; week 1 at Philadelphia with white pants): white jersey with a burgundy V collar, burgundy block numbers with a gold outline, burgundy and gold sleeve stripes, white pants with a gold and burgundy stripe, burgundy socks, the same helmet.",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "29A6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "burgundy"
+    },
+    "collar_trim": [
+     {
+      "colour": "burgundy",
+      "width": 8
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_29A0",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "gold",
+      10
+     ],
+     [
+      "burgundy",
+      9
+     ]
+    ],
+    "swoosh_colour": "burgundy"
+   },
+   "socks": {
+    "colour": "burgundy"
+   },
+   "digits": {
+    "glyph_donor": "29A0",
+    "fill": "burgundy",
+    "outline": "gold",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "29A0",
+    "fill": "burgundy"
+   },
+   "helmet_digits": {
+    "glyph_donor": "29A0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell": "helmet_burgundy",
+    "shell_from": "#5F070C",
+    "recolour": [
+     {
+      "from": "#F5A500",
+      "to": "gold",
+      "tolerance": 0.18
+     }
+    ],
+    "decal": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#2E0003",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.22
+     },
+     {
+      "from": "#6B070D",
+      "to": "helmet_burgundy",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 4176,
+    "torso_donor": "29A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#6F0E2C",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#5B070B",
+      "to": "helmet_burgundy",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "w",
+     "scale": 0.95
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "burgundy jersey body, NFL shield at the collar, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "burgundy with gold and white stripes",
+   "pants": "white with a gold and burgundy side stripe and a burgundy maker mark",
+   "helmet": "gloss burgundy shell, white-gold-white center stripe, gold W logo with burgundy detail, white and grey hardware",
+   "digit_jersey": "white numbers with a gold outline",
+   "digit_arm": "white numbers with a gold outline",
+   "digit_helmet": "plain black numbers",
+   "nameplate": "white letters",
+   "socks00": "solid burgundy",
+   "splayer": "far-away player atlas: white pants with gold stripe, burgundy torso, burgundy helmet with gold W, burgundy socks, skin and glove patches",
+   "team-select_unif": "menu render: burgundy jersey with white numbers, white pants, burgundy helmet with gold W, dark shading",
+   "team-select_helm": "menu render: burgundy helmet with gold W and gold facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, burgundy V collar band, NFL shield at the collar, burgundy maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with burgundy and gold stripes",
+   "pants": "white with a gold and burgundy side stripe and a burgundy maker mark",
+   "helmet": "gloss burgundy shell, white-gold-white center stripe, gold W logo with burgundy detail, white and grey hardware",
+   "digit_jersey": "burgundy numbers with a gold outline",
+   "digit_arm": "burgundy numbers with a gold outline",
+   "digit_helmet": "plain black numbers",
+   "nameplate": "burgundy letters",
+   "socks00": "solid burgundy",
+   "splayer": "far-away player atlas: white pants with gold stripe, white torso, burgundy helmet with gold W, burgundy socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with burgundy numbers, white pants, burgundy helmet with gold W, grey and dark shading",
+   "team-select_helm": "menu render: burgundy helmet with gold W and gold facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "burgundy painted end zone with gold COMMANDERS lettering outlined in white",
+   "center_logo": "the gold W logo with burgundy inner detail",
+   "banner": "stadium boards and fan banners in burgundy, gold and white with COMMANDERS text",
+   "wall01": "plain burgundy wall pads"
+  }
+ },
+ "venue": {
+  "prefix": "s29",
+  "notes": "Washington's home games in the game's Washington Field (the 2004 FedExField, kept; 2026 name Northwest Stadium). End zone: burgundy paint with the gold COMMANDERS lettering outlined in white (INFERRED: no 2026 end-zone photo found; check the week 3 home frames). Midfield: the W. Every REDSKINS cell on the boards becomes COMMANDERS; the 1999 division-champions strip becomes WASHINGTON COMMANDERS; the fascia letter atlas banner04 (WASHINGTON REDSKINS letter pieces assembled by the scene's UVs) is cleared to transparent, because the pieces cannot spell COMMANDERS without geometry work (open item). Both end zones share one texture in s29.",
+  "sources": [
+   "https://www.commanders.com/news/commanders-2026-uniform-inspired-franchise-history",
+   "https://commons.wikimedia.org/wiki/File:Washington_Commanders_wordmark.svg (public domain)",
+   "https://static.www.nfl.com/league/api/clubs/logos/WAS.svg"
+  ],
+  "endzone": {
+   "paint": "ez_burgundy",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "ez_cmd_outline",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_cmd_fill",
+     "colour": "gold",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "mid_w_outline",
+   "outline": "gold",
+   "fill_mark": "mid_w_fill",
+   "fill": "burgundy",
+   "width_frac": 0.92
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO\nCOMMANDERS",
+        "colour": "burgundy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "HAIL TO THE\nCOMMANDERS",
+        "colour": "burgundy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     }
+    ]
+   },
+   "banner01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       76,
+       256,
+       92
+      ],
+      "bg": "board_burgundy",
+      "items": [
+       {
+        "text": "WASHINGTON COMMANDERS",
+        "colour": "gold",
+        "center": [
+         128,
+         84
+        ],
+        "height": 11,
+        "max_width": 236
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       95,
+       92,
+       124
+      ],
+      "bg": "board_burgundy",
+      "items": [
+       {
+        "text": "COMMANDERS",
+        "colour": "white",
+        "center": [
+         46,
+         109
+        ],
+        "height": 13,
+        "max_width": 84
+       }
+      ]
+     },
+     {
+      "slot": [
+       60,
+       142,
+       192,
+       158
+      ],
+      "bg": "label_blue",
+      "items": [
+       {
+        "text": "HOME OF THE WASHINGTON COMMANDERS",
+        "colour": "label_navy",
+        "center": [
+         126,
+         150
+        ],
+        "height": 9,
+        "max_width": 126
+       }
+      ]
+     }
+    ]
+   },
+   "banner03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       97,
+       128,
+       128
+      ],
+      "bg": "board_burgundy",
+      "items": [
+       {
+        "text": "COMMANDERS",
+        "colour": "white",
+        "center": [
+         64,
+         112
+        ],
+        "height": 16,
+        "max_width": 120
+       }
+      ]
+     }
+    ]
+   },
+   "ad_bb02": {
+    "banners": [
+     {
+      "slot": [
+       128,
+       97,
+       256,
+       128
+      ],
+      "bg": "board_burgundy",
+      "items": [
+       {
+        "text": "COMMANDERS",
+        "colour": "gold",
+        "center": [
+         192,
+         112
+        ],
+        "height": 16,
+        "max_width": 120
+       }
+      ]
+     }
+    ]
+   },
+   "banner04": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       256
+      ],
+      "bg": "white",
+      "items": []
+     }
+    ]
+   },
+   "wall01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "burgundy",
+      "items": []
+     }
+    ]
+   }
+  }
+ }
+}

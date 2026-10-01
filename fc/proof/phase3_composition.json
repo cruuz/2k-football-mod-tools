@@ -1,0 +1,42 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "recipe_source_sha256": "eb3f3b68de97e276f5498493b257467879412020f439952f3a366393492d3970",
+  "recipe_override_delta": {
+    "franchise_economy": [
+      false,
+      true
+    ]
+  },
+  "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "combined_xbe_sha256": "05341edb6293eb2964e36c2d7d979ab51a5b0a998ee1f79aee42bef53b166944",
+  "apply_orders_identical": true,
+  "entry": "0x322bb0",
+  "entry_bytes": "e95bea0a0090",
+  "continuation": "0x3d161f",
+  "continuation_bytes": "e9e1cff4ff909090909090",
+  "economy_gate": "0x31e605",
+  "selective_reverts_exact": true,
+  "both_revert_orders_exact": true,
+  "roster_replay": {
+    "edits": 5939,
+    "players_changed": 5939,
+    "fields_written": 119306,
+    "moves": 0,
+    "players_moved": 0,
+    "coach_names_written": 32,
+    "team_uniform_years_written": 3,
+    "log": []
+  },
+  "roster_body_sha256": "485db82eb9360e37ae0fca86edd7614befba0f139e8687fe74d4d23784c1a120",
+  "inputs": {
+    "/media/noah/Storage/.b76-research/fc/astra-build/phase3/candidate_B_economy.json": "459f288625cc8c3a640496fe3478d98658233b032912a0f5c2f68569bf6f058b",
+    "/media/noah/Storage/.b76-research/fc/astra-build/phase3/league_project.json": "4874ffcacb27b783fe799685ee1f7b6ac19d1698497cd91c9f885d123ae1936b",
+    "/media/noah/Storage/.b76-research/fc/astra-build/phase3/league_roster_edits.json": "377338469da2d94ec41c9a83ab1f9ae46f2d3bdae8660fa7dafcb6a4b0f187d8"
+  },
+  "rookie_table": {
+    "address": "0x521598",
+    "bytes": 224,
+    "original_contract_actions_unchanged": true,
+    "reason": "first full recipe exposed seven live action flags aliased by the retired pick-index base; preserve them"
+  }
+}

@@ -110,7 +110,7 @@ class InstallationTests(unittest.TestCase):
         cls.patched, cls.receipt = r.apply(cls.retail)
 
     def test_named_budget_and_static_v3_both_orders(self):
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (4096, 128))
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (5376, 128))  # beta 76 s15: records, tabs and the possession arrow; sb: the broadcast states
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
         left = r.apply(r.scene.apply_xbe(self.retail)[0])[0]
@@ -165,6 +165,8 @@ class NativeBindingTests(unittest.TestCase):
         cls.stream = PACK.open('rb')
         cls.addClassCleanup(cls.stream.close)
         cls.source = art.PackView.from_fd(cls.stream.fileno(), 0, PACK.stat().st_size)
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACK.parents[1])
         cls.fonts = read_fonts(PACK)
         cls.probes = {p: art.compile_runtime_collection(cls.source, probe=p) for p in ("transport","hooks","resources","neutral","pair","full","mnf")}
         cls.evidence = dict(schema='scorebug-freeze-native-v2', runtime_witnessed=False,

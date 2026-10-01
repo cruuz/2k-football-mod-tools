@@ -1,0 +1,787 @@
+{
+  "fields": [
+    {
+      "field": "age_2026_09_29",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "derived_DOB"
+    },
+    {
+      "field": "base_salary_2026",
+      "before_mismatch": 1434,
+      "before_checked": 1439,
+      "after_mismatch": 1434,
+      "after_checked": 1439,
+      "category": "model_semantics"
+    },
+    {
+      "field": "birth_date",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "data"
+    },
+    {
+      "field": "bonus_proration_2026",
+      "before_mismatch": 1187,
+      "before_checked": 1324,
+      "after_mismatch": 1188,
+      "after_checked": 1324,
+      "category": "model_semantics"
+    },
+    {
+      "field": "cap_2026",
+      "before_mismatch": 1369,
+      "before_checked": 1439,
+      "after_mismatch": 1369,
+      "after_checked": 1439,
+      "category": "fit_or_source_change"
+    },
+    {
+      "field": "cap_2026_over_20000",
+      "before_mismatch": 24,
+      "before_checked": 1439,
+      "after_mismatch": 0,
+      "after_checked": 1439,
+      "category": "material_fit_or_source_change"
+    },
+    {
+      "field": "cap_all_years",
+      "before_mismatch": 2786,
+      "before_checked": 2869,
+      "after_mismatch": 2787,
+      "after_checked": 2870,
+      "category": "fit_or_source_change"
+    },
+    {
+      "field": "career_defensive_interceptions",
+      "before_mismatch": 432,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_defensive_sacks",
+      "before_mismatch": 562,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_extra_points_attempted",
+      "before_mismatch": 32,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_extra_points_made",
+      "before_mismatch": 32,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_field_goals_made_1_29",
+      "before_mismatch": 30,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_field_goals_made_30_39",
+      "before_mismatch": 29,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_field_goals_made_40_49",
+      "before_mismatch": 29,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_field_goals_made_50_plus",
+      "before_mismatch": 29,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_forced_fumbles",
+      "before_mismatch": 572,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_games",
+      "before_mismatch": 1377,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_interception_return_yards",
+      "before_mismatch": 415,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_passing_attempts",
+      "before_mismatch": 173,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_passing_completions",
+      "before_mismatch": 137,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_passing_interceptions",
+      "before_mismatch": 93,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_passing_touchdowns",
+      "before_mismatch": 102,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_passing_yards",
+      "before_mismatch": 139,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_punt_touchbacks",
+      "before_mismatch": 29,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_punting_yards",
+      "before_mismatch": 43,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_punts",
+      "before_mismatch": 42,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_punts_inside_20",
+      "before_mismatch": 37,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_receiving_touchdowns",
+      "before_mismatch": 339,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_receiving_yards",
+      "before_mismatch": 433,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_receptions",
+      "before_mismatch": 425,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_rushing_attempts",
+      "before_mismatch": 414,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_rushing_touchdowns",
+      "before_mismatch": 233,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "career_rushing_yards",
+      "before_mismatch": 401,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "inherited_history"
+    },
+    {
+      "field": "college_literal",
+      "before_mismatch": 515,
+      "before_checked": 1692,
+      "after_mismatch": 435,
+      "after_checked": 1692,
+      "category": "source_label_or_data"
+    },
+    {
+      "field": "college_school",
+      "before_mismatch": 160,
+      "before_checked": 1692,
+      "after_mismatch": 0,
+      "after_checked": 1692,
+      "category": "school_review"
+    },
+    {
+      "field": "contract_bonus_frozen_integrity",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "frozen_integrity"
+    },
+    {
+      "field": "contract_headline_value",
+      "before_mismatch": 1657,
+      "before_checked": 1695,
+      "after_mismatch": 1657,
+      "after_checked": 1695,
+      "category": "model_semantics"
+    },
+    {
+      "field": "contract_headline_years",
+      "before_mismatch": 864,
+      "before_checked": 1695,
+      "after_mismatch": 863,
+      "after_checked": 1695,
+      "category": "model_semantics"
+    },
+    {
+      "field": "contract_length_frozen_integrity",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "frozen_integrity"
+    },
+    {
+      "field": "contract_playable_years",
+      "before_mismatch": 1,
+      "before_checked": 1439,
+      "after_mismatch": 0,
+      "after_checked": 1439,
+      "category": "stale_data_or_model"
+    },
+    {
+      "field": "contract_remaining_frozen_integrity",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "frozen_integrity"
+    },
+    {
+      "field": "contract_schedule_changed",
+      "before_mismatch": 24,
+      "before_checked": 1439,
+      "after_mismatch": 0,
+      "after_checked": 1439,
+      "category": "source_change"
+    },
+    {
+      "field": "contract_type_frozen_integrity",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "frozen_integrity"
+    },
+    {
+      "field": "contract_value_frozen_integrity",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "frozen_integrity"
+    },
+    {
+      "field": "current_team",
+      "before_mismatch": 1,
+      "before_checked": 1696,
+      "after_mismatch": 1,
+      "after_checked": 1696,
+      "category": "data"
+    },
+    {
+      "field": "height",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "data"
+    },
+    {
+      "field": "last_defensive_interceptions",
+      "before_mismatch": 230,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_defensive_sacks",
+      "before_mismatch": 382,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_extra_points_attempted",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_extra_points_made",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_field_goals_made_1_29",
+      "before_mismatch": 27,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_field_goals_made_30_39",
+      "before_mismatch": 27,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_field_goals_made_40_49",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_field_goals_made_50_plus",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_forced_fumbles",
+      "before_mismatch": 244,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_games",
+      "before_mismatch": 1287,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_interception_return_yards",
+      "before_mismatch": 178,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_passing_attempts",
+      "before_mismatch": 87,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_passing_completions",
+      "before_mismatch": 74,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_passing_interceptions",
+      "before_mismatch": 58,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_passing_touchdowns",
+      "before_mismatch": 62,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_passing_yards",
+      "before_mismatch": 75,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_punt_touchbacks",
+      "before_mismatch": 27,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_punting_yards",
+      "before_mismatch": 31,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_punts",
+      "before_mismatch": 31,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_punts_inside_20",
+      "before_mismatch": 29,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_receiving_touchdowns",
+      "before_mismatch": 233,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_receiving_yards",
+      "before_mismatch": 342,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_receptions",
+      "before_mismatch": 342,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_rushing_attempts",
+      "before_mismatch": 277,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_rushing_touchdowns",
+      "before_mismatch": 122,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "last_rushing_yards",
+      "before_mismatch": 271,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "inherited_history"
+    },
+    {
+      "field": "weight",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "data"
+    },
+    {
+      "field": "years_pro",
+      "before_mismatch": 0,
+      "before_checked": 1696,
+      "after_mismatch": 0,
+      "after_checked": 1696,
+      "category": "data"
+    },
+    {
+      "field": "career_defensive_tackles",
+      "before_mismatch": 1230,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "supplemental_combined_tackle_policy"
+    },
+    {
+      "field": "career_field_goals_attempted_1_29",
+      "before_mismatch": 30,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "career_field_goals_attempted_30_39",
+      "before_mismatch": 30,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "career_field_goals_attempted_40_49",
+      "before_mismatch": 30,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "career_field_goals_attempted_50_plus",
+      "before_mismatch": 31,
+      "before_checked": 1383,
+      "after_mismatch": 0,
+      "after_checked": 1383,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "last_defensive_tackles",
+      "before_mismatch": 988,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "supplemental_combined_tackle_policy"
+    },
+    {
+      "field": "last_field_goals_attempted_1_29",
+      "before_mismatch": 27,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "last_field_goals_attempted_30_39",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "last_field_goals_attempted_40_49",
+      "before_mismatch": 27,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "supplemental_distance_attempts"
+    },
+    {
+      "field": "last_field_goals_attempted_50_plus",
+      "before_mismatch": 28,
+      "before_checked": 1326,
+      "after_mismatch": 0,
+      "after_checked": 1326,
+      "category": "supplemental_distance_attempts"
+    }
+  ],
+  "before_meta": {
+    "retail_body_sha256": "b1164eeed262988dc97d840ba59f6274c1f5d4505249474e4cafd4e322d9f7ae",
+    "files": {
+      "/home/noah/Desktop/2K5-8 Editors/ultimate/ULTIMATE_BUILD_RECIPE_2026-09-29_candidate_F.json": "55c8449d5d03084c6789dc2203e2c626de8f4affdca7cbc0a93f7e52b1e11f5c",
+      "/media/noah/Storage/.b76-research/main/freeze/candF/league_roster_edits_candE_dc.json": "35d855af3921c42f93e4c525a2868a2294fbd6e5cc717eaf9f6b141a43ea8e2c",
+      "/media/noah/Storage/.b76-research/main/freeze/candF/league_project_k2_v55_49ers_frozen.json": "a3c0c95f0198f640a8aea131b53e15cc1500326ab093e684f6336da29be7705a"
+    },
+    "active_players": 1696,
+    "teams": 32,
+    "roster_groups": {
+      "team": 1701,
+      "free_agent": 236,
+      "pool": 230,
+      "draft_class": 380
+    },
+    "college_failures": [],
+    "roster_identities_matched": 1696,
+    "free_agents": 236,
+    "free_agents_names_unchanged": 236,
+    "stats": {
+      "players_with_inherited_stream": 1155,
+      "players_with_inherited_current_games_slot": 538,
+      "players_with_inherited_future_games_slots": 619,
+      "players_with_any_stats_source": 1383,
+      "players_with_2025_stats_source": 1326,
+      "last_nonzero_source_mismatches": 4198,
+      "career_nonzero_source_mismatches": 5615,
+      "missing_2025_display_rows": 883,
+      "OL_cards_no_table": 330
+    },
+    "team_history": {
+      "missing_row": 2920,
+      "wrong_TEAM": 1530,
+      "roster_only_no_stat_row": 175,
+      "matches_one_source_team": 611,
+      "no_source_season": 11,
+      "missing_TEAM": 20
+    },
+    "team_history_multiteam_rows": 2,
+    "contracts": {
+      "observed": 1439,
+      "unverifiable": 257
+    },
+    "original_contract_types": {
+      "observed": 1437,
+      "modeled": 259
+    },
+    "history_match_log": {
+      "exact": 1131,
+      "fallback_dob": 0,
+      "fallback_position": 0,
+      "none": 0,
+      "ambiguous": 0,
+      "seasons_written": 5042,
+      "would_not_show": 0,
+      "never_displayed": 26,
+      "already_present": 0,
+      "outside_career": 0,
+      "duplicate_rows": 0,
+      "seasons_inferred": 704,
+      "players_inferred": 185,
+      "seasons_no_team": 92,
+      "players_no_team": 41,
+      "displayable_seasons": 5838
+    },
+    "max_rss_kib": 294984
+  },
+  "after_meta": {
+    "decoded_body_sha256": "699ec8974a2649ba98d9a9257fbccb87e36f99ed8cae0ce22138992c06c84037",
+    "files": {
+      "/home/noah/Desktop/2K5-8 Editors/ultimate/ULTIMATE_BUILD_RECIPE_2026-09-29_candidate_F.json": "55c8449d5d03084c6789dc2203e2c626de8f4affdca7cbc0a93f7e52b1e11f5c",
+      "/media/noah/Storage/.b76-research/main/freeze/candG/league_roster_edits_candG_fr.json": "983eeeb076b7b6b30587def0fd6c6f31c3daea4d7c4efbffd5828646c0d9dfde",
+      "/media/noah/Storage/.b76-research/main/freeze/candF/league_project_k2_v55_49ers_frozen.json": "a3c0c95f0198f640a8aea131b53e15cc1500326ab093e684f6336da29be7705a"
+    },
+    "active_players": 1696,
+    "teams": 32,
+    "roster_groups": {
+      "team": 1701,
+      "free_agent": 236,
+      "pool": 230,
+      "draft_class": 380
+    },
+    "college_failures": [],
+    "roster_identities_matched": 1696,
+    "free_agents": 236,
+    "free_agents_names_unchanged": 0,
+    "stats": {
+      "players_with_decoded_stream": 1383,
+      "players_with_any_stats_source": 1383,
+      "players_with_2025_stats_source": 1326,
+      "OL_cards_no_table": 330
+    },
+    "team_history": {
+      "matches_one_source_team": 5002,
+      "roster_only_no_stat_row": 254
+    },
+    "team_history_multiteam_rows": 2,
+    "contracts": {
+      "observed": 1439,
+      "unverifiable": 257
+    },
+    "original_contract_types": {
+      "observed": 1439,
+      "modeled": 257
+    },
+    "history_match_log": {
+      "actual_G_streams": true,
+      "retail_fallback": false
+    },
+    "max_rss_kib": 341652
+  }
+}

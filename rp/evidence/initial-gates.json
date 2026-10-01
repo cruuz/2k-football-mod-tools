@@ -1,0 +1,102 @@
+[
+  {
+    "name": "stage-2k5",
+    "exit_code": 0,
+    "seconds": 0.56
+  },
+  {
+    "name": "release-2k5",
+    "exit_code": 0,
+    "seconds": 9.73
+  },
+  {
+    "name": "runtime-2k5",
+    "exit_code": 1,
+    "seconds": 7.38
+  },
+  {
+    "name": "stage-apf2k8",
+    "exit_code": 0,
+    "seconds": 0.11
+  },
+  {
+    "name": "release-apf2k8",
+    "exit_code": 0,
+    "seconds": 0.41
+  },
+  {
+    "name": "runtime-apf2k8",
+    "exit_code": 0,
+    "seconds": 11.73
+  },
+  {
+    "name": "test_build_panel_qt",
+    "exit_code": 0,
+    "seconds": 5.22
+  },
+  {
+    "name": "test_ux_build_plan_coverage_qt",
+    "exit_code": 0,
+    "seconds": 3.27
+  },
+  {
+    "name": "test_b76_ed2_build_recursion",
+    "exit_code": 1,
+    "seconds": 0.16
+  },
+  {
+    "name": "test_b76_release_build_controls",
+    "exit_code": 0,
+    "seconds": 2.42
+  },
+  {
+    "name": "test_b76_release_texts",
+    "exit_code": 0,
+    "seconds": 0.97
+  },
+  {
+    "name": "test_stage_release",
+    "exit_code": 0,
+    "seconds": 0.16
+  },
+  {
+    "name": "test_phase1_packaging",
+    "exit_code": 1,
+    "seconds": 0.16
+  },
+  {
+    "name": "test_runtime_dependencies",
+    "exit_code": 0,
+    "seconds": 0.11
+  },
+  {
+    "name": "test_update_check",
+    "exit_code": 0,
+    "seconds": 0.21
+  },
+  {
+    "name": "test_self_update",
+    "exit_code": 0,
+    "seconds": 3.32
+  },
+  {
+    "name": "test_beta45_honesty_freeze",
+    "exit_code": 0,
+    "seconds": 4.32
+  },
+  {
+    "name": "test_apf_public_docs_registry_current",
+    "exit_code": 0,
+    "seconds": 0.16
+  },
+  {
+    "name": "build-data-allowlist",
+    "exit_code": 0,
+    "seconds": 8.23
+  },
+  {
+    "name": "registry-structure",
+    "exit_code": 0,
+    "seconds": 0.06
+  }
+]

@@ -1,0 +1,320 @@
+{
+ "schema": "nfl2k5_usbank_model_art/v1",
+ "art": {
+  "usb_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "204bf1aeef0b09d7d596dc36b54c9448331843b88baa183f6b7c0c9e698fcfeb"
+  },
+  "usb_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "6fd38a978c3c9c389f1cecaae15176f7cc279efe4177b96c80842603be5a603e"
+  },
+  "usb_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "5221d4e8c4a01257061f978af65ad8a2fbda2b8800f84f8c8320ae62157bd0d1"
+  },
+  "usb_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "usb_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "d29a4a568e4e8562da1d55c154cf3c48563a0e389ff3d1ca08cb65c4bbd9ff4d"
+  },
+  "LIGHT_usb_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "90ecab5bfb8a16f8f9a19c67f34a3251f0c3314bc13af2342c2547cf6f90e863"
+  },
+  "LIGHT_usb_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_usb_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "usb_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "usb_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "usb_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98"
+  },
+  "usb_etfe_under": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "a4c60fb905285a5cc9f4e92e34dfd18dc59d059bf956cbe5c80251fb88ca67f3"
+  },
+  "usb_roof_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "45ab2abaab79f5d376f256a80d38b9da1c2bf95a111acea9546f4347623824df"
+  },
+  "usb_truss": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d969f8fada4bb50a1bdc2598fa0d9bb6340662be63d49a86a957eafe076d27db"
+  },
+  "usb_etfe_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "6946d882cdba2a9201d714ad289238403fbb8adebcfc628027fbd6d893702b8b"
+  },
+  "usb_zinc_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "478f4e5d8c813d04b9e2165ac6bc057682faedfd0254a21607c2b1fb5331a463"
+  },
+  "LIGHT_usb_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b"
+  },
+  "LIGHT_usb_glasswall": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "5a624aa0412b9d9df4cda6cf9ae260cb8f4e7c412987866c2442e8a818d7118c"
+  },
+  "LIGHT_usb_glasswall_n": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "4361f2bece434a8e0d8a572062868e7c12073966ab2eaf2daa929b757ac808d8"
+  },
+  "usb_zinc": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "3d20ee7d47d1e2a30441f5c3d47e0212e4f91d60f9f76d84be8e17d3e077b858"
+  },
+  "LIGHT_usb_facade_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9"
+  },
+  "LIGHT_usb_prow_display": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "1ea9b0366b1324b7f82d7cb9eaef07a01e38100498e6977a2dc11b7e2e05ea31"
+  },
+  "LIGHT_usb_board_wing": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "32f8e59f3e1a5d3bf48d65d6795391740f8bf9ac49c61c6953f0be42f31e3f95"
+  },
+  "usb_header": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "a327cbaf02914ac8758660a3225fea1a99a444c32def7516b105cba92c117153"
+  },
+  "usb_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "7c2f0a7a3a1ac05481d2d3866aae9d1cbe4f4d71c44833ed0da2d255b1a2ad19"
+  },
+  "usb_prow_letters": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "acd8d44e0a289cae559d138236daddc6fbd9d4aa5899d994cd1dffa8ae91ced5"
+  },
+  "usb_letters_back": {
+   "size": [
+    64,
+    16
+   ],
+   "sha256": "5ee6e15a4d08027dcc5b08247ec0a6c3891377b34a8d664cc96dbae3a463ede5"
+  },
+  "LIGHT_usb_signs": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "96199464ecb41c51eacc9e2dc5a34865570cb65551348ee9d148726536c43d40"
+  },
+  "LIGHT_usb_blue_sign": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "576bacd3e6f0a9de6d946e9a89eb4d2956581bcb9d178fb6ada4606cd6b48bd5"
+  },
+  "LIGHT_usb_panels": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "afc03e438bc2ac412d1c19bd8dde48dbb0523a424130c31d7a48fa3ca9c702ab"
+  },
+  "LIGHT_usb_clerestory": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "a89343723644fe24310ce0d8d7949356f46277c720b42b0e83c85f57f7e53bdb"
+  },
+  "LIGHT_usb_clerestory_n": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "9876ed2f21125bd2c1bbeec52ecb5fea417d45ead90db58bd549c574b138fdf4"
+  },
+  "usb_flag": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "215b09271134023ee88376f931d79d6a9a14ee1c2d1136b03f52a03434b67a3d"
+  },
+  "usb_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "usb_lawn": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7"
+  },
+  "usb_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "usb_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "usb_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "LIGHT_usb_towers": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "8ba0678e840fa2651072ee596da7d8e8194f88ee34003fd364023a7e9c984426"
+  },
+  "LIGHT_usb_towers_n": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "90d201a907ea5379ba71856fdd0d492bd75b1059cb768db40a5a61f45acb42e6"
+  },
+  "usb_sky_d": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "d59ca8ca7fe248af218ffdcfa26da871402d35070ecf1a86ef9c05778ee3fca8"
+  },
+  "usb_sky_a": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "75ec96d1d8788f409ccd56549758cd88642a82b0e48a31994b06032ada9df459"
+  },
+  "usb_sky_n": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "4d68e724893d9e8258030ae5e5199b1c211a4ac82b89d153726928e7a9a01fdc"
+  },
+  "field/usb_turf": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "5ee6e377bdc57ba36eaed2a6a795d665873c788555e1b10ac171d0a0b35619c1"
+  },
+  "field/usb_turf_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "88d4020c9bb9c46587aa9250481200e4591d935221dd7875d3a58fb72140cb5c"
+  }
+ }
+}

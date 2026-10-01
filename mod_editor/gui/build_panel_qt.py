@@ -40,25 +40,19 @@ import tempfile
 from dataclasses import replace, asdict
 
 from mod_editor.gui import beta62_options as r62_ui
-from mod_editor.core import mod_build
+from mod_editor.core import mod_build, platform_compat
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
 
 
 def _resolved_build_file(path, what: str) -> Path:
-    """``path`` resolved, or a sentence naming the file that is not there.
-
-    ``Path.resolve(strict=True)`` answers a missing file with the platform's
-    own words. On Windows those are "[WinError 2] The system cannot find the
-    file specified", which a beta 72.1 tester met after renaming the disc this
-    page had just built for him and pressing Build again: no sentence, no next
-    step, and a path he had never chosen in that build.
-    """
-
+    """Verify the selected file without requiring Windows handle resolution."""
     try:
-        return Path(path).resolve(strict=True)
-    except OSError as exc:
+        selected = platform_compat.io_path(platform_compat.absolute_path(path))
+        selected.stat()
+        return selected
+    except FileNotFoundError as exc:
         raise ValueError(f"{what} is no longer on this computer: {path}. "
                          "It was renamed, moved or deleted after it was chosen.") from exc
 
@@ -81,6 +75,153 @@ PRESET_CAPTIONS = {
                                "Includes changes not yet tested in-game."),
 }
 PRESET_NOTE = "Review the selected changes below. Unavailable or already-installed changes are listed here."
+
+# Lab scope from BETA75_WAVE_2026-09-21.md and the Beta 76 release draft.
+# Earlier lab observations do not certify later revisions or Xbox play.
+LAB_SCOPES = {'modern_metlife_model': 'The MetLife model was seen in a headless xemu lab: Giants day and Jets night, with '
+                         'live boards and the exterior. Later model, sponsor, board and environment '
+                         'revisions remain offline only; no Xbox witness.',
+ 'modern_sofi': 'The SoFi model was seen in a headless xemu lab: Rams day and Chargers night with forced '
+                'rain and a dry field. Later model, sponsor, board and environment revisions remain offline '
+                'only; no Xbox witness.',
+ 'modern_highmark': 'The Highmark model was seen in a headless xemu lab: Bills day, night and snow. Later '
+                    'model, sponsor, board and environment revisions remain offline only; no Xbox witness.',
+ 'modern_att': 'The AT&T model was seen in a headless xemu lab: Cowboys day, night and flyover; an early '
+               'centre board showed white and was sent back for repair. Later model, sponsor, board and '
+               'environment revisions remain offline only; no Xbox witness.',
+ 'modern_levis': "The Levi's model was seen in a headless xemu lab: 49ers day, night and flyover. Later "
+                 'model, sponsor, board and environment revisions remain offline only; no Xbox witness.',
+ 'modern_allegiant': 'The Allegiant model was seen in a headless xemu lab: Raiders day, night and flyover. '
+                     'Later model, sponsor, board and environment revisions remain offline only; no Xbox '
+                     'witness.',
+ 'modern_mercedes_benz': 'The Mercedes-Benz model was seen in a headless xemu lab: Falcons day and night; '
+                         'the early Halo text was inverted and was sent back for repair. Later model, '
+                         'sponsor, board and environment revisions remain offline only; no Xbox witness.',
+ 'modern_usbank': 'The U.S. Bank model was seen in a headless xemu lab: Vikings day, night and flyover. '
+                  'Later model, sponsor, board and environment revisions remain offline only; no Xbox '
+                  'witness.',
+ 'modern_lucas_oil': 'The Lucas Oil model was seen in a headless xemu lab: Colts day and flyover; the night '
+                     'route missed Team Select. Later model, sponsor, board and environment revisions remain '
+                     'offline only; no Xbox witness.',
+ 'modern_state_farm': 'The State Farm model was seen in a headless xemu lab: Cardinals day, night, flyover '
+                      'and forced rain. Later model, sponsor, board and environment revisions remain offline '
+                      'only; no Xbox witness.',
+ 'modern_hard_rock': 'The Hard Rock model was seen in a headless xemu lab: the canopy, spires, exterior and '
+                     'live board on candidate E. Later model, sponsor, board and environment revisions '
+                     'remain offline only; no Xbox witness.',
+ 'modern_gillette': 'The Gillette model was seen in a headless xemu lab: the lighthouse, north end and live '
+                    'board on candidate E. Later model, sponsor, board and environment revisions remain '
+                    'offline only; no Xbox witness.',
+ 'modern_lambeau': 'The Lambeau model was seen in a headless xemu lab: the brick bowl, south end and live '
+                   'board on candidate E. Later model, sponsor, board and environment revisions remain '
+                   'offline only; no Xbox witness.',
+ 'modern_everbank': 'The EverBank model was seen in a headless xemu lab: the 2026 construction bowl and live '
+                    'boards on candidate E. Later model, sponsor, board and environment revisions remain '
+                    'offline only; no Xbox witness.',
+ 'modern_arrowhead': 'The Arrowhead model was seen in a headless xemu lab: the Chiefs home venue in the lab '
+                     'and candidate C smoke run. Later model, sponsor, board and environment revisions '
+                     'remain offline only; no Xbox witness.',
+ 'modern_metlife': 'The MetLife appearance was seen with the complete model in Giants and Jets lab games. '
+                   'The separate skin-only route and later art revisions remain unwitnessed.',
+ 'modern_board_kit': 'The first board kit was seen on candidate E at the Superdome, Huntington Bank Field '
+                     'and Empower Field, with live video. Later venues and board passes remain offline only; '
+                     'no Xbox witness.',
+ 'modern_practice_field': 'The practice facility was reached in Practice > Scrimmage on candidate E. Its '
+                          'final revisions and every other practice route remain unverified in game.',
+ 'modern_surfaces': 'The tf-v3 playing surfaces were seen in six lab games: Giants day/night, Chiefs, Rams '
+                    'at SoFi, Bills and Colts. Later close-mip corrections remain offline only; no claim for '
+                    'every venue and condition.',
+ 'modern_venues_2026': 'The first venue art was seen at Pittsburgh and Kansas City. The release draft also '
+                       'records the environment kit at nine venues. Later sponsor sweeps, venue read-back '
+                       'changes and environment pass 3 remain offline only.',
+ 'espn25_more_moments': 'All 50 Anniversary moments appeared in the lab list; selected added moments and '
+                        'previews loaded. Completion saving across all added rows and full games remain '
+                        'unwitnessed.',
+ 'historic_teams_quick_game': 'Historic teams loaded in mixed and historic-pair Quick Games on candidate E '
+                              'with era uniforms; a Jets 1968 player card showed George Sauer. Full coverage '
+                              'of every historic team remains unwitnessed.',
+ 'historic_rosters_2026': 'Historic rosters loaded with historic teams in candidate E Quick Games, including '
+                          'a George Sauer card for the 1968 Jets. Later historic-roster corrections remain '
+                          'offline only; this does not certify every player or team.',
+ 'espn25_rosters': 'The Wide Right repair and Anniversary loading were seen in the lab, as recorded in the '
+                   'release draft. Later historic-roster corrections remain offline only; full moment and '
+                   'save coverage is not claimed.',
+ 'practice_squad_screen': "The lab opened the Giants Practice Squad from the Coach's Desk and switched "
+                          'between Active and Reserves without the old popup. Complete transaction, save '
+                          'lifecycle and Xbox coverage remain unwitnessed.',
+ 'position_pools': 'Candidate D reproduced the tired-linebacker freeze on demand. The repaired code in E '
+                   'survived the same forced drain for 180 seconds and 102 lineups; an E CPU game also '
+                   'completed without a stall. Other causes of freezing and Xbox behaviour remain '
+                   'unverified.',
+ 'team_names_2026': 'The release draft records full 2026 names in Play Now and MyNFL and home games for '
+                    'renamed teams. Menu colours and every renamed screen remain unverified.',
+ 'player_star': 'The hollow white outline star with a thin dark under-edge was seen in the W2 lab at 1x. '
+                'Near tips were clean; the distant stroke became dashes. Replays showed no added stars; Xbox '
+                'appearance remains unwitnessed.',
+ 'kick_meter_2026': 'The complete 2026 kick meter, wind arrow and digits, swing, forced MAX and clearing on '
+                    'kick were seen in lab 3. That run did not show NO WIND; Xbox appearance remains '
+                    'unwitnessed.',
+ 'scorebug_runtime': 'The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour '
+                     'were seen in the lab. The later raised play-call position and Eagles/Bears fit remain '
+                     'offline only. TIMEOUT, HALFTIME and the red low play clock were not all captured in '
+                     'those runs; Xbox appearance remains unwitnessed.',
+ 'k128_memory': 'All three 128 MB options reached the coin toss and live play in the lab, including the '
+                'early graphics-memory form. The later 64 MB message screen remains offline only. Set xemu '
+                'System Memory to 128 MB; no Xbox witness.',
+ 'reserves_16': 'The release draft records 16 reserves and two extra created teams in game at 128 MB. Boot '
+                'and match entry were witnessed; every created-team screen, full franchise lifecycle and '
+                'Xbox loading remain unverified.',
+ 'k128_roster_heap': 'All three 128 MB options reached the coin toss and live play in the lab, including the '
+                     'early graphics-memory form. The later 64 MB message screen remains offline only. Set '
+                     'xemu System Memory to 128 MB; no Xbox witness.',
+ 'k128_early': 'All three 128 MB options reached the coin toss and live play in the lab, including the early '
+               'graphics-memory form. The later 64 MB message screen remains offline only. Set xemu System '
+               'Memory to 128 MB; no Xbox witness.',
+ 'created_teams_extra': 'The release draft records 16 reserves and two extra created teams in game at 128 '
+                        'MB. Boot and match entry were witnessed; every created-team screen, full franchise '
+                        'lifecycle and Xbox loading remain unverified.',
+ 'modern_everbank_construction': 'The 2026 construction setting was seen on candidate E: stripped concrete, '
+                                 'lattice towers and a crane. The off setting and later changes remain '
+                                 'unwitnessed.',
+ 'kickoff_return_blocking': 'Lab kicks kept the setup-zone players still before first touch. After '
+                            'landing-zone catches, ten return blockers took ten distinct coverage players. '
+                            'Full-game feel and Xbox play remain unverified.',
+ 'espn25_named_previews': 'All 50 named previews were seen in the lab; Ice Bowl, Wide Right and moment 50 '
+                          'showed Lambeau Field, Tampa Stadium and Allegiant Stadium on candidate E. No '
+                          'claim for every rendered venue name.',
+ 'historic_stock_books': 'The home-side stock book content was verified from memory for Ice Bowl, Wide '
+                         'Right, moment 50 and a mixed Quick Game on candidate E. Away-side content and '
+                         'complete two-side coverage remain unwitnessed.',
+ 'xemu_display_list_fix': 'The release draft records the display-list fix in game. This is a bounded lab '
+                          'observation; it does not rule out other freezes or certify Xbox behaviour.',
+ 'widescreen': 'The lab showed the main menu studio inside its 4:3 frame at 16:9 while gameplay stayed '
+               'wider. Other screens and Xbox behaviour remain unverified.'}
+
+ANNIVERSARY_OPTIONS = (
+    ("espn25_named_previews", "Anniversary: named previews and historic venues",
+     "Name the players and Super Bowls in all 50 previews and use historic venue names. "
+     "Requires 25 more moments. Previews and three venue names were seen in the lab."),
+    ("historic_stock_books", "Stock playbooks for historic teams",
+     "Keep a separate retail playbook bank for historic teams and Anniversary sides. "
+     "Cannot combine with Separate offensive and defensive playbooks. Home-side bindings "
+     "were verified in four lab cases; away-side content remains unwitnessed."),
+    ("espn25_era_rules", "Anniversary rules by season",
+     "Use season-specific rules in Anniversary moments. Requires 25 more moments, dynamic kickoff, "
+     "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
+)
+BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS)
+BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
+VENUE_BUILD_KEYS = (
+    "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
+    "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
+    "modern_hard_rock", "modern_gillette", "modern_lambeau", "modern_everbank",
+    "modern_board_kit", "modern_practice_field", "modern_practice_field_team_logo", "modern_surfaces",
+)
+ANNIVERSARY_DEPENDENCIES = {
+    "espn25_named_previews": ("espn25_more_moments",),
+    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
+    "historic_rosters_2026": ("historic_teams_quick_game",),
+}
 
 
 class _Signals(QObject):
@@ -147,6 +288,11 @@ class BuildPanel(QWidget):
 
         self._state: dict[str, object] | None = None
         self._available = mod_build.availability() if available is None else available
+        # Named previews use the same shipped moment resources and the venue
+        # owner already imported by throw tuning. Keep this UI binding here so
+        # release preparation does not change the candidate's build fingerprint.
+        self._available = dict(self._available)
+        self._available.setdefault("espn25_named_previews", self._available.get("espn25_more_moments", False))
         self._reading = False                 # the shell is inspecting the open disc for us
         self._target_generated = False        # the target was suggested, not chosen by the user
         # The page hands each finished copy to the next build. These remember
@@ -194,6 +340,19 @@ class BuildPanel(QWidget):
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
+        self.softdrink_project_check = QCheckBox("Include SOFTDRINK league artwork")
+        self.softdrink_project_check.toggled.connect(self._refresh)
+        self.softdrink_project_check.hide()
+        root.addWidget(self.softdrink_project_check)
+        self.softdrink_project_field = QLineEdit()
+        self.softdrink_project_field.textChanged.connect(self._refresh)
+        self.softdrink_project_field.setPlaceholderText("Extracted league project JSON; editable before rebuilding")
+        self.softdrink_project_field.hide()
+        root.addWidget(self.softdrink_project_field)
+        self.softdrink_art_button = QPushButton("Choose SOFTDRINK league artwork…")
+        self.softdrink_art_button.clicked.connect(self.choose_softdrink_art)
+        self.softdrink_art_button.hide()
+        root.addWidget(self.softdrink_art_button)
         self.project_includes_heading = QLabel("What this build includes")
         root.addWidget(self.project_includes_heading)
         self.project_includes_list = QPlainTextEdit()
@@ -470,7 +629,7 @@ class BuildPanel(QWidget):
         self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
         self.qb_spy_check = self._option(g, "qb_spy", "QB spy for zone, man and rush (experimental)",
             tt.qb_spy_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        for key, caption, help_text in r62_ui.OPTIONS:
+        for key, caption, help_text in BUILD_OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
         self.cpu_money_downs_level = QComboBox()
@@ -643,6 +802,12 @@ class BuildPanel(QWidget):
                                               "Growth over years 1-5, harder decline after years 9-12; more stars and busts.",
                                               details="The ten aging-curve tables grow by rating family and decline harder after year 9-12 (speed first); each "
                                                       "position's archetype mix is widened. Draft-day ratings are unchanged.")
+        self.franchise_economy_check = self._option(
+            f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
+            "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",
+            details="Changes the cap, generated contracts and trade values. Use the separately imported 2026 "
+                    "contract roster. Imported cap schedules are approximations, and original APY and guarantees "
+                    "are not reproduced exactly. Keep this off for existing saves.")
         self.team_column_check = self._option(f, "team_column", "Show TEAM in Player Card season stats",
                                               "Which team each season was played for.",
                                               details="Seasons that ended before this change was in the save, the folded \"pre\" row and the Total row read "
@@ -682,11 +847,14 @@ class BuildPanel(QWidget):
                                          needs_image=True,
                                          details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
                                                  "birth years.")
-        self.team_names_2026_check = self._option(f, "team_names_2026", "2026 team names (experimental)",
-            "Use modern team names in new disc rosters. Limited name space writes "
-            "L.A. Chargers (LA), L Vegas Raiders (LV), L.A. Rams (LAR), and "
-            "Washington Cmdrs (WAS); Arizona uses ARI. Existing saves keep their names. "
-            "EXPERIMENTAL / UNWITNESSED.", needs_image=True, details=self._team_names_details())
+        self.team_names_2026_check = self._option(f, "team_names_2026", "2026 team names and colours (experimental)",
+            "Use the 2026 team names on every screen of new disc rosters: Los Angeles Chargers (LAC), "
+            "Las Vegas Raiders (LV), Los Angeles Rams (LAR), Arizona Cardinals (ARI) and Washington "
+            "Commanders, and every team's 2026 colours in the menus. The game's team lookups (schedules, "
+            "Thanksgiving hosts, saved playbooks, 25th Anniversary moments) are patched to keep finding every "
+            "team; playbook files and team art keep their names. Existing saves keep their names. "
+            "EXPERIMENTAL / UNWITNESSED.",
+            needs_image=True, details=self._team_names_details())
         self.season_cap_check = self._option(
             f, "season_cap", "128-season franchise (experimental)",
             tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
@@ -703,6 +871,20 @@ class BuildPanel(QWidget):
                                                 "All sixteen elbow pads can be picked, not the first ten.",
                                                 badge="EXPERIMENTAL / UNWITNESSED",
                                                 details=tt.elbow_options_patch.HELP_TEXT)
+        self.the1wam_lineman_rating_check = self._option(
+            f, "the1wam_lineman_rating", tt.lineman_rating_patch.UI_LABEL,
+            "Offensive line overalls stop rising with weight.",
+            badge="EXPERIMENTAL / UNWITNESSED",
+            details=tt.lineman_rating_patch.HELP_TEXT)
+        self.xemu_display_list_fix_check = self._option(  # b76-z2
+            f, "xemu_display_list_fix", tt.display_list_patch.UI_LABEL,
+            "Stops the pregame-intro crash in xemu; the game runs the same GPU commands.",
+            badge=NOT_TESTED,
+            details=tt.display_list_patch.HELP_TEXT)
+        self.resource_load_guard_check = self._option(
+            f, "resource_load_guard", tt.resource_load_guard_patch.BUILD_CAPTION,
+            "Skip a cutaway if its presentation pool is full so the game can continue.",
+            badge=NOT_TESTED, details=tt.resource_load_guard_patch.HELP_TEXT)
         self.franchise_practice_check = self._option(f, "franchise_practice", 'Free Practice inside Franchise',
                                                      r62_ui.PRACTICE_HELP,
                                                      badge=NOT_TESTED)
@@ -802,6 +984,10 @@ class BuildPanel(QWidget):
         r.addWidget(self.espn25_plan_status)
         self.espn25_rosters_check = self._option(r, "espn25_rosters", "Historic moments: real rosters",
                                                  tt.espn25_rosters_patch.HELP_TEXT, needs_image=True)
+        from mod_editor.core import nfl2k5_historic_rosters as historic_seasons
+        self.historic_rosters_2026_check = self._option(
+            r, "historic_rosters_2026", historic_seasons.CAPTION,
+            historic_seasons.HELP_TEXT, needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -826,6 +1012,10 @@ class BuildPanel(QWidget):
         self.weather_haze_check = self._option(
             r, "weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED")
+        from mod_editor.core import nfl2k5_number_kerning as kerning  # b76-k2
+        self.number_kerning_check = self._option(
+            r, "number_kerning", kerning.BUILD_CAPTION, kerning.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED")
         from mod_editor.core import nfl2k5_modern_color as modern_color
         self.modern_color_check = self._option(
             r, "modern_color", modern_color.BUILD_CAPTION, modern_color.HELP_TEXT,
@@ -839,15 +1029,166 @@ class BuildPanel(QWidget):
         self.modern_arrowhead_check = self._option(
             r, "modern_arrowhead", modern_arrowhead.BUILD_CAPTION, modern_arrowhead.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_metlife as modern_metlife
+        self.modern_metlife_check = self._option(
+            r, "modern_metlife", modern_metlife.BUILD_CAPTION, modern_metlife.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        # b76-u4: 2026 field and wall art in every home stadium, from a folder of team venue art
+        from mod_editor.core import nfl2k5_modern_venues_2026 as modern_venues
+        self.modern_venues_check = self._option(
+            r, "modern_venues_2026", modern_venues.BUILD_CAPTION, modern_venues.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        modern_venues_row = QHBoxLayout()
+        self.modern_venues_field = QLineEdit()
+        self.modern_venues_field.setPlaceholderText("Choose the folder of 2026 team venue art (one <team>/venue folder per team)")
+        modern_venues_row.addWidget(self.modern_venues_field, 1)
+        self.modern_venues_button = QPushButton("Choose…")
+        self.modern_venues_button.clicked.connect(self._choose_modern_venues)
+        modern_venues_row.addWidget(self.modern_venues_button)
+        r.addLayout(modern_venues_row)
+        self.modern_venues_field.textChanged.connect(self._refresh)
+        self._modern_venues_cache: tuple[tuple | None, str] = (None, "")
+        from mod_editor.core import nfl2k5_metlife_model as metlife_model
+        self.modern_metlife_model_check = self._option(
+            r, "modern_metlife_model", metlife_model.BUILD_CAPTION, metlife_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.modern_metlife_model_check.toggled.connect(
+            lambda on: on and self.modern_metlife_check.isEnabled() and self.modern_metlife_check.setChecked(True))
+        from mod_editor.core import nfl2k5_modern_helmets as modern_helmets  # b76-hm
+        self.modern_helmets_check = self._option(
+            r, "modern_helmets", modern_helmets.BUILD_CAPTION, modern_helmets.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_sofi_model as sofi_model  # b76-u6
+        self.modern_sofi_check = self._option(
+            r, "modern_sofi", sofi_model.BUILD_CAPTION, sofi_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_highmark_model as highmark_model  # b76-st
+        self.modern_highmark_check = self._option(
+            r, "modern_highmark", highmark_model.BUILD_CAPTION, highmark_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_att_model as att_model  # b76-st2
+        self.modern_att_check = self._option(
+            r, "modern_att", att_model.BUILD_CAPTION, att_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_levis_model as levis_model  # b76-st2
+        self.modern_levis_check = self._option(
+            r, "modern_levis", levis_model.BUILD_CAPTION, levis_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_allegiant_model as allegiant_model  # b76-st2
+        self.modern_allegiant_check = self._option(
+            r, "modern_allegiant", allegiant_model.BUILD_CAPTION, allegiant_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_mercedes_benz_model as mercedes_benz_model  # b76-st2
+        self.modern_mercedes_benz_check = self._option(
+            r, "modern_mercedes_benz", mercedes_benz_model.BUILD_CAPTION, mercedes_benz_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_usbank_model as usbank_model  # b76-st3
+        self.modern_usbank_check = self._option(
+            r, "modern_usbank", usbank_model.BUILD_CAPTION, usbank_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_lucas_oil_model as lucas_oil_model  # b76-st3
+        self.modern_lucas_oil_check = self._option(
+            r, "modern_lucas_oil", lucas_oil_model.BUILD_CAPTION, lucas_oil_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_state_farm_model as state_farm_model  # b76-st3
+        self.modern_state_farm_check = self._option(
+            r, "modern_state_farm", state_farm_model.BUILD_CAPTION, state_farm_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_hard_rock_model as hard_rock_model  # b76-st4
+        self.modern_hard_rock_check = self._option(
+            r, "modern_hard_rock", hard_rock_model.BUILD_CAPTION, hard_rock_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_gillette_model as gillette_model  # b76-st4
+        self.modern_gillette_check = self._option(
+            r, "modern_gillette", gillette_model.BUILD_CAPTION, gillette_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_lambeau_model as lambeau_model  # b76-st4
+        self.modern_lambeau_check = self._option(
+            r, "modern_lambeau", lambeau_model.BUILD_CAPTION, lambeau_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_everbank_model as everbank_model  # b76-st4
+        self.modern_everbank_check = self._option(
+            r, "modern_everbank", everbank_model.BUILD_CAPTION, everbank_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.modern_everbank_construction_check = self._option(
+            r, "modern_everbank_construction", "EverBank: 2026 construction", everbank_model.CONSTRUCTION_HELP,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        # the construction follows the stadium (on with it by default, the 2026 season; unticking it gives the 2025
+        # stadium); it never turns the stadium on by itself (the presets carry it on while the stadium stays off)
+        self.modern_everbank_check.toggled.connect(
+            lambda on: self.modern_everbank_construction_check.isEnabled()
+            and self.modern_everbank_construction_check.setChecked(on))
+        from mod_editor.core import nfl2k5_board_kit as board_kit  # b76-st5
+        self.modern_board_kit_check = self._option(
+            r, "modern_board_kit", board_kit.BUILD_CAPTION, board_kit.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_practice_field_model as practice_model  # b76-pf
+        self.modern_practice_field_check = self._option(
+            r, "modern_practice_field", practice_model.BUILD_CAPTION, practice_model.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_team_logo_swap as team_logo_swap  # b76-pf P1
+        self.modern_practice_field_team_logo_check = self._option(
+            r, "modern_practice_field_team_logo", team_logo_swap.BUILD_CAPTION, team_logo_swap.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.modern_practice_field_team_logo_check.toggled.connect(
+            lambda on: on and self.modern_practice_field_check.isEnabled()
+            and self.modern_practice_field_check.setChecked(True))
+        self.modern_practice_field_check.toggled.connect(
+            lambda on: (not on) and self.modern_practice_field_team_logo_check.isEnabled()
+            and self.modern_practice_field_team_logo_check.setChecked(False))
+        from mod_editor.core import nfl2k5_modern_surfaces as modern_surfaces  # b76-tf
+        self.modern_surfaces_check = self._option(
+            r, "modern_surfaces", modern_surfaces.BUILD_CAPTION, modern_surfaces.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_espn_marks as espn_marks
+        self.espn_marks_check = self._option(
+            r, "espn_marks_2026", espn_marks.BUILD_CAPTION, espn_marks.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_espn_wipes_boards as espn_wipes_boards  # b76-p2
+        self.espn_wipes_boards_check = self._option(
+            r, "espn_wipes_boards_2026", espn_wipes_boards.BUILD_CAPTION, espn_wipes_boards.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        pack_row = QHBoxLayout()
+        pack_row.addWidget(QLabel("Official marks pack"))
+        self.official_marks_pack_field = QLineEdit()
+        self.official_marks_pack_field.setPlaceholderText("Local pack folder, or NFL2K5_MARKS_PACK")
+        self.official_marks_pack_field.setToolTip(
+            "Choose the separate official marks pack for ESPN marks and wipes. "
+            "An empty field uses NFL2K5_MARKS_PACK. The release does not include the pack.")
+        pack_row.addWidget(self.official_marks_pack_field, 1)
+        self.official_marks_pack_button = QPushButton("Choose...")
+        self.official_marks_pack_button.clicked.connect(self._choose_official_marks_pack)
+        pack_row.addWidget(self.official_marks_pack_button)
+        r.addLayout(pack_row)
+        self.official_marks_pack_field.textChanged.connect(self._official_marks_pack_changed)
+        from mod_editor.core import nfl2k5_kick_meter_2026 as kick_meter  # b76-km
+        self.kick_meter_check = self._option(
+            r, "kick_meter_2026", kick_meter.BUILD_CAPTION, kick_meter.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_intro_videos as intro_videos
         self.trim_intro_videos_check = self._option(
             r, "trim_intro_videos", intro_videos.BUILD_CAPTION, intro_videos.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        # b76-i1: Custom intro video, a movie made with tools/nfl2k5_intro_encode.py
+        from mod_editor.core import nfl2k5_custom_intro as custom_intro
+        self.custom_intro_check = self._option(
+            r, "custom_intro", custom_intro.BUILD_CAPTION, custom_intro.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        custom_intro_row = QHBoxLayout()
+        self.custom_intro_field = QLineEdit()
+        self.custom_intro_field.setPlaceholderText("Choose a movie made with tools/nfl2k5_intro_encode.py")
+        custom_intro_row.addWidget(self.custom_intro_field, 1)
+        self.custom_intro_button = QPushButton("Choose…")
+        self.custom_intro_button.clicked.connect(self._choose_custom_intro)
+        custom_intro_row.addWidget(self.custom_intro_button)
+        r.addLayout(custom_intro_row)
+        self.custom_intro_field.textChanged.connect(self._refresh)
+        self._custom_intro_cache: tuple[tuple | None, str] = (None, "")
         self.player_star_check = self._option(
-            r, "player_star", "Show a filled star under selected players",
-            "A filled white star with a dark edge under every tagged player on the field; in-game appearance unwitnessed.",
+            r, "player_star", "Show a white outline star under selected players",
+            "A hollow white outline star with a thin dark under-edge under each tagged player.",
             badge=NOT_TESTED,
-            details="Select players with the Rosters star column. Each active tagged player gets a filled star at his feet, "
+            details="Select players with the Rosters star column. Each active tagged player gets a white outline star at his feet, "
                     "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
                     "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
         )
@@ -1082,6 +1423,16 @@ class BuildPanel(QWidget):
         self.career_stats_check.toggled.connect(self.career_row.setVisible)
         self.roster_edits_check.toggled.connect(self.edits_row.setVisible)
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
+        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
+            getattr(self, child + "_check").toggled.connect(
+                lambda on, key=child: self._anniversary_toggled(key, on))
+            for parent in parents:
+                getattr(self, parent + "_check").toggled.connect(
+                    lambda on, key=child: self._anniversary_parent_toggled(key, on))
+        self.historic_stock_books_check.toggled.connect(
+            lambda on: self._exclusive_books("historic_stock_books", "playbook_pair", on))
+        self.playbook_pair_check.toggled.connect(
+            lambda on: self._exclusive_books("playbook_pair", "historic_stock_books", on))
         self.espn25_plan_check.toggled.connect(self.espn25_row.setVisible)
         self.espn25_plan_check.toggled.connect(lambda on: self.espn25_plan_status.setVisible(on and bool(self.espn25_plan_status.text())))
         self.uniform_choice_mode.setEnabled(False)
@@ -1106,6 +1457,18 @@ class BuildPanel(QWidget):
                 needs_image: bool = False, details: str = "") -> QCheckBox:
         """One change: a real check box, a helper line, a qualifier badge and an optional Details."""
 
+        if key in LAB_SCOPES:
+            # Remove only superseded blanket claims. Keep feature instructions
+            # and append the exact observed scope and remaining limits.
+            import re
+            def scoped(text):
+                text = re.sub(r"EXPERIMENTAL / UNWITNESSED", "EXPERIMENTAL", text)
+                text = re.sub(r"(?i)[^.]*\b(?:unwitnessed|not yet (?:run|tested|witnessed)|no lab run yet|no game (?:was|has been) run)[^.]*\.?", "", text)
+                return text.strip() + " " + LAB_SCOPES[key]
+            helper = scoped(helper)
+            if details:
+                details = scoped(details)
+            badge = "EXPERIMENTAL / LAB OBSERVED"
         row = QWidget()
         rl = QVBoxLayout(row)
         rl.setContentsMargins(0, 0, 0, 2)
@@ -1142,6 +1505,8 @@ class BuildPanel(QWidget):
         return box
 
     def _set_badge(self, key: str, text: str) -> None:
+        if key in LAB_SCOPES and text in ("EXPERIMENTAL / UNWITNESSED", NOT_TESTED):
+            text = "EXPERIMENTAL / LAB OBSERVED"
         badge = self._badges.get(key)
         if badge is not None:
             badge.setText(text)
@@ -1184,7 +1549,7 @@ class BuildPanel(QWidget):
     @staticmethod
     def _still_there(path: str) -> bool:
         try:
-            return bool(path) and Path(path).is_file()
+            return bool(path) and platform_compat.io_path(path).is_file()
         except OSError:  # an unreadable parent, a dead network share
             return False
 
@@ -1280,6 +1645,7 @@ class BuildPanel(QWidget):
     def apply_state(self, state: dict[str, object]) -> None:
         """Populate from mod_build.inspect output (also used by tests)."""
 
+        softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
                 state.get("screen_timing_details", {}).get("level", "D") != combo.currentText()):
@@ -1303,8 +1669,8 @@ class BuildPanel(QWidget):
         if isinstance(settings, tt.TuningSettings):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
-                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -1320,12 +1686,12 @@ class BuildPanel(QWidget):
             head += " " + identity.rstrip(".") + "."
         applied = [f"{label}: applied" for key, label in (
             ("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"), ("draft_ai", "draft AI"),
-            ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
+            ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"),
             ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
-            ("elbow_options", "elbow pad options"), ("penalties", "penalties"),
+            ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
@@ -1350,11 +1716,15 @@ class BuildPanel(QWidget):
         def gate(box: QCheckBox, key: str, needs_image: bool = False, module: str | None = None) -> None:
             value = str(state.get(key))
             available = self._available.get(module or key, True)
-            box.setEnabled(available and value == "retail" and (is_image or not needs_image))
+            upgrade = key == "position_pools" and value == "needs_fix"
+            box.setEnabled(available and (value == "retail" or upgrade) and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
                 self._set_badge(key, "Not available in this release")
+            elif upgrade:
+                box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")
+                self._set_badge(key, "Needs CPU lineup fix")
             elif value == "applied":
                 box.setToolTip("Already installed on this source.")
                 self._set_badge(key, "Already installed")
@@ -1374,14 +1744,31 @@ class BuildPanel(QWidget):
         gate(self.catch_check, "catch_slider")
         gate(self.accel_check, "accel_ramp")
         for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
-                    "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS):
+                    "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *BUILD_KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
+        # b76-i1: a source with a custom intro may take another movie, so retail or custom enables it
+        custom_state = str(state.get("custom_intro"))
+        custom_available = self._available.get("custom_intro", False)
+        custom_ok = bool(is_image and custom_available and custom_state in ("retail", "custom"))
+        for widget in (self.custom_intro_check, self.custom_intro_field, self.custom_intro_button):
+            widget.setEnabled(custom_ok)
+        self.custom_intro_check.setChecked(False)
+        if custom_ok:
+            self._set_badge("custom_intro", "EXPERIMENTAL / UNWITNESSED" if custom_state == "retail" else
+                            "EXPERIMENTAL / UNWITNESSED; this source already has a custom intro")
+        elif not custom_available:
+            self._set_badge("custom_intro", "Not available in this release")
+        elif not is_image:
+            self._set_badge("custom_intro", "Full disc required")
+        else:
+            self._set_badge("custom_intro", "Unrecognized source data (startup movies not retail)")
         gate(self.flatter_deep_ball_check, "flatter_deep_ball")
         gate(self.chop_block_toggle_check, "chop_block_toggle")
         gate(self.draft_check, "draft_ai")
         gate(self.returner_check, "returner_fix")
         gate(self.progression_check, "progression")
+        gate(self.franchise_economy_check, "franchise_economy")
         gate(self.team_column_check, "team_column")
         gate(self.team_history_check, "team_history", needs_image=True)
         gate(self.career_stats_check, "career_stats", needs_image=True)
@@ -1408,6 +1795,12 @@ class BuildPanel(QWidget):
         self.weather_haze_check.setChecked(haze_ok and haze_state == "applied")
         self._set_badge("weather_haze", "EXPERIMENTAL / UNWITNESSED" if haze_ok else
                         "Haze reader unavailable; choose a supported USA source")
+        kern_state = state.get("number_kerning")  # b76-k2
+        kern_ok = bool(self._available.get("number_kerning", False) and kern_state in ("retail", "applied"))
+        self.number_kerning_check.setEnabled(kern_ok)
+        self.number_kerning_check.setChecked(kern_ok and kern_state == "applied")
+        self._set_badge("number_kerning", "EXPERIMENTAL / UNWITNESSED" if kern_ok else
+                        "Number binder unavailable; choose a supported USA source")
         modern_state = state.get("modern_color")
         modern_ok = bool(self._available.get("modern_color", False) and is_image and modern_state in ("retail", "applied", "applied (custom)"))
         self.modern_color_check.setEnabled(modern_ok)
@@ -1424,6 +1817,214 @@ class BuildPanel(QWidget):
         self._set_badge("modern_arrowhead", "EXPERIMENTAL / UNWITNESSED" if arrowhead_ok else
                         "Already in this source (Off cannot restore it)" if arrowhead_done else
                         "Needs a supported USA disc image; Arrowhead packages unavailable")
+        metlife_state = state.get("modern_metlife")
+        metlife_ok = bool(self._available.get("modern_metlife", False) and is_image and metlife_state == "retail")
+        metlife_done = bool(self._available.get("modern_metlife", False) and is_image and metlife_state == "applied")
+        self.modern_metlife_check.setEnabled(metlife_ok)
+        self.modern_metlife_check.setChecked(metlife_done)
+        self._set_badge("modern_metlife", "EXPERIMENTAL / UNWITNESSED" if metlife_ok else
+                        "Already in this source (Off cannot restore it)" if metlife_done else
+                        "Needs a supported USA disc image; Giants and Jets packages unavailable")
+        venues_state = state.get("modern_venues_2026")  # b76-u4
+        venues_ok = bool(self._available.get("modern_venues_2026", False) and is_image and venues_state == "retail")
+        venues_done = bool(self._available.get("modern_venues_2026", False) and is_image and venues_state == "applied")
+        for widget in (self.modern_venues_check, self.modern_venues_field, self.modern_venues_button):
+            widget.setEnabled(venues_ok)
+        self.modern_venues_check.setChecked(venues_done)
+        self._set_badge("modern_venues_2026", "EXPERIMENTAL / UNWITNESSED" if venues_ok else
+                        "Already in this source (Off cannot restore it)" if venues_done else
+                        "Needs a supported USA disc image; home stadium packages unavailable")
+        model_state = state.get("modern_metlife_model")
+        model_ok = bool(self._available.get("modern_metlife_model", False) and is_image
+                        and model_state in ("retail", "skin"))
+        model_done = bool(self._available.get("modern_metlife_model", False) and is_image and model_state == "applied")
+        self.modern_metlife_model_check.setEnabled(model_ok)
+        self.modern_metlife_model_check.setChecked(model_done)
+        self._set_badge("modern_metlife_model", "EXPERIMENTAL / UNWITNESSED" if model_ok else
+                        "Already in this source (Off cannot restore it)" if model_done else
+                        "Needs a supported USA disc image; Giants and Jets packages unavailable")
+        sofi_state = state.get("modern_sofi")  # b76-u6
+        sofi_ok = bool(self._available.get("modern_sofi", False) and is_image and sofi_state == "retail")
+        sofi_done = bool(self._available.get("modern_sofi", False) and is_image and sofi_state == "applied")
+        self.modern_sofi_check.setEnabled(sofi_ok)
+        self.modern_sofi_check.setChecked(sofi_done)
+        self._set_badge("modern_sofi", "EXPERIMENTAL / UNWITNESSED" if sofi_ok else
+                        "Already in this source (Off cannot restore it)" if sofi_done else
+                        "Needs a supported USA disc image; Rams and Chargers packages unavailable")
+        highmark_state = state.get("modern_highmark")  # b76-st
+        highmark_ok = bool(self._available.get("modern_highmark", False) and is_image and highmark_state == "retail")
+        highmark_done = bool(self._available.get("modern_highmark", False) and is_image and highmark_state == "applied")
+        self.modern_highmark_check.setEnabled(highmark_ok)
+        self.modern_highmark_check.setChecked(highmark_done)
+        self._set_badge("modern_highmark", "EXPERIMENTAL / UNWITNESSED" if highmark_ok else
+                        "Already in this source (Off cannot restore it)" if highmark_done else
+                        "Needs a supported USA disc image; Bills packages unavailable")
+        att_state = state.get("modern_att")  # b76-st2
+        att_ok = bool(self._available.get("modern_att", False) and is_image and att_state == "retail")
+        att_done = bool(self._available.get("modern_att", False) and is_image and att_state == "applied")
+        self.modern_att_check.setEnabled(att_ok)
+        self.modern_att_check.setChecked(att_done)
+        self._set_badge("modern_att", "EXPERIMENTAL / UNWITNESSED" if att_ok else
+                        "Already in this source (Off cannot restore it)" if att_done else
+                        "Needs a supported USA disc image; Cowboys packages unavailable")
+        levis_state = state.get("modern_levis")  # b76-st2
+        levis_ok = bool(self._available.get("modern_levis", False) and is_image and levis_state == "retail")
+        levis_done = bool(self._available.get("modern_levis", False) and is_image and levis_state == "applied")
+        self.modern_levis_check.setEnabled(levis_ok)
+        self.modern_levis_check.setChecked(levis_done)
+        self._set_badge("modern_levis", "EXPERIMENTAL / UNWITNESSED" if levis_ok else
+                        "Already in this source (Off cannot restore it)" if levis_done else
+                        "Needs a supported USA disc image; 49ers packages unavailable")
+        allegiant_state = state.get("modern_allegiant")  # b76-st2
+        allegiant_ok = bool(self._available.get("modern_allegiant", False) and is_image and allegiant_state == "retail")
+        allegiant_done = bool(self._available.get("modern_allegiant", False) and is_image and allegiant_state == "applied")
+        self.modern_allegiant_check.setEnabled(allegiant_ok)
+        self.modern_allegiant_check.setChecked(allegiant_done)
+        self._set_badge("modern_allegiant", "EXPERIMENTAL / UNWITNESSED" if allegiant_ok else
+                        "Already in this source (Off cannot restore it)" if allegiant_done else
+                        "Needs a supported USA disc image; Raiders packages unavailable")
+        mercedes_benz_state = state.get("modern_mercedes_benz")  # b76-st2
+        mercedes_benz_ok = bool(self._available.get("modern_mercedes_benz", False) and is_image and mercedes_benz_state == "retail")
+        mercedes_benz_done = bool(self._available.get("modern_mercedes_benz", False) and is_image and mercedes_benz_state == "applied")
+        self.modern_mercedes_benz_check.setEnabled(mercedes_benz_ok)
+        self.modern_mercedes_benz_check.setChecked(mercedes_benz_done)
+        self._set_badge("modern_mercedes_benz", "EXPERIMENTAL / UNWITNESSED" if mercedes_benz_ok else
+                        "Already in this source (Off cannot restore it)" if mercedes_benz_done else
+                        "Needs a supported USA disc image; Falcons packages unavailable")
+        usbank_state = state.get("modern_usbank")  # b76-st3
+        usbank_ok = bool(self._available.get("modern_usbank", False) and is_image and usbank_state == "retail")
+        usbank_done = bool(self._available.get("modern_usbank", False) and is_image and usbank_state == "applied")
+        self.modern_usbank_check.setEnabled(usbank_ok)
+        self.modern_usbank_check.setChecked(usbank_done)
+        self._set_badge("modern_usbank", "EXPERIMENTAL / UNWITNESSED" if usbank_ok else
+                        "Already in this source (Off cannot restore it)" if usbank_done else
+                        "Needs a supported USA disc image; Vikings packages unavailable")
+        lucas_state = state.get("modern_lucas_oil")  # b76-st3
+        lucas_ok = bool(self._available.get("modern_lucas_oil", False) and is_image and lucas_state == "retail")
+        lucas_done = bool(self._available.get("modern_lucas_oil", False) and is_image and lucas_state == "applied")
+        self.modern_lucas_oil_check.setEnabled(lucas_ok)
+        self.modern_lucas_oil_check.setChecked(lucas_done)
+        self._set_badge("modern_lucas_oil", "EXPERIMENTAL / UNWITNESSED" if lucas_ok else
+                        "Already in this source (Off cannot restore it)" if lucas_done else
+                        "Needs a supported USA disc image; Colts packages unavailable")
+        sf_state = state.get("modern_state_farm")  # b76-st3
+        sf_ok = bool(self._available.get("modern_state_farm", False) and is_image and sf_state == "retail")
+        sf_done = bool(self._available.get("modern_state_farm", False) and is_image and sf_state == "applied")
+        self.modern_state_farm_check.setEnabled(sf_ok)
+        self.modern_state_farm_check.setChecked(sf_done)
+        self._set_badge("modern_state_farm", "EXPERIMENTAL / UNWITNESSED" if sf_ok else
+                        "Already in this source (Off cannot restore it)" if sf_done else
+                        "Needs a supported USA disc image; Cardinals packages unavailable")
+        hrk_state = state.get("modern_hard_rock")  # b76-st4
+        hrk_ok = bool(self._available.get("modern_hard_rock", False) and is_image and hrk_state == "retail")
+        hrk_done = bool(self._available.get("modern_hard_rock", False) and is_image and hrk_state == "applied")
+        self.modern_hard_rock_check.setEnabled(hrk_ok)
+        self.modern_hard_rock_check.setChecked(hrk_done)
+        self._set_badge("modern_hard_rock", "EXPERIMENTAL / UNWITNESSED" if hrk_ok else
+                        "Already in this source (Off cannot restore it)" if hrk_done else
+                        "Needs a supported USA disc image; Dolphins packages unavailable")
+        gil_state = state.get("modern_gillette")  # b76-st4
+        gil_ok = bool(self._available.get("modern_gillette", False) and is_image and gil_state == "retail")
+        gil_done = bool(self._available.get("modern_gillette", False) and is_image and gil_state == "applied")
+        self.modern_gillette_check.setEnabled(gil_ok)
+        self.modern_gillette_check.setChecked(gil_done)
+        self._set_badge("modern_gillette", "EXPERIMENTAL / UNWITNESSED" if gil_ok else
+                        "Already in this source (Off cannot restore it)" if gil_done else
+                        "Needs a supported USA disc image; Patriots packages unavailable")
+        lam_state = state.get("modern_lambeau")  # b76-st4
+        lam_ok = bool(self._available.get("modern_lambeau", False) and is_image and lam_state == "retail")
+        lam_done = bool(self._available.get("modern_lambeau", False) and is_image and lam_state == "applied")
+        self.modern_lambeau_check.setEnabled(lam_ok)
+        self.modern_lambeau_check.setChecked(lam_done)
+        self._set_badge("modern_lambeau", "EXPERIMENTAL / UNWITNESSED" if lam_ok else
+                        "Already in this source (Off cannot restore it)" if lam_done else
+                        "Needs a supported USA disc image; Packers packages unavailable")
+        evb_state = state.get("modern_everbank")  # b76-st4
+        evb_ok = bool(self._available.get("modern_everbank", False) and is_image and evb_state == "retail")
+        evb_done = bool(self._available.get("modern_everbank", False) and is_image and evb_state == "applied")
+        self.modern_everbank_check.setEnabled(evb_ok)
+        self.modern_everbank_check.setChecked(evb_done)
+        self._set_badge("modern_everbank", "EXPERIMENTAL / UNWITNESSED" if evb_ok else
+                        "Already in this source (Off cannot restore it)" if evb_done else
+                        "Needs a supported USA disc image; Jaguars packages unavailable")
+        evc_state = state.get("modern_everbank_construction")  # b76-st4: retail, on, off, mixed or foreign
+        self.modern_everbank_construction_check.setEnabled(evb_ok)
+        self.modern_everbank_construction_check.setChecked(evc_state == "on" if evb_done else
+                                                          bool(evb_ok and self.modern_everbank_check.isChecked()))
+        self._set_badge("modern_everbank_construction", "EXPERIMENTAL / UNWITNESSED" if evb_ok else
+                        "Already in this source (Off cannot restore it)" if evb_done else
+                        "Needs a supported USA disc image; Jaguars packages unavailable")
+        bk_state = state.get("modern_board_kit")  # b76-st5
+        bk_ok = bool(self._available.get("modern_board_kit", False) and is_image and bk_state == "retail")
+        bk_done = bool(self._available.get("modern_board_kit", False) and is_image and bk_state == "applied")
+        self.modern_board_kit_check.setEnabled(bk_ok)
+        self.modern_board_kit_check.setChecked(bk_done)
+        self._set_badge("modern_board_kit", "EXPERIMENTAL / UNWITNESSED" if bk_ok else
+                        "Already in this source (Off cannot restore it)" if bk_done else
+                        "Needs a supported USA disc image; the stadium packages unavailable")
+        practice_state = state.get("modern_practice_field")  # b76-pf
+        practice_ok = bool(self._available.get("modern_practice_field", False) and is_image and practice_state == "retail")
+        practice_done = bool(self._available.get("modern_practice_field", False) and is_image
+                             and practice_state == "applied")
+        self.modern_practice_field_check.setEnabled(practice_ok)
+        self.modern_practice_field_check.setChecked(practice_done)
+        self._set_badge("modern_practice_field", "EXPERIMENTAL / UNWITNESSED" if practice_ok else
+                        "Already in this source (Off cannot restore it)" if practice_done else
+                        "Needs a supported USA disc image; practice field packages unavailable")
+        logo_state = state.get("modern_practice_field_team_logo")  # b76-pf P1: the executable's eighth swap pair
+        logo_available = bool(self._available.get("modern_practice_field_team_logo", False) and is_image)
+        logo_ok = logo_available and logo_state == "retail" and practice_state == "retail"
+        logo_done = logo_available and logo_state == "applied"
+        self.modern_practice_field_team_logo_check.setEnabled(logo_ok)
+        self.modern_practice_field_team_logo_check.setChecked(logo_done)
+        self._set_badge("modern_practice_field_team_logo", "EXPERIMENTAL / UNWITNESSED" if logo_ok else
+                        "Already in this source (Off cannot restore it)" if logo_done else
+                        "Needs a supported USA disc image with the retail practice field")
+        surfaces_state = state.get("modern_surfaces")  # b76-tf
+        surfaces_ok = bool(self._available.get("modern_surfaces", False) and is_image and surfaces_state == "retail")
+        surfaces_done = bool(self._available.get("modern_surfaces", False) and is_image and surfaces_state == "applied")
+        self.modern_surfaces_check.setEnabled(surfaces_ok)
+        self.modern_surfaces_check.setChecked(surfaces_done)
+        self._set_badge("modern_surfaces", "EXPERIMENTAL / UNWITNESSED" if surfaces_ok else
+                        "Already in this source (Off cannot restore it)" if surfaces_done else
+                        "Needs a supported USA disc image with the retail home-venue fields")
+        helmets_state = state.get("modern_helmets")  # b76-hm
+        helmets_ok = bool(self._available.get("modern_helmets", False) and is_image and helmets_state == "retail")
+        helmets_done = bool(self._available.get("modern_helmets", False) and is_image and helmets_state == "applied")
+        self.modern_helmets_check.setEnabled(helmets_ok)
+        self.modern_helmets_check.setChecked(helmets_done)
+        self._set_badge("modern_helmets", "EXPERIMENTAL / UNWITNESSED" if helmets_ok else
+                        "Already in this source (Off cannot restore it)" if helmets_done else
+                        "Needs a supported USA disc image; player models unavailable")
+        from mod_editor.core import nfl2k5_espn_marks, nfl2k5_espn_wipes_boards
+        marks_state = state.get("espn_marks_2026")
+        marks_ok = bool(self._available.get("espn_marks_2026", False) and is_image and marks_state == "retail")
+        marks_done = bool(self._available.get("espn_marks_2026", False) and is_image and marks_state == "applied")
+        self.espn_marks_check.setEnabled(marks_ok)
+        self.espn_marks_check.setChecked(marks_done)
+        self._set_badge("espn_marks_2026", "EXPERIMENTAL / UNWITNESSED" if marks_ok else
+                        "Already in this source (Off cannot restore it)" if marks_done else
+                        nfl2k5_espn_marks.availability_reason() or
+                        "Needs a supported USA disc image with the retail GAMEDATA marks")
+        # b76-p2: ESPN 2026 wipes and boards
+        wipes_state = state.get("espn_wipes_boards_2026")
+        wipes_ok = bool(self._available.get("espn_wipes_boards_2026", False) and is_image and wipes_state == "retail")
+        wipes_done = bool(self._available.get("espn_wipes_boards_2026", False) and is_image and wipes_state == "applied")
+        self.espn_wipes_boards_check.setEnabled(wipes_ok)
+        self.espn_wipes_boards_check.setChecked(wipes_done)
+        self._set_badge("espn_wipes_boards_2026", "EXPERIMENTAL / UNWITNESSED" if wipes_ok else
+                        "Already in this source (Off cannot restore it)" if wipes_done else
+                        nfl2k5_espn_wipes_boards.availability_reason() or
+                        "Needs a supported USA disc image with the retail wipes and boards")
+        # b76-km: the 2026 kick meter
+        kick_state = state.get("kick_meter_2026")
+        kick_ok = bool(self._available.get("kick_meter_2026", False) and is_image and kick_state == "retail")
+        kick_done = bool(self._available.get("kick_meter_2026", False) and is_image and kick_state == "applied")
+        self.kick_meter_check.setEnabled(kick_ok)
+        self.kick_meter_check.setChecked(kick_done)
+        self._set_badge("kick_meter_2026", "EXPERIMENTAL / UNWITNESSED" if kick_ok else
+                        "Already in this source (Off cannot restore it)" if kick_done else
+                        "Needs a supported USA disc image with the retail kick meter")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -1453,6 +2054,9 @@ class BuildPanel(QWidget):
         gate(self.position_row_check, "position_row")
         gate(self.probowl_order_check, "probowl_order")
         gate(self.elbow_options_check, "elbow_options")
+        gate(self.the1wam_lineman_rating_check, "the1wam_lineman_rating")
+        gate(self.xemu_display_list_fix_check, "xemu_display_list_fix")
+        gate(self.resource_load_guard_check, "resource_load_guard")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
         if state.get("uniform_choice") == "applied":
@@ -1484,6 +2088,7 @@ class BuildPanel(QWidget):
         gate(self.position_pools_check, "position_pools", needs_image=True)
         gate(self.position_pools_keep_olb_check, "position_pools_keep_olb", needs_image=True)
         gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
+        gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -1511,6 +2116,8 @@ class BuildPanel(QWidget):
         pending, self.pending_preset = self.pending_preset, None
         if pending:
             self.apply_preset_if_fresh(pending)
+        if softdrink_choices is not None:
+            self.restore_project_build_settings(softdrink_choices)
 
     def apply_preset_if_fresh(self, name: str) -> bool:
         """Tick a preset only when nothing is ticked yet; customised choices stay (BS-15)."""
@@ -1627,11 +2234,11 @@ class BuildPanel(QWidget):
         return {
             "hires_pack": self.hires_pack_check, "flatter_deep_ball": self.flatter_deep_ball_check, "chop_block_toggle": self.chop_block_toggle_check,
             "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
-            "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
+            "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check, "franchise_economy": self.franchise_economy_check,
             **{key: getattr(self, key + "_check") for key in (
                 "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library",
                 "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
-                "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS)},
+                "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *BUILD_KEYS)},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "position_pools_keep_olb": self.position_pools_keep_olb_check, "depth_roles": self.depth_roles_check,
@@ -1643,15 +2250,46 @@ class BuildPanel(QWidget):
             "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "elbow_options": self.elbow_options_check,
+            "the1wam_lineman_rating": self.the1wam_lineman_rating_check,
+            "xemu_display_list_fix": self.xemu_display_list_fix_check,
+            "resource_load_guard": self.resource_load_guard_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
+            "number_kerning": self.number_kerning_check,
             "modern_color": self.modern_color_check,
             "modern_arrowhead": self.modern_arrowhead_check,
+            "modern_metlife": self.modern_metlife_check,
+            "modern_venues_2026": self.modern_venues_check,
+            "modern_metlife_model": self.modern_metlife_model_check,
+            "modern_helmets": self.modern_helmets_check,  # b76-hm
+            "modern_sofi": self.modern_sofi_check,  # b76-u6
+            "modern_highmark": self.modern_highmark_check,  # b76-st
+            "modern_att": self.modern_att_check,  # b76-st2
+            "modern_levis": self.modern_levis_check,  # b76-st2
+            "modern_allegiant": self.modern_allegiant_check,  # b76-st2
+            "modern_mercedes_benz": self.modern_mercedes_benz_check,  # b76-st2
+            "modern_usbank": self.modern_usbank_check,  # b76-st3
+            "modern_lucas_oil": self.modern_lucas_oil_check,  # b76-st3
+            "modern_state_farm": self.modern_state_farm_check,  # b76-st3
+            "modern_hard_rock": self.modern_hard_rock_check,  # b76-st4
+            "modern_gillette": self.modern_gillette_check,  # b76-st4
+            "modern_lambeau": self.modern_lambeau_check,  # b76-st4
+            "modern_everbank": self.modern_everbank_check,  # b76-st4
+            "modern_everbank_construction": self.modern_everbank_construction_check,  # b76-st4
+            "modern_board_kit": self.modern_board_kit_check,  # b76-st5
+            "modern_practice_field": self.modern_practice_field_check,  # b76-pf
+            "modern_practice_field_team_logo": self.modern_practice_field_team_logo_check,  # b76-pf P1
+            "modern_surfaces": self.modern_surfaces_check,  # b76-tf
+            "espn_marks_2026": self.espn_marks_check,
+            "espn_wipes_boards_2026": self.espn_wipes_boards_check,  # b76-p2
+            "kick_meter_2026": self.kick_meter_check,  # b76-km
             "trim_intro_videos": self.trim_intro_videos_check,
+            "custom_intro": self.custom_intro_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
+            "historic_rosters_2026": self.historic_rosters_2026_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -1695,7 +2333,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
-            overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
+            overwrite=platform_compat.io_path(self.target_field.text()).exists() if self.target_field.text() else False,
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
@@ -1721,11 +2359,13 @@ class BuildPanel(QWidget):
             catch_slider=self.catch_check.isChecked(), accel_ramp=self.accel_check.isChecked(),
             draft_ai=self.draft_check.isChecked(), edge_rename=self.edge_check.isChecked(),
             returner_fix=self.returner_check.isChecked(), progression=self.progression_check.isChecked(),
+            franchise_economy=self.franchise_economy_check.isChecked(),
             scheme_labels=self.scheme_labels_check.isChecked(), camera=self.camera_check.isChecked(),
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
             position_pools_keep_olb=False,
             espn25_rosters=self.espn25_rosters_check.isChecked(),
+            historic_rosters_2026=self.historic_rosters_2026_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
@@ -1736,6 +2376,9 @@ class BuildPanel(QWidget):
             overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             elbow_options=self.elbow_options_check.isChecked(),
+            the1wam_lineman_rating=self.the1wam_lineman_rating_check.isChecked(),
+            xemu_display_list_fix=self.xemu_display_list_fix_check.isChecked(),
+            resource_load_guard=self.resource_load_guard_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
             helmet_finish=("matte" if self.helmet_finish_check.isChecked() else "glossy"),
@@ -1751,10 +2394,20 @@ class BuildPanel(QWidget):
             espn25_plan=(self.espn25_plan_field.text().strip() if self.espn25_plan_check.isChecked() else ""),
             weather_plan=(self.weather_plan_field.text().strip() if self.weather_plan_check.isChecked() else ""),
             weather_haze=self.weather_haze_check.isChecked(),
+            number_kerning=self.number_kerning_check.isChecked(),
             modern_color=self.modern_color_check.isChecked(),
             modern_color_settings=self.colour_lighting.settings(),
             modern_arrowhead=self._modern_arrowhead_changed(),
+            modern_metlife=self._modern_metlife_changed(),
+            modern_venues_2026=(self.modern_venues_field.text().strip() if self._modern_venues_changed() else ""),
+            modern_metlife_model=self._modern_metlife_model_changed(),
+            modern_helmets=self._modern_helmets_changed(),  # b76-hm
+            official_marks_pack=self.official_marks_pack_field.text().strip(),
+            espn_marks_2026=self._espn_marks_changed(),
+            espn_wipes_boards_2026=self._espn_wipes_boards_changed(),  # b76-p2
+            kick_meter_2026=self._kick_meter_changed(),  # b76-km
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
+            custom_intro=(self.custom_intro_field.text().strip() if self.custom_intro_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
             scorebug_runtime=self.scorebug_runtime_check.isChecked(),
             scorebug_watermark=self.scorebug_watermark_combo.currentData(),
@@ -1776,8 +2429,12 @@ class BuildPanel(QWidget):
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
             plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
-        for key in r62_ui.KEYS:
+        for key in BUILD_KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
+        for key in VENUE_BUILD_KEYS:
+            box = getattr(self, key + "_check")
+            setattr(plan, key, box.isChecked() and box.isEnabled())
+        plan.modern_everbank_construction = self.modern_everbank_construction_check.isChecked()
         plan.cpu_money_downs = self._money_downs_level() if self.cpu_money_downs_check.isChecked() else "retail"
         plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
         plan.decided_clock_margin = int(self.decided_clock_margin.currentData())
@@ -1797,11 +2454,23 @@ class BuildPanel(QWidget):
 
     def has_work(self) -> bool:
         p = self.plan()
-        return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or any(getattr(p, key) for key in r62_ui.KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
+        if any(getattr(p, key) for key in VENUE_BUILD_KEYS):
+            return True
+        if p.custom_intro:  # b76-i1
+            return True
+        if p.modern_venues_2026:  # b76-u4
+            return True
+        if p.espn_marks_2026:
+            return True
+        if p.espn_wipes_boards_2026:  # b76-p2
+            return True
+        if p.kick_meter_2026:  # b76-km
+            return True
+        return bool(self.softdrink_project_check.isChecked() or self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression or p.franchise_economy
+                    or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -1814,14 +2483,22 @@ class BuildPanel(QWidget):
     def _team_names_details() -> str:
         from mod_editor.core import nfl2k5_team_names_2026 as names
         try:
-            teams = names.manifest()["teams"]
+            data = names.manifest()
         except (OSError, ValueError) as exc:
             return "Team-name preview unavailable: " + str(exc)
+
         def label(row):
             return f"{row['city']} {row['nickname']} ({row['abbreviation']})"
-        lines = ["Each name must fit its existing space. Intended name / Written name:"]
-        lines.extend(f"{label(team['desired'])} / {label(team['written'])}"
-                     for team in teams if team['retail'] != team['desired'])
+        changed = [team for team in data["teams"] if team["retail"] != team["written"]]
+        lines = ["2004 disc name / 2026 name written (code):"]
+        lines.extend(f"{label(team['retail'])} / {label(team['written'])}" for team in changed)
+        books = [team["written"]["label_abbreviation"] for team in changed
+                 if team["written"]["label_abbreviation"] != team["written"]["abbreviation"]]
+        if books:
+            lines.append("Playbook files keep their names: " + ", ".join(f"{code}-pb.iff" for code in books) + ".")
+        lines.append("Schedules, Thanksgiving hosts, saved playbooks and 25th Anniversary moments find teams "
+                     "through patched lookups in default.xbe, so old saves keep working.")
+        lines.append("Menu colours: the 32 teams, the NFL, AFC and NFC take their 2026 colours in the menu colour table.")
         return "\n".join(lines)
 
     def selected_labels(self) -> list[str]:
@@ -1843,9 +2520,25 @@ class BuildPanel(QWidget):
                     text += f" ({self.ceiling_spin.value()} yd)"
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
+                if key == "number_kerning" and not self._number_kerning_changed():
+                    continue
                 if key == "modern_color" and not self._modern_color_changed():
                     continue
                 if key == "modern_arrowhead" and not self._modern_arrowhead_changed():
+                    continue
+                if key == "modern_metlife" and not self._modern_metlife_changed():
+                    continue
+                if key == "modern_venues_2026" and not self._modern_venues_changed():
+                    continue
+                if key == "modern_metlife_model" and not self._modern_metlife_model_changed():
+                    continue
+                if key == "modern_helmets" and not self._modern_helmets_changed():  # b76-hm
+                    continue
+                if key == "espn_marks_2026" and not self._espn_marks_changed():
+                    continue
+                if key == "espn_wipes_boards_2026" and not self._espn_wipes_boards_changed():  # b76-p2
+                    continue
+                if key == "kick_meter_2026" and not self._kick_meter_changed():  # b76-km
                     continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
@@ -1876,6 +2569,19 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        if self.softdrink_project_check.isChecked():
+            if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
+                return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
+            if self._include_session_project():
+                return "Save the open project's edits, then use a clean session for the SOFTDRINK source project, or turn off Include SOFTDRINK league artwork."
+        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
+            if getattr(self, child + "_check").isChecked():
+                missing = [getattr(self, key + "_check").text() for key in parents
+                           if not getattr(self, key + "_check").isChecked()]
+                if missing:
+                    return getattr(self, child + "_check").text() + " requires: " + ", ".join(missing) + "."
+        if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
+            return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
             from mod_editor.core.nfl2k5_model_project import validate_build_plan
             from mod_editor.core.errors import ValidationError
@@ -1920,14 +2626,19 @@ class BuildPanel(QWidget):
             problem = self._weather_plan_problem()
             if problem:
                 return problem
+        if self.custom_intro_check.isChecked():
+            problem = self._custom_intro_problem()
+            if problem:
+                return problem
+        if (self.modern_venues_check.isEnabled() and self.modern_venues_check.isChecked()
+                and (self._state or {}).get("modern_venues_2026") == "retail"):
+            problem = self._modern_venues_problem()
+            if problem:
+                return problem
         target = self.target_field.text().strip()
         if not target:
             return "Choose where to save the disc."
-        try:
-            same = Path(target).resolve() == Path(source).resolve()
-        except OSError:
-            same = target == source
-        if same:
+        if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
         return ""
 
@@ -2046,7 +2757,7 @@ class BuildPanel(QWidget):
             combo.setEnabled(False)
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
-        for key in ("coin_defer", "decided_clock"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early"):
             if (self._state or {}).get(key) == "applied":
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
@@ -2134,6 +2845,49 @@ class BuildPanel(QWidget):
             raise ValueError("Senior Bowl is preparation only; use a seed from 0 to 2147483647")
         import copy
         self._senior_bowl_options = copy.deepcopy(options)
+        self._refresh()
+
+    def _anniversary_toggled(self, child, on):
+        if on:
+            for parent in ANNIVERSARY_DEPENDENCIES[child]:
+                box = getattr(self, parent + "_check")
+                if box.isEnabled():
+                    box.setChecked(True)
+        self._refresh()
+
+    def _anniversary_parent_toggled(self, child, on):
+        box = getattr(self, child + "_check")
+        if not on and box.isEnabled():
+            box.setChecked(False)
+        self._refresh()
+
+    def _exclusive_books(self, selected, other, on):
+        box = getattr(self, other + "_check")
+        if on and box.isEnabled():
+            box.setChecked(False)
+        self._refresh()
+
+    def _choose_official_marks_pack(self):
+        folder = QFileDialog.getExistingDirectory(self, "Choose official marks pack")
+        if folder:
+            self.official_marks_pack_field.setText(folder)
+
+    def _official_marks_pack_changed(self):
+        folder = self.official_marks_pack_field.text().strip()
+        for key, box, check in (
+            ("espn_marks_2026", self.espn_marks_check, mod_build._espn_marks_available),
+            ("espn_wipes_boards_2026", self.espn_wipes_boards_check, mod_build._espn_wipes_boards_available),
+        ):
+            available = check(folder)
+            self._available[key] = available
+            state = self._state or {}
+            ready = available and state.get("container") == "xiso" and state.get(key) == "retail"
+            box.setEnabled(ready)
+            if not ready:
+                box.setChecked(state.get(key) == "applied")
+            self._set_badge(key, "EXPERIMENTAL / UNWITNESSED" if ready else
+                            "Official marks pack missing" if not available else
+                            "Already in this source" if state.get(key) == "applied" else "Full supported disc required")
         self._refresh()
 
     def _parent_toggled(self, parent, on):
@@ -2244,7 +2998,8 @@ class BuildPanel(QWidget):
         if not chosen:
             return
         try:
-            self.apply_state(mod_build.inspect(Path(chosen)))
+            from mod_editor.core.studio_inspection import inspect_source
+            self.apply_state(inspect_source(Path(chosen), marks_pack=self.official_marks_pack_field.text().strip()))
         except Exception as exc:  # noqa: BLE001
             show_operation_error(self, "read that file", str(exc))
 
@@ -2285,6 +3040,37 @@ class BuildPanel(QWidget):
         self.weather_status.setText(f"Saved climate plan: {Path(name).name}. EXPERIMENTAL / UNWITNESSED.")
         self._refresh()
 
+    def _choose_custom_intro(self):
+        name, _ = QFileDialog.getOpenFileName(self, "Choose the custom intro movie", "",
+                                              "Game movie (*.mov *.sfd);;All files (*)")
+        if name:
+            self.set_custom_intro(name)
+
+    def set_custom_intro(self, name):
+        self.custom_intro_field.setText(str(name))
+        self.custom_intro_check.setChecked(bool(name) and self.custom_intro_check.isEnabled())
+        self._refresh()
+
+    def _custom_intro_problem(self):
+        """The movie is checked against every retail rule once per file version."""
+        from mod_editor.core import nfl2k5_custom_intro as custom_intro
+        name = self.custom_intro_field.text().strip()
+        if not name:
+            return "Choose the custom intro movie (make one with tools/nfl2k5_intro_encode.py)."
+        try:
+            info = Path(name).stat()
+        except OSError:
+            return f"The custom intro movie was not found: {name}"
+        key = (name, info.st_size, info.st_mtime_ns)
+        if self._custom_intro_cache[0] != key:
+            try:
+                custom_intro.read_movie(name)
+                problem = ""
+            except (OSError, ValueError) as exc:
+                problem = f"The custom intro movie cannot be used: {exc}"
+            self._custom_intro_cache = (key, problem)
+        return self._custom_intro_cache[1]
+
     def _open_weather_editor(self):
         module = mod_build._tools_module("nfl2k5_weather_editor")
         if module is None:
@@ -2293,6 +3079,11 @@ class BuildPanel(QWidget):
         dialog = module.WeatherDialog(self.source_field.text().strip(), self)
         dialog.saved.connect(self.set_weather_plan)
         dialog.exec()
+
+    def _number_kerning_changed(self):
+        """Only turning the option on counts: Off leaves an already-kerned source as it is (b76-k2)."""
+        state = (self._state or {}).get("number_kerning")
+        return bool(self.number_kerning_check.isEnabled() and state == "retail" and self.number_kerning_check.isChecked())
 
     def _weather_haze_changed(self):
         state = (self._state or {}).get("weather_haze")
@@ -2303,6 +3094,82 @@ class BuildPanel(QWidget):
         """Only turning the option on counts: Off leaves an already-modern source as it is."""
         state = (self._state or {}).get("modern_arrowhead")
         return bool(self.modern_arrowhead_check.isEnabled() and state == "retail" and self.modern_arrowhead_check.isChecked())
+
+    def _modern_metlife_changed(self):
+        """Only turning the option on counts: Off leaves an already-MetLife source as it is."""
+        state = (self._state or {}).get("modern_metlife")
+        return bool(self.modern_metlife_check.isEnabled() and state == "retail" and self.modern_metlife_check.isChecked())
+
+    def _modern_venues_changed(self):
+        """b76-u4: only turning the option on with a folder counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("modern_venues_2026")
+        return bool(self.modern_venues_check.isEnabled() and state == "retail" and self.modern_venues_check.isChecked()
+                    and self.modern_venues_field.text().strip())
+
+    def _choose_modern_venues(self):
+        name = QFileDialog.getExistingDirectory(self, "Choose the folder of 2026 team venue art")
+        if name:
+            self.set_modern_venues(name)
+
+    def set_modern_venues(self, name):
+        self.modern_venues_field.setText(str(name))
+        self.modern_venues_check.setChecked(bool(name) and self.modern_venues_check.isEnabled())
+        self._refresh()
+
+    def _modern_venues_problem(self):
+        """The art folder is read (every file against its manifest) once per folder state; the Kansas City rule
+        is checked against the Modern Arrowhead box."""
+        from mod_editor.core import nfl2k5_modern_venues_2026 as modern_venues
+        name = self.modern_venues_field.text().strip()
+        if not name:
+            return "Choose the folder of 2026 team venue art (one <team>/venue folder per team)."
+        folder = Path(name)
+        if not folder.is_dir():
+            return f"The 2026 venue art folder was not found: {name}"
+        try:
+            stamp = tuple(sorted((str(m), m.stat().st_mtime_ns) for m in folder.glob("*/venue/manifest.json")))
+        except OSError:
+            stamp = ()
+        key = (name, stamp)
+        if self._modern_venues_cache[0] != key:
+            try:
+                art = modern_venues.load_art(folder)
+                problem = "" if (art["venues"] or art["league"]) else f"No team venue art in {name} (expected <team>/venue/manifest.json)."
+                kc = modern_venues.ARROWHEAD_VENUE in art["venues"]
+            except (OSError, ValueError) as exc:
+                problem, kc = f"The 2026 venue art cannot be used: {exc}", False
+            self._modern_venues_cache = (key, (problem, kc))
+        problem, kc = self._modern_venues_cache[1]
+        if not problem and kc and self.modern_arrowhead_check.isChecked():
+            return "Modern Arrowhead and the 2026 venue art would both write the Kansas City packages. Turn Modern Arrowhead off."
+        return problem
+
+    def _modern_metlife_model_changed(self):
+        """Only turning the option on counts: Off leaves an already-modelled source as it is."""
+        state = (self._state or {}).get("modern_metlife_model")
+        return bool(self.modern_metlife_model_check.isEnabled() and state in ("retail", "skin")
+                    and self.modern_metlife_model_check.isChecked())
+
+    def _modern_helmets_changed(self):  # b76-hm
+        """Only turning the option on counts: Off leaves a source that already has the helmets as it is."""
+        state = (self._state or {}).get("modern_helmets")
+        return bool(self.modern_helmets_check.isEnabled() and state == "retail" and self.modern_helmets_check.isChecked())
+
+    def _espn_marks_changed(self):
+        """Only turning the option on counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("espn_marks_2026")
+        return bool(self.espn_marks_check.isEnabled() and state == "retail" and self.espn_marks_check.isChecked())
+
+    def _espn_wipes_boards_changed(self):  # b76-p2
+        """Only turning the option on counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("espn_wipes_boards_2026")
+        return bool(self.espn_wipes_boards_check.isEnabled() and state == "retail"
+                    and self.espn_wipes_boards_check.isChecked())
+
+    def _kick_meter_changed(self):  # b76-km
+        """Only turning the option on counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("kick_meter_2026")
+        return bool(self.kick_meter_check.isEnabled() and state == "retail" and self.kick_meter_check.isChecked())
 
     def _modern_color_changed(self):
         from mod_editor.core import nfl2k5_modern_color as colour
@@ -2470,9 +3337,69 @@ class BuildPanel(QWidget):
         from .gameplay_project_ui import capture
         return capture(self)
 
+    def load_softdrink_sources(self, recipe):
+        from mod_editor.core import modpack_sources, nfl2k5_build_settings
+        plan = modpack_sources.build_plan(recipe)
+        self.restore_project_build_settings(nfl2k5_build_settings.from_plan(plan))
+        # Sources can be loaded before a disc. Keep requested path options
+        # checked while their availability is waiting for source inspection.
+        self.custom_intro_check.setChecked(bool(plan.custom_intro))
+        self.modern_venues_check.setChecked(bool(plan.modern_venues_2026))
+        self.softdrink_project_field.setText(recipe["project"])
+        self.softdrink_project_check.setChecked(True)
+        self.softdrink_project_check.show()
+        self.softdrink_project_field.show()
+        self.softdrink_art_button.show()
+        self._refresh()
+
+    def _softdrink_build_settings(self):
+        choices = self.project_build_settings()
+        # plan() intentionally omits source-gated edits before a clean image
+        # is inspected. Preserve the user's actual selections across that read.
+        for key, box in self._boxes().items():
+            if isinstance(choices.get(key), bool):
+                choices[key] = box.isChecked()
+        for key, box, field in (
+            ("custom_intro", self.custom_intro_check, self.custom_intro_field),
+            ("modern_venues_2026", self.modern_venues_check, self.modern_venues_field),
+        ):
+            choices[key] = field.text().strip() if box.isChecked() else ""
+        return choices
+
+    def choose_softdrink_art(self):
+        from .modpack_sources_qt import SourceSelection
+        dialog = None
+        try:
+            dialog = SourceSelection(self.softdrink_project_field.text(), self)
+            if dialog.exec_() != dialog.Accepted:
+                return
+            source = Path(self.softdrink_project_field.text())
+            output, _ = QFileDialog.getSaveFileName(self, "Save selected league artwork", str(source.with_name("SOFTDRINK-league-selected.json")), "League project (*.json)")
+            if output:
+                dialog.save(output, overwrite=platform_compat.io_path(output).exists())
+                self.softdrink_project_field.setText(output)
+        except (ValueError, OSError) as exc:
+            show_operation_error(self, "select league artwork", str(exc))
+        finally:
+            if dialog is not None:
+                dialog.deleteLater()
+
     def restore_project_build_settings(self, state):
         from .gameplay_project_ui import restore
+        from mod_editor.core import nfl2k5_build_settings as saved
+        self.official_marks_pack_field.setText(saved.build_settings(state).get("official_marks_pack") or "")
         restore(self, state)
+        # b76-i1: the custom intro movie path is not one of the shared path fields
+        from mod_editor.core import nfl2k5_build_settings as saved
+        movie = saved.build_settings(state).get("custom_intro") or ""
+        if movie:
+            self.custom_intro_field.setText(movie)
+            self.custom_intro_check.setChecked(self.custom_intro_check.isEnabled())
+        # b76-u4: the 2026 venue art folder is not one of the shared path fields either
+        venue_art = saved.build_settings(state).get("modern_venues_2026") or ""
+        if venue_art:
+            self.modern_venues_field.setText(venue_art)
+            self.modern_venues_check.setChecked(self.modern_venues_check.isEnabled())
 
     def music_build_settings(self):
         document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
@@ -2496,20 +3423,20 @@ class BuildPanel(QWidget):
 
     def _add_option_pack(self):
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_option.2k5book")
-        if Path(seed).resolve() not in {Path(p).resolve() for p in self.playbook_packs}:
+        if not any(platform_compat.paths_alias(seed, p) for p in self.playbook_packs):
             self.set_playbook_packs([*self.playbook_packs, seed])
 
     def _add_match_coverage_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_match_coverage.2k5book")
         paths = list(self.playbook_packs)
-        if Path(seed).resolve() not in {Path(path).resolve() for path in paths}:
+        if not any(platform_compat.paths_alias(seed, path) for path in paths):
             paths.append(seed)
         self.set_playbook_packs(paths)
 
     def _add_modern_defense_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")
         paths = list(self.playbook_packs)
-        if Path(seed).resolve() not in {Path(path).resolve() for path in paths}:
+        if not any(platform_compat.paths_alias(seed, path) for path in paths):
             paths.append(seed)
         self.set_playbook_packs(paths)
 
@@ -2579,6 +3506,8 @@ class BuildPanel(QWidget):
                   else f"New {'disc' if is_image else 'executable'}: {plan.target}"),
                  "", "Changes: " + (", ".join(self.selected_labels()) or "none")]
         files = []
+        if self.softdrink_project_check.isChecked():
+            files.append(f"SOFTDRINK league artwork: {self.softdrink_project_field.text()}")
         if plan.team_history and plan.team_history != "retail":
             files.append(f"team history CSV: {Path(plan.team_history).name}")
         if plan.career_stats:
@@ -2589,6 +3518,10 @@ class BuildPanel(QWidget):
             files.append(f"roster edits: {Path(plan.roster_edits).name}")
         if plan.weather_plan:
             files.append(f"Climate plan: {Path(plan.weather_plan).name}")
+        if plan.custom_intro:
+            files.append(f"custom intro movie: {Path(plan.custom_intro).name}")
+        if plan.modern_venues_2026:
+            files.append(f"2026 venue art: {Path(plan.modern_venues_2026).name}")
         if plan.espn25_plan:
             files.append(f"ESPN Anniversary plan: {Path(plan.espn25_plan).name}")
         if plan.playbook_packs:
@@ -2666,16 +3599,21 @@ class BuildPanel(QWidget):
         return bool(getattr(self._facade, "_session", None) is not None
                     and getattr(self._facade, "modified_count", 0))
 
-    def _build_operation(self, plan, progress, include_session=False):
+    def _build_operation(self, plan, progress, include_session=False, softdrink_project=None):
         if plan.modern_naming and getattr(self._facade, "source_ready", False):
             tt.modern_naming_patch.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
                                                     value_lookup=self._facade.text_value)
         if plan.team_names_2026 and getattr(self._facade, "source_ready", False):
-            if Path(plan.source).resolve() == Path(self._facade.source_path).resolve():
+            if platform_compat.paths_alias(plan.source, self._facade.source_path):
                 from mod_editor.core import nfl2k5_team_names_2026 as names
                 names.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
                                         value_lookup=self._facade.text_value)
-        if not include_session:
+        if softdrink_project:
+            if include_session:
+                raise ValueError("Save the open project's edits, then start a clean session to build the SOFTDRINK source project, or turn off Include SOFTDRINK league artwork.")
+            from mod_editor.core import modpack_sources
+            receipt = modpack_sources.build_project(plan, softdrink_project, progress)
+        elif not include_session:
             receipt = mod_build.build(plan, progress)
         else:
             source = _resolved_build_file(plan.source, "The file to build from")
@@ -2693,7 +3631,8 @@ class BuildPanel(QWidget):
         progress("Reading the finished disc's settings", 0, 0)
         receipt["_build_panel_state"] = None
         try:
-            receipt["_build_panel_state"] = mod_build.inspect(Path(receipt["target"]))
+            from mod_editor.core.studio_inspection import inspect_source
+            receipt["_build_panel_state"] = inspect_source(Path(receipt["target"]), marks_pack=plan.official_marks_pack)
         except Exception:
             pass
         return receipt
@@ -2726,7 +3665,8 @@ class BuildPanel(QWidget):
         self._last_build_summary = self._requested_build_summary + "\n\nBuild in progress."
         self.copy_summary_button.setEnabled(True)
         include_session = self._include_session_project()
-        task = _Task(lambda progress: self._build_operation(plan, progress, include_session))
+        softdrink_project = self.softdrink_project_field.text().strip() if self.softdrink_project_check.isChecked() else None
+        task = _Task(lambda progress: self._build_operation(plan, progress, include_session, softdrink_project))
         task.signals.progress.connect(self.progress_label.setText)
         task.signals.counts.connect(self._progress_counts)
         task.signals.finished.connect(self._done)

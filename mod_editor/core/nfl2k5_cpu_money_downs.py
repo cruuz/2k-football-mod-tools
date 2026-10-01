@@ -18,6 +18,7 @@ from types import SimpleNamespace
 from . import nfl2k5_cpu_money_downs_code as assembly
 from . import nfl2k5_gameplay_lever as lever
 from . import nfl2k5_xbe_space as space
+from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_cpu_money_downs"
 CODE_SIZE = 2048
@@ -129,10 +130,21 @@ def sites(va):
              b"\x90" * (len(before) - 5)) for name, (hook, before) in HOOKS.items()]
 
 
+def _neighbors(payload):
+    """b76-vb3: the 25th Anniversary kickoff gate enters the pinned diagram reader FUN_0017FE60 through a 7-byte
+    trampoline. Restore its retail entry for the hash only after that owner's complete recognizer accepts it."""
+    from . import nfl2k5_anniversary_kickoff as anniversary
+    va, entry = dict(anniversary.READER_SITES)["reader_diagram"], anniversary.READER_ENTRY
+    if XbeImage(payload).read(va, len(entry)) == entry:
+        return ()
+    space._require(anniversary.status(payload) == "applied", "Foreign play-call diagram reader neighbor")
+    return ((va, entry),)
+
+
 def _adapter(level):
     return SimpleNamespace(OWNER=OWNER, CODE_SIZE=CODE_SIZE, REQUESTS=REQUESTS,
                            GUARDS=GUARDS, sites=sites, mapping=lambda: mapping(level),
-                           code_for=lambda va: code_for(va, level))
+                           code_for=lambda va: code_for(va, level), neighbors=_neighbors)
 
 
 def read_settings(payload):

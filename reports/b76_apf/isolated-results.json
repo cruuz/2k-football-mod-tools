@@ -1,0 +1,79 @@
+{
+  "classification": "PROVED OFFLINE",
+  "cpu_affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "rss_guard_kib": 1350000,
+  "cases": [
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_reserved_code_page_and_exact_revert",
+      "returncode": 0,
+      "tree_peak_rss_kib": 350828,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-00.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_retail_and_patched_full_charge_state_machine",
+      "returncode": 0,
+      "tree_peak_rss_kib": 638200,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-01.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_every_packed_ability_and_unrelated_bit",
+      "returncode": 0,
+      "tree_peak_rss_kib": 393484,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-02.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_qb_gate_and_passing_mode_qualification",
+      "returncode": 0,
+      "tree_peak_rss_kib": 588632,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-03.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_real_caller_cpu_bypass",
+      "returncode": 0,
+      "tree_peak_rss_kib": 607184,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-04.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_beta75_feedback_mismatch_and_current_regression",
+      "returncode": 0,
+      "tree_peak_rss_kib": 593952,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-05.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_feedback_quantization_partial_charge_and_discharge_interpolation",
+      "returncode": 0,
+      "tree_peak_rss_kib": 378296,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-06.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_b69_launch_patches.py",
+      "returncode": 0,
+      "tree_peak_rss_kib": 81452,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-07.log"
+    },
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_qt.py",
+      "returncode": 0,
+      "tree_peak_rss_kib": 91952,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/isolated-08.log"
+    }
+  ]
+}

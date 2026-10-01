@@ -122,6 +122,8 @@ def reclassified_retail_body() -> bytes:
 
     import nfl2k5_roster_reclassify as reclassify
 
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(RETAIL_EXTRACTION)
     with reclassify.OuterImage(RETAIL_EXTRACTION) as archive:
         resource = reclassify.load_resources(archive, historic=False)[0]
     body = bytearray(resource.body)
@@ -1254,6 +1256,41 @@ class ImageWriterTests(unittest.TestCase):
 
 # --------------------------------------------------------------------------------------------- retail
 @unittest.skipUnless(HAVE_RETAIL, "the retail extraction is not present")
+class TeamUniformYearsTests(unittest.TestCase):
+    """``teams`` entries relabel a team's existing uniform styles (the Rams' 2026 alternates, job u7)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.body = retail_body()
+
+    def pairs(self, body: bytes, index: int) -> list[tuple[int, int]]:
+        team = next(t for t in rr.RosterDocument(body).teams if t.index == index)
+        return [struct.unpack_from("<HH", body, team.offset + rr.TEAM_UNIFORM_YEARS + 4 * k)
+                for k in range(rr.TEAM_UNIFORM_STYLES)]
+
+    def test_existing_styles_are_relabelled_and_nothing_else_changes(self) -> None:
+        doc = {"schema": rr.EDITS_SCHEMA, "edits": [], "teams": [
+            {"team_index": 23, "team": "STL", "uniform_years": {"10": [2026, 1], "11": [2026, 2], "12": [2026, 3]}}]}
+        out, receipt = rr.apply_body(self.body, doc)
+        self.assertEqual(receipt["team_uniform_years_written"], 3)
+        self.assertEqual(receipt["log"], [])
+        before, after = self.pairs(self.body, 23), self.pairs(out, 23)
+        self.assertEqual(before[9:12], [(2004, 1), (2004, 2), (2004, 3)])
+        self.assertEqual(after[9:12], [(2026, 1), (2026, 2), (2026, 3)])
+        self.assertEqual(after[:9] + after[12:], before[:9] + before[12:])
+        self.assertEqual(sum(1 for a, b in zip(self.body, out) if a != b), 3)   # the three first-year words
+
+    def test_a_missing_style_a_zero_pair_or_a_wrong_team_is_refused(self) -> None:
+        doc = {"schema": rr.EDITS_SCHEMA, "edits": [], "teams": [
+            {"team_index": 23, "uniform_years": {"13": [2026, 4], "10": [0, 0]}},
+            {"team_index": 23, "team": "SEA", "uniform_years": {"10": [2026, 1]}}]}
+        out, receipt = rr.apply_body(self.body, doc)
+        self.assertEqual(receipt["team_uniform_years_written"], 0)
+        self.assertEqual(len(receipt["log"]), 3)
+        self.assertEqual(out, rr.RosterDocument(self.body).to_body())
+
+
+@unittest.skipUnless(HAVE_RETAIL, "the retail extraction is not present")
 class RetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -1397,9 +1434,16 @@ class RetailTests(unittest.TestCase):
         # beta 66: the document preflight parses the roster edits before any copy; the passes start after it
         passes = source.index("if _preflight_only:")
         order = [source.index(f"if plan.{name}:", passes) for name in
-                 ("position_pools", "season_2026", "team_history", "prospect_names", "player_tags",
-                  "roster_edits")]
-        self.assertEqual(order, sorted(order), "roster_edits is the last ROST pass in build()")
+                 ("position_pools", "season_2026", "prospect_names", "player_tags")]
+        order.append(source.index("_apply_roster_history(plan, target, receipt, progress)", passes))
+        self.assertEqual(order, sorted(order), "the roster edits and their history run after names and tags")
+        # b76 fr (19d8a89c): one history owner. The roster edits (identities) are the last ROST pass that edits
+        # players; the optional history imports that follow attach to those identities: counters, then TEAM (the
+        # retail TEAM fallback only when the edits carry no franchise history).
+        owner = source.index("def _apply_roster_history(")
+        inner = [source.index(marker, owner) for marker in
+                 ("if plan.roster_edits:", "if plan.career_stats:", "if plan.team_history and not modern_history:")]
+        self.assertEqual(inner, sorted(inner), "identities, then counters, then TEAM")
 
 
 # --------------------------------------------------------------------------------------- schemes

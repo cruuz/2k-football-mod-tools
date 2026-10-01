@@ -38,9 +38,10 @@ class SettingsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             settings.build_settings({'trim_intro_videos': 1})
 
-    def test_combined_archive_shrink_refuses_before_build_copy(self):
+    def test_combined_archive_shrink_with_the_crib_cut_is_allowed(self):
+        # b76-f2: the shrink past pack F spills into the packs before it
         plan = mod_build.BuildPlan('source.iso','output.iso',trim_intro_videos=True,crib_reclaim=True)
-        self.assertIn('final-pack capacity',mod_build.validate_plan(plan)[0])
+        self.assertEqual(mod_build.validate_plan(plan),[])
 
 
 
@@ -172,24 +173,65 @@ class RetailTests(unittest.TestCase):
         self.assertFalse(list(root.glob('.archive-*')))
 
     def test_build_pipeline_reports_real_bytes_and_off_never_runs_trim(self):
-        root,source=self.fixture()
-        p=mod_build.BuildPlan(str(source),str(root/'built.iso'),trim_intro_videos=True,
-                             camera=False,catch_slider=False,accel_ramp=False)
-        # Synthetic archive has the true movie/XBE contract, no fabricated gameplay
-        # resources. Bypass unrelated inspectors, keep Build's copy/publication and trim.
+        for compact_source in (False, True):
+            with self.subTest(compact_source=compact_source):
+                root,source=self.fixture()
+                if compact_source:
+                    from mod_editor.core import xdvdfs_compact
+                    xdvdfs_compact.finish_private(source)
+                p=mod_build.BuildPlan(str(source),str(root/'built.iso'),trim_intro_videos=True,
+                                     camera=False,catch_slider=False,accel_ramp=False)
+                # Synthetic archive has the true movie/XBE contract, no fabricated gameplay
+                # resources. Bypass unrelated inspectors, keep Build's copy/publication and trim.
+                with mock.patch.object(mod_build,'inspect',return_value={'container':'xiso'}), \
+                     mock.patch.object(mod_build.tt,'_check_installed_runtime_settings'), \
+                     mock.patch.object(mod_build.tt,'_naming_source_preflight'), \
+                     mock.patch.object(mod_build.tt,'_grown_status_fields',return_value={}), \
+                     mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+                    receipt=mod_build.build(p)
+                    self.assertEqual(receipt['intro_video_payload_bytes_freed'],4*4096)
+                    self.assertEqual(receipt['intro_video_disc_bytes_freed'],source.stat().st_size-(root/'built.iso').stat().st_size)
+                    self.assertEqual(receipt['intro_video_gamedata_memory_credit'],0)
+                    self.assertEqual(receipt['result']['trim_intro_videos'],'applied')
+                    with mock.patch.object(cut,'finish_output',side_effect=AssertionError('off must not trim')):
+                        off=mod_build.build(replace(p,target=str(root/'off.iso'),trim_intro_videos=False))
+                    self.assertNotIn('intro_video_disc_bytes_freed',off)
+                self.assertFalse(list(root.glob('.studio-build-*')))
+
+    def test_crib_cut_and_trim_spill_into_pack_e_in_either_order_and_build(self):
+        # b76-f2: the Crib cut leaves pack F smaller than this trim frees
+        from tests.mod_editor.test_nfl2k5_custom_intro import CribFixture, pack_extents
+        fx = CribFixture(self, self.retail)
+        crib.rebuild(fx.source, fx.root/'cut.iso')
+        cut_f = pack_extents(fx.root/'cut.iso')['F'][1]
+        planned = cut.plan(fx.root/'cut.iso')
+        self.assertGreater(planned['archive_bytes_reclaimed'], cut_f)
+        self.assertEqual(planned['layout']['resized_packs'], ['E'])
+        cut.rebuild(fx.root/'cut.iso', fx.root/'both.iso', expected_plan=planned)
+        both = pack_extents(fx.root/'both.iso')
+        self.assertEqual(both['F'][1], 2048)
+        self.assertEqual(both['E'][1], fx.PACK - (planned['archive_bytes_reclaimed'] - cut_f + 2048))
+        self.assertEqual(both['E'][0] + both['E'][1], both['F'][0])
+        self.assertEqual(cut.image_status(fx.root/'both.iso'), 'applied')
+        self.assertTrue(crib.plan(fx.root/'both.iso')['already_applied'])
+        cut.rebuild(fx.source, fx.root/'trim.iso')
+        crib.rebuild(fx.root/'trim.iso', fx.root/'trim_cut.iso')
+        self.assertEqual(archive.file_hash(fx.root/'trim_cut.iso'), archive.file_hash(fx.root/'both.iso'))
+        p = mod_build.BuildPlan(str(fx.source), str(fx.root/'built.iso'), trim_intro_videos=True, crib_reclaim=True,
+                                camera=False, catch_slider=False, accel_ramp=False)
         with mock.patch.object(mod_build,'inspect',return_value={'container':'xiso'}), \
              mock.patch.object(mod_build.tt,'_check_installed_runtime_settings'), \
              mock.patch.object(mod_build.tt,'_naming_source_preflight'), \
-             mock.patch.object(mod_build.tt,'_grown_status_fields',return_value={}):
-            receipt=mod_build.build(p)
-            self.assertEqual(receipt['intro_video_payload_bytes_freed'],4*4096)
-            self.assertEqual(receipt['intro_video_disc_bytes_freed'],source.stat().st_size-(root/'built.iso').stat().st_size)
-            self.assertEqual(receipt['intro_video_gamedata_memory_credit'],0)
-            self.assertEqual(receipt['result']['trim_intro_videos'],'applied')
-            with mock.patch.object(cut,'finish_output',side_effect=AssertionError('off must not trim')):
-                off=mod_build.build(replace(p,target=str(root/'off.iso'),trim_intro_videos=False))
-            self.assertNotIn('intro_video_disc_bytes_freed',off)
-        self.assertFalse(list(root.glob('.studio-build-*')))
+             mock.patch.object(mod_build.tt,'_grown_status_fields',return_value={}), \
+             mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            receipt = mod_build.build(p)
+        steps = [s['step'] for s in receipt['steps']]
+        self.assertLess(steps.index('crib_reclaim'), steps.index('trim_intro_videos'))
+        self.assertEqual(receipt['result']['trim_intro_videos'], 'applied')
+        self.assertEqual(pack_extents(fx.root/'built.iso'), both)
+        self.assertEqual(archive.file_hash(fx.source), fx.original)
+        self.assertFalse(list(fx.root.glob('.archive-*')))
+        self.assertFalse(list(fx.root.glob('.studio-build-*')))
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(),'Unicorn or pinned USA retail default.xbe is absent')
@@ -223,6 +265,8 @@ class NativeTests(unittest.TestCase):
     def test_every_stream_missing_stub_and_native_header_allocation(self):
         path=XBE.parent/'vc_53450030/0'
         if not path.is_file():self.skipTest('retail packs are absent')
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(path.parents[1])
         a=parse_archive(path); rows=[]
         for i,name in enumerate(NAMES,4293):
             entry=a.entries[i]

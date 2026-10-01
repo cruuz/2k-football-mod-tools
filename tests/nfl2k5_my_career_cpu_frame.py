@@ -34,6 +34,8 @@ def retail_skeletons():
         (116, 1462576, 480, b'SKEL', 'd057905e5848bb89df1d4ec766f598ae56bc4664c9bc6bbd3bc1493b1ce7f463'),
     )
     result = []
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(XBE.parent)
     with roster._outer_image()(XBE.parent) as archive:
         entry = archive.entries[3]
         if entry.size != 2387424:

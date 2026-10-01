@@ -226,8 +226,8 @@ class ApfPlayCallingEditor(QWidget):
         situation_root.addWidget(self.situation_picker)
         self.situation_note = note(situation_root, "")
         note(situation_root, "Select a candidate to fine-tune its weights beside this table; personnel controls are below. Adding, removing or changing personnel edits the shared book, "
-             "so it affects every situation using that data. These 23 preview buckets are not independent stored formation lists.")
-        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nproduct", "Formation\nweight", "Curve\nterm", "Ratings\nmean", "Personnel\nrank", "Retail\nweight", "Row: retail /\neffective", "Draw status"), "All ordinary situation candidates before the draw")
+             "so it affects every situation using that data. These 23 coaching samples map to the Live situations controls below. Live formation multipliers and exclusions are independent per book and live bucket.")
+        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nproduct", "Formation\nweight", "Curve\nterm", "Ratings\nmean", "Personnel\nrank", "Retail\nweight", "Row: retail /\neffective", "Draw status", "Formation retail", "Situation multiplier"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         self.candidate_table.setMinimumHeight(180)
         candidate_row = QHBoxLayout()
@@ -695,7 +695,9 @@ class ApfPlayCallingEditor(QWidget):
                                      f"{c.get('curve_term', 1.):.7g}", f"{c.get('ratings_term', c['category_weight']):.7g}",
                                      c.get('rank', ''), f"{c.get('retail_weight', c['category_weight']):.7g}",
                                      f"{c.get('stored_row', '')} / {c.get('effective_row', '')}",
-                                     'Fallback' if c.get('fallback') else 'Candidate' if c.get('active', True) else 'Excluded') for c in row["candidates"]])
+                                     'Fallback' if c.get('fallback') else 'Candidate' if c.get('active', True) else 'Excluded',
+                                     f"{c.get('formation_retail_weight', c['formation_weight']):.7g}",
+                                     f"{c.get('formation_multiplier', 1.):g}x") for c in row["candidates"]])
         self._updating = False
         header = self.candidate_table.horizontalHeader()
         header.setMinimumSectionSize(60)

@@ -24,10 +24,21 @@ from mod_editor.core import nfl2k5_practice_squad as ps
 from mod_editor.core import nfl2k5_franchise_practice as fp
 from mod_editor.core import nfl2k5_practice_reserves as pr
 from mod_editor.core import nfl2k5_xbe_space as space
+from mod_editor.core import nfl2k5_lineman_rating as lineman
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
+
+
+class LinemanRating:
+    """the1wam's lineman rating: two fixed .text spans, no allocation (beta 76 f1: in the ultimate
+    recipe beside the generic MyCareer, whose native-context guard holds its dispatch hook)."""
+    OWNER = "nfl2k5_lineman_rating"
+    status = staticmethod(lineman.status)
+    apply = staticmethod(lineman.apply)
+
+
 # The ten integration owners requested in the brief, plus both screen partners.
 # QB spy includes the landed man/rush hooks; Read option v5 retains its existing reservation.
 OWNERS = (
@@ -63,6 +74,7 @@ OWNERS = (
     ("static_scorebar_v3", stack.StaticScorebar),
     ("cpu_money_downs", stack.money_downs),
     ("franchise_edit_player", stack.edit_player),
+    ("the1wam_lineman_rating", LinemanRating),
 )
 
 

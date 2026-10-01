@@ -197,6 +197,8 @@ class PrivateResourceTests(unittest.TestCase):
         from nfl_scene_probe import record_from_header
         from nfl_main_menu_font import parse_font
         from layout_inventory import relative, parse_chain, NFL_RECORD_SIZES
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(ARCHIVE_INDEX.parents[1])
         archive = parse_archive(ARCHIVE_INDEX)
         raw = read_entry_bytes(archive, archive.entries[3], max_size=3_000_000)
         chunks = parse_chunks(raw)

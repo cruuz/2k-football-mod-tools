@@ -1,0 +1,470 @@
+[
+  {
+    "venue": "s00",
+    "team": "ARI",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "7de84f7e39c5ca86c72e38a07117c86766684b9e7402a091a25c17b7806a88d5",
+    "master_sha256": "d389978c4dd0a6fa869e75f1483b528b93a5c4ad0c20e05baec039a40a1ac788"
+  },
+  {
+    "venue": "s00",
+    "team": "ARI",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "e83d1f5887017a9d90b4e6e9ee6b4c615ad2a01d9e413f7cf6de86533a516b56",
+    "master_sha256": "42a703ca0844b1ebcb84919feb329cb4b25cc8bf304bb2fdfd33fda5493924e5"
+  },
+  {
+    "venue": "s00",
+    "team": "ARI",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "b00247e2dfcb892f1593d12e96b1f99626db5d30dee3faf1414ca30cee144bbf",
+    "master_sha256": "d88564b49077b5c7e889ac58ecb986974014b58ba30a08679667c36fb220dcec"
+  },
+  {
+    "venue": "s01",
+    "team": "ATL",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "6ad3455b65e7f91f60d939439f384c3b8e5ac8d026fd658f1bb47a3d27354293",
+    "master_sha256": "22443ffb5fdbc756be58f0bc95843a2c5cca7d71ea7356a529a26e49fd26ed47"
+  },
+  {
+    "venue": "s01",
+    "team": "ATL",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "e822887fbde00a9b4b872504d2702af03cf4644722f6803afa7242953f59a45a",
+    "master_sha256": "038310a84d2984783045318b90c51c5efc91f002a63389005591dd698e2516cf"
+  },
+  {
+    "venue": "s01",
+    "team": "ATL",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "d26d64ab906c573be61ac71e4207e02ba078be0029c974e62111c1771b23b6e0",
+    "master_sha256": "55aea6adb8bdf2b98924f4e64b26682503fb804f2bc8640c5c306f5b92d26754"
+  },
+  {
+    "venue": "s03",
+    "team": "BUF",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "ead92c47eba55b300c1b2995ab1e572b80963830ec4bac358e7c2e122f47f166",
+    "master_sha256": "4ef1421fbd6a1433b5929d7649eae5fd523950110432ddbb52dafec00c8cdd6e"
+  },
+  {
+    "venue": "s03",
+    "team": "BUF",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "8a779089579273ef359d1b10a100e99de2b261dc9ebcb04d519d2d1845be7d71",
+    "master_sha256": "b4a3dc0c710b7caf2769b8ee5663d149dbf90266974172f3da35cff412a1809d"
+  },
+  {
+    "venue": "s03",
+    "team": "BUF",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "73508fd5d5844abb1f0cd94abe2992c9a9d3877cf9e1b0d5a9b1660cff856622",
+    "master_sha256": "c26719e77c38c9b3bbab1311ec1307d0ee20ee19eb239e9a3a9d513302bc226e"
+  },
+  {
+    "venue": "s07",
+    "team": "DAL",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "7679d77742ce327c069c59ef222526c79b39657a70023fc562ec03003bbf0022",
+    "master_sha256": "85d5cf5c432b1eb57c04ad64fb7f22f62ea5b51ca92961a2d085065ff39f73b2"
+  },
+  {
+    "venue": "s07",
+    "team": "DAL",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "0aa6b51a7c3160b134bd82a89ac8de3b2c18ffa8ccb751159ca6af757bffadbf",
+    "master_sha256": "df754d04a97a38d1564a7e64ae578b7f022e776a56ccbc49d447bf5f0ce3ef28"
+  },
+  {
+    "venue": "s07",
+    "team": "DAL",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "1dcd9c93444ad56c748885a4261498247141b7858b2065f64e00a05128c7238e",
+    "master_sha256": "f1e1e76139c47b3364b66ee9324ea6286f99aa3e48b456f95992834aad138df3"
+  },
+  {
+    "venue": "s10",
+    "team": "GB",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "2e302c5abaa3e849335ec9c8e40d2ec223eb0a734a661b51bc7677e655540b70",
+    "master_sha256": "09dc79b7a76ffd2f5cec9598dfcf44cb0e5b0b2c9a1c52a4262162f300ad980e"
+  },
+  {
+    "venue": "s10",
+    "team": "GB",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "4ce476f0f6c151e3dfb7e81bc6330f9bd24c1e31c65103d4878e0fef6dd995eb",
+    "master_sha256": "bd1401bbc81af79008ddeeeacd5cf1ccb67c4fa0cf6a157cf881962c7116a351"
+  },
+  {
+    "venue": "s10",
+    "team": "GB",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "4524d172ee8d900d5b919ca886ddfee2b9f162eaf887e117fda33c82b4a7a4e1",
+    "master_sha256": "0a28ee86ab18b419120f7dc98e570a24c6b6d0c1a2d43e8bf7261dac28a98bc1"
+  },
+  {
+    "venue": "s11",
+    "team": "IND",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "09f7e8ea67a0181a6675fe07729f6f2eb45f8845d1270b29591b414c3f7dcdf4",
+    "master_sha256": "55925d2573edab355e4b6c37e52eb81f4c409fff903ffddd813056eeb53cf16d"
+  },
+  {
+    "venue": "s11",
+    "team": "IND",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "84736a03054f7411d6b42d7110f2ce31b140b9a15720d3ba87ea2abaac70242c",
+    "master_sha256": "6d51e556c1b7c416df947d6da96ea94acfef9f3d832e99e8954230057f30118a"
+  },
+  {
+    "venue": "s11",
+    "team": "IND",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "19740a3f1670391d27fabb195d536f7ec3eeceb8efc8849beafff32b1e96d736",
+    "master_sha256": "a18a3e753f3500ff41db6abe50a8f160dca97c6f12f886bf7f89f3e251972d5a"
+  },
+  {
+    "venue": "s12",
+    "team": "JAX",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "ee78cb157084066c088310cfffc88084ec4041c205ec4141bf3cdeb70cd7509d",
+    "master_sha256": "56ad6a78b4c0de7613e856208110ea94015b9c18abe6879d3fbecf801b3e7093"
+  },
+  {
+    "venue": "s12",
+    "team": "JAX",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "ce35c6570e2135fc10aaed1ed1be6a8c8ff131930435aed8000188ef0dd79799",
+    "master_sha256": "f3074c775c354d47753298e729845021fe7b7c5e063c01977ed7a9e9e50809f8"
+  },
+  {
+    "venue": "s12",
+    "team": "JAX",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "c2ffe68fba81b8a9db4baa97269d75ad4ff6f0f8c020e19e3951de4bdc825279",
+    "master_sha256": "fb5399519c51e098edd9cc396e61ea02d55347c248556ab92aeaac3d5528aca1"
+  },
+  {
+    "venue": "s14",
+    "team": "MIA",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "ee41b1fb75199bd745d20d2800cf3e3ef1e8a0d10518d24e261849ebd0d8bca7",
+    "master_sha256": "822df8fa9c1fa9cb55b34e3693afcb428dfe22ac57238c1b2f5a85f185cd1aee"
+  },
+  {
+    "venue": "s14",
+    "team": "MIA",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "aff2db7e2b7a44286f181d4b18315192f040b9520a63972cb4ef82c9f1e9e30d",
+    "master_sha256": "2f85df30739eb57a6647f3b159291880047fc9d6ef48c7806d64e08c2cea6a65"
+  },
+  {
+    "venue": "s14",
+    "team": "MIA",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "62f9510e04e3b71e7d78e1c364e92146545cfe779ec06e16766dac7570fd0556",
+    "master_sha256": "f27db5094709276453f389ae43041aef401e08f997cea44fd6838964b8a64e6a"
+  },
+  {
+    "venue": "s15",
+    "team": "MIN",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "9f2fa2fcf804b416ac2f406a8646665b29507de00e93fb039da627c4aedc69dc",
+    "master_sha256": "264fa2b5ab1ab520eac61a99bcbae3fc49108d9df9d8739f71ec6d862183cb85"
+  },
+  {
+    "venue": "s15",
+    "team": "MIN",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "92cb3c389467289fdf51a1bca648f796032ece991a8e53b54a195c5fc93d7dc1",
+    "master_sha256": "f06a744e63630cdc332f6f79163935693470648921baa5b43af1c5615e3bbb58"
+  },
+  {
+    "venue": "s15",
+    "team": "MIN",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "8c02a39d3d319564919e5021959bfec340737cdb703caca2703ca5f6f46f9841",
+    "master_sha256": "05ed79c3034b9745ff96e7596be9826b2a769c52208648b4dcc29651b75a5e5b"
+  },
+  {
+    "venue": "s20",
+    "team": "LV",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "74be809147d578312c919797af382660802aff1569c92ebd98fdb5c83b30bc02",
+    "master_sha256": "727a0300d4a6b25e762259a70f555b965b83c22158e0f88b99f7f54605005dcf"
+  },
+  {
+    "venue": "s20",
+    "team": "LV",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "94c41868a5073f1f5ae41eb8e38f4f21ad4415111fd1b661899810f27291a18e",
+    "master_sha256": "66acf38a2cafb2694b58af15c1502eec4b5fc2a552bdfd982811d8d386363684"
+  },
+  {
+    "venue": "s20",
+    "team": "LV",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "b5a7a49295f7be02ea443cf56ea21f4919302b1656400b4e585152ddbd212929",
+    "master_sha256": "cc390e9b5ab3964866a94e6b9aa6c2eb4705d977e44f6c7ecb3b3688f82b74a9"
+  },
+  {
+    "venue": "s23",
+    "team": "LA",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "e21c83469566aeb179bb645365e1fcf1189f02b1b3581e05f2102f61ebb14f21",
+    "master_sha256": "3d76d4cecbc43f22b2d218f1637cba069248214d866128f77b08be49ded5db49"
+  },
+  {
+    "venue": "s23",
+    "team": "LA",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "290e33f0fddb7ee5ee3fddb0480384341186b18c0a3d506b59fa7ce5eaf98967",
+    "master_sha256": "ac7997f263202837c972988fa19996e2cb6b77ce84f6802626941ce5c9715177"
+  },
+  {
+    "venue": "s23",
+    "team": "LA",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "fea24d12a3350375853f1c77718199abfc513568a67db946b1be3bdce5b4977e",
+    "master_sha256": "bd33caf21f6eb8a928519a00db0d8eaf7e1dbb97f8b510ef1659483355e427a4"
+  },
+  {
+    "venue": "s24",
+    "team": "LAC",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "9e935a5a326c1fbf3398c4fe624b9bd0f26611c43f5146a949bbee8913d70865",
+    "master_sha256": "b7a3c52b8eb385031dd64efe9e0653b004b1e364e85a8d6787a855f607b5614f"
+  },
+  {
+    "venue": "s24",
+    "team": "LAC",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "c4fd0c2ba5fd44a14d0bd66b1f1babaf354ccecb7837b080fbd49134cf6ef3d2",
+    "master_sha256": "88ca06ab62fc07f99e4f1a7947f7c46b8b22c721e328c5e39aae0956cd44b8d6"
+  },
+  {
+    "venue": "s24",
+    "team": "LAC",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "77997653d89f094aa8b0530e300026443a8d50669caa8da5c878790dae368c6e",
+    "master_sha256": "edec558b1579bb73748eeeac46ab10937f9c139f0d1d6d4864264b8522489b36"
+  },
+  {
+    "venue": "s25",
+    "team": "SF",
+    "key": "banner_away_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "82e35f304975ea88921b5802f8097dce24e1e6adaa4c5311dcd559288aed9db6",
+    "master_sha256": "5cf3333ca511bd5afa9ada37772971233cb95cdfc08611bf4c254bc216771da6"
+  },
+  {
+    "venue": "s25",
+    "team": "SF",
+    "key": "banner_home_player",
+    "size": [
+      256,
+      128
+    ],
+    "format": "P8",
+    "sha256": "c405f52b5a1ead0ef5163595874446cb426e090c525d43aa790ba59c165624e2",
+    "master_sha256": "5e7ddb8a5fbc4349aef96495b8071d791ab68732ce4bddd29ace0d4772cd344c"
+  },
+  {
+    "venue": "s25",
+    "team": "SF",
+    "key": "banner_home_team",
+    "size": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "sha256": "2697106f563fd7fbe18c397febdfa4829bce8612733138bfba8141ebf9dbf3d1",
+    "master_sha256": "940331228d2730a162cdaac87513b98b2bf149ecfe886cc0fdd9a70f2657dbbe"
+  }
+]

@@ -1,0 +1,583 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "DAL",
+ "name": "Dallas Cowboys",
+ "asset_code": "07",
+ "season": 2026,
+ "sources_uw": {"sleeve_swoosh_2026": "nike.com's Cowboys Game jersey (White, george-pickens 67NMDCG): the royal swoosh on the upper sleeve, the stripes at the cuff (u1's donor stripes can move 3 rows before art reaches the island's bottom: they clear the swoosh but stay higher than the real cuff stripes)"},
+ "status": "Phase B (job d5, 2026-09-23). Sort: KEPT its 2004 look (the 2026 standard white and navy sets are the 2004 designs). Colours sourced (2026 Record and Fact Book, Cowboys media guide via the repository palette); authored albedo values keep the retail shades where they already match (INFERRED).",
+ "sources": {
+  "uniform_schedule": "https://www.dallascowboys.com/news/dallas-cowboys-reveal-uniform-schedule-for-2026-season",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (DAL: Blue #002244 PMS 282, Royal Blue #003594, Metallic Silver Blue #869397, Silver-Green #7F9695)",
+  "photos_week1": "https://www.giants.com/photos/game-photos-giants-host-cowboys-in-week-1 (2026-09-13, Dallas in white)",
+  "photos_schedule": "dallascowboys.com uniform schedule slideshow (white, navy, color rush, classic)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/DAL.svg",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Cowboys_wordmark.svg (public domain)",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "defense": "https://www.dallascowboys.com/news/christian-parker-outlines-vision-for-cowboys-defense-in-2026-and-beyond (3-4 base under DC Christian Parker)"
+ },
+ "palette": {
+  "navy": "#002244",
+  "royal": "#003594",
+  "silver": "#869397",
+  "silver_green": "#7F9695",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "navy": "#002244",
+  "royal": "#003594",
+  "seafoam": "#9DB3AE",
+  "pants_silver": "#B8BCBF",
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "helmet_navy": "#002E66",
+  "helmet_silver": "#949FA3",
+  "wordmark_silver": "#C8CDD2",
+  "digit_silver": "#D4D6E0",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "gray": "#A5ACAF",
+  "ez_blue": "#1A2C66",
+  "ez_silver": "#A9B1B6",
+  "banner_navy": "#0B2455",
+  "banner_royal": "#0A34A0"
+ },
+ "marks": {
+  "star": "star_full.png",
+  "cowboys_wordmark": "cowboys_wordmark_mask.png",
+  "torso_07A0_stripes": "torso_07A0_stripes.png",
+  "torso_07H0_stripes": "torso_07H0_stripes.png",
+  "sleeve_07H0": "sleeve_07H0.png",
+  "ez_wordmark_fill": "ez_wordmark_fill.png",
+  "ez_wordmark_outline": "ez_wordmark_outline.png",
+  "mid_star_outline": "mid_star_outline.png",
+  "mid_star_fill": "mid_star_fill.png",
+  "star_silhouette": "star_silhouette_mask.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "07A0",
+   "outer_index": 3985,
+   "note": "2026 Primary White (worn at home, and on the road except three navy games): white jersey, plain royal blue numbers, two royal sleeve stripes, seafoam (silver-green) pants with a royal-white-royal stripe, royal socks, silver helmet with the navy star. The game gives Dallas its A set at home (retail rule, uniform_choice).",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "07A3",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "royal"
+    },
+    "decorations": [
+     {
+      "mark": "torso_07A0_stripes",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     }
+    ]
+   },
+   "sleeve": {
+    "art_shift_rows": 3,
+    "base_colour": "white",
+    "stripes_from": "07A0",
+    "stripe_colour": "royal"
+   },
+   "pants": {
+    "base_colour": "seafoam",
+    "stripe": [
+     [
+      "royal",
+      7
+     ],
+     [
+      "white",
+      7
+     ],
+     [
+      "royal",
+      7
+     ]
+    ],
+    "swoosh_colour": "royal"
+   },
+   "socks": {
+    "colour": "royal"
+   },
+   "digits": {
+    "glyph_donor": "07A0",
+    "fill": "royal"
+   },
+   "nameplate": {
+    "glyph_donor": "07A0",
+    "fill": "royal"
+   },
+   "helmet_digits": {
+    "glyph_donor": "07A0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "#002E66",
+    "recolour": []
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor_outer": 3985,
+    "torso_donor": "07A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "helmet_silver",
+      "to": "helmet_silver",
+      "region": "helmet"
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "07H0",
+   "outer_index": 3668,
+   "note": "2026 Primary Navy (three road games): navy jersey with the COWBOYS chest wordmark, white numbers with navy and silver trim, grey-white-grey sleeve stripes with the star, silver pants with a navy-white-navy stripe, navy socks, silver helmet. Retail worn only at WAS and TEN (retail rule); 2026 wears it at HOU, IND and LAR.",
+   "torso": {
+    "base_colour": "navy",
+    "neck_donor": "07H1",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "torso_07H0_stripes",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     },
+     {
+      "mark": "cowboys_wordmark",
+      "colour": "wordmark_silver",
+      "center": [
+       162,
+       94.2
+      ],
+      "width": 44
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "navy",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_07H0",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_silver",
+    "stripe": [
+     [
+      "navy",
+      7
+     ],
+     [
+      "white",
+      7
+     ],
+     [
+      "navy",
+      7
+     ]
+    ],
+    "swoosh_colour": "navy"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "07H0",
+    "fill": "white",
+    "outline": "navy",
+    "outline_frac": 0.024,
+    "outline2": "digit_silver",
+    "outline2_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "07H0",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "07H0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "#002E66",
+    "recolour": []
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor_outer": 3668,
+    "torso_donor": "07H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "helmet_silver",
+      "to": "helmet_silver",
+      "region": "helmet"
+     }
+    ]
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Brian Schottenheimer",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 53 active. 3-4 base (DC Christian Parker, 2026)."
+ },
+ "part_intents": {
+  "home": {
+   "torso": "white jersey body with small royal blue stripe pieces at the armpits, NFL shield at the collar, royal maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with two royal blue stripes",
+   "pants": "light silver-green (seafoam) with a royal-white-royal side stripe and a royal maker mark",
+   "helmet": "metallic silver shell, navy blue star with white outline, navy-white-navy center stripe, white and grey hardware",
+   "digit_jersey": "plain royal blue numbers",
+   "digit_arm": "plain royal blue numbers",
+   "digit_helmet": "plain black numbers",
+   "nameplate": "royal blue letters",
+   "socks00": "solid royal blue",
+   "splayer": "far-away player atlas: seafoam pants with blue stripe, white torso, silver helmet with navy star, royal socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with royal numbers, seafoam pants, silver helmet with navy star, dark shading",
+   "team-select_helm": "menu render: silver helmet with navy star, grey facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "navy blue jersey body with white and silver stripe pieces at the armpits, a small silver COWBOYS wordmark under the collar, NFL shield at the collar, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "navy with a silver-white-silver stripe and a navy star with white outline",
+   "pants": "silver with a navy-white-navy side stripe and a navy maker mark",
+   "helmet": "metallic silver shell, navy blue star with white outline, navy-white-navy center stripe, white and grey hardware",
+   "digit_jersey": "white numbers with thin navy and silver outlines",
+   "digit_arm": "white numbers with thin navy and silver outlines",
+   "digit_helmet": "plain black numbers",
+   "nameplate": "white letters",
+   "socks00": "solid navy blue",
+   "splayer": "far-away player atlas: silver pants with navy stripe, navy torso, silver helmet with navy star, navy socks, skin and glove patches",
+   "team-select_unif": "menu render: navy jersey with white numbers, silver pants, silver helmet with navy star, dark shading",
+   "team-select_helm": "menu render: silver helmet with navy star, grey facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "blue painted end zone with a silver COWBOYS wordmark outlined in white",
+   "center_logo": "navy star with a white border",
+   "banner": "cloth fan banners: white with navy or royal blue text, and a navy or royal star"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Ajani Cornelius": 4,
+   "Alijah Clark": 3,
+   "Ameer Speed": 4,
+   "Brandon Aubrey": 0,
+   "Brevyn Spann-Ford": 2,
+   "Broderick Jones": 4,
+   "Bryan Anger": 0,
+   "Caelen Carson": 3,
+   "Caleb Downs": 3,
+   "Camden Brown": 4,
+   "CeeDee Lamb": 3,
+   "Cobie Durant": 3,
+   "Cooper Beebe": 0,
+   "DaRon Bland": 3,
+   "Dak Prescott": 2,
+   "DeMarvion Overshown": 4,
+   "Dee Winters": 3,
+   "Donovan Ezeiruaku": 4,
+   "Drew Shelton": 1,
+   "Emari Demercado": 4,
+   "George Pickens": 3,
+   "Hunter Luepke": 0,
+   "Jaishawn Barham": 4,
+   "Jake Ferguson": 0,
+   "Jalen Thompson": 3,
+   "James Houston": 4,
+   "Javonte Williams": 4,
+   "Jonathan Bullard": 4,
+   "Jonathan Mingo": 4,
+   "KaVontae Turpin": 3,
+   "Kenny Clark": 3,
+   "LT Overton": 3,
+   "Luke Schoonmaker": 0,
+   "Malachi Lawrence": 4,
+   "Malik Hooker": 3,
+   "Markquese Bell": 4,
+   "Nick Leverett": 2,
+   "Otito Ogbonnia": 4,
+   "P.J. Locke": 3,
+   "Quinnen Williams": 4,
+   "Rashan Gary": 3,
+   "Ryan Flournoy": 4,
+   "Sam Howell": 0,
+   "Shavon Revel": 3,
+   "Shemar James": 4,
+   "TJ Bass": 0,
+   "Terence Steele": 2,
+   "Trent Sieg": 0,
+   "Tyler Booker": 4,
+   "Tyler Goodson": 4,
+   "Tyler Guyton": 4,
+   "Tyrus Wheat": 4,
+   "Von Miller": 3
+  },
+  "dreads": [
+   "CeeDee Lamb",
+   "Cobie Durant",
+   "DeMarvion Overshown",
+   "Javonte Williams",
+   "Jaishawn Barham",
+   "Jalen Thompson",
+   "James Houston",
+   "Jonathan Mingo",
+   "KaVontae Turpin",
+   "Malachi Lawrence",
+   "Malik Hooker",
+   "P.J. Locke",
+   "Rashan Gary",
+   "George Pickens",
+   "Tyler Goodson",
+   "Tyler Guyton",
+   "Tyrus Wheat",
+   "Alijah Clark",
+   "Shavon Revel"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), by eye from the official 2026 headshots on a labelled sheet (INFERRED, +/-1 possible). Dreads and twists by eye."
+ },
+ "venue": {
+  "prefix": "s07",
+  "notes": "Dallas home games in the game's Texas Stadium (the 2004 venue is kept, U_BRIEF). Field art follows AT&T Stadium 2026: blue end zones with the silver COWBOYS wordmark outlined in white, the navy star with a white border at midfield (dallascowboys.com week 2 2026 gallery). Both end zones share one texture in s07. The retail helmets beside the wordmark are dropped (not seen in 2026 photos: INFERRED). Fan banners carry 2026 players.",
+  "sources": [
+   "https://www.dallascowboys.com/photos/game-day-gallery-cowboys-vs-commanders-2026"
+  ],
+  "endzone": {
+   "paint": "ez_blue",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "ez_wordmark_outline",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_wordmark_fill",
+     "colour": "ez_silver",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "mid_star_outline",
+   "outline": "white",
+   "fill_mark": "mid_star_fill",
+   "fill": "navy",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "HOW 'BOUT\nTHEM COWBOYS",
+        "colour": "banner_navy",
+        "center": [
+         64,
+         31
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#4 DAK\nPRESCOTT",
+        "colour": "banner_royal",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO\nCOWBOYS",
+        "colour": "banner_royal",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "star_silhouette",
+        "colour": "banner_navy",
+        "center": [
+         192,
+         31
+        ],
+        "width": 44
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#88\nCEEDEE",
+        "colour": "banner_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "AMERICA'S\nTEAM",
+        "colour": "banner_royal",
+        "center": [
+         192,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#87 FERGUSON\nTOUCHDOWN!",
+        "colour": "banner_navy",
+        "center": [
+         64,
+         31
+        ],
+        "height": 13
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "star_silhouette",
+        "colour": "banner_royal",
+        "center": [
+         64,
+         96
+        ],
+        "width": 40
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

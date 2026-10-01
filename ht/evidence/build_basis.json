@@ -1,0 +1,24 @@
+{
+  "label": "PROVED OFFLINE",
+  "base_head": "eb11b3d7b2df871f117b9c5cd131cec510d19c4e",
+  "private_patch_head": "8602194ffb3be2ac38b5930b3a52e753d7c84c10",
+  "files": {
+    "/home/noah/2k-worktrees/b76-x2/mod_editor/core/mod_build.py": "2fe9db7a9fca4cad41eecc66f6eee2cf07c94ab0ee7b57c266e99aa5678efc87",
+    "/home/noah/2k-worktrees/b76-x2/mod_editor/core/nfl2k5_historic_teams_quick_game.py": "69b8c24eeae4e1df92a83091527ca4d69806acb0848abfb7050a80c02300610f",
+    "/home/noah/2k-worktrees/b76-x2/mod_editor/core/nfl2k5_historic_teams_quick_game_code.py": "29197741a8157e9562edab4892106f649c9d3e00bbfcbf9377a2ecd4a7433361",
+    "/home/noah/2k-worktrees/b76-x2/mod_editor/core/nfl2k5_historic_rosters.py": "5b1e05ed460d6e9c1e324c69cbfd8200e84bfeda923de14ccf5caa93308c366f",
+    "/media/noah/Storage/.b76-research/ht/astra-build/candidate_B_ht_accessibility_diagnostic.json": "3f4e69acdaca66bc037593155a5b2592dec33aeb8faaf483d661b9de707766fe",
+    "/media/noah/Storage/.b76-research/ht/astra-build/candidate_B_ht_requested.json": "66992d47ec954eaa7fd166c6c5b49c96363675e463e920e95d650fec31d709c8",
+    "/media/noah/Storage/.b76-research/ht/astra-build/build_ultimate.py": "9500d63ee53c50675a7d6c2f6f1c69c6cd7180194a36851f05cdfde5ab414f8d",
+    "/media/noah/Storage/.b76-research/ht/astra-build/build_ultimate_teams2026.py": "f11503fff542d713d0ccbee4502c0007e94d72b9a843ac83d1cce301008546af",
+    "/media/noah/Storage/.b76-research/main/freeze/candB/league_project_k2_v52_frozen.json": "4874ffcacb27b783fe799685ee1f7b6ac19d1698497cd91c9f885d123ae1936b",
+    "/media/noah/Storage/.b76-research/main/freeze/candB/league_roster_edits_candB_nofc.json": "f2e991dc1f6ecdb22be017cfbf248456fb001d959c1233e438e9ba147a38cf6f",
+    "/home/noah/2k-worktrees/b76-x2/data/nfl2k5_cave_reservations.json": "69bbdc955f267c3c5e507a0ccf5590cd05383c0714705d9b765fc1c73aa4ecee",
+    "/home/noah/2k-worktrees/b76-x2/data/nfl2k5_historic_rosters/manifest.json": "cc18fba3436847e476ef138c6d8a2786b7ecb9d2b0861fadbb258db6c034a407",
+    "/home/noah/2k-worktrees/b76-x2/ht/tools/run_diagnostic.sh": "e9ada3fcf1f2e964da89eb3ac13c3617acd29ff0ba5bb8489ff7c1906f6d2e51",
+    "/home/noah/2k-worktrees/b76-x2/ht/tools/check_build.py": "b389db5b46fbd8712438706f641e7ea25b202d39a450c27b3345ee2b779af809"
+  },
+  "runner_change": "Two output-location adaptations only: explicit HERE/source-cache; byte-identical frozen project copy under HERE after checking its asset paths are absolute, placing the service compile cache under HERE as well. All Build options and checks retained.",
+  "basis_checked_utc": "2026-09-27T22:03:18Z",
+  "head_note": "The common worktree HEAD remains the integrated base. This private commit and explicit file hashes identify the candidate under test."
+}

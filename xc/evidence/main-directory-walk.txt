@@ -1,0 +1,9 @@
+files C 19 D 19
+max end C 8.013 GB  D 5.924 GB
+total file bytes C 5.924 GB  D 5.924 GB
+D big: /vc_53450030/8 start 3.234 GB size 0.929 GB
+D big: /vc_53450030/9 start 0.073 GB size 0.635 GB
+D big: /vc_53450030/B start 4.472 GB size 0.458 GB
+D big: /vc_53450030/6 start 2.775 GB size 0.458 GB
+D big: /vc_53450030/3 start 1.016 GB size 0.324 GB
+D big: /vc_53450030/7 start 2.456 GB size 0.319 GB

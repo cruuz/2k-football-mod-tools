@@ -19,6 +19,9 @@ from mod_editor.core.presentation_inspection import (
 
 class PresentationInspectionTests(unittest.TestCase):
     def test_named_components_and_digital_font_boundary(self) -> None:
+        missing = [str(path) for path in (AUDIT, FONT_LAYOUT, FONT_ROUNDTRIP) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF presentation reports missing: " + ", ".join(missing))
         value = inspect_apf_scorebug_presentation()
         self.assertEqual(value["field_scorebug"]["component_count"], 7)
         self.assertEqual(
@@ -39,6 +42,9 @@ class PresentationInspectionTests(unittest.TestCase):
         self.assertEqual(value["safe_writer_count"], 1)
 
     def test_public_projection_has_no_raw_offsets_or_runtime_overclaim(self) -> None:
+        missing = [str(path) for path in (AUDIT, FONT_LAYOUT, FONT_ROUNDTRIP) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF presentation reports missing: " + ", ".join(missing))
         text = json.dumps(inspect_apf_scorebug_presentation())
         self.assertIsNone(re.search(r"0x[0-9a-f]+", text, re.IGNORECASE))
         self.assertNotIn("offset", text.lower())
@@ -46,6 +52,9 @@ class PresentationInspectionTests(unittest.TestCase):
         self.assertNotIn("inner_index", text)
 
     def test_symlink_and_tampered_reports_are_refused(self) -> None:
+        missing = [str(path) for path in (AUDIT, FONT_LAYOUT, FONT_ROUNDTRIP) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF presentation reports missing: " + ", ".join(missing))
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             for source, position in (

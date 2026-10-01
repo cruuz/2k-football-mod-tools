@@ -1,0 +1,16 @@
+{
+  "status": "PROVED OFFLINE",
+  "measurement": "Before final commit/bundle; private Git objects already staged",
+  "workspace": "/home/noah/2k-worktrees/b76-u4",
+  "requested_scratch": "/media/noah/Storage/.b76-research/pb",
+  "scratch_used": "/home/noah/2k-worktrees/b76-u4/.scratch",
+  "reason": "Storage scratch is outside writable roots; private metadata is local.",
+  "scratch_bytes": 2793726,
+  "deliverables_bytes": 3718313,
+  "nvme_available_bytes": 113779388416,
+  "floor_bytes": 100000000000,
+  "conservative_floor_bytes": 107374182400,
+  "scratch_limit_bytes": 4000000000,
+  "iso_copies": 0,
+  "xemu_runs": 0
+}

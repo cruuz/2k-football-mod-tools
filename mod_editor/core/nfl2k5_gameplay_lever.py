@@ -23,11 +23,17 @@ def allocation(payload, owner, size):
 def recognize(payload, module):
     layout = space.layout(payload)  # also validates every digest and allocator seal
     image = XbeImage(payload)
+    # b76-vb3: another owner's verified hook inside a dependent routine, as (hook va, retail bytes). The module
+    # proves that owner's complete installation before naming it.
+    neighbors = tuple(module.neighbors(payload)) if hasattr(module, "neighbors") else ()
     for va, size, digest in module.GUARDS:
         # Hash complete dependent routines, restoring only this owner's hook
         # operands for the comparison. Hook recognition below is independent.
         blob = bytearray(image.read(va, size))
         for _label, hook, before, _after in module.sites(0):
+            if va <= hook and hook + len(before) <= va + size:
+                blob[hook - va:hook - va + len(before)] = before
+        for hook, before in neighbors:
             if va <= hook and hook + len(before) <= va + size:
                 blob[hook - va:hook - va + len(before)] = before
         space._require(hashlib.sha256(blob).hexdigest() == digest,

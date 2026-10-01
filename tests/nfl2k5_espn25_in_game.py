@@ -22,6 +22,8 @@ BN_IMAGE = Path(os.environ.get("NFL2K5_ESPN25_BN_IMAGE",
 def evidence(source):
     manifest, _ = e.dataset()
     wanted = (5, 22, *(t["outer"] for t in manifest["resources"]))
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(source)
     with rr._outer_image()(source) as archive:
         resources = {}
         for i in wanted:

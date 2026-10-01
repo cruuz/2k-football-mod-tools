@@ -2,10 +2,12 @@ import copy
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 MODULE_PATH = ROOT / "tools/apf_stadium_static_target_catalog.py"
 REPORT_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 

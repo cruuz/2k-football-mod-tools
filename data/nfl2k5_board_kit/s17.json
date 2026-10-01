@@ -1,0 +1,150 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.25,
+        "depth": 0.12,
+        "material": "boxshadow"
+      },
+      "inset": 0.35,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -62.9,
+          118.1
+        ],
+        [
+          -32.0,
+          128.4
+        ],
+        [
+          32.0,
+          128.4
+        ],
+        [
+          62.9,
+          118.1
+        ]
+      ],
+      "width": 101.5,
+      "y": [
+        52.75,
+        64.33
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "depth": 0.12,
+        "material": "boxshadow"
+      },
+      "inset": 0.35,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -62.9,
+          -118.1
+        ],
+        [
+          -32.0,
+          -128.4
+        ],
+        [
+          32.0,
+          -128.4
+        ],
+        [
+          62.9,
+          -118.1
+        ]
+      ],
+      "width": 101.5,
+      "y": [
+        52.75,
+        64.33
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          30.0,
+          45.0
+        ],
+        "y": [
+          53.5,
+          62.5
+        ],
+        "z_abs": [
+          125.0,
+          128.6
+        ]
+      },
+      "materials": [
+        "corp_temp_adbanner01",
+        "boxshadow"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -45.0,
+          -30.0
+        ],
+        "y": [
+          53.5,
+          62.5
+        ],
+        "z_abs": [
+          125.0,
+          128.6
+        ]
+      },
+      "materials": [
+        "corp_temp_adbanner01",
+        "boxshadow"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group355"
+    }
+  ],
+  "help": "the 2016 boards, 333 x 38 ft",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_s",
+    "jumboMarkerB": "bk_board_n"
+  },
+  "name": "Caesars Superdome",
+  "replace": [
+    {
+      "keep": [
+        "new_orleans3_lambert37",
+        "lambert42"
+      ],
+      "shape": "group191"
+    },
+    {
+      "keep": [
+        "new_orleans3_lambert37",
+        "lambert42"
+      ],
+      "shape": "group194"
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Wikipedia, Caesars Superdome (fetched 2026-09-25, st/renov/NO.txt): 'During the 2016 off-season, the smaller videoboards formerly located along the end zone walls above the upper seating bowl were replaced with two large Panasonic HD LED displays that stretch 330 ft wide and 35 ft tall' (The Times-Picayune, 27 May 2016; SportsNOLA, 24 August 2016).",
+    "New Orleans Saints (neworleanssaints.com), 24 August 2016, 'New Orleans Saints unveil new high-definition end zone boards at Mercedes-Benz Superdome': 'The new video boards are 333 feet wide by 38 feet high, which represents a 900% increase from the previous boards'. The kit uses the team's figure at the unveiling (Wikipedia's 330 x 35 ft is the Times-Picayune's figure of 27 May 2016, before the boards were finished): 101.5 x 11.58 m, the bottom on the last row (y 52.75), the top under the roof ring (y 64.6) with a 0.25 m frame.",
+    "The retail s17 scene (PROVED OFFLINE): the old boards' feed quads (group355, jumbo_tron) 15.8 x 10.8 m at z +-126.6, y 52.8 to 63.6; their frames and ad strips on the end walls (group191, group194: black, corp_temp_adbanner01, boxshadow) in front of the wall face (new_orleans3_lambert37) at z +-128.4; the end wall runs flat for x -32 to 32 and turns toward (62.9, 118.1) on each side.",
+    "The retail s17 scene (PROVED OFFLINE): beside the north board's housing two framed sponsor panels stand on the end wall (group106 and group108: corp_temp_adbanner01 in boxshadow, x 30.3 to 44.3, y 53.8 to 62.2, z 125.6 to 128.4), inside the band the 2016 board now covers. Since the 2026 venue art repaints corp_temp_adbanner01 (its defunct 2004 sponsors, 2026-09-29), they are cut with the old board's housing rather than left behind the new board (the rule on the venue art); the south end has no such panels.",
+    "The rule on the 2026 venue art (main, 2026-09-28 21:26): the kit never covers the venue art on a structure that still stands in 2026 and may remove a venue-art panel of a board housing the renovation replaced. The old boards' side ad panels on the end walls (group106 and group108: corp_temp_adbanner01 on boxshadow), which the 2016 boards stand in front of, are cut with the old boards (bk.covered_venue_art found them covered)."
+  ],
+  "team": "NO",
+  "venue": "s17"
+}

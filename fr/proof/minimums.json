@@ -1,0 +1,1587 @@
+[
+  {
+    "index": 31,
+    "name": "Wydett Williams",
+    "team": 7,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 55,
+    "name": "Malcolm DeWalt",
+    "team": 14,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 58,
+    "name": "Jack Strand",
+    "team": 14,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 112,
+    "name": "Ethan Burke",
+    "team": 24,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 139,
+    "name": "Joe Fagnano",
+    "team": 24,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 226,
+    "name": "Aaron Hall",
+    "team": 20,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 233,
+    "name": "Albert Reese",
+    "team": 20,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 240,
+    "name": "Tyrel Dodson",
+    "team": 20,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 7,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 33,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        1300000
+      ],
+      "represented_cap_dollars": [
+        1320000
+      ],
+      "errors_dollars": [
+        20000
+      ],
+      "minimum_floor_dollars": 1300000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 250,
+    "name": "Haynes King",
+    "team": 20,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 266,
+    "name": "Skyler Thomas",
+    "team": 1,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 315,
+    "name": "Jayden Loving",
+    "team": 1,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 366,
+    "name": "Dohnte Meyers",
+    "team": 2,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 393,
+    "name": "Camden Brown",
+    "team": 11,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 479,
+    "name": "Bishop Fitzgerald",
+    "team": 18,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 485,
+    "name": "Eric O'Neill",
+    "team": 18,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 533,
+    "name": "J. Michael Sturdivant",
+    "team": 19,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 596,
+    "name": "Kapena Gushiken",
+    "team": 10,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 606,
+    "name": "Tahj Chambers",
+    "team": 10,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 649,
+    "name": "Bryan Thomas",
+    "team": 16,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 691,
+    "name": "Xavier Nwankpa",
+    "team": 9,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 697,
+    "name": "Jack Pyburn",
+    "team": 9,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 700,
+    "name": "Bryson Eason",
+    "team": 9,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 708,
+    "name": "Diego Pounds",
+    "team": 9,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 727,
+    "name": "Kahlil Benson",
+    "team": 9,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 754,
+    "name": "DJ Herman",
+    "team": 12,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 813,
+    "name": "Jacob Thomas",
+    "team": 31,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 828,
+    "name": "Brett Thorson",
+    "team": 31,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 879,
+    "name": "Erick Hunter",
+    "team": 21,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 885,
+    "name": "Channing Canada",
+    "team": 21,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 891,
+    "name": "Tanner Arkin",
+    "team": 21,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 921,
+    "name": "Mason Murphy",
+    "team": 26,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 924,
+    "name": "CJ Donaldson",
+    "team": 26,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 980,
+    "name": "Dominic Zvada",
+    "team": 15,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 994,
+    "name": "Ben Mann",
+    "team": 15,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1132,
+    "name": "Rocco Underwood",
+    "team": 13,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1205,
+    "name": "Kevin Jobity",
+    "team": 28,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1232,
+    "name": "Wesley Bailey",
+    "team": 23,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1275,
+    "name": "Rodney Shelley",
+    "team": 8,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1296,
+    "name": "Jacob Spomer",
+    "team": 8,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1348,
+    "name": "James Thompson",
+    "team": 0,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1379,
+    "name": "Avery Smith",
+    "team": 27,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1464,
+    "name": "Jalon Daniels",
+    "team": 6,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1467,
+    "name": "Ayden Garnes",
+    "team": 6,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1511,
+    "name": "Owen Pappoe",
+    "team": 30,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 3,
+      "reason": "no active source contract",
+      "previous_observed_expired": true
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 29,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        1145000
+      ],
+      "represented_cap_dollars": [
+        1160000
+      ],
+      "errors_dollars": [
+        15000
+      ],
+      "minimum_floor_dollars": 1145000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1562,
+    "name": "Drew Stevens",
+    "team": 25,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1588,
+    "name": "Tanoa Togiai",
+    "team": 25,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1644,
+    "name": "Collin Wright",
+    "team": 29,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  },
+  {
+    "index": 1653,
+    "name": "Sabastian Harsh",
+    "team": 29,
+    "fallback": {
+      "evidence": "DESIGN",
+      "rule": "one-year active-roster CBA minimum",
+      "experience_proxy": 0,
+      "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf"
+    },
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 23,
+        "contract_length": 1,
+        "contract_remaining": 1,
+        "contract_type": 2,
+        "contract_bonus": 0
+      },
+      "source_cap_dollars": [
+        885000
+      ],
+      "represented_cap_dollars": [
+        920000
+      ],
+      "errors_dollars": [
+        35000
+      ],
+      "minimum_floor_dollars": 885000,
+      "charge_quantum_dollars": 40000,
+      "meaning": "smallest representable one-year charge at or above minimum; years pro proxies credited seasons"
+    }
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "classification": "PROVED OFFLINE",
+  "suites": [
+    {
+      "suite": "nfl2k5_scorebug_phi_chi",
+      "exit_code": 0,
+      "tests": 8,
+      "seconds": 25.879,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_phi_chi.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_sd",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 0.66,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_sd.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_broadcast_display",
+      "exit_code": 0,
+      "tests": 7,
+      "seconds": 0.28,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_broadcast_display.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_broadcast_states",
+      "exit_code": 0,
+      "tests": 19,
+      "seconds": 34.6,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_broadcast_states.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_logo_retention",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 0.37,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_logo_retention.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_sprite",
+      "exit_code": 0,
+      "tests": 22,
+      "seconds": 27.16,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_sprite.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_records",
+      "exit_code": 0,
+      "tests": 26,
+      "seconds": 17.63,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_records.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_down_visibility",
+      "exit_code": 0,
+      "tests": 4,
+      "seconds": 17.7,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_down_visibility.log"
+    },
+    {
+      "suite": "scorebug_replication",
+      "exit_code": 0,
+      "tests": 12,
+      "seconds": 0.64,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_scorebug_replication.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_bar_strings",
+      "exit_code": 0,
+      "tests": 7,
+      "seconds": 0.47,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_bar_strings.log"
+    },
+    {
+      "suite": "scorebug_gpu",
+      "exit_code": 0,
+      "tests": 10,
+      "seconds": 11.82,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_scorebug_gpu.log"
+    },
+    {
+      "suite": "nfl2k5_scorebug_template_release",
+      "exit_code": 0,
+      "tests": 5,
+      "seconds": 0.62,
+      "log": "/media/noah/Storage/.b76-research/sb/sb2/test_nfl2k5_scorebug_template_release.log"
+    }
+  ],
+  "max_child_rss_kib": 439032,
+  "total_tests": 126
+}

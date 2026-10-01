@@ -1,0 +1,1091 @@
+.................. [ 23%]
+...........ss.......................F..FF.....F........FFF                                                [100%]
+=================================== FAILURES ===================================
+___________ PresetTests.test_playbook_pack_step_lands_in_the_receipt ___________
+
+descriptor = 12, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 12, image_size = 3293184, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmpr8d1eq87/default.xbe', target='/tmp/tmpr8d1eq87/out.xbe', overwrite=False, throw=False, max_...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929ff5a6720>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 12, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_mod_build.PresetTests testMethod=test_playbook_pack_step_lands_in_the_receipt>
+
+    def test_playbook_pack_step_lands_in_the_receipt(self) -> None:
+        from mod_editor.core import nfl2k5_playbook_pack as packs
+
+        seed = ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"
+        calls: list[tuple[str, list[str]]] = []
+
+        def fake_apply(target, paths, progress=None, collector=None):
+            calls.append((str(target), [Path(p).name for p in paths]))
+            if progress:
+                progress("Installing “Modern Gun Core” into ATL")
+            pack = packs.load_pack(seed)
+            return {"status": "applied", "packs": [{
+                "pack": seed.name, "name": pack.book.name, "author": pack.book.author,
+                "version": pack.book.version, "license": pack.book.license,
+                "authored_on": pack.book.team, "book_fingerprint": pack.base.book_fingerprint,
+                "formations": len(pack.formations), "plays": len(pack.plays),
+                "books": [{"team": "ATL", "outer_index": 308, "retargeted": False,
+                           "formations": 39, "plays": 254, "nodes": 2746, "changed_bytes": 2450}],
+            }]}
+
+        real_apply = packs.apply_packs_to_image
+        real_is_image = mod_build.tt.is_disc_image
+        real_inspect = mod_build.inspect
+        pretend_image = lambda _path: True   # noqa: E731 - only the plan's image gate
+
+        def inspect_for_real(target, **options):
+            # inspect() reads the real container; only the plan gate is pretending
+            mod_build.tt.is_disc_image = real_is_image
+            try:
+                return real_inspect(target, **options)
+            finally:
+                mod_build.tt.is_disc_image = pretend_image
+
+        real_check_menus = mod_build._check_playbook_menus
+        menu_checks: list[str] = []
+
+        def fake_check_menus(target, progress):
+            # The real gate opens the image's PLAY books; this test's target is a synthetic XBE that only
+            # pretends to be a disc image, so record the call and answer like a clean one-book image.
+            menu_checks.append(str(target))
+            return {"books": 1, "problems": 0}
+
+        packs.apply_packs_to_image = fake_apply
+        mod_build.tt.is_disc_image = pretend_image
+        mod_build.inspect = inspect_for_real
+        mod_build._check_playbook_menus = fake_check_menus
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                source = Path(tmp) / "default.xbe"
+                source.write_bytes(_build_synthetic_xbe())
+                target = Path(tmp) / "out.xbe"
+                messages: list[str] = []
+>               receipt = mod_build.build(
+                    mod_build.BuildPlan(str(source), str(target), playbook_packs=(str(seed),)),
+                    lambda msg, a, b: messages.append(msg),
+                )
+
+tests/mod_editor/test_mod_build.py:249:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpr8d1eq87/default.xbe', target='/tmp/tmpr8d1eq87/out.xbe', overwrite=False, throw=False, max_...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929ff5a6720>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+_ PlanTests.test_grouped_names_follow_roster_edits_and_refuse_manual_conflict __
+
+self = <test_mod_build_beta62_integration.PlanTests testMethod=test_grouped_names_follow_roster_edits_and_refuse_manual_conflict>
+
+    def test_grouped_names_follow_roster_edits_and_refuse_manual_conflict(self):
+        from mod_editor.core import nfl2k5_roster_records as records
+        from tests.mod_editor.test_nfl2k5_team_names_2026 import synthetic_resource
+        from nfl2k5_xiso_fixture import SyntheticXiso
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            root = Path(directory)
+            fixture = SyntheticXiso(root, [(100+i,b'DUMY'+bytes(256)) for i in range(5)]+
+                                    [(5,synthetic_resource()), (200,b'TAIL'+bytes(256))],
+                                    pack_sizes=(0xA0000,), pack_sectors=(96,))
+            stack.enter_context(patch.object(build, 'inspect', return_value={'path':'unused', 'container':'xiso'}))
+            # The synthetic image has no executable: the XBE key paths are proved on the retail XBE in
+            # test_nfl2k5_team_names_2026; here a stand-in records that the step installs them once.
+            xbe = {'state': 'retail'}
+            stack.enter_context(patch.object(build, '_xbe_bytes', side_effect=lambda path: b'XBE-' + xbe['state'].encode()))
+            stack.enter_context(patch.object(build, '_write_xbe_bytes', side_effect=lambda path, data: xbe.update(state=data[4:].decode())))
+            stack.enter_context(patch.object(names, 'xbe_status', side_effect=lambda data: data[4:].decode()))
+            stack.enter_context(patch.object(names, 'apply_xbe', side_effect=lambda data: (b'XBE-applied', {'status': 'applied'})))
+            def roster_edits(path, *args, **kwargs):
+                self.assertEqual(names.image_status(path), 'retail')
+                return {'log':[]}
+            stack.enter_context(patch.object(records, 'apply', new=roster_edits))
+            target = root/'built.iso'
+            edits_path = root/'edits.json'
+            edits_path.write_text(json.dumps({'schema': records.EDITS_SCHEMA, 'edits': []}), encoding='utf-8')
+>           receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_mod_build_beta62_integration.py:138:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:1360: in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+target = PosixPath('/tmp/tmpgju1zkam/.studio-build-3090vb46/built.iso')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929f77e51c0>
+
+    def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[str, Any]:
+        """Fail closed on every final PLAY, after all book writers, before publication."""
+        from . import nfl2k5_play_scoring as scoring
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
+        payload = _xbe_bytes(target)
+        rows = []
+        with packs._outer_image().OuterImage(target) as archive:
+            for entry in archive.entries_with_head(b"PLAY"):
+                progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
+                row = scoring.require_safe(archive.read_entry(entry.index), payload)
+                rows.append({"entry": entry.index, **row})
+        if not rows:
+>           raise RuntimeError("Native PLAY scoring found no books in the build")
+E           RuntimeError: Native PLAY scoring found no books in the build
+
+mod_editor/core/mod_build.py:1054: RuntimeError
+____ PlanTests.test_hires_is_last_and_pre_remap_states_are_not_final_claims ____
+
+descriptor = 12, size = 6
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 12, image_size = 6, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmpdmrhnnis/source.iso', target='/tmp/tmpdmrhnnis/output.iso', overwrite=False, throw=False, ma...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929fa13d340>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 12, size = 6
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_mod_build_beta62_integration.PlanTests testMethod=test_hires_is_last_and_pre_remap_states_are_not_final_claims>
+
+    def test_hires_is_last_and_pre_remap_states_are_not_final_claims(self):
+        from mod_editor.core import nfl2k5_hires_pack as hires
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            source, target = Path(directory)/'source.iso', Path(directory)/'output.iso'
+            source.write_bytes(b'source'); events = []
+            stack.enter_context(patch.object(tt, 'is_disc_image', return_value=True))
+            def inspect(path, **kw):
+                events.append('inspect')
+                self.assertEqual(Path(path).read_bytes(), b'source')
+                return dict(path=str(path), container='xiso', scorebug='retail', hires_pack='retail')
+            stack.enter_context(patch.object(build, 'inspect', new=inspect))
+            stack.enter_context(patch.object(hires, 'preflight_budget', return_value={'whole_game_fit_proved':False}))
+            stack.enter_context(patch.object(hires, 'inspect_image', return_value={'assets':[{'key':'helmet','family':'helmets'}]}))
+            def compile(source, output, folder, **kw):
+                events.append('hires')
+                Path(output).write_bytes(b'final remapped archive')
+                return {'verification': {'status':'verified', 'output_sha256':hashlib.sha256(b'final remapped archive').hexdigest()}}
+            stack.enter_context(patch.object(hires, 'build_image', new=compile))
+>           receipt = build.build(build.BuildPlan(str(source), str(target), hires_pack=True, hires_folder='art'))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_mod_build_beta62_integration.py:85:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpdmrhnnis/source.iso', target='/tmp/tmpdmrhnnis/output.iso', overwrite=False, throw=False, ma...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929fa13d340>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+_ ExecutableTests.test_runtime_scorebug_reserves_all_owners_before_final_install _
+
+plan = BuildPlan(source='/tmp/tmpf16cm4hx/source.iso', target='/tmp/tmpf16cm4hx/build.iso', overwrite=False, throw=False, max...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x792a00119dc0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1048: in _check_playbook_scoring
+    with packs._outer_image().OuterImage(target) as archive:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl2k5_playbook_position_recode.py:257: in __init__
+    self._open_image()
+tools/nfl2k5_playbook_position_recode.py:295: in _open_image
+    _require(first is not None, f"disc image has no {PACK_FOLDER}/0")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+condition = False, message = 'disc image has no vc_53450030/0'
+
+    def _require(condition: bool, message: str) -> None:
+        if not condition:
+>           raise RecodeError(message)
+E           nfl2k5_playbook_position_recode.RecodeError: disc image has no vc_53450030/0
+
+tools/nfl2k5_playbook_position_recode.py:130: RecodeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_mod_build_beta62_integration.ExecutableTests testMethod=test_runtime_scorebug_reserves_all_owners_before_final_install>
+
+    def test_runtime_scorebug_reserves_all_owners_before_final_install(self):
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        from mod_editor.core import nfl2k5_scorebug_ingame as ingame
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as kickoff
+        from mod_editor.core import nfl2k5_xbe_space as space
+        events = []
+        def resources(image, *, with_kickoff=False, extra_requests=(), scorebug_folder=None, widescreen=False, **_kwargs):
+            events.append('runtime')
+            before = build._xbe_bytes(Path(image))
+            for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
+                self.assertEqual(tt._grown_status_fields(before)[key], 'retail')
+            requested = tuple(runtime.REQUESTS) + tuple(extra_requests) + (tuple(kickoff.REQUESTS) if with_kickoff else ())
+            from mod_editor.core import nfl2k5_calendar_engine as calendar
+            self.assertEqual(set(requested), set(REQUESTS) - set(calendar.REQUESTS))  # the calendar needs the 2026 templates, absent on a synthetic disc
+            grown, rec = space.apply(before, requested)
+            grown, _ = runtime.apply(grown)
+            if with_kickoff:
+                grown, _ = kickoff.apply(grown)
+            build._write_xbe_bytes(Path(image), grown)
+            return rec
+        def validate_playlist(image, *, expected):
+            # This fixture owns only an XBE. Validate its actual installed table;
+            # descriptor/archive geometry is covered by the Music owner suite.
+            state, selected = tt.music_playlist_patch._inspect(build._xbe_bytes(image))
+            self.assertEqual(state, 'applied')
+            self.assertEqual(selected, tt.music_playlist_patch.from_options(expected))
+            tt.music_playlist_patch.validate_source(selected, tt.music_playlist_patch.BANK_COUNTS)
+            return {'installed':True, 'revalidated_after_rebuild':True}
+        with tempfile.TemporaryDirectory() as directory, patch.object(ingame,'runtime_apply_in_place',new=resources), patch.object(
+                build._core_module('nfl2k5_music_banks'), 'read_descriptor_counts', return_value=tt.music_playlist_patch.BANK_COUNTS), patch.object(
+                build._core_module('nfl2k5_music_banks'), 'revalidate_playlist', side_effect=validate_playlist):
+            source=Path(directory)/'source.iso'
+            source.write_bytes(image_with_xbe(self.retail))
+            for writer in ('dispatcher','build'):
+                target=Path(directory)/(writer+'.iso')
+                if writer == 'dispatcher':
+                    result=tt.write_image_copy(source,target,scorebug_runtime=True,kickoff_relocated=True,**GROWN)
+                else:
+                    with patch.object(build,'inspect',return_value={'container':'xiso'}), patch.object(
+                            build._tools_module('nfl2k5_kickoff_alignment'), 'apply', return_value={'status':'applied','kicker_depth_yd':5,'changed_bytes':0,'books':[]}), patch.object(
+                            build._tools_module('nfl2k5_kickoff_returns'), 'apply', return_value={'status':'applied','changed_bytes':0,'books':[]}), patch.object(
+                            build, '_check_playbook_menus', return_value=None):  # vb2's play-menu gate opens the PLAY books; this fixture's image has none (the kickoff writers above are stubbed for the same reason)
+>                       result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
+                                                           kickoff_relocated=True,**GROWN))
+
+tests/mod_editor/test_mod_build_beta62_integration.py:229:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpf16cm4hx/source.iso', target='/tmp/tmpf16cm4hx/build.iso', overwrite=False, throw=False, max...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x792a00119dc0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no vc_53450030/0. This image is: unknown image. This is an xiso whose directory has no vc_53450030/0. It is not ESPN NFL 2K5.
+
+mod_editor/core/mod_build.py:1412: ValueError
+_ PairedBuildIntegration.test_guardian_resource_growth_then_final_screen_hooks _
+
+self = <test_mod_build_beta62_integration3.PairedBuildIntegration testMethod=test_guardian_resource_growth_then_final_screen_hooks>
+
+    def test_guardian_resource_growth_then_final_screen_hooks(self):
+        from tests.mod_editor.test_nfl2k5_guardian_resources import ResourceTests, g
+        ResourceTests.setUpClass()
+        fixture = ResourceTests(methodName='test_streamed_paired_image_growth_all_outer_mappings_and_replay')
+        with tempfile.TemporaryDirectory() as directory, patch.object(g,'compile_collection',new=fixture.compiler):
+            source=Path(directory)/'source.iso';target=Path(directory)/'target.iso'
+            fixture.fixture(source)
+            with patch.object(build,'inspect',return_value={'container':'xiso'}):
+>               receipt=build.build(build.BuildPlan(str(source),str(target),guardian_overlay=True,screen_hooks=True,
+                                                    guardian_everyone_practice=False))
+
+tests/mod_editor/test_mod_build_beta62_integration3.py:177:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:1360: in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+target = PosixPath('/tmp/tmp3w85_0ld/.studio-build-aqc615jd/target.iso')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929fa121460>
+
+    def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[str, Any]:
+        """Fail closed on every final PLAY, after all book writers, before publication."""
+        from . import nfl2k5_play_scoring as scoring
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
+        payload = _xbe_bytes(target)
+        rows = []
+        with packs._outer_image().OuterImage(target) as archive:
+            for entry in archive.entries_with_head(b"PLAY"):
+                progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
+                row = scoring.require_safe(archive.read_entry(entry.index), payload)
+                rows.append({"entry": entry.index, **row})
+        if not rows:
+>           raise RuntimeError("Native PLAY scoring found no books in the build")
+E           RuntimeError: Native PLAY scoring found no books in the build
+
+mod_editor/core/mod_build.py:1054: RuntimeError
+_ PairedBuildIntegration.test_modern_naming_build_writes_both_halves_and_off_refuses_named_source _
+
+self = <test_mod_build_beta62_integration3.PairedBuildIntegration testMethod=test_modern_naming_build_writes_both_halves_and_off_refuses_named_source>
+
+    def test_modern_naming_build_writes_both_halves_and_off_refuses_named_source(self):
+        from tests.mod_editor.test_nfl2k5_modern_naming import fixture_image, synthetic_strg, n
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);fixture=fixture_image(root,RETAIL.read_bytes(),synthetic_strg())
+            target=root/'named.iso'
+            with patch.object(build,'inspect',return_value={'container':'xiso'}):
+>               receipt=build.build(build.BuildPlan(str(fixture.path),str(target),modern_naming=True))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_mod_build_beta62_integration3.py:192:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:1360: in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+target = PosixPath('/tmp/tmpha86m2yh/.studio-build-yzebgi31/named.iso')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929fcbd7830>
+
+    def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[str, Any]:
+        """Fail closed on every final PLAY, after all book writers, before publication."""
+        from . import nfl2k5_play_scoring as scoring
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
+        payload = _xbe_bytes(target)
+        rows = []
+        with packs._outer_image().OuterImage(target) as archive:
+            for entry in archive.entries_with_head(b"PLAY"):
+                progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
+                row = scoring.require_safe(archive.read_entry(entry.index), payload)
+                rows.append({"entry": entry.index, **row})
+        if not rows:
+>           raise RuntimeError("Native PLAY scoring found no books in the build")
+E           RuntimeError: Native PLAY scoring found no books in the build
+
+mod_editor/core/mod_build.py:1054: RuntimeError
+__ PairedBuildIntegration.test_roster_growth_is_paired_after_final_executable __
+
+self = <test_mod_build_beta62_integration3.PairedBuildIntegration testMethod=test_roster_growth_is_paired_after_final_executable>
+
+    def test_roster_growth_is_paired_after_final_executable(self):
+        from tests.mod_editor.test_nfl2k5_roster_arena_image import PairedArchiveTests, writer
+        fixture=PairedArchiveTests(methodName='test_paired_growth_replay_neighbors_and_transaction_rollback')
+        fixture.setUp();self.addCleanup(fixture.doCleanups)
+        target=fixture.directory/'build.iso'
+        with patch.object(build,'inspect',return_value={'container':'xiso'}):
+>           receipt=build.build(build.BuildPlan(str(fixture.source),str(target),reserves_16=True,created_teams_extra=2))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_mod_build_beta62_integration3.py:207:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:1360: in build
+    receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+target = PosixPath('/tmp/arena-paired-ed6mju34/.studio-build-8py4r07f/build.iso')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7929f77f9c40>
+
+    def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[str, Any]:
+        """Fail closed on every final PLAY, after all book writers, before publication."""
+        from . import nfl2k5_play_scoring as scoring
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
+        payload = _xbe_bytes(target)
+        rows = []
+        with packs._outer_image().OuterImage(target) as archive:
+            for entry in archive.entries_with_head(b"PLAY"):
+                progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
+                row = scoring.require_safe(archive.read_entry(entry.index), payload)
+                rows.append({"entry": entry.index, **row})
+        if not rows:
+>           raise RuntimeError("Native PLAY scoring found no books in the build")
+E           RuntimeError: Native PLAY scoring found no books in the build
+
+mod_editor/core/mod_build.py:1054: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_mod_build.py::PresetTests::test_playbook_pack_step_lands_in_the_receipt
+FAILED tests/mod_editor/test_mod_build_beta62_integration.py::PlanTests::test_grouped_names_follow_roster_edits_and_refuse_manual_conflict
+FAILED tests/mod_editor/test_mod_build_beta62_integration.py::PlanTests::test_hires_is_last_and_pre_remap_states_are_not_final_claims
+FAILED tests/mod_editor/test_mod_build_beta62_integration.py::ExecutableTests::test_runtime_scorebug_reserves_all_owners_before_final_install
+FAILED tests/mod_editor/test_mod_build_beta62_integration3.py::PairedBuildIntegration::test_guardian_resource_growth_then_final_screen_hooks
+FAILED tests/mod_editor/test_mod_build_beta62_integration3.py::PairedBuildIntegration::test_modern_naming_build_writes_both_halves_and_off_refuses_named_source
+FAILED tests/mod_editor/test_mod_build_beta62_integration3.py::PairedBuildIntegration::test_roster_growth_is_paired_after_final_executable
+7 failed, 67 passed, 2 skipped, 93 subtests passed in 676.88s (0:11:16)

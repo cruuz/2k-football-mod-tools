@@ -495,17 +495,28 @@ class RuntimeTests(unittest.TestCase):
                     self.assertEqual(bytes(m.uc.mem_read(target+1024,8)),b'CANARY!!')
                     raw=bytes(m.uc.mem_read(target,1024))
                     self.assertTrue(any(raw[i:i+2]==b'\0\0' for i in range(0,1024,2)))
+                    # vb1 A5: the in-match render pass (11A8F5) draws no
+                    # ticker text; text there takes the field camera and was
+                    # rotated 180 degrees in Noah's recording. The ticker comes
+                    # from the presentation tail with the stat line (74879).
                     m.draws.clear();m.call('mode_visuals',budget=3000000)
+                    self.assertEqual([d for d in m.draws if d['text'].strip()],[])
+                    m.draws.clear();m.call('mode_hud_frame',budget=3000000)
                     visible=[d for d in m.draws if d['text'].strip()]
                     self.assertEqual(visible[0]['text'],'21 - 17   Q2 2:01   8x   B: Cancel')
                     self.assertGreaterEqual(len(visible),2)
                     for draw in visible:
                         self.assertTrue(draw['vertices'])
-                        self.assertTrue(all(20<=p[0]<=620 and 320<=p[1]<=455 for p in draw['vertices']),draw['text'])
-            m.put(0xE53804,0);m.draws.clear();m.call('mode_visuals',budget=3000000)
+                        # Rows lifted 60 above beta 66's (header 290, play
+                        # lines from 314, 22 apart) so four play lines clear
+                        # the 2026 sprite scorebug's bar. Measured here over
+                        # the 13 kinds: x 85..553, y 275..363.
+                        self.assertTrue(all(20<=p[0]<=620 and 260<=p[1]<=400 for p in draw['vertices']),draw['text'])
+                    self.assertLess(max(p[1] for p in visible[0]['vertices']),300)
+            m.put(0xE53804,0);m.draws.clear();m.call('mode_hud_frame',budget=3000000)
             self.assertIn('Waiting for the next play',[d['text'] for d in m.draws])
-            m.put(m.state+2716,0);m.draws.clear();m.call('mode_visuals')
-            self.assertEqual(m.draws,[])
+            m.put(m.state+2716,0);m.draws.clear();m.call('mode_hud_frame')
+            self.assertEqual([d for d in m.draws if d['text'].startswith(('21 - 17','Waiting'))],[])
 
     def test_installed_skip_uses_native_postplay_cleanup_and_cpu_ownership(self):
         from tests.nfl2k5_my_career_cpu_fixture import Machine as CareerMachine, retail_playbook

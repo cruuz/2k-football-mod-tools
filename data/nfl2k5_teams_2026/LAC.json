@@ -1,0 +1,868 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "LAC",
+ "name": "Los Angeles Chargers",
+ "asset_code": "24",
+ "season": 2026,
+ "status": "Phase B d4 (2026-09-23): REDESIGNED (2020 powder blue identity, 2026 schedule): home powder blue jersey over gold pants with powder blue socks (weeks 2 and 15), road white over white with powder blue socks (weeks 8 and 14). Gold shoulder bolts, a bolt down the pants seam, white helmet with the 2020 bolt, rounded numerals (Saira Semi Condensed Bold, closest OFL match: INFERRED). Bolt shapes lifted from the retail 1960s throwback sets (24H6, 24A6, 24A7), repainted in 2026 colours: shapes INFERRED.",
+ "sources": {
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (LAC, 2026 NFL Record and Fact Book)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Los_Angeles_Chargers&action=raw (2020 rebrand; 2025 standard combos: powder blue over yellow at home, white on white away)",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Los_Angeles_Chargers_Uniforms_2025.png (CC BY-SA 4.0)",
+  "uniform_schedule": "https://www.chargers.com/news/2026-uniform-schedule (jersey, pants and socks for all 17 games)",
+  "home_photos": "https://www.chargers.com/photos/2026-game-action-photos-week-2-raiders (2026-09-20, powder blue over gold, powder blue socks)",
+  "number_font": "Saira Semi Condensed Bold (SIL OFL, github.com/google/fonts ofl/sairasemicondensed): closest open font to the 2020 numerals by eye; the club font is not published"
+ },
+ "palette": {
+  "powder_blue": "#0080C6",
+  "gold": "#FFC20E",
+  "white": "#FFFFFF",
+  "navy": "#001532"
+ },
+ "albedo": {
+  "powder_blue": "#0080C6",
+  "gold": "#FFC20E",
+  "white": "#FFFFFF",
+  "navy": "#001532",
+  "helmet_white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_powder": "#0080C6",
+  "field_navy": "#0A2240",
+  "sign_white": "#F4F4F4"
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense": "3-4",
+  "head_coach": "Jim Harbaugh",
+  "roster_abbreviation": "SD",
+  "defense_source": "nflverse depth_charts_2026 since 2026-09-09: LDE, NT, RDE, LILB, RILB, SLB, WLB slots (3-4)",
+  "overrides": {
+   "00-0039489": {
+    "jersey": 40
+   }
+  },
+  "overrides_note": "Hayden Rucci wears 40: https://www.chargers.com/team/players-roster/ ('Hayden Rucci 40 TE'); nflverse roster_2026 week 3 repeats David Njoku's 83. The snapshot ignores the field until u1's override feature lands; the LAC roster reruns then."
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Akheem Mesidor": 3,
+   "Alec Ingold": 0,
+   "Alex Harkey": 0,
+   "Brenen Thompson": 2,
+   "Bud Dupree": 4,
+   "Cam Hart": 4,
+   "Cameron Dicker": 0,
+   "Charlie Kolar": 0,
+   "Cole Strange": 0,
+   "Daiyan Henley": 3,
+   "Dalvin Tomlinson": 5,
+   "David Njoku": 4,
+   "Deane Leonard": 2,
+   "Del'Shawn Phillips": 3,
+   "Derius Davis": 4,
+   "Derwin James": 4,
+   "Donte Jackson": 4,
+   "Elijah Molden": 0,
+   "Genesis Smith": 2,
+   "Hayden Rucci": 0,
+   "J.K. Scott": 0,
+   "Jacob Spomer": 0,
+   "Jake Slaughter": 0,
+   "Jamaree Caldwell": 4,
+   "Joe Alt": 0,
+   "Josh Harris": 0,
+   "Justin Eboigbe": 4,
+   "Justin Herbert": 0,
+   "Kayode Awosika": 5,
+   "Keaton Mitchell": 4,
+   "Kendall Williamson": 3,
+   "Khalil Mack": 4,
+   "Kimani Vidal": 4,
+   "Ladd McConkey": 0,
+   "Logan Taylor": 0,
+   "Marlowe Wax": 3,
+   "Nick Barrett": 4,
+   "Omarion Hampton": 3,
+   "Oronde Gadsden": 2,
+   "Quentin Johnston": 4,
+   "R.J. Mickens": 3,
+   "Rashawn Slater": 2,
+   "Rodney Shelley": 4,
+   "Tarheeb Still": 3,
+   "Teair Tart": 4,
+   "Tony Jefferson": 4,
+   "Travis Burke": 0,
+   "Tre Harris": 3,
+   "Trevor Penning": 0,
+   "Trey Lance": 2,
+   "Trey Pipkins": 3,
+   "Troy Dye": 2,
+   "Tuli Tuipulotu": 3
+  },
+  "dreads": [
+   "Omarion Hampton",
+   "Del'Shawn Phillips",
+   "Genesis Smith",
+   "Keaton Mitchell",
+   "Kendall Williamson",
+   "R.J. Mickens",
+   "Rodney Shelley"
+  ],
+  "note": "2K5 skin tone 0 to 5 by eye from the official 2026 headshots (INFERRED); automatic estimates in faces.json. Dreads by eye."
+ },
+ "marks": {
+  "team_logo": "lac_bolt_club.png",
+  "torso_bolt_all_home": "lac_torso_bolt_all_home.png",
+  "torso_bolt_fill_home": "lac_torso_bolt_fill_home.png",
+  "torso_bolt_all_away": "lac_torso_bolt_all_away.png",
+  "torso_bolt_fill_away": "lac_torso_bolt_fill_away.png",
+  "pants_bolt_all": "lac_pants_bolt_all.png",
+  "pants_bolt_fill": "lac_pants_bolt_fill.png",
+  "ez_letters": "lac_ez_letters.png",
+  "ez_outline": "lac_ez_outline.png",
+  "ez_underline": "lac_ez_underline.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "24H0",
+   "note": "2026 home (weeks 2 and 15): powder blue jersey, gold shoulder bolts outlined in white, white numbers trimmed in gold, gold pants with a white bolt outlined in powder blue, powder blue socks, white helmet with the gold and powder blue bolt",
+   "torso": {
+    "base_colour": "powder_blue",
+    "neck_donor": "24H6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "torso_bolt_all_home",
+      "colour": "white",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     },
+     {
+      "mark": "torso_bolt_fill_home",
+      "colour": "gold",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "powder_blue",
+    "stripes_from": null
+   },
+   "pants": {
+    "base_from": "24H3",
+    "base_colour": "gold",
+    "stripe": [],
+    "swoosh_colour": "powder_blue",
+    "decorations": [
+     {
+      "mark": "pants_bolt_all",
+      "colour": "powder_blue",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     },
+     {
+      "mark": "pants_bolt_fill",
+      "colour": "white",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     }
+    ]
+   },
+   "socks": {
+    "colour": "powder_blue"
+   },
+   "digits": {
+    "glyph_donor": "24H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "white",
+    "outline": "gold",
+    "outline_frac": 0.035
+   },
+   "arm_digits": "none",
+   "nameplate": {
+    "glyph_donor": "24H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "24H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "powder_blue"
+   },
+   "helmet": {
+    "shell_from": "#00295D",
+    "shell": "helmet_white",
+    "recolour": [],
+    "decorations": [
+     {
+      "mark": "team_logo",
+      "center": [
+       74,
+       176
+      ],
+      "width": 112
+     },
+     {
+      "mark": "team_logo",
+      "center": [
+       74,
+       87
+      ],
+      "width": 112,
+      "rotate": 180,
+      "mirror": true
+     }
+    ],
+    "note": "the 2004 bolts are filled with the flat shell navy in retail_prepped/ (hand step, d4 prep script), the navy shell becomes white, and the 2020 club bolt is drawn where they were: the lower as drawn, the upper flipped vertically (rotate 180 + mirror), as the retail pair is a vertical mirror image"
+   },
+   "outer_index": 3817,
+   "splayer": {
+    "torso_donor_outer": 3817,
+    "torso_donor": "24H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#001537",
+      "to": "#006FAB",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#001537",
+      "to": "#006FAB",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#00275A",
+      "to": "#E9ECEF",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "team_logo"
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#01509C",
+      "to": "powder_blue",
+      "region": "jersey",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#01509C",
+      "to": "powder_blue",
+      "region": "helmet",
+      "tolerance": 0.22,
+      "cards": [
+       "unif_256"
+      ]
+     },
+     {
+      "from": "#F7B003",
+      "to": "gold",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "team_logo",
+     "boxes": {
+      "helm_256": [
+       96,
+       6,
+       250,
+       140
+      ],
+      "helm_128": [
+       48,
+       2,
+       125,
+       70
+      ]
+     }
+    },
+    "note": "the render comes from the retail 1960s throwback card (24H6: blue jersey with white and gold numbers, gold pants, white helmet), prepared in retail_prepped/, recoloured to 2026 and given the 2020 bolt"
+   },
+   "arm_digits_note": "the 2020+ Chargers have no sleeve (TV) numbers (d4 open item; set centrally by u1 in B2)"
+  },
+  "away": {
+   "selector": "24A0",
+   "note": "2026 road (weeks 8 and 14): white jersey, gold shoulder bolts outlined in powder blue, powder blue numbers trimmed in gold, white pants with a gold bolt outlined in powder blue, powder blue socks, the same helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "24H6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "powder_blue"
+    },
+    "decorations": [
+     {
+      "mark": "torso_bolt_all_away",
+      "colour": "powder_blue",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     },
+     {
+      "mark": "torso_bolt_fill_away",
+      "colour": "gold",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null
+   },
+   "pants": {
+    "base_from": "24A7",
+    "base_colour": "white",
+    "stripe": [],
+    "swoosh_colour": "powder_blue",
+    "decorations": [
+     {
+      "mark": "pants_bolt_all",
+      "colour": "powder_blue",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     },
+     {
+      "mark": "pants_bolt_fill",
+      "colour": "gold",
+      "center": [
+       256,
+       128
+      ],
+      "width": 512
+     }
+    ]
+   },
+   "socks": {
+    "colour": "powder_blue"
+   },
+   "digits": {
+    "glyph_donor": "24A0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "powder_blue",
+    "outline": "gold",
+    "outline_frac": 0.035
+   },
+   "arm_digits": "none",
+   "nameplate": {
+    "glyph_donor": "24A0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "powder_blue"
+   },
+   "helmet_digits": {
+    "glyph_donor": "24A0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/LAC/refs/fonts/SairaSemiCondensed-Bold.ttf",
+    "fill": "powder_blue"
+   },
+   "helmet": {
+    "shell_from": "#00295D",
+    "shell": "helmet_white",
+    "recolour": [],
+    "decorations": [
+     {
+      "mark": "team_logo",
+      "center": [
+       74,
+       176
+      ],
+      "width": 112
+     },
+     {
+      "mark": "team_logo",
+      "center": [
+       74,
+       87
+      ],
+      "width": 112,
+      "rotate": 180,
+      "mirror": true
+     }
+    ],
+    "note": "the 2004 bolts are filled with the flat shell navy in retail_prepped/ (hand step, d4 prep script), the navy shell becomes white, and the 2020 club bolt is drawn where they were: the lower as drawn, the upper flipped vertically (rotate 180 + mirror), as the retail pair is a vertical mirror image"
+   },
+   "outer_index": 4134,
+   "splayer": {
+    "torso_donor_outer": 4134,
+    "torso_donor": "24A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#001638",
+      "to": "#E6E8EC",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#00285C",
+      "to": "#E9ECEF",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "team_logo"
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#014D99",
+      "to": "powder_blue",
+      "region": "jersey",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#1D3859",
+      "to": "powder_blue",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "team_logo",
+     "boxes": {
+      "helm_256": [
+       8,
+       6,
+       160,
+       140
+      ],
+      "helm_128": [
+       3,
+       2,
+       82,
+       70
+      ]
+     }
+    },
+    "note": "the render comes from the retail throwback road card (24A8: white jersey, blue numbers trimmed in gold, white pants, white helmet), prepared in retail_prepped/"
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "helmet": "white shell, gold lightning bolt outlined in powder blue, gold and grey hardware, flag and shield decals",
+   "digit_helmet": "powder blue numbers",
+   "torso": "powder blue jersey body, gold shoulder lightning bolts outlined in white, NFL shield at the collar, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "plain powder blue",
+   "pants": "gold pants with a white lightning bolt outlined in powder blue down the side, powder blue maker mark",
+   "digit_jersey": "white rounded numbers with a thin gold outline",
+   "digit_arm": "white rounded numbers with a thin gold outline",
+   "nameplate": "white letters",
+   "socks00": "solid powder blue",
+   "splayer": "far-away player atlas: gold pants, powder blue torso, white helmet, powder blue socks, skin and glove patches",
+   "team-select_unif": "menu render: powder blue jersey with a white number, gold pants, white helmet with the bolt",
+   "team-select_helm": "menu render: white helmet with the gold bolt, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "helmet": "white shell, gold lightning bolt outlined in powder blue, gold and grey hardware, flag and shield decals",
+   "digit_helmet": "powder blue numbers",
+   "torso": "white jersey body, gold shoulder lightning bolts outlined in powder blue, NFL shield at the collar, powder blue maker marks; the light grey patch is the neck opening",
+   "sleeve": "plain white",
+   "pants": "white pants with a gold lightning bolt outlined in powder blue down the side, powder blue maker mark",
+   "digit_jersey": "powder blue rounded numbers with a thin gold outline",
+   "digit_arm": "powder blue rounded numbers with a thin gold outline",
+   "nameplate": "powder blue letters",
+   "socks00": "solid powder blue",
+   "splayer": "far-away player atlas: white pants, white torso, white helmet, powder blue socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a powder blue number, white pants, white helmet with the bolt",
+   "team-select_helm": "menu render: white helmet with the gold bolt, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "unpainted end zone with white italic CHARGERS outlined in powder blue over a gold underline",
+   "center_logo": "the gold and powder blue lightning bolt",
+   "banner": "cloth fan banners in powder blue, gold and white",
+   "wall": "powder blue field-level pads and walls with white lightning",
+   "sign": "CHARGERS signs in powder blue"
+  }
+ },
+ "venue": {
+  "prefix": "s24",
+  "notes": "Chargers home games at the retail Qualcomm scene (SoFi Stadium since 2020; Noah: keep the stadiums, only the team art changes). The standard 2026 SoFi end-zone design was not confirmed by any source found (only theme-game designs are documented), so the retail layout is kept and made 2026: italic CHARGERS (Saira Semi Condensed Bold, slanted) in white with a powder blue outline and a gold underline on unpainted turf, replacing SAN DIEGO: INFERRED, open item for the lab. Midfield: the 2020 bolt (full colour, hand step) replaces the 2004 helmet: INFERRED. Pads and the lightning walls powder blue (2026 photos: powder blue field-level walls); the lightning walls are recoloured by hand from the retail art (lightning kept). CHARGERS sign panels in powder blue; the small helmet picture on the chargerlogo sign becomes a white helmet with the gold bolt; fan banners carry 2026 players.",
+  "sources": [
+   "https://www.chargers.com/photos/2026-top-shots-photos-week-2-raiders (2026-09-20: powder blue field walls, white helmet with the bolt)",
+   "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg"
+  ],
+  "endzone": {
+   "paint": "powder_blue",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "ez_underline",
+     "colour": "gold",
+     "center": [
+      384,
+      64
+     ],
+     "height": 96.0,
+     "stretch": 1.0
+    },
+    {
+     "mark": "ez_outline",
+     "colour": "powder_blue",
+     "center": [
+      384,
+      64
+     ],
+     "height": 96.0,
+     "stretch": 1.0
+    },
+    {
+     "mark": "ez_letters",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 96.0,
+     "stretch": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "fill_mark": "team_logo",
+   "fill": "gold",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "powder_blue",
+      "items": [
+       {
+        "text": "LET'S GO\nCHARGERS",
+        "colour": "white",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BOLT UP!",
+        "colour": "powder_blue",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "HERBERT\n#10",
+        "colour": "powder_blue",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       133,
+       2,
+       252,
+       61
+      ],
+      "bg": "powder_blue",
+      "items": [
+       {
+        "text": "McCONKEY\n#15",
+        "colour": "white",
+        "center": [
+         192.5,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       125
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "MACK\n#52",
+        "colour": "powder_blue",
+        "center": [
+         64.0,
+         94.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       133,
+       66,
+       251,
+       125
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "HAMPTON\n#8",
+        "colour": "powder_blue",
+        "center": [
+         192.0,
+         94.5
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "powder_blue",
+      "items": [
+       {
+        "text": "POWDER\nBLUES",
+        "colour": "gold",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "JAMES\n#3",
+        "colour": "powder_blue",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "wall01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "powder_blue",
+      "items": []
+     }
+    ]
+   },
+   "chargerswall02": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "powder_blue",
+      "items": []
+     }
+    ]
+   },
+   "chargerswall03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "powder_blue",
+      "items": []
+     }
+    ]
+   },
+   "score_sign": {
+    "banners": [
+     {
+      "slot": [
+       104,
+       95,
+       254,
+       123
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "CHARGERS",
+        "colour": "powder_blue",
+        "center": [
+         179,
+         109
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "bigscore": {
+    "banners": [
+     {
+      "slot": [
+       179,
+       161,
+       247,
+       186
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "CHARGERS",
+        "colour": "powder_blue",
+        "center": [
+         213,
+         173.5
+        ],
+        "height": 10
+       }
+      ]
+     }
+    ]
+   },
+   "chargerlogo": {
+    "banners": [
+     {
+      "slot": [
+       6,
+       9,
+       249,
+       58
+      ],
+      "bg": "powder_blue",
+      "items": []
+     },
+     {
+      "slot": [
+       0,
+       149,
+       109,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "team_logo",
+        "colour": "gold",
+        "center": [
+         52,
+         196
+        ],
+        "width": 62
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

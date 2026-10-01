@@ -1,0 +1,14 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "introduced_commit": "9a44516ce6f506231d52d688a0a980a6764b7437",
+  "shipped_merge": "3423cf7f",
+  "introduced_date": "2026-09-03",
+  "reason": "2026 calendar pointed at the retail Los Angeles entry to approximate the announced SoFi location, before u6 installed its neutral model in s40.",
+  "source_excerpt": "  January and can be edited by hand.  The Super Bowl venue selector FUN_001332b0 picks the neutral\n  stadium by season index through a five-entry jump table at 0x133354 (s40 Jacksonville, s42 Detroit,\n  s43 Miami, s41 Glendale, s44 Los Angeles, then s45); the preset points season 0 at the Los Angeles\n  entry (Super Bowl LXI is at SoFi Stadium).",
+  "reports": [
+    "fb/EVENT_SLOTS.md",
+    "fb/evidence/event_proof.json",
+    "docs/sofi_model/README.md"
+  ],
+  "current_s40_art_sha256": "5154e530a6aebec11eeba19acc0f565e79426ff20acea2a689abab4af50ad82c"
+}

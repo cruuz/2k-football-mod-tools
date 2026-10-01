@@ -75,6 +75,9 @@ from mod_editor.core import nfl2k5_formation_play_writer as formation_play_adapt
 from mod_editor.core import nfl2k5_crib_scene_texture_writer as crib_scene_adapter  # noqa: E402
 from mod_editor.core import nfl2k5_crib_standalone_texture_writer as crib_standalone_adapter  # noqa: E402
 from mod_editor.core import nfl2k5_crib_geometry_writer as crib_geometry_adapter  # noqa: E402
+# b76 p1: the explicit GAMEDATA presentation inventory; its four A/B graded marks build through
+# the p8_texture kind (asset ids p8:346:<texture>), every other row is refused with its reason.
+from mod_editor.core import nfl2k5_presentation_standalone as presentation_adapter  # noqa: E402
 
 
 def _load_scorebug_adapter() -> Any:
@@ -2885,6 +2888,13 @@ def build_one_import(order: int, edit: dict[str, Any], project: ProjectFile,
             )
         except stadium_texture_adapter.StadiumTextureWriterError as exc:
             raise ProjectError(str(exc)) from exc
+    if kind == P8_TEXTURE_KIND and presentation_adapter.is_presentation_asset(edit["asset_id"]):
+        try:
+            return presentation_adapter.build_unified_presentation_mark_imports(
+                index, str(edit["asset_id"]), Path(png)
+            )[0]
+        except presentation_adapter.PresentationMarkError as exc:
+            raise ProjectError(str(exc)) from exc
     if kind == P8_TEXTURE_KIND:
         try:
             return p8_texture_adapter.build_unified_p8_texture_import(
@@ -4208,10 +4218,16 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             len(prepared), "input", png_pin, temp_root, temp_files
                         )
                         try:
-                            built = p8_texture_adapter.build_unified_p8_texture_imports(
-                                index_pin.path, str(edit["asset_id"]), png
-                            )
-                        except p8_texture_adapter.P8TextureWriterError as exc:
+                            if presentation_adapter.is_presentation_asset(edit["asset_id"]):
+                                built = presentation_adapter.build_unified_presentation_mark_imports(
+                                    index_pin.path, str(edit["asset_id"]), png
+                                )
+                            else:
+                                built = p8_texture_adapter.build_unified_p8_texture_imports(
+                                    index_pin.path, str(edit["asset_id"]), png
+                                )
+                        except (p8_texture_adapter.P8TextureWriterError,
+                                presentation_adapter.PresentationMarkError) as exc:
                             raise ProjectError(str(exc)) from exc
                     elif kind == CRIB_STANDALONE_TEXTURE_KIND:
                         built = build_crib_standalone_texture_imports(

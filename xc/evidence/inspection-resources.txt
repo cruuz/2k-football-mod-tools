@@ -1,0 +1,24 @@
+Command exited with non-zero status 1
+	Command being timed: "python3 xc/prove_disc.py /media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 candidate D 2026-09-28.xiso.iso /media/noah/Storage/.b76-research/xc/astra-build/candidate-D-compact.xiso.iso --evidence xc/evidence --build-receipt /media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 candidate D 2026-09-28.xiso.build.json"
+	User time (seconds): 179.63
+	System time (seconds): 6.44
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:07.06
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 200276
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 3
+	Minor (reclaiming a frame) page faults: 1489817
+	Voluntary context switches: 7393
+	Involuntary context switches: 275397
+	Swaps: 0
+	File system inputs: 1142048
+	File system outputs: 1056
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

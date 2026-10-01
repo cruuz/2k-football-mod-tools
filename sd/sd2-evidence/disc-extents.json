@@ -1,0 +1,10 @@
+{
+  "classification": "PROVED OFFLINE",
+  "extents_checked": 21,
+  "image_bytes": 8012931072,
+  "partition_base": 0,
+  "volume_sectors": 3912564,
+  "per_file_cap": 4294965248,
+  "max_xemu_sectors": 2147483647,
+  "read_only": true
+}

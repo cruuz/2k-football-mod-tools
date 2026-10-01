@@ -1,0 +1,181 @@
+{
+  "items": [
+    {
+      "file": "banner_corp.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banner_corp_4x.png",
+      "master_sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "material": "banner_corp",
+      "rects": [
+        [
+          5,
+          2,
+          123,
+          61
+        ],
+        [
+          5,
+          66,
+          123,
+          125
+        ],
+        [
+          131,
+          67,
+          190,
+          126
+        ],
+        [
+          195,
+          67,
+          254,
+          126
+        ],
+        [
+          131,
+          131,
+          190,
+          190
+        ],
+        [
+          195,
+          131,
+          254,
+          190
+        ],
+        [
+          5,
+          194,
+          123,
+          253
+        ],
+        [
+          195,
+          195,
+          254,
+          254
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "224ce9a1461cf36253d05e60a6810e2872b6e57cd56c93967561f9af6d8d08a2"
+    },
+    {
+      "file": "lambert28.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "lambert28_4x.png",
+      "master_sha256": "4b9d9ab2d3644662ea70e600712deed7ef2737abbe9e812d48f575689dc36cd8",
+      "material": "lambert28",
+      "rects": [
+        [
+          0,
+          0,
+          128,
+          34
+        ],
+        [
+          0,
+          66,
+          128,
+          98
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "64ad65125847bb084d96274a73c7759ba0455bb05b4d802623ba0c941b03ab07",
+      "size": [
+        128,
+        128
+      ],
+      "source_rgba_sha256": "2822197fd76f1307cf82c28a0d4008e0fcd26a2f8d57d84c239e35bd6e97cd84"
+    },
+    {
+      "file": "lambert27.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "lambert27_4x.png",
+      "master_sha256": "ffad376698a296113aff36f0653c0404ed484c1d26318392226bc0fd63a15088",
+      "material": "lambert27",
+      "rects": [
+        [
+          41,
+          1,
+          82,
+          31
+        ],
+        [
+          1,
+          32,
+          40,
+          63
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "516d9d19f2b70873431ba171bb3ad66a2768f1d284a7f4c7fe6c958fa621a070",
+      "size": [
+        128,
+        64
+      ],
+      "source_rgba_sha256": "78a5a4f5a00550c9c22e9e5329d6736042e63e9173ec80c640c1ddbd8c9b9b51"
+    },
+    {
+      "file": "lambert31.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "lambert31_4x.png",
+      "master_sha256": "b1c2e4e86d028599566035339ed05cada59ff834a364057724cfbbb7fc700660",
+      "material": "lambert31",
+      "rects": [
+        [
+          42,
+          21,
+          84,
+          64
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "7c9133c7041efd86c4d503190c69ee5b9dda58d10f875172919c504a5493d1ca",
+      "size": [
+        128,
+        64
+      ],
+      "source_rgba_sha256": "99c0b8ad0689ccb18fb3664f740dab097116c6ecd7bec6ddfb07ff00d4abc5f5"
+    },
+    {
+      "file": "field_logo.png",
+      "format": "P8",
+      "kind": "field-logo",
+      "layer": "full",
+      "master": "field_logo_4x.png",
+      "master_sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "material": "logo",
+      "rects": [
+        [
+          0,
+          0,
+          256,
+          256
+        ]
+      ],
+      "scene": "field",
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "a8e2bf2dc7691e71d14bdf3b0627f45e15c3800542a268d6f0fbdfe70dd65369"
+    }
+  ],
+  "schema": "metlife_team_art/v1",
+  "team": "s41",
+  "venue_prefix": "s41"
+}

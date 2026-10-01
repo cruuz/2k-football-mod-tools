@@ -1,7 +1,7 @@
 pool,index,first,last,position,jersey,college,speed,agility,pass_arm_strength,stamina,kick_power,durability,strength,jumping,coverage,run_route,tackle,break_tackle,pass_accuracy,pass_read_coverage,catch,run_blocking,pass_blocking,hold_onto_ball,pass_rush,run_coverage,kick_accuracy,kicking_style,leadership,power_run_style,composure,scramble,consistency,aggressiveness
 primary,0,Mike,Flanagan,C,58,UCLA,45,67,11,89,21,99,67,61,18,13,23,11,10,10,20,77,81,8,24,33,17,49,35,99,64,5,81,39
 primary,1,Rob,Davis,C,60,Shippensburg,44,53,12,66,14,80,69,47,15,18,22,27,14,11,24,68,66,10,20,23,9,49,34,99,31,5,47,46
-primary,2,Marcus,Spriggs,C,79,,60,67,10,40,23,85,73,65,24,23,28,28,10,10,30,44,48,4,30,46,24,49,30,99,28,5,43,56
+primary,2,Brennan,Curtin,C,60,,60,67,10,40,23,85,73,65,24,23,28,28,10,10,30,44,48,4,30,46,24,49,30,99,28,5,43,56
 primary,3,Mike,McKenzie,CB,34,Memphis,81,77,9,60,19,95,53,64,68,11,71,8,11,10,26,22,27,37,32,55,19,49,24,1,47,5,94,45
 primary,4,Al,Harris,CB,31,,86,82,12,68,17,68,45,82,93,6,77,4,13,11,32,21,24,30,55,76,20,49,31,1,63,5,70,43
 primary,5,Curtis,Fuller,CB,29,TCU,87,84,11,70,21,53,41,79,65,8,72,6,11,11,33,45,41,34,41,60,22,49,34,1,34,5,22,49
@@ -43,7 +43,7 @@ primary,40,Erwin,Swiney,SS,26,Nebraska,91,85,13,66,16,53,43,73,69,8,69,6,13,11,2
 primary,41,Chad,Clifton,T,76,Tennessee,56,56,11,70,14,98,69,59,8,28,21,15,10,10,2,78,80,1,20,27,14,49,35,99,55,5,72,41
 primary,42,Mark,Tauscher,T,65,Wisconsin,38,50,11,71,19,96,65,48,13,34,30,16,10,10,21,80,82,2,30,27,18,49,34,99,52,5,77,46
 primary,43,Kevin,Barry,T,71,Arizona,46,50,11,76,17,78,63,64,6,8,16,7,10,10,9,50,51,8,11,33,13,49,27,99,26,5,24,14
-primary,44,Brennan,Curtin,T,71,,41,56,11,61,7,62,67,52,14,26,28,32,11,15,30,40,40,19,15,22,9,49,42,99,28,5,1,6
+primary,44,Marcus,Spriggs,T,79,,41,56,11,61,7,62,67,52,14,26,28,32,11,15,30,40,40,19,15,22,9,49,42,99,28,5,1,6
 primary,45,Bubba,Franks,TE,88,,65,71,10,53,8,86,53,58,12,83,8,72,11,13,85,70,74,77,14,12,14,49,31,99,50,5,76,77
 primary,46,David,Martin,TE,87,Tennessee,75,75,10,55,11,54,43,70,12,72,10,47,11,11,79,70,72,88,6,12,15,49,80,99,84,5,64,21
 primary,47,Wesley,Walls,TE,85,Mississippi,85,77,12,49,13,75,45,82,29,75,31,47,14,13,72,62,60,57,28,26,13,49,35,99,34,5,37,24

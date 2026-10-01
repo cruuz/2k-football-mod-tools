@@ -46,12 +46,21 @@ static NOINLINE void set_count(u8 *t,u32 n) {
     B(t,RSV_VERSION)=1; B(t,RSV_MAGIC)=0xa5; B(t,RSV_COUNT)=n;
 }
 static NOINLINE u8 *owner(u32 id) {
-    u8 *r=ROOT,*t=(u8 *)U32(r,0x1c); u32 i,j; int n;
+    u8 *r=ROOT,*t=(u8 *)U32(r,0x1c); u32 i,j,*s,p; int n;
     if(!r || U32(r,0x18)>128) return (u8 *)1;
+    /* index_of(slot)==id exactly when the slot holds this pool address, for
+     * any real index. Reserve slots only ever hold pool players. */
+    p=U32(r,4)+84*id;
     for(i=0;i<U32(r,0x18);i++,t+=500) {
+        /* Reserves belong to the franchise teams listed() counts: the 32 clubs,
+         * created (2) and historic (4) teams. After a season the AFC and NFC
+         * all-star teams are cut to 40 with their old players left past the
+         * count; a display team's layout must not make every player owned. */
+        if(i>=32 && (U32(t,0x128)-2)&~2U) continue;
         n=reserve_count(t);
         if(n<0) return (u8 *)1;
-        for(j=0;j<(u32)n;j++) if(index_of((u8 *)U32(t,4*(B(t,ACTIVE)+j)))==id) return t;
+        s=(u32 *)t+B(t,ACTIVE);
+        for(j=0;j<(u32)n;j++) if(s[j]==p) return t;
     }
     return 0;
 }

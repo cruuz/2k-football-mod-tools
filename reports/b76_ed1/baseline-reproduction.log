@@ -1,0 +1,29 @@
+PROVED OFFLINE: baseline save succeeded, project.json=17345658 bytes, 600 textures, 200 colour records, 100 fit generations.
+PROVED OFFLINE: Models precheck rejected its own saved file: Project manifest is too large.
+PROVED OFFLINE: Base loader rejected its own saved file: Project manifest is missing or too large.
+PROVED OFFLINE: baseline receipt=53820262 bytes; colour-change rows=[65528, 65528, 65528].
+PROVED OFFLINE: baseline parent readback failed: The texture receipt is missing or exceeds its size bound: /tmp/tmpkmyjxie5/05162_import.json is 53820262 bytes, outside 1..33554432 after 6 attempts. The artifact folder holds: 05162_import.json, old.
+PROVED OFFLINE: fixed replacement span SHA-256=f61254ba9afe1b9eeba2b292d6c0dfd8c653bf02fda8caf64cb0a4fc561a881e; all three previews and aggregate quality metrics equal the baseline.
+	Command being timed: "python3 reports/b76_ed1/reproduce_baseline.py"
+	User time (seconds): 13.36
+	System time (seconds): 1.25
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:14.64
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 616044
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 272088
+	Voluntary context switches: 124
+	Involuntary context switches: 81
+	Swaps: 0
+	File system inputs: 288
+	File system outputs: 144288
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

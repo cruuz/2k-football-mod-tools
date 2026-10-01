@@ -1,0 +1,3750 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "source": "sn descriptor-verified retail.occurrences",
+  "bundles": [
+    {
+      "name": "s00dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 22,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 23,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 23,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s00ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 23,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s01ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 29,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 28,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s03ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s07ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s10ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 21,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 20,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 19,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s11ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 26,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 25,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 24,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 45,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 44,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 43,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 45,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 44,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 43,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 46,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 45,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 44,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s12ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 45,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 44,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 43,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 32,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 31,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 32,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 31,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 32,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 31,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s14ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 31,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 30,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s15ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 24,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 23,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s20ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 35,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 34,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 33,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s23ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 27,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 26,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 25,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s24ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 22,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 21,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 20,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25dd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25dr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25ds.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25ad.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25ar.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25as.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25nd.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25nr.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    },
+    {
+      "name": "s25ns.iff",
+      "textures": [
+        {
+          "key": "banner_away_team",
+          "texture": 34,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_player",
+          "texture": 33,
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8"
+        },
+        {
+          "key": "banner_home_team",
+          "texture": 32,
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8"
+        }
+      ]
+    }
+  ]
+}

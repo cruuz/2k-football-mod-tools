@@ -1,0 +1,125 @@
+{
+  "classification": "PROVED OFFLINE",
+  "teams": {
+    "PHI": {
+      "source": "phi_chi",
+      "side": "away",
+      "frames": 293,
+      "wing": [
+        34,
+        182,
+        202
+      ],
+      "wing_unclipped": [
+        33.8,
+        182.5,
+        202.1
+      ],
+      "plate": [
+        25,
+        85,
+        95
+      ],
+      "plate_frames": 293,
+      "on_air_wing_rows": {
+        "top": [
+          30.8,
+          182.5,
+          201.5
+        ],
+        "middle": [
+          37.2,
+          123.3,
+          136.5
+        ]
+      },
+      "parent": "#004851",
+      "hex": "#22B6CA",
+      "fitted": "#15A1B2",
+      "distance": 0.06373950681751013,
+      "bound": 0.0485,
+      "plate_candidates": [
+        {
+          "value": "#004851",
+          "error": 4.39168782461962
+        },
+        {
+          "value": "#26636B",
+          "error": 4.834078557971949
+        },
+        {
+          "value": "#00363D",
+          "error": 9.854878900804806
+        },
+        {
+          "value": "#515556",
+          "error": 14.338023912398603
+        },
+        {
+          "value": "#002428",
+          "error": 15.477224047937495
+        }
+      ]
+    },
+    "CHI": {
+      "source": "phi_chi",
+      "side": "home",
+      "frames": 407,
+      "wing": [
+        255,
+        109,
+        51
+      ],
+      "wing_unclipped": [
+        315.4,
+        109.3,
+        50.5
+      ],
+      "plate": [
+        156,
+        56,
+        28
+      ],
+      "plate_frames": 407,
+      "on_air_wing_rows": {
+        "top": [
+          250.8,
+          113.0,
+          68.4
+        ],
+        "middle": [
+          225.2,
+          82.2,
+          45.4
+        ]
+      },
+      "parent": "#E64100",
+      "hex": "#FF6D33",
+      "fitted": "#EB5920",
+      "distance": 0.05744491176156036,
+      "bound": 0.0485,
+      "plate_candidates": [
+        {
+          "value": "#AC3100",
+          "error": 4.831615410739305
+        },
+        {
+          "value": "#732000",
+          "error": 9.774626286638261
+        },
+        {
+          "value": "#545C6A",
+          "error": 31.048016232977258
+        },
+        {
+          "value": "#30394A",
+          "error": 33.83033104710853
+        },
+        {
+          "value": "#060B15",
+          "error": 37.515146356702495
+        }
+      ]
+    }
+  }
+}

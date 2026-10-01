@@ -1,0 +1,222 @@
+{
+ "schema": "nfl2k5_everbank_model_art/v1",
+ "art": {
+  "jx_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "3030d8d7ea5c1ea10fc1115208e408a65e535b5524f1c908ab1d0c0839531844"
+  },
+  "jx_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "5c591ee4a55fa5e227805135967c74017ab7952cc7e2f882fc5e0b14360d6e14"
+  },
+  "jx_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "0b47856eb8163c3e8040475daad08d1f299592084378894c4842c3e681fe44b7"
+  },
+  "jx_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "jx_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "11fe1f003e9bcae938d5e27f630f12bfabd0d8efeb387434a495cc7079d53cfa"
+  },
+  "LIGHT_jx_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "bee4c269c1cc5a5fea34fd0dbf45127254d07e44d73cc907a30faf5ae002cc5b"
+  },
+  "LIGHT_jx_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_jx_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "jx_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "jx_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "jx_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "jx_steel": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bb04aca4a2442c3719d5274c84088ba4e5f2366788f9188633d44857f0b0474"
+  },
+  "LIGHT_jx_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_jx_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "08e110524babe366dec8ab40ddc854a2d20521ad6892c507aeabf5799a59c768"
+  },
+  "jx_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "8b94140952f55a9ec84ec56e8622e2f290b31d0a1a62ddfc748b5e7338fc312d"
+  },
+  "jx_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "f99c861540870990bf166c9d40ece17bfd7a3c37302d07c71235d77eac0d6a5f"
+  },
+  "jx_board_back": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "4f4dfb14213c202b8ff9ba0b28a98279b4e1e95e9e23468ca71d299d2ebd44ae"
+  },
+  "jx_roof": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "cc2502d90b7db7d8f6715e4a77c433933e58e0a8628b5ff49bab9ebb476f56e0"
+  },
+  "jx_riser": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "ac048af5bfbd3673686835af441f13f2012c98da66d476516b9df266fc09e0f4"
+  },
+  "jx_deck": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "3dc912c8d239665d1f3ce72694761003a39aa853710092183e27507e6c6da536"
+  },
+  "jx_water": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "545673b630bcf1e84fdd5479c5c434124abbb60fb2209b2d14b74892f8703a4a"
+  },
+  "jx_drained": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "8576f75b5745a0a4f65f5ce6dd1ce41d1046a30896567ed3b50e9aeae70bc596"
+  },
+  "jx_fence": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "2d415bbf0769d4c84e9c3e9714394e53750805ae598d00f448943d4a681ce163"
+  },
+  "jx_fabric": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "acfea6b9e060aebc1e366f499db76a0ae28282591eb59573e80d4e105b964f69"
+  },
+  "jx_truss": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "2df2d2d7f54d7f7fb7c349aada0dca5390f1193dd7033136b46e23fee224e103"
+  },
+  "jx_crane": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "818c1a019f0caa9db2d197cea62ddca07f96c3ee2c2822598624bd4e93a3aa21"
+  },
+  "jx_cab": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "91e381953e8d9a5d73d16f687f7fc53b424a055622b61b4b4c4ca4e161dc752b"
+  },
+  "jx_netting": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed625d7db91bca33a8b7ec5c02bca6a47d66c72a7850563085230931c79ba3d5"
+  },
+  "jx_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "field/jx_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58"
+  },
+  "field/jx_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391"
+  }
+ }
+}

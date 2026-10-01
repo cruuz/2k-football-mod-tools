@@ -34,6 +34,8 @@ def retail_roster():
     from mod_editor.core import nfl2k5_roster_records as rr
     if not (XBE.parent / "vc_53450030/0").is_file():
         raise unittest.SkipTest("private retail roster archive is absent")
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(XBE.parent)
     with rr._outer_image()(XBE.parent) as archive:
         entry = rr._entry(archive)
         if entry.size > 1024**2:

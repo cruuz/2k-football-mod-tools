@@ -1,0 +1,86 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base": "c340704642e5a4b4115b2e97766a318e5a41b054",
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "checks": [
+    {
+      "sofi": false,
+      "season0_bytes": "e1321300",
+      "table_bytes": "e1321300cc321300d3321300da321300e1321300",
+      "index_0_to_4": [
+        "s44",
+        "s42",
+        "s43",
+        "s41",
+        "s44"
+      ],
+      "index_5_and_later": "s45",
+      "selector_sha256": "1b17980494fd9dc22ac2117d48a8773ee54542a5bc5bef0ee9ab2a5ad246e762",
+      "later_table_unchanged": true,
+      "calendar_status": "applied",
+      "season_status": {
+        "year": "applied",
+        "super_bowl_venue": "s44",
+        "calendar": "applied",
+        "season_length": "applied",
+        "playoffs_14": "applied",
+        "preseason": "applied",
+        "regular_weeks": 18,
+        "playoff_teams": 14,
+        "preseason_games": 3
+      },
+      "legacy_exactly_equal": true,
+      "xbe_sha256": "a59e0126285b7ff8db8818c210d0f0a40b7666734d48484cd252a5578357c04e",
+      "build_receipt": {
+        "steps": []
+      },
+      "pro_bowl_skip": "eb22909090",
+      "pro_bowl_week": "16"
+    },
+    {
+      "sofi": true,
+      "season0_bytes": "c5321300",
+      "table_bytes": "c5321300cc321300d3321300da321300e1321300",
+      "index_0_to_4": [
+        "s40",
+        "s42",
+        "s43",
+        "s41",
+        "s44"
+      ],
+      "index_5_and_later": "s45",
+      "selector_sha256": "1b17980494fd9dc22ac2117d48a8773ee54542a5bc5bef0ee9ab2a5ad246e762",
+      "later_table_unchanged": true,
+      "calendar_status": "applied",
+      "season_status": {
+        "year": "applied",
+        "super_bowl_venue": "s40",
+        "calendar": "applied",
+        "season_length": "applied",
+        "playoffs_14": "applied",
+        "preseason": "applied",
+        "regular_weeks": 18,
+        "playoff_teams": 14,
+        "preseason_games": 3
+      },
+      "legacy_exactly_equal": null,
+      "xbe_sha256": "7ea51ec29356d9698855c9e1cb2343457746af822f3121fcec43e064b5448af7",
+      "build_receipt": {
+        "steps": [
+          {
+            "step": "sofi_super_bowl_route",
+            "venue": "s40",
+            "previous": "s40",
+            "va": "0x00133354",
+            "size": 4,
+            "already_applied": true
+          }
+        ]
+      },
+      "pro_bowl_skip": "eb22909090",
+      "pro_bowl_week": "16"
+    }
+  ],
+  "scope": "Actual executable statements selected from mod_build.py plus complete calendar overlay; no other E patches or disc build.",
+  "peak_rss_kib": 154576
+}

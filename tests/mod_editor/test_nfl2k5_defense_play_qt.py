@@ -13,7 +13,7 @@ for entry in (ROOT, ROOT / 'tools'):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from test_nfl2k5_defense_play import retail_resources
+from test_nfl2k5_defense_play import EXTRACT, retail_resources
 from mod_editor.core import nfl2k5_playbook_inspector as insp, nfl2k5_playbook_pack as pk
 from mod_editor.core import nfl2k5_play_library as lib, nfl2k5_formation_play_writer as writer
 
@@ -33,6 +33,7 @@ class DefenseQtTests(unittest.TestCase):
         self.book = insp.parse_playbook_resource(self.resource, asset_id='book:ATL')
         testcase = self
         class Host:
+            source_path = EXTRACT / "default.xbe"
             installed = None
             def playbook_raw_body(self, _asset):
                 return testcase.resource[32:]
@@ -40,7 +41,7 @@ class DefenseQtTests(unittest.TestCase):
                 return (), ()
             def install_playbook_pack(self, pack, teams, progress):
                 self.installed = pack
-                return pk.apply_pack_to_resource(testcase.resource, pack)
+                return pk.apply_pack_to_resource(testcase.resource, pack, xbe=self.source_path)
         self.host = Host()
 
     def wizard(self):
@@ -57,6 +58,11 @@ class DefenseQtTests(unittest.TestCase):
         return w
 
     def test_full_defense_wizard_stages_spy_and_restores_project(self):
+        import importlib.util
+        if not self.host.source_path.is_file():
+            self.skipTest('private default.xbe required for native defense preview')
+        if importlib.util.find_spec('unicorn') is None:
+            self.skipTest('Unicorn required for native defense preview')
         w = self.wizard()
         self.assertTrue(w.is_defense)
         f = w.page_formation

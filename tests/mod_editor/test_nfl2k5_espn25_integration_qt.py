@@ -78,6 +78,8 @@ class _Fixture:
                       mock.patch.object(mod_build.tt.modern_naming_patch, "image_status", return_value="retail"),
                       mock.patch.object(mod_build.tt.modern_naming_patch, "image_preview", return_value={}),
                       mock.patch.object(mod_build, "_xbe_bytes", side_effect=lambda _path: xbe.read_bytes()),
+                      # The invented SITU/ROST archive contains no native PLAY books.
+                      mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}),
                       mock.patch.object(mod_build.tt, "_naming_source_preflight", return_value=None),
                       mock.patch.object(build_feedback, "measure", return_value={"message": "measured"})):
             patch.start()

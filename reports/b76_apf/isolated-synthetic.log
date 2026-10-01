@@ -1,0 +1,56 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ ChargeTests.test_synthetic_xex_apply_revert_and_tamper_refusal ________
+
+self = <test_apf_charge_abilities.ChargeTests testMethod=test_synthetic_xex_apply_revert_and_tamper_refusal>
+
+    def test_synthetic_xex_apply_revert_and_tamper_refusal(self):
+        for profile in p.PROFILES:
+            source = synthetic_xex(synthetic_image(profile))
+            image, _ = decode_xex(source)
+            doc = p.PatchDocument(profile, True)
+            # Only the whole retail digest check is mocked. All site, bounds,
+            # reservation, authored-byte and revert checks remain real.
+            with patch.object(p, "check_image", return_value=profile):
+                self.assertEqual(p.apply_image(image, replace(doc, enabled=False)), image)
+                changed = p.apply_image(image, doc)
+                self.assertNotEqual(changed, image)
+                self.assertEqual(p.revert_image(changed, doc), image)
+                self.assertEqual(synthetic_xex(p.revert_image(changed, doc)), source)
+                allowed = {a - p.IMAGE_BASE + byte for a, _ in doc.words for byte in range(4)}
+                self.assertTrue(all(i in allowed for i, (a, b) in enumerate(zip(image, changed)) if a != b))
+                for address in (p.CAVE, p.CAVE_LIMIT - 1, p.address(p.HOOK + 8, profile),
+                                p.address(p.QB_GATE + 12, profile),
+                                *(a for a, _ in doc.original_words)):
+>                   broken = bytearray(image)
+                             ^^^^^^^^^^^^^^^^
+E                   MemoryError
+
+tests/mod_editor/test_apf_charge_abilities.py:105: MemoryError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_apf_charge_abilities.py::ChargeTests::test_synthetic_xex_apply_revert_and_tamper_refusal
+1 failed in 7.78s
+Command exited with non-zero status 1
+	Command being timed: "python3 -m pytest -q -p no:cacheprovider tests/mod_editor/test_apf_charge_abilities.py::ChargeTests::test_synthetic_xex_apply_revert_and_tamper_refusal"
+	User time (seconds): 6.72
+	System time (seconds): 1.47
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.17
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1379800
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 613662
+	Voluntary context switches: 47
+	Involuntary context switches: 24
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

@@ -181,10 +181,36 @@ class PublicTests(unittest.TestCase):
         self.assertEqual(grown, self.grown)
         self.assertEqual(space.logo.status(grown), "applied")
         self.assertEqual(space.logo.apply(grown)[0], grown)
-        va = struct.unpack_from("<I", grown, 0x170)[0]
-        bitmap = XbeImage(grown).read(va, space.logo.LOGO_SIZE)
-        self.assertEqual(bitmap, space.logo.RETAIL_LOGO)
+        # The kernel copies the logo before it loads any section, so the header points at a
+        # blank logo inside the header page; the owned allocation keeps the retail bitmap.
+        va, size = struct.unpack_from("<II", grown, 0x170)
+        self.assertEqual((va, size), space.HEADER_LOGO)
+        bitmap = grown[va - 0x10000:va - 0x10000 + size]
+        self.assertEqual(bitmap, space.logo.BLANK_LOGO)
         self.assertEqual(space.logo.decode_pixels(bitmap), (1700, 0))
+        owned = next(a for a in space.layout(grown)["allocations"] if a["owner"] == space.LOGO_REQUEST[0])
+        self.assertEqual(XbeImage(grown).read(owned["va"], owned["size"]), space.logo.RETAIL_LOGO)
+
+    def test_every_grown_layout_keeps_the_boot_logo_inside_the_header_pages(self):
+        """Static proof for the boot bugcheck fix (kernel copies the logo before loading sections)."""
+        layouts = {
+            "one page": space.apply(self.retail, REQUESTS)[0],
+            "two pages": space.apply(self.retail, (("alpha", "code", 4096, 16), ("beta", "code", 128, 16)))[0],
+        }
+        for name, grown in layouts.items():
+            with self.subTest(layout=name):
+                self.assertEqual(space.status(grown), "applied")
+                headers = struct.unpack_from("<I", grown, 0x108)[0]
+                va, size = struct.unpack_from("<II", grown, 0x170)
+                self.assertLessEqual(size, 0x1000)
+                self.assertGreaterEqual(va, 0x10000)
+                self.assertLessEqual(va + size, 0x10000 + headers)
+                self.assertEqual(space.logo.decode_pixels(grown[va - 0x10000:va - 0x10000 + size]), (1700, 0))
+                image = XbeImage(grown)
+                self.assertTrue(all(not (s.start <= va < s.end) for s in image.sections))
+                bad = bytearray(grown)
+                bad[va - 0x10000] ^= 1
+                self.assertEqual(space.status(bytes(bad)), "foreign")
 
     def _writer(self, source, target, failure=None):
         from mod_editor.core import platform_compat as io
@@ -256,9 +282,23 @@ class RetailTests(unittest.TestCase):
     def test_fresh_allocation_proof_and_retired_cave_pin(self):
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS as all_requests
+        # The current manifest reserves the complete owner union, including
+        # moment venues. The historical nine-request layout cannot prove that
+        # ownership; the legacy kickoff/retired-cave checks below stay intact.
+        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests
         combined, _ = space.apply(self.retail, all_requests)
-        self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=combined)["encoded_references"], [])
+        evidence = space.allocation_evidence(self.retail, manifest, allocated=combined)
+        # The full union uses v3 loader mappings. Keep the legacy zero-reference
+        # gate and pin every raw candidate in the larger mappings; those
+        # encodings are retained as unknown, never declared free retail code.
+        self.assertEqual(evidence["legacy_encoded_references"], [])
+        self.assertEqual(len(evidence["encoded_references"]), 1081)
+        import json
+        self.assertEqual(hashlib.sha256(json.dumps(evidence["encoded_references"],
+            separators=(',', ':')).encode()).hexdigest(),
+            "131306f5cc97d41e687f49322daf9ee36cf492e21ff7ee8dcf56872157e70cee")
+        self.assertEqual(evidence["reference_policy"],
+            "v3 adds loader mappings, never overwrites a retail cave; all raw encoding candidates retained; legacy pages retain zero-encoding gate")
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
         self.assertEqual(self.grown[old:old+kickoff.CAVE_SIZE], self.legacy[old:old+kickoff.CAVE_SIZE])
         retail_direct = relocated.apply(self.retail)[0]

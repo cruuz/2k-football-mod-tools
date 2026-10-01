@@ -1,0 +1,14 @@
+test_every_coaching_label_maps_explicitly (tests.mod_editor.test_apf_b76_situation_weights.DataTests.test_every_coaching_label_maps_explicitly) ... ok
+test_preview_decomposition_and_empty_draw_restore_native_weights (tests.mod_editor.test_apf_b76_situation_weights.DataTests.test_preview_decomposition_and_empty_draw_restore_native_weights) ... ok
+test_v3_roundtrip_capacity_decode_and_legacy_identity (tests.mod_editor.test_apf_b76_situation_weights.DataTests.test_v3_roundtrip_capacity_decode_and_legacy_identity) ... ok
+test_write_sets_do_not_overlap_other_shipped_patches (tests.mod_editor.test_apf_b76_situation_weights.DataTests.test_write_sets_do_not_overlap_other_shipped_patches) ... ok
+test_explicit_install_sync_reload_remove_and_unchanged_other_patch (tests.mod_editor.test_apf_b71_situation_mask_install.InstallTests.test_explicit_install_sync_reload_remove_and_unchanged_other_patch) ... ok
+test_tamper_and_failed_config_write_leave_no_partial_installation (tests.mod_editor.test_apf_b71_situation_mask_install.InstallTests.test_tamper_and_failed_config_write_leave_no_partial_installation) ... ok
+test_weights_try_rows_save_replay_cache_undo_and_export (tests.mod_editor.test_apf_b76_situation_weights.ProjectTests.test_weights_try_rows_save_replay_cache_undo_and_export) ... ok
+test_explicit_install_sync_reload_remove_and_unchanged_other_patch (tests.mod_editor.test_apf_b76_situation_weights.WeightInstallTests.test_explicit_install_sync_reload_remove_and_unchanged_other_patch) ... ok
+test_tamper_and_failed_config_write_leave_no_partial_installation (tests.mod_editor.test_apf_b76_situation_weights.WeightInstallTests.test_tamper_and_failed_config_write_leave_no_partial_installation) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 4.637s
+
+OK

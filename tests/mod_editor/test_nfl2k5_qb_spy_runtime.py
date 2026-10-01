@@ -30,6 +30,8 @@ def compiled_spy():
     from mod_editor.core import nfl2k5_playbook_inspector as inspector
     from mod_editor.core import nfl2k5_play_library as library
     from mod_editor.core import nfl2k5_formation_play_writer as writer
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(EXTRACT)
     with OuterImage(EXTRACT) as archive:
         raw = archive.read_entry(BOOK_ENTRIES['ATL'])
     book = inspector.parse_playbook_resource(raw, asset_id='book:ATL')

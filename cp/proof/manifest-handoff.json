@@ -1,0 +1,101 @@
+{
+  "status": "PROVED OFFLINE",
+  "base_commit": "6bd9b3d66d239a267f8d4f66e083b8a6eb320671",
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "new_cave_bytes": 0,
+  "new_allocator_requests": [],
+  "main_regeneration_required": true,
+  "in_place_instruction_spans": [
+    {
+      "label": "cap_default_birth",
+      "start": "0xc0adc",
+      "end": "0xc0ae2",
+      "size": 6,
+      "owner": "nfl2k5_season_length",
+      "retail": "81c90010e109",
+      "patched": "81c90010010d",
+      "note": "FUN_000c0a80: zeroed new record receives January 1, starting year minus 22"
+    },
+    {
+      "label": "cap_year_up_limit",
+      "start": "0x343d3a",
+      "end": "0x343d3d",
+      "size": 3,
+      "owner": "nfl2k5_season_length",
+      "retail": "80fa54",
+      "patched": "80fa6c",
+      "note": "Birth Year next: wrap after starting year minus 18"
+    },
+    {
+      "label": "cap_year_up_wrap_clear",
+      "start": "0x343d42",
+      "end": "0x343d48",
+      "size": 6,
+      "owner": "nfl2k5_season_length",
+      "retail": "81e1ffffdff6",
+      "patched": "81e1ffff1ff0",
+      "note": "Birth Year next wrap: clear only the seven year bits"
+    },
+    {
+      "label": "cap_year_up_wrap_set",
+      "start": "0x343d48",
+      "end": "0x343d4e",
+      "size": 6,
+      "owner": "nfl2k5_season_length",
+      "retail": "81c90000c006",
+      "patched": "81c90000200a",
+      "note": "Birth Year next wrap: starting year minus 45"
+    },
+    {
+      "label": "cap_year_down_limit",
+      "start": "0x343d8a",
+      "end": "0x343d8d",
+      "size": 3,
+      "owner": "nfl2k5_season_length",
+      "retail": "80fa36",
+      "patched": "80fa51",
+      "note": "Birth Year previous: wrap below starting year minus 45"
+    },
+    {
+      "label": "cap_year_down_wrap_clear",
+      "start": "0x343d92",
+      "end": "0x343d98",
+      "size": 6,
+      "owner": "nfl2k5_season_length",
+      "retail": "81e1ffff9ffa",
+      "patched": "81e1ffff1ff0",
+      "note": "Birth Year previous wrap: clear only the seven year bits"
+    },
+    {
+      "label": "cap_year_down_wrap_set",
+      "start": "0x343d98",
+      "end": "0x343d9e",
+      "size": 6,
+      "owner": "nfl2k5_season_length",
+      "retail": "81c90000800a",
+      "patched": "81c90000800d",
+      "note": "Birth Year previous wrap: starting year minus 18"
+    },
+    {
+      "label": "cap_year_display_pivot",
+      "start": "0x346b56",
+      "end": "0x346b59",
+      "size": 3,
+      "owner": "nfl2k5_season_length",
+      "retail": "83f804",
+      "patched": "83f81a",
+      "note": "Birth Year display: recognize normalized 2000s through the starting year"
+    },
+    {
+      "label": "cap_birth_leap_2000",
+      "start": "0x34318d",
+      "end": "0x343191",
+      "size": 4,
+      "owner": "nfl2k5_season_length",
+      "retail": "85d2740a",
+      "patched": "85d29090",
+      "note": "CAP month length: allow Feb 29 in 2000; the supported range has no non-leap century"
+    }
+  ],
+  "shared_sites": "MyCareer omits its three legacy CAP upper-limit edits when the full season date policy validates. Standalone MyCareer retains those edits."
+}

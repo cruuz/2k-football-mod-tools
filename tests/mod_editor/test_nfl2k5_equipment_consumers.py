@@ -540,6 +540,8 @@ class RetailSharedSpanTests(unittest.TestCase):
     def test_every_sampled_copy_lies_inside_one_pack_extent(self):
         from nfl_outer import parse_archive, read_entry_bytes
 
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(INDEX.parents[1])
         archive = parse_archive(INDEX)
         straddling = [index for index, entry in enumerate(archive.entries)
                       if 3613 <= index <= 4246 and len(entry.segments) != 1]

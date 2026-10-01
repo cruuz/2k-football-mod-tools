@@ -1,0 +1,1516 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "TEN",
+  "name": "Tennessee Titans",
+  "asset_code": "28",
+  "season": 2026,
+  "status": "Phase B job d3 (2026-09-24). Sort: redesigned (March 2026 uniforms and logo). Colours sourced (Titans 2026 media information Pantone specs via the repo palette); albedo = the palette Titans Blue (the daylight photo median (71,148,210) matches #4495D2). Numbers use the retail 1955-56 Colts block glyphs with a red outline as the nearest donor (INFERRED). The sleeve strings are horizontal bands (the real ones run at an angle: INFERRED).",
+  "sources": {
+    "uniform_release": "https://www.tennesseetitans.com/news/titans-unveil-new-uniforms-logo-to-represent-the-next-chapter-of-franchise-history",
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Tennessee_Titans_Uniforms_(2026).png (CC BY 4.0, TheGoodGeneral 1, 2026-03-12)",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (TEN: Titans 2026 Media Information Pantone 279 C / 186 C / 289 C; NFL logo file)",
+    "home_photos": "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-1-vs-new-york-jets (2026-09-13)",
+    "road_photos": "https://www.tennesseetitans.com/photos/gameday-photos-2026-preseason-week-1-at-san-francisco-49ers (white jersey, Titans Blue pants)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg",
+    "wordmark": "https://en.wikipedia.org/wiki/File:Tennessee_Titans_wordmark.png",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "titans_blue": "#4495D2",
+    "red": "#D50A0A",
+    "white": "#FFFFFF",
+    "navy": "#0C2340"
+  },
+  "albedo": {
+    "titans_blue": "#4495D2",
+    "red": "#D50A0A",
+    "white": "#FFFFFF",
+    "navy": "#0C2340",
+    "retail_white": "#F1F2F6",
+    "retail_pants_white": "#E8E8E8",
+    "retail_card_navy": "#080848",
+    "retail_card_navy2": "#081858",
+    "retail_card_lightblue": "#3878D8",
+    "retail_atlas_navy": "#080848",
+    "retail_atlas_lightblue": "#5888D8",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A",
+    "retail_card_navy3": "#080828",
+    "retail_card_numfill": "#00022B",
+    "retail_card_navy4": "#080830",
+    "retail_atlas_pants_navy": "#081850"
+  },
+  "marks": {
+    "roundel": "roundel_full.png",
+    "roundel_red": "roundel_red.png",
+    "roundel_white": "roundel_white.png",
+    "roundel_blue": "roundel_blue.png",
+    "word_titans": "word_titans.png",
+    "word_tennessee": "word_tennessee.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "28H0",
+      "note": "2026 home (week 1 vs the Jets): Titans Blue jersey, white TITANS wordmark above white block numbers outlined in red, navy string lines and a white and red band on the sleeves, white pants with the navy, white and red side stripe, Titans Blue socks, white helmet with the 2026 roundel, a red and blue string stripe and a white facemask",
+      "torso": {
+        "base_colour": "titans_blue",
+        "neck_donor": "28H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "navy",
+            "width": 1.5
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "white"
+        },
+        "decorations": [
+          {
+            "mark": "word_titans",
+            "colour": "white",
+            "center": [
+              161,
+              90
+            ],
+            "width": 40
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "titans_blue",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "rect": [
+              8,
+              34,
+              120,
+              35
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              37,
+              120,
+              38
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              40,
+              120,
+              41
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              43,
+              120,
+              44
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              98,
+              120,
+              99
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              101,
+              120,
+              102
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              104,
+              120,
+              105
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              107,
+              120,
+              108
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              0,
+              52,
+              128,
+              55
+            ],
+            "colour": "white"
+          },
+          {
+            "rect": [
+              0,
+              55,
+              128,
+              58
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              0,
+              116,
+              128,
+              119
+            ],
+            "colour": "white"
+          },
+          {
+            "rect": [
+              0,
+              119,
+              128,
+              122
+            ],
+            "colour": "red"
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "red",
+            2
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "navy",
+            5
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "red",
+            2
+          ]
+        ],
+        "swoosh_colour": "navy"
+      },
+      "socks": {
+        "colour": "titans_blue"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "white",
+        "outline": "red",
+        "outline_frac": 0.03
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "navy"
+      },
+      "nameplate": {
+        "glyph_donor": "28H0",
+        "fill": "white"
+      },
+      "helmet": {
+        "shell_from": "retail_white",
+        "shell": "retail_white",
+        "decorations": [
+          {
+            "rect": [
+              146,
+              0,
+              179,
+              232
+            ],
+            "colour": "retail_white",
+            "shade": true
+          },
+          {
+            "rect": [
+              152,
+              0,
+              154,
+              232
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              155,
+              0,
+              157,
+              232
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              158,
+              0,
+              160,
+              232
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              164,
+              0,
+              166,
+              232
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              167,
+              0,
+              169,
+              232
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              170,
+              0,
+              172,
+              232
+            ],
+            "colour": "navy"
+          }
+        ],
+        "decal": {
+          "mark": "roundel",
+          "erase": "box",
+          "boxes": {
+            "upper": [
+              38,
+              48,
+              118,
+              104
+            ],
+            "lower": [
+              38,
+              150,
+              118,
+              206
+            ]
+          },
+          "centres": {
+            "upper": [
+              70,
+              76
+            ],
+            "lower": [
+              70,
+              178
+            ]
+          },
+          "sizes": {
+            "upper": [
+              46,
+              46
+            ],
+            "lower": [
+              46,
+              46
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_lightblue",
+            "to": "red",
+            "box": [
+              15,
+              85,
+              135,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_navy",
+            "to": "titans_blue",
+            "region": "jersey",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_navy2",
+            "to": "titans_blue",
+            "region": "jersey",
+            "tolerance": 0.28
+          },
+          {
+            "from": "retail_card_navy3",
+            "to": "titans_blue",
+            "region": "jersey",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_lightblue",
+            "to": "titans_blue",
+            "region": "jersey",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_navy",
+            "to": "titans_blue",
+            "box": [
+              27,
+              128,
+              168,
+              160
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_navy3",
+            "to": "titans_blue",
+            "box": [
+              27,
+              128,
+              168,
+              160
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_lightblue",
+            "to": "red",
+            "region": "pants",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_navy4",
+            "to": "titans_blue",
+            "box": [
+              120,
+              150,
+              168,
+              200
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          }
+        ],
+        "logo": {
+          "mark": "roundel",
+          "scale": 0.9
+        }
+      },
+      "outer_index": 3850,
+      "splayer": {
+        "torso_donor_outer": 3850,
+        "torso_donor": "28H0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_navy",
+            "to": "titans_blue",
+            "region": "torso",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_lightblue",
+            "to": "titans_blue",
+            "region": "torso",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "titans_blue",
+            "region": "sleeve",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_lightblue",
+            "to": "titans_blue",
+            "region": "sleeve",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.24
+          }
+        ],
+        "logo": {
+          "mark": "roundel",
+          "scale": 0.85
+        }
+      },
+      "arm_digits": {
+        "glyph_donor": "28H0",
+        "fill": "white",
+        "outline": "red",
+        "outline_frac": 0.05
+      }
+    },
+    "away": {
+      "selector": "28A0",
+      "note": "2026 road (preseason at San Francisco): white jersey, Titans Blue TENNESSEE wordmark above Titans Blue numbers outlined in red, navy string lines and a blue and red sleeve band, Titans Blue pants with the navy, white and red stripe, white socks, the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "28H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "navy",
+            "width": 1.5
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "navy"
+        },
+        "decorations": [
+          {
+            "mark": "word_tennessee",
+            "colour": "titans_blue",
+            "center": [
+              161,
+              90
+            ],
+            "width": 48
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "rect": [
+              8,
+              34,
+              120,
+              35
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              37,
+              120,
+              38
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              40,
+              120,
+              41
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              43,
+              120,
+              44
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              98,
+              120,
+              99
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              101,
+              120,
+              102
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              104,
+              120,
+              105
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              8,
+              107,
+              120,
+              108
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              0,
+              52,
+              128,
+              55
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              0,
+              55,
+              128,
+              58
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              0,
+              116,
+              128,
+              119
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              0,
+              119,
+              128,
+              122
+            ],
+            "colour": "red"
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "titans_blue",
+        "base_from": "28H0",
+        "stripe": [
+          [
+            "red",
+            2
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "navy",
+            5
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "red",
+            2
+          ]
+        ],
+        "swoosh_colour": "navy"
+      },
+      "socks": {
+        "colour": "white"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "titans_blue",
+        "outline": "red",
+        "outline_frac": 0.03
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "navy"
+      },
+      "nameplate": {
+        "glyph_donor": "28A0",
+        "fill": "titans_blue"
+      },
+      "helmet": {
+        "shell_from": "retail_white",
+        "shell": "retail_white",
+        "decorations": [
+          {
+            "rect": [
+              146,
+              0,
+              179,
+              232
+            ],
+            "colour": "retail_white",
+            "shade": true
+          },
+          {
+            "rect": [
+              152,
+              0,
+              154,
+              232
+            ],
+            "colour": "navy"
+          },
+          {
+            "rect": [
+              155,
+              0,
+              157,
+              232
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              158,
+              0,
+              160,
+              232
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              164,
+              0,
+              166,
+              232
+            ],
+            "colour": "red"
+          },
+          {
+            "rect": [
+              167,
+              0,
+              169,
+              232
+            ],
+            "colour": "titans_blue"
+          },
+          {
+            "rect": [
+              170,
+              0,
+              172,
+              232
+            ],
+            "colour": "navy"
+          }
+        ],
+        "decal": {
+          "mark": "roundel",
+          "erase": "box",
+          "boxes": {
+            "upper": [
+              38,
+              48,
+              118,
+              104
+            ],
+            "lower": [
+              38,
+              150,
+              118,
+              206
+            ]
+          },
+          "centres": {
+            "upper": [
+              70,
+              76
+            ],
+            "lower": [
+              70,
+              178
+            ]
+          },
+          "sizes": {
+            "upper": [
+              46,
+              46
+            ],
+            "lower": [
+              46,
+              46
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_lightblue",
+            "to": "red",
+            "box": [
+              15,
+              85,
+              135,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_lightblue",
+            "to": "red",
+            "region": "pants",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_numfill",
+            "to": "titans_blue",
+            "box": [
+              15,
+              85,
+              135,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_navy",
+            "to": "titans_blue",
+            "box": [
+              15,
+              85,
+              135,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_navy3",
+            "to": "titans_blue",
+            "box": [
+              15,
+              85,
+              135,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_lightblue",
+            "to": "white",
+            "region": "jersey",
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_lightblue",
+            "to": "white",
+            "box": [
+              27,
+              128,
+              168,
+              160
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_navy",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.32
+          },
+          {
+            "from": "retail_card_navy2",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_card_navy3",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.32
+          }
+        ],
+        "logo": {
+          "mark": "roundel",
+          "scale": 0.9
+        }
+      },
+      "outer_index": 4167,
+      "splayer": {
+        "torso_donor_outer": 4167,
+        "torso_donor": "28A0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_navy",
+            "to": "white",
+            "region": "torso",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_lightblue",
+            "to": "white",
+            "region": "torso",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "white",
+            "region": "sleeve",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_lightblue",
+            "to": "white",
+            "region": "sleeve",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_atlas_pants_navy",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.32
+          },
+          {
+            "from": "retail_card_navy",
+            "to": "titans_blue",
+            "region": "pants",
+            "tolerance": 0.3
+          }
+        ],
+        "logo": {
+          "mark": "roundel",
+          "scale": 0.85
+        }
+      },
+      "arm_digits": {
+        "glyph_donor": "28A0",
+        "fill": "titans_blue",
+        "outline": "red",
+        "outline_frac": 0.05
+      }
+    }
+  },
+  "venue": {
+    "prefix": "s28",
+    "notes": "Nissan Stadium, 2026 (its last season). Week 1 photos: Titans Blue end zones with the white 2026 TITANS wordmark at both ends inside a white border, the 2026 roundel at midfield, Titans Blue wall pads with white TENNESSEE TITANS and roundels.",
+    "sources": [
+      "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-1-vs-new-york-jets",
+      "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg",
+      "https://en.wikipedia.org/wiki/File:Tennessee_Titans_wordmark.png"
+    ],
+    "endzone": {
+      "paint": "titans_blue",
+      "paint_alpha": 0.92,
+      "marks": [
+        {
+          "mark": "word_titans",
+          "colour": "white",
+          "center": [
+            384,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "mark": "roundel",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "text": "TITAN UP!",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#1\nCAM WARD",
+                "colour": "titans_blue",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 16
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "navy",
+            "items": [
+              {
+                "mark": "word_titans",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "width": 100
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "roundel_red",
+                "colour": "red",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_white",
+                "colour": "white",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_blue",
+                "colour": "titans_blue",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 50
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "red",
+            "items": [
+              {
+                "text": "#98 BIG JEFF\nSIMMONS",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "ESPN\nin NASHVILLE",
+                "colour": "navy",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "text": "MUSIC\nCITY",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#6 CARNELL\nTATE",
+                "colour": "red",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "wall05": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              256,
+              64
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "roundel_red",
+                "colour": "red",
+                "center": [
+                  36,
+                  32
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_white",
+                "colour": "white",
+                "center": [
+                  36,
+                  32
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_blue",
+                "colour": "titans_blue",
+                "center": [
+                  36,
+                  32
+                ],
+                "width": 50
+              },
+              {
+                "mark": "word_titans",
+                "colour": "white",
+                "center": [
+                  150,
+                  32
+                ],
+                "width": 170
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              256,
+              128
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "word_tennessee",
+                "colour": "white",
+                "center": [
+                  128,
+                  96
+                ],
+                "width": 200
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              128,
+              256,
+              192
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "roundel_red",
+                "colour": "red",
+                "center": [
+                  36,
+                  160
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_white",
+                "colour": "white",
+                "center": [
+                  36,
+                  160
+                ],
+                "width": 50
+              },
+              {
+                "mark": "roundel_blue",
+                "colour": "titans_blue",
+                "center": [
+                  36,
+                  160
+                ],
+                "width": 50
+              },
+              {
+                "mark": "word_titans",
+                "colour": "white",
+                "center": [
+                  150,
+                  160
+                ],
+                "width": 170
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              192,
+              256,
+              256
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "word_tennessee",
+                "colour": "white",
+                "center": [
+                  128,
+                  224
+                ],
+                "width": 200
+              }
+            ]
+          }
+        ]
+      },
+      "exitbanner": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "word_tennessee",
+                "colour": "white",
+                "center": [
+                  64,
+                  18
+                ],
+                "width": 100
+              },
+              {
+                "mark": "word_titans",
+                "colour": "white",
+                "center": [
+                  64,
+                  40
+                ],
+                "width": 110
+              },
+              {
+                "mark": "roundel_red",
+                "colour": "red",
+                "center": [
+                  64,
+                  88
+                ],
+                "width": 58
+              },
+              {
+                "mark": "roundel_white",
+                "colour": "white",
+                "center": [
+                  64,
+                  88
+                ],
+                "width": 58
+              },
+              {
+                "mark": "roundel_blue",
+                "colour": "titans_blue",
+                "center": [
+                  64,
+                  88
+                ],
+                "width": 58
+              }
+            ]
+          }
+        ]
+      },
+      "ad_bb02": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              52
+            ],
+            "bg": "titans_blue",
+            "items": [
+              {
+                "mark": "word_tennessee",
+                "colour": "white",
+                "center": [
+                  64,
+                  13
+                ],
+                "width": 80
+              },
+              {
+                "mark": "word_titans",
+                "colour": "white",
+                "center": [
+                  64,
+                  33
+                ],
+                "width": 110
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "4-3",
+    "note": "nflverse roster_2026 week 3 active list; 2026 depth charts list a 4-3 front (LDE, LDT, RDT, RDE, WLB, MLB, SLB).",
+    "head_coach": "Robert Saleh",
+    "depth_since": "2026-09-09"
+  },
+  "part_intents": {
+    "home": {
+      "torso": "light Titans Blue jersey body with a small white TITANS wordmark on the chest, thin navy collar trim, small NFL shield at the collar, white maker swooshes; the light grey patch is the neck opening",
+      "sleeve": "light Titans Blue sleeve with thin navy string lines and a white and red band at the end",
+      "pants": "white pants with a red, white and navy side stripe, navy maker mark",
+      "helmet": "white shell with the blue, white and red roundel, a thin navy, blue and red string stripe on top, grey and white hardware, flag and shield decals",
+      "digit_jersey": "white numbers outlined in red",
+      "digit_arm": "white numbers outlined in red",
+      "digit_helmet": "navy numbers for the back of a white helmet",
+      "nameplate": "white letters",
+      "socks00": "solid light Titans Blue",
+      "splayer": "far-away player atlas: white pants, light blue torso, white helmet with the roundel, light blue socks, skin and glove patches",
+      "team-select_unif": "menu render: light blue jersey with a white number outlined in red, white pants, white helmet with the blue roundel",
+      "team-select_helm": "menu render: white helmet with the blue and red roundel, a dark bar and yellow UI strip below"
+    },
+    "away": {
+      "torso": "white jersey body with a small light blue TENNESSEE wordmark on the chest, thin navy collar trim, small NFL shield at the collar, navy maker swooshes; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with thin navy string lines and a light blue and red band at the end",
+      "pants": "light Titans Blue pants with a red, white and navy side stripe, navy maker mark",
+      "helmet": "white shell with the blue, white and red roundel, a thin navy, blue and red string stripe on top, grey and white hardware, flag and shield decals",
+      "digit_jersey": "light blue numbers outlined in red",
+      "digit_arm": "light blue numbers outlined in red",
+      "digit_helmet": "navy numbers for the back of a white helmet",
+      "nameplate": "light blue letters",
+      "socks00": "solid white",
+      "splayer": "far-away player atlas: light blue pants, white torso, white helmet with the roundel, white socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with a light blue number outlined in red, light blue pants, white helmet with the blue roundel",
+      "team-select_helm": "menu render: white helmet with the blue and red roundel, a dark bar and yellow UI strip below"
+    },
+    "venue": {
+      "endzone": "Titans Blue painted end zone with the white TITANS wordmark",
+      "center_logo": "the blue, white and red Titans roundel with three white stars and a white T",
+      "banner": "cloth fan banners in Titans Blue, navy, red and white with white, blue or red text and the roundel",
+      "wall05": "Titans Blue wall pads with white TITANS and TENNESSEE wordmarks and the roundel",
+      "exitbanner": "Titans Blue banner with white TENNESSEE TITANS and the roundel",
+      "ad_bb02": "ad board: a Titans Blue panel with white TENNESSEE TITANS beside sponsor ads"
+    }
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Alontae Taylor": 3,
+      "Amani Hooker": 3,
+      "Anthony Hill": 4,
+      "Atonio Mafi": 2,
+      "Austin Schlottmann": 0,
+      "Brandon Crenshaw": 4,
+      "Calvin Ridley": 4,
+      "Cam Ward": 3,
+      "Carnell Tate": 4,
+      "Cedric Gray": 3,
+      "Chimere Dike": 3,
+      "Cody Barton": 0,
+      "Cordale Flott": 4,
+      "Dan Moore": 4,
+      "Daniel Bellinger": 0,
+      "David Martin-Robinson": 3,
+      "Elic Ayomanor": 3,
+      "Fernando Carmona": 1,
+      "Gunnar Helm": 0,
+      "JC Latham": 5,
+      "Jackie Marshall": 4,
+      "Jackson Slater": 0,
+      "Jacob Martin": 4,
+      "James Hudson": 5,
+      "James Williams": 5,
+      "Jaylon Jones": 4,
+      "Jeffery Simmons": 4,
+      "Jermaine Johnson": 3,
+      "Joey Slye": 0,
+      "John Franklin-Myers": 4,
+      "Jordan Elliott": 4,
+      "Julius Chestnut": 4,
+      "Keldric Faulk": 4,
+      "Kevin Winston": 3,
+      "Kylen Granson": 2,
+      "Marcus Harris": 4,
+      "Micah Robinson": 3,
+      "Mitchell Trubisky": 0,
+      "Morgan Cox": 0,
+      "Nazir Stackhouse": 5,
+      "Nicholas Singleton": 4,
+      "Oluwafemi Oladejo": 5,
+      "Owen Pappoe": 4,
+      "Pat Coogan": 0,
+      "Peter Skoronski": 1,
+      "Solomon Thomas": 3,
+      "Terrell Burgess": 4,
+      "Tommy Townsend": 0,
+      "Tony Adams": 4,
+      "Tony Pollard": 4,
+      "Truman Jones": 4,
+      "Tyjae Spears": 4,
+      "Wan'Dale Robinson": 3
+    },
+    "dreads": [
+      "Cam Ward",
+      "Cedric Gray",
+      "James Hudson",
+      "Julius Chestnut",
+      "Nicholas Singleton",
+      "Oluwafemi Oladejo",
+      "Tyjae Spears",
+      "Wan'Dale Robinson",
+      "Anthony Hill"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads flag by eye for locs, braids and twists."
+  }
+}

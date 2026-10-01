@@ -1,0 +1,31 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base": "6bd9b3d66",
+  "release_manifest_regenerated": false,
+  "reservations_covered": true,
+  "allocation_requests_added": 0,
+  "lineman_code_bytes": 63,
+  "lineman_cave_bytes": 64,
+  "lineman_spans": [
+    {
+      "label": "overall_dispatch",
+      "va": "0x246d60",
+      "size": 23
+    },
+    {
+      "label": "lineman_weight_cave",
+      "va": "0x1d2400",
+      "size": 64
+    }
+  ],
+  "scorebar_changed_xbe_sites": [
+    "0xe6c4c4"
+  ],
+  "scorebar_site_extents_unchanged": true,
+  "stale_sources": [
+    "mod_editor/core/nfl2k5_lineman_rating.py",
+    "mod_editor/core/nfl2k5_scorebug_exact.py",
+    "mod_editor/core/nfl2k5_scorebug_resources.py"
+  ],
+  "main_action": "Regenerate the release cave manifest after integration; no disc build was run here."
+}

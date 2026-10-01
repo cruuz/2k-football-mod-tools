@@ -30,6 +30,8 @@ class ProjectionTests(unittest.TestCase):
         cls.after=r.decode(r.apply(cls.spans['score_bug'],'score_bug',scorebug_folder=template.DEFAULT_FOLDER)[0])[1]
         cls.atlas=r.apply(cls.spans['score_buga'],'score_buga',inputs=cls.spans,scorebug_folder=template.DEFAULT_FOLDER)[0]
         cls.before,cls.old_atlas=v8_baseline(cls.spans)
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACK.parents[1])
         cls.fonts=read_fonts(PACK)
         cls.capture={}
         # A static proof must never install the runtime to get a usable fixture.

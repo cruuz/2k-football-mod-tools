@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="790" viewBox="0 0 1200 790">
+<rect width="1200" height="790" fill="#111827"/>
+<g font-family="sans-serif" font-size="15" fill="white">
+<text x="25" y="28">PROVED OFFLINE measurements + DESIGN projection: 54 game units up (75.6 capture pixels)</text>
+<text x="25" y="53">Measured visible envelopes only. Not a gameplay render. Candidate G must confirm raster and state transitions.</text>
+<text x="25" y="86">three plays retail</text>
+<rect x="25" y="100" width="250" height="672" fill="black" stroke="#64748b"/>
+<path d="M25 122.4h250" stroke="#60a5fa" stroke-dasharray="4 3"/>
+<rect x="27" y="212.0" width="246" height="528.0" fill="#10b981" fill-opacity=".3" stroke="#34d399"/>
+<rect x="57" y="645.0666666666666" width="75" height="25" fill="#f59e0b" fill-opacity=".8"/>
+<rect x="57" y="669" width="185" height="64" fill="#ef4444" fill-opacity=".8"/>
+<text x="34" y="232.0">UI y 112.0 to 640.0</text>
+<text x="61" y="697">scorebug</text>
+<text x="305" y="86">three plays shifted</text>
+<rect x="305" y="100" width="250" height="672" fill="black" stroke="#64748b"/>
+<path d="M305 122.4h250" stroke="#60a5fa" stroke-dasharray="4 3"/>
+<rect x="307" y="136.4" width="246" height="528.0" fill="#10b981" fill-opacity=".3" stroke="#34d399"/>
+<rect x="337" y="645.0666666666666" width="75" height="25" fill="#f59e0b" fill-opacity=".8"/>
+<rect x="337" y="669" width="185" height="64" fill="#ef4444" fill-opacity=".8"/>
+<text x="314" y="156.4">UI y 36.4 to 564.4</text>
+<text x="341" y="697">scorebug</text>
+<text x="615" y="86">KICK RETURN retail</text>
+<rect x="615" y="100" width="250" height="672" fill="black" stroke="#64748b"/>
+<path d="M615 122.4h250" stroke="#60a5fa" stroke-dasharray="4 3"/>
+<rect x="617" y="200.0" width="246" height="512.0" fill="#10b981" fill-opacity=".3" stroke="#34d399"/>
+<rect x="647" y="645.0666666666666" width="75" height="25" fill="#f59e0b" fill-opacity=".8"/>
+<rect x="647" y="669" width="185" height="64" fill="#ef4444" fill-opacity=".8"/>
+<text x="624" y="220.0">UI y 100.0 to 612.0</text>
+<text x="651" y="697">scorebug</text>
+<text x="895" y="86">KICK RETURN shifted</text>
+<rect x="895" y="100" width="250" height="672" fill="black" stroke="#64748b"/>
+<path d="M895 122.4h250" stroke="#60a5fa" stroke-dasharray="4 3"/>
+<rect x="897" y="124.4" width="246" height="512.0" fill="#10b981" fill-opacity=".3" stroke="#34d399"/>
+<rect x="927" y="645.0666666666666" width="75" height="25" fill="#f59e0b" fill-opacity=".8"/>
+<rect x="927" y="669" width="185" height="64" fill="#ef4444" fill-opacity=".8"/>
+<text x="904" y="144.4">UI y 24.4 to 536.4</text>
+<text x="931" y="697">scorebug</text>
+</g></svg>

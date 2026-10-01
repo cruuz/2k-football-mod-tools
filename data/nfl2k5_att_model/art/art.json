@@ -1,0 +1,215 @@
+{
+ "schema": "nfl2k5_att_model_art/v1",
+ "art": {
+  "att_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "ca50033fe490a6c7809a5a1d1877479b33ff9adb3f8b8b9084f8e06af62dc580"
+  },
+  "att_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "2a9fe9f8b4c148b2d2bf2dcf982bc8bb6c74a5bd219ec5029a4f61aac13c9d3c"
+  },
+  "att_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "3bfbb020a419df726f31a086d21522e6f900e8b770dd72c9f38876da31730cef"
+  },
+  "att_deck": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "938ebf230c027b22830c7b157e1f03b95d95d5e4f41d1a810af703b0d4888f3a"
+  },
+  "att_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "att_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "0afbb72cfb681abc9f1888a7cf59ba56b06ae7fbfcd07ea3d7dd754ce2573be0"
+  },
+  "att_rail": {
+   "size": [
+    64,
+    16
+   ],
+   "sha256": "9b7b217f537fcad1e30b5a3fd66ab07826e375038df67a92377a18731bfb15af"
+  },
+  "LIGHT_att_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "fea9dfa62b5ddd12522edb0705af7024f0aff30a700cfdb293f4cdc6ce28072d"
+  },
+  "LIGHT_att_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_att_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "att_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "att_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "att_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "att_roof_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "bc762aee590724f29f961081b4efb905ca318b33c7b336011f41313887f994c0"
+  },
+  "att_panels": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "c44957c562a30aab7f01ad506376b27e4a87cc910c00bd2d0b12ffae8dccceb4"
+  },
+  "att_roof_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "e2a301470b4a9f1109d4f972da9dae5c0de6559f525acf88a7b003d537cefa03"
+  },
+  "att_roof_edge": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "3f6c18b0c77a456ea7e121bc1d0dc940b7301a721cf25f9ebca13046c61074a7"
+  },
+  "att_truss": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "6390ebe90838be674157c7a31dd4e03ca0bc5af2fcb3b4c84ae7bea45f73a347"
+  },
+  "att_steel": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "82509a37f9f1efaf156fe895338dbac2bced7d92a7e31d8545daa0495e659df0"
+  },
+  "LIGHT_att_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "68272757fdb0508113f9cde0d75d9c602ecb85eabcf9d958cbcee57eb6e59d29"
+  },
+  "att_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "a1339564f1ad3088a562d39705b4bdbbe13f5da1bdbf82afd31b1e951405d9f7"
+  },
+  "LIGHT_att_endglass": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "f087e593a8de85159ec1564fb8c367296af8ae06963e20f3b3d8c1b46ba24e4b"
+  },
+  "att_stone": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "afbf18ad2d58d03c9570c5af476726f37a65caf4e930a9268e443e8eaf8163e6"
+  },
+  "att_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "att_ground": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "5cd3a649c3a80214619c444ce7a601d104c99d713d3589af5b8eea1a1d7d0716"
+  },
+  "att_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "att_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "att_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "field/att_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "68b18dc7bd090b45512eb8e14c2c77b5a01f91daa1d6c2af457568450f0bb6fe"
+  },
+  "field/att_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "335b3c1837615bedb72f2a99c465b4c660b8c9b4f325e7400f5a73778985f676"
+  }
+ }
+}

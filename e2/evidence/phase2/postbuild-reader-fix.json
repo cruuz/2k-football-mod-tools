@@ -1,0 +1,26 @@
+{
+  "classification": "PROVED OFFLINE",
+  "build_code_commit": "4ef666dde377c2545f420a9f5b36bd28c7e38f7f",
+  "reason": "Support the known expanded SITU context and exclude the complete pinned historic alias bank from the modern screen-timing owner. Both original fixed-layout readers rejected the correctly built expanded archive.",
+  "changed_functions": {
+    "mod_editor/core/nfl2k5_espn25_rosters.py": "describe_context",
+    "mod_editor/core/nfl2k5_screen_timing.py": "_archive_books"
+  },
+  "all_other_module_ast_identical": true,
+  "provider_change_only_reader_content_pin": true,
+  "disc_rewritten": false,
+  "changes": {
+    "mod_editor/core/nfl2k5_espn25_rosters.py": {
+      "before_sha256": "fbcf1f35923cf0fc626e7e7f462617420a020783a91615b51daa9aaf14fabdc8",
+      "after_sha256": "dc46f552e10552fc1830c570d0f9189e9ef6e56ec9fe6bb128bc50ab9d5eb8c0"
+    },
+    "mod_editor/core/nfl2k5_screen_timing.py": {
+      "before_sha256": "b042ae22e791c3b2f335aeb35207bd1dd56e7d64d805f414c1f7c89e08571382",
+      "after_sha256": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894"
+    },
+    "mod_editor/core/providers.py": {
+      "before_sha256": "c9d3d112bf3e3fd8c1250b7ee0e00cfbf3dbb6fd061e00fcb207d5e9f46a616f",
+      "after_sha256": "f0a29d69aee40d99a7c7c5ee92900f2b7b1c5e5adb42c96b144a15a57d9c2b4b"
+    }
+  }
+}

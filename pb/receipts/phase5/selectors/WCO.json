@@ -1,0 +1,9721 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "states": [
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 99
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 3,
+      "yard": 99
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 5,
+      "yard": 99
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 10,
+      "yard": 99
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 20,
+      "yard": 99
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 5
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 20
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 50
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 80
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 95
+    },
+    {
+      "down": 1,
+      "distance": 99,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 1,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 3,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 5,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 10,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 20,
+      "yard": 99
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 1
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 5
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 20
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 50
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 80
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 95
+    },
+    {
+      "down": 2,
+      "distance": 99,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 1,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 3,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 5,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 10,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 20,
+      "yard": 99
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 1
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 5
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 20
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 50
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 80
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 95
+    },
+    {
+      "down": 3,
+      "distance": 99,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 1,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 3,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 5,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 10,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 20,
+      "yard": 99
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 1
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 5
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 20
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 50
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 80
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 95
+    },
+    {
+      "down": 4,
+      "distance": 99,
+      "yard": 99
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -26,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -26,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -26,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -26,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -26,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -25,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -25,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -25,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -25,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -25,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -15,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -15,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -15,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -15,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -15,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -14,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -14,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -14,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -14,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -14,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -4,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -4,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -4,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -4,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -4,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": -3,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": -3,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": -3,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": -3,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": -3,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 0,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 0,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 0,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 0,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 0,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 3,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 3,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 3,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 3,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 3,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 4,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 4,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 4,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 4,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 4,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 14,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 14,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 14,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 14,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 14,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 15,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 15,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 15,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 15,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 15,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 25,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 25,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 25,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 25,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 25,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 0
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 1
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 2
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 5
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 10
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 30
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 60
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 120
+    },
+    {
+      "margin": 26,
+      "quarter": 1,
+      "seconds": 300
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 0
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 1
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 2
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 5
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 10
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 30
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 60
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 120
+    },
+    {
+      "margin": 26,
+      "quarter": 2,
+      "seconds": 300
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 0
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 1
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 2
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 5
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 10
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 30
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 60
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 120
+    },
+    {
+      "margin": 26,
+      "quarter": 3,
+      "seconds": 300
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 0
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 1
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 2
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 5
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 10
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 30
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 60
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 120
+    },
+    {
+      "margin": 26,
+      "quarter": 4,
+      "seconds": 300
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 0
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 1
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 2
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 5
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 10
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 30
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 60
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 120
+    },
+    {
+      "margin": 26,
+      "quarter": 5,
+      "seconds": 300
+    },
+    {
+      "phase": 1
+    },
+    {
+      "phase": 2
+    },
+    {
+      "phase": 3
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 1
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 5
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 20
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 50
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 80
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 95
+    },
+    {
+      "direction": -1,
+      "down": 1,
+      "yard": 99
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 1
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 5
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 20
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 50
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 80
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 95
+    },
+    {
+      "direction": -1,
+      "down": 2,
+      "yard": 99
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 1
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 5
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 20
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 50
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 80
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 95
+    },
+    {
+      "direction": -1,
+      "down": 3,
+      "yard": 99
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 1
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 5
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 20
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 50
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 80
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 95
+    },
+    {
+      "direction": -1,
+      "down": 4,
+      "yard": 99
+    }
+  ],
+  "fixture": "PROVED OFFLINE: real selector/policy replay with explicit synthetic world inputs.\n\nDESIGN: state dimensions are factored, not a Cartesian proof of a whole game.\nAll PLAY-indexed scorer arguments are exhausted separately by scoring_sweep.py.\nNo selector, category policy, compatibility, trajectory or matchup is stubbed.\n",
+  "books": [
+    {
+      "book": "WCO",
+      "variant": "retail",
+      "resource_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "states": 784,
+      "calls": {
+        "0x20b180": 784,
+        "0x20b820": 784,
+        "0xe1a80": 29,
+        "0x2096a0": 522
+      },
+      "visits": {
+        "0x20b820": 784,
+        "0x20b400": 784,
+        "0x2093f0": 784,
+        "0x20a240": 784,
+        "0x2081b0": 733,
+        "0x20a7f0": 733,
+        "0x208820": 20129,
+        "0x205660": 18696,
+        "0x203f20": 18696,
+        "0x20aa40": 733,
+        "0x2096a0": 573,
+        "0x207bf0": 1248,
+        "0x2815f0": 588,
+        "0x281620": 660
+      },
+      "environment": {
+        "0x18b120": 1876,
+        "0xe89f0": 18696,
+        "0x246a80": 317684,
+        "0xcb2d0": 212
+      },
+      "choices": [
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 31
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 8,
+            "formation": 32,
+            "front": 131,
+            "coverage": 53
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 110
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 8,
+            "formation": 32,
+            "front": 46,
+            "coverage": 128
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 8,
+            "formation": 32,
+            "front": 129,
+            "coverage": 126
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 30
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 119
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 8,
+            "formation": 32,
+            "front": 48,
+            "coverage": 53
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 6
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 20
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 17
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 3,
+            "coverage": 7
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 122,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 4,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 3,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 120,
+            "coverage": 10
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 8,
+            "formation": 32,
+            "front": 129,
+            "coverage": 127
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 8,
+            "formation": 32,
+            "front": 47,
+            "coverage": 49
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 40
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 20
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 8,
+            "formation": 32,
+            "front": 43,
+            "coverage": 58
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 105
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 13
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 114
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 8,
+            "formation": 32,
+            "front": 130,
+            "coverage": 56
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 1,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 8,
+            "category": 11,
+            "formation": 30,
+            "front": 0,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 8,
+            "category": 11,
+            "formation": 30,
+            "front": 120,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 9,
+            "category": 11,
+            "formation": 30,
+            "front": 2,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 120,
+            "coverage": 12
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 9,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 19
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 1,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 40
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 11
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 1,
+            "category": 8,
+            "formation": 32,
+            "front": 131,
+            "coverage": 127
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 8
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 32
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 105
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 8,
+            "formation": 32,
+            "front": 48,
+            "coverage": 127
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 7,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 7,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 7,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 6,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 1,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 0,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 122,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 1,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 2,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 2,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 3,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 4,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 2,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 4,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 122,
+            "coverage": 8
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 17,
+            "category": 14,
+            "formation": 40,
+            "front": 212,
+            "coverage": 212
+          },
+          "count": 8
+        },
+        {
+          "result": {
+            "offense_category": 17,
+            "category": 14,
+            "formation": 40,
+            "front": 209,
+            "coverage": 209
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 2,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 19,
+            "category": 16,
+            "formation": 41,
+            "front": 211,
+            "coverage": 211
+          },
+          "count": 8
+        },
+        {
+          "result": {
+            "offense_category": 19,
+            "category": 16,
+            "formation": 41,
+            "front": 199,
+            "coverage": 199
+          },
+          "count": 13
+        },
+        {
+          "result": {
+            "offense_category": 17,
+            "category": 14,
+            "formation": 40,
+            "front": 230,
+            "coverage": 230
+          },
+          "count": 5
+        },
+        {
+          "result": {
+            "offense_category": 17,
+            "category": 14,
+            "formation": 40,
+            "front": 231,
+            "coverage": 231
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 17,
+            "category": 14,
+            "formation": 40,
+            "front": 197,
+            "coverage": 197
+          },
+          "count": 7
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 109
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 28
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 12
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 113
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 40
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 115
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 35
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 19
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 39
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 119
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 108
+          },
+          "count": 5
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 14
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 12
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 113
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 8
+          },
+          "count": 6
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 105
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 10
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 110
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 9
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 11
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 11
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 19
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 115
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 111
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 9
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 7
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 34
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 109
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 33
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 106
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 106
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 29
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 13
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 33
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 32
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 19
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 27
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 11
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 11
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 110
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 11
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 31
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 6
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 109
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 14
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 40
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 34
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 14
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 38
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 112
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 116
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 6
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 113
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 14
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 42
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 20
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 33
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 14
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 41
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 19
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 18
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 38
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 33
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 30
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 37
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 36
+          },
+          "count": 4
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 7
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 11
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 33
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 118
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 39
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 28
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 34
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 8
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 112
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 11
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 8
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 15
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 38
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 11
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 19
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 105
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 38
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 34
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 9
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 40
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 8
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 106
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 115
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 36
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 30
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 106
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 9
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 108
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 110
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 8
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 19
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 118
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 11
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 36
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 40
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 12
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 118
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 108
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 21,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 112
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 10
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 18
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 35
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 108
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 106
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 33
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 10
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 37
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 18
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 28
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 34
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 42
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 6
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 35
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 105
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 17
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 31
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 121,
+            "coverage": 109
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 31
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 10
+          },
+          "count": 3
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 3,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 116
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 3,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 118
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 4,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 4,
+            "coverage": 111
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 6
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 106
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 41
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 9
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 28
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 124,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 115
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 123,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 125,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 37
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 22,
+            "formation": 31,
+            "front": 1,
+            "coverage": 113
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 120,
+            "coverage": 10
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 40
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 7
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 2,
+            "coverage": 27
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 2,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 2,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 1,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 32
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 10,
+            "formation": 29,
+            "front": 120,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 114
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 4,
+            "coverage": 14
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 0,
+            "coverage": 16
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 120,
+            "coverage": 119
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 3,
+            "coverage": 17
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 29
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 35
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 22,
+            "coverage": 38
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 9,
+            "formation": 27,
+            "front": 121,
+            "coverage": 18
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 21,
+            "formation": 28,
+            "front": 25,
+            "coverage": 30
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 122,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 10,
+            "formation": 29,
+            "front": 122,
+            "coverage": 9
+          },
+          "count": 2
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 121,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 22,
+            "formation": 31,
+            "front": 0,
+            "coverage": 105
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 122,
+            "coverage": 107
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 19,
+            "formation": 36,
+            "front": 195,
+            "coverage": 195
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 19,
+            "formation": 36,
+            "front": 228,
+            "coverage": 228
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 16,
+            "formation": 41,
+            "front": 199,
+            "coverage": 199
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 9,
+            "formation": 27,
+            "front": 1,
+            "coverage": 13
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 22,
+            "formation": 31,
+            "front": 5,
+            "coverage": 108
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 24,
+            "coverage": 36
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 3,
+            "category": 8,
+            "formation": 32,
+            "front": 48,
+            "coverage": 58
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 10,
+            "formation": 29,
+            "front": 5,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 9,
+            "formation": 27,
+            "front": 5,
+            "coverage": 20
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 4,
+            "category": 21,
+            "formation": 28,
+            "front": 26,
+            "coverage": 42
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 5,
+            "category": 21,
+            "formation": 28,
+            "front": 23,
+            "coverage": 39
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 9
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 12
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 1,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 121,
+            "coverage": 19
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 11,
+            "formation": 30,
+            "front": 5,
+            "coverage": 8
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 10,
+            "category": 10,
+            "formation": 29,
+            "front": 0,
+            "coverage": 16
+          },
+          "count": 1
+        }
+      ],
+      "faults": [],
+      "seconds": 575.0240142469993
+    }
+  ]
+}

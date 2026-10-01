@@ -94,3 +94,8 @@ docs/mycareer_art/mycareer_apartment.png
 docs/mycareer_art/hub_mockup_*.png
 docs/mycareer_art/*_hub_mockup_*.png
 docs/mycareer_art/previews/preview_*_mycareer_apartment.png
+
+# --- Agent session output -------------------------------------------------
+# An agent's closing chat message. AGENTS.md keeps agent handoffs and
+# transcripts out of the repository.
+ASTRA_LAST_MESSAGE.md

@@ -1,0 +1,63 @@
+{
+  "label": "PROVED OFFLINE",
+  "results": [
+    {
+      "requested": 36,
+      "selected": {
+        "index": 32,
+        "name": "49ers '81",
+        "abbr": "SF81",
+        "category": 4,
+        "players": 36,
+        "identity": 155,
+        "pointers": 36
+      },
+      "pool": {
+        "records": 155,
+        "used": 36
+      },
+      "loaded": [
+        "h-25-1981-49ers-3.iff"
+      ]
+    },
+    {
+      "requested": 40,
+      "selected": {
+        "index": 32,
+        "name": "49ers '81",
+        "abbr": "SF81",
+        "category": 4,
+        "players": 40,
+        "identity": 155,
+        "pointers": 40
+      },
+      "pool": {
+        "records": 155,
+        "used": 40
+      },
+      "loaded": [
+        "h-25-1981-49ers-3.iff"
+      ]
+    },
+    {
+      "requested": 45,
+      "selected": {
+        "index": 32,
+        "name": "49ers '81",
+        "abbr": "SF81",
+        "category": 4,
+        "players": 45,
+        "identity": 155,
+        "pointers": 45
+      },
+      "pool": {
+        "records": 155,
+        "used": 45
+      },
+      "loaded": [
+        "h-25-1981-49ers-3.iff"
+      ]
+    }
+  ],
+  "limitation": "Synthetic removal of final retail roster slots; no claim of valid lineups or game safety. Importer accepts fewer than 53 players. A real writer must compact sourced players, rebuild depth/special teams and validate every position and match-start route. The existing fixed-quota draft overstates missing membership."
+}

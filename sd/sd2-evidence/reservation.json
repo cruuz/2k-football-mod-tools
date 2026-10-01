@@ -1,0 +1,13 @@
+{
+  "classification": "PROVED OFFLINE",
+  "new_span": {
+    "start": "0xe8410",
+    "end": "0xe8790",
+    "size": 896,
+    "owner": "nfl2k5_position_pools",
+    "basis": "declared edit: lineup_iterator"
+  },
+  "existing_overlaps": [],
+  "new_cave_bytes": 0,
+  "manifest_regenerated": false
+}

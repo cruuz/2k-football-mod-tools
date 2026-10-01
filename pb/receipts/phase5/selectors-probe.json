@@ -1,0 +1,77 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "states": [
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 1
+    },
+    {
+      "down": 1,
+      "distance": 1,
+      "yard": 5
+    }
+  ],
+  "fixture": "PROVED OFFLINE: real selector/policy replay with explicit synthetic world inputs.\n\nDESIGN: state dimensions are factored, not a Cartesian proof of a whole game.\nAll PLAY-indexed scorer arguments are exhausted separately by scoring_sweep.py.\nNo selector, category policy, compatibility, trajectory or matchup is stubbed.\n",
+  "books": [
+    {
+      "book": "DAL",
+      "variant": "retail",
+      "resource_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "states": 2,
+      "calls": {
+        "0x20b180": 2,
+        "0x20b820": 2,
+        "0xe1a80": 25,
+        "0x2096a0": 450
+      },
+      "visits": {
+        "0x20b820": 2,
+        "0x20b400": 2,
+        "0x2093f0": 2,
+        "0x20a240": 2,
+        "0x2081b0": 2,
+        "0x20a7f0": 2,
+        "0x208820": 1054,
+        "0x205660": 58,
+        "0x203f20": 58,
+        "0x20aa40": 2,
+        "0x2096a0": 450,
+        "0x207bf0": 996,
+        "0x2815f0": 444,
+        "0x281620": 552
+      },
+      "environment": {
+        "0x18b120": 4,
+        "0xe89f0": 58,
+        "0x246a80": 2584,
+        "0xcb2d0": 140
+      },
+      "choices": [
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 10,
+            "formation": 23,
+            "front": 6,
+            "coverage": 15
+          },
+          "count": 1
+        },
+        {
+          "result": {
+            "offense_category": 0,
+            "category": 10,
+            "formation": 23,
+            "front": 1,
+            "coverage": 25
+          },
+          "count": 1
+        }
+      ],
+      "faults": [],
+      "seconds": 2.976956599042751
+    }
+  ]
+}

@@ -1,0 +1,974 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "GB",
+ "name": "Green Bay Packers",
+ "asset_code": "10",
+ "season": 2026,
+ "status": "Phase B job d6 (2026-09-23). Sort: KEPT its 2004 look (the Packers declined Nike's template changes). Colours sourced; authored albedo INFERRED (dark green lifted like the Giants' pilot); stripe, collar and sleeve geometry vectorised from the retail textures (the 2026 design is unchanged). The neck shape comes from 10NK, a neck-only copy of the retail 10H0 torso (the retail shoulder maker marks and white-jersey mesh read as neck grey otherwise). Team Select cards keep the retail helmet G render (the G is unchanged since 1961; the swapped mark read flat).",
+ "sources": {
+  "kit_rules": "https://en.wikipedia.org/w/index.php?title=Green_Bay_Packers&action=raw (Uniform variation: Nike 2012 changes refused, traditional striped collar kept)",
+  "uniform_diagram": "https://en.wikipedia.org/wiki/Special:FilePath/Green_Bay_Packers_Uniforms_-2026.png (CC BY-SA)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (GB: Dark Green #203731, Gold #FFB612, White; 2026 NFL Record and Fact Book p.178)",
+  "home_photos": "https://www.packers.com/photos/game-photos-packers-vs-jets-week-2-2026 (green jersey, gold pants, green socks; 2026-09-20)",
+  "road_photos": "https://www.vikings.com/photos/packers-game-action-week-1-2026 (white jersey, gold pants, white socks; 2026-09-13)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/GB.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/Special:FilePath/Green_Bay_Packers_wordmark.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "green": "#203731",
+  "gold": "#FFB612",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "jersey_green": "#26413A",
+  "green": "#203731",
+  "gold": "#FFB612",
+  "helmet_gold": "#FFB612",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_green": "#203731",
+  "r_helmet_gold": "#F0AA00",
+  "r_helmet_green": "#063328",
+  "r_card_green": "#065629",
+  "r_card_gold": "#DFA503",
+  "r_atlas_green": "#005632",
+  "r_atlas_helmet_gold": "#E5A708",
+  "wall_green": "#203731",
+  "banner_green": "#26413A"
+ },
+ "marks": {
+  "logo_full": "g_logo_full.png",
+  "helmet_decal": "g_helmet_decal.png",
+  "team_logo_fill": "g_oval_mask.png",
+  "g_letter": "g_letter_mask.png",
+  "wordmark": "packers_wordmark_mask.png",
+  "ez_N_fill": "ez_N_fill.png",
+  "ez_N_outline": "ez_N_outline.png",
+  "ez_S_fill": "ez_S_fill.png",
+  "ez_S_outline": "ez_S_outline.png",
+  "g_layer_silhouette": "g_layer_silhouette.png",
+  "g_layer_green": "g_layer_green.png",
+  "g_layer_white": "g_layer_white.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "10H0",
+   "note": "2026 home: dark green jersey, plain white block numbers, gold-white-gold sleeve stripes, gold-white-gold striped V collar, gold pants with a green-white-green stripe, dark green socks",
+   "torso": {
+    "base_colour": "jersey_green",
+    "neck_donor": "10NK",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "gold",
+      "width": 2.3
+     },
+     {
+      "colour": "jersey_green",
+      "width": 0.7
+     },
+     {
+      "colour": "white",
+      "width": 2.4
+     },
+     {
+      "colour": "jersey_green",
+      "width": 0.7
+     },
+     {
+      "colour": "gold",
+      "width": 2.8
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_green",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        10.16,
+        28
+       ],
+       [
+        122.0,
+        28
+       ],
+       [
+        122.0,
+        35
+       ],
+       [
+        12.41,
+        35
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        12.86,
+        37
+       ],
+       [
+        122.0,
+        37
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        14.86,
+        44
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        15.75,
+        46
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        122.0,
+        53
+       ],
+       [
+        18.25,
+        53
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        92
+       ],
+       [
+        117.84,
+        92
+       ],
+       [
+        115.59,
+        99
+       ],
+       [
+        6.0,
+        99
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        101
+       ],
+       [
+        115.14,
+        101
+       ],
+       [
+        113.14,
+        108
+       ],
+       [
+        6.0,
+        108
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        110
+       ],
+       [
+        112.25,
+        110
+       ],
+       [
+        109.75,
+        117
+       ],
+       [
+        6.0,
+        117
+       ]
+      ],
+      "colour": "gold"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "gold",
+    "stripe": [
+     [
+      "jersey_green",
+      7
+     ],
+     [
+      "white",
+      8
+     ],
+     [
+      "jersey_green",
+      7
+     ]
+    ],
+    "swoosh_colour": "jersey_green"
+   },
+   "socks": {
+    "colour": "jersey_green"
+   },
+   "digits": {
+    "glyph_donor": "10H0",
+    "fill": "white"
+   },
+   "nameplate": {
+    "glyph_donor": "10H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_gold",
+    "shell_from": "r_helmet_gold",
+    "stripe": "jersey_green",
+    "recolour": [
+     {
+      "from": "r_helmet_green",
+      "to": "jersey_green",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "helmet_decal",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_green",
+      "to": "jersey_green",
+      "region": "all",
+      "tolerance": 0.34
+     },
+     {
+      "from": "r_card_gold",
+      "to": "gold",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 3695,
+   "splayer": {
+    "torso_donor_outer": 3695,
+    "torso_donor": "10H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_green",
+      "to": "jersey_green",
+      "region": "torso",
+      "tolerance": 0.2
+     },
+     {
+      "from": "r_atlas_green",
+      "to": "jersey_green",
+      "region": "sleeve",
+      "tolerance": 0.2
+     },
+     {
+      "from": "r_atlas_helmet_gold",
+      "to": "helmet_gold",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "helmet_decal",
+     "scale": 1.0
+    }
+   },
+   "helmet_digits": {
+    "glyph_donor": "10H0",
+    "fill": "jersey_green"
+   }
+  },
+  "away": {
+   "selector": "10A0",
+   "note": "2026 road: white jersey, plain dark green block numbers, green-gold-green sleeve stripes and collar, gold pants with a green-white-green stripe, white socks",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "10NK",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "jersey_green",
+      "width": 2.8
+     },
+     {
+      "colour": "white",
+      "width": 0.7
+     },
+     {
+      "colour": "gold",
+      "width": 1.7
+     },
+     {
+      "colour": "white",
+      "width": 0.6
+     },
+     {
+      "colour": "jersey_green",
+      "width": 2.3
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "jersey_green"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        10.14,
+        28
+       ],
+       [
+        122.0,
+        28
+       ],
+       [
+        122.0,
+        35
+       ],
+       [
+        12.14,
+        35
+       ]
+      ],
+      "colour": "jersey_green"
+     },
+     {
+      "polygon": [
+       [
+        12.75,
+        37
+       ],
+       [
+        122.0,
+        37
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        15.25,
+        44
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        15.48,
+        46
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        122.0,
+        53
+       ],
+       [
+        18.23,
+        53
+       ]
+      ],
+      "colour": "jersey_green"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        92
+       ],
+       [
+        117.86,
+        92
+       ],
+       [
+        115.86,
+        99
+       ],
+       [
+        6.0,
+        99
+       ]
+      ],
+      "colour": "jersey_green"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        101
+       ],
+       [
+        115.25,
+        101
+       ],
+       [
+        112.75,
+        108
+       ],
+       [
+        6.0,
+        108
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        110
+       ],
+       [
+        112.52,
+        110
+       ],
+       [
+        109.77,
+        117
+       ],
+       [
+        6.0,
+        117
+       ]
+      ],
+      "colour": "jersey_green"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "gold",
+    "stripe": [
+     [
+      "jersey_green",
+      7
+     ],
+     [
+      "white",
+      8
+     ],
+     [
+      "jersey_green",
+      7
+     ]
+    ],
+    "swoosh_colour": "jersey_green"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "10A0",
+    "fill": "jersey_green"
+   },
+   "nameplate": {
+    "glyph_donor": "10A0",
+    "fill": "jersey_green"
+   },
+   "helmet": {
+    "shell": "helmet_gold",
+    "shell_from": "r_helmet_gold",
+    "stripe": "jersey_green",
+    "recolour": [
+     {
+      "from": "r_helmet_green",
+      "to": "jersey_green",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "helmet_decal",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_green",
+      "to": "jersey_green",
+      "region": "all",
+      "tolerance": 0.3
+     },
+     {
+      "from": "r_card_gold",
+      "to": "gold",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 4012,
+   "splayer": {
+    "torso_donor_outer": 4012,
+    "torso_donor": "10A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_helmet_gold",
+      "to": "helmet_gold",
+      "region": "helmet",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "helmet_decal",
+     "scale": 1.0
+    }
+   },
+   "helmet_digits": {
+    "glyph_donor": "10A0",
+    "fill": "jersey_green"
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Matt LaFleur",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 53 active. ESPN depth chart slots (NT, LILB/RILB, WLB/SLB) show a 3-4 base."
+ },
+ "part_intents": {
+  "home": {
+   "torso": "dark green jersey body, gold-white-gold striped V collar, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "dark green with gold-white-gold stripes near the cuff",
+   "pants": "metallic gold with a green-white-green side stripe, green maker mark",
+   "helmet": "metallic gold shell, green oval G logo with white G and white outline, green-white-green centre stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "plain white block numbers",
+   "digit_arm": "plain white numbers",
+   "digit_helmet": "plain dark green numbers (retail's helmet numbers are dark too)",
+   "nameplate": "white letters",
+   "socks00": "solid dark green",
+   "splayer": "far-away player atlas: gold pants with green stripe, green torso, gold helmet, green socks, skin and glove patches",
+   "team-select_unif": "menu render: green jersey with a white number, gold pants, gold helmet with the G logo, dark shading",
+   "team-select_helm": "menu render: gold helmet with the green G logo, green facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, green-gold-green striped V collar, small NFL shield at the collar, green maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with green-gold-green stripes near the cuff",
+   "pants": "metallic gold with a green-white-green side stripe, green maker mark",
+   "helmet": "metallic gold shell, green oval G logo with white G and white outline, green-white-green centre stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "plain dark green block numbers",
+   "digit_arm": "plain dark green numbers",
+   "digit_helmet": "plain dark green numbers (retail's helmet numbers are dark too)",
+   "nameplate": "dark green letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: gold pants with green stripe, white torso, gold helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a green number, gold pants, gold helmet, grey and dark shading",
+   "team-select_helm": "menu render: gold helmet with the green G logo, green facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "grass end zone with gold team lettering outlined in white (transparent paint)",
+   "center_logo": "the G oval logo: green oval, white G, gold ring",
+   "banner": "cloth fan banners in green, gold and white",
+   "wall": "plain dark green field-level wall pads"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Jordan Love": 2,
+   "Christian Watson": 2,
+   "MarShawn Lloyd": 4,
+   "Tucker Kraft": 0,
+   "Lukas Van Ness": 0,
+   "Keisean Nixon": 4,
+   "Edgerrin Cooper": 4,
+   "Javon Hargrave": 5,
+   "Xavier McKinney": 4,
+   "Evan Williams": 2,
+   "Jordan Morgan": 2,
+   "Aaron Banks": 3,
+   "Sean Rhyan": 1,
+   "Trey Smack": 0,
+   "Daniel Whelan": 0,
+   "Tyrod Taylor": 4,
+   "Jayden Reed": 4,
+   "Chris Brooks": 4,
+   "Jonnu Smith": 4,
+   "Barryn Sorrell": 4,
+   "Brandon Cisse": 3,
+   "Zaire Franklin": 4,
+   "Karl Brooks": 4,
+   "Kitan Oladapo": 5,
+   "Zach Bako-Bewele": 4,
+   "Jacob Monk": 4,
+   "Jager Burton": 0,
+   "Matthew Golden": 3,
+   "Kaleb Johnson": 4,
+   "Josh Whyle": 0,
+   "Brenton Cox": 5,
+   "Javon Bullard": 4,
+   "Ty'Ron Hopper": 4,
+   "Devonte Wyatt": 5,
+   "Anthony Belton": 5,
+   "Donovan Jennings": 2,
+   "Matthew Orzech": 0,
+   "Skyy Moore": 3,
+   "Mark Redman": 0,
+   "Dani Dennis-Sutton": 4,
+   "Benjamin St-Juste": 3,
+   "Isaiah McDuffie": 2,
+   "Jonathan Ford": 4,
+   "John Williams": 3,
+   "Bo Melton": 3,
+   "Carrington Valentine": 3,
+   "Nick Niemann": 0,
+   "Anthony Campbell": 4,
+   "Travis Glover": 5,
+   "J. Michael Sturdivant": 3,
+   "Kamal Hadden": 4,
+   "Warren Brinson": 4,
+   "Chris McClellan": 3
+  },
+  "dreads": [
+   "Xavier McKinney",
+   "Kaleb Johnson",
+   "Javon Bullard",
+   "Ty'Ron Hopper",
+   "Devonte Wyatt"
+  ],
+  "hair_by_eye": {
+   "Tucker Kraft": "#7A5234",
+   "Lukas Van Ness": "#6B4A2F"
+  },
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); the automatic cheek estimate reads studio-lit skin light, so most tones were raised by eye. Dreads by eye (long locs). Hair by eye for Tucker Kraft and Lukas Van Ness (light and mid brown)."
+ },
+ "venue": {
+  "prefix": "s10",
+  "notes": "Lambeau Field (s10). End zones: gold PACKERS (north) and GREEN BAY (south) letters with a white outline on the natural grass, traced from the retail textures at 4x and redrawn in the 2026 gold (INFERRED unchanged since 2004: no 2025-2026 photo of the lettering was found). Midfield: the official G logo (club SVG) at the retail size, drawn in full colour by hand (the venue step draws two one-colour layers). Walls: the field-level pads in the 2026 dark green (photos show a dark green wall under gold railings). Fan banners: 2026 content.",
+  "sources": [
+   "https://www.packers.com/photos/game-photos-packers-vs-cardinals-preseason-week-3-2026 (field-level wall, gold railings)",
+   "https://static.www.nfl.com/league/api/clubs/logos/GB.svg"
+  ],
+  "endzone": {
+   "paint": "field_green",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "ez_N_outline",
+     "colour": "white",
+     "center": [
+      375.5,
+      62.375
+     ],
+     "height": 101.25,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "ez_N_fill",
+     "colour": "gold",
+     "center": [
+      375.0,
+      62.5
+     ],
+     "height": 95.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_green",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "ez_S_outline",
+     "colour": "white",
+     "center": [
+      384.125,
+      62.0
+     ],
+     "height": 100.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "ez_S_fill",
+     "colour": "gold",
+     "center": [
+      382.25,
+      62.5
+     ],
+     "height": 95.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "team_logo_fill",
+   "outline": "gold",
+   "fill_mark": null,
+   "fill": "green",
+   "width_frac": 0.96
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "text": "GO PACK\nGO!",
+        "colour": "gold",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "TITLETOWN",
+        "colour": "banner_green",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "#10 LOVE",
+        "colour": "banner_green",
+        "center": [
+         64,
+         31
+        ],
+        "height": 18
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "mark": "wordmark",
+        "colour": "gold",
+        "center": [
+         192,
+         31
+        ],
+        "width": 100
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "text": "#85 KRAFT\n#9 WATSON",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "DEFENSE!!",
+        "colour": "banner_green",
+        "center": [
+         192,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "mark": "g_layer_silhouette",
+        "colour": "gold",
+        "center": [
+         64,
+         31
+        ],
+        "width": 66
+       },
+       {
+        "mark": "g_layer_green",
+        "colour": "green",
+        "center": [
+         64,
+         31
+        ],
+        "width": 66
+       },
+       {
+        "mark": "g_layer_white",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "width": 66
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "CHEESEHEADS\nUNITE",
+        "colour": "banner_green",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "wall01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       64
+      ],
+      "bg": "wall_green",
+      "items": []
+     }
+    ]
+   },
+   "wall03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       32,
+       32
+      ],
+      "bg": "wall_green",
+      "items": []
+     }
+    ]
+   }
+  }
+ }
+}

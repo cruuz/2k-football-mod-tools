@@ -1,0 +1,142 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "scope": "synthetic native trade decisions, not reconstructed NFL transactions",
+  "threshold": 0.82,
+  "cases": [
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "round 1 slot 1 for round 7 slot 1",
+      "fixture": "DESIGN: picks only, known current draft order",
+      "legal": true,
+      "offered": 6000,
+      "requested": 666,
+      "unpenalized_score": 1,
+      "accepted": true
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "round 7 slot 1 for round 1 slot 1",
+      "fixture": "DESIGN: picks only, known current draft order",
+      "legal": true,
+      "offered": 666,
+      "requested": 6000,
+      "unpenalized_score": 0,
+      "accepted": false
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "round 1 slot 1 for round 1 slot 1",
+      "fixture": "DESIGN: picks only, known current draft order",
+      "legal": true,
+      "offered": 6000,
+      "requested": 6000,
+      "unpenalized_score": 0.8,
+      "accepted": false
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "round 1 slot 1 for round 2 slot 1",
+      "fixture": "DESIGN: picks only, known current draft order",
+      "legal": true,
+      "offered": 6000,
+      "requested": 2456,
+      "unpenalized_score": 1,
+      "accepted": true
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "Giants-Texans observed pick package",
+      "fixture": "DESIGN: 2025 overall ranks mapped to native slots; future third valued at the modeled median",
+      "legal": true,
+      "offered": 4936,
+      "requested": 2738,
+      "unpenalized_score": 1,
+      "accepted": true,
+      "source": "https://www.giants.com/news/jaxson-dart-trade-details-nfl-draft-room-joe-schoen-brian-daboll-abdul-carter-ole-miss",
+      "real_world_status": "observed accepted package"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "Giants-Texans package with sweeteners removed",
+      "fixture": "DESIGN: 2025 overall ranks mapped to native slots; future third valued at the modeled median",
+      "legal": true,
+      "offered": 2426,
+      "requested": 2738,
+      "unpenalized_score": 0.648954,
+      "accepted": false,
+      "source": "https://www.giants.com/news/jaxson-dart-trade-details-nfl-draft-room-joe-schoen-brian-daboll-abdul-carter-ole-miss",
+      "real_world_status": "hypothetical reduced offer; no real-world rejection claimed"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "young cheap QB for aging costly QB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 0, 'experience': 3, 'total': 500}; requested={'position': 0, 'experience': 20, 'total': 7500}; balanced four-year terms",
+      "legal": true,
+      "offered": 28085,
+      "requested": 1,
+      "unpenalized_score": 1,
+      "accepted": true
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "aging costly QB for young cheap QB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 0, 'experience': 20, 'total': 7500}; requested={'position': 0, 'experience': 3, 'total': 500}; balanced four-year terms",
+      "legal": true,
+      "offered": 1,
+      "requested": 28305,
+      "unpenalized_score": 0,
+      "accepted": false
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "cheap QB for same-rated expensive QB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 0, 'experience': 3, 'total': 500}; requested={'position': 0, 'experience': 3, 'total': 7500}; balanced four-year terms",
+      "legal": true,
+      "offered": 28085,
+      "requested": 1,
+      "unpenalized_score": 1,
+      "accepted": true
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "expensive QB for same-rated cheap QB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 0, 'experience': 3, 'total': 7500}; requested={'position': 0, 'experience': 3, 'total': 500}; balanced four-year terms",
+      "legal": true,
+      "offered": 1,
+      "requested": 28305,
+      "unpenalized_score": 0,
+      "accepted": false
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "QB for same-rated RB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 0, 'experience': 3, 'total': 500}; requested={'position': 7, 'experience': 3, 'total': 500}; balanced four-year terms",
+      "legal": true,
+      "offered": 28085,
+      "requested": 13454,
+      "unpenalized_score": 1,
+      "accepted": true
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "case": "RB for same-rated QB",
+      "fixture": "DESIGN: all native rating bytes 85; offered={'position': 7, 'experience': 3, 'total': 500}; requested={'position': 0, 'experience': 3, 'total': 500}; balanced four-year terms",
+      "legal": true,
+      "offered": 13454,
+      "requested": 28305,
+      "unpenalized_score": 0,
+      "accepted": false
+    }
+  ],
+  "leaves": [
+    [
+      1369408,
+      "user confirms the proposed trade; native CPU decision remains"
+    ],
+    [
+      1369376,
+      "informational rejection display only"
+    ]
+  ],
+  "limitations": "DESIGN: pick and positional-market sources inform the model; these cases do not establish actual NFL acceptance or rejection of hypothetical trades."
+}

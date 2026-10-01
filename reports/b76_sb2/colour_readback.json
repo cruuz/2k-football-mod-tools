@@ -1,0 +1,129 @@
+{
+  "classification": "PROVED OFFLINE",
+  "rendered": {
+    "before_chi_first10": {
+      "present": true,
+      "plate_kind": "transition",
+      "plate_rgb": [
+        76.0,
+        83.0,
+        96.0
+      ],
+      "chevrons": {
+        "away": 49.77301587301587,
+        "home": 207.87142857142857
+      },
+      "wing": {
+        "PHI": [
+          28.0,
+          111.0,
+          120.0
+        ],
+        "CHI": [
+          68.0,
+          104.0,
+          166.0
+        ]
+      },
+      "red": false
+    },
+    "before_phi_first10": {
+      "present": true,
+      "plate_kind": "PHI",
+      "plate_rgb": [
+        35.0,
+        90.0,
+        97.0
+      ],
+      "chevrons": {
+        "away": 207.37301587301587,
+        "home": 54.22222222222222
+      },
+      "wing": {
+        "PHI": [
+          28.0,
+          111.0,
+          120.0
+        ],
+        "CHI": [
+          68.0,
+          104.0,
+          166.0
+        ]
+      },
+      "red": false
+    },
+    "after_chi_first10": {
+      "present": true,
+      "plate_kind": "CHI",
+      "plate_rgb": [
+        156.0,
+        44.0,
+        0.0
+      ],
+      "chevrons": {
+        "away": 51.455555555555556,
+        "home": 206.28730158730158
+      },
+      "wing": {
+        "PHI": [
+          34.0,
+          119.0,
+          131.0
+        ],
+        "CHI": [
+          174.0,
+          82.0,
+          44.0
+        ]
+      },
+      "red": false
+    },
+    "after_phi_first10": {
+      "present": true,
+      "plate_kind": "PHI",
+      "plate_rgb": [
+        35.0,
+        90.0,
+        97.0
+      ],
+      "chevrons": {
+        "away": 207.16666666666666,
+        "home": 51.457142857142856
+      },
+      "wing": {
+        "PHI": [
+          34.0,
+          119.0,
+          131.0
+        ],
+        "CHI": [
+          174.0,
+          82.0,
+          44.0
+        ]
+      },
+      "red": false
+    }
+  },
+  "broadcast_red": {
+    "frames": 56,
+    "median": [
+      237.0,
+      0.0,
+      52.0
+    ],
+    "p10p90": [
+      [
+        235.0,
+        0.0,
+        50.0
+      ],
+      [
+        238.5,
+        0.0,
+        52.75
+      ]
+    ]
+  }
+}

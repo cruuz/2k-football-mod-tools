@@ -1,0 +1,88 @@
+{
+  "status": "PROVED OFFLINE",
+  "fixture": "PROVED OFFLINE: repeat the saved crash with only the loaded Dallas book changed.\n\nDESIGN: uses the prior heap investigation's RAM reader and loader, read-only.\nScoring runs saved instructions/data without substituted instructions.\n",
+  "play": 153,
+  "context": 3,
+  "rows": [
+    {
+      "variant": "old",
+      "sha256": "c558e78d12b9aaaf521b218ab36d57e6a812c8ab9938e4338a53099266517b39",
+      "loader": {
+        "mode": 2,
+        "destination": "0xb88dd0",
+        "read_size": 78736,
+        "heap_delta": 0,
+        "allocator_calls": [],
+        "validated_plays": 269,
+        "registered_root": "0xb88dd0"
+      },
+      "trace": [
+        {
+          "pc": "0x281343",
+          "eax": "0xffffffff"
+        },
+        {
+          "pc": "0x281607",
+          "eax": "0x3991a2b4"
+        }
+      ],
+      "faults": [
+        {
+          "pc": "0x281607",
+          "address": "0xe70c5f90",
+          "size": 4
+        }
+      ],
+      "error": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+      "returned": false
+    },
+    {
+      "variant": "retail",
+      "sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "loader": {
+        "mode": 2,
+        "destination": "0xb88dd0",
+        "read_size": 78736,
+        "heap_delta": 0,
+        "allocator_calls": [],
+        "validated_plays": 269,
+        "registered_root": "0xb88dd0"
+      },
+      "trace": [
+        {
+          "pc": "0x281607",
+          "eax": "0x2"
+        }
+      ],
+      "faults": [],
+      "error": null,
+      "returned": true
+    },
+    {
+      "variant": "fixed",
+      "sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
+      "loader": {
+        "mode": 2,
+        "destination": "0xb88dd0",
+        "read_size": 78736,
+        "heap_delta": 0,
+        "allocator_calls": [],
+        "validated_plays": 269,
+        "registered_root": "0xb88dd0"
+      },
+      "trace": [
+        {
+          "pc": "0x281343",
+          "eax": "0x6"
+        },
+        {
+          "pc": "0x281607",
+          "eax": "0x1"
+        }
+      ],
+      "faults": [],
+      "error": null,
+      "returned": true
+    }
+  ]
+}

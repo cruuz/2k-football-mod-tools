@@ -1,0 +1,17 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ CaveReferenceTests.test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks _
+tests/mod_editor/test_xbe_patch_cave_references.py:602: in test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks
+    self.assertTrue(all(r.detail.split(":", 1)[0] in
+E   AssertionError: False is not true
+______ CaveReferenceTests.test_practice_squad_spans_preserve_stack_owners ______
+tests/mod_editor/test_xbe_patch_cave_references.py:496: in test_practice_squad_spans_preserve_stack_owners
+    self.assertEqual(hit.detail.split(':', 1)[0], arena.OWNER, hit)
+E   AssertionError: 'nfl2k5_franchise_economy' != 'nfl2k5_roster_arena_growth'
+E   - nfl2k5_franchise_economy
+E   + nfl2k5_roster_arena_growth
+E    : Evidence(start=4003359, end=4003370, source=None, kind='reserved', detail='nfl2k5_franchise_economy: declared edit: site', certainty='reserved')
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks
+FAILED tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_practice_squad_spans_preserve_stack_owners
+2 failed in 341.90s (0:05:41)

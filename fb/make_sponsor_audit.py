@@ -1,0 +1,22 @@
+"""Join the reviewed sn atlas ledger to the residual-only catalog."""
+import json,hashlib
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];B=ROOT.parent
+atlas=json.loads((B/'evidence/sponsor_atlases.json').read_text());design=json.loads((ROOT/'data/nfl2k5_stadium_shared_art/design.json').read_text())
+brands={0:'ESPN VIDEOGAMES; Visual Concepts; TEAM NFL; PLAY FOOTBALL; Coaches Association; PLAYERS INC; SEGA',2:'ESPN THE MAGAZINE / ESPN VIDEOGAMES (small publishing labels)',3:'Reebok vector remnant',4:'MOTOROLA; Visual Concepts',5:'MOTOROLA; Visual Concepts; Reebok',6:'Reebok; ESPN VIDEOGAMES',7:'ESPN VIDEOGAMES; Visual Concepts; Reebok',8:'MOTOROLA; Reebok',12:'MOTOROLA; ESPN VIDEOGAMES',13:'MOTOROLA',14:'Visual Concepts; ESPN VIDEOGAMES',15:'ESPN VIDEOGAMES; ESPN THE MAGAZINE; Reebok; MOTOROLA',16:'MOTOROLA; Visual Concepts; ESPN VIDEOGAMES; Reebok',17:'Visual Concepts; ESPN VIDEOGAMES',18:'Visual Concepts; PLAY FOOTBALL; ESPN THE MAGAZINE',19:'ESPN VIDEOGAMES; MOTOROLA',20:'Visual Concepts',21:'MOTOROLA; Reebok; ESPN THE MAGAZINE; ESPN VIDEOGAMES',22:'MOTOROLA; Visual Concepts',23:'ESPN VIDEOGAMES; Visual Concepts',24:'ESPN VIDEOGAMES; Reebok; Visual Concepts',25:'MOTOROLA; ESPN THE MAGAZINE; Reebok',26:'Visual Concepts',27:'Reebok; ESPN VIDEOGAMES',28:'MOTOROLA; Reebok',29:'ESPN VIDEOGAMES; Visual Concepts',30:'Visual Concepts; ESPN VIDEOGAMES',31:'ESPN THE MAGAZINE; Reebok; ESPN VIDEOGAMES; MOTOROLA',32:'ESPN THE MAGAZINE; Reebok; ESPN VIDEOGAMES; MOTOROLA',33:'MOTOROLA; Visual Concepts; ESPN VIDEOGAMES; Reebok',34:'MOTOROLA; PLAYERS INC; ESPN THE MAGAZINE',35:'ESPN VIDEOGAMES; MOTOROLA',36:'MOTOROLA; ESPN VIDEOGAMES',37:'ESPN THE MAGAZINE; Reebok; ESPN VIDEOGAMES; MOTOROLA',38:'MOTOROLA; Visual Concepts; ESPN VIDEOGAMES; Reebok',39:'MOTOROLA; PLAYERS INC; ESPN VIDEOGAMES; ESPN THE MAGAZINE'}
+lines=['PROVED OFFLINE: this audit joins sn\'s retail atlas hashes, the selected candidate E u4 manifests and the fb2 catalog. `sponsor_proof.json` checks the resulting stadium pixels and byte scopes with the production painter. E recipe visibility remains INFERRED; no game was run.','',
+'PROVED OFFLINE: the nine removed prep candidates are listed in `evidence/u4_sponsor_exclusions.json`. Baltimore ad03 and Tennessee ad_bb02 already carry new u4 team panels. Detroit sign01/sign03, Philadelphia sign01/sign02/sign03, and Tennessee banner01/ad_bb01 are already replaced by u4. Chicago and Cincinnati receive only the residual cells below.','',
+'DESIGN: replacement words follow the approved u4 sections 4c and 10d. This is the approved definition of obsolete NFL use, not a claim that every company has ceased to exist. No new sponsorship relationship is asserted.','',
+'| Evidence | Slot | Native P8 atlas | Remaining brand or promo | New plain type |','| --- | --- | --- | --- | --- |']
+ledger=[]
+for r in design['textures']:
+ a=next(a for a in atlas if a['sha']==r['source_rgba_sha256'])
+ old=brands[a['id']];new='; '.join(dict.fromkeys(o['text'].replace('\n',' ') or '(erase retired sublabel only)' for o in r['ops']))
+ evidence='INFERRED' if a['id']==2 else 'PROVED OFFLINE'
+ lines.append(f"| {evidence} | {r['venue']} | `{r['material']}` {r['size'][0]}x{r['size'][1]} | {old} | {new} |")
+ ledger.append(dict(evidence=evidence,venue=r['venue'],material=r['material'],retail_atlas_sha256=a['sha'],remaining=old,replacement=new,rects=r['rects'],source=str(a['source'])))
+lines+=['','INFERRED: Chicago\'s tiny upper ESPN publishing sublabel is consistent with THE MAGAZINE and the lower black cell with VIDEOGAMES. Native-resolution type does not permit a stronger transcription. Both map to the already-approved ESPN type panel. Cincinnati\'s surviving pixels are the top of the retired Reebok vector, above u4\'s y=88 rectangle; the complete existing PLAY 60 panel is extended upward to y=83.','',
+'PROVED OFFLINE: all 19 special slots have `stadium_only`, no league-mark targets, and no field items. s36\'s three `banner_*team/player` atlases in this table are corporate Visual Concepts/ESPN cloths, not new player or chant art. The ten board-kit venues have no fb2 manifest.','',
+'DESIGN: current-brand panels remain under the existing texture. The writer composites only the listed rectangles before P8 requantization. Event midfield and end-zone identities remain a separate decision in `EVENT_SLOTS.md`.']
+(ROOT/'fb/SPONSOR_AUDIT.md').write_text('\n'.join(lines)+'\n')
+(B/'evidence/residual_sponsor_ledger.json').write_text(json.dumps(ledger,indent=2)+'\n')

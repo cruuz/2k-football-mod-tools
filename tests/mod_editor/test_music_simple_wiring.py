@@ -98,8 +98,11 @@ class BuildHandoffTests(unittest.TestCase):
                 return {'steps': [], 'result': {}}
             verifier = Mock(return_value={'installed': False})
             namespace = function_namespace(sources['mod_editor/core/mod_build.py'], {'build', 'preflight_plan'}, vars(mod_build))
+            library = types.SimpleNamespace(revalidate_playlist=verifier)
+            # Keep non-music receipt readers on their real module contracts.
             namespace.update(_prepare_music_project=prepare, _build=build_private,
-                             _core_module=lambda name: types.SimpleNamespace(revalidate_playlist=verifier))
+                             _core_module=lambda name: library if name == "nfl2k5_music_banks"
+                             else mod_build._core_module(name))
             # Feedback is unrelated to the handoff's small synthetic image.
             from unittest.mock import patch
             image_kind = patch.object(namespace['tt'], 'is_disc_image', return_value=True)

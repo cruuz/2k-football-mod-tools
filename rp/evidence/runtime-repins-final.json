@@ -1,0 +1,12 @@
+[
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "before": "162922479d72e179a69c2962627d579c6040dd9c4886611408eba0ac927dd787",
+    "after": "6f8e51de69205b91a689f67f2ca634fdedb92cd3ca230ea5ebe2ffaefd130721"
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "before": "162922479d72e179a69c2962627d579c6040dd9c4886611408eba0ac927dd787",
+    "after": "6f8e51de69205b91a689f67f2ca634fdedb92cd3ca230ea5ebe2ffaefd130721"
+  }
+]

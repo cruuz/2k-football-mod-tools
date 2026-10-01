@@ -1,0 +1,8 @@
+test_live_checkbox_preview_undo_and_requested_row_edit (tests.mod_editor.test_apf_b71_situation_mask_qt.MaskQtTests.test_live_checkbox_preview_undo_and_requested_row_edit) ... ok
+test_named_books_keep_independent_masks_and_no_implicit_install (tests.mod_editor.test_apf_b71_situation_mask_qt.MaskQtTests.test_named_books_keep_independent_masks_and_no_implicit_install) ... ok
+test_v2_local_row_preview_decomposition_dependency_and_reset (tests.mod_editor.test_apf_b71_situation_mask_qt.MaskQtTests.test_v2_local_row_preview_decomposition_dependency_and_reset) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.052s
+
+OK

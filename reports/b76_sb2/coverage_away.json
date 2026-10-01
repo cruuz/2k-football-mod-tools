@@ -1,0 +1,44 @@
+{
+  "state": {
+    "away": "PHI",
+    "home": "CHI",
+    "away_score": 0,
+    "home_score": 7,
+    "away_timeouts": 3,
+    "home_timeouts": 3,
+    "quarter": 1,
+    "clock": 476,
+    "play_clock": 40,
+    "down": 1,
+    "distance": 10,
+    "possession": "away",
+    "event": "standard",
+    "goal_to_go": false,
+    "broadcast": "monday_night",
+    "home_record": [
+      2,
+      0,
+      0
+    ],
+    "away_record": [
+      1,
+      1,
+      0
+    ],
+    "season": "regular",
+    "phase": 4,
+    "previous_down": null,
+    "timeout_called": null
+  },
+  "colours": {
+    "plate": "0xff26636b",
+    "away_wing": "0xff1fb0c4",
+    "home_wing": "0xfffb6930",
+    "red": "0xffffffff",
+    "away_logo": "0xffffffff",
+    "home_logo": "0xffffffff"
+  },
+  "appended_bytes": 327904,
+  "runtime_witnessed": false,
+  "calibration_passed": false
+}

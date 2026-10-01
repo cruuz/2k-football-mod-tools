@@ -1,0 +1,207 @@
+test_assembly_reproduces_committed_code (tests.mod_editor.test_nfl2k5_calendar_engine.PureTests.test_assembly_reproduces_committed_code) ... Calendar engine template verified
+ok
+test_calendar_row_passes_real_validator_file_check_mode (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.HandoffTests.test_calendar_row_passes_real_validator_file_check_mode) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.114s
+
+OK
+test_giants_and_jets_are_skipped_and_bad_items_refuse (tests.mod_editor.test_nfl2k5_modern_venues_2026.ContractTests.test_giants_and_jets_are_skipped_and_bad_items_refuse) ... ok
+test_league_marks_load_from_the_art_root (tests.mod_editor.test_nfl2k5_modern_venues_2026.ContractTests.test_league_marks_load_from_the_art_root) ... ok
+test_slots_become_rects_and_hashes_are_checked (tests.mod_editor.test_nfl2k5_modern_venues_2026.ContractTests.test_slots_become_rects_and_hashes_are_checked) ... ok
+test_clean_turf_fills_marks_and_flattens_patterns (tests.mod_editor.test_nfl2k5_modern_venues_2026.HelperTests.test_clean_turf_fills_marks_and_flattens_patterns) ... ok
+test_compose_keeps_pixels_outside_the_rects (tests.mod_editor.test_nfl2k5_modern_venues_2026.HelperTests.test_compose_keeps_pixels_outside_the_rects) ... ok
+test_export_key_and_names (tests.mod_editor.test_nfl2k5_modern_venues_2026.HelperTests.test_export_key_and_names) ... ok
+test_league_art_replaces_only_its_rect (tests.mod_editor.test_nfl2k5_modern_venues_2026.HelperTests.test_league_art_replaces_only_its_rect) ... ok
+test_letterbox_keeps_aspect_and_clears_the_sides (tests.mod_editor.test_nfl2k5_modern_venues_2026.HelperTests.test_letterbox_keeps_aspect_and_clears_the_sides) ... ok
+test_a_bundle_refit_changes_only_the_planned_textures (tests.mod_editor.test_nfl2k5_modern_venues_2026.RetailTests.test_a_bundle_refit_changes_only_the_planned_textures) ... ok
+test_same_building_venues_take_their_2026_names_and_nothing_else_moves (tests.mod_editor.test_nfl2k5_modern_venues_2026.RetailTests.test_same_building_venues_take_their_2026_names_and_nothing_else_moves) ... ok
+test_the_packs_read_as_retail (tests.mod_editor.test_nfl2k5_modern_venues_2026.RetailTests.test_the_packs_read_as_retail) ... ok
+test_the_resolver_reproduces_the_table (tests.mod_editor.test_nfl2k5_modern_venues_2026.RetailTests.test_the_resolver_reproduces_the_table) ... ok
+test_bundle_states_from_site_hashes_and_the_receipt (tests.mod_editor.test_nfl2k5_modern_venues_2026.StateTests.test_bundle_states_from_site_hashes_and_the_receipt) ... ok
+test_kansas_city_fallback_is_arrowheads_art_without_the_yard_markers (tests.mod_editor.test_nfl2k5_modern_venues_2026.TableTests.test_kansas_city_fallback_is_arrowheads_art_without_the_yard_markers) ... ok
+test_names_rename_only_same_building_venues (tests.mod_editor.test_nfl2k5_modern_venues_2026.TableTests.test_names_rename_only_same_building_venues) ... ok
+test_the_known_variant_oddities_are_mapped (tests.mod_editor.test_nfl2k5_modern_venues_2026.TableTests.test_the_known_variant_oddities_are_mapped) ... ok
+test_the_league_sponsor_sheet_reaches_every_home_venue (tests.mod_editor.test_nfl2k5_modern_venues_2026.TableTests.test_the_league_sponsor_sheet_reaches_every_home_venue) ... ok
+test_the_table_covers_every_home_venue_but_the_giants_and_jets (tests.mod_editor.test_nfl2k5_modern_venues_2026.TableTests.test_the_table_covers_every_home_venue_but_the_giants_and_jets) ... ok
+test_compacted_image_uses_retained_venue_sidecar (tests.mod_editor.test_nfl2k5_model_fan_art.ExportReceipt.test_compacted_image_uses_retained_venue_sidecar) ... ok
+test_standalone_model_does_not_fabricate_venue_ownership (tests.mod_editor.test_nfl2k5_model_fan_art.ExportReceipt.test_standalone_model_does_not_fabricate_venue_ownership) ... ok
+test_each_writer_requires_a_matching_composed_span_receipt (tests.mod_editor.test_nfl2k5_model_fan_art.ModelStatus.test_each_writer_requires_a_matching_composed_span_receipt) ... ok
+test_neutral_event_slot_does_not_take_a_club_banner (tests.mod_editor.test_nfl2k5_model_fan_art.Receipt.test_neutral_event_slot_does_not_take_a_club_banner) ... ok
+test_recognizes_each_pinned_model_variant (tests.mod_editor.test_nfl2k5_model_fan_art.Receipt.test_recognizes_each_pinned_model_variant) ... ok
+test_tampered_bytes_parent_span_and_schema_refuse (tests.mod_editor.test_nfl2k5_model_fan_art.Receipt.test_tampered_bytes_parent_span_and_schema_refuse) ... ok
+test_unknown_parent_model_is_rejected_before_any_archive_write (tests.mod_editor.test_nfl2k5_model_fan_art.Receipt.test_unknown_parent_model_is_rejected_before_any_archive_write) ... ok
+test_unselected_art_keeps_exact_model_output (tests.mod_editor.test_nfl2k5_model_fan_art.Receipt.test_unselected_art_keeps_exact_model_output) ... ok
+test_any_three_in_a_row_show_the_screen_and_an_exterior (tests.mod_editor.test_nfl2k5_sofi_model.Cameras.test_any_three_in_a_row_show_the_screen_and_an_exterior) ... ok
+test_every_shot_wants_what_its_camera_can_carry (tests.mod_editor.test_nfl2k5_sofi_model.Cameras.test_every_shot_wants_what_its_camera_can_carry) ... ok
+test_eyes_stay_in_the_open_and_the_screen_shots_see_the_screen (tests.mod_editor.test_nfl2k5_sofi_model.Cameras.test_eyes_stay_in_the_open_and_the_screen_shots_see_the_screen) ... ok
+test_no_flare_marker_is_in_any_flyover_shot (tests.mod_editor.test_nfl2k5_sofi_model.Cameras.test_no_flare_marker_is_in_any_flyover_shot)
+xemu draws a flare marker's lens flare through the canopy, so no shot may have one in its frustum. ... ok
+test_the_super_bowl_camera_shows_the_screen (tests.mod_editor.test_nfl2k5_sofi_model.Cameras.test_the_super_bowl_camera_shows_the_screen)
+The s40 bundles carry one intro camera with every component, whose angle channels do not play as the s23/s24 ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_sofi_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s23_and_s24_to_sofi (tests.mod_editor.test_nfl2k5_sofi_model.Composition.test_the_venue_art_leaves_s23_and_s24_to_sofi) ... ok
+test_recolour_moves_team_colours_and_keeps_skin (tests.mod_editor.test_nfl2k5_sofi_model.Crowd.test_recolour_moves_team_colours_and_keeps_skin) ... ok
+test_end_zone_halves (tests.mod_editor.test_nfl2k5_sofi_model.FieldArt.test_end_zone_halves)
+Each panel: the south end (the team) in the top half, the north end (LOS ANGELES) in the bottom half. ... ok
+test_midfield_quads_follow_the_marks (tests.mod_editor.test_nfl2k5_sofi_model.FieldArt.test_midfield_quads_follow_the_marks) ... ok
+test_aisles_cut_the_crowd_over_the_texture_steps (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_aisles_cut_the_crowd_over_the_texture_steps)
+An aisle at both ends of every straight and corner, sections of 11 to 18 m, symmetric about each end zone and ... ok
+test_bowl_below_grade_and_canopy_height (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_bowl_below_grade_and_canopy_height)
+The field is 30.5 m (100 ft) below grade; the canopy rises about 53 m above grade (174 ft). ... ok
+test_budget (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_budget) ... ok
+test_crowd_uv_convention (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_crowd_uv_convention) ... ok
+test_feed_windows_show_the_feed_uncut_and_unstretched (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_feed_windows_show_the_feed_uncut_and_unstretched)
+Every jumbo_tron quad samples inside the feed's 16:9 crop of the render target (u 0 to 0.625, v 0.109 to ... ok
+test_field_wall_clears_the_sideline_props_and_the_broadcast_eye (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_field_wall_clears_the_sideline_props_and_the_broadcast_eye) ... ok
+test_infinity_screen_size_and_height (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_infinity_screen_size_and_height)
+The ring spans 120 yards along the field, its bottom 120 ft above it, the inner board 40 ft tall. ... ok
+test_markers_positions (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_markers_positions)
+The glow markers keep their records but no longer register glows; the flares ride the light ring; the ... ok
+test_screen_panels_and_light_banks_are_not_stretched (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_screen_panels_and_light_banks_are_not_stretched)
+The team panels tile at their art's own aspect along the ring, and each light bank shows its 2:1 LED ... ok
+test_the_ribbons_read_left_to_right_from_the_field (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_the_ribbons_read_left_to_right_from_the_field)
+U grows with the loop, which runs to the right of a viewer at midfield facing any stand. ... ok
+test_the_score_strip_sits_beside_the_outer_windows (tests.mod_editor.test_nfl2k5_sofi_model.Geometry.test_the_score_strip_sits_beside_the_outer_windows)
+The game's score and clock digits (adjust_digits: a strip from 10.3 to 26.8 m from each long side's middle ... ok
+test_compiled_stretches_equal_their_pins (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_compiled_stretches_equal_their_pins)
+With the committed screen panels always; with the private portrait panels when they are present. ... ok
+test_field_fits_and_splits (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_field_fits_and_splits) ... ok
+test_official_colours_survive_modern_colour (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_official_colours_survive_modern_colour)
+Modern colour's end-zone pass would move the Rams' sol #FFD100 toward lemon; the painted marks keep theirs. ... ok
+test_one_turf_for_both_records (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_one_turf_for_both_records)
+The Chargers' field lays the Rams' (dome) turf, surround and numbers, and the dome's detail normal map. ... ok
+test_the_camera_table_matches_the_retail_scenes (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_camera_table_matches_the_retail_scenes) ... ok
+test_the_kept_banners_carry_the_2026_league_cloths (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_kept_banners_carry_the_2026_league_cloths)
+banner_corp takes u4's 2026 league sheet in every bundle (st's method): the SEGA cloth's cell changes, rain ... ok
+test_the_super_bowl_field (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_super_bowl_field)
+s40: the LXI mark at midfield and the NFL shield on both 25s, each quad at its art's true proportions, the ... ok
+test_nothing_private_is_released (tests.mod_editor.test_nfl2k5_sofi_model.PrivatePortraits.test_nothing_private_is_released) ... ok
+test_the_build_falls_back_without_the_private_panels (tests.mod_editor.test_nfl2k5_sofi_model.PrivatePortraits.test_the_build_falls_back_without_the_private_panels) ... ok
+test_the_committed_panels_are_the_art_manifest_s (tests.mod_editor.test_nfl2k5_sofi_model.PrivatePortraits.test_the_committed_panels_are_the_art_manifest_s) ... ok
+test_the_pinned_private_panels_are_used (tests.mod_editor.test_nfl2k5_sofi_model.PrivatePortraits.test_the_pinned_private_panels_are_used) ... skipped 'the private portrait panels are not hydrated'
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_sofi_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... /media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_concourse.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_facade.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_glass.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_lights.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s23.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s24.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s40.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s23.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s24.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s40.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s23_endzone_L.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s23_endzone_M.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s23_endzone_R.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s23_midfield.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s24_endzone_L.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s24_endzone_M.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s24_endzone_R.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s24_midfield.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s40_midfield.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/field/s40_shield.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_alu.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_concrete.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_dark.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_etfe_top_d.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_etfe_top_n.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_etfe_under_d.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_etfe_under_n.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_ground.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_letters.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_letters_screen.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_plaza.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_portal.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_seat.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_sky_a.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_sky_d.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_sky_n.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_sky_o.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_water.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_sofi_model.py:420: ResourceWarning: unclosed file <_io.BufferedReader name='/media/noah/Storage/.b76-research/ev/work/data/nfl2k5_sofi_model/art/sf_white.png'>
+  self.assertEqual((row["width"], row["height"]), Image.open(png).size, rel)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 59 tests in 331.209s
+
+OK (skipped=1)
+MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=207

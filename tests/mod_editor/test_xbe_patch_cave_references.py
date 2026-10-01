@@ -360,7 +360,24 @@ class CaveReferenceTests(unittest.TestCase):
         # callbacks at their independently referenced entries, and include
         # retained byte islands so their displaced branches remain internal.
         from mod_editor.core import nfl2k5_scorebar_v3 as v3
-        spans=[(va,va+len(old),old,new) for va,old,new,_ in v3.xbe_specs() if va<0x4e0000]
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        spans = []
+        for va, old, new, _ in v3.xbe_specs():
+            if va >= 0x4e0000:
+                continue
+            if va == 0xfc050:
+                # SB3 pins the two 32-byte score callbacks in one write. Their
+                # retail table entries still call both starts independently;
+                # the second entry is not an interior reference into a cave.
+                self.assertEqual((len(old), len(new)), (64, 64))
+                for offset, pointer in ((0, 0xa9594c), (32, 0xa95984)):
+                    entry = va + offset
+                    for payload in (self.retail, self.patched):
+                        self.assertEqual(struct.unpack('<I', XbeImage(payload).read(pointer, 4))[0], entry)
+                    self.assertIn(entry, self.targets)
+                    spans.append((entry, entry+32, old[offset:offset+32], new[offset:offset+32]))
+            else:
+                spans.append((va, va+len(old), old, new))
         corrected=set()
         for a,b in ranges:
             cursor=a
@@ -478,6 +495,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
         from mod_editor.core import nfl2k5_practice_squad as ps
         from mod_editor.core import nfl2k5_roster_arena_growth as arena
+        from mod_editor.core import nfl2k5_roster_fill_composition as fill
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         retail = XbeImage(self.retail)
         stack = XbeImage(self.stack)
@@ -493,6 +511,11 @@ class CaveReferenceTests(unittest.TestCase):
         for start, size, _ in ps.CAVES:
             overlaps = manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad')
             for hit in overlaps:
+                # b76-fc3: the economy chained with the squad at 0x322BB0 continues inside the squad's cave (the
+                # roster-fill composition's CHAIN); its owners are the composition and the economy, on exactly that span.
+                if hit.detail.split(':', 1)[0] in ('nfl2k5_franchise_economy', 'nfl2k5_roster_fill_composition'):
+                    self.assertTrue(fill.CONTINUATION <= hit.start < hit.end <= fill.CONTINUATION + len(fill.CHAIN), hit)
+                    continue
                 self.assertEqual(hit.detail.split(':', 1)[0], arena.OWNER, hit)
                 matching = [(va, name, before, after) for va, (name, before, after) in bridges.items()
                             if va <= hit.start < hit.end <= va + len(before)]
@@ -587,6 +610,7 @@ class CaveReferenceTests(unittest.TestCase):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 
     def test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks(self) -> None:
+        from mod_editor.core import nfl2k5_anniversary_kickoff as anniversary
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
@@ -599,8 +623,9 @@ class CaveReferenceTests(unittest.TestCase):
             va, original = kickoff.HOOKS[name]
             overlaps = manifest.overlaps(va, va + len(original))
             self.assertTrue(overlaps)
+            # b76-vb3: the 25th Anniversary kickoff gate owns these hooks too (it chains through them)
             self.assertTrue(all(r.detail.split(":", 1)[0] in
-                                ("nfl2k5_dynamic_kickoff", relocated.OWNER) for r in overlaps))
+                                ("nfl2k5_dynamic_kickoff", relocated.OWNER, anniversary.OWNER) for r in overlaps))
             self.assertEqual(sum(i.size for i in Cs(CS_ARCH_X86, CS_MODE_32).disasm(original, va)),
                              len(original))
             self.assertEqual(image.read(va, len(original)), kickoff._hook_bytes(name, labels))
@@ -831,16 +856,24 @@ class ScorebugReferenceReservations(unittest.TestCase):
             section=image.section(va,len(new))
             if section is not None and section.name == ".text":
                 from mod_editor.core import nfl2k5_scorebar_v3 as v3
-                if va in (v3.VISIBILITY_VA, 0xfc010, 0xfc030, 0xfbe30, 0xfc285, 0xfc305):
+                if va in (v3.VISIBILITY_VA, 0xfc010, 0xfc030, 0xfc050, 0xfc090, 0xfbe30, 0xfc285, 0xfc305):
                     # Complete live instruction spans, never an allocation in
                     # padding. Every new branch has a native or owned target.
                     offset=scorebug.layout.sbpos.va_to_off(retail,va)
                     self.assertEqual(retail[offset:offset+len(old)],old)
+                    self.assertEqual(patched[offset:offset+len(new)],new)
                     self.assertEqual(len(old),len(new))
                     insns=list(md.disasm(new,va))
                     self.assertEqual(sum(i.size for i in insns),len(new))
                     native={0xabe90,0x30ab0,0x30f20,0x68d70,0x68dc0,0x61c50,0x61c60,0xfbb10,0xfbe4e,0x4a400}
                     starts={i.address for i in md.disasm(v3.VISIBILITY_CODE,v3.VISIBILITY_VA)}
+                    # SB3 compacts the pinned score/quarter spans and places
+                    # its timeout helper there. Accept only decoded starts
+                    # within those exact owned spans, not arbitrary addresses.
+                    for start, code in ((0xfc050, v3.SCORES_CODE), (0xfc090, v3.QUARTER_CODE)):
+                        decoded = list(md.disasm(code, start))
+                        self.assertEqual(sum(i.size for i in decoded), len(code))
+                        starts.update(i.address for i in decoded)
                     starts.update(i.address for i in insns)
                     for ins in insns:
                         if ins.mnemonic.startswith('j') or ins.mnemonic=='call':

@@ -32,10 +32,16 @@ static NOINLINE u32 index_of(u8 *p) {
 #define RSV_COUNT 0x1f2
 #define RSV_MAGIC 0x1f3
 #include "storage.h"
+/* Display teams (all-star aliases: index 32 and up unless category 2 or 4, as listed() has it) own nobody. After a
+ * season the AFC and NFC all-star teams keep stale players past their 40 active, which reserve_count() reads as a
+ * corrupt team; walking them made owner() answer "owned" for every player and every guarded append refuse (vb1 on
+ * Noah's MyNFL2: MyCareer's Enter the Draft fell back to the main menu). */
+static NOINLINE int franchise_team(u32 i,u8 *t) { return i<32 || U32(t,0x128)==2 || U32(t,0x128)==4; }
 static NOINLINE u8 *owner(u32 id) {
     u8 *r=ROOT,*t=(u8 *)U32(r,0x1c); u32 i,j; int n;
     if(!r || U32(r,0x18)>128) return (u8 *)1;
     for(i=0;i<U32(r,0x18);i++,t+=500) {
+        if(!franchise_team(i,t)) continue;
         n=reserve_count(t);
         if(n<0) return (u8 *)1;
         for(j=0;j<(u32)n;j++) if(index_of((u8 *)slot(t,B(t,ACTIVE)+j))==id) return t;

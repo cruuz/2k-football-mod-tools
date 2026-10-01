@@ -1,0 +1,285 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_e",
+      "path": [
+        [
+          -23.465,
+          -76.998
+        ],
+        [
+          23.465,
+          -75.842
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 46.33,
+      "y": [
+        32.26,
+        44.3
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_en",
+      "path": [
+        [
+          -41.818,
+          -77.45
+        ],
+        [
+          -23.795,
+          -77.006
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 17.983,
+      "y": [
+        37.788,
+        41.75
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_es",
+      "path": [
+        [
+          23.795,
+          -75.834
+        ],
+        [
+          41.818,
+          -75.39
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 17.983,
+      "y": [
+        37.788,
+        41.75
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_w",
+      "path": [
+        [
+          -23.465,
+          76.929
+        ],
+        [
+          23.465,
+          75.586
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 46.33,
+      "y": [
+        32.26,
+        44.3
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_wn",
+      "path": [
+        [
+          -41.818,
+          77.455
+        ],
+        [
+          -23.795,
+          76.939
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 17.983,
+      "y": [
+        37.788,
+        41.75
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 1.2,
+      "name": "bk_board_ws",
+      "path": [
+        [
+          23.795,
+          75.576
+        ],
+        [
+          41.818,
+          75.06
+        ]
+      ],
+      "structure": {
+        "colour": [
+          34,
+          36,
+          40
+        ],
+        "depth": 1.06,
+        "material": "cement01"
+      },
+      "width": 17.983,
+      "y": [
+        37.788,
+        41.75
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -16.0,
+          16.0
+        ],
+        "y": [
+          39.5,
+          48.0
+        ],
+        "z_abs": [
+          73.0,
+          76.0
+        ]
+      },
+      "materials": [
+        "sign01",
+        "sign02"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "digits2"
+    }
+  ],
+  "env": null,
+  "help": "the 2017 boards, 152 x 39.5 ft, and their flanking displays",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_e",
+    "jumboMarkerBShape": "bk_board_w"
+  },
+  "name": "Ford Field",
+  "replace": [
+    {
+      "keep": [],
+      "shape": "group126"
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Daktronics, 'Detroit Lions To Enhance The Roar At Ford Field With New Daktronics Video System' (2017; Sports Video Group ran it on 2017-02-28, 'New Daktronics LED Video Displays Enhance Ford Field'): 'In each end zone, the main video displays will be more than twice the size of the existing displays'; 'Each main display will measure 39.5 feet high by 152 feet wide'; 'Flanking the main displays, four additional displays will measure 13 feet high by 59 feet wide'. The four displays 'mounted to the back of the main displays' have no published size and are not built.",
+    "Wikipedia, Ford Field: 'The majority of suites at Ford Field are located in the Hudson Warehouse along the stadium's southern sideline'; the end zones are in the east and the west. The retail s09 scene (PROVED OFFLINE) carries the suite rows (LIGHT_boxseat01, upperbox01 and upperbox02) on +x and the upper deck on -x, so +x is south and -z east (the frame st2 and st3 fixed at Acrisure Stadium and Huntington Bank Field).",
+    "The retail s09 scene (PROVED OFFLINE): each old board is an 18.9 x 7.4 m feed quad (digits2, jumbo_tron) at y 40.0 to 47.5, z -75.13 (east) and +73.67 (west), in a sign01 surround with sign02 strips (group126 at the east end, upper_deck and the sign02 faces of group38 and group40 at the west), hung in front of the roof truss (ibeam01), whose bottom chord runs at y 42.0 on a line about 1.5 degrees off square (x -51.5 to 38.6, z -77.76 to -75.54 at the east end; z 77.71 to 75.13 at the west). The score, clock and play-clock digits are on the fascias at y 19 (digits1, digits2) and stay, as the 2025 photo's ribbon shows them.",
+    "Commons, '2025 MAC Championship Game Ford Field.jpg' (2025-12-06, from behind one end zone; Commons '2020 Packers at Lions' (50715608723) shows both ends alike): the far end's boards, with the far crossbar (18.5 ft) for scale, stand 137 m from the camera, the old boards' plane 75 m from midfield. On the photo's own scale the main board spans 29.2 to 41.5 m and the flanking displays 34.7 to 39.0 m, beside the main board's upper part with their tops on a horizontal truss member; the same scale puts the retail fascia digits (19.0 m) at 16.1 m, so it reads about 2.9 m low against the retail model: main 32.1 to 44.4 m, flanking 37.6 to 41.9 m (INFERRED). The stadium's name stands on top of each main board in blue letters.",
+    "DESIGN: each end's flanking displays hang from the retail truss's bottom chord (their frames' tops at 42.0 m), 0.15 m beside the main board, which rises 2.55 m higher on the truss's face (as the retail 2002 board overlapped the chord): main 32.26 to 44.30 m, flanking 37.79 to 41.75 m, all square to the chord line, their bodies back to the truss's plane. Frames and bodies are the plain retail cement (cement01) at a steel dark, with no stretched frame texture on the backs. The name letters on top, the back displays and the static sponsor signs outboard of the flanking displays are not built."
+  ],
+  "team": "DET",
+  "venue": "s09"
+}

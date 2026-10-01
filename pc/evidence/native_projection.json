@@ -1,0 +1,343 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runtime_witnessed": false,
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "shift": 54.0,
+  "scene_sources": [
+    {
+      "chunk": 83,
+      "decoded_sha256": "c5328ee5baa02b8a3170ae20170cf74088c51cd325903c1f3e60f217d9f1db59",
+      "decoded_size": 19584,
+      "nodes": [
+        "o_1",
+        "o_2",
+        "o_3",
+        "o_form"
+      ],
+      "anchors": {
+        "o_1": [
+          "joint_o_1",
+          "icon_o_1",
+          "text_playname_o_1",
+          "playarea_o_1_UL",
+          "playarea_o_1_LR",
+          "text_receivername_o_1"
+        ],
+        "o_2": [
+          "joint_o_2",
+          "icon_o_2",
+          "text_playname_o_2",
+          "playarea_o_2_UL",
+          "playarea_o_2_LR",
+          "text_receivername_o_2"
+        ],
+        "o_3": [
+          "joint_o_3",
+          "icon_o_3",
+          "text_playname_o_3",
+          "playarea_o_3_UL",
+          "playarea_o_3_LR",
+          "text_formationname_o",
+          "text_page_o",
+          "text_flip_o",
+          "text_receivername_o_3"
+        ],
+        "o_form": [
+          "joint_o_form",
+          "icon_o_form",
+          "text_formationname_o_form",
+          "playarea_o_form_UL",
+          "playarea_o_form_LR",
+          "text_flip_o_form",
+          "text_page_o_form",
+          "text_subs_o_form",
+          "text_coachpick_o_form"
+        ]
+      }
+    },
+    {
+      "chunk": 84,
+      "decoded_sha256": "862ffa7f58030004da761bd2d04cbacb07f889b3d1c098fa6e2f0365ac4262f3",
+      "decoded_size": 17792,
+      "nodes": [
+        "d_1",
+        "d_2",
+        "d_3",
+        "d_form"
+      ],
+      "anchors": {
+        "d_1": [
+          "joint_d_1",
+          "icon_d_1",
+          "text_playname_d_1",
+          "playarea_d_1_UL",
+          "playarea_d_1_LR"
+        ],
+        "d_2": [
+          "joint_d_2",
+          "icon_d_2",
+          "text_playname_d_2",
+          "playarea_d_2_UL",
+          "playarea_d_2_LR"
+        ],
+        "d_3": [
+          "joint_d_3",
+          "icon_d_3",
+          "text_playname_d_3",
+          "playarea_d_3_UL",
+          "playarea_d_3_LR",
+          "text_formationname_d",
+          "text_page_d",
+          "text_flip_d"
+        ],
+        "d_form": [
+          "joint_d_form",
+          "icon_d_form",
+          "text_formationname_d_form",
+          "playarea_d_form_UL",
+          "playarea_d_form_LR",
+          "text_flip_d_form",
+          "text_page_d_form",
+          "text_subs_d_form",
+          "text_coachpick_d_form"
+        ]
+      }
+    },
+    {
+      "chunk": 86,
+      "decoded_sha256": "1e3b984af5838d11ee67a1a5b28e4294a97d901f84afcea87e00ed66ec298c79",
+      "decoded_size": 17024,
+      "nodes": [
+        "coach_pick_d_1",
+        "coach_pick_d_2",
+        "coach_pick_d_3",
+        "coach_pick_o_1",
+        "coach_pick_o_2",
+        "coach_pick_o_3"
+      ],
+      "anchors": {
+        "coach_pick_d_1": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ],
+        "coach_pick_d_2": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ],
+        "coach_pick_d_3": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ],
+        "coach_pick_o_1": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ],
+        "coach_pick_o_2": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ],
+        "coach_pick_o_3": [
+          "root",
+          "coach_circle",
+          "End_circle"
+        ]
+      }
+    }
+  ],
+  "phases": [
+    0.0,
+    0.08333333333333333,
+    0.16666666666666666,
+    0.3333333333333333,
+    0.5,
+    1.0
+  ],
+  "matrix_samples": 450,
+  "max_matrix_error": 1.52587890625e-05,
+  "menu_camera": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    16794.009765625,
+    0.0,
+    40.0,
+    16.0,
+    -16794.009765625,
+    1.0
+  ],
+  "menu_target": [
+    40.0,
+    16.0,
+    0.0,
+    0.0,
+    680.0,
+    464.0,
+    1.0,
+    0.0
+  ],
+  "cameras": [
+    {
+      "camera": "0xb38c50",
+      "before": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -16793.16796875,
+        0.0,
+        360.0,
+        240.0,
+        10059947.0,
+        1.0
+      ],
+      "after": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -16793.16796875,
+        0.0,
+        360.0,
+        186.0,
+        10059947.0,
+        1.0
+      ]
+    },
+    {
+      "camera": "0xb719d0",
+      "before": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -16793.16796875,
+        0.0,
+        360.0,
+        240.0,
+        10059947.0,
+        1.0
+      ],
+      "after": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -16793.16796875,
+        0.0,
+        360.0,
+        186.0,
+        10059947.0,
+        1.0
+      ]
+    }
+  ],
+  "viewports": [
+    {
+      "mode": 0,
+      "before": [
+        40.0,
+        16.0,
+        0.0,
+        0.0,
+        680.0,
+        464.0,
+        1.0,
+        0.0
+      ],
+      "after": [
+        40.0,
+        16.0,
+        0.0,
+        0.0,
+        680.0,
+        464.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "mode": 1,
+      "before": [
+        315.20001220703125,
+        80.06400299072266,
+        0.0,
+        0.0,
+        648.0,
+        271.3599853515625,
+        1.0,
+        0.0
+      ],
+      "after": [
+        315.20001220703125,
+        26.064002990722656,
+        0.0,
+        0.0,
+        648.0,
+        217.3599853515625,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "mode": 2,
+      "before": [
+        65.5999984741211,
+        266.8800048828125,
+        0.0,
+        0.0,
+        398.3999938964844,
+        464.0,
+        1.0,
+        0.0
+      ],
+      "after": [
+        65.5999984741211,
+        212.8800048828125,
+        0.0,
+        0.0,
+        398.3999938964844,
+        410.0,
+        1.0,
+        0.0
+      ]
+    }
+  ],
+  "initializer_bytes": 129,
+  "limits": "CPU projection; GPU raster, live state selection and transitions require candidate G"
+}

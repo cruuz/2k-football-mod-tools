@@ -601,11 +601,25 @@ def xbe_status(payload: bytes, *, scorebug_folder=_AUTO) -> str:
             version == scene_version(scorebug_folder=scorebug_folder) else "foreign")
 
 
+@lru_cache(maxsize=1)
+def shared_fields():
+    """In-place fields another owner writes inside these guards, each recognized whole: the 2026 menu colour rows of
+    nfl2k5_team_names_2026 (job u3) in the retail team colour table that scorebar v3 reads. A row counts only when all
+    of its bytes are the pinned 2026 value, so a partial or foreign row still fails the guard. Where the names module
+    or its pinned data is absent (a bundle without them), nothing extra is recognized: the guard stays retail-only."""
+    try:
+        from . import nfl2k5_team_names_2026 as names
+        sites = names.xbe_sites()
+    except (ImportError, OSError, ValueError):
+        return ()
+    return tuple((va, before, after, label) for label, va, before, after in sites if label.startswith("menu_colours."))
+
+
 def guard_bytes(payload, va, size):
     """Normalize only individually recognized in-place fields in native guards."""
     off = layout.sbpos.va_to_off(payload, va)
     body = bytearray(payload[off:off + size])
-    for address, old, new, _label in xbe_specs():
+    for address, old, new, _label in (*xbe_specs(), *shared_fields()):
         if va <= address and address + len(old) <= va + size:
             at = address - va
             if body[at:at + len(new)] == new:
@@ -668,7 +682,7 @@ def animation_catalogue(payload: bytes) -> dict:
     return {"evidence":"PROVED file data and pinned native code; UNWITNESSED in game",
             "elements":records,"score_phase_rate":read(0x4f6964,"<f")[0],
             "score_phase_words":["0xa95978","0xa959b0"],"score_rotation_code":["0xfd2f0","0xfd416"],
-            "score_flash_color":False,"down_refresh_each_new_down":False,"timeout_dimming":False,
+            "score_flash_color":False,"down_refresh_each_new_down":False,"timeout_dimming":xbe_version(payload) == VERSION,
             "under_5_color":False,"drop_yellow_label":"FLAG","drop_red_label":"FUMBLE"}
 
 
@@ -699,7 +713,7 @@ def image_plan(fd: int, size: int, *, scorebug_folder=None):
     return jobs, {"layout":scene_version(scorebug_folder=scorebug_folder),"experimental":True,"witnessed":False,"state_before":states[0],
                   "root":list(ROOT),"textures":["score_buga"],"resources":receipts,"xbe":xr,
                   "wrapper_identical":all(r["wrapper_identical"] for r in receipts),
-                  "runtime_team_logos":False,"timeout_dimming":False,"under_5_color":False,
+                  "runtime_team_logos":False,"timeout_dimming":scorebug_folder is None,"under_5_color":False,
                   "team_material_hook":dict(TEAM_MATERIAL_HOOK),
                   **({"template":compiled.receipt} if compiled is not None else {}),
                   "animation":"retail score rotation and native text visibility; cells remain inside the frame"}
@@ -937,6 +951,18 @@ def runtime_image_status(path, *, probe="sprite", scorebug_folder=None):
                 hud = disc.read_entry_range(entry, 0, entry.size)
                 if (digest(hud[:resources.HUD_SIZE]) == resources.RUNTIME_PINS["hud_after"]
                         and digest(hud[resources.HUD_SIZE:]) == resources.RUNTIME_PINS["appendix"]):
+                    resource_state = "applied"
+        if resource_state == "foreign" and xbe_state == "applied" and probe == "sprite":
+            # b76 c1 (u1 F4): an owner that grows pack 0 after the sprite (the Guardian overlay appends to outer 3)
+            # moves outer 346 and changes the pack's size, so the pack-0 view above cannot see the install. Resolve
+            # the outer through the validated archive, as the full probe does with its hud_after pin, and keep the
+            # sprite's own pins: the retail HUD (hud_before; the ESPN presentation marks allowed) and this layout's
+            # exact appended resources. Inspection only: runtime_image_plan still installs on the pack-0 view.
+            from . import nfl2k5_music_archive as archive, nfl2k5_scorebug_sprite as sprite
+            with archive.Disc(path, descriptors=()) as disc:
+                entry = disc.archive_entries[resources.HUD_OUTER_INDEX]
+                if entry.name_id == 11965036 and sprite.gamedata_status(
+                        lambda count, at: disc.read_entry_range(entry, at, count), entry.size, scorebug_folder) == "applied":
                     resource_state = "applied"
         return resource_state if resource_state == xbe_state else "foreign"
     except MissingDependency as exc:

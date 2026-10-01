@@ -1,0 +1,20 @@
+[
+  {
+    "file": "original-beta60.2k5patch",
+    "source_commit": "b8d55f4f2b9a50c2433efa52c3565f61a99c2108",
+    "base_fixture": "original-base.iso.zlib",
+    "result_fixture": "original-beta60-result.iso.zlib",
+    "base_sha256": "0872a01aaad494e4512a2ae3e82d0812114b7282de302fb77501a3134b7665ef",
+    "result_sha256": "41a6550115dd2c1965ffb08eab68985ed5a6a4aa5ae4d8544d6eb5b894a29619",
+    "pack_sha256": "b90d70f4ec6fa4095d281f683eafd3116f34258fe76d3b8d50f3530b2f62a305"
+  },
+  {
+    "file": "original-beta61.2k5patch",
+    "source_commit": "75b7b2ac51a88ecf9581a9f316a28fa9919e8b1c",
+    "base_fixture": "original-base.iso.zlib",
+    "result_fixture": "original-beta61-result.iso.zlib",
+    "base_sha256": "0872a01aaad494e4512a2ae3e82d0812114b7282de302fb77501a3134b7665ef",
+    "result_sha256": "b25f63581e39b5151c2c17983b2ac6b9973ceb5f1341c73c552b14e82bbbe947",
+    "pack_sha256": "ef598da0ab24afb853590b4bb850ea2e73cbb94104dbef35568a664f4dacadfc"
+  }
+]

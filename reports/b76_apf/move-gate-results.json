@@ -1,0 +1,23 @@
+{
+  "classification": "PROVED OFFLINE",
+  "cpu_affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "rss_guard_kib": 1350000,
+  "cases": [
+    {
+      "test": "tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_feedback_quantization_partial_charge_and_discharge_interpolation",
+      "returncode": 0,
+      "tree_peak_rss_kib": 427596,
+      "rss_guard_killed": false,
+      "log": "reports/b76_apf/move-gate-final.log"
+    }
+  ]
+}

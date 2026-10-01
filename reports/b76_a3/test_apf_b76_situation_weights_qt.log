@@ -1,0 +1,6 @@
+test_alias_edit_targets_bucket_and_undo_preserves_global_ratings (tests.mod_editor.test_apf_b76_situation_weights_qt.WeightQtTests.test_alias_edit_targets_bucket_and_undo_preserves_global_ratings) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.596s
+
+OK

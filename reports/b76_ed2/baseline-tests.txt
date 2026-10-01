@@ -1,0 +1,47 @@
+test_refit_refresh_does_not_reenter_or_lose_authored_settings (tests.mod_editor.test_b76_ed2_build_recursion.BuildRecursionTests.test_refit_refresh_does_not_reenter_or_lose_authored_settings) ... FAIL
+test_replacement_roster_from_signed_file_reaches_build_writer (tests.mod_editor.test_roster_save_to_disc_wiring.WiringTests.test_replacement_roster_from_signed_file_reaches_build_writer) ... FAIL
+test_private_signed_save_replaces_all_2547_players_through_button (tests.mod_editor.test_roster_save_to_disc_wiring.WiringTests.test_private_signed_save_replaces_all_2547_players_through_button) ... FAIL
+
+======================================================================
+FAIL: test_refit_refresh_does_not_reenter_or_lose_authored_settings (tests.mod_editor.test_b76_ed2_build_recursion.BuildRecursionTests.test_refit_refresh_does_not_reenter_or_lose_authored_settings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-u3/tests/mod_editor/test_b76_ed2_build_recursion.py", line 69, in test_refit_refresh_does_not_reenter_or_lose_authored_settings
+    self.assertEqual(self.errors, [], repr(self.errors[:1]))
+AssertionError: Lists differ: [RecursionError('maximum recursion depth exceeded')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+RecursionError('maximum recursion depth exceeded')
+
+- [RecursionError('maximum recursion depth exceeded')]
++ [] : [RecursionError('maximum recursion depth exceeded')]
+
+======================================================================
+FAIL: test_replacement_roster_from_signed_file_reaches_build_writer (tests.mod_editor.test_roster_save_to_disc_wiring.WiringTests.test_replacement_roster_from_signed_file_reaches_build_writer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-u3/tests/mod_editor/test_roster_save_to_disc_wiring.py", line 150, in test_replacement_roster_from_signed_file_reaches_build_writer
+    self.assertGreater(receipt['players_changed'], 0)
+AssertionError: 0 not greater than 0
+
+======================================================================
+FAIL: test_private_signed_save_replaces_all_2547_players_through_button (tests.mod_editor.test_roster_save_to_disc_wiring.WiringTests.test_private_signed_save_replaces_all_2547_players_through_button)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-u3/tests/mod_editor/test_roster_save_to_disc_wiring.py", line 187, in test_private_signed_save_replaces_all_2547_players_through_button
+    self.assertEqual((src.first, src.last, src.college), (dst.first, dst.last, dst.college))
+AssertionError: Tuples differ: ('Aaron', 'Graham', 'Miami, FL') != ('Duane', 'Starks', 'Baylor')
+
+First differing element 0:
+'Aaron'
+'Duane'
+
+- ('Aaron', 'Graham', 'Miami, FL')
++ ('Duane', 'Starks', 'Baylor')
+
+----------------------------------------------------------------------
+Ran 3 tests in 14.873s
+
+FAILED (failures=3)
+PROVED OFFLINE: all three regressions fail on the original call sites as expected.

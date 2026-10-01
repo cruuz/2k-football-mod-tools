@@ -28,6 +28,9 @@ RECIPE = ROOT / "reports/asset_samples/apf_roster/uniform_all_families_built_in_
 class APFUniformSelectorPatchTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (SOURCE, RECIPE, verifier.ALLOCATION_REPORT, verifier.CAPACITY_REPORT) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF uniform selector sources missing: " + ", ".join(missing))
         cls.writer_source = writer.transport._validate_source(SOURCE)
         with mock.patch.object(
             writer.transport, "_validate_source", return_value=cls.writer_source

@@ -1,0 +1,197 @@
+{
+  "status": "PROVED OFFLINE",
+  "teams": {
+    "ARZ": {
+      "unchanged_play_records": 206,
+      "unchanged_formations": 40,
+      "source_sha256": "49c3882916c5d0a58570635ba168e27961d3c06f14913d573d487ae5e72dfdda",
+      "result_sha256": "76cdf5602687b7c382d1825c5ef46f052acc320e0777487f81fbf46bcaaafc26"
+    },
+    "ATL": {
+      "unchanged_play_records": 192,
+      "unchanged_formations": 37,
+      "source_sha256": "4a5e8eac2f434fab2c966595f07968ae21648f8811a13296ca72c728ed368317",
+      "result_sha256": "a28f4611936a9fefea68cf67f316481d9449ad812d60402c5831ba0778b80d24"
+    },
+    "BAL": {
+      "unchanged_play_records": 201,
+      "unchanged_formations": 40,
+      "source_sha256": "0b8bbd6d034766f6652cc3f4d3da3880b929c4830aaf436c7f2de946f23ca9b3",
+      "result_sha256": "6157362603abbe892a9e161dbd7de756f2e543c378bc199b7d93c0a718268c70"
+    },
+    "BUF": {
+      "unchanged_play_records": 213,
+      "unchanged_formations": 44,
+      "source_sha256": "15dc83bae38d8e2df9574d13c63006efffb1607ec624c4fc4b57066fd2e2edf8",
+      "result_sha256": "70cfab42fe6159a9f52fec2970efd9decd7a0dfd02ba4d1ded9a76072d056281"
+    },
+    "CAR": {
+      "unchanged_play_records": 208,
+      "unchanged_formations": 44,
+      "source_sha256": "7274ea1dc13d6b50d2c47a42bf95d975d40b518ea18714c3b5572e89ed82089f",
+      "result_sha256": "40530345d2073ee4cf87df756df96a394110b6753a5803dc957f284bbac96b55"
+    },
+    "CHI": {
+      "unchanged_play_records": 204,
+      "unchanged_formations": 40,
+      "source_sha256": "19df3f94a489ec6df5acc00b9ea7b4f31c2886d250af947465951dae58e62ffa",
+      "result_sha256": "d77db7a1a1151b479e186c183a4102636ea3d186d2d5aee99eae7b01c2a2d8e8"
+    },
+    "CIN": {
+      "unchanged_play_records": 211,
+      "unchanged_formations": 43,
+      "source_sha256": "adaac2c875922ae1a6c90a55d1009b31ac205c6eefa2a54bee15eded1b9d8dd6",
+      "result_sha256": "41af1eace1b384329a40150c4e4769427171007633403df120f237dc1b2674bd"
+    },
+    "CLE": {
+      "unchanged_play_records": 210,
+      "unchanged_formations": 42,
+      "source_sha256": "a7331a2d6acbe4aba2a17dae3abccbc8234b7bc968cb6faae6cb31168cf642d4",
+      "result_sha256": "b8593aa0d6593afebf0834c0b696fe32b504a64aa8758fdb113844598b5887c0"
+    },
+    "DAL": {
+      "unchanged_play_records": 194,
+      "unchanged_formations": 39,
+      "source_sha256": "08b44396d598a4155cba15d923dee2c110993842d91522301bd6c3f44f9ecdd2",
+      "result_sha256": "c558e78d12b9aaaf521b218ab36d57e6a812c8ab9938e4338a53099266517b39"
+    },
+    "DEN": {
+      "unchanged_play_records": 206,
+      "unchanged_formations": 39,
+      "source_sha256": "5362ddc41bf2b2a806bc52141daa5dad4a9b3789cfc57d67db050216beaed6c1",
+      "result_sha256": "e6d58d52dc811bfefc068c7e3df1ce2a4fc948bc8a93e111c12d6d5a4fd25c23"
+    },
+    "DET": {
+      "unchanged_play_records": 193,
+      "unchanged_formations": 40,
+      "source_sha256": "c631fb257ee4ac99c604ae1dc93082c2f3e4bfdeb49a62dfe43f5a36ba19f3ec",
+      "result_sha256": "4dc0e777b22e2529fe648f24f609989af484cde6363b7fd364e6ce6bc25261eb"
+    },
+    "GB": {
+      "unchanged_play_records": 200,
+      "unchanged_formations": 47,
+      "source_sha256": "a0b6373d8037a824cbc6e268ee94b0a82e7222ee86c800474481cb8806baa5fc",
+      "result_sha256": "77c558f00d0f38983582284494ade72c3f37d7c1adb574c7eb8493fc6fda9e46"
+    },
+    "HOU": {
+      "unchanged_play_records": 209,
+      "unchanged_formations": 39,
+      "source_sha256": "f3b0b2f53036b0982a5a698b6a9fd57007486dc39fbd564e7f83c914bbe30386",
+      "result_sha256": "780c6b5ad425601c8c79819978a683518340dfe6c9100ed23109cad1afbaa5a0"
+    },
+    "IND": {
+      "unchanged_play_records": 205,
+      "unchanged_formations": 44,
+      "source_sha256": "1654b016a334e85c739046047c6d7d35bd41967cebb014123c9526c3f9053d5b",
+      "result_sha256": "3fd8c10fab7a32b2295ad68c38400e6298c8d115cb88189ad9905da273b6c1fc"
+    },
+    "JAX": {
+      "unchanged_play_records": 208,
+      "unchanged_formations": 40,
+      "source_sha256": "a2b2ede83c5ffe37affd43a07154d18db7f62db42257ede36a1bbb77530159aa",
+      "result_sha256": "ac7159f689e6dd9c20703524b48637a8792a84320cce5f6fdc9a9498c9cca553"
+    },
+    "KC": {
+      "unchanged_play_records": 205,
+      "unchanged_formations": 40,
+      "source_sha256": "74f61632a9ff31dc093508de3b22d115f4e31e44a276313070f3c148da4577a5",
+      "result_sha256": "45eca631519fe7f5609c58d55efaa2149d2ac565c54c56db451596a9c5a00e45"
+    },
+    "MIA": {
+      "unchanged_play_records": 189,
+      "unchanged_formations": 42,
+      "source_sha256": "3afa67d430adad9c12c5e623dca9669e6bed0677dfb9b84b7439ca7817b9137d",
+      "result_sha256": "308b13d2407cc4a5c1e820786d8ebd3b6f5bd5b2fd8eadc7507602b69b4fca41"
+    },
+    "MIN": {
+      "unchanged_play_records": 196,
+      "unchanged_formations": 43,
+      "source_sha256": "c56f9bc270f8920acda1713501f2585091d1f1839774bce589c8dc5ae2a6a3f9",
+      "result_sha256": "6439bde2dcf527bc0885119ca22f970ea52060702568ec93864fefdd5769b590"
+    },
+    "NE": {
+      "unchanged_play_records": 191,
+      "unchanged_formations": 41,
+      "source_sha256": "5d29a81e63c21dd7c5d88a83b644d4b44ca5ff925f9c3993df755d3eb57ca88e",
+      "result_sha256": "dce10eed44dbd329f22d257aca96f5add2d3368e99a2486f60938037826be970"
+    },
+    "NO": {
+      "unchanged_play_records": 202,
+      "unchanged_formations": 40,
+      "source_sha256": "e3e7b05a3633c458180b51edc4d6eee9e3451a088deb1f778bb10a00d5a6e432",
+      "result_sha256": "a354f14086b8ed3ae501fe25f7f946336aba91a5f0c7c68f7dafdc00bd88d970"
+    },
+    "NYG": {
+      "unchanged_play_records": 205,
+      "unchanged_formations": 42,
+      "source_sha256": "5fa6f7efd4c7b53587f9b0f9b8445277d14acc826f40a08aa4bd830b53489131",
+      "result_sha256": "8abf9d28be6a9cc30230f045e717f67f25f6c90d57dc4b01e8f399208dfd23ce"
+    },
+    "NYJ": {
+      "unchanged_play_records": 196,
+      "unchanged_formations": 38,
+      "source_sha256": "a4fd2061eeda9c76646b9e32fca3b75e72ae22a0008e40d0c4c2bdee0fb0e6da",
+      "result_sha256": "2ef701b617eaeb3c938b515a8fcfe42f3f8e2b7cd9b3943074354b0650d2658c"
+    },
+    "OAK": {
+      "unchanged_play_records": 213,
+      "unchanged_formations": 41,
+      "source_sha256": "90108360d40e32226bebfe076f4f65f363119f92b3c17654f9d429be212a500a",
+      "result_sha256": "ee53589ce0b7e11ad70bf56f85c93fdfa83dacdea15797c090c4eccfff003573"
+    },
+    "PHI": {
+      "unchanged_play_records": 203,
+      "unchanged_formations": 40,
+      "source_sha256": "d5120a137e03f5c54e5a0fddb1f8cec4f86e8297818d203247de60f1a39e0309",
+      "result_sha256": "f3566f24921d3698223afca29e78a2b23e393dab90ccc861bf017605035201ea"
+    },
+    "PIT": {
+      "unchanged_play_records": 193,
+      "unchanged_formations": 40,
+      "source_sha256": "b0771f8db29b62834e99323fdfe0809bd2933274b4c25d948a923b1e2874bcf6",
+      "result_sha256": "3e48ccc9c334da7ba31a58ad39493cae311e3ee16f5204d0d29d60beb25c6ab6"
+    },
+    "SD": {
+      "unchanged_play_records": 198,
+      "unchanged_formations": 40,
+      "source_sha256": "e1ae6c2733cc72e3b649359047cf099ec69ef820d0b8ccf51a40e9fa6813d480",
+      "result_sha256": "4fd2a0545d14fdce42ebdde413d6568acca14e22498ab9cf980d67ba6f96b49a"
+    },
+    "SEA": {
+      "unchanged_play_records": 207,
+      "unchanged_formations": 42,
+      "source_sha256": "93b472dfacc9a9b9b03475cb9298867f07df1f83d5e3e09995e8fb2d8b639354",
+      "result_sha256": "acfe0ce13c138371fa8d54d8adfe9324b04ed9a6377b771912bc19873cb5dd10"
+    },
+    "SF": {
+      "unchanged_play_records": 187,
+      "unchanged_formations": 37,
+      "source_sha256": "b2b353ceb504cdfd9062328013d06180578a198a3f0d9d8f10aa629d5e119d66",
+      "result_sha256": "aac827d8ba31c048ba112d460bc289077adf328c7b743fa5923a287bc61adf3b"
+    },
+    "STL": {
+      "unchanged_play_records": 207,
+      "unchanged_formations": 44,
+      "source_sha256": "3a7a10d6f2ff530f1c86654c248261cd0c78676b3af167613c7c5cbfcbfb13dc",
+      "result_sha256": "7ffb133957e4a266e54378a3269db0f537516a3245d47b43e2977c19852ff39d"
+    },
+    "TB": {
+      "unchanged_play_records": 193,
+      "unchanged_formations": 47,
+      "source_sha256": "a66059a09ef50563c3bf4d228856dc67e361f23b48a4a717eada1659c17926b2",
+      "result_sha256": "b3990bfda4646eff4bda21e5d23916b08c020c9eba544d4e7db14c896b0dede8"
+    },
+    "TEN": {
+      "unchanged_play_records": 209,
+      "unchanged_formations": 38,
+      "source_sha256": "17302b40bf0d5dcc723ce8d61db85c34c0e1dd1c7f7b80d9fb5ec8a78248ded4",
+      "result_sha256": "1f70015042a05dfb3ce10531b995b92da62dd00d98dda6e8388da0b7662b1959"
+    },
+    "WAS": {
+      "unchanged_play_records": 196,
+      "unchanged_formations": 40,
+      "source_sha256": "5e78d309782d4f2e27702ae8c8f133a532156c253d9bfac4fa037a380a898606",
+      "result_sha256": "f1f506dd77d5b0ec9addf38e2a2741cd62830ef8dd11141520627f0e246c9974"
+    }
+  }
+}

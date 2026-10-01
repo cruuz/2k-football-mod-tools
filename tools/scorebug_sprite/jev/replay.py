@@ -28,8 +28,11 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--frames',type=Path,required=True);p.add_argument('--report',type=Path,default=ROOT/'reports/b72_s3')
     p.add_argument('--output',type=Path,default=ROOT/'data/nfl2k5_scorebug_sprite/broadcast_states.json')
-    a=p.parse_args();out=a.report/'full_miner';session=Session(a.report)
-    if not (out/'requests.json').exists():prepare(a.frames,out,0)
+    p.add_argument('--pattern',default='frame_*.jpg',help='Frame glob; a broadcast extracted as PNG uses frame_*.png')
+    p.add_argument('--stride',type=int,default=10,help='Source-frame stride')
+    p.add_argument('--subdir',default='full_miner',help='Request and answer folder under the report; a second source of the same job uses its own')
+    a=p.parse_args();out=a.report/a.subdir;session=Session(a.report)
+    if not (out/'requests.json').exists():prepare(a.frames,out,0,a.pattern,a.stride)
     requests=json.loads((out/'requests.json').read_text(encoding='utf-8'))
     log=out/'answers.jsonl'
     responses=resume(requests,log)

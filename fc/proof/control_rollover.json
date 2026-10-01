@@ -1,0 +1,981 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "scope": "synthetic CBA-minimum control, not player contracts",
+  "release_proof": false,
+  "roster_sha256": "270daebb6e8186a9cb9a79dc7b29108c8f5c93f8152fa79e8fbc3261309585b4",
+  "xbe_sha256": "e2b465aaf2d83e1590864e485241c62a3bac1e0c7ed57747b01dbcbd1f580185",
+  "seed": 12345,
+  "finances_start": [
+    {
+      "team": 0,
+      "players": 53,
+      "salary_game_thousands": 15115,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 1,
+      "players": 53,
+      "salary_game_thousands": 14975,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 2,
+      "players": 53,
+      "salary_game_thousands": 14765,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 3,
+      "players": 53,
+      "salary_game_thousands": 15005,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 4,
+      "players": 53,
+      "salary_game_thousands": 15290,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 5,
+      "players": 53,
+      "salary_game_thousands": 14535,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 6,
+      "players": 53,
+      "salary_game_thousands": 14780,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 7,
+      "players": 53,
+      "salary_game_thousands": 15085,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 8,
+      "players": 53,
+      "salary_game_thousands": 14815,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 9,
+      "players": 53,
+      "salary_game_thousands": 14530,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 10,
+      "players": 53,
+      "salary_game_thousands": 14785,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 11,
+      "players": 53,
+      "salary_game_thousands": 15135,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 12,
+      "players": 53,
+      "salary_game_thousands": 14130,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 13,
+      "players": 53,
+      "salary_game_thousands": 15130,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 14,
+      "players": 53,
+      "salary_game_thousands": 15310,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 15,
+      "players": 53,
+      "salary_game_thousands": 14925,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 16,
+      "players": 53,
+      "salary_game_thousands": 14695,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 17,
+      "players": 53,
+      "salary_game_thousands": 14990,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 18,
+      "players": 53,
+      "salary_game_thousands": 14975,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 19,
+      "players": 53,
+      "salary_game_thousands": 14770,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 20,
+      "players": 53,
+      "salary_game_thousands": 14795,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 21,
+      "players": 53,
+      "salary_game_thousands": 14425,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 22,
+      "players": 53,
+      "salary_game_thousands": 14805,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 23,
+      "players": 53,
+      "salary_game_thousands": 15065,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 24,
+      "players": 53,
+      "salary_game_thousands": 14770,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 25,
+      "players": 53,
+      "salary_game_thousands": 15250,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 26,
+      "players": 53,
+      "salary_game_thousands": 14930,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 27,
+      "players": 53,
+      "salary_game_thousands": 15045,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 28,
+      "players": 53,
+      "salary_game_thousands": 14920,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 29,
+      "players": 53,
+      "salary_game_thousands": 14965,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 30,
+      "players": 53,
+      "salary_game_thousands": 14895,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 31,
+      "players": 53,
+      "salary_game_thousands": 14685,
+      "cap_game_thousands": 75300,
+      "cap_pass": true,
+      "native_gate": 1
+    }
+  ],
+  "transitions": [
+    {
+      "stage": 8,
+      "week": 0,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 1,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 2,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 3,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 4,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 5,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 6,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 7,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 8,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 9,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 10,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 11,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 12,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 13,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 14,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 15,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 16,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 8,
+      "week": 17,
+      "end_week": 17,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 17,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 18,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 19,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 20,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 21,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 9,
+      "week": 22,
+      "end_week": 22,
+      "year": 0
+    },
+    {
+      "stage": 1,
+      "week": 0,
+      "end_week": 1,
+      "year": 1
+    },
+    {
+      "stage": 2,
+      "week": 0,
+      "end_week": 1,
+      "year": 1
+    },
+    {
+      "stage": 3,
+      "week": 0,
+      "end_week": 1,
+      "year": 1
+    },
+    {
+      "stage": 4,
+      "week": 0,
+      "end_week": 1,
+      "year": 1
+    }
+  ],
+  "status": "completed",
+  "native_calls": {
+    "0xc7a20": 268,
+    "0x1356d0": 268,
+    "0x322bb0": 292,
+    "0x3228a0": 844,
+    "0x247b40": 1,
+    "0x324060": 45,
+    "0x323b30": 1169
+  },
+  "notices": [],
+  "leaves": [
+    [
+      1538448,
+      "progress renderer only"
+    ],
+    [
+      1369376,
+      "informational dialog acknowledgement only"
+    ]
+  ],
+  "seconds": 835.916,
+  "state": {
+    "stage": 4,
+    "week": 0,
+    "end_week": 1,
+    "year": 1
+  },
+  "temporary_native_owner": 0,
+  "finances_rollover": [
+    {
+      "team": 0,
+      "players": 56,
+      "salary_game_thousands": 10990,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 1,
+      "players": 57,
+      "salary_game_thousands": 9374,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 2,
+      "players": 57,
+      "salary_game_thousands": 8498,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 3,
+      "players": 57,
+      "salary_game_thousands": 8811,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 4,
+      "players": 57,
+      "salary_game_thousands": 8807,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 5,
+      "players": 56,
+      "salary_game_thousands": 7863,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 6,
+      "players": 57,
+      "salary_game_thousands": 8568,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 7,
+      "players": 57,
+      "salary_game_thousands": 8513,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 8,
+      "players": 54,
+      "salary_game_thousands": 7617,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 9,
+      "players": 54,
+      "salary_game_thousands": 7725,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 10,
+      "players": 54,
+      "salary_game_thousands": 8123,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 11,
+      "players": 54,
+      "salary_game_thousands": 7848,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 12,
+      "players": 54,
+      "salary_game_thousands": 7195,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 13,
+      "players": 54,
+      "salary_game_thousands": 8055,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 14,
+      "players": 54,
+      "salary_game_thousands": 8075,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 15,
+      "players": 54,
+      "salary_game_thousands": 8561,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 16,
+      "players": 55,
+      "salary_game_thousands": 8021,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 17,
+      "players": 55,
+      "salary_game_thousands": 9587,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 18,
+      "players": 54,
+      "salary_game_thousands": 7695,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 19,
+      "players": 54,
+      "salary_game_thousands": 7486,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 20,
+      "players": 54,
+      "salary_game_thousands": 7345,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 21,
+      "players": 54,
+      "salary_game_thousands": 7535,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 22,
+      "players": 54,
+      "salary_game_thousands": 8042,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 23,
+      "players": 54,
+      "salary_game_thousands": 7835,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 24,
+      "players": 54,
+      "salary_game_thousands": 7452,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 25,
+      "players": 54,
+      "salary_game_thousands": 8080,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 26,
+      "players": 55,
+      "salary_game_thousands": 8820,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 27,
+      "players": 55,
+      "salary_game_thousands": 9249,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 28,
+      "players": 55,
+      "salary_game_thousands": 8823,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 29,
+      "players": 55,
+      "salary_game_thousands": 8505,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 30,
+      "players": 54,
+      "salary_game_thousands": 8301,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 31,
+      "players": 54,
+      "salary_game_thousands": 7991,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    }
+  ],
+  "finances_after_free_agency": [
+    {
+      "team": 0,
+      "players": 29,
+      "salary_game_thousands": 10333,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 1,
+      "players": 44,
+      "salary_game_thousands": 41513,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 2,
+      "players": 53,
+      "salary_game_thousands": 55654,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 3,
+      "players": 56,
+      "salary_game_thousands": 57285,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 0
+    },
+    {
+      "team": 4,
+      "players": 52,
+      "salary_game_thousands": 64476,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 5,
+      "players": 48,
+      "salary_game_thousands": 36117,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 6,
+      "players": 53,
+      "salary_game_thousands": 65289,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 7,
+      "players": 53,
+      "salary_game_thousands": 50929,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 8,
+      "players": 46,
+      "salary_game_thousands": 53121,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 9,
+      "players": 47,
+      "salary_game_thousands": 49518,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 10,
+      "players": 46,
+      "salary_game_thousands": 46660,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 11,
+      "players": 48,
+      "salary_game_thousands": 58129,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 12,
+      "players": 50,
+      "salary_game_thousands": 36747,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 13,
+      "players": 50,
+      "salary_game_thousands": 68370,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 14,
+      "players": 52,
+      "salary_game_thousands": 59690,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 15,
+      "players": 45,
+      "salary_game_thousands": 44763,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 16,
+      "players": 50,
+      "salary_game_thousands": 50829,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 17,
+      "players": 49,
+      "salary_game_thousands": 54923,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 18,
+      "players": 50,
+      "salary_game_thousands": 58794,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 19,
+      "players": 47,
+      "salary_game_thousands": 43462,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 20,
+      "players": 49,
+      "salary_game_thousands": 47508,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 21,
+      "players": 53,
+      "salary_game_thousands": 48561,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 22,
+      "players": 49,
+      "salary_game_thousands": 58577,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 23,
+      "players": 47,
+      "salary_game_thousands": 38151,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 24,
+      "players": 47,
+      "salary_game_thousands": 55392,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 25,
+      "players": 51,
+      "salary_game_thousands": 48387,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 26,
+      "players": 52,
+      "salary_game_thousands": 45324,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 27,
+      "players": 50,
+      "salary_game_thousands": 51969,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 28,
+      "players": 49,
+      "salary_game_thousands": 59610,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 29,
+      "players": 45,
+      "salary_game_thousands": 45538,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 30,
+      "players": 51,
+      "salary_game_thousands": 49416,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    },
+    {
+      "team": 31,
+      "players": 50,
+      "salary_game_thousands": 47806,
+      "cap_game_thousands": 81233,
+      "cap_pass": true,
+      "native_gate": 1
+    }
+  ]
+}

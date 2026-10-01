@@ -639,13 +639,25 @@ def _legacy_status(payload: bytes) -> str:
         expected = "retail" if retail else "applied" if patched else "foreign"
         if expected == "foreign":
             return expected
+        views = None
         for name, (va, original) in HOOKS.items():
             off = _offset(payload, va, len(original))
-            if payload[off:off + len(original)] != (original if retail else _hook_bytes(name, labels)):
-                return "foreign"
+            want = original if retail else _hook_bytes(name, labels)
+            if payload[off:off + len(original)] != want:
+                views = gate_views(payload) if views is None else views
+                if views.get(va) != want:
+                    return "foreign"
         return expected
     except (ValueError, struct.error, IndexError):
         return "foreign"
+
+
+def gate_views(payload: bytes) -> dict[int, bytes]:
+    """b76-vb3: the 25th Anniversary gate (nfl2k5_anniversary_kickoff) sends these hook sites through its own
+    mode-8 trampolines, which forward to the same cave labels outside the 25th Anniversary. Read a gated site as
+    the bytes this owner wrote there; an ungated image reads as before."""
+    from . import nfl2k5_anniversary_kickoff as anniversary
+    return anniversary.gate_views(payload)
 
 
 def status(payload: bytes) -> str:

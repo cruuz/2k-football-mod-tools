@@ -123,7 +123,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         if resource is not None and (team != pack.book.team or args.retarget):
             book = parse_playbook_resource(resource, asset_id=f"book:{team}")
             use, resolutions = pack_mod.retarget_pack(pack, team, book, resource[RESOURCE_HEADER_SIZE:])
-        report = pack_mod.check_pack(use, resource=resource, asset_id=f"book:{team}")
+        report = pack_mod.check_pack(use, resource=resource, asset_id=f"book:{team}", xbe=args.image)
         _print_check(team, report, header=len(teams) > 1)
         for res in resolutions:
             if res.how in ("ranked", "unresolved"):
@@ -155,7 +155,7 @@ def cmd_retarget(args: argparse.Namespace) -> int:
     for res in resolutions:
         print(f"{res.kind:9s} {res.entry_id:32s} {res.field:8s} -> "
               f"{res.index if res.index is not None else '(new)'} “{res.name}” [{res.how}] {res.detail}")
-    report = pack_mod.check_pack(retargeted, resource=resource, asset_id=f"book:{team}")
+    report = pack_mod.check_pack(retargeted, resource=resource, asset_id=f"book:{team}", xbe=args.image)
     print()
     print(report.text())
     if not report.ok:
@@ -207,7 +207,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         version=args.pack_version,
         license=args.license,
     )
-    report = pack_mod.check_pack(pack, resource=resource, asset_id="book:export")
+    report = pack_mod.check_pack(pack, resource=resource, asset_id="book:export", xbe=getattr(args, 'image', None))
     print(report.text())
     out = Path(args.output) if args.output else project.with_suffix(pack_mod.PACK_EXTENSION)
     pack_mod.save_pack(pack, out)
@@ -273,7 +273,7 @@ def cmd_modern_defense(args):
         raise PackToolError("modern-defense needs --image or --book")
     book = parse_playbook_resource(resource, asset_id=f"book:{args.team}")
     pack = pack_mod.modern_defense_pack(book, resource[RESOURCE_HEADER_SIZE:], args.team)
-    report = pack_mod.check_pack(pack, resource=resource)
+    report = pack_mod.check_pack(pack, resource=resource, xbe=args.image)
     print(report.text())
     if not report.ok:
         return 1

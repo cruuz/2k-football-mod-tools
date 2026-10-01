@@ -1,0 +1,10 @@
+{
+  "classification": "PROVED OFFLINE",
+  "idempotent": true,
+  "sha256": {
+    "data/nfl2k5_scorebug_sprite/layout.json": "56c75a77dce9e82579dfa4c00761fe2a9d6a8906b57891ea9c61e213b038ca2f",
+    "data/nfl2k5_scorebug_sprite/template.png": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b",
+    "data/nfl2k5_scorebug_sprite/team_accents.json": "5daa34a320d7bdc681eaccb84164d4e30bf489259e5d55c92fb2af0aa6f7ebbe",
+    "data/nfl2k5_scorebug_sprite/broadcast_display.json": "5e1396bba2d5ea06dc4bdb985216f6fec673625717cb9d82a2d42b5a938b7b09"
+  }
+}

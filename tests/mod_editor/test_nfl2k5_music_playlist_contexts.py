@@ -6,7 +6,7 @@ import struct
 import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from tests.mod_editor.test_nfl2k5_music_playlist import Machine, XBE, u
+from tests.mod_editor.test_nfl2k5_music_playlist import Machine, XBE, u, retail_game_mode
 from mod_editor.core import nfl2k5_music_playlist as playlist
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -120,8 +120,13 @@ class ContextTests(unittest.TestCase):
                     table = int(screen['va'], 0)
                     with self.subTest(screen=hex(table)):
                         self.assertEqual(hashlib.sha256(image.read(table, 40)).hexdigest(), screen['sha256'])
+                        in_game = row['context'] in ('Replay', 'Pause menu')
                         vm = ContextMachine(self.patched)
-                        vm.run('mode', ecx=4 if row['context'] in ('Replay', 'Pause menu') else 1)
+                        if in_game:
+                            # Retail Crib Music "Crib/Menus/Game" (B9E2A4): the list plays in game.
+                            # The default game route is test_default_game_keeps_the_crowd_loop.
+                            vm.write(0xB9E2A4, 1)
+                        vm.run('mode', ecx=4 if in_game else 1)
                         song, cursor = vm.field(40), vm.field(8)
                         vm.prepare_screen()
                         if row['context'] == 'Replay':
@@ -167,6 +172,20 @@ class ContextTests(unittest.TestCase):
                 elif policy == 'shared':
                     self.run_mode_block(vm, 0x64899, 0x648A3)
                     self.assertEqual(len(vm.queued), 1)
+                elif policy == 'game':
+                    # The native caller's F6510(4) keeps the retail F6578 choice.
+                    self.run_mode_block(vm, 0x64899, 0x648A3)
+                    self.assertEqual(vm.switches, [1])  # the crowd loop on (AB16E4)
+                    self.assertEqual((vm.field(20), vm.field(28), len(vm.queued)), (0, 0, 1))
+                    vm.run('mode', ecx=1)  # the interrupted song restarts in the menus
+                    self.assertEqual(len(vm.queued), 2)
+                    self.assertEqual(vm.queued[-1][0], song)
+                    listening = ContextMachine(self.patched)
+                    listening.run('mode', ecx=1)
+                    listening.write(0xB9E2A4, 1)  # Crib Music "Crib/Menus/Game"
+                    self.run_mode_block(listening, 0x64899, 0x648A3)
+                    self.assertEqual(listening.switches, [0])  # retail F6583: loop off
+                    self.assertEqual((listening.field(20), listening.field(28), len(listening.queued)), (1, 1, 1))
                 elif policy == 'loading':
                     del vm.stub_addresses[0xF5410]
                     vm.stub(0xCF0F0, 'native_loading_start')
@@ -176,13 +195,18 @@ class ContextTests(unittest.TestCase):
                     self.assertIn('native_loading_start', vm.calls)
                     self.assertEqual(vm.field(28), 0)
                     vm.run(0xF6510, ecx=4)
-                    self.assertEqual(len(vm.queued), 2)
+                    # Default Crib Music: the game keeps the crowd loop and no song.
+                    self.assertEqual((len(vm.queued), vm.switches), (1, [1]))
+                    vm.write(0xB9E2A4, 1)  # "Crib/Menus/Game": the interrupted song resumes
+                    vm.run(0xF6510, ecx=4)
+                    self.assertEqual((len(vm.queued), vm.switches), (2, [1, 0]))
                 elif policy == 'halftime':
                     vm.stream_stubs()
                     vm.run(0xD90F0)
                     self.assertEqual(vm.field(56), 1)
                     self.assertEqual([controller for controller, _ in vm.native_queues], [0xB73B64,0xB73B1C])
                     self.assertEqual([index for bank,index in vm.ranges if bank == vm.bank_descriptors['halftimeaudio']], [2,4,1,1,3])
+                    vm.write(0xB9E2A4, 1)  # Crib Music "Crib/Menus/Game": the in-game list
                     vm.run('mode', ecx=4)
                     self.assertEqual(len(vm.queued), 1)
                     vm.run(0xD9350)
@@ -281,6 +305,7 @@ class ContextTests(unittest.TestCase):
 
     def test_profile_stop_override_recreation_and_native_callback_isolation(self):
         vm = Machine(self.patched, playlist.Selection(playlist.CORE[:2]))
+        vm.write(0xB9E2A4, 1)  # Crib Music "Crib/Menus/Game": the list plays in game
         vm.run('mode', ecx=4)
         song, cursor = vm.field(40), vm.field(8)
         # Pinned profile-setting stop call now cannot disable opt-in game shuffle.
@@ -296,6 +321,58 @@ class ContextTests(unittest.TestCase):
         self.assertEqual(vm.field(40), song)
         self.assertEqual(vm.field(8), cursor)
         self.assertEqual(len(vm.queued), 2)
+
+    def test_default_game_keeps_the_crowd_loop_and_no_in_game_route_starts_a_song(self):
+        # u6 2026-09-27: without Crib Music "Crib/Menus/Game" the game passes 1 to
+        # 1C4210, as retail F659F, and no pause, replay, halftime or frame route
+        # restarts the background during the game.
+        matrix = json.loads((ROOT / 'reports/music_playlist_contexts.v1.json').read_text())
+        rows = {row['context']: row for row in matrix['contexts']}
+        tables = [int(screen['va'], 0) for name in ('Pause menu', 'Replay')
+                  for screen in rows[name]['screen_tables']]
+        for table in tables:
+            with self.subTest(screen=hex(table)):
+                vm = ContextMachine(self.patched)
+                vm.run('mode', ecx=1)
+                vm.run('mode', ecx=4)
+                self.assertEqual(vm.switches, [1])
+                self.assertEqual((vm.field(20), vm.field(28)), (0, 0))
+                vm.prepare_screen()
+                vm.push_screen(table)
+                vm.pop_screen()
+                vm.run(0x6E4E0, ecx=vm.CONTEXT, arg=3)
+                vm.run('frame')
+                self.assertEqual(len(vm.queued), 1)
+        vm = ContextMachine(self.patched)
+        vm.run('mode', ecx=1)
+        vm.run('mode', ecx=4)
+        vm.stream_stubs()
+        vm.run(0xD90F0)
+        vm.run(0xD9350)
+        self.assertEqual((vm.field(20), vm.field(28), vm.field(56), len(vm.queued)), (0, 0, 0, 1))
+        self.assertEqual(vm.switches, [1])
+
+    def test_crib_music_setting_reaches_the_game_mode_as_in_retail(self):
+        # The retail music frame F6420 turns Crib Music (E601CC) into B9E2A4, set only for
+        # 2 "Crib/Menus/Game". The fixed game mode then matches retail F6510(4) for that
+        # flag: with it the list plays in game and 1C4210(0) turns the crowd loop off;
+        # otherwise the song stops and 1C4210(1) keeps the loop.
+        for crib, in_game in ((0, False), (1, False), (2, True)):
+            with self.subTest(crib_music=crib):
+                vm = ContextMachine(self.patched)
+                vm.run('mode', ecx=1)
+                vm.stub(0x77560, 'profile_ready', result=1)
+                vm.stub(0x140180, 'soundtrack_source')
+                vm.stub(0x280620, 'music_frame_tail')
+                vm.write(0xE601CC, crib)
+                vm.run(0xF6420)
+                self.assertEqual(vm.read(0xB9E2A4), int(in_game))
+                vm.run(0xF6510, ecx=4)
+                calls, _ = retail_game_mode(XBE.read_bytes(), int(in_game))
+                self.assertEqual(vm.switches, [v for name, v in calls if name == 'game_music_switch'])
+                self.assertEqual(vm.switches, [0] if in_game else [1])
+                self.assertEqual((vm.field(20), vm.field(28), len(vm.queued)),
+                                 (1, 1, 1) if in_game else (0, 0, 1))
 
     def test_disc_and_hdd_preview_completion_resumes_background_once(self):
         for kind in (1, 2, 4):

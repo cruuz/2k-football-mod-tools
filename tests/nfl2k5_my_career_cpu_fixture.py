@@ -19,6 +19,8 @@ def retail_playbook():
     from mod_editor.core import nfl2k5_roster_records as roster
     if not (XBE.parent / "vc_53450030/0").is_file():
         raise unittest.SkipTest("private USA PLAY archive is absent")
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(XBE.parent)
     with roster._outer_image()(XBE.parent) as archive:
         if len(archive.entries) <= 308 or archive.entries[308].size != 78768:
             raise unittest.SkipTest("fixed 78,768-byte ATL PLAY evidence differs")

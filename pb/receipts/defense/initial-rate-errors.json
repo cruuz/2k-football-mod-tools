@@ -1,0 +1,161 @@
+{
+  "status": "PROVED OFFLINE",
+  "scope": "Initial unretuned fixture only, superseded by final receipts",
+  "teams": {
+    "ARZ": {
+      "man": -0.3895,
+      "split_family": 2.6875,
+      "blitz": 0.7166
+    },
+    "ATL": {
+      "man": -0.2165,
+      "split_family": -0.8045,
+      "blitz": 0.5159
+    },
+    "BAL": {
+      "man": 1.0159,
+      "split_family": 1.1409,
+      "blitz": -0.1966
+    },
+    "BUF": {
+      "man": 2.1013,
+      "split_family": 8.9272,
+      "blitz": 4.1822
+    },
+    "CAR": {
+      "man": 1.7252,
+      "split_family": -2.9803,
+      "blitz": -0.5819
+    },
+    "CHI": {
+      "man": 2.8888,
+      "split_family": 17.4787,
+      "blitz": -0.7128
+    },
+    "CIN": {
+      "man": 0.7267,
+      "split_family": 8.3907,
+      "blitz": 0.2963
+    },
+    "CLE": {
+      "man": 1.44,
+      "split_family": 7.4064,
+      "blitz": 1.1669
+    },
+    "DAL": {
+      "man": -2.1335,
+      "split_family": -22.9046,
+      "blitz": -9.219
+    },
+    "DEN": {
+      "man": 0.0257,
+      "split_family": 5.6291,
+      "blitz": -0.3455
+    },
+    "DET": {
+      "man": -4.1029,
+      "split_family": -0.9389,
+      "blitz": 4.7384
+    },
+    "GB": {
+      "man": 0.2586,
+      "split_family": 1.7059,
+      "blitz": -0.2831
+    },
+    "HOU": {
+      "man": -0.4993,
+      "split_family": 1.4502,
+      "blitz": 0.3589
+    },
+    "IND": {
+      "man": -4.1068,
+      "split_family": -4.9828,
+      "blitz": 3.3019
+    },
+    "JAX": {
+      "man": 1.4064,
+      "split_family": 5.7815,
+      "blitz": 2.0938
+    },
+    "KC": {
+      "man": 5.6432,
+      "split_family": 9.7421,
+      "blitz": 0.123
+    },
+    "MIA": {
+      "man": 0.3452,
+      "split_family": 10.6923,
+      "blitz": -1.0046
+    },
+    "MIN": {
+      "man": -0.2949,
+      "split_family": -5.0101,
+      "blitz": -1.0042
+    },
+    "NE": {
+      "man": 0.8116,
+      "split_family": -2.8902,
+      "blitz": 0.1519
+    },
+    "NO": {
+      "man": -0.3729,
+      "split_family": 2.3965,
+      "blitz": 0.4652
+    },
+    "NYG": {
+      "man": 1.7852,
+      "split_family": 6.885,
+      "blitz": 5.174
+    },
+    "NYJ": {
+      "man": 0.1573,
+      "split_family": -1.9637,
+      "blitz": 0.5568
+    },
+    "OAK": {
+      "man": -0.3129,
+      "split_family": -2.0423,
+      "blitz": -1.6597
+    },
+    "PHI": {
+      "man": -0.5067,
+      "split_family": 0.5689,
+      "blitz": 0.8465
+    },
+    "PIT": {
+      "man": 0.605,
+      "split_family": -1.8126,
+      "blitz": 0.9734
+    },
+    "SEA": {
+      "man": 0.4596,
+      "split_family": -0.2898,
+      "blitz": 0.3541
+    },
+    "SF": {
+      "man": -0.2027,
+      "split_family": -1.3613,
+      "blitz": 0.4435
+    },
+    "STL": {
+      "man": -0.3154,
+      "split_family": -1.6671,
+      "blitz": 0.0993
+    },
+    "TB": {
+      "man": -0.1095,
+      "split_family": -1.0024,
+      "blitz": 0.0793
+    },
+    "TEN": {
+      "man": -0.0304,
+      "split_family": 0.9416,
+      "blitz": 1.4931
+    },
+    "WAS": {
+      "man": -1.1469,
+      "split_family": 0.352,
+      "blitz": 1.3861
+    }
+  }
+}

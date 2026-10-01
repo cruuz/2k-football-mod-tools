@@ -1,0 +1,33 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "baseline_commit": "9de333712be81d919359131c2ecb2bd3185ac18a",
+  "baseline_tree": "64631cff33d5a3d3ebec5a63cf02decbc5962eed",
+  "archive_command": [
+    "git",
+    "archive",
+    "9de333712be81d919359131c2ecb2bd3185ac18a"
+  ],
+  "verified_source_sha256": {
+    "tests/mod_editor/test_xbe_patch_cave_references.py": "85af36bfee72504ecbd7c9fc699dd52c52ee9a5dd8e6755b97cff8e3bb46a299",
+    "tests/nfl2k5_allocator_stack.py": "a25e4871c9d3c6a829f0d639e87cd3b44ee1365558e94ac2d7684d11feb6c328",
+    "data/nfl2k5_cave_reservations.json": "6231ec65f97e147205ef94632477e9d63e8fe38cfd3d08bcb51b8a421c48c347",
+    "mod_editor/core/nfl2k5_roster_records.py": "a565e0b32c2f181df8ed16dc643781cf37289dd72b792ac08623e119b69af21e",
+    "mod_editor/core/providers.py": "1e0c5fb02d16b4b459c8bb4f085533b151cec757a0bfa2e79adb0595d7480418"
+  },
+  "pytest_selectors": [
+    "tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_practice_squad_spans_preserve_stack_owners"
+  ],
+  "nice": 10,
+  "cores": "0-23",
+  "pytest_exit_code": 1,
+  "result": "2 failed in 341.90s",
+  "log_sha256": "a87e905ed3b5584070121c96d05d1c9da0dfa7692456ac0a9f1f8fdb72543914",
+  "environment_overrides": {
+    "NFL2K5_CAVE_MANIFEST": null,
+    "NFL2K5_RETAIL_XBE": null,
+    "NFL2K5_RETAIL_XISO": null
+  },
+  "private_archive_deleted": true,
+  "nvme_free_after_cleanup": 113875607552
+}

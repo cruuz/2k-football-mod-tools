@@ -697,6 +697,8 @@ def _read(payload, va, size):
 
 
 def _validate(payload):
+    from . import nfl2k5_era_rules as era
+    payload = era.underlying_view(payload)
     state = space.status(payload)
     space._require(state != "foreign", "foreign XBE geometry, allocation or section digest")
     space._require(team_column_status(payload) in ("retail", "applied"),

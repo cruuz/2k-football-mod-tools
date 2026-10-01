@@ -1,0 +1,146 @@
+{
+ "schema": "nfl2k5_espn_marks_pins/v1",
+ "outer": {
+  "index": 346,
+  "name_id": 11965036,
+  "size": 2977184
+ },
+ "art": {
+  "espnLogo1.png": "42573f5a4fe96698d5470ffc3984b85127847f485c10214681e7419d7428cb2c",
+  "nfl_chiclet.png": "06062f839ceffaccc1b17a35c7a7105c541a72576431be89829bf859122af14f",
+  "shield_espn.png": "b89b5f4df374bc23b78f9b284ff4d12cf412e2a89820fe2afa8c3589204fde54",
+  "z_ESPN_bug.png": "8aaa2cbc8d9c54fa52de56b1890770f896407ae4c6cab13b64957787b0971c62"
+ },
+ "marks": [
+  {
+   "texture": "nfl_chiclet",
+   "png": "nfl_chiclet.png",
+   "grade": "A",
+   "chunk_index": 24,
+   "chunk_offset": 224864,
+   "span_size": 4368,
+   "pack_name": "0",
+   "pack_offset": 110120544,
+   "outer_index": 346,
+   "width": 64,
+   "height": 64,
+   "mip_levels": 1,
+   "retail_sha256": "be075d94bff90e3cb1f352759beecac310538269aa22e4ea888a2e185a9e7e03",
+   "applied_sha256": "75e51208a99fe191dd302b85122c43072407eb9af9992c2949e9301ed7ca2a95",
+   "rgba_sha256": "73409d8c96b4b68cc2dc27f93eabcc0d6c56f681172ce0454c078bf63b99ed75",
+   "palette_entries": 48,
+   "fill": {
+    "stored_size": 4336,
+    "compressed_bytes": 2792,
+    "filled_bytes": 4332,
+    "padding_bytes": 4,
+    "matches_expanded": 294,
+    "scratch_bytes": 144,
+    "exact_minimum_scratch": 4,
+    "wrapper_identical": true
+   }
+  },
+  {
+   "texture": "shield_espn",
+   "png": "shield_espn.png",
+   "grade": "A",
+   "chunk_index": 26,
+   "chunk_offset": 229456,
+   "span_size": 5952,
+   "pack_name": "0",
+   "pack_offset": 110125136,
+   "outer_index": 346,
+   "width": 128,
+   "height": 64,
+   "mip_levels": 1,
+   "retail_sha256": "4517f5602ebab791e0d54e5f5bc8c3881e4f31addf5afe7f869c3b7c2f2cb1c7",
+   "applied_sha256": "33f09080c5ace376814ebe3dd222fd74ab3a739a55622ab80182d614c48945bd",
+   "rgba_sha256": "c0404160964cfbe4b2cc8bfcd7be0204e18ae4e70360888cfce2e765c003f762",
+   "palette_entries": 32,
+   "fill": {
+    "stored_size": 5920,
+    "compressed_bytes": 1736,
+    "filled_bytes": 5906,
+    "padding_bytes": 14,
+    "matches_expanded": 255,
+    "scratch_bytes": 112,
+    "exact_minimum_scratch": 4,
+    "wrapper_identical": true
+   }
+  },
+  {
+   "texture": "espnLogo1",
+   "png": "espnLogo1.png",
+   "grade": "A",
+   "chunk_index": 33,
+   "chunk_offset": 255808,
+   "span_size": 6240,
+   "pack_name": "0",
+   "pack_offset": 110151488,
+   "outer_index": 346,
+   "width": 256,
+   "height": 256,
+   "mip_levels": 1,
+   "retail_sha256": "7a331fbb644efbc8bd9129e389dc12ccbda972249aad2e6de6d205a8f7aa519f",
+   "applied_sha256": "042515533e1bd642510c4ad5f63297042c7b0dc73c43a9005143d0fa878c5476",
+   "rgba_sha256": "3050c8d7d5cd39d0fd4e3fc266030304b5ccb91f3511733fe6cb96b08f7d4157",
+   "palette_entries": 57,
+   "fill": {
+    "stored_size": 6208,
+    "compressed_bytes": 5068,
+    "filled_bytes": 6194,
+    "padding_bytes": 14,
+    "matches_expanded": 36,
+    "scratch_bytes": 16,
+    "exact_minimum_scratch": 12,
+    "wrapper_identical": true
+   }
+  },
+  {
+   "texture": "z_ESPN_bug",
+   "png": "z_ESPN_bug.png",
+   "grade": "B",
+   "chunk_index": 57,
+   "chunk_offset": 459344,
+   "span_size": 4064,
+   "pack_name": "0",
+   "pack_offset": 110355024,
+   "outer_index": 346,
+   "width": 64,
+   "height": 64,
+   "mip_levels": 1,
+   "retail_sha256": "33ae3da83e34c0b3e42f8836158164aaea36464d8b55931ed7093e8b894a29e4",
+   "applied_sha256": "3330bbacd4c77b7841953418c72686d3b3f4f9df5baf3c79b9e2a18f7ca91413",
+   "rgba_sha256": "0efe87f0ebcada2566f8b2f1a9e3734710f9e940f8adbde6d1fdfec5028ba925",
+   "palette_entries": 60,
+   "fill": {
+    "stored_size": 4032,
+    "compressed_bytes": 1206,
+    "filled_bytes": 4021,
+    "padding_bytes": 11,
+    "matches_expanded": 185,
+    "scratch_bytes": 80,
+    "exact_minimum_scratch": 0,
+    "wrapper_identical": true
+   }
+  }
+ ],
+ "refused": [
+  "endQTR_textures",
+  "passicons",
+  "replayicons",
+  "score_buga",
+  "telecircle1",
+  "telecircle2"
+ ],
+ "runtime_witnessed": false,
+ "official_marks_pack": {
+  "schema": "nfl2k5_official_marks/v1",
+  "files": [
+   "espnLogo1.png",
+   "nfl_chiclet.png",
+   "shield_espn.png",
+   "z_ESPN_bug.png"
+  ]
+ }
+}

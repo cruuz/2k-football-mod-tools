@@ -1,0 +1,11 @@
+{
+  "status": "PROVED OFFLINE",
+  "source_recipe_sha256": "2d7ca939a62e6cf6458f091ed9b93264ed3bd6c3ad3ec65c161ca2a55f89cead",
+  "source_copy_identical": true,
+  "shell_syntax": "bash -n pb/lab/pb_lab.sh passed",
+  "python_compile": "python3 -m py_compile pb/lab/pb_runtime.py passed",
+  "build_executed": false,
+  "script_executed": false,
+  "runtime_executed": false,
+  "xemu_executed": false
+}

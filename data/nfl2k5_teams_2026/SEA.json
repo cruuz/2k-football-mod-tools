@@ -1,0 +1,1391 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "SEA",
+ "abbreviation_2026": "SEA",
+ "name": "Seattle Seahawks",
+ "asset_code": "26",
+ "season": 2026,
+ "status": "Phase B job d8 (2026-09-23). Colours sourced (team_colors_official_2026.json); albedo and placements INFERRED from 2026 photos (week 2 at ARI, preseason week 3 at KC).",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "defense_note": "ESPN's 2026 chart: NT, LDE, RDE, LILB, RILB, WLB, SLB (a 3-4 look): ends to the interior pool, outside backers to EDGE.",
+  "roster_abbreviation": "SEA",
+  "head_coach": "Mike Macdonald",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status): 53 active.",
+  "head_coach_source": "https://www.seahawks.com/team/coaches-roster/mike-macdonald (Head Coach; matches nflverse games.csv 2026)"
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "AJ Barner": 0,
+   "Abraham Lucas": 1,
+   "Beau Stephens": 0,
+   "Brady Russell": 0,
+   "Brandon Pili": 1,
+   "Byron Murphy": 3,
+   "Chazz Surratt": 2,
+   "Chris Stoll": 0,
+   "Connor O'Toole": 0,
+   "Cooper Kupp": 0,
+   "Drake Thomas": 0,
+   "Drew Lock": 0,
+   "Eric Saubert": 0,
+   "George Holani": 1,
+   "Grey Zabel": 0,
+   "Jalen Sundell": 0,
+   "Jason Myers": 0,
+   "Jaxon Smith-Njigba": 2,
+   "Julian Love": 3,
+   "Michael Dickson": 0,
+   "Nick Kallerup": 0,
+   "Patrick O'Connell": 0,
+   "Rylie Mills": 0,
+   "Sam Darnold": 0,
+   "Ty Okada": 0,
+   "Uchenna Nwosu": 4,
+   "Elijah Arroyo": 2,
+   "Ernest Jones": 3,
+   "Josh Jobe": 3,
+   "Julian Neal": 3,
+   "Mike Morris": 2,
+   "Montorie Foster": 3,
+   "Nehemiah Pritchett": 4,
+   "Tory Horton": 3,
+   "Anthony Bradford": 4,
+   "Avery Smith": 3,
+   "Dante Fowler": 4,
+   "Devon Witherspoon": 3,
+   "Emanuel Wilson": 3,
+   "Leonard Williams": 3,
+   "Nick Emmanwori": 3,
+   "Charles Cross": 4,
+   "Christian Haynes": 4,
+   "DeMarcus Lawrence": 4,
+   "Jadarian Price": 4,
+   "Jalen Milroe": 3,
+   "Jarran Reed": 4,
+   "Tyrice Knight": 4,
+   "AJ Finley": 4,
+   "Derick Hall": 4,
+   "Josh Jones": 4,
+   "Rashid Shaheed": 4,
+   "Olu Oluwatimi": 5
+  },
+  "dreads": [
+   "Julian Neal",
+   "Emanuel Wilson",
+   "Charles Cross",
+   "Christian Haynes",
+   "Tyrice Knight",
+   "Josh Jones",
+   "Rashid Shaheed",
+   "Byron Murphy"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots against the Giants pilot's calibration (INFERRED); the automatic cheek estimate reads studio-lit darker skin as light, so it is kept only as skin_lab in faces.json. Dreads (locs, long twists) by eye. Hair colours set by eye where the automatic sample read the backdrop between locs or a shadow (first contact sheet, 2026-09-23)."
+ },
+ "sources": {
+  "kit_rules": "https://sports.mynorthwest.com/nfl/seattle-seahawks/seattle-seahawks-to-wear-alternate-uniforms-for-3-prime-time-games (2026: week 1 all navy; throwbacks weeks 7 and 13; Rivalries week 16)",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Seattle_Seahawks&action=raw (2012 Nike set: college navy, action green, wolf grey)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (SEA: College Navy #002244, Action Green #69BE28, Wolf Grey #A5ACAF, White)",
+  "home_photos": "https://www.seahawks.com/photos/photos-must-see-game-action-shots-from-seahawks-vs-cardinals-week-2 (2026-09-20: navy jersey, wolf grey pants, navy socks)",
+  "road_photos": "https://www.seahawks.com/photos/2026-seahawks-at-cheifs-preseason-week-3-best-game-action-photos (white jersey, navy pants, navy socks)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Seattle_Seahawks_wordmark.svg (PD-textlogo)",
+  "number_font": "NFL Seattle Seahawks Flat (fan font, FontSpace via dafontfree.io, 2014): the 2012 number and letter shapes, checked by eye against 2026 photos",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "navy": "#002244",
+  "green": "#69BE28",
+  "grey": "#A5ACAF",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "jersey_navy": "#0A2A4E",
+  "helmet_navy": "#0C2848",
+  "pants_navy": "#0C2A4C",
+  "navy": "#002244",
+  "green": "#69BE28",
+  "grey": "#A5ACAF",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_navy": "#0B2A4D",
+  "banner_navy": "#0A2A4E",
+  "retail_helmet_blue": "#22537F",
+  "retail_helmet_navy": "#07153C",
+  "retail_splayer_blue": "#225588",
+  "retail_splayer_navy": "#001144",
+  "retail_card_blue": "#1B4B73",
+  "retail_card_navy": "#112C45",
+  "retail_card_helmet_blue": "#225D91",
+  "retail_card_white": "#D9D7D4"
+ },
+ "marks": {
+  "club_logo": "club_logo_full.png",
+  "wordmark": "wordmark_line2_seahawks.png",
+  "wordmark_full": "wordmark_full.png",
+  "logo_L0_navy": "logo_L0_navy.png",
+  "logo_L1_grey": "logo_L1_grey.png",
+  "logo_L2_white": "logo_L2_white.png",
+  "logo_L3_green": "logo_L3_green.png",
+  "seattle": "wordmark_line1_seattle.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "26H0",
+   "outer_index": 3837,
+   "note": "2026 home: college navy jersey, wolf grey shoulder bands, green collar trim, wolf grey numbers with action green outline (2012 font), navy pants with a grey and green stripe, navy socks, navy helmet",
+   "torso": {
+    "base_colour": "jersey_navy",
+    "neck_donor": "26H0",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "green",
+      "width": 1.5
+     }
+    ],
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      198,
+      50
+     ],
+     "width": 24
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "rect": [
+       54,
+       4,
+       128,
+       22
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       194,
+       4,
+       268,
+       22
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       278,
+       6,
+       358,
+       20
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       420,
+       6,
+       504,
+       20
+      ],
+      "colour": "grey"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_navy",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "pants_navy",
+    "stripe": [
+     [
+      "green",
+      1
+     ],
+     [
+      "grey",
+      5
+     ],
+     [
+      "green",
+      1
+     ]
+    ],
+    "swoosh_colour": "white",
+    "base_from": "26A0"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "26H0",
+    "fill": "grey",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf",
+    "outline": "green",
+    "outline_frac": 0.04
+   },
+   "helmet_digits": {
+    "glyph_donor": "26H0",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "nameplate": {
+    "glyph_donor": "26H0",
+    "fill": "grey",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "retail_helmet_blue",
+    "recolour": [
+     {
+      "from": "retail_helmet_navy",
+      "to": "navy"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    },
+    "decorations": [
+     {
+      "rect": [
+       100,
+       53,
+       147,
+       99
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       100,
+       158,
+       154,
+       205
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       154,
+       0,
+       170,
+       232
+      ],
+      "colour": "green"
+     },
+     {
+      "rect": [
+       155.5,
+       0,
+       168.5,
+       232
+      ],
+      "colour": "grey"
+     }
+    ]
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_blue",
+      "to": "jersey_navy",
+      "region": "jersey"
+     },
+     {
+      "from": "retail_card_helmet_blue",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "cards": [
+       "helm_256",
+       "helm_128",
+       "unif_256"
+      ]
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3837,
+    "torso_donor": "26H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_blue",
+      "to": "jersey_navy",
+      "region": "torso"
+     },
+     {
+      "from": "retail_splayer_blue",
+      "to": "jersey_navy",
+      "region": "sleeve"
+     },
+     {
+      "from": "retail_splayer_blue",
+      "to": "helmet_navy",
+      "region": "helmet"
+     },
+     {
+      "from": "retail_splayer_blue",
+      "to": "pants_navy",
+      "region": "pants"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "26A0",
+   "outer_index": 4154,
+   "note": "2026 road: white jersey, navy shoulder bands, navy numbers with action green outline, navy pants with a grey and green stripe, navy socks, navy helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "26H0",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "jersey_navy",
+      "width": 1.5
+     }
+    ],
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "navy",
+     "center": [
+      198,
+      50
+     ],
+     "width": 24
+    },
+    "sleeve_swooshes": {
+     "colour": "navy"
+    },
+    "decorations": [
+     {
+      "rect": [
+       54,
+       4,
+       128,
+       22
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       194,
+       4,
+       268,
+       22
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       278,
+       6,
+       358,
+       20
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       420,
+       6,
+       504,
+       20
+      ],
+      "colour": "jersey_navy"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "pants_navy",
+    "stripe": [
+     [
+      "green",
+      1
+     ],
+     [
+      "grey",
+      5
+     ],
+     [
+      "green",
+      1
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "26A0",
+    "fill": "jersey_navy",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf",
+    "outline": "green",
+    "outline_frac": 0.04
+   },
+   "helmet_digits": {
+    "glyph_donor": "26A0",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "nameplate": {
+    "glyph_donor": "26A0",
+    "fill": "jersey_navy",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "retail_helmet_blue",
+    "recolour": [
+     {
+      "from": "retail_helmet_navy",
+      "to": "navy"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    },
+    "decorations": [
+     {
+      "rect": [
+       100,
+       53,
+       147,
+       99
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       100,
+       158,
+       154,
+       205
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       154,
+       0,
+       170,
+       232
+      ],
+      "colour": "green"
+     },
+     {
+      "rect": [
+       155.5,
+       0,
+       168.5,
+       232
+      ],
+      "colour": "grey"
+     }
+    ]
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_helmet_blue",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "cards": [
+       "helm_256",
+       "helm_128",
+       "unif_256"
+      ]
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 4154,
+    "torso_donor": "26A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_blue",
+      "to": "jersey_navy",
+      "region": "sleeve"
+     },
+     {
+      "from": "retail_splayer_blue",
+      "to": "helmet_navy",
+      "region": "helmet"
+     },
+     {
+      "from": "retail_splayer_blue",
+      "to": "pants_navy",
+      "region": "pants"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "college navy jersey body with wolf grey shoulder bands, small SEAHAWKS wordmark, NFL shield at the collar; the light grey patch is the neck opening",
+   "sleeve": "plain college navy",
+   "pants": "college navy with a thin green-grey-green side stripe, white maker mark",
+   "helmet": "college navy shell, Seahawks head logo (navy, white, grey, green eye), grey and white hardware, flag and shield decals",
+   "digit_jersey": "wolf grey numbers with an action green outline",
+   "digit_arm": "wolf grey numbers with an action green outline",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "wolf grey letters",
+   "socks00": "solid college navy",
+   "splayer": "far-away player atlas: navy pants, navy torso, navy helmet, navy socks, skin and glove patches",
+   "team-select_unif": "menu render: navy jersey, navy helmet with the Seahawks logo, dark shading",
+   "team-select_helm": "menu render: navy helmet with the Seahawks logo, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the Seahawks head logo: navy, white, wolf grey, action green eye",
+   "flipchip": "the Seahawks head logo on the coin toss chip",
+   "chiclet": "a glossy square in college navy"
+  },
+  "away": {
+   "torso": "white jersey body with navy shoulder bands, small SEAHAWKS wordmark, NFL shield at the collar; the light grey patch is the neck opening",
+   "sleeve": "plain white",
+   "pants": "college navy with a thin green-grey-green side stripe, white maker mark",
+   "helmet": "college navy shell, Seahawks head logo (navy, white, grey, green eye), grey and white hardware, flag and shield decals",
+   "digit_jersey": "navy numbers with an action green outline",
+   "digit_arm": "navy numbers with an action green outline",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "navy letters",
+   "socks00": "solid college navy",
+   "splayer": "far-away player atlas: navy pants, white torso, navy helmet, navy socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey, navy helmet with the Seahawks logo, dark shading",
+   "team-select_helm": "menu render: navy helmet with the Seahawks logo, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the Seahawks head logo: navy, white, wolf grey, action green eye",
+   "flipchip": "the Seahawks head logo on the coin toss chip",
+   "chiclet": "a glossy square in college navy"
+  },
+  "venue": {
+   "endzone": "college navy painted end zone with a white SEAHAWKS wordmark",
+   "center_logo": "the Seahawks head logo in navy, grey, white and green",
+   "banner": "cloth fan banners in navy, green, grey and white",
+   "wall": "college navy wall bands with repeated Seahawks logos"
+  }
+ },
+ "venue": {
+  "prefix": "s26",
+  "notes": "Seahawks home games stay at the retail Seattle venue. End zones: college navy paint with a white SEAHAWKS wordmark (one texture serves both ends on this venue; INFERRED from the Lumen Field look). Midfield: the 2012 logo in full colour. Field walls: navy bands with the 2012 logo; fan banners with 2026 players and the Super Bowl LX title.",
+  "sources": [
+   "https://www.seahawks.com/photos/photos-must-see-game-action-shots-from-seahawks-vs-cardinals-week-2"
+  ],
+  "endzone": {
+   "paint": "field_navy",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      384,
+      62
+     ],
+     "height": 50,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "jersey_navy",
+      "items": [
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         64,
+         32
+        ],
+        "width": 90
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         64,
+         32
+        ],
+        "width": 90
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         64,
+         32
+        ],
+        "width": 90
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         64,
+         32
+        ],
+        "width": 90
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "green",
+      "items": [
+       {
+        "text": "SUPER BOWL LX\nCHAMPIONS",
+        "colour": "jersey_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 13
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "DARNOLD\n#14",
+        "colour": "jersey_navy",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "green",
+      "items": [
+       {
+        "text": "JSN\n#11",
+        "colour": "jersey_navy",
+        "center": [
+         192,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "jersey_navy",
+      "items": [
+       {
+        "text": "SPOON\n#21",
+        "colour": "green",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "grey",
+      "items": [
+       {
+        "text": "12s\nLOUD!",
+        "colour": "jersey_navy",
+        "center": [
+         192,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO\nHAWKS",
+        "colour": "jersey_navy",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "green",
+      "items": [
+       {
+        "text": "12TH\nMAN",
+        "colour": "jersey_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "fieldwall2": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       256
+      ],
+      "bg": "jersey_navy",
+      "items": [
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         46,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         46,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         46,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         46,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         128,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         128,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         128,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         128,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         210,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         210,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         210,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         210,
+         26
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         46,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         46,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         46,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         46,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         128,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         128,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         128,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         128,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         210,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         210,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         210,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         210,
+         78
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         46,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         46,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         46,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         46,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         128,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         128,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         128,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         128,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         210,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         210,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         210,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         210,
+         128
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         46,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         46,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         46,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         46,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         128,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         128,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         128,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         128,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         210,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         210,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         210,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         210,
+         180
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         46,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         46,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         46,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         46,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         128,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         128,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         128,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         128,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L0_navy",
+        "colour": "navy",
+        "center": [
+         210,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_grey",
+        "colour": "grey",
+        "center": [
+         210,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_white",
+        "colour": "white",
+        "center": [
+         210,
+         232
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_green",
+        "colour": "green",
+        "center": [
+         210,
+         232
+        ],
+        "width": 70
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

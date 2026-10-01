@@ -38,8 +38,8 @@ class IntegrationTests(unittest.TestCase):
         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
         catalog = build_nfl2k5_product_catalog(registry)
-        self.assertEqual(len(registry.capabilities), 177)
-        self.assertEqual(len(catalog.capabilities), 102)
+        self.assertEqual(len(registry.capabilities), 207)  # b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u5 MetLife model, b76-u6 SoFi Stadium, b76-st Highmark Stadium, b76-tf modern surfaces, b76-km: + kick meter, b76-hm modern helmets, b76-st2 AT&T, Levi's, Allegiant and Mercedes-Benz, b76-st4 Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + modern_board_kit
+        self.assertEqual(len(catalog.capabilities), 132)
         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
         source = path.read_text()
         # Execute the production assertions against the actual registry, without
@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
                                           'require(len(product_catalog.capabilities)')):
                     with self.subTest(expression=expression):
                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
-        self.assertTrue('registry=177 sections=12 nfl2k5_capabilities=102' in source)
-        self.assertIn('registry=177 sections=12 nfl2k5_capabilities=102',
+        self.assertTrue('registry=207 sections=12 nfl2k5_capabilities=132' in source)
+        self.assertIn('registry=207 sections=12 nfl2k5_capabilities=132',
                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
 
     def test_new_core_modules_are_in_all_release_closures(self):

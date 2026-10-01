@@ -547,8 +547,16 @@ def _site_state(payload: bytes, sites: list[tuple[str, int, bytes, bytes]]) -> s
         if payload[off:off + len(expected)] != expected:
             return "foreign"
     states = set()
-    for _label, off, before, after in sites:
+    menus_view = None
+    for label, off, before, after in sites:
         got = payload[off: off + len(before)]
+        if label == "hook" and got not in (before, after):
+            # b76-vb3 D2: the 4:3-menus owner (nfl2k5_widescreen_menus) enters the camera activation call first; read
+            # the site through its view, which verifies that owner's code and the cave address it forwards to.
+            if menus_view is None:
+                from . import nfl2k5_widescreen_menus as menus
+                menus_view = menus.views(payload)
+            got = menus_view.get(HOOK_VA, got)
         states.add("retail" if got == before else "applied" if got == after else "foreign")
     if states == {"retail"}:
         return "retail"

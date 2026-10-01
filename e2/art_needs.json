@@ -1,0 +1,2977 @@
+{
+  "schema": "e2.art_needs.v1",
+  "classification": "DESIGN",
+  "rendered_asset_approval": false,
+  "moments": [
+    {
+      "row": 1,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "DAL",
+          "season": 1967,
+          "jersey_pants": "white/silver-blue",
+          "set": "1967 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DAL&year=1967",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "GB",
+          "season": 1967,
+          "jersey_pants": "green/gold",
+          "set": "1967 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=1967",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Dallas blue-star silver helmet; Green Bay G helmet. Regular 1967 sets.",
+      "existing": {
+        "away": {
+          "kit": "07a5.iff",
+          "retail_style": "1964 - 1966 Uniform",
+          "expanded_build_kit": "07a5.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "10h3.iff",
+          "retail_style": "1966 - 1976 Uniform",
+          "expanded_build_kit": "10h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Lambeau Field"
+      },
+      "existing_field": {
+        "index": 10,
+        "asset_code": "s10",
+        "retail_name": "Lambeau Field",
+        "candidate_B_name": "Lambeau Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/196712310gnb.htm",
+        "https://www.profootballhof.com/football-history/the-ice-bowl",
+        "https://www.profootballhof.com/football-history/the-ice-bowl"
+      ]
+    },
+    {
+      "row": 2,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NYJ",
+          "season": 1968,
+          "jersey_pants": "white/white",
+          "set": "1968 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYJ&year=1968",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "OAK",
+          "season": 1968,
+          "jersey_pants": "black/silver",
+          "set": "1968 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAI&year=1968",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Jets white oval-logo helmet; regular 1968 AFL sets.",
+      "existing": {
+        "away": {
+          "kit": "19a4.iff",
+          "retail_style": "1965 - 1968 Uniform",
+          "expanded_build_kit": "19a4.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "20h1.iff",
+          "retail_style": "1966 - 1967 Uniform",
+          "expanded_build_kit": "20h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Oakland-Alameda County Coliseum"
+      },
+      "existing_field": {
+        "index": 20,
+        "asset_code": "s20",
+        "retail_name": "Network Associates Coliseum",
+        "candidate_B_name": "Network Associates Coliseum",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/196811170rai.htm",
+        "https://www.profootballhof.com/news/heidi",
+        "https://www.profootballhof.com/news/heidi"
+      ]
+    },
+    {
+      "row": 3,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "MIA",
+          "season": 1971,
+          "jersey_pants": "white/white",
+          "set": "1971 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIA&year=1971",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 1971,
+          "jersey_pants": "red/white",
+          "set": "1971 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=1971",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Miami 1971 plain-sleeve era and Kansas City grey facemask era; do not copy modern striping.",
+      "existing": {
+        "away": {
+          "kit": "14a5.iff",
+          "retail_style": "1971 - 1972 Uniform",
+          "expanded_build_kit": "14a5.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "13h3.iff",
+          "retail_style": "1970 - 1971 Uniform",
+          "expanded_build_kit": "13h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Municipal Stadium, Kansas City"
+      },
+      "existing_field": {
+        "index": 13,
+        "asset_code": "s13",
+        "retail_name": "Arrowhead Stadium",
+        "candidate_B_name": "Arrowhead Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/197112250kan.htm",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf"
+      ]
+    },
+    {
+      "row": 4,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "OAK",
+          "season": 1972,
+          "jersey_pants": "white/silver",
+          "set": "1972 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAI&year=1972",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "PIT",
+          "season": 1972,
+          "jersey_pants": "black/gold",
+          "set": "1972 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=1972",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "20a1.iff",
+          "retail_style": "1966 - 1967 Uniform",
+          "expanded_build_kit": "20a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "22h1.iff",
+          "retail_style": "1968 - 1976 Uniform",
+          "expanded_build_kit": "22h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Three Rivers Stadium"
+      },
+      "existing_field": {
+        "index": 22,
+        "asset_code": "s22",
+        "retail_name": "Heinz Field",
+        "candidate_B_name": "Acrisure Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/197212230pit.htm"
+      ]
+    },
+    {
+      "row": 5,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "MIA",
+          "season": 1974,
+          "jersey_pants": "white/white",
+          "set": "1974 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIA&year=1974",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "OAK",
+          "season": 1974,
+          "jersey_pants": "black/silver",
+          "set": "1974 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAI&year=1974",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "14a4.iff",
+          "retail_style": "1972 - 1973 Uniform",
+          "expanded_build_kit": "14a4.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "20h1.iff",
+          "retail_style": "1966 - 1967 Uniform",
+          "expanded_build_kit": "20h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Oakland-Alameda County Coliseum"
+      },
+      "existing_field": {
+        "index": 20,
+        "asset_code": "s20",
+        "retail_name": "Network Associates Coliseum",
+        "candidate_B_name": "Network Associates Coliseum",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler"
+      ]
+    },
+    {
+      "row": 6,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "WAS",
+          "season": 1979,
+          "jersey_pants": "burgundy/white",
+          "set": "1979 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=WAS&year=1979",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DAL",
+          "season": 1979,
+          "jersey_pants": "white/silver-blue",
+          "set": "1979 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DAL&year=1979",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Dallas wore home white; historic-name routing currently selects the dark home file.",
+      "existing": {
+        "away": {
+          "kit": "29a3.iff",
+          "retail_style": "1972 - 1977 Uniform",
+          "expanded_build_kit": "29a3.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "07h3.iff",
+          "retail_style": "1977 - 1980 Uniform",
+          "expanded_build_kit": "07h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Texas Stadium"
+      },
+      "existing_field": {
+        "index": 7,
+        "asset_code": "s07",
+        "retail_name": "Texas Stadium",
+        "candidate_B_name": "Texas Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown"
+      ]
+    },
+    {
+      "row": 7,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NO",
+          "season": 1980,
+          "jersey_pants": "white/black",
+          "set": "1980 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=1980",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job.",
+          "additional_sources": [
+            "https://static.clubs.nfl.com/image/upload/saints/sxtkajg4ucn4vq26ytkj.pdf"
+          ]
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 1980,
+          "jersey_pants": "red/gold",
+          "set": "1980 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=1980",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Saints road white/black in the 1976-1985 pants era; not gold pants.",
+      "existing": {
+        "away": {
+          "kit": "17a5.iff",
+          "retail_style": "1976 - 1982 Uniform",
+          "expanded_build_kit": "17a5.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "25h3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Candlestick Park"
+      },
+      "existing_field": {
+        "index": 25,
+        "asset_code": "s25",
+        "retail_name": "San Francisco Park",
+        "candidate_B_name": "San Francisco Park",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198012070sfo.htm",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090"
+      ]
+    },
+    {
+      "row": 8,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "SD",
+          "season": 1981,
+          "jersey_pants": "white/gold",
+          "set": "1981 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SD&year=1981",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "MIA",
+          "season": 1981,
+          "jersey_pants": "aqua/white",
+          "set": "1981 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIA&year=1981",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job.",
+          "additional_sources": [
+            "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=white-at-home&page-title=White+at+Home"
+          ]
+        }
+      },
+      "detail": "Miami wore aqua for the Epic in Miami; San Diego wore white/gold. Do not confuse it with their January 1983 playoff uniform choices.",
+      "existing": {
+        "away": {
+          "kit": "24a4.iff",
+          "retail_style": "1978 - 1979 Uniform",
+          "expanded_build_kit": "24a4.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "14h3.iff",
+          "retail_style": "1979 - 1980 Uniform",
+          "expanded_build_kit": "14h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Miami Orange Bowl"
+      },
+      "existing_field": {
+        "index": 14,
+        "asset_code": "s14",
+        "retail_name": "Pro Player Stadium",
+        "candidate_B_name": "Hard Rock Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198201020mia.htm",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami"
+      ]
+    },
+    {
+      "row": 9,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "DAL",
+          "season": 1981,
+          "jersey_pants": "white/silver-blue",
+          "set": "1981 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DAL&year=1981",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 1981,
+          "jersey_pants": "red/gold",
+          "set": "1981 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=1981",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "07a2.iff",
+          "retail_style": "1982 - 1994 Uniform",
+          "expanded_build_kit": "07a2.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "25h3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Candlestick Park"
+      },
+      "existing_field": {
+        "index": 25,
+        "asset_code": "s25",
+        "retail_name": "San Francisco Park",
+        "candidate_B_name": "San Francisco Park",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198201100sfo.htm"
+      ]
+    },
+    {
+      "row": 10,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "LA",
+          "season": 1983,
+          "jersey_pants": "black/silver",
+          "set": "1983 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAI&year=1983",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "WAS",
+          "season": 1983,
+          "jersey_pants": "white/burgundy",
+          "set": "1983 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=WAS&year=1983",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Washington home white; Los Angeles Raiders dark. Current side-letter selection is reversed.",
+      "existing": {
+        "away": {
+          "kit": "20a1.iff",
+          "retail_style": "1966 - 1967 Uniform",
+          "expanded_build_kit": "20a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "29h2.iff",
+          "retail_style": "1982 Uniform",
+          "expanded_build_kit": "29h2.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "RFK Stadium"
+      },
+      "existing_field": {
+        "index": 29,
+        "asset_code": "s29",
+        "retail_name": "Washington Field",
+        "candidate_B_name": "Northwest Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198310020was.htm",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555"
+      ]
+    },
+    {
+      "row": 11,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 1986,
+          "jersey_pants": "orange/white",
+          "set": "1986 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=1986",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "CLE",
+          "season": 1986,
+          "jersey_pants": "white/white",
+          "set": "1986 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CLE&year=1986",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job.",
+          "additional_sources": [
+            "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=white-at-home&page-title=White+at+Home"
+          ]
+        }
+      },
+      "detail": "Cleveland wore home white in 1986; Denver wore orange. Current kit side letters are reversed.",
+      "existing": {
+        "away": {
+          "kit": "08a1.iff",
+          "retail_style": "1985 - 1996 Uniform",
+          "expanded_build_kit": "08a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "30h1.iff",
+          "retail_style": "1983 - 1984 Uniform",
+          "expanded_build_kit": "30h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Cleveland Municipal Stadium"
+      },
+      "existing_field": {
+        "index": 30,
+        "asset_code": "s30",
+        "retail_name": "The Cleveland Browns Stadium",
+        "candidate_B_name": "Huntington Bank Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198701110cle.htm"
+      ]
+    },
+    {
+      "row": 12,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 1987,
+          "jersey_pants": "white/gold",
+          "set": "1987 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=1987",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "CIN",
+          "season": 1987,
+          "jersey_pants": "black/white",
+          "set": "1987 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=1987",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "25a3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25a3.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "06h1.iff",
+          "retail_style": "1981 - 1997 Uniform",
+          "expanded_build_kit": "06h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Riverfront Stadium"
+      },
+      "existing_field": {
+        "index": 6,
+        "asset_code": "s06",
+        "retail_name": "Paul Brown Stadium",
+        "candidate_B_name": "Paycor Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198709200cin.htm"
+      ]
+    },
+    {
+      "row": 13,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "TB",
+          "season": 1987,
+          "jersey_pants": "white/white",
+          "set": "1987 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=TB&year=1987",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "STL",
+          "season": 1987,
+          "jersey_pants": "red/white",
+          "set": "1987 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SLC&year=1987",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "St. Louis Cardinals, not Los Angeles/St. Louis Rams; Tampa Bay creamsicle-era white.",
+      "existing": {
+        "away": {
+          "kit": "27a3.iff",
+          "retail_style": "1976 - 1991 Uniform",
+          "expanded_build_kit": "27a3.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "00h3.iff",
+          "retail_style": "1971 - 1972 Uniform",
+          "expanded_build_kit": "00h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Busch Memorial Stadium"
+      },
+      "existing_field": {
+        "index": 23,
+        "asset_code": "s23",
+        "retail_name": "Edward Jones Dome",
+        "candidate_B_name": "SoFi Stadium",
+        "candidate_B_field": "modern SoFi model and 2026 team field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198711080crd.htm",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946"
+      ]
+    },
+    {
+      "row": 14,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "CIN",
+          "season": 1988,
+          "jersey_pants": "white/white",
+          "set": "1988 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=1988",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 1988,
+          "jersey_pants": "red/gold",
+          "set": "1988 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=1988",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "06a1.iff",
+          "retail_style": "1981 - 1997 Uniform",
+          "expanded_build_kit": "06a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "25h3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXIII field",
+        "venue": "Joe Robbie Stadium"
+      },
+      "existing_field": {
+        "index": 14,
+        "asset_code": "s14",
+        "retail_name": "Pro Player Stadium",
+        "candidate_B_name": "Hard Rock Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/198901220cin.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII"
+      ]
+    },
+    {
+      "row": 15,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 1990,
+          "jersey_pants": "white/white",
+          "set": "1990 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=1990",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NYG",
+          "season": 1990,
+          "jersey_pants": "blue/white",
+          "set": "1990 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=1990",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Bills red helmet; Giants GIANTS helmet wordmark era.",
+      "existing": {
+        "away": {
+          "kit": "03a2.iff",
+          "retail_style": "1987 - 2002 Uniform",
+          "expanded_build_kit": "03a2.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "18h2.iff",
+          "retail_style": "1981 - 1999 Uniform",
+          "expanded_build_kit": "18h2.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXV field",
+        "venue": "Tampa Stadium"
+      },
+      "existing_field": {
+        "index": 27,
+        "asset_code": "s27",
+        "retail_name": "Tampa Bay Stadium",
+        "candidate_B_name": "Raymond James Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199101270buf.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV"
+      ]
+    },
+    {
+      "row": 16,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "HOU",
+          "season": 1991,
+          "jersey_pants": "white/white",
+          "set": "1991 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=OIL&year=1991",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 1991,
+          "jersey_pants": "orange/white",
+          "set": "1991 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=1991",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Houston Oilers derrick and Columbia-blue trim, not Houston Texans or Tennessee Titans.",
+      "existing": {
+        "away": {
+          "kit": "28a1.iff",
+          "retail_style": "1989 - 1990 Uniform",
+          "expanded_build_kit": "28a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "08h1.iff",
+          "retail_style": "1985 - 1996 Uniform",
+          "expanded_build_kit": "08h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Mile High Stadium"
+      },
+      "existing_field": {
+        "index": 8,
+        "asset_code": "s08",
+        "retail_name": "INVESCO Field at Mile High Stadium",
+        "candidate_B_name": "Empower Field at Mile High",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199201040den.htm",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers"
+      ]
+    },
+    {
+      "row": 17,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 1992,
+          "jersey_pants": "white/white",
+          "set": "1992 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=1992",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job.",
+          "additional_sources": [
+            "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/KC.pdf"
+          ]
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 1992,
+          "jersey_pants": "orange/white",
+          "set": "1992 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=1992",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Kansas City wore white pants on the road in 1989-1999, with a WWD memorial patch in 1992.",
+      "existing": {
+        "away": {
+          "kit": "13a2.iff",
+          "retail_style": "1991 - 1993 Uniform",
+          "expanded_build_kit": "13a2.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "08h1.iff",
+          "retail_style": "1985 - 1996 Uniform",
+          "expanded_build_kit": "08h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Mile High Stadium"
+      },
+      "existing_field": {
+        "index": 8,
+        "asset_code": "s08",
+        "retail_name": "INVESCO Field at Mile High Stadium",
+        "candidate_B_name": "Empower Field at Mile High",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199210040den.htm"
+      ]
+    },
+    {
+      "row": 18,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "HOU",
+          "season": 1992,
+          "jersey_pants": "white/white",
+          "set": "1992 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=OIL&year=1992",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 1992,
+          "jersey_pants": "blue/white",
+          "set": "1992 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=1992",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Houston Oilers derrick; Bills red helmet.",
+      "existing": {
+        "away": {
+          "kit": "28a1.iff",
+          "retail_style": "1989 - 1990 Uniform",
+          "expanded_build_kit": "28a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "03h2.iff",
+          "retail_style": "1987 - 2002 Uniform",
+          "expanded_build_kit": "03h2.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Rich Stadium"
+      },
+      "existing_field": {
+        "index": 3,
+        "asset_code": "s03",
+        "retail_name": "Ralph Wilson Stadium",
+        "candidate_B_name": "Highmark Stadium (2026 replacement)",
+        "candidate_B_field": "modern Highmark model and 2026 Bills field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199301030buf.htm"
+      ]
+    },
+    {
+      "row": 19,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 1994,
+          "jersey_pants": "white/white",
+          "set": "1994 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=1994",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job.",
+          "additional_sources": [
+            "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/KC.pdf"
+          ]
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 1994,
+          "jersey_pants": "orange/white",
+          "set": "1994 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=1994",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular 1994 sets: Chiefs all-white with 75th-season and 35th-anniversary patches. Denver throwbacks were Weeks 3-4, not this Week 7 game. Retail reverses the clubs and venue.",
+      "existing": {
+        "away": {
+          "kit": "08a1.iff",
+          "retail_style": "1985 - 1996 Uniform",
+          "expanded_build_kit": "08a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "13h1.iff",
+          "retail_style": "1993 - 1994 Uniform",
+          "expanded_build_kit": "13h1.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Mile High Stadium"
+      },
+      "existing_field": {
+        "index": 13,
+        "asset_code": "s13",
+        "retail_name": "Arrowhead Stadium",
+        "candidate_B_name": "Arrowhead Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199410170den.htm"
+      ]
+    },
+    {
+      "row": 20,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "IND",
+          "season": 1997,
+          "jersey_pants": "white/white",
+          "set": "1997 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=IND&year=1997",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 1997,
+          "jersey_pants": "blue/white",
+          "set": "1997 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=1997",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "11a1.iff",
+          "retail_style": "1995 Uniform",
+          "expanded_build_kit": "11a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "03h2.iff",
+          "retail_style": "1987 - 2002 Uniform",
+          "expanded_build_kit": "03h2.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Rich Stadium"
+      },
+      "existing_field": {
+        "index": 3,
+        "asset_code": "s03",
+        "retail_name": "Ralph Wilson Stadium",
+        "candidate_B_name": "Highmark Stadium (2026 replacement)",
+        "candidate_B_field": "modern Highmark model and 2026 Bills field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199709210buf.htm",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086"
+      ]
+    },
+    {
+      "row": 21,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "GB",
+          "season": 1997,
+          "jersey_pants": "white/gold",
+          "set": "1997 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=1997",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 1997,
+          "jersey_pants": "navy/white",
+          "set": "1997 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=1997",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Denver 1997 redesign; no orange throwback. Super Bowl XXXII patch.",
+      "existing": {
+        "away": {
+          "kit": "10a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "10a7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "08h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "08h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXXII field",
+        "venue": "Qualcomm Stadium"
+      },
+      "existing_field": {
+        "index": 24,
+        "asset_code": "s24",
+        "retail_name": "QUALCOMM Stadium",
+        "candidate_B_name": "SoFi Stadium",
+        "candidate_B_field": "modern SoFi model and 2026 team field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/199801250den.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII"
+      ]
+    },
+    {
+      "row": 22,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "STL",
+          "season": 1999,
+          "jersey_pants": "royal-blue/yellow",
+          "set": "1999 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAM&year=1999",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "TEN",
+          "season": 1999,
+          "jersey_pants": "white/navy",
+          "set": "1999 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=TEN&year=1999",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Rams pre-2000 royal-blue/yellow set, not metallic gold; Titans wore white with navy pants. Both kit directions need correcting.",
+      "existing": {
+        "away": {
+          "kit": "23a2.iff",
+          "retail_style": "1998 - 1999 Uniform",
+          "expanded_build_kit": "23a2.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "28h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "28h9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXXIV field",
+        "venue": "Georgia Dome"
+      },
+      "existing_field": {
+        "index": 1,
+        "asset_code": "s01",
+        "retail_name": "The Georgia Dome",
+        "candidate_B_name": "The Georgia Dome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/200001300oti.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV"
+      ]
+    },
+    {
+      "row": 23,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "STL",
+          "season": 2001,
+          "jersey_pants": "white/metallic-gold",
+          "set": "2001 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAM&year=2001",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2001,
+          "jersey_pants": "navy/silver",
+          "set": "2001 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2001",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Rams post-2000 navy/metallic-gold era. Super Bowl XXXVI patch.",
+      "existing": {
+        "away": {
+          "kit": "23a1.iff",
+          "retail_style": "2002 - 2003 Uniform",
+          "expanded_build_kit": "23a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXXVI field",
+        "venue": "Louisiana Superdome"
+      },
+      "existing_field": {
+        "index": 17,
+        "asset_code": "s17",
+        "retail_name": "The Louisiana Super Dome",
+        "candidate_B_name": "Caesars Superdome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/200202030nwe.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI"
+      ]
+    },
+    {
+      "row": 24,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NYG",
+          "season": 2002,
+          "jersey_pants": "white/grey",
+          "set": "2002 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2002",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 2002,
+          "jersey_pants": "red/metallic-gold",
+          "set": "2002 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2002",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Giants 2002 white jersey with blue numerals; 49ers 1996-2008 dark-red/metallic-gold era.",
+      "existing": {
+        "away": {
+          "kit": "18a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "18a8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "25h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "25h8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "3Com Park at Candlestick Point"
+      },
+      "existing_field": {
+        "index": 25,
+        "asset_code": "s25",
+        "retail_name": "San Francisco Park",
+        "candidate_B_name": "San Francisco Park",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/200301050sfo.htm"
+      ]
+    },
+    {
+      "row": 25,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "GB",
+          "season": 2003,
+          "jersey_pants": "white/gold",
+          "set": "2003 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=2003",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "PHI",
+          "season": 2003,
+          "jersey_pants": "midnight-green/white",
+          "set": "2003 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2003",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "10a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "10a7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "21h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "21h9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Lincoln Financial Field"
+      },
+      "existing_field": {
+        "index": 21,
+        "asset_code": "s21",
+        "retail_name": "Lincoln Financial Field",
+        "candidate_B_name": "Lincoln Financial Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": null
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://www.pro-football-reference.com/boxscores/200401110phi.htm"
+      ]
+    },
+    {
+      "row": 26,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "ATL",
+          "season": 1998,
+          "jersey_pants": "white/white",
+          "set": "1998 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ATL&year=1998",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "MIN",
+          "season": 1998,
+          "jersey_pants": "purple/white",
+          "set": "1998 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=1998",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "01a1.iff",
+          "retail_style": "1998 - 2003 Uniform",
+          "expanded_build_kit": "01a1.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "15h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "15h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Hubert H. Humphrey Metrodome"
+      },
+      "existing_field": {
+        "index": 15,
+        "asset_code": "s15",
+        "retail_name": "H. H. H. Metrodome",
+        "candidate_B_name": "H. H. H. Metrodome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Hubert H. Humphrey Metrodome"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+        "https://www.atlantafalcons.com/news/1998-nfc-championship-game-postgame-notes",
+        "https://www.nfl.com/news/1998-nfc-championship-09000d5d8060961f"
+      ]
+    },
+    {
+      "row": 27,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NYG",
+          "season": 2007,
+          "jersey_pants": "white/grey",
+          "set": "2007 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2007",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2007,
+          "jersey_pants": "navy/silver",
+          "set": "2007 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2007",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Giants 2005-2016 red-numeral white jersey, grey pants; Patriots navy/silver. Not Giants blue/Patriots white.",
+      "existing": {
+        "away": {
+          "kit": "18a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "18a8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLII field",
+        "venue": "University of Phoenix Stadium"
+      },
+      "existing_field": {
+        "index": 38,
+        "asset_code": "s41",
+        "retail_name": "Super Bowl 2008 Stadium",
+        "candidate_B_name": "Super Bowl 2008 Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "University of Phoenix Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII"
+      ]
+    },
+    {
+      "row": 28,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "PIT",
+          "season": 2008,
+          "jersey_pants": "white/gold",
+          "set": "2008 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=2008",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "ARI",
+          "season": 2008,
+          "jersey_pants": "red/white",
+          "set": "2008 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ARZ&year=2008",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Steelers chose white; Arizona wore red. Super Bowl XLIII patches.",
+      "existing": {
+        "away": {
+          "kit": "22a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "22a6.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "00h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "00h9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLIII field",
+        "venue": "Raymond James Stadium"
+      },
+      "existing_field": {
+        "index": 27,
+        "asset_code": "s27",
+        "retail_name": "Tampa Bay Stadium",
+        "candidate_B_name": "Raymond James Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Raymond James Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII"
+      ]
+    },
+    {
+      "row": 29,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NYG",
+          "season": 2011,
+          "jersey_pants": "white/grey",
+          "set": "2011 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2011",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2011,
+          "jersey_pants": "navy/silver",
+          "set": "2011 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2011",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Giants 2005-2016 road set; Patriots 2000-2019 set.",
+      "existing": {
+        "away": {
+          "kit": "18a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "18a8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLVI field",
+        "venue": "Lucas Oil Stadium"
+      },
+      "existing_field": {
+        "index": 11,
+        "asset_code": "s11",
+        "retail_name": "The RCA Dome",
+        "candidate_B_name": "The RCA Dome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Lucas Oil Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI"
+      ]
+    },
+    {
+      "row": 30,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2016,
+          "jersey_pants": "white/navy",
+          "set": "2016 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2016",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "ATL",
+          "season": 2016,
+          "jersey_pants": "red/white",
+          "set": "2016 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ATL&year=2016",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Patriots 2000-2019 road set; Atlanta 2003-2019 red set.",
+      "existing": {
+        "away": {
+          "kit": "16a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16a12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "01h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "01h14.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl LI field",
+        "venue": "NRG Stadium"
+      },
+      "existing_field": {
+        "index": 31,
+        "asset_code": "s37",
+        "retail_name": "Reliant Stadium",
+        "candidate_B_name": "Reliant Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "NRG Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI"
+      ]
+    },
+    {
+      "row": 31,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "MIN",
+          "season": 2022,
+          "jersey_pants": "white/purple",
+          "set": "2022 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2022",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 2022,
+          "jersey_pants": "blue/white",
+          "set": "2022 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=2022",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Minnesota 2013 redesign, white/purple; Buffalo 2011 redesign, white helmet.",
+      "existing": {
+        "away": {
+          "kit": "15a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "15a7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "03h4.iff",
+          "retail_style": "1976 - 1983 Uniform",
+          "expanded_build_kit": "03h4.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Highmark Stadium"
+      },
+      "existing_field": {
+        "index": 3,
+        "asset_code": "s03",
+        "retail_name": "Ralph Wilson Stadium",
+        "candidate_B_name": "Highmark Stadium (2026 replacement)",
+        "candidate_B_field": "modern Highmark model and 2026 Bills field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Highmark Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 32,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 1999,
+          "jersey_pants": "white/white",
+          "set": "1999 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=1999",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "TEN",
+          "season": 1999,
+          "jersey_pants": "navy/white",
+          "set": "1999 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=TEN&year=1999",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "03a2.iff",
+          "retail_style": "1987 - 2002 Uniform",
+          "expanded_build_kit": "03a2.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "28h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "28h9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Adelphia Coliseum"
+      },
+      "existing_field": {
+        "index": 28,
+        "asset_code": "s28",
+        "retail_name": "Titans Coliseum",
+        "candidate_B_name": "Nissan Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Adelphia Coliseum"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    {
+      "row": 33,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "OAK",
+          "season": 2001,
+          "jersey_pants": "white/silver",
+          "set": "2001 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=RAI&year=2001",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2001,
+          "jersey_pants": "navy/silver",
+          "set": "2001 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2001",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "20a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "20a5.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Foxboro Stadium"
+      },
+      "existing_field": {
+        "index": 16,
+        "asset_code": "s16",
+        "retail_name": "Gillette Stadium",
+        "candidate_B_name": "Gillette Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Foxboro Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    {
+      "row": 34,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "CAR",
+          "season": 2003,
+          "jersey_pants": "white/white",
+          "set": "2003 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CAR&year=2003",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2003,
+          "jersey_pants": "navy/silver",
+          "set": "2003 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2003",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "04a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "04a3.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XXXVIII field",
+        "venue": "Reliant Stadium"
+      },
+      "existing_field": {
+        "index": 31,
+        "asset_code": "s37",
+        "retail_name": "Reliant Stadium",
+        "candidate_B_name": "Reliant Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Reliant Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
+      ]
+    },
+    {
+      "row": 35,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NO",
+          "season": 2009,
+          "jersey_pants": "white/gold",
+          "set": "2009 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2009",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "IND",
+          "season": 2009,
+          "jersey_pants": "blue/white",
+          "set": "2009 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=IND&year=2009",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "17a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "17a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "11h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "11h8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLIV field",
+        "venue": "Sun Life Stadium"
+      },
+      "existing_field": {
+        "index": 37,
+        "asset_code": "s43",
+        "retail_name": "Super Bowl 2007 Stadium",
+        "candidate_B_name": "Super Bowl 2007 Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Sun Life Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
+      ]
+    },
+    {
+      "row": 36,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "PHI",
+          "season": 2010,
+          "jersey_pants": "white/midnight-green",
+          "set": "2010 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2010",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NYG",
+          "season": 2010,
+          "jersey_pants": "blue/grey",
+          "set": "2010 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2010",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "21a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "21a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "18h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "18h8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "New Meadowlands Stadium"
+      },
+      "existing_field": {
+        "index": 18,
+        "asset_code": "s18",
+        "retail_name": "Giants Stadium",
+        "candidate_B_name": "MetLife Stadium",
+        "candidate_B_field": "modern MetLife model and team field",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "New Meadowlands Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands"
+      ]
+    },
+    {
+      "row": 37,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NO",
+          "season": 2010,
+          "jersey_pants": "white/gold",
+          "set": "2010 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2010",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SEA",
+          "season": 2010,
+          "jersey_pants": "slate-blue/slate-blue",
+          "set": "2010 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SEA&year=2010",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Seattle 2002-2011 monochrome slate-blue, not the 2012 Nike navy set.",
+      "existing": {
+        "away": {
+          "kit": "17a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "17a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "26h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "26h5.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Qwest Field"
+      },
+      "existing_field": {
+        "index": 26,
+        "asset_code": "s26",
+        "retail_name": "Qwest Field",
+        "candidate_B_name": "Lumen Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Qwest Field"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Beast_Quake"
+      ]
+    },
+    {
+      "row": 38,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NO",
+          "season": 2011,
+          "jersey_pants": "white/black",
+          "set": "2011 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2011",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 2011,
+          "jersey_pants": "red/gold",
+          "set": "2011 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2011",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "San Francisco 2009 redesign, not literally a 1981 uniform.",
+      "existing": {
+        "away": {
+          "kit": "17a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "17a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "25h3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Candlestick Park"
+      },
+      "existing_field": {
+        "index": 25,
+        "asset_code": "s25",
+        "retail_name": "San Francisco Park",
+        "candidate_B_name": "San Francisco Park",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Candlestick Park"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/The_Catch_III"
+      ]
+    },
+    {
+      "row": 39,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "BAL",
+          "season": 2012,
+          "jersey_pants": "white/black",
+          "set": "2012 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DEN",
+          "season": 2012,
+          "jersey_pants": "orange/white",
+          "set": "2012 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=2012",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Denver orange primary returned in 2012; retail style 0 home is navy.",
+      "existing": {
+        "away": {
+          "kit": "02a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "02a4.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "08h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "08h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Sports Authority Field at Mile High"
+      },
+      "existing_field": {
+        "index": 8,
+        "asset_code": "s08",
+        "retail_name": "INVESCO Field at Mile High Stadium",
+        "candidate_B_name": "Empower Field at Mile High",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Sports Authority Field at Mile High"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle"
+      ]
+    },
+    {
+      "row": 40,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "BAL",
+          "season": 2012,
+          "jersey_pants": "white/black",
+          "set": "2012 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 2012,
+          "jersey_pants": "red/gold",
+          "set": "2012 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2012",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "02a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "02a4.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "25h3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25h3.iff",
+          "expanded_contents": "retail era art"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLVII field",
+        "venue": "Mercedes-Benz Superdome"
+      },
+      "existing_field": {
+        "index": 17,
+        "asset_code": "s17",
+        "retail_name": "The Louisiana Super Dome",
+        "candidate_B_name": "Caesars Superdome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Mercedes-Benz Superdome"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    {
+      "row": 41,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "DAL",
+          "season": 2014,
+          "jersey_pants": "white/silver-blue",
+          "set": "2014 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DAL&year=2014",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "GB",
+          "season": 2014,
+          "jersey_pants": "green/gold",
+          "set": "2014 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=2014",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "07a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "07a10.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "10h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "10h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Lambeau Field"
+      },
+      "existing_field": {
+        "index": 10,
+        "asset_code": "s10",
+        "retail_name": "Lambeau Field",
+        "candidate_B_name": "Lambeau Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Lambeau Field"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs"
+      ]
+    },
+    {
+      "row": 42,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2014,
+          "jersey_pants": "white/navy",
+          "set": "2014 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2014",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "SEA",
+          "season": 2014,
+          "jersey_pants": "navy/navy",
+          "set": "2014 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SEA&year=2014",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Seattle 2012 Nike set; New England 2000-2019 white/navy.",
+      "existing": {
+        "away": {
+          "kit": "16a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16a12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "26h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "26h5.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl XLIX field",
+        "venue": "University of Phoenix Stadium"
+      },
+      "existing_field": {
+        "index": 38,
+        "asset_code": "s41",
+        "retail_name": "Super Bowl 2008 Stadium",
+        "candidate_B_name": "Super Bowl 2008 Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "University of Phoenix Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
+      ]
+    },
+    {
+      "row": 43,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "GB",
+          "season": 2015,
+          "jersey_pants": "white/gold",
+          "set": "2015 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=2015",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "DET",
+          "season": 2015,
+          "jersey_pants": "Honolulu-blue/silver",
+          "set": "2015 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DET&year=2015",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Detroit pre-2017 black-trim set; Green Bay standard road.",
+      "existing": {
+        "away": {
+          "kit": "10a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "10a7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "09h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "09h10.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "Ford Field"
+      },
+      "existing_field": {
+        "index": 9,
+        "asset_code": "s09",
+        "retail_name": "Ford Field",
+        "candidate_B_name": "Ford Field",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Ford Field"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ]
+    },
+    {
+      "row": 44,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "NO",
+          "season": 2017,
+          "jersey_pants": "white/black",
+          "set": "2017 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2017",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "MIN",
+          "season": 2017,
+          "jersey_pants": "purple/white",
+          "set": "2017 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2017",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "17a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "17a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "15h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "15h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "U.S. Bank Stadium"
+      },
+      "existing_field": {
+        "index": 15,
+        "asset_code": "s15",
+        "retail_name": "H. H. H. Metrodome",
+        "candidate_B_name": "H. H. H. Metrodome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "U.S. Bank Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds"
+      ]
+    },
+    {
+      "row": 45,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "PHI",
+          "season": 2017,
+          "jersey_pants": "midnight-green/white",
+          "set": "2017 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2017",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "NE",
+          "season": 2017,
+          "jersey_pants": "white/navy",
+          "set": "2017 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2017",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Philadelphia wore green; New England white. Both current side-letter choices are wrong.",
+      "existing": {
+        "away": {
+          "kit": "21a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "21a9.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "16h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "16h12.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl LII field",
+        "venue": "U.S. Bank Stadium"
+      },
+      "existing_field": {
+        "index": 15,
+        "asset_code": "s15",
+        "retail_name": "H. H. H. Metrodome",
+        "candidate_B_name": "H. H. H. Metrodome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "U.S. Bank Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Philly_Special",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII"
+      ]
+    },
+    {
+      "row": 46,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 2019,
+          "jersey_pants": "white/gold",
+          "set": "2019 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2019",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 2019,
+          "jersey_pants": "red/white",
+          "set": "2019 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2019",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Kansas City red; San Francisco white with gold, standard 2019 sets.",
+      "existing": {
+        "away": {
+          "kit": "25a3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25a3.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "13h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "13h6.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl LIV field",
+        "venue": "Hard Rock Stadium"
+      },
+      "existing_field": {
+        "index": 37,
+        "asset_code": "s43",
+        "retail_name": "Super Bowl 2007 Stadium",
+        "candidate_B_name": "Super Bowl 2007 Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Hard Rock Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV"
+      ]
+    },
+    {
+      "row": 47,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "BUF",
+          "season": 2021,
+          "jersey_pants": "white/white",
+          "set": "2021 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=2021",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 2021,
+          "jersey_pants": "red/white",
+          "set": "2021 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2021",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Buffalo white helmet and 2011-era all-white, not a 1960s throwback.",
+      "existing": {
+        "away": {
+          "kit": "03a4.iff",
+          "retail_style": "1976 - 1983 Uniform",
+          "expanded_build_kit": "03a4.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "13h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "13h6.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "GEHA Field at Arrowhead Stadium"
+      },
+      "existing_field": {
+        "index": 13,
+        "asset_code": "s13",
+        "retail_name": "Arrowhead Stadium",
+        "candidate_B_name": "Arrowhead Stadium",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "GEHA Field at Arrowhead Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/13_seconds_game"
+      ]
+    },
+    {
+      "row": 48,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "LA",
+          "season": 2021,
+          "jersey_pants": "white/sol-yellow",
+          "set": "2021 Modern Throwback",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=LAR&year=2021",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "CIN",
+          "season": 2021,
+          "jersey_pants": "black/white",
+          "set": "2021 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=2021",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Rams Modern Throwback white jersey and sol pants, introduced in 2021. Bengals 2021 redesign. Not a retail Rams 1970s throwback.",
+      "existing": {
+        "away": {
+          "kit": "23a4.iff",
+          "retail_style": "1978 - 1979 Uniform",
+          "expanded_build_kit": "23a4.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "06h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "06h8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl LVI field",
+        "venue": "SoFi Stadium"
+      },
+      "existing_field": {
+        "index": 39,
+        "asset_code": "s44",
+        "retail_name": "Super Bowl Future Stadium",
+        "candidate_B_name": "Super Bowl Future Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "SoFi Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
+      ]
+    },
+    {
+      "row": 49,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "IND",
+          "season": 2022,
+          "jersey_pants": "white/white",
+          "set": "2022 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=IND&year=2022",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "MIN",
+          "season": 2022,
+          "jersey_pants": "purple/white",
+          "set": "2022 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2022",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "Regular era sets; Super Bowl patches where applicable.",
+      "existing": {
+        "away": {
+          "kit": "11a0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "11a8.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        },
+        "home": {
+          "kit": "15h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "15h7.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "date-specific home stadium field",
+        "venue": "U.S. Bank Stadium"
+      },
+      "existing_field": {
+        "index": 15,
+        "asset_code": "s15",
+        "retail_name": "H. H. H. Metrodome",
+        "candidate_B_name": "H. H. H. Metrodome",
+        "candidate_B_field": "2026 team field/wall art on retail bowl",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "U.S. Bank Stadium"
+      },
+      "field_action": "Preserve/authenticate the era home field and signs; restore missing old building where current slot is a stand-in.",
+      "source": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 50,
+      "classification": "DESIGN",
+      "uniforms": {
+        "away": {
+          "classification": "INFERRED",
+          "team": "SF",
+          "season": 2023,
+          "jersey_pants": "white/gold",
+          "set": "2023 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2023",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        },
+        "home": {
+          "classification": "INFERRED",
+          "team": "KC",
+          "season": 2023,
+          "jersey_pants": "red/white",
+          "set": "2023 regular season-era set",
+          "source": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2023",
+          "verification": "Season-chart reconstruction; exact patches, facemasks, socks and pant trim need game-photo acceptance in the art job."
+        }
+      },
+      "detail": "2023 season sets and Super Bowl LVIII patches, not 2024 kickoff-era art/rules.",
+      "existing": {
+        "away": {
+          "kit": "25a3.iff",
+          "retail_style": "1964 - 1995 Uniform",
+          "expanded_build_kit": "25a3.iff",
+          "expanded_contents": "retail era art"
+        },
+        "home": {
+          "kit": "13h0.iff",
+          "retail_style": "Current Uniform (2004)",
+          "expanded_build_kit": "13h6.iff",
+          "expanded_contents": "retail 2004 style copied by m1"
+        }
+      },
+      "uniform_action": "Compare the cited game photo with both retail kits; author missing set, exact pants/helmets and event patches. Do not certify a year-label match as pixel accuracy.",
+      "field": {
+        "classification": "DESIGN",
+        "kind": "Super Bowl LVIII field",
+        "venue": "Allegiant Stadium"
+      },
+      "existing_field": {
+        "index": 36,
+        "asset_code": "s42",
+        "retail_name": "Super Bowl 2006 Stadium",
+        "candidate_B_name": "Super Bowl 2006 Stadium",
+        "candidate_B_field": "retail future Super Bowl package; exact edition art unverified",
+        "candidate_B_classification": "INFERRED",
+        "display_override_only": "Allegiant Stadium"
+      },
+      "field_action": "Author this Super Bowl edition midfield, both end zones, patches and sidelines; reserve a moment-specific field binding.",
+      "source": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII"
+      ]
+    }
+  ]
+}

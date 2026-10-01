@@ -69,7 +69,11 @@ class PublicationHandoffTests(unittest.TestCase):
                 self.assertEqual(expected, value)
                 return checked
             library = types.SimpleNamespace(revalidate_playlist=Mock(side_effect=validate))
-            namespace.update(_build=build_private, _core_module=lambda name:library,
+            # Substitute only the music owner. Other receipt readers keep
+            # their actual module contracts as the Build wrapper evolves.
+            namespace.update(_build=build_private,
+                             _core_module=lambda name: library if name == "nfl2k5_music_banks"
+                             else mod_build._core_module(name),
                              _with_identity=lambda exc,*args:exc)
             receipt = namespace['build'](plan)
             self.assertEqual(target.read_bytes(), b'final after all edits')

@@ -1,0 +1,17 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "unit_tests": 38,
+  "unit_status": "passed",
+  "native_stats_status": "passed",
+  "native_cpu_status": "passed",
+  "peak_rss_kib": {
+    "generate": 330084,
+    "audit": 545276,
+    "native_stats": 142804,
+    "cpu": 117240
+  },
+  "test_command": "python3 -m unittest tests.mod_editor.test_franchise_history tests.mod_editor.test_franchise_free_agents tests.mod_editor.test_franchise_colleges tests.mod_editor.test_fr_contract_refresh tests.mod_editor.test_fr_stat_semantics tests.mod_editor.test_fr_build_history tests.mod_editor.test_nfl2k5_career_stats.CareerStatsTests tests.mod_editor.test_franchise_economy.ImportTests -q",
+  "cpu_affinity": "24-31",
+  "disc_builds": 0,
+  "xemu_runs": 0
+}

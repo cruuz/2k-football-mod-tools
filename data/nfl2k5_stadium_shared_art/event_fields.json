@@ -1,0 +1,110 @@
+{
+  "evidence": "DESIGN",
+  "font_sha256": {
+    "/usr/share/fonts/truetype/roboto/unhinted/RobotoCondensed-Bold.ttf": "7f109b2b6d72e7563522d3c3d2c6c8b79ec5a711bfdf483b93e345eab5b5ef94",
+    "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Black.ttf": "bbd81322180b38dee7c61668970af6159f7fd180eac6bf615f3d1e06f878d3f0"
+  },
+  "schema": "nfl2k5_event_field_art/v1",
+  "sofi_s40": "Preserve u6 model art unchanged; it already supplies SUPER BOWL LXI.",
+  "style": "u4 plain centered Roboto type, white paint on transparent ground; no marks or lockups",
+  "textures": [
+    {
+      "format": "P8",
+      "lines": [
+        "PRO BOWL",
+        "ALL-STARS"
+      ],
+      "material": "center_logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "207cb2929f7897f9eeaf59e0323c1a99a4e86d3cdd595efc8f8046f597129eb3",
+      "venue": "s31"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "PRO BOWL",
+        "ALL-STARS"
+      ],
+      "material": "center_logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "f112dfbdceb252b7ede0fc263afaf228e1f6af5483b47665ed376a7635de422b",
+      "venue": "s39"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "SUPER BOWL",
+        "CHAMPIONSHIP"
+      ],
+      "material": "logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "a8e2bf2dc7691e71d14bdf3b0627f45e15c3800542a268d6f0fbdfe70dd65369",
+      "venue": "s41"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "SUPER BOWL",
+        "CHAMPIONSHIP"
+      ],
+      "material": "logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "27b923de362de2440d59e72a0b9d52e07341aed9bc296e565ea9d9d201efc34e",
+      "venue": "s42"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "SUPER BOWL",
+        "CHAMPIONSHIP"
+      ],
+      "material": "logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "a7e6e7699b7f2c82f3034e63956095ee55b3bc03662cd76c0d10559af3c9e882",
+      "venue": "s43"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "SUPER BOWL",
+        "CHAMPIONSHIP"
+      ],
+      "material": "logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "bad3b47f59b1e8c0c6eb0e5ed25bcda3465136a6f495a206679689ab312af1ec",
+      "venue": "s44"
+    },
+    {
+      "format": "P8",
+      "lines": [
+        "SUPER BOWL",
+        "CHAMPIONSHIP"
+      ],
+      "material": "logo",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "c14f2bb94fb49ee43dc896b9562878e214e4827f926c38bea4d7a360dd816d41",
+      "venue": "s45"
+    }
+  ]
+}

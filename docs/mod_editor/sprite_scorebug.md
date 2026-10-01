@@ -136,3 +136,16 @@ against a 400,000 byte ceiling. The code owner remains 4,096 bytes. Native CPU
 execution, software rasterization and bounded state fixtures do not establish
 console GPU appearance or played-game behaviour. Everything in game remains
 UNWITNESSED.
+
+## Supported base and other owners (beta 76)
+
+The install checks read `gamedata.iff` (outer 346), where the collection is appended. Its original bytes must be
+retail, with one exception: the four ESPN presentation marks (2026) may each be at their retail or their 2026 pin
+(`hud_espn_marks`; every byte outside those four spans is still checked against a retail pin). So the sprite and that
+Build option go on one disc in either order, and both orders give the same pack 0. Anything else in the file still
+reads as foreign.
+
+`gamedata_status` reads the same install from the outer alone, wherever the archive keeps it. The ESPN marks use it
+to accept this collection's growth of their file, and the Build page's status uses it when a later owner has grown
+pack 0 (the Guardian overlay grows outer 3, which moves outer 346): the pack-0 view then reports foreign although the
+outer is intact. Installing still requires the unmoved pack-0 layout.

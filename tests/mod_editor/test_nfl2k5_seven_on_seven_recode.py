@@ -30,6 +30,8 @@ class RecodeCompositionTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         import nfl2k5_playbook_position_recode as recode
         cls.recode = recode
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(LOOSE)
         with recode.OuterImage(LOOSE) as archive:
             (cls.practice,) = recode.load_books(archive, ["PRACTICE"])
             cls.entry = archive.entries[book.PRACTICE_OUTER_INDEX]
@@ -77,6 +79,8 @@ class MenuLinkShapeTests(unittest.TestCase):
     def test_every_new_link_word_has_the_retail_shape(self) -> None:
         import struct
         import nfl2k5_playbook_position_recode as recode
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(LOOSE)
         with recode.OuterImage(LOOSE) as archive:
             entry = archive.entries[book.PRACTICE_OUTER_INDEX]
             retail = archive.read(entry.virtual_offset, entry.size)
@@ -98,6 +102,8 @@ class MenuLinkShapeTests(unittest.TestCase):
     def test_retail_links_all_carry_bit_15(self) -> None:
         import struct
         import nfl2k5_playbook_position_recode as recode
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(LOOSE)
         with recode.OuterImage(LOOSE) as archive:
             entry = archive.entries[book.PRACTICE_OUTER_INDEX]
             body = archive.read(entry.virtual_offset, entry.size)[book.RESOURCE_HEADER_SIZE:]

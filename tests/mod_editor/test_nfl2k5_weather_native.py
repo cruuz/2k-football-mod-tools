@@ -25,6 +25,8 @@ class NativeWeatherTests(unittest.TestCase):
         cls.payload = (RETAIL/"default.xbe").read_bytes()
         if w.sha(cls.payload) != RETAIL_SHA256:
             raise AssertionError("Native fixture is not the pinned USA retail XBE")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         cls.resource = w.load_resource(RETAIL)
         cls.catalog = w.inspect_resource(cls.resource)
         at = cls.catalog["rows"][5]["offset"]

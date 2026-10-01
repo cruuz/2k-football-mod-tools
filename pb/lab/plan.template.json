@@ -1,0 +1,319 @@
+{
+  "status": "DESIGN",
+  "runtime_witness": false,
+  "xiso_path": null,
+  "game": {
+    "mode": "Quick Game",
+    "home": "GIANTS",
+    "away": "COWBOYS",
+    "controller": "home",
+    "roster": "retail fixture; verify TE1 separately for Likely"
+  },
+  "freeze_seconds": 60,
+  "attempts": 1,
+  "cases": [
+    {
+      "status": "DESIGN",
+      "play_index": 59,
+      "name": "01 Inside Zone",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "Inside Zone",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 0,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ],
+      "case": 1,
+      "page": 1,
+      "button": "X",
+      "page_labels": [
+        "01 Inside Zone",
+        "01 Counter",
+        "01 TE Seam"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 65,
+      "name": "02 Outside Zone",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Outside Zone",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 0,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ],
+      "case": 2,
+      "page": 1,
+      "button": "X",
+      "page_labels": [
+        "02 Outside Zone",
+        "02 Downhill",
+        "02 TE Drag"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 76,
+      "name": "03 Mesh",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "Mesh",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 5,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ],
+      "case": 3,
+      "page": 2,
+      "button": "B",
+      "page_labels": [
+        "03 Dagger",
+        "03 Stick",
+        "03 Mesh"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 68,
+      "name": "02 Y Cross",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Y Cross",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 3,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ],
+      "case": 4,
+      "page": 2,
+      "button": "X",
+      "page_labels": [
+        "02 Y Cross",
+        "02 Drive",
+        "02 RB Screen"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 87,
+      "name": "05 TE Seam",
+      "formation_index": 4,
+      "formation": "Gun Empty R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ],
+      "case": 5,
+      "page": 2,
+      "button": "A",
+      "page_labels": [
+        "05 Y Cross",
+        "05 TE Seam",
+        "05 TE Drag"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 109,
+      "name": "09 TE Seam",
+      "formation_index": 8,
+      "formation": "Ace Wing R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ],
+      "case": 6,
+      "page": 1,
+      "button": "B",
+      "page_labels": [
+        "09 Inside Zone",
+        "09 End Around",
+        "09 TE Seam"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 124,
+      "name": "11 TE Drag",
+      "formation_index": 10,
+      "formation": "Pistol Ace R",
+      "concept": "TE Drag",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 5,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ],
+      "case": 7,
+      "page": 2,
+      "button": "B",
+      "page_labels": [
+        "11 Levels",
+        "11 Flood",
+        "11 TE Drag"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 147,
+      "name": "15 RB Screen",
+      "formation_index": 14,
+      "formation": "Gun Y Trips R",
+      "concept": "RB Slip",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 10,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12",
+        "0x18"
+      ],
+      "case": 8,
+      "page": 2,
+      "button": "A",
+      "page_labels": [
+        "15 Drive",
+        "15 RB Screen",
+        "15 Levels"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 72,
+      "name": "03 End Around",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "End Around",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 1,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ],
+      "case": 9,
+      "page": 1,
+      "button": "A",
+      "page_labels": [
+        "03 Inside Zone",
+        "03 End Around",
+        "03 TE Seam"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 99,
+      "name": "07 PA Boot",
+      "formation_index": 6,
+      "formation": "Singleback Ace R",
+      "concept": "PA Boot",
+      "play_type": "pa_pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12",
+        "0x14",
+        "0x17"
+      ],
+      "case": 10,
+      "page": 2,
+      "button": "A",
+      "page_labels": [
+        "07 TE Drag",
+        "07 PA Boot",
+        "07 Dagger"
+      ]
+    }
+  ]
+}

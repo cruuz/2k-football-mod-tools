@@ -1,0 +1,3557 @@
+{
+  "classification": "PROVED OFFLINE",
+  "franchises": [
+    {
+      "team_index": 0,
+      "asset_code": "25",
+      "abbreviation": "SF",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "selector": "49ers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1996 - 1997 Uniform",
+          "years": [
+            1996,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1964 - 1995 Uniform",
+          "years": [
+            1964,
+            1995
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1962 - 1963 Uniform",
+          "years": [
+            1962,
+            1963
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1960 - 1961 Uniform",
+          "years": [
+            1960,
+            1961
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1958 - 1959 Uniform",
+          "years": [
+            1958,
+            1959
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 1,
+      "asset_code": "05",
+      "abbreviation": "CHI",
+      "city": "Chicago",
+      "nickname": "Bears",
+      "selector": "bears",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1974 - 1982 Uniform",
+          "years": [
+            1974,
+            1982
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1962 - 1973 Uniform",
+          "years": [
+            1962,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1958 - 1961 Uniform",
+          "years": [
+            1958,
+            1961
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 2,
+      "asset_code": "06",
+      "abbreviation": "CIN",
+      "city": "Cincinnati",
+      "nickname": "Bengals",
+      "selector": "bengals",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1981 - 1997 Uniform",
+          "years": [
+            1981,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1979 - 1980 Uniform",
+          "years": [
+            1979,
+            1980
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1968 - 1978 Uniform",
+          "years": [
+            1968,
+            1978
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 3,
+      "asset_code": "03",
+      "abbreviation": "BUF",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "selector": "bills",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1987 - 2002 Uniform",
+          "years": [
+            1987,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1984 - 1986 Uniform",
+          "years": [
+            1984,
+            1986
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1976 - 1983 Uniform",
+          "years": [
+            1976,
+            1983
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1974 - 1975 Uniform",
+          "years": [
+            1974,
+            1975
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1969 - 1973 Uniform",
+          "years": [
+            1969,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1964 - 1965 Uniform",
+          "years": [
+            1964,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 4,
+      "asset_code": "08",
+      "abbreviation": "DEN",
+      "city": "Denver",
+      "nickname": "Broncos",
+      "selector": "broncos",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1985 - 1996 Uniform",
+          "years": [
+            1985,
+            1996
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1969 - 1973 Uniform",
+          "years": [
+            1969,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1963 - 1965 Uniform",
+          "years": [
+            1963,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1961 - 1962 Uniform",
+          "years": [
+            1961,
+            1962
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 5,
+      "asset_code": "30",
+      "abbreviation": "CLE",
+      "city": "Cleveland",
+      "nickname": "Browns",
+      "selector": "browns",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1983 - 1984 Uniform",
+          "years": [
+            1983,
+            1984
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1964 - 1974 Uniform",
+          "years": [
+            1964,
+            1974
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 6,
+      "asset_code": "27",
+      "abbreviation": "TB",
+      "city": "Tampa Bay",
+      "nickname": "Buccaneers",
+      "selector": "buccaneers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1992 - 1996 Uniform",
+          "years": [
+            1992,
+            1996
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1976 - 1991 Uniform",
+          "years": [
+            1976,
+            1991
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1997 Alternate 1",
+          "years": [
+            1997,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1997 Alternate 2",
+          "years": [
+            1997,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 7,
+      "asset_code": "00",
+      "abbreviation": "ARZ",
+      "city": "Arizona",
+      "nickname": "Cardinals",
+      "selector": "cardinals",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1990 - 1991 Uniform",
+          "years": [
+            1990,
+            1991
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1971 - 1972 Uniform",
+          "years": [
+            1971,
+            1972
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1959 - 1960 Uniform",
+          "years": [
+            1959,
+            1960
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1958 - 1959 Uniform",
+          "years": [
+            1958,
+            1959
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 8,
+      "asset_code": "24",
+      "abbreviation": "SD",
+      "city": "San Diego",
+      "nickname": "Chargers",
+      "selector": "chargers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1988 - 1989 Uniform",
+          "years": [
+            1988,
+            1989
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1985 - 1987 Uniform",
+          "years": [
+            1985,
+            1987
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1983 - 1984 Uniform",
+          "years": [
+            1983,
+            1984
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1978 - 1979 Uniform",
+          "years": [
+            1978,
+            1979
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1973 - 1974 Uniform",
+          "years": [
+            1973,
+            1974
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1967 - 1972 Uniform",
+          "years": [
+            1967,
+            1972
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1965 - 1966 Uniform",
+          "years": [
+            1965,
+            1966
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "1963 - 1965 Uniform",
+          "years": [
+            1963,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 11,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 9,
+      "asset_code": "13",
+      "abbreviation": "KC",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "selector": "chiefs",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1991 - 1993 Uniform",
+          "years": [
+            1991,
+            1993
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1970 - 1971 Uniform",
+          "years": [
+            1970,
+            1971
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1963 - 1970 Uniform",
+          "years": [
+            1963,
+            1970
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1960 - 1962 Uniform",
+          "years": [
+            1960,
+            1962
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 10,
+      "asset_code": "11",
+      "abbreviation": "IND",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "selector": "colts",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1995 Uniform",
+          "years": [
+            1995,
+            1995
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1988 - 1991 Uniform",
+          "years": [
+            1988,
+            1991
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1987 Uniform",
+          "years": [
+            1987,
+            1987
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1982 Uniform",
+          "years": [
+            1982,
+            1982
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1968 - 1970 Uniform",
+          "years": [
+            1968,
+            1970
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1955 - 1956 Uniform",
+          "years": [
+            1955,
+            1956
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1954 - 1955 Uniform",
+          "years": [
+            1954,
+            1955
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 11,
+      "asset_code": "07",
+      "abbreviation": "DAL",
+      "city": "Dallas",
+      "nickname": "Cowboys",
+      "selector": "cowboys",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1995 Uniform",
+          "years": [
+            1993,
+            1995
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1982 - 1994 Uniform",
+          "years": [
+            1982,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1977 - 1980 Uniform",
+          "years": [
+            1977,
+            1980
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1975 - 1976 Uniform",
+          "years": [
+            1975,
+            1976
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1964 - 1966 Uniform",
+          "years": [
+            1964,
+            1966
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1960 - 1963 Uniform",
+          "years": [
+            1960,
+            1963
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1994 Alternate 1",
+          "years": [
+            1994,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "1994 Alternate 2",
+          "years": [
+            1994,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2002 Alternate 1",
+          "years": [
+            2002,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 12,
+      "asset_code": "14",
+      "abbreviation": "MIA",
+      "city": "Miami",
+      "nickname": "Dolphins",
+      "selector": "dolphins",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1989 - 1990 Uniform",
+          "years": [
+            1989,
+            1990
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1979 - 1980 Uniform",
+          "years": [
+            1979,
+            1980
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1972 - 1973 Uniform",
+          "years": [
+            1972,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1971 - 1972 Uniform",
+          "years": [
+            1971,
+            1972
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "2004 Alternate 3",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 13,
+      "asset_code": "21",
+      "abbreviation": "PHI",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "selector": "eagles",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2000 - 2003 Uniform",
+          "years": [
+            2000,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1996 Uniform",
+          "years": [
+            1996,
+            1996
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1989 - 1999 Uniform",
+          "years": [
+            1989,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1979 - 1980 Uniform",
+          "years": [
+            1979,
+            1980
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1969 - 1973 Uniform",
+          "years": [
+            1969,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1967 Uniform",
+          "years": [
+            1967,
+            1967
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "1958 - 1959 Uniform",
+          "years": [
+            1958,
+            1959
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2000 Alternate 1",
+          "years": [
+            2000,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "2000 Alternate 2",
+          "years": [
+            2000,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 11,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 12,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 13,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 14,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 14,
+      "asset_code": "01",
+      "abbreviation": "ATL",
+      "city": "Atlanta",
+      "nickname": "Falcons",
+      "selector": "falcons",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1998 - 2003 Uniform",
+          "years": [
+            1998,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1990 - 1997 Uniform",
+          "years": [
+            1990,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1987 - 1989 Uniform",
+          "years": [
+            1987,
+            1989
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1984 - 1986 Uniform",
+          "years": [
+            1984,
+            1986
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1978 - 1979 Uniform",
+          "years": [
+            1978,
+            1979
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1971 - 1977 Uniform",
+          "years": [
+            1971,
+            1977
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "1968 - 1969 Uniform",
+          "years": [
+            1968,
+            1969
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "1966 - 1967 Uniform",
+          "years": [
+            1966,
+            1967
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 11,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 12,
+          "label": "2004 Alternate 3",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 13,
+          "label": "2004 Alternate 4",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 15,
+      "asset_code": "18",
+      "abbreviation": "NYG",
+      "city": "New York",
+      "nickname": "Giants",
+      "selector": "giants",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2000 - 2002 Uniform",
+          "years": [
+            2000,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1981 - 1999 Uniform",
+          "years": [
+            1981,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1976 - 1980 Uniform",
+          "years": [
+            1976,
+            1980
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1974 - 1975 Uniform",
+          "years": [
+            1974,
+            1975
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1961 - 1974 Uniform",
+          "years": [
+            1961,
+            1974
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1956 - 1960 Uniform",
+          "years": [
+            1956,
+            1960
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 16,
+      "asset_code": "12",
+      "abbreviation": "JAX",
+      "city": "Jacksonville",
+      "nickname": "Jaguars",
+      "selector": "jaguars",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1995 - 2000 Uniform",
+          "years": [
+            1995,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1996 - 1997 Uniform",
+          "years": [
+            1996,
+            1997
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2003 Alternate 3",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2003 Alternate 4",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 17,
+      "asset_code": "19",
+      "abbreviation": "NYJ",
+      "city": "New York",
+      "nickname": "Jets",
+      "selector": "jets",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1990 - 1993 Uniform",
+          "years": [
+            1990,
+            1993
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1978 - 1985 Uniform",
+          "years": [
+            1978,
+            1985
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1965 - 1968 Uniform",
+          "years": [
+            1965,
+            1968
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1963 - 1964 Uniform",
+          "years": [
+            1963,
+            1964
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 18,
+      "asset_code": "09",
+      "abbreviation": "DET",
+      "city": "Detroit",
+      "nickname": "Lions",
+      "selector": "lions",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2000 - 2003 Uniform",
+          "years": [
+            2000,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1999 Uniform",
+          "years": [
+            1999,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1980 - 1993 Uniform",
+          "years": [
+            1980,
+            1993
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1972 - 1976 Uniform",
+          "years": [
+            1972,
+            1976
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1965 - 1968 Uniform",
+          "years": [
+            1965,
+            1968
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1957 - 1965 Uniform",
+          "years": [
+            1957,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 19,
+      "asset_code": "10",
+      "abbreviation": "GB",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "selector": "packers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1983 - 1984 Uniform",
+          "years": [
+            1983,
+            1984
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1966 - 1976 Uniform",
+          "years": [
+            1966,
+            1976
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1952 - 1965 Uniform",
+          "years": [
+            1952,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 20,
+      "asset_code": "04",
+      "abbreviation": "CAR",
+      "city": "Carolina",
+      "nickname": "Panthers",
+      "selector": "panthers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1996 Uniform",
+          "years": [
+            1996,
+            1996
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 21,
+      "asset_code": "16",
+      "abbreviation": "NE",
+      "city": "New England",
+      "nickname": "Patriots",
+      "selector": "patriots",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1996 - 2000 Uniform",
+          "years": [
+            1996,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1992 - 1993 Uniform",
+          "years": [
+            1992,
+            1993
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1990 - 1992 Uniform",
+          "years": [
+            1990,
+            1992
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1984 - 1987 Uniform",
+          "years": [
+            1984,
+            1987
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1975 - 1981 Uniform",
+          "years": [
+            1975,
+            1981
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1965 - 1969 Uniform",
+          "years": [
+            1965,
+            1969
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "1959 - 1960 Uniform",
+          "years": [
+            1959,
+            1960
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "1994 Alternate 1",
+          "years": [
+            1994,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 11,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 22,
+      "asset_code": "20",
+      "abbreviation": "OAK",
+      "city": "Oakland",
+      "nickname": "Raiders",
+      "selector": "raiders",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1966 - 1967 Uniform",
+          "years": [
+            1966,
+            1967
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1962 - 1963 Uniform",
+          "years": [
+            1962,
+            1963
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1960 - 1962 Uniform",
+          "years": [
+            1960,
+            1962
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 23,
+      "asset_code": "23",
+      "abbreviation": "STL",
+      "city": "St. Louis",
+      "nickname": "Rams",
+      "selector": "rams",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2002 - 2003 Uniform",
+          "years": [
+            2002,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1998 - 1999 Uniform",
+          "years": [
+            1998,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1978 - 1979 Uniform",
+          "years": [
+            1978,
+            1979
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1965 - 1972 Uniform",
+          "years": [
+            1965,
+            1972
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1957 - 1958 Uniform",
+          "years": [
+            1957,
+            1958
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2000 Alternate 1",
+          "years": [
+            2000,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2000 Alternate 2",
+          "years": [
+            2000,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 10,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 11,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 12,
+          "label": "2004 Alternate 3",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 24,
+      "asset_code": "02",
+      "abbreviation": "BAL",
+      "city": "Baltimore",
+      "nickname": "Ravens",
+      "selector": "ravens",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1997 - 1999 Uniform",
+          "years": [
+            1997,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1995 - 1996 Uniform",
+          "years": [
+            1995,
+            1996
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 25,
+      "asset_code": "29",
+      "abbreviation": "WAS",
+      "city": "Washington",
+      "nickname": "Redskins",
+      "selector": "redskins",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1982 Uniform",
+          "years": [
+            1982,
+            1982
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1972 - 1977 Uniform",
+          "years": [
+            1972,
+            1977
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1970 - 1971 Uniform",
+          "years": [
+            1970,
+            1971
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1968 - 1969 Uniform",
+          "years": [
+            1968,
+            1969
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1965 - 1967 Uniform",
+          "years": [
+            1965,
+            1967
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1959 - 1964 Uniform",
+          "years": [
+            1959,
+            1964
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 9,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 26,
+      "asset_code": "17",
+      "abbreviation": "NO",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "selector": "saints",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2001 - 2002 Uniform",
+          "years": [
+            2001,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1999 - 2000 Uniform",
+          "years": [
+            1999,
+            2000
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1991 - 1992 Uniform",
+          "years": [
+            1991,
+            1992
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1976 - 1982 Uniform",
+          "years": [
+            1976,
+            1982
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1975 - 1976 Uniform",
+          "years": [
+            1975,
+            1976
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "1967 - 1975 Uniform",
+          "years": [
+            1967,
+            1975
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 27,
+      "asset_code": "26",
+      "abbreviation": "SEA",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "selector": "seahawks",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1983 - 2002 Uniform",
+          "years": [
+            1983,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1976 - 1982 Uniform",
+          "years": [
+            1976,
+            1982
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "2003 Alternate 1",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "2003 Alternate 2",
+          "years": [
+            2003,
+            2003
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 28,
+      "asset_code": "22",
+      "abbreviation": "PIT",
+      "city": "Pittsburgh",
+      "nickname": "Steelers",
+      "selector": "steelers",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1968 - 1976 Uniform",
+          "years": [
+            1968,
+            1976
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1966 - 1967 Uniform",
+          "years": [
+            1966,
+            1967
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1963 - 1965 Uniform",
+          "years": [
+            1963,
+            1965
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1961 - 1962 Uniform",
+          "years": [
+            1961,
+            1962
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1959 - 1960 Uniform",
+          "years": [
+            1959,
+            1960
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 29,
+      "asset_code": "37",
+      "abbreviation": "HOU",
+      "city": "Houston",
+      "nickname": "Texans",
+      "selector": "texans",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "2001 - 2002 Uniform",
+          "years": [
+            2001,
+            2002
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 30,
+      "asset_code": "28",
+      "abbreviation": "TEN",
+      "city": "Tennessee",
+      "nickname": "Titans",
+      "selector": "titans",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1989 - 1990 Uniform",
+          "years": [
+            1989,
+            1990
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1974 - 1975 Uniform",
+          "years": [
+            1974,
+            1975
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1972 - 1974 Uniform",
+          "years": [
+            1972,
+            1974
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1967 - 1968 Uniform",
+          "years": [
+            1967,
+            1968
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "1960 - 1961 Uniform",
+          "years": [
+            1960,
+            1961
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "1999 Alternate 1",
+          "years": [
+            1999,
+            1999
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 7,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 8,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    },
+    {
+      "team_index": 31,
+      "asset_code": "15",
+      "abbreviation": "MIN",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "selector": "vikings",
+      "uniforms": [
+        {
+          "uniform": 0,
+          "label": "Current Uniform (2004)",
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 1,
+          "label": "1993 - 1994 Uniform",
+          "years": [
+            1993,
+            1994
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 2,
+          "label": "1980 - 1984 Uniform",
+          "years": [
+            1980,
+            1984
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 3,
+          "label": "1972 - 1973 Uniform",
+          "years": [
+            1972,
+            1973
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 4,
+          "label": "1961 - 1962 Uniform",
+          "years": [
+            1961,
+            1962
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 5,
+          "label": "2004 Alternate 1",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        },
+        {
+          "uniform": 6,
+          "label": "2004 Alternate 2",
+          "years": [
+            2004,
+            2004
+          ],
+          "home_kit_file": true,
+          "away_kit_file": true
+        }
+      ]
+    }
+  ],
+  "stadiums": [
+    {
+      "index": 0,
+      "name": "Arizona Stadium",
+      "short": "Arizona Stadium",
+      "city": "Tempe, AZ",
+      "code": "s00"
+    },
+    {
+      "index": 1,
+      "name": "The Georgia Dome",
+      "short": "Georgia Dome",
+      "city": "Atlanta, GA",
+      "code": "s01"
+    },
+    {
+      "index": 2,
+      "name": "M&T Bank Stadium ",
+      "short": "M&T Bank Stadium ",
+      "city": "Baltimore, MD",
+      "code": "s02"
+    },
+    {
+      "index": 3,
+      "name": "Ralph Wilson Stadium",
+      "short": "Ralph Wilson Stadium",
+      "city": "Orchard Park, NY",
+      "code": "s03"
+    },
+    {
+      "index": 4,
+      "name": "Bank of America Stadium",
+      "short": "B of A Stadium",
+      "city": "Charlotte, NC",
+      "code": "s04"
+    },
+    {
+      "index": 5,
+      "name": "Chicago Field",
+      "short": "Chicago Field",
+      "city": "Chicago, IL",
+      "code": "s05"
+    },
+    {
+      "index": 6,
+      "name": "Paul Brown Stadium",
+      "short": "Paul Brown Stadium",
+      "city": "Cincinnati, OH",
+      "code": "s06"
+    },
+    {
+      "index": 7,
+      "name": "Texas Stadium",
+      "short": "Texas Stadium",
+      "city": "Irving, TX",
+      "code": "s07"
+    },
+    {
+      "index": 8,
+      "name": "INVESCO Field at Mile High Stadium",
+      "short": "INVESCO Field",
+      "city": "Denver, CO",
+      "code": "s08"
+    },
+    {
+      "index": 9,
+      "name": "Ford Field",
+      "short": "Ford Field",
+      "city": "Detroit, MI",
+      "code": "s09"
+    },
+    {
+      "index": 10,
+      "name": "Lambeau Field",
+      "short": "Lambeau Field",
+      "city": "Green Bay, WI",
+      "code": "s10"
+    },
+    {
+      "index": 11,
+      "name": "The RCA Dome",
+      "short": "RCA Dome",
+      "city": "Indianapolis, IN",
+      "code": "s11"
+    },
+    {
+      "index": 12,
+      "name": "ALLTEL Stadium",
+      "short": "ALLTEL Stadium",
+      "city": "Jacksonville, FL",
+      "code": "s12"
+    },
+    {
+      "index": 13,
+      "name": "Arrowhead Stadium",
+      "short": "Arrowhead Stadium",
+      "city": "Kansas City, MO",
+      "code": "s13"
+    },
+    {
+      "index": 14,
+      "name": "Pro Player Stadium",
+      "short": "Pro Player Stadium",
+      "city": "Miami, FL",
+      "code": "s14"
+    },
+    {
+      "index": 15,
+      "name": "H. H. H. Metrodome",
+      "short": "H. H. H. Metrodome",
+      "city": "Minneapolis, MN",
+      "code": "s15"
+    },
+    {
+      "index": 16,
+      "name": "Gillette Stadium",
+      "short": "Gillette Stadium",
+      "city": "Foxboro, MA",
+      "code": "s16"
+    },
+    {
+      "index": 17,
+      "name": "The Louisiana Super Dome",
+      "short": "Louisiana Super Dome",
+      "city": "New Orleans, LA",
+      "code": "s17"
+    },
+    {
+      "index": 18,
+      "name": "Giants Stadium",
+      "short": "Giants Stadium",
+      "city": "East Rutherford, NJ",
+      "code": "s18"
+    },
+    {
+      "index": 19,
+      "name": "Giants Stadium",
+      "short": "Jets Stadium",
+      "city": "East Rutherford, NJ",
+      "code": "s19"
+    },
+    {
+      "index": 20,
+      "name": "Network Associates Coliseum",
+      "short": "Network Associates",
+      "city": "Oakland, CA",
+      "code": "s20"
+    },
+    {
+      "index": 21,
+      "name": "Lincoln Financial Field",
+      "short": "Lincoln Financial Field",
+      "city": "Philadelphia, PA",
+      "code": "s21"
+    },
+    {
+      "index": 22,
+      "name": "Heinz Field",
+      "short": "Heinz Field",
+      "city": "Pittsburgh, PA",
+      "code": "s22"
+    },
+    {
+      "index": 23,
+      "name": "Edward Jones Dome ",
+      "short": "Edward Jones Dome ",
+      "city": "St. Louis, MO",
+      "code": "s23"
+    },
+    {
+      "index": 24,
+      "name": "QUALCOMM Stadium",
+      "short": "QUALCOMM Stadium",
+      "city": "San Diego, CA",
+      "code": "s24"
+    },
+    {
+      "index": 25,
+      "name": "San Francisco Park",
+      "short": "San Francisco Park",
+      "city": "San Francisco, CA",
+      "code": "s25"
+    },
+    {
+      "index": 26,
+      "name": "Qwest Field",
+      "short": "Qwest Field",
+      "city": "Seattle, WA",
+      "code": "s26"
+    },
+    {
+      "index": 27,
+      "name": "Tampa Bay Stadium",
+      "short": "Tampa Bay Stadium",
+      "city": "Tampa, FL",
+      "code": "s27"
+    },
+    {
+      "index": 28,
+      "name": "Titans Coliseum",
+      "short": "Titans Coliseum",
+      "city": "Nashville, TN",
+      "code": "s28"
+    },
+    {
+      "index": 29,
+      "name": "Washington Field",
+      "short": "Washington Field",
+      "city": "Raljon, MD",
+      "code": "s29"
+    },
+    {
+      "index": 30,
+      "name": "The Cleveland Browns Stadium",
+      "short": "Cleveland Stadium",
+      "city": "Cleveland, OH",
+      "code": "s30"
+    },
+    {
+      "index": 31,
+      "name": "Reliant Stadium",
+      "short": "Reliant Stadium",
+      "city": "Houston, TX",
+      "code": "s37"
+    },
+    {
+      "index": 32,
+      "name": "Aloha Stadium",
+      "short": "Aloha Stadium",
+      "city": "Honolulu, HI",
+      "code": "s31"
+    },
+    {
+      "index": 33,
+      "name": "The Practice Facility ",
+      "short": "Practice Facility ",
+      "city": "San Rafael, CA",
+      "code": "s32"
+    },
+    {
+      "index": 34,
+      "name": "Future Aloha Stadium",
+      "short": "Future Aloha Stadium",
+      "city": "Honolulu, HI",
+      "code": "s39"
+    },
+    {
+      "index": 35,
+      "name": "Super Bowl 2005 Stadium",
+      "short": "Super Bowl 2005",
+      "city": "Jacksonville, FL",
+      "code": "s40"
+    },
+    {
+      "index": 36,
+      "name": "Super Bowl 2006 Stadium",
+      "short": "Super Bowl 2006",
+      "city": "Detroit, MI",
+      "code": "s42"
+    },
+    {
+      "index": 37,
+      "name": "Super Bowl 2007 Stadium",
+      "short": "Super Bowl 2007",
+      "city": "Miami, FL",
+      "code": "s43"
+    },
+    {
+      "index": 38,
+      "name": "Super Bowl 2008 Stadium",
+      "short": "Super Bowl 2008",
+      "city": "Tempe, AZ",
+      "code": "s41"
+    },
+    {
+      "index": 39,
+      "name": "Super Bowl Future Stadium",
+      "short": "Super Bowl Future",
+      "city": "Los Angeles, CA",
+      "code": "s44"
+    },
+    {
+      "index": 40,
+      "name": "Ulterior Super Bowl Stadium",
+      "short": "Ulterior Super Bowl",
+      "city": "San Jose, CA",
+      "code": "s45"
+    },
+    {
+      "index": 41,
+      "name": "Visual Concepts Dome",
+      "short": "Visual Concepts Dome",
+      "city": "San Rafael, CA",
+      "code": "s36"
+    },
+    {
+      "index": 42,
+      "name": "ESPN Stadium",
+      "short": "ESPN Stadium",
+      "city": "Bristol, CT",
+      "code": "s48"
+    },
+    {
+      "index": 43,
+      "name": "Cheesesteak Dome",
+      "short": "Cheesesteak Dome",
+      "city": "Upper Darby, PA",
+      "code": "s54"
+    },
+    {
+      "index": 44,
+      "name": "Loco Arena",
+      "short": "Loco Arena",
+      "city": "Los Angeles, CA",
+      "code": "s55"
+    },
+    {
+      "index": 45,
+      "name": "Electra Coliseum",
+      "short": "Electra Coliseum",
+      "city": "Cincinnati, OH",
+      "code": "s56"
+    },
+    {
+      "index": 46,
+      "name": "Funk Field",
+      "short": "Funk Field",
+      "city": "Baurtwell, NY",
+      "code": "s57"
+    },
+    {
+      "index": 47,
+      "name": "Dream Superdome",
+      "short": "Dream Superdome",
+      "city": "Los Angeles, CA",
+      "code": "s58"
+    },
+    {
+      "index": 48,
+      "name": "Alien Arena",
+      "short": "Alien Arena",
+      "city": "Roswell, NM",
+      "code": "s51"
+    },
+    {
+      "index": 49,
+      "name": "Atomic Dome",
+      "short": "Atomic Dome",
+      "city": "Alamogordo, NM",
+      "code": "s52"
+    },
+    {
+      "index": 50,
+      "name": "Metro Field",
+      "short": "Metro Field",
+      "city": "Hickory, NC",
+      "code": "s53"
+    },
+    {
+      "index": 51,
+      "name": "Bat Field",
+      "short": "Bat Field",
+      "city": "Kenosha, WI",
+      "code": "s54"
+    },
+    {
+      "index": 52,
+      "name": "Axe Superdome",
+      "short": "Axe Superdome",
+      "city": "Boise, ID",
+      "code": "s55"
+    },
+    {
+      "index": 53,
+      "name": "Angry Dog Park",
+      "short": "Angry Dog Park",
+      "city": "Santa Barbara, CA",
+      "code": "s56"
+    },
+    {
+      "index": 54,
+      "name": "Express Dome",
+      "short": "Express Dome",
+      "city": "Salt Lake City, UT",
+      "code": "s57"
+    },
+    {
+      "index": 55,
+      "name": "Cat Park",
+      "short": "Cat Park",
+      "city": "Salem, MA",
+      "code": "s58"
+    },
+    {
+      "index": 56,
+      "name": "Cobra Field",
+      "short": "Cobra Field",
+      "city": "San Jose, CA",
+      "code": "s59"
+    },
+    {
+      "index": 57,
+      "name": "Royal Arena",
+      "short": "Royal Arena",
+      "city": "Los Angeles, CA",
+      "code": "s50"
+    },
+    {
+      "index": 58,
+      "name": "Dragon Dome",
+      "short": "Dragon Dome",
+      "city": "Portland, OR",
+      "code": "s51"
+    },
+    {
+      "index": 59,
+      "name": "Gold Coast Dome",
+      "short": "Gold Coast Dome",
+      "city": "Monterey, CA",
+      "code": "s52"
+    },
+    {
+      "index": 60,
+      "name": "Scimitar Stadium",
+      "short": "Scimitar Stadium",
+      "city": "Brooklyn, NY",
+      "code": "s53"
+    },
+    {
+      "index": 61,
+      "name": "Rebel Field",
+      "short": "Rebel Field",
+      "city": "Birmingham, AL",
+      "code": "s54"
+    },
+    {
+      "index": 62,
+      "name": "Jester Park",
+      "short": "Jester Park",
+      "city": "Atlantic City, NJ",
+      "code": "s55"
+    },
+    {
+      "index": 63,
+      "name": "Knight Field",
+      "short": "Knight Field",
+      "city": "Bloomington, IN",
+      "code": "s56"
+    },
+    {
+      "index": 64,
+      "name": "Thunderbolt Park",
+      "short": "Thunderbolt Park",
+      "city": "Branson, MO",
+      "code": "s57"
+    },
+    {
+      "index": 65,
+      "name": "Norseman Stadium",
+      "short": "Norseman Stadium",
+      "city": "Las Vegas, NV",
+      "code": "s58"
+    },
+    {
+      "index": 66,
+      "name": "Star Dome",
+      "short": "Star Dome",
+      "city": "Anaheim, CA",
+      "code": "s59"
+    },
+    {
+      "index": 67,
+      "name": "Viper Stadium",
+      "short": "Viper Stadium",
+      "city": "Long Beach, CA",
+      "code": "s50"
+    },
+    {
+      "index": 68,
+      "name": "Firecracker Dome",
+      "short": "Firecracker Dome",
+      "city": "Reno, NV",
+      "code": "s51"
+    },
+    {
+      "index": 69,
+      "name": "Arachnid Park",
+      "short": "Arachnid Park",
+      "city": "Palm Springs, CA",
+      "code": "s53"
+    },
+    {
+      "index": 70,
+      "name": "Diablo Coliseum",
+      "short": "Diablo Coliseum",
+      "city": "Devil's Tower, WY",
+      "code": "s54"
+    },
+    {
+      "index": 71,
+      "name": "Rhino Park",
+      "short": "Rhino Park",
+      "city": "Jackson Hole, WY",
+      "code": "s55"
+    },
+    {
+      "index": 72,
+      "name": "Ariel Superdome",
+      "short": "Ariel Superdome",
+      "city": "Helena, MT",
+      "code": "s56"
+    },
+    {
+      "index": 73,
+      "name": "Rising Sun Coliseum",
+      "short": "Rising Sun Coliseum",
+      "city": "Flagstaff, AZ",
+      "code": "s57"
+    },
+    {
+      "index": 74,
+      "name": "Gator Coliseum",
+      "short": "Gator Coliseum",
+      "city": "Gainesville, FL",
+      "code": "s58"
+    },
+    {
+      "index": 75,
+      "name": "Outback Field",
+      "short": "Outback Field",
+      "city": "Sacramento, CA",
+      "code": "s59"
+    },
+    {
+      "index": 76,
+      "name": "Southwest Dome",
+      "short": "Southwest Dome",
+      "city": "Grand Canyon, AZ",
+      "code": "s54"
+    },
+    {
+      "index": 77,
+      "name": "Mercury Stadium",
+      "short": "Mercury Stadium",
+      "city": "San Antonio, TX",
+      "code": "s55"
+    },
+    {
+      "index": 78,
+      "name": "Prehistoric Park",
+      "short": "Prehistoric Park",
+      "city": "Anchorage, AK",
+      "code": "s56"
+    },
+    {
+      "index": 79,
+      "name": "Iron Hammer Coliseum",
+      "short": "Iron Hammer Coliseum",
+      "city": "Zion, UT",
+      "code": "s57"
+    },
+    {
+      "index": 80,
+      "name": "Hog Heaven",
+      "short": "Hog Heaven",
+      "city": "Little Rock, AR",
+      "code": "s58"
+    },
+    {
+      "index": 81,
+      "name": "Zoo Dome",
+      "short": "Zoo Dome",
+      "city": "Orlando, FL",
+      "code": "s59"
+    }
+  ],
+  "spare_styles": {
+    "02": 4,
+    "04": 3,
+    "08": 7,
+    "10": 7,
+    "15": 7,
+    "16": 12,
+    "18": 8,
+    "19": 8,
+    "20": 5,
+    "21": 9,
+    "22": 6,
+    "24": 12,
+    "25": 8,
+    "27": 8,
+    "28": 9,
+    "00": 9,
+    "01": 14,
+    "17": 9,
+    "11": 8,
+    "26": 5,
+    "07": 10,
+    "09": 10,
+    "13": 6,
+    "06": 8
+  },
+  "affected": {
+    "02": [
+      "h-02-2000-ravens-0.iff style 0",
+      "h-02-2012-ravens-9.iff style 0",
+      "row 39 away kit 0",
+      "row 40 away kit 0"
+    ],
+    "04": [
+      "h-04-2003-panthers-0.iff style 0",
+      "h-04-2003-panthers-9.iff style 0",
+      "row 34 away kit 0"
+    ],
+    "08": [
+      "h-08-1998-broncos-0.iff style 0",
+      "h-08-2012-broncos-9.iff style 0",
+      "row 21 home kit 0",
+      "row 39 home kit 0"
+    ],
+    "10": [
+      "h-10-2004-packers-0.iff style 0",
+      "h-10-2014-packers-9.iff style 0",
+      "h-10-2015-packers-9.iff style 0",
+      "row 21 away kit 0",
+      "row 25 away kit 0",
+      "row 41 home kit 0",
+      "row 43 away kit 0"
+    ],
+    "15": [
+      "h-15-1998-vikings-0.iff style 0",
+      "h-15-1998-vikings-9.iff style 0",
+      "h-15-2017-vikings-9.iff style 0",
+      "h-15-2022-vikings-9.iff style 0",
+      "row 26 home kit 0",
+      "row 31 away kit 0",
+      "row 44 home kit 0",
+      "row 49 home kit 0"
+    ],
+    "16": [
+      "h-16-2001-patriots-0.iff style 0",
+      "h-16-2001-patriots-9.iff style 0",
+      "h-16-2003-patriots-0.iff style 0",
+      "h-16-2003-patriots-9.iff style 0",
+      "h-16-2007-patriots-9.iff style 0",
+      "h-16-2011-patriots-9.iff style 0",
+      "h-16-2014-patriots-9.iff style 0",
+      "h-16-2016-patriots-9.iff style 0",
+      "h-16-2017-patriots-9.iff style 0",
+      "row 23 home kit 0",
+      "row 27 home kit 0",
+      "row 29 home kit 0",
+      "row 30 away kit 0",
+      "row 33 home kit 0",
+      "row 34 home kit 0",
+      "row 42 away kit 0",
+      "row 45 home kit 0"
+    ],
+    "18": [
+      "h-18-2003-giants-0.iff style 0",
+      "h-18-2007-giants-9.iff style 0",
+      "h-18-2010-giants-9.iff style 0",
+      "h-18-2011-giants-9.iff style 0",
+      "row 24 away kit 0",
+      "row 27 away kit 0",
+      "row 29 away kit 0",
+      "row 36 home kit 0"
+    ],
+    "19": [
+      "h-19-1998-jets-0.iff style 0"
+    ],
+    "20": [
+      "h-20-1976-raiders-0.iff style 0",
+      "h-20-1983-raiders-0.iff style 0",
+      "h-20-2001-raiders-9.iff style 0",
+      "row 33 away kit 0"
+    ],
+    "21": [
+      "h-21-2004-eagles-0.iff style 0",
+      "h-21-2010-eagles-9.iff style 0",
+      "h-21-2017-eagles-9.iff style 0",
+      "row 25 home kit 0",
+      "row 36 away kit 0",
+      "row 45 away kit 0"
+    ],
+    "22": [
+      "h-22-1995-steelers-0.iff style 0",
+      "h-22-2008-steelers-9.iff style 0",
+      "row 28 away kit 0"
+    ],
+    "24": [
+      "h-24-1994-chargers-0.iff style 0"
+    ],
+    "25": [
+      "h-25-2003-49ers-0.iff style 0",
+      "h-25-2011-49ers-9.iff style 0",
+      "h-25-2012-49ers-9.iff style 0",
+      "h-25-2019-49ers-9.iff style 0",
+      "h-25-2023-49ers-9.iff style 0",
+      "row 24 home kit 0"
+    ],
+    "27": [
+      "h-27-1999-buccaneers-0.iff style 0",
+      "h-27-2002-buccaneers-0.iff style 0"
+    ],
+    "28": [
+      "h-28-1999-titans-0.iff style 0",
+      "h-28-1999-titans-9.iff style 0",
+      "row 22 home kit 0",
+      "row 32 home kit 0"
+    ],
+    "00": [
+      "row 28 home kit 0"
+    ],
+    "01": [
+      "row 30 home kit 0"
+    ],
+    "17": [
+      "row 35 away kit 0",
+      "row 37 away kit 0",
+      "row 38 away kit 0",
+      "row 44 away kit 0"
+    ],
+    "11": [
+      "row 35 home kit 0",
+      "row 49 away kit 0"
+    ],
+    "26": [
+      "row 37 home kit 0",
+      "row 42 home kit 0"
+    ],
+    "07": [
+      "row 41 away kit 0"
+    ],
+    "09": [
+      "row 43 home kit 0"
+    ],
+    "13": [
+      "row 46 home kit 0",
+      "row 47 home kit 0",
+      "row 50 home kit 0"
+    ],
+    "06": [
+      "row 48 home kit 0"
+    ]
+  },
+  "retail_directory_entries": 4323,
+  "extra_team_files": 48,
+  "m1_full_directory_entries": 4418,
+  "directory_note": "4418 and 6 remaining reproduced by m1 report; E2 only recomputes the source census and spare indices."
+}

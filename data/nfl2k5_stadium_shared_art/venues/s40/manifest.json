@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "file": "banner_home_player.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banner_home_player_4x.png",
+      "master_sha256": "630612348a77e4cf78846922e17cb39e92ec1f33291764d48e523001acecacb7",
+      "material": "banner_home_player",
+      "rects": [
+        [
+          128,
+          64,
+          256,
+          128
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "206d4ea3c24b91d1ef340007c49731d428c48aeeb9c2ab3ff53314ef351d4dc6",
+      "size": [
+        256,
+        128
+      ],
+      "source_rgba_sha256": "bde49dda192a3e3a751ae91ae6866754a331f373a6ee6f1c0af5189d7b6a1369"
+    }
+  ],
+  "schema": "metlife_team_art/v1",
+  "team": "s40",
+  "venue_prefix": "s40"
+}

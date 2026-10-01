@@ -89,3 +89,15 @@ actual filled writer's unchanged reservation footprint. It produces a marked
 test-only manifest with all parent reservations retained. Run the oracle
 regressions with `NFL2K5_CAVE_MANIFEST=.scratch/star-filled-manifest.json`.
 This is not a substitute for Claude's release manifest regeneration.
+
+## Beta 76 km2: the white outline star (same five spans)
+
+The runtime is rewritten inside the same five audited spans; no span, entry or boundary changes, so the reference
+and ownership results above still describe them. The star is now a hollow white outline (tips 86.4 cm, notches
+29.376, inner/outer 0.34, an even 8 cm stroke with mitred tips) over a thin dark under-edge (2.5 cm each side).
+Each pass is the existing 22-vertex strip of (outer, inner) pairs on the star's ten rays, generated with `fsincos`
+from a pass table (four radii, a diffuse and a height per pass) instead of a point table. The mitred offset of the
+star lies on the same rays, so two radii per contour (tip and notch) make the stroke exactly even; the draw test
+checks that every inner edge lies 8 cm inside its outer edge. A pass with a zero diffuse alpha is skipped, which is
+how the outline-only variant drops the under-edge. Badge C (`gold_badge_v4`) is pinned as upgradeable legacy.
+The emulation fixture still write-protects `.text` while the new path runs; all mutable state stays on the stack.

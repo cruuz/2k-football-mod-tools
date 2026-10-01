@@ -34,18 +34,19 @@ HELP_TEXT = (
     "Retail: many historic players have position names in shared rosters. "
     "Patch: use Pro Football Reference game starters and season jersey numbers "
     "with the nflverse roster base. Short lists still need named reserves from "
-    "nearby seasons. Shared teams cannot match every game. Requires the retail position layout. "
-    "Build blocked while the Wide Right loading freeze remains unresolved. "
-    "Native reload and archive-wait checks do not prove a complete scene load. EXPERIMENTAL / UNWITNESSED. See the in-game report."
+    "nearby seasons. Shared teams cannot match every game. Works with the retail positions or One-pool positions. "
+    "The historic-team release repair that ended the Wide Right freeze is installed with it. "
+    "EXPERIMENTAL / UNWITNESSED: lab runs only; Noah has not played it."
 )
 DEFAULT_ENABLED = False
-BUILD_BLOCK_REASON = (
-    "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. "
-    "Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
-)
+# e1 (2026-09-23): the Wide Right freeze was the practice squad's import guard meeting the retail release's stale
+# player pointers (root-caused in a lab run; see RESEARCH_E1_ESPN25_2026-09-23). The 12-byte repair below now ships
+# with every practice squad build, and apply_to_image installs it too, so the build hold is lifted. The constant stays
+# for callers that read it; an empty reason means "buildable".
+BUILD_BLOCK_REASON = ""
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.
-DATASET_SHA256 = "9f2c1d1d67ef630300a081410129c71a53f9de54f4b02a89ec0cbe7087656ba8"
+DATASET_SHA256 = "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84"
 MAX_RESOURCE = 1024 * 1024
 MAX_MANIFEST = 8 * 1024 * 1024
 SITU_OUTER = 22
@@ -65,6 +66,93 @@ XBE_GUARDS = (
     (0xC2300, 0x110, "21d5e9825aff0adac9a476bbd117ada85b1fd261fd19aadab1120a2966c9b8e5"),
     (0xBFF90, 9, "4d11d20c170d21fcc60b8741c49c608e695b0885523d348d33aaad174fff714b"),
 )
+
+# One-pool positions (Build option position_pools) reclassify all 75 historic ROSTs with the historic 4-3 rule
+# before this data pass: tools/nfl2k5_roster_reclassify.py writes the position byte (+0x35, OLB -> ILB) and the
+# rank/side word (+0x28) of the front pools. This writer changes names, jerseys and college indices only. The two
+# commute byte for byte (e1, 2026-09-23), so the same dataset applies on the reclassified layout. Per resource:
+# (reclassify(retail) sha256, reclassify(applied) sha256). tests/mod_editor/test_nfl2k5_espn25_one_pool.py recomputes
+# them from the retail resources with the reclassify tool itself.
+ONE_POOL_PINS = {
+    113: ("a290d74c90a2135bafb8b497e65d9ab29c4e0750edf781cb1077939a03514ce2",
+          "88c54b55fff39a83c429271bf2b56d6fe86ef9649a1b62c15ec041bf92f45a50"),
+    118: ("740394b3c1ec5087cb24a61935cdaf0386f3a8e9e4a98b7082437a9cfd776ee6",
+          "4ac1a5e58c4a09ec6296f560db5905ae85aa4dc7ffe7bebd74d2738d4f9abca9"),
+    124: ("0dc8e1e7a8469c4dba62e581473d4635113ea8ec092514b8affcfd6e764c2d12",
+          "27d34fdb292a80e5ea0605e60867eff31065a7b0f95158f7e1b154d65d72179b"),
+    125: ("13bb4299909bd3ce844615799fe181c4c11c2517780f32e1e357705f7b907352",
+          "8c59a4786ce53fd9ce6645ede24280cc33b630d4725c145cb0d73615f75997f1"),
+    126: ("d023f2a4ec9220a0edc77e036a5147982544a08cca9786f3308ca27e4b0ee06a",
+          "bdeaba2912340fb70fd599714711d0edf37b3bce55483b7afc90055c1e531ae6"),
+    129: ("e07fd1bfa463a59374d9d9aff531909cb09a247497852b0ce95dd59c65f6a97a",
+          "fc88cba9653ec85a24be6897abcb0d6ced3d6e38928c76c21dbd7c02a6f534a7"),
+    130: ("e7e36fe2e536b27f5f75e915f3bbaa11ce8f17d9e8ef61362057f9a5a6a54fa7",
+          "ed333718aec7212551e53728ee26d4350a2c177201e4187d65af701478b77279"),
+    133: ("dd02b15ca2532b4eb4cdf62b26163274da96b0a33488ed2eaff0627b26002f24",
+          "3c850864c4d91cac960c2463def31459d9fc925db92a6b7853025e298c7523ae"),
+    134: ("962e11c4f0cc70cf14726f2e60307fbd54e3cca46f7da98a66b92fbe5181207e",
+          "5e09ed46b7a6194159fc30bf95fa9637bd14d5123f137dd5cd2c420a6e50e6b6"),
+    135: ("f4e9c30871ad6a45e69b156df96997d854970d065d52b89e4d8489139da8d348",
+          "9140adaf99ed66fdedfc6345b2a24121d594b5504fa5fe82bd5c2676ac2b4524"),
+    136: ("41d02289544dc100ed9e06ae508ddece7ee553bb554fd785993ca593d527ff45",
+          "bdb9475c946240eabc2917603b0661ff805cfb1559036ce8ec6c0b9e0997ec73"),
+    139: ("3969766a78e86b4b7f4b5b61fe643784ea3a05c43a9c7c403387d41900b2478f",
+          "d2c42af91d142f05de50e552a98812e1158f5a49bc8c3e952b56d2bb51ccff66"),
+    140: ("99a48364028e04824024fa4382337e1efcf333b9aca7d52932f6300adeb30c33",
+          "f464aab72469da6787db58bdde89136a8ddb3bb8af7709ad7557c43ffc0347f7"),
+    141: ("5a5e8aaa64ce34fb320b790de6451ccfa81719c7a4c9bd2be2eac94ebb78ec0d",
+          "0d07214d112cd27f950135362aff8265db5d82b444ed51a0f79f6150028a7844"),
+    142: ("34d4076ccdb849521ff71d7e8aec43a2f1d97760931496ac8381641e4b6966d3",
+          "9025f62d672097147569c9e6888927749077c6fc007a81fd3007ffe91523c334"),
+    147: ("8ce79ba8d36d3f523aa002d47b36c9b6f07a11610f9054783c8711103f73dd36",
+          "90b58c5c4e15ab5c24a4c1370d54247fb0fa1050af47561d82163ffdaa042314"),
+    149: ("cfd4f5e8cf9c22ff60af784dac03acd4d6ee29cf6506a49285a940c97c7034dc",
+          "3639f9274131cac867ea92d3fe0180e58267240aee973781663871739b92a266"),
+    153: ("ce05a6c70e7c690d1770905eaeeeeaa7056555971f83e72b83bb5f3435465341",
+          "a4145da35c6a98c07b56f2d8d50617b2def0c7f9ab57acf435bdb78153185bbc"),
+    154: ("8c90a93aac5a7e7116c61683cc21b6ba31ee198a00d6c27dd7adb538432f4ed5",
+          "1c3053b61c31b4cb81188a6818d4fd0fadda22ab769f8fb2cc9b57f7a95446fe"),
+    155: ("6e31f8822ba5f5db1fa8d74b6d0d845076b3742b953adc7cfa77932178890a4d",
+          "7941c5f248c82c52432699c71f1f0f6026d5b5e59ffdab15413fe161c048b48b"),
+    157: ("59e3475033ea5b9e2e2f47e2b98278eef74d9155b8863548de4a50f599b4132a",
+          "2d17ebba0b55b93b21ef56407178cde867bf79040db7f8c5799db4fe4c633cbc"),
+    158: ("2ba50f24610a52f91d44cb463588f2043d940b2ca5e277da4e37f78bf058b312",
+          "23ba7b255f18597a777700ff67136c3425eb657660f44728fd3af72306e621a3"),
+    159: ("d2d51050fee314a3463eaf7440baeeca572669aab90cb91a1e33db522876571f",
+          "e8b62f20496dcf8533d472ead7fa288cafa0f25781abf25eed943b5110d005af"),
+    162: ("8aa16fe442e7a016aa451414cd76889305255639af205f4efabd7a97e7e5eeba",
+          "27be14bd8f104dd7886d8068524781ece85fdba552d8e275cc6bc76723026cc8"),
+    163: ("ef8e80e295c9ef37887523661155b8c90aea0388737db03e1fb25a442b1420aa",
+          "d223b95302b0bdbfdc41f57286133cf3fd90b2d85fda5b4004d43c2f3543b853"),
+    167: ("14e6aa67aed7c0d66b593ea8ad9196238536bace89642d68d65e217c37f378ad",
+          "68160af42e2281f0f9676ff7c9e1f23bd1672a6df522e166b8fc77e7ec2364a0"),
+    169: ("ef8399e2d93d51621f8786e240a1a57bec03d34d920e41dce7d9468315a84deb",
+          "e53bd57ba4106d858f9ff2102f060d615f66f107dd4c44a0523c431795a714c8"),
+    171: ("6e2e76c91883690386ad81270dbdea08817fc72b5a52d94c34783863e11680d0",
+          "a87d227edfd70362ca26359b235c4e4a51351088f8219502d7c3b4bf266b470e"),
+    172: ("eda6b07dae55bf6e6a00fa62cf121f874ab97fdbd8dab3b2866187de63b442ac",
+          "4673f886efb98afe7845d864ebfb32965d76d21305153494437091013e879ebf"),
+    174: ("81563cf7596735f989a2e08c9c12199e3f6c0006ee3a6c384f7e0cd4f63593d9",
+          "40b6d8028c6e4812bf5bb2c93b5f48bfe5e5d5e44706db7e08c1eff33f0bebc7"),
+    177: ("308e893277e48c6896eb163656e0eb3fb3cf5e5d8c53442c4750034ed540cda3",
+          "2691c60447c5c78c751e1adf039bc718a035c9123116c674c666f08ba8c089dc"),
+    181: ("71044ce334ab3c5ae949ef811d16e92d72ecd7e52fcd640303e10a292ed735f8",
+          "2c228fe654f1307cb7e1ef1215082a51f2f2d66c290539763269a49b5b69a77d"),
+    182: ("9eb71baea6deaf1edaa8771781b287ba6bb4b6a18192b0b8fe6a4b4035f8ca1b",
+          "a9eb46910f41dd375c9724c1c17440ff9f23bd13df7999ca2b5924c15a7b4ef7"),
+    183: ("18d4baa452f8ba6bf405f9f013b9b16e24d4ba00ab9e836af84fdfc8e52f6581",
+          "b72ca0f24b3bb459b096bdde5e6cc9d0c6d2c2daa07e96ffb6618b3c2dc96320"),
+    187: ("e7e04d09661a898f3e43b3326899bce0f4d2ebdeb861ba9b70ead85e8c91495c",
+          "a9474295f1ecaff47e1f8e64fdab5be99996e42a39a7dee175c27b53368a90d0"),
+}
+# The historic 4-3 rule's only position recode; every other slot keeps its retail label.
+ONE_POOL_POSITIONS = {"OLB": "ILB"}
+# The EDGE rename (Build option edge_rename) rewrites the 16-byte "Def End" placeholder surnames of historic players
+# to "Edge" in place, before this pass. They are placeholders this dataset replaces anyway, so resource states are read
+# on a copy with those exact 16-byte slots put back; the compiled output replaces every name in the pool.
+EDGE_PLACEHOLDER_BEFORE = "Def End".encode("utf-16le") + b"\0\0"
+EDGE_PLACEHOLDER_AFTER = "Edge".encode("utf-16le") + b"\0\0" + b"\0" * 6
+
 
 
 def xbe_status(payload):
@@ -149,7 +237,8 @@ def describe_context(main, situ, entries):
     """Independently decode the retail historical descriptors and moment bindings.
 
     Ordinary current-team roster edits may coexist. Historic descriptor changes,
-    changed title/date/bindings and expanded SITU tables cannot use this dataset.
+    changed title/date/bindings cannot use this dataset. The known 50-row profile
+    is validated by its owner, then reduced to this dataset's original 25 bindings.
     Narrative text is used only by the offline generator, never to execute code.
     """
     require(32 < len(main) <= MAX_RESOURCE and main[:4] == b"ROST", "missing main ROST")
@@ -177,16 +266,26 @@ def describe_context(main, situ, entries):
     require(len(by_team) == 75 and len({d["outer"] for d in descriptors}) == 75,
             "duplicate historic descriptor")
     require(32 < len(situ) <= MAX_RESOURCE and situ[:4] == b"SITU" and
-            u32(situ, 8) == COUNT and u32(situ, 16) == 0, "foreign SITU wrapper")
+            u32(situ, 8) in (COUNT, 50) and u32(situ, 16) == 0, "foreign SITU wrapper")
+    count = u32(situ, 8)
+    canonical = None
+    if count != COUNT:
+        from . import nfl2k5_espn25_more_moments as more
+        require(more.situ_rows(situ, more.Data.load()) == "applied", "foreign expanded SITU profile")
+        canonical = dataset()[0]["moments"]
     size = u32(situ, 4)
-    require(RECORDS + COUNT * STRIDE <= size <= len(situ) - 32, "SITU span outside entry")
+    require(RECORDS + count * STRIDE <= size <= len(situ) - 32, "SITU span outside entry")
     sb = situ[32:32 + size]
-    require(sb[12:16] == b"SITU" and u32(sb, 64) == COUNT, "foreign SITU table")
+    require(sb[12:16] == b"SITU" and u32(sb, 64) == count, "foreign SITU table")
     moments = []
     for i in range(COUNT):
         at = RECORDS + i * STRIDE
         m = {"moment": i, "title": utf16(sb, rel(sb, at)), "date": utf16(sb, rel(sb, at + 12)),
              "history": utf16(sb, rel(sb, at + 4)), "objective": utf16(sb, rel(sb, at + 8))}
+        if canonical is not None:
+            # The complete known text profile was checked above. Retain the
+            # original roster transaction's title/date context pin.
+            m.update(title=canonical[i]["title"], date=canonical[i]["date"])
         for side, pointer, year in (("away", 20, 28), ("home", 24, 32)):
             pair = (utf16(sb, rel(sb, at + pointer)), u32(sb, at + year))
             require(pair in by_team, "unrecognized moment name/year")
@@ -252,23 +351,114 @@ def dataset():
     return manifest, sheets
 
 
-def resource_status(payload, target):
+def without_edge_placeholders(payload):
+    """A copy with the EDGE rename's exact 16-byte "Edge" placeholder surnames put back to "Def End".
+
+    Only last-name allocations that hold exactly the EDGE rename's bytes change; anything else is returned as is.
+    Used to read a resource's state and as the compile input, never written back on its own.
+    """
+    if not isinstance(payload, (bytes, bytearray)) or len(payload) <= 32 or payload[:4] != b"ROST":
+        return payload
+    try:
+        document = rr.RosterDocument(bytes(payload[32:]))
+    except (ValueError, IndexError, KeyError, struct.error):
+        return payload
+    field = rr.FIELD_BY_NAME["last_name_pointer"]
+    out = None
+    for player in document.players:
+        at = 32 + player.offset + field.offset
+        target = at + struct.unpack_from("<i", payload, at)[0] - 1
+        if 32 <= target <= len(payload) - 16 and payload[target:target + 16] == EDGE_PLACEHOLDER_AFTER:
+            out = out if out is not None else bytearray(payload)
+            out[target:target + 16] = EDGE_PLACEHOLDER_BEFORE
+    return bytes(out) if out is not None else payload
+
+
+def without_helmet_equipment(payload, outer):
+    """Modern helmets (beta 76 hm) keeps the classic equipment on the historic teams: it writes only the helmet and
+    facemask fields of a few records. Those fields are put back to retail before this module reads a state, so the
+    two writers compose in either order (their fields are disjoint)."""
+    try:
+        from . import nfl2k5_modern_helmets as helmets
+        return helmets.without_equipment_edits(payload, outer)
+    except (ImportError, OSError, ValueError, KeyError):
+        return payload
+
+
+HISTORIC_SPARES = {'00': 9, '01': 14, '02': 4, '03': 10, '04': 3, '05': 7, '06': 8, '07': 10,
+    '08': 7, '09': 10, '10': 7, '11': 8, '12': 7, '13': 6, '14': 11, '15': 7, '16': 12, '17': 9,
+    '18': 8, '19': 8, '20': 5, '21': 9, '22': 6, '23': 13, '24': 12, '25': 8, '26': 5, '27': 8,
+    '28': 9, '29': 10, '30': 5, '37': 3}
+
+
+def without_historic_styles(payload, target):
+    """Normalize only m1's exact USA spare-style transform; full roster pins still decide the state."""
+    from . import nfl2k5_historic_styles as styles
+    try:
+        code, _style = styles.historic_style(payload)
+        if code != target['code'] or code not in HISTORIC_SPARES:
+            return payload
+        spare = HISTORIC_SPARES[code]
+        candidate = styles.undo_spare(payload, code, spare)
+        return candidate if styles.with_spare(candidate, spare) == payload else payload
+    except (ValueError, KeyError, IndexError, struct.error):
+        return payload
+
+
+def resource_status(payload, target, *, colleges=None, source_colleges=None):
+    """retail / applied (retail positions), one_pool / one_pool_applied (One-pool reclassified), or foreign.
+
+    The input states are read with the EDGE rename's placeholder surnames put back; the applied states hold no
+    placeholder at all (every name is a dataset name).
+    """
     if not isinstance(payload, (bytes, bytearray)) or len(payload) != target["size"]:
         return "foreign"
-    digest = sha(payload)
-    if digest == target["retail_sha256"]:
-        return "retail"
+    payload = without_helmet_equipment(payload, target["outer"])
+    payload = without_historic_styles(payload, target)
+    # Applied resources carry live indices. Normalize only those fields back to
+    # the shipped table before comparing the full payload pin. Retail resources
+    # are still recognized against their untouched, canonical bytes below.
+    applied = payload
+    if colleges is not None:
+        canonical = dataset()[0]["colleges"] if source_colleges is None else source_colleges
+        if colleges != canonical:
+            applied = bytearray(payload)
+            try:
+                document = rr.RosterDocument(payload[32:])
+            except (ValueError, IndexError, KeyError, struct.error):
+                return "foreign"
+            for player in document.players:
+                index = player.record.values["college_pointer"]
+                if not 0 <= index < len(colleges) or canonical.count(colleges[index]) != 1 or colleges.count(colleges[index]) != 1:
+                    applied = b""
+                    break
+                struct.pack_into("<I", applied, 32 + player.offset + rr.FIELD_BY_NAME["college_pointer"].offset, canonical.index(colleges[index]))
+    digest = sha(applied)
+    pins = ONE_POOL_PINS.get(target["outer"], (None, None))
     if digest == target["applied_sha256"]:
         return "applied"
+    if digest == pins[1]:
+        return "one_pool_applied"
+    digest = sha(without_edge_placeholders(payload))
+    if digest == target["retail_sha256"]:
+        return "retail"
+    if digest == pins[0]:
+        return "one_pool"
     return "foreign"
 
 
-def status(resources: Mapping[int, bytes]):
-    """Status of the COMPLETE 35-resource transaction; raw XBE is foreign."""
+APPLIED_STATES = ("applied", "one_pool_applied")
+
+
+def status(resources: Mapping[int, bytes], *, colleges=None):
+    """Status of the COMPLETE 35-resource transaction; raw XBE is foreign.
+
+    retail, applied, one_pool or one_pool_applied when every resource agrees; mixed layouts are foreign.
+    """
     manifest, _ = dataset()
     if not isinstance(resources, Mapping) or set(resources) != {t["outer"] for t in manifest["resources"]}:
         return "foreign"
-    states = {resource_status(resources[t["outer"]], t) for t in manifest["resources"]}
+    states = {resource_status(resources[t["outer"]], t, colleges=colleges, source_colleges=manifest["colleges"]) for t in manifest["resources"]}
     return states.pop() if len(states) == 1 else "foreign"
 
 
@@ -285,7 +475,7 @@ def changed_spans(before, after):
     return out
 
 
-def compile_resource(raw, rows, colleges):
+def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=None):
     """Existing name allocator + player encoder, inside the discovered retail pool.
 
     All names move to an existing first allocation before assigning final names;
@@ -320,12 +510,18 @@ def compile_resource(raw, rows, colleges):
     require(receipt["rows"] == 53 and not receipt["log"], "roster import refused: " + "; ".join(receipt["log"]))
     for p, row, old in zip(document.players, rows, original_values):
         require(row["pool"] == p.pool and int(row["index"]) == p.index, "roster slot identity changed")
-        require(row["position"] == rr.POSITIONS[old["position"]] and
+        expected = row["position"] if layout == "retail" else ONE_POOL_POSITIONS.get(row["position"], row["position"])
+        require(expected == rr.POSITIONS[old["position"]] and
                 all(int(row[k]) == old[k] for k in rr.RATING_BYTE_ORDER), "retail slot position/ratings changed")
         require((p.first, p.last) == (row["first"], row["last"]), "name import was incomplete")
-        if row["college"]:
-            require(colleges.count(row["college"]) == 1, "college must resolve exactly once in the main table")
-            p.record.set("college_pointer", colleges.index(row["college"]))
+        name = row["college"]
+        if not name and source_colleges is not None:
+            index = old["college_pointer"]
+            require(0 <= index < len(source_colleges), "template college index outside source table")
+            name = source_colleges[index]
+        if name:
+            require(colleges.count(name) == 1, f"college must resolve exactly once in the main table: {name!r}")
+            p.record.set("college_pointer", colleges.index(name))
     result = raw[:32] + document.to_body()
     require(len(result) == len(raw) and result[:32] == raw[:32], "resource wrapper/size changed")
     allowed = set(range(32 + bounds[0], 32 + bounds[1]))
@@ -343,16 +539,25 @@ def compile_resource(raw, rows, colleges):
     return result
 
 
-def _compile_resources(resources: Mapping[int, bytes]):
-    """Pure all-or-nothing compilation; replay is byte-identical with zero writes."""
+def _compile_resources(resources: Mapping[int, bytes], *, colleges=None):
+    """Pure all-or-nothing compilation; replay is byte-identical with zero writes.
+
+    The retail position layout compiles to the pinned applied profile; the One-pool layout (the reclassify already
+    ran) compiles to its own pinned profile, which equals reclassify(applied) byte for byte.
+    """
     manifest, sheets = dataset()
-    state = status(resources)
-    require(state in ("retail", "applied"), "historic rosters refuse missing, mixed or foreign resources")
+    colleges = manifest["colleges"] if colleges is None else colleges
+    state = status(resources, colleges=colleges)
+    require(state in ("retail", "applied", "one_pool", "one_pool_applied"),
+            "historic rosters refuse missing, mixed or foreign resources")
+    layout = "one_pool" if state.startswith("one_pool") else "retail"
+    goal = "one_pool_applied" if layout == "one_pool" else "applied"
     output, receipts = {}, []
     for t in manifest["resources"]:
         before = bytes(resources[t["outer"]])
-        after = before if state == "applied" else compile_resource(before, sheets[t["outer"]], manifest["colleges"])
-        require(resource_status(after, t) == "applied", "compiled roster differs from the pinned profile")
+        after = before if state == goal else compile_resource(without_edge_placeholders(before), sheets[t["outer"]],
+                                                              colleges, layout=layout, source_colleges=manifest["colleges"])
+        require(resource_status(after, t, colleges=colleges, source_colleges=manifest["colleges"]) == goal, "compiled roster differs from the pinned profile")
         changes = changed_spans(before, after)
         output[t["outer"]] = after
         receipts.append({"outer": t["outer"], "filename": t["filename"], "size": t["size"],
@@ -360,8 +565,8 @@ def _compile_resources(resources: Mapping[int, bytes]):
                          "changed_bytes": sum(len(c["before"]) // 2 for c in changes), "changes": changes,
                          "wrapper_identical": True, "compressed": False})
     return output, {"schema": SCHEMA, "owner": OWNER, "evidence": EVIDENCE,
-                    "dataset_sha256": DATASET_SHA256, "before": state, "after": "applied",
-                    "already_applied": state == "applied", "xbe_changed": False, "growth_bytes": 0,
+                    "dataset_sha256": DATASET_SHA256, "before": state, "after": goal, "layout": layout,
+                    "already_applied": state == goal, "xbe_changed": False, "growth_bytes": 0,
                     "changed_bytes": sum(r["changed_bytes"] for r in receipts), "resources": receipts,
                     "lineups": "Season inference; see per-moment basis and per-player exceptions in manifest.json"}
 
@@ -373,18 +578,18 @@ def require_build_ready():
     require(not BUILD_BLOCK_REASON, BUILD_BLOCK_REASON)
 
 
-def apply(resources: Mapping[int, bytes]):
+def apply(resources: Mapping[int, bytes], *, colleges=None):
     """Build-facing resource preflight, including the unresolved gameplay hold."""
     require_build_ready()
-    return _compile_resources(resources)
+    return _compile_resources(resources, colleges=colleges)
 
 
 apply_resources = apply
 resources_status = status
 
 
-def _read_archive(archive):
-    manifest, _ = dataset()
+def _read_archive(archive, *, with_colleges=False):
+    manifest, sheets = dataset()
     outputs, entries = {}, {}
     for t in manifest["resources"]:
         require(t["outer"] < len(archive.entries), "missing historic outer entry")
@@ -398,8 +603,14 @@ def _read_archive(archive):
         require(32 < e.size <= MAX_RESOURCE, "context resource exceeds bounded read")
         context_raw[index] = archive.read(e.virtual_offset, e.size)
     context = describe_context(context_raw[5], context_raw[22], archive.entries)
-    require(context_sha(context) == manifest["context_sha256"], "moment bindings or main college/descriptor table changed")
-    return outputs, entries
+    # Preserve the shipped descriptor and moment-binding pin. College labels
+    # outside this transaction may legitimately change; resolve needed names.
+    require(context_sha({**context, "colleges": manifest["colleges"]}) == manifest["context_sha256"],
+            "moment bindings or main descriptor table changed")
+    for name in sorted({r["college"] for rows in sheets.values() for r in rows if r["college"]}):
+        require(context["colleges"].count(name) == 1,
+                f"college must resolve exactly once in the main table: {name!r}")
+    return (outputs, entries, context["colleges"]) if with_colleges else (outputs, entries)
 
 
 def read_resources(source):
@@ -430,7 +641,9 @@ def read_xbe(source):
 def preflight_image(source):
     """Validate both members of the roster plus native reload repair before copy."""
     require_build_ready()
-    _, receipt = apply(read_resources(source))
+    with rr._outer_image()(source) as archive:
+        resources, _, colleges = _read_archive(archive, with_colleges=True)
+    _, receipt = apply(resources, colleges=colleges)
     _, native = apply_xbe(read_xbe(source))
     return {**receipt, "load_fix": native}
 
@@ -451,11 +664,16 @@ def install_image_xbe(stream, offset, before, after):
 
 def image_status(source):
     try:
-        resources = status(read_resources(source))
+        with rr._outer_image()(source) as archive:
+            raw, _, colleges = _read_archive(archive, with_colleges=True)
+        resources = status(raw, colleges=colleges)
         native = xbe_status(read_xbe(source))
         if "foreign" in (resources, native):
             return "foreign"
-        return "needs load fix" if resources == "applied" and native == "retail" else resources
+        # The position layout (retail or One-pool) is not part of the Build status: both read retail/applied.
+        if resources in APPLIED_STATES:
+            return "needs load fix" if native == "retail" else "applied"
+        return "retail"
     except (OSError, ValueError, IndexError, KeyError, struct.error):
         return "foreign"
 
@@ -474,11 +692,11 @@ def apply_to_image(path):
     with path.open("r+b") as executable, rr._outer_image()(path, writable=True) as archive:
         xbe_offset, xbe_before = _image_xbe(executable)
         xbe_after, native = apply_xbe(xbe_before)
-        original, entries = _read_archive(archive)
-        output, receipt = apply(original)
+        original, entries, colleges = _read_archive(archive, with_colleges=True)
+        output, receipt = apply(original, colleges=colleges)
         require(archive._read_table() == archive.entries, "archive table changed during roster preflight")
-        current, rechecked = _read_archive(archive)
-        require(path.stat().st_size == size and entries == rechecked and original == current,
+        current, rechecked, current_colleges = _read_archive(archive, with_colleges=True)
+        require(path.stat().st_size == size and entries == rechecked and original == current and colleges == current_colleges,
                 "image changed during roster preflight")
         require(_image_xbe(executable) == (xbe_offset, xbe_before), "executable changed during roster preflight")
         spans = []
@@ -490,8 +708,9 @@ def apply_to_image(path):
                                        for p, off, n in segments]})
             if after != original[index]:
                 require(archive.write(e.virtual_offset, after) == len(after), "short historic roster write")
-        verified, _ = _read_archive(archive)
-        require(path.stat().st_size == size and verified == output, "historic roster readback differs")
+        verified, _, verified_colleges = _read_archive(archive, with_colleges=True)
+        require(path.stat().st_size == size and verified == output and verified_colleges == colleges,
+                "historic roster readback differs")
         xbe_spans = install_image_xbe(executable, xbe_offset, xbe_before, xbe_after) if xbe_after != xbe_before else []
     receipt.update(load_fix=native, xbe_changed=bool(xbe_spans), xbe_spans=xbe_spans,
                    already_applied=receipt["already_applied"] and not xbe_spans,

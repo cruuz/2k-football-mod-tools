@@ -75,6 +75,9 @@ class RenamedBuildOutputTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / "ESPN NFL 2K5 (USA).xiso.iso"
         synthetic_disc(self.source)
+        # This disc has a synthetic XBE and textures, with no PLAY archive.
+        self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
+                                             return_value={"synthetic": True}))
         self.retail = digest(self.source)
 
     def build(self, source: Path, target: Path) -> dict:
@@ -199,6 +202,9 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / "ESPN NFL 2K5 (USA).xiso.iso"
         synthetic_disc(self.source)
+        # This disc has a synthetic XBE and textures, with no PLAY archive.
+        self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
+                                             return_value={"synthetic": True}))
         self.panel = BuildPanel()
         self.addCleanup(self.panel.deleteLater)
         self.panel._pool = _Immediate()

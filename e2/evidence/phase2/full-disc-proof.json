@@ -1,0 +1,1152 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runtime_witnessed": false,
+  "output": {
+    "size": 8012931072,
+    "sha256": "b134e946c1cb3ead4aebb7a1ba1371184d21ceb45a3eafda61c2981e26174849"
+  },
+  "postbuild_reader_fix": {
+    "classification": "PROVED OFFLINE",
+    "build_code_commit": "4ef666dde377c2545f420a9f5b36bd28c7e38f7f",
+    "reason": "Support the known expanded SITU context and exclude the complete pinned historic alias bank from the modern screen-timing owner. Both original fixed-layout readers rejected the correctly built expanded archive.",
+    "changed_functions": {
+      "mod_editor/core/nfl2k5_espn25_rosters.py": "describe_context",
+      "mod_editor/core/nfl2k5_screen_timing.py": "_archive_books"
+    },
+    "all_other_module_ast_identical": true,
+    "provider_change_only_reader_content_pin": true,
+    "disc_rewritten": false,
+    "changes": {
+      "mod_editor/core/nfl2k5_espn25_rosters.py": {
+        "before_sha256": "fbcf1f35923cf0fc626e7e7f462617420a020783a91615b51daa9aaf14fabdc8",
+        "after_sha256": "dc46f552e10552fc1830c570d0f9189e9ef6e56ec9fe6bb128bc50ab9d5eb8c0"
+      },
+      "mod_editor/core/nfl2k5_screen_timing.py": {
+        "before_sha256": "b042ae22e791c3b2f335aeb35207bd1dd56e7d64d805f414c1f7c89e08571382",
+        "after_sha256": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894"
+      },
+      "mod_editor/core/providers.py": {
+        "before_sha256": "c9d3d112bf3e3fd8c1250b7ee0e00cfbf3dbb6fd061e00fcb207d5e9f46a616f",
+        "after_sha256": "f0a29d69aee40d99a7c7c5ee92900f2b7b1c5e5adb42c96b144a15a57d9c2b4b"
+      }
+    }
+  },
+  "checks": {
+    "stock_xbe": "applied",
+    "stock_bank": "applied",
+    "moments_xbe": "applied",
+    "moments_resources": "applied",
+    "named_previews": "applied",
+    "era_rules": "applied",
+    "original_rosters": "applied"
+  },
+  "directory": {
+    "count": 4451,
+    "first_payload": 55296,
+    "unique_ids": 4451
+  },
+  "books": [
+    {
+      "source": "ARZ-pb.iff",
+      "alias": "E2R-ARZ-pb.iff",
+      "stock_sha256": "b8864e41eff0b59aa4c357e8ee02592be552d950466a95b54c7ed454ff9e3acf",
+      "modern_sha256": "a61acb6bbaa696a7ceb50310aba92cc3cb29135ea4982ee145af4a6a243c9dbb"
+    },
+    {
+      "source": "ATL-pb.iff",
+      "alias": "E2R-ATL-pb.iff",
+      "stock_sha256": "825cbe247dabab0b201a20c3edb36262a50426c3f180c3a774c6804d1a547189",
+      "modern_sha256": "514ae0abb4a43383f2c260072a784846264ea6178df39bfacd178365466531f3"
+    },
+    {
+      "source": "BAL-pb.iff",
+      "alias": "E2R-BAL-pb.iff",
+      "stock_sha256": "c95623285da2f634de3d83a8b275bdc22fbf35d9ff675ab017bbe4e950ef9e0a",
+      "modern_sha256": "e70882bdb46fd29e1685670181e39cbd4f9d064a23e82838f67237d76444f3a6"
+    },
+    {
+      "source": "BUF-pb.iff",
+      "alias": "E2R-BUF-pb.iff",
+      "stock_sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+      "modern_sha256": "12c3e6db800a6ad28a83a28a24f10142cda16bb436f2b749cee487ad0b1c5c38"
+    },
+    {
+      "source": "CAR-pb.iff",
+      "alias": "E2R-CAR-pb.iff",
+      "stock_sha256": "19efe026cf5dcd92ab4000180b55bf81d8c92f03ea3fc4fcf87775bb0732bd2b",
+      "modern_sha256": "0cb7cf85c65bb50188ebae019fea35f2688488db97c4eff410a8c623cd3726f0"
+    },
+    {
+      "source": "CHI-pb.iff",
+      "alias": "E2R-CHI-pb.iff",
+      "stock_sha256": "9cfd81751f23f2c608a789becc8909f31662d3813f65865b11a2d781ed7fb11b",
+      "modern_sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae"
+    },
+    {
+      "source": "CIN-pb.iff",
+      "alias": "E2R-CIN-pb.iff",
+      "stock_sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+      "modern_sha256": "dc9f28ca3947b926e9c22722d1438d096dd722d6fe1bed90d82e6645fc3593e9"
+    },
+    {
+      "source": "CLE-pb.iff",
+      "alias": "E2R-CLE-pb.iff",
+      "stock_sha256": "1948b55bfb2b603fed366e7afb04a8f0f97edab7c872a6bd35fb99a4734cbc24",
+      "modern_sha256": "ac5f3b6e877bf5811e457482b13f9ea79cf9d1dfca4bccefc34b66c9b735f444"
+    },
+    {
+      "source": "DAL-pb.iff",
+      "alias": "E2R-DAL-pb.iff",
+      "stock_sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+      "modern_sha256": "141ad070d0ce5cb801dc138050e91dea4f688265fa87b8c22d4fca38150b9f1d"
+    },
+    {
+      "source": "DEN-pb.iff",
+      "alias": "E2R-DEN-pb.iff",
+      "stock_sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+      "modern_sha256": "fddbc3df7789d7d3b816a9ab700801bedeccd555299af904cdfac93d629e0f2b"
+    },
+    {
+      "source": "DET-pb.iff",
+      "alias": "E2R-DET-pb.iff",
+      "stock_sha256": "6ee8c492f6139ca54e971056707c2e28d175fa51c5f4392301bf0b4f14a05647",
+      "modern_sha256": "fd6c69122c3b4609afd105de8bc831e8b0a8004221847acef63e84a0a8a09e0d"
+    },
+    {
+      "source": "GB-pb.iff",
+      "alias": "E2R-GB-pb.iff",
+      "stock_sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+      "modern_sha256": "ab3c19083e5f6190071899307ef40a961200c7cebe95b911ad13d16e83ab892e"
+    },
+    {
+      "source": "HOU-pb.iff",
+      "alias": "E2R-HOU-pb.iff",
+      "stock_sha256": "14fa1d33019b7da2de10e14461687afa5aa789fd5025af5d467589da04472a76",
+      "modern_sha256": "ce01473383d51753ce9634b330d2c38c05d9b1a9e301e91435fffb0487505db1"
+    },
+    {
+      "source": "IND-pb.iff",
+      "alias": "E2R-IND-pb.iff",
+      "stock_sha256": "94d23f6c76bf613502e64fe0ff2976d3f99b83884cc3b9f1408b50cbf09accec",
+      "modern_sha256": "981dcf5c97c547373b47f55195c56ac295b8a5e781a972296eb991d6a7148c19"
+    },
+    {
+      "source": "JAX-pb.iff",
+      "alias": "E2R-JAX-pb.iff",
+      "stock_sha256": "abca42d2a59ff5dba5ed5048aaf738ca7cdd2c64c81cd0b470f983d7741a8790",
+      "modern_sha256": "c30ad51897e573c66af4bbafc4d25a4894ff4d15b564f885e42e9a66888c6f66"
+    },
+    {
+      "source": "KC-pb.iff",
+      "alias": "E2R-KC-pb.iff",
+      "stock_sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+      "modern_sha256": "1055b45f6ba0827f8683d5cf05996de5cbf800b757990cd26ef748036d387640"
+    },
+    {
+      "source": "MIA-pb.iff",
+      "alias": "E2R-MIA-pb.iff",
+      "stock_sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+      "modern_sha256": "82a4f091c414e84e5f2f5206326ba4e40f3f249e75050b7c61c522c7d8a4775e"
+    },
+    {
+      "source": "MIN-pb.iff",
+      "alias": "E2R-MIN-pb.iff",
+      "stock_sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+      "modern_sha256": "414aaf85dd324834ca8be8f3e679710983970d28d64fd0753c33e7f0ed66459a"
+    },
+    {
+      "source": "NE-pb.iff",
+      "alias": "E2R-NE-pb.iff",
+      "stock_sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+      "modern_sha256": "380b9c644722ab7a7f805478c4279b4a4d330eda5003f68bffc583055ae5152d"
+    },
+    {
+      "source": "NO-pb.iff",
+      "alias": "E2R-NO-pb.iff",
+      "stock_sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+      "modern_sha256": "180753ed061be405453aa0da206b4d1b6a884dd9ba1ae8e722694f507d6b1d79"
+    },
+    {
+      "source": "NYG-pb.iff",
+      "alias": "E2R-NYG-pb.iff",
+      "stock_sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+      "modern_sha256": "5be302dec27e402aa85046f622c3aa0a8e4b24975c403ee3615754874d12b373"
+    },
+    {
+      "source": "NYJ-pb.iff",
+      "alias": "E2R-NYJ-pb.iff",
+      "stock_sha256": "c81f2c0ac1cc8c08e785cca064b9f8c8fb40689edaadaee3a7f7348aa2bbb319",
+      "modern_sha256": "2c7540d045a2293d8fb186527d06f0619931ca5858086fe35fba877122c12097"
+    },
+    {
+      "source": "OAK-pb.iff",
+      "alias": "E2R-OAK-pb.iff",
+      "stock_sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+      "modern_sha256": "2157ee551fc047555d6727b99f48ea0f1de8faa0fe168b1751128ee532097985"
+    },
+    {
+      "source": "PHI-pb.iff",
+      "alias": "E2R-PHI-pb.iff",
+      "stock_sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+      "modern_sha256": "a599c0276acde8e69456830c4a6a3ecb7119d09f09b12e96bf77cfa639cdac82"
+    },
+    {
+      "source": "PIT-pb.iff",
+      "alias": "E2R-PIT-pb.iff",
+      "stock_sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+      "modern_sha256": "f70f22754ebc90cf9a2be88105cceb1bb7367d788b293cbdae219d7a25002ea8"
+    },
+    {
+      "source": "SD-pb.iff",
+      "alias": "E2R-SD-pb.iff",
+      "stock_sha256": "a579a90bd862a6179790bbc8941628853066dd4e3bcdf9b87bf6c74232079b46",
+      "modern_sha256": "f251b55b51d0153540300a50853f6b1879d94a6a3409fce382d9c02f18130525"
+    },
+    {
+      "source": "SEA-pb.iff",
+      "alias": "E2R-SEA-pb.iff",
+      "stock_sha256": "2682d48180b30598b99481aee1b64e7a43bb2937b87a3970fdac1987eff38354",
+      "modern_sha256": "edfee4a8cfe836cee50203446a7719f0e947bbf1c113494ae06a98e8d85c375e"
+    },
+    {
+      "source": "SF-pb.iff",
+      "alias": "E2R-SF-pb.iff",
+      "stock_sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+      "modern_sha256": "78040a3a2fdd342c70317fa99d6e37e294b6f71f67c5fa9978100575cacdae0b"
+    },
+    {
+      "source": "STL-pb.iff",
+      "alias": "E2R-STL-pb.iff",
+      "stock_sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+      "modern_sha256": "8df7534d0aeb5b8b7de3c5b828df2e9973bc81d474e0ce6c31d6323a198169e2"
+    },
+    {
+      "source": "TB-pb.iff",
+      "alias": "E2R-TB-pb.iff",
+      "stock_sha256": "b137410f10b9da3834d55cd2ce340afd498e9bf0e1902a9a1982bb5eefd70cbc",
+      "modern_sha256": "09dd866aecf1447a7eb4dd005f64e7327c82baf6944156fcebadd7a8d19ccb23"
+    },
+    {
+      "source": "TEN-pb.iff",
+      "alias": "E2R-TEN-pb.iff",
+      "stock_sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+      "modern_sha256": "03907f2de7e1194e686facac209fefded5be7696767bf68c3b954e825ba98841"
+    },
+    {
+      "source": "WAS-pb.iff",
+      "alias": "E2R-WAS-pb.iff",
+      "stock_sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+      "modern_sha256": "04c601e328ec92fe8d94d28a44a63bfb594fae3759d32e4f64bbd9c1efda906d"
+    }
+  ],
+  "route": {
+    "mode_va": 15073152,
+    "required_mode": 8,
+    "ordinal_va": 12523608,
+    "count": 50,
+    "profiles_va": 22055392,
+    "stride": 32,
+    "season_offset": 20,
+    "season_bytes": 2,
+    "super_bowl_offset": 28,
+    "super_bowl_bytes": 4
+  },
+  "runtime_states": {
+    "momentum": "applied",
+    "momentum_settings": {
+      "status": "applied",
+      "momentum": 50,
+      "momentum_contact": true,
+      "momentum_collisions": true,
+      "momentum_collision_level": 50,
+      "model_version": 2,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "momentum_contact": "applied",
+    "momentum_collisions": "applied",
+    "camera": "applied",
+    "read_option_runtime": "retail",
+    "read_option_runtime_settings": null,
+    "screen_hooks": "applied",
+    "screen_hooks_settings": {
+      "model_version": 1,
+      "line_hold_floor_seconds": 0.8,
+      "default_qb_timer_seconds": 0.6,
+      "explicit_qb_delays_preserved": true,
+      "data_bytes": 0,
+      "experimental": true,
+      "runtime_witnessed": false,
+      "experiment_order": 2
+    },
+    "coverage_trail": "applied",
+    "franchise_edit_player": "applied",
+    "cpu_money_downs": "applied",
+    "cpu_money_downs_settings": {
+      "level": "modern",
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "accelerated_clock": "applied",
+    "accelerated_clock_settings": {
+      "status": "applied",
+      "enabled": true,
+      "minimum_seconds": 20,
+      "option_source": "build_time",
+      "runtime_witnessed": false
+    },
+    "coin_defer": "applied",
+    "coin_defer_settings": {
+      "status": "applied",
+      "settings": {},
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time",
+      "human_defer": false,
+      "cpu_defer_rate": [
+        15,
+        17
+      ],
+      "source": "https://www.reddit.com/r/nfl/comments/198fkwh/2023_regular_season_coin_toss_data/"
+    },
+    "decided_clock": "applied",
+    "decided_clock_settings": {
+      "status": "applied",
+      "settings": {
+        "margin": 17,
+        "seconds": 60
+      },
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time"
+    },
+    "cpu_scrambles": "applied",
+    "cpu_scrambles_settings": {
+      "status": "applied",
+      "settings": {},
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time",
+      "retail_factor": 0.25,
+      "modern_factor": 0.5,
+      "nfl_average_calibrated": false
+    },
+    "weekly_prep": "applied",
+    "weekly_prep_cpu": "applied",
+    "weekly_prep_remember": "applied",
+    "weekly_prep_settings": {
+      "status": "applied",
+      "cpu": true,
+      "remember": true
+    },
+    "playbook_pair": "retail",
+    "deep_zone_facing": "applied",
+    "deep_zone_bail": "applied",
+    "deep_zone_settings": {
+      "status": "applied",
+      "facing": true,
+      "bail": true,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "guardian_overlay": "retail",
+    "guardian_overlay_settings": {
+      "status": "retail",
+      "guardian_everyone_practice": true,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "franchise_2026_rules": "unavailable",
+    "franchise_2026_kernel": "retail",
+    "franchise_2026_runtime_enforced": false,
+    "senior_bowl": "retail",
+    "senior_bowl_native_available": false,
+    "my_career": "applied",
+    "crib_reclaim": "applied",
+    "franchise_autosave": "applied",
+    "historic_teams_quick_game": "applied",
+    "espn25_more_moments": "applied",
+    "historic_stock_books": "applied",
+    "espn25_era_rules": "applied",
+    "anniversary_kickoff": "applied",
+    "widescreen_menus": "applied",
+    "kickoff_return_blocking": "retail",
+    "k128_memory": "retail",
+    "k128_settings": {
+      "status": "retail",
+      "k128": false,
+      "roster_heap": false,
+      "early": false,
+      "require_128": false
+    },
+    "k128_roster_heap": "retail",
+    "k128_early": "retail",
+    "position_pools": "applied",
+    "position_pool_filters": "applied",
+    "modern_naming": "applied",
+    "roster_arena_growth": "retail",
+    "roster_arena_settings": {
+      "status": "retail",
+      "reserves_16": false,
+      "created_teams_extra": 0
+    },
+    "reserves_16": "retail",
+    "created_teams_extra": "retail",
+    "defensive_try": "applied",
+    "zone_drop_cap": "applied",
+    "all_stadiums": "applied",
+    "coverage_slider": "applied",
+    "scramble_tuning": "applied",
+    "flatter_deep_ball": "foreign",
+    "chop_block_toggle": "applied",
+    "chop_block_evidence": {
+      "status": "applied",
+      "experimental": true,
+      "runtime_witnessed": false,
+      "retail_toggle_ignored": true,
+      "detector_present": true,
+      "case_entry_va": "0xb1598",
+      "clipping_entry_va": "0xb1594",
+      "retail_shared_target_va": "0xb14ee",
+      "toggle_va": "0xe60064",
+      "detector_va": "0xb2900",
+      "practice_disables_all_penalties": true,
+      "truth_table": [
+        {
+          "chop_toggle": 0,
+          "clipping": 0.0,
+          "retail_enabled": false,
+          "patch_enabled": false
+        },
+        {
+          "chop_toggle": 0,
+          "clipping": 0.5,
+          "retail_enabled": true,
+          "patch_enabled": false
+        },
+        {
+          "chop_toggle": 1,
+          "clipping": 0.0,
+          "retail_enabled": false,
+          "patch_enabled": true
+        },
+        {
+          "chop_toggle": 1,
+          "clipping": 0.5,
+          "retail_enabled": true,
+          "patch_enabled": true
+        }
+      ]
+    },
+    "music_shuffle": "applied",
+    "music_shuffle_state": {
+      "status": "applied",
+      "records": [
+        [
+          "femusic",
+          0
+        ],
+        [
+          "femusic",
+          1
+        ],
+        [
+          "femusic",
+          2
+        ],
+        [
+          "femusic",
+          3
+        ],
+        [
+          "femusic",
+          4
+        ],
+        [
+          "femusic",
+          5
+        ],
+        [
+          "femusic",
+          6
+        ],
+        [
+          "cribmusic",
+          0
+        ],
+        [
+          "cribmusic",
+          1
+        ],
+        [
+          "cribmusic",
+          2
+        ],
+        [
+          "cribmusic",
+          3
+        ],
+        [
+          "cribmusic",
+          4
+        ],
+        [
+          "cribmusic",
+          5
+        ],
+        [
+          "cribmusic",
+          6
+        ],
+        [
+          "cribmusic",
+          7
+        ],
+        [
+          "cribmusic",
+          8
+        ],
+        [
+          "cribmusic",
+          9
+        ],
+        [
+          "cribmusic",
+          10
+        ],
+        [
+          "cribmusic",
+          11
+        ],
+        [
+          "cribmusic",
+          12
+        ],
+        [
+          "cribmusic",
+          13
+        ],
+        [
+          "cribmusic",
+          14
+        ],
+        [
+          "cribmusic",
+          15
+        ],
+        [
+          "cribmusic",
+          16
+        ],
+        [
+          "cribmusic",
+          17
+        ],
+        [
+          "cribmusic",
+          18
+        ],
+        [
+          "cribmusic",
+          19
+        ],
+        [
+          "cribmusic",
+          20
+        ],
+        [
+          "cribmusic",
+          21
+        ],
+        [
+          "cribmusic",
+          22
+        ],
+        [
+          "cribmusic",
+          23
+        ],
+        [
+          "cribmusic",
+          24
+        ],
+        [
+          "cribmusic",
+          25
+        ],
+        [
+          "cribmusic",
+          26
+        ],
+        [
+          "cribmusic",
+          27
+        ],
+        [
+          "cribmusic",
+          28
+        ],
+        [
+          "cribmusic",
+          29
+        ],
+        [
+          "cribmusic",
+          30
+        ],
+        [
+          "cribmusic",
+          31
+        ],
+        [
+          "cribmusic",
+          32
+        ],
+        [
+          "cribmusic",
+          33
+        ],
+        [
+          "cribmusic",
+          34
+        ],
+        [
+          "cribmusic",
+          35
+        ],
+        [
+          "cribmusic",
+          36
+        ],
+        [
+          "cribmusic",
+          37
+        ],
+        [
+          "cribmusic",
+          38
+        ],
+        [
+          "cribmusic",
+          39
+        ],
+        [
+          "cribmusic",
+          40
+        ],
+        [
+          "cribmusic",
+          41
+        ],
+        [
+          "cribmusic",
+          42
+        ],
+        [
+          "cribmusic",
+          43
+        ],
+        [
+          "cribmusic",
+          44
+        ],
+        [
+          "cribmusic",
+          45
+        ],
+        [
+          "cribmusic",
+          46
+        ],
+        [
+          "cribmusic",
+          47
+        ],
+        [
+          "cribmusic",
+          48
+        ],
+        [
+          "cribmusic",
+          49
+        ],
+        [
+          "cribmusic",
+          50
+        ],
+        [
+          "cribmusic",
+          51
+        ],
+        [
+          "cribmusic",
+          52
+        ],
+        [
+          "cribmusic",
+          53
+        ],
+        [
+          "cribmusic",
+          54
+        ],
+        [
+          "cribmusic",
+          55
+        ],
+        [
+          "cribmusic",
+          56
+        ],
+        [
+          "cribmusic",
+          57
+        ],
+        [
+          "cribmusic",
+          58
+        ]
+      ],
+      "enabled": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "experimental": true,
+      "runtime_witnessed": false,
+      "position_policy": "Keep the song and shuffle position between menus, Crib, draft and game background. Pause and replay screens keep music playing. Stadium clip previews pause and resume it. Loading, halftime, wrap-up and jukebox previews stop the background song; it restarts on return. One selected song repeats; zero stops.",
+      "all_modes_proved": true,
+      "context_proof_scope": "24 named native routes, bounded with rendering and streaming stubs; gameplay unwitnessed"
+    },
+    "practice_squad_screen": "applied",
+    "abilities": "applied",
+    "abilities_settings": {
+      "status": "applied",
+      "abilities_off_week": null,
+      "lock_right_stick": true,
+      "lock_special_moves": true,
+      "lock_speedster": true,
+      "model_version": 2,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "qb_spy": "applied",
+    "calendar_engine": "applied",
+    "zone_drop_settings": {
+      "status": "applied",
+      "cap": 0.8399999737739563
+    }
+  },
+  "applied": {
+    "throw": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+    "max_deep_yards": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+    "realistic_flight": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+    "arc_by_distance": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+    "catch_slider": "applied",
+    "draft_ai": "applied",
+    "returner_fix": "applied",
+    "progression": "applied",
+    "scheme_labels": "applied",
+    "camera": "applied",
+    "kick_rules": "applied",
+    "kickoff_alignment": "applied",
+    "xbe_space": "applied",
+    "momentum": "applied",
+    "momentum_contact": "applied",
+    "momentum_collisions": "applied",
+    "my_career": "applied",
+    "franchise_autosave": "applied",
+    "custom_intro": "applied",
+    "crib_reclaim": "applied",
+    "screen_hooks": "applied",
+    "coverage_trail": "applied",
+    "weekly_prep": "applied",
+    "weekly_prep_cpu": "applied",
+    "weekly_prep_remember": "applied",
+    "deep_zone_facing": "applied",
+    "deep_zone_bail": "applied",
+    "cpu_money_downs": "applied",
+    "coin_defer": "applied",
+    "decided_clock": "applied",
+    "cpu_scrambles": "applied",
+    "historic_teams_quick_game": "applied",
+    "espn25_era_rules": "applied",
+    "historic_stock_books": "applied",
+    "espn25_named_previews": "applied",
+    "espn25_more_moments": "applied",
+    "accelerated_clock": "applied",
+    "franchise_edit_player": "applied",
+    "defensive_try": "applied",
+    "zone_drop_cap": "applied",
+    "all_stadiums": "applied",
+    "music_shuffle": "applied",
+    "practice_squad_screen": "applied",
+    "abilities": "applied",
+    "qb_spy": "applied",
+    "calendar_engine": "applied",
+    "coverage_slider": "applied",
+    "scramble_tuning": "applied",
+    "chop_block_toggle": "applied",
+    "dynamic_kickoff": "applied",
+    "position_pools": "applied",
+    "depth_chart_rows": "applied",
+    "season_cap": "applied",
+    "season_2026": "applied",
+    "team_names_2026": "applied",
+    "modern_naming": "applied",
+    "widescreen": "applied",
+    "overtime": "applied",
+    "team_column": "applied",
+    "seven_on_seven": "applied",
+    "team_history": "applied",
+    "position_row": "applied",
+    "probowl_order": "applied",
+    "elbow_options": "applied",
+    "the1wam_lineman_rating": "applied",
+    "xemu_display_list_fix": "applied",
+    "penalties": "applied",
+    "kick_laces": "applied",
+    "franchise_practice": "applied",
+    "practice_squad": "applied",
+    "depth_locks": "applied",
+    "prospect_names": "applied",
+    "player_star": "applied",
+    "player_tags": "applied",
+    "roster_edits": "edited",
+    "weather_haze": "applied",
+    "number_kerning": "applied",
+    "modern_color": "applied",
+    "modern_metlife": "applied",
+    "modern_venues_2026": "applied",
+    "modern_metlife_model": "applied",
+    "modern_helmets": "applied",
+    "modern_sofi": "applied",
+    "modern_highmark": "applied",
+    "modern_surfaces": "applied",
+    "espn_marks_2026": "applied",
+    "espn_wipes_boards_2026": "applied",
+    "kick_meter_2026": "applied",
+    "espn25_rosters": "applied",
+    "playbook_packs": "step defense_playbook_packs+playbook_packs",
+    "screen_timing": "applied",
+    "edge_rename": "applied",
+    "scorebug_runtime": "applied",
+    "music_policy": "applied",
+    "music_unlock": "applied",
+    "music_userlist": "applied"
+  },
+  "inactive_inspection_exceptions": {
+    "flatter_deep_ball": "foreign"
+  },
+  "legacy_inspection_exceptions": {
+    "depth_roles": "custom books (packs, 7-on-7) read foreign without allow_custom; the step reports applied",
+    "scorebug": "static scorebar inspector vs the sprite-grown HUD (same on the Berman disc A)"
+  },
+  "active_owner_readback": {
+    "scorebug_runtime": "applied",
+    "depth_roles": "applied",
+    "depth_role_books": [
+      {
+        "outer_index": 307,
+        "name": "ARZ",
+        "sha256": "a61acb6bbaa696a7ceb50310aba92cc3cb29135ea4982ee145af4a6a243c9dbb",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 308,
+        "name": "ATL",
+        "sha256": "514ae0abb4a43383f2c260072a784846264ea6178df39bfacd178365466531f3",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 309,
+        "name": "BAL",
+        "sha256": "e70882bdb46fd29e1685670181e39cbd4f9d064a23e82838f67237d76444f3a6",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 310,
+        "name": "BUF",
+        "sha256": "12c3e6db800a6ad28a83a28a24f10142cda16bb436f2b749cee487ad0b1c5c38",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 311,
+        "name": "CAR",
+        "sha256": "0cb7cf85c65bb50188ebae019fea35f2688488db97c4eff410a8c623cd3726f0",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 312,
+        "name": "CHI",
+        "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 313,
+        "name": "CIN",
+        "sha256": "dc9f28ca3947b926e9c22722d1438d096dd722d6fe1bed90d82e6645fc3593e9",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 314,
+        "name": "CLE",
+        "sha256": "ac5f3b6e877bf5811e457482b13f9ea79cf9d1dfca4bccefc34b66c9b735f444",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 315,
+        "name": "DAL",
+        "sha256": "141ad070d0ce5cb801dc138050e91dea4f688265fa87b8c22d4fca38150b9f1d",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 316,
+        "name": "DEN",
+        "sha256": "fddbc3df7789d7d3b816a9ab700801bedeccd555299af904cdfac93d629e0f2b",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 317,
+        "name": "DET",
+        "sha256": "fd6c69122c3b4609afd105de8bc831e8b0a8004221847acef63e84a0a8a09e0d",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 318,
+        "name": "Editor",
+        "sha256": "848912d56bfa3d413bf165bc084961c42a0ac79a0e2ce8da94588d44f33983fb",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 319,
+        "name": "GB",
+        "sha256": "ab3c19083e5f6190071899307ef40a961200c7cebe95b911ad13d16e83ab892e",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 320,
+        "name": "GEN",
+        "sha256": "1c4c4fd2a2673ba1b652441af6ae9ec966eb43d5265d27de23d4882f65356624",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 321,
+        "name": "HOU",
+        "sha256": "ce01473383d51753ce9634b330d2c38c05d9b1a9e301e91435fffb0487505db1",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 322,
+        "name": "IND",
+        "sha256": "981dcf5c97c547373b47f55195c56ac295b8a5e781a972296eb991d6a7148c19",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 323,
+        "name": "JAX",
+        "sha256": "c30ad51897e573c66af4bbafc4d25a4894ff4d15b564f885e42e9a66888c6f66",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 324,
+        "name": "KC",
+        "sha256": "1055b45f6ba0827f8683d5cf05996de5cbf800b757990cd26ef748036d387640",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 325,
+        "name": "MIA",
+        "sha256": "82a4f091c414e84e5f2f5206326ba4e40f3f249e75050b7c61c522c7d8a4775e",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 326,
+        "name": "MIN",
+        "sha256": "414aaf85dd324834ca8be8f3e679710983970d28d64fd0753c33e7f0ed66459a",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 327,
+        "name": "NE",
+        "sha256": "380b9c644722ab7a7f805478c4279b4a4d330eda5003f68bffc583055ae5152d",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 328,
+        "name": "NO",
+        "sha256": "180753ed061be405453aa0da206b4d1b6a884dd9ba1ae8e722694f507d6b1d79",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 329,
+        "name": "NYG",
+        "sha256": "5be302dec27e402aa85046f622c3aa0a8e4b24975c403ee3615754874d12b373",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 330,
+        "name": "NYJ",
+        "sha256": "2c7540d045a2293d8fb186527d06f0619931ca5858086fe35fba877122c12097",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 331,
+        "name": "OAK",
+        "sha256": "2157ee551fc047555d6727b99f48ea0f1de8faa0fe168b1751128ee532097985",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 332,
+        "name": "PHI",
+        "sha256": "a599c0276acde8e69456830c4a6a3ecb7119d09f09b12e96bf77cfa639cdac82",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 333,
+        "name": "PIT",
+        "sha256": "f70f22754ebc90cf9a2be88105cceb1bb7367d788b293cbdae219d7a25002ea8",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 334,
+        "name": "PRACTICE",
+        "sha256": "80334a4d82ec7524c466cf4ed2c00f9d5e1509d655e18a571275f6c6edc10fbb",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 335,
+        "name": "reference",
+        "sha256": "3cd9811478257ca2f1d0ad268066a56542b401a43f5f52a9bbfc6e013059b23e",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 336,
+        "name": "SD",
+        "sha256": "f251b55b51d0153540300a50853f6b1879d94a6a3409fce382d9c02f18130525",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 337,
+        "name": "SEA",
+        "sha256": "edfee4a8cfe836cee50203446a7719f0e947bbf1c113494ae06a98e8d85c375e",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 338,
+        "name": "SF",
+        "sha256": "78040a3a2fdd342c70317fa99d6e37e294b6f71f67c5fa9978100575cacdae0b",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 339,
+        "name": "STL",
+        "sha256": "8df7534d0aeb5b8b7de3c5b828df2e9973bc81d474e0ce6c31d6323a198169e2",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 340,
+        "name": "TB",
+        "sha256": "09dd866aecf1447a7eb4dd005f64e7327c82baf6944156fcebadd7a8d19ccb23",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 341,
+        "name": "TEN",
+        "sha256": "03907f2de7e1194e686facac209fefded5be7696767bf68c3b954e825ba98841",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 342,
+        "name": "WAS",
+        "sha256": "04c601e328ec92fe8d94d28a44a63bfb594fae3759d32e4f64bbd9c1efda906d",
+        "changed_bytes": 0
+      },
+      {
+        "outer_index": 343,
+        "name": "WCO",
+        "sha256": "8e36494350643cdf8c4d4396850157125ca203fb0bb43a9511b13c22e0dcfdba",
+        "changed_bytes": 0
+      }
+    ]
+  },
+  "native_play_scoring": {
+    "status": "applied",
+    "books": 69,
+    "faults": 0,
+    "stock_aliases": 32
+  },
+  "settings_and_inputs": {
+    "momentum_collision_level": "no inspection row (a setting of another option, or an input)",
+    "scorebug_watermark": "no inspection row (a setting of another option, or an input)",
+    "accelerated_clock_minimum_seconds": "no inspection row (a setting of another option, or an input)",
+    "decided_clock_margin": "no inspection row (a setting of another option, or an input)",
+    "decided_clock_seconds": "no inspection row (a setting of another option, or an input)",
+    "abilities_lock_right_stick": "no inspection row (a setting of another option, or an input)",
+    "abilities_lock_special_moves": "no inspection row (a setting of another option, or an input)",
+    "abilities_lock_speedster": "no inspection row (a setting of another option, or an input)"
+  }
+}

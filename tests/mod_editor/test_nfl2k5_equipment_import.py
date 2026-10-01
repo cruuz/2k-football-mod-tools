@@ -98,7 +98,9 @@ class EquipmentSessionTests(unittest.TestCase):
         self.assertEqual(before, self.a._manifest_document())
         self.assertEqual(undo, len(self.a._undo))
         path = self.root / "equipment.2k5mod"
-        self.a.save_shareable_project(path)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with self.f.context():
+            self.a.save_shareable_project(path)
         b = self.session("b")
         # Reopening now compiles equipment; keep the real synthetic catalog active.
         with self.f.context():
@@ -148,7 +150,9 @@ class EquipmentSessionTests(unittest.TestCase):
         self.a.replace_batch(((self.asset, path),))
         self.assertEqual(self.mode(self.a), OWN_TEXTURE)
         saved = self.root / "same-base.2k5mod"
-        self.a.save_shareable_project(saved)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with self.f.context():
+            self.a.save_shareable_project(saved)
         b = self.session("same-base")
         # Reopening now compiles equipment; keep the real synthetic catalog active.
         with self.f.context():
@@ -209,7 +213,9 @@ class EquipmentSessionTests(unittest.TestCase):
             result = stage_equipment_import(self.a, other, exported, independent=True)
         self.assertIn("preserved exactly", result.message)
         saved = self.root / "portable.2k5mod"
-        self.a.save_shareable_project(saved)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with self.f.context():
+            self.a.save_shareable_project(saved)
         reopened = self.session("portable")
         # Reopening now compiles equipment; keep the real synthetic catalog active.
         with self.f.context():

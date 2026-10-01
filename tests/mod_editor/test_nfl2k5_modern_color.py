@@ -52,6 +52,36 @@ class PaletteTransformTests(unittest.TestCase):
         self.assertEqual(len(out), 1024)
         self.assertEqual(mc.regrade_palette(out), mc.regrade_palette(out), "deterministic")
 
+    def test_end_zone_pass_grades_grass_and_keeps_paint(self):
+        """b76 u6: the end-zone pass grades the entries that are the field's own turf and keeps team paint that sits
+        in the hue window: the Rams' sol, the Seahawks' action green, a 2004 Saints gold, a Packers cream."""
+        turf = bytearray(1024)
+        grass = [(56, 121, 94), (48, 110, 86), (64, 132, 102), (40, 96, 74)]  # B,G,R: retail grass, 80 to 90 degrees
+        for i, (b, g, r) in enumerate(grass):
+            turf[i * 4:i * 4 + 4] = bytes((b, g, r, 255))
+        envelope = mc.turf_envelope(bytes(turf), [400, 300, 200, 100] + [0] * 252)
+        pal = bytearray(1024)
+        entries = grass + [(0, 209, 255), (40, 190, 105), (39, 201, 243), (154, 195, 208), (30, 36, 24), (157, 187, 173)]
+        for i, (b, g, r) in enumerate(entries):
+            pal[i * 4:i * 4 + 4] = bytes((b, g, r, 255))
+        flags = mc.turf_like_entries(bytes(pal), envelope)
+        self.assertEqual(flags[:4], [True] * 4, "the turf's own colours are grass")
+        self.assertEqual(flags[4:8], [False] * 4, "sol, action green, 2004 Saints gold and cream are paint")
+        self.assertTrue(flags[8], "a dark blade is grass")
+        self.assertTrue(flags[9], "white paint blended into grass follows the grass")
+        doc = full()
+        masked = mc.regrade_palette(bytes(pal), settings=doc, surface="endzones", only=flags)
+        plain = mc.regrade_palette(bytes(pal), settings=doc, surface="endzones")
+        for i in range(10):
+            if flags[i]:
+                self.assertEqual(masked[i * 4:i * 4 + 4], plain[i * 4:i * 4 + 4], i)
+            else:
+                self.assertEqual(masked[i * 4:i * 4 + 4], bytes(pal[i * 4:i * 4 + 4]), i)
+        self.assertNotEqual(plain[16:20], bytes(pal[16:20]), "without the mask the pass moved sol")
+        self.assertIsNone(mc.turf_like_entries(bytes(pal), None), "no turf: the pass is unchanged")
+        one = mc.turf_envelope(bytes((59, 104, 55, 255)))  # a material-only field's grass colour word
+        self.assertAlmostEqual(one[0], one[1])
+
     def test_material_colour_word_regrade_keeps_alpha_and_non_greens(self):
         self.assertNotEqual(mc.regrade_colour_word(0xFF37683B), 0xFF37683B)
         self.assertEqual(mc.regrade_colour_word(0xFF37683B) >> 24, 0xFF)
@@ -174,6 +204,8 @@ class BundleTests(unittest.TestCase):
     def test_arrowhead_night_bundle_transform_matches_pins(self):
         pins = mc._pins()
         row = next(r for r in pins["bundles"] if r["name"] == "s13nd.iff")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(GAME)
         with mc._outer_image()(GAME / "vc_53450030") as archive:
             entry = archive.entries[row["outer"]]
             data = archive.read(entry.virtual_offset, entry.size)

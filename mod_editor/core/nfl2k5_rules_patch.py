@@ -25,6 +25,8 @@ def allocations(payload, module):
 
 
 def inspect(payload, module):
+    from . import nfl2k5_era_rules as era
+    payload = era.underlying_view(payload)
     space._require(isinstance(payload, bytes) and len(payload) <= space.SCALE_FILE_SIZE,
                    "Expected bounded default.xbe bytes")
     layout = space.layout(payload)

@@ -1,0 +1,20 @@
+formation_descriptor 0xb7f40c row 13 slot 6 code 0x2e kind 14 rank 1 mask_at 0xac290c mask 0xc000
+list 15 ids [] pointers []
+list 16 ids [] pointers []
+list 17 ids [24, 28, 25, 30, 31] pointers ['0xb3142c', '0xb3157c', '0xb31480', '0xb31624', '0xb31678']
+list 18 ids [28, 25, 24, 30, 31] pointers ['0xb3157c', '0xb31480', '0xb3142c', '0xb31624', '0xb31678']
+0xb31624 roster_position 11 namepointers ['0x8128ecae', '0x81295054']
+name 0x8128ecae Jack
+name 0x81295054 Kelly
+0xb31678 roster_position 11 namepointers ['0x8128ed88', '0x81290404']
+name 0x8128ed88 Zaire
+name 0x81290404 Barnes
+0xb3157c roster_position 11 namepointers ['0x8128f2b2', '0x8128f2c4']
+name 0x8128f2b2 Tremaine
+name 0x8128f2c4 Edmunds
+0xb31480 roster_position 11 namepointers ['0x8128f294', '0x81293b32']
+name 0x8128f294 Micah
+name 0x81293b32 McFadden
+0xb3142c roster_position 11 namepointers ['0x81294254', '0x81291a1c']
+name 0x81294254 Arvell
+name 0x81291a1c Reese

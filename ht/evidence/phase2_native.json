@@ -1,0 +1,2507 @@
+{
+  "label": "PROVED OFFLINE",
+  "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+  "writer_sha256": "36b4c4810afa1b1c7622a07e2ebd162a42eac21a541fc093daceb689bea85e26",
+  "loads": [
+    {
+      "flow": 1,
+      "team": "49ers '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1981-49ers-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "49ers '89",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1989-49ers-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "49ers '94",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1994-49ers-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "49ers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-2003-49ers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bears '63",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1963-bears-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bears '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1985-bears-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bengals '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1981-bengals-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bengals '88",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1988-bengals-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bills '64",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1964-bills-7.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Bills '90",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1990-bills-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1977-broncos-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1986-broncos-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1998-broncos-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Browns '64",
+      "players": 41,
+      "export_players": 94,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1964-browns-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Browns '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1986-browns-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1979-buccaneers-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1999-buccaneers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '02",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-2002-buccaneers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Cardinals '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-00-1975-cardinals-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '63",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1963-chargers-8.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1980-chargers-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '94",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1994-chargers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Chiefs '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1969-chiefs-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Chiefs '93",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1993-chiefs-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Colts '70",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-11-1970-colts-5.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '71",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1971-cowboys-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1977-cowboys-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '92",
+      "players": 48,
+      "export_players": 101,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1992-cowboys-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Dolphins '72",
+      "players": 46,
+      "export_players": 99,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1972-dolphins-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Dolphins '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1984-dolphins-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '60",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1960-eagles-8.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1980-eagles-5.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '04",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-2004-eagles-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Falcons '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1980-falcons-6.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Falcons '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1998-falcons-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Giants '56",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1956-giants-6.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Giants '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1986-giants-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Giants '90",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1990-giants-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Giants '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-2003-giants-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Jaguars '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-12-1999-jaguars-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Jets '68",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1968-jets-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Jets '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1998-jets-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Lions '53",
+      "players": 33,
+      "export_players": 86,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1953-lions-6.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Lions '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1991-lions-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Oilers '61",
+      "players": 35,
+      "export_players": 88,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1961-oilers-5.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Oilers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1979-oilers-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Packers '66",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1966-packers-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Packers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1996-packers-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Packers '04",
+      "players": 55,
+      "export_players": 108,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-2004-packers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Panthers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-1996-panthers-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Panthers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-2003-panthers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-1985-patriots-5.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '01",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2001-patriots-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2003-patriots-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '67",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1967-raiders-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '76",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1976-raiders-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '83",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1983-raiders-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Rams '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1979-rams-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Rams '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1999-rams-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Ravens '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-02-2000-ravens-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '82",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1982-redskins-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '87",
+      "players": 50,
+      "export_players": 103,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1987-redskins-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1991-redskins-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Saints '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-1991-saints-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Saints '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-2000-saints-2.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Seahawks '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1984-seahawks-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Seahawks '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1999-seahawks-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1975-steelers-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '78",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1978-steelers-1.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '95",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1995-steelers-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Texans '62",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1962-texans-5.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Titans '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1999-titans-0.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1969-vikings-4.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '73",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1973-vikings-3.iff"
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1998-vikings-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "49ers '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1981-49ers-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "49ers '89",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1989-49ers-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "49ers '94",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1994-49ers-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "49ers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-2003-49ers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bears '63",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1963-bears-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bears '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1985-bears-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bengals '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1981-bengals-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bengals '88",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1988-bengals-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bills '64",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1964-bills-7.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Bills '90",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1990-bills-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1977-broncos-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1986-broncos-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1998-broncos-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Browns '64",
+      "players": 41,
+      "export_players": 94,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1964-browns-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Browns '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1986-browns-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1979-buccaneers-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1999-buccaneers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '02",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-2002-buccaneers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Cardinals '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-00-1975-cardinals-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '63",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1963-chargers-8.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1980-chargers-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '94",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1994-chargers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Chiefs '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1969-chiefs-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Chiefs '93",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1993-chiefs-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Colts '70",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-11-1970-colts-5.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '71",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1971-cowboys-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1977-cowboys-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '92",
+      "players": 48,
+      "export_players": 101,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1992-cowboys-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Dolphins '72",
+      "players": 46,
+      "export_players": 99,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1972-dolphins-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Dolphins '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1984-dolphins-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '60",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1960-eagles-8.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1980-eagles-5.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '04",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-2004-eagles-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Falcons '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1980-falcons-6.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Falcons '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1998-falcons-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Giants '56",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1956-giants-6.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Giants '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1986-giants-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Giants '90",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1990-giants-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Giants '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-2003-giants-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Jaguars '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-12-1999-jaguars-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Jets '68",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1968-jets-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Jets '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1998-jets-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Lions '53",
+      "players": 33,
+      "export_players": 86,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1953-lions-6.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Lions '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1991-lions-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Oilers '61",
+      "players": 35,
+      "export_players": 88,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1961-oilers-5.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Oilers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1979-oilers-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Packers '66",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1966-packers-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Packers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1996-packers-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Packers '04",
+      "players": 55,
+      "export_players": 108,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-2004-packers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Panthers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-1996-panthers-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Panthers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-2003-panthers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-1985-patriots-5.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '01",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2001-patriots-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2003-patriots-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '67",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1967-raiders-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '76",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1976-raiders-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '83",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1983-raiders-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Rams '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1979-rams-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Rams '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1999-rams-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Ravens '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-02-2000-ravens-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '82",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1982-redskins-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '87",
+      "players": 50,
+      "export_players": 103,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1987-redskins-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1991-redskins-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Saints '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-1991-saints-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Saints '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-2000-saints-2.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Seahawks '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1984-seahawks-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Seahawks '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1999-seahawks-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1975-steelers-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '78",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1978-steelers-1.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '95",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1995-steelers-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Texans '62",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1962-texans-5.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Titans '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1999-titans-0.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1969-vikings-4.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '73",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1973-vikings-3.iff"
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1998-vikings-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "49ers '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1981-49ers-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "49ers '89",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1989-49ers-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "49ers '94",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-1994-49ers-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "49ers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-25-2003-49ers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bears '63",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1963-bears-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bears '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-05-1985-bears-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bengals '81",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1981-bengals-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bengals '88",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-06-1988-bengals-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bills '64",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1964-bills-7.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Bills '90",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-03-1990-bills-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1977-broncos-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1986-broncos-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-08-1998-broncos-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Browns '64",
+      "players": 41,
+      "export_players": 94,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1964-browns-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Browns '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-30-1986-browns-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1979-buccaneers-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-1999-buccaneers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '02",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-27-2002-buccaneers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Cardinals '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-00-1975-cardinals-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '63",
+      "players": 34,
+      "export_players": 87,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1963-chargers-8.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1980-chargers-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '94",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-24-1994-chargers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Chiefs '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1969-chiefs-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Chiefs '93",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1993-chiefs-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Colts '70",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-11-1970-colts-5.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '71",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1971-cowboys-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '77",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1977-cowboys-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '92",
+      "players": 48,
+      "export_players": 101,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-07-1992-cowboys-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Dolphins '72",
+      "players": 46,
+      "export_players": 99,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1972-dolphins-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Dolphins '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-14-1984-dolphins-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '60",
+      "players": 37,
+      "export_players": 90,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1960-eagles-8.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-1980-eagles-5.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '04",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-21-2004-eagles-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Falcons '80",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1980-falcons-6.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Falcons '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-01-1998-falcons-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Giants '56",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1956-giants-6.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Giants '86",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1986-giants-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Giants '90",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-1990-giants-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Giants '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-18-2003-giants-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Jaguars '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-12-1999-jaguars-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Jets '68",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1968-jets-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Jets '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-19-1998-jets-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Lions '53",
+      "players": 33,
+      "export_players": 86,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1953-lions-6.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Lions '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-09-1991-lions-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Oilers '61",
+      "players": 35,
+      "export_players": 88,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1961-oilers-5.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Oilers '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1979-oilers-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Packers '66",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1966-packers-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Packers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-1996-packers-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Packers '04",
+      "players": 55,
+      "export_players": 108,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-10-2004-packers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Panthers '96",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-1996-panthers-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Panthers '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-04-2003-panthers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '85",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-1985-patriots-5.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '01",
+      "players": 54,
+      "export_players": 107,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2001-patriots-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '03",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-16-2003-patriots-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '67",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1967-raiders-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '76",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1976-raiders-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '83",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-20-1983-raiders-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Rams '79",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1979-rams-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Rams '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-23-1999-rams-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Ravens '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-02-2000-ravens-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '82",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1982-redskins-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '87",
+      "players": 50,
+      "export_players": 103,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1987-redskins-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-29-1991-redskins-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Saints '91",
+      "players": 47,
+      "export_players": 100,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-1991-saints-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Saints '00",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-17-2000-saints-2.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Seahawks '84",
+      "players": 49,
+      "export_players": 102,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1984-seahawks-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Seahawks '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-26-1999-seahawks-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '75",
+      "players": 43,
+      "export_players": 96,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1975-steelers-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '78",
+      "players": 45,
+      "export_players": 98,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1978-steelers-1.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '95",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-22-1995-steelers-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Texans '62",
+      "players": 36,
+      "export_players": 89,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-13-1962-texans-5.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Titans '99",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-28-1999-titans-0.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '69",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1969-vikings-4.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '73",
+      "players": 40,
+      "export_players": 93,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1973-vikings-3.iff"
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '98",
+      "players": 53,
+      "export_players": 106,
+      "distinct_personnel": [
+        11,
+        11
+      ],
+      "alias": "HTS-h-15-1998-vikings-0.iff"
+    }
+  ],
+  "maximum_pairs": [
+    {
+      "flow": 1,
+      "team": "Packers '04",
+      "players_per_side": 55,
+      "pool_used": 110,
+      "export_players": 110
+    },
+    {
+      "flow": 3,
+      "team": "Packers '04",
+      "players_per_side": 55,
+      "pool_used": 110,
+      "export_players": 110
+    },
+    {
+      "flow": 7,
+      "team": "Packers '04",
+      "players_per_side": 55,
+      "pool_used": 110,
+      "export_players": 110
+    }
+  ],
+  "boundaries": "LiveCPU with Team Select boundaries and hooks only at the named addresses (fast native runs).",
+  "limitation": "Native importer/exporter/personnel only. No xemu or rendered gameplay."
+}

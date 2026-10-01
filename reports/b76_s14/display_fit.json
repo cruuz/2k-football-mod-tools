@@ -1,0 +1,641 @@
+{
+ "schema": "b76-s14-display-fit/v1",
+ "transfer": {
+  "saturation": 0.8615,
+  "value": 1.0,
+  "lightness_cap": 0.6502,
+  "neutral_chroma": 0.02,
+  "measured_bound": 0.0485
+ },
+ "measured": {
+  "NYG": {
+   "source": "nyg_lar",
+   "side": "away",
+   "frames": 1897,
+   "wing": [
+    53,
+    103,
+    255
+   ],
+   "wing_unclipped": [
+    52.9,
+    102.8,
+    272.1
+   ],
+   "plate": [
+    26,
+    54,
+    131
+   ],
+   "plate_frames": 950,
+   "on_air_wing_rows": {
+    "top": [
+     51.8,
+     100.7,
+     251.9
+    ],
+    "middle": [
+     47.4,
+     75.5,
+     181.1
+    ]
+   }
+  },
+  "LAR": {
+   "source": "nyg_lar",
+   "side": "home",
+   "frames": 1897,
+   "wing": [
+    49,
+    123,
+    255
+   ],
+   "wing_unclipped": [
+    49.0,
+    123.3,
+    292.5
+   ],
+   "plate": [
+    20,
+    61,
+    142
+   ],
+   "plate_frames": 926,
+   "on_air_wing_rows": {
+    "top": [
+     71.7,
+     129.7,
+     245.9
+    ],
+    "middle": [
+     42.5,
+     86.8,
+     200.9
+    ]
+   }
+  },
+  "DEN": {
+   "source": "den_kc",
+   "side": "away",
+   "frames": 2798,
+   "wing": [
+    69,
+    138,
+    245
+   ],
+   "wing_unclipped": [
+    69.4,
+    137.9,
+    244.6
+   ],
+   "plate": [
+    36,
+    68,
+    119
+   ],
+   "plate_frames": 1405,
+   "on_air_wing_rows": {
+    "top": [
+     70.7,
+     140.3,
+     240.0
+    ],
+    "middle": [
+     56.9,
+     95.4,
+     162.4
+    ]
+   }
+  },
+  "KC": {
+   "source": "den_kc",
+   "side": "home",
+   "frames": 2798,
+   "wing": [
+    255,
+    40,
+    102
+   ],
+   "wing_unclipped": [
+    293.6,
+    40.2,
+    102.4
+   ],
+   "plate": [
+    152,
+    19,
+    56
+   ],
+   "plate_frames": 1390,
+   "on_air_wing_rows": {
+    "top": [
+     236.6,
+     64.0,
+     107.2
+    ],
+    "middle": [
+     210.5,
+     35.1,
+     78.5
+    ]
+   }
+  },
+  "LV": {
+   "source": "lv_hou",
+   "side": "away",
+   "frames": 578,
+   "wing": [
+    255,
+    255,
+    255
+   ],
+   "wing_unclipped": [
+    259.4,
+    261.8,
+    258.9
+   ],
+   "plate": [
+    108,
+    109,
+    108
+   ],
+   "plate_frames": 268,
+   "on_air_wing_rows": {
+    "top": [
+     242.5,
+     243.4,
+     242.8
+    ],
+    "middle": [
+     175.8,
+     176.7,
+     175.6
+    ]
+   }
+  },
+  "HOU": {
+   "source": "lv_hou",
+   "side": "home",
+   "frames": 578,
+   "wing": [
+    255,
+    21,
+    84
+   ],
+   "wing_unclipped": [
+    301.5,
+    21.2,
+    83.7
+   ],
+   "plate": [
+    153,
+    8,
+    47
+   ],
+   "plate_frames": 297,
+   "on_air_wing_rows": {
+    "top": [
+     246.1,
+     55.9,
+     94.2
+    ],
+    "middle": [
+     214.5,
+     22.5,
+     66.3
+    ]
+   }
+  }
+ },
+ "table": {
+  "DEN": {
+   "parent": "#0A2343",
+   "measured": "#458AF5",
+   "fitted_all": "#408FF3",
+   "fit_error": {
+    "de2000": 2.08,
+    "oklab": 0.0133,
+    "rgb_max": 5
+   },
+   "loo_error": {
+    "de2000": 2.06,
+    "oklab": 0.0131,
+    "rgb_max": 5
+   },
+   "loo_hsv3": {
+    "de2000": 2.54,
+    "oklab": 0.0174,
+    "rgb_max": 7
+   },
+   "loo_affine6": {
+    "de2000": 7.43,
+    "oklab": 0.0597,
+    "rgb_max": 23
+   },
+   "loo_prediction": "#408FF3"
+  },
+  "HOU": {
+   "parent": "#EB0028",
+   "measured": "#FF1554",
+   "fitted_all": "#FF2349",
+   "fit_error": {
+    "de2000": 3.59,
+    "oklab": 0.0182,
+    "rgb_max": 14
+   },
+   "loo_error": {
+    "de2000": 3.45,
+    "oklab": 0.018,
+    "rgb_max": 15
+   },
+   "loo_hsv3": {
+    "de2000": 3.43,
+    "oklab": 0.0179,
+    "rgb_max": 16
+   },
+   "loo_affine6": {
+    "de2000": 1.02,
+    "oklab": 0.005,
+    "rgb_max": 4
+   },
+   "loo_prediction": "#FF244A"
+  },
+  "KC": {
+   "parent": "#E31837",
+   "measured": "#FF2866",
+   "fitted_all": "#FA3957",
+   "fit_error": {
+    "de2000": 5.0,
+    "oklab": 0.0298,
+    "rgb_max": 17
+   },
+   "loo_error": {
+    "de2000": 4.94,
+    "oklab": 0.0323,
+    "rgb_max": 17
+   },
+   "loo_hsv3": {
+    "de2000": 5.03,
+    "oklab": 0.0301,
+    "rgb_max": 20
+   },
+   "loo_affine6": {
+    "de2000": 1.6,
+    "oklab": 0.0112,
+    "rgb_max": 10
+   },
+   "loo_prediction": "#F63956"
+  },
+  "LAR": {
+   "parent": "#003594",
+   "measured": "#317BFF",
+   "fitted_all": "#2372FF",
+   "fit_error": {
+    "de2000": 3.02,
+    "oklab": 0.0249,
+    "rgb_max": 14
+   },
+   "loo_error": {
+    "de2000": 3.9,
+    "oklab": 0.0318,
+    "rgb_max": 18
+   },
+   "loo_hsv3": {
+    "de2000": 3.86,
+    "oklab": 0.0316,
+    "rgb_max": 18
+   },
+   "loo_affine6": {
+    "de2000": 6.68,
+    "oklab": 0.0539,
+    "rgb_max": 39
+   },
+   "loo_prediction": "#1F6FFF"
+  },
+  "LV": {
+   "parent": "#C8C7C7",
+   "measured": "#FFFFFF",
+   "fitted_all": "#FFFEFE",
+   "fit_error": {
+    "de2000": 0.58,
+    "oklab": 0.0027,
+    "rgb_max": 1
+   },
+   "loo_error": {
+    "de2000": 0.58,
+    "oklab": 0.0027,
+    "rgb_max": 1
+   },
+   "loo_hsv3": {
+    "de2000": 0.58,
+    "oklab": 0.0027,
+    "rgb_max": 1
+   },
+   "loo_affine6": {
+    "de2000": 2.33,
+    "oklab": 0.0059,
+    "rgb_max": 4
+   },
+   "loo_prediction": "#FFFEFE"
+  },
+  "NYG": {
+   "parent": "#0B2265",
+   "measured": "#3567FF",
+   "fitted_all": "#3B6DFF",
+   "fit_error": {
+    "de2000": 2.05,
+    "oklab": 0.0163,
+    "rgb_max": 6
+   },
+   "loo_error": {
+    "de2000": 2.49,
+    "oklab": 0.02,
+    "rgb_max": 8
+   },
+   "loo_hsv3": {
+    "de2000": 2.42,
+    "oklab": 0.0195,
+    "rgb_max": 8
+   },
+   "loo_affine6": {
+    "de2000": 1.13,
+    "oklab": 0.0125,
+    "rgb_max": 14
+   },
+   "loo_prediction": "#3D6FFF"
+  }
+ },
+ "summary": {
+  "fit_error": {
+   "mean": 2.72,
+   "max": 5.0,
+   "rgb_max": 17
+  },
+  "loo_error": {
+   "mean": 2.9,
+   "max": 4.94,
+   "rgb_max": 18
+  },
+  "loo_hsv3": {
+   "mean": 2.98,
+   "max": 5.03,
+   "rgb_max": 20
+  },
+  "loo_affine6": {
+   "mean": 3.36,
+   "max": 7.43,
+   "rgb_max": 39
+  }
+ },
+ "all_teams": {
+  "ARI": {
+   "parent": "#97233F",
+   "sourced": "#97233F",
+   "shade": "#EB4F74",
+   "parent_oklab_chroma": 0.1513,
+   "capped": true
+  },
+  "ATL": {
+   "parent": "#A71930",
+   "sourced": "#B43C4F",
+   "shade": "#F6415F",
+   "parent_oklab_chroma": 0.1741,
+   "capped": true
+  },
+  "BAL": {
+   "parent": "#24135F",
+   "sourced": "#665A8F",
+   "shade": "#774FFF",
+   "parent_oklab_chroma": 0.125,
+   "capped": false
+  },
+  "BUF": {
+   "parent": "#00338D",
+   "sourced": "#00338D",
+   "shade": "#2373FF",
+   "parent_oklab_chroma": 0.1573,
+   "capped": false
+  },
+  "CAR": {
+   "parent": "#0085CF",
+   "sourced": "#00649B",
+   "shade": "#1D98DD",
+   "parent_oklab_chroma": 0.1473,
+   "capped": true
+  },
+  "CHI": {
+   "parent": "#0B162A",
+   "sourced": "#545C6A",
+   "shade": "#568CEE",
+   "parent_oklab_chroma": 0.0433,
+   "capped": true
+  },
+  "CIN": {
+   "parent": "#FB4F14",
+   "sourced": "#BC3B0F",
+   "shade": "#E75E2F",
+   "parent_oklab_chroma": 0.217,
+   "capped": true
+  },
+  "CLE": {
+   "parent": "#311D00",
+   "sourced": "#6F614C",
+   "shade": "#C47E18",
+   "parent_oklab_chroma": 0.0534,
+   "capped": true
+  },
+  "DAL": {
+   "parent": "#002244",
+   "sourced": "#264360",
+   "shade": "#2390FC",
+   "parent_oklab_chroma": 0.0749,
+   "capped": true
+  },
+  "DEN": {
+   "parent": "#0A2343",
+   "sourced": "#1E69C9",
+   "shade": "#408FF3",
+   "parent_oklab_chroma": 0.0677,
+   "capped": true
+  },
+  "DET": {
+   "parent": "#0076B6",
+   "sourced": "#0076B6",
+   "shade": "#1D99DC",
+   "parent_oklab_chroma": 0.1322,
+   "capped": true
+  },
+  "GB": {
+   "parent": "#203731",
+   "sourced": "#203731",
+   "shade": "#629D8D",
+   "parent_oklab_chroma": 0.0311,
+   "capped": true
+  },
+  "HOU": {
+   "parent": "#EB0028",
+   "sourced": "#EB0028",
+   "shade": "#FF2349",
+   "parent_oklab_chroma": 0.24,
+   "capped": false
+  },
+  "IND": {
+   "parent": "#013369",
+   "sourced": "#013369",
+   "shade": "#258EFF",
+   "parent_oklab_chroma": 0.1066,
+   "capped": false
+  },
+  "JAX": {
+   "parent": "#006778",
+   "sourced": "#267E8C",
+   "shade": "#16A0B7",
+   "parent_oklab_chroma": 0.0831,
+   "capped": true
+  },
+  "KC": {
+   "parent": "#E31837",
+   "sourced": "#E31837",
+   "shade": "#FA3957",
+   "parent_oklab_chroma": 0.2265,
+   "capped": true
+  },
+  "LAC": {
+   "parent": "#0080C6",
+   "sourced": "#006094",
+   "shade": "#1D98DC",
+   "parent_oklab_chroma": 0.1415,
+   "capped": true
+  },
+  "LAR": {
+   "parent": "#003594",
+   "sourced": "#003594",
+   "shade": "#2372FF",
+   "parent_oklab_chroma": 0.1641,
+   "capped": false
+  },
+  "LV": {
+   "parent": "#C8C7C7",
+   "sourced": "#646464",
+   "shade": "#FFFEFE",
+   "parent_oklab_chroma": 0.0011,
+   "capped": false
+  },
+  "MIA": {
+   "parent": "#008E97",
+   "sourced": "#006A71",
+   "shade": "#14A2AB",
+   "parent_oklab_chroma": 0.1003,
+   "capped": true
+  },
+  "MIN": {
+   "parent": "#4F2683",
+   "sourced": "#4F2683",
+   "shade": "#A863FF",
+   "parent_oklab_chroma": 0.1478,
+   "capped": false
+  },
+  "NE": {
+   "parent": "#002244",
+   "sourced": "#264360",
+   "shade": "#2390FC",
+   "parent_oklab_chroma": 0.0749,
+   "capped": true
+  },
+  "NO": {
+   "parent": "#D3BC8D",
+   "sourced": "#6A5E46",
+   "shade": "#9D8D6E",
+   "parent_oklab_chroma": 0.0675,
+   "capped": true
+  },
+  "NYG": {
+   "parent": "#0B2265",
+   "sourced": "#0B2265",
+   "shade": "#3B6DFF",
+   "parent_oklab_chroma": 0.1213,
+   "capped": false
+  },
+  "NYJ": {
+   "parent": "#115740",
+   "sourced": "#35705D",
+   "shade": "#30A67F",
+   "parent_oklab_chroma": 0.0776,
+   "capped": true
+  },
+  "PHI": {
+   "parent": "#004851",
+   "sourced": "#26636B",
+   "shade": "#15A1B2",
+   "parent_oklab_chroma": 0.0634,
+   "capped": true
+  },
+  "PIT": {
+   "parent": "#FFB612",
+   "sourced": "#805B09",
+   "shade": "#B48721",
+   "parent_oklab_chroma": 0.1685,
+   "capped": true
+  },
+  "SEA": {
+   "parent": "#002244",
+   "sourced": "#4C647C",
+   "shade": "#2390FC",
+   "parent_oklab_chroma": 0.0749,
+   "capped": true
+  },
+  "SF": {
+   "parent": "#AA0000",
+   "sourced": "#C44C4C",
+   "shade": "#FF2323",
+   "parent_oklab_chroma": 0.1902,
+   "capped": false
+  },
+  "TB": {
+   "parent": "#A71930",
+   "sourced": "#A71930",
+   "shade": "#F6415F",
+   "parent_oklab_chroma": 0.1741,
+   "capped": true
+  },
+  "TEN": {
+   "parent": "#4495D2",
+   "sourced": "#33709E",
+   "shade": "#5296C9",
+   "parent_oklab_chroma": 0.1208,
+   "capped": true
+  },
+  "WAS": {
+   "parent": "#5A1414",
+   "sourced": "#8C5A5A",
+   "shade": "#F04F4F",
+   "parent_oklab_chroma": 0.1017,
+   "capped": true
+  }
+ },
+ "plate": {
+  "measured": {
+   "DEN": "#244477",
+   "HOU": "#99082F",
+   "KC": "#981338",
+   "LAR": "#143D8E",
+   "LV": "#6C6D6C",
+   "NYG": "#1A3683"
+  },
+  "sourced": {
+   "DEN": "#1E69C9",
+   "HOU": "#EB0028",
+   "KC": "#E31837",
+   "LAR": "#003594",
+   "LV": "#646464",
+   "NYG": "#0B2265"
+  },
+  "applied": false,
+  "note": "Measured for the record; not applied. See B76_S14_REPORT.md: every trial that put the measured plates on the bar raised a pinned residual."
+ },
+ "method": [
+  "Inputs:\n- reports/b76_s14/broadcast_colours.json (reports/b76_s14/broadcast_colours.py): per-row on-air wing colours at\n  each wing's outer end and the plate colour by possession, for NYG, LAR, DEN, KC, LV and HOU.\n- The current sprite data folder (run ``author.py --steps wingcell`` first): our own response is read from two\n  offline renders in which the NYG and LAR wing and plate carry the probe tints #000000 and #808080. The palette\n  validator is widened in-process for those two probe renders only (the probe tints are not team colours); it is\n  restored before anything is written, and nothing from the probe folder is kept.",
+  "Measured shade: the tint whose render reproduces the broadcast wing at the outer end of the bar (rows 948 to 1020,\n12 columns inside each bar end) in the least-squares sense through our own wing coverage, clipped to 0..255. The\nplate is measured the same way over the plate body without the label (for the record; see the report).",
+  "Transfer: ``nfl2k5_scorebug_teams.broadcast_shade_rgb``: HSV hue kept, value 1, saturation scaled by one fitted\nfactor; chromatic results capped at the lightest measured chromatic wing (OKLab L). Leave-one-out refits the factor\nand the cap without the held-out team. Alternatives are fitted and reported for comparison only."
+ ]
+}

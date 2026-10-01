@@ -52,7 +52,16 @@ linemen; the nose keeps ``(15, 0)``).  ``chain = 3`` means "side chain, row 1" a
 cave below; the other records (MIKE, NT, 3-4 MIKE/WILL, the 4-3 EDGE/DT slots) already point at the
 right pool in retail and are asserted, never written.
 
-Code, two optional sites (both on by default):
+Code, mandatory CPU lineup repair and two optional sites (both on by default):
+
+* ``lineup_iterator`` replaces the complete 0xE8410..0xE878F next-candidate
+  routine in place. It reconstructs the native ordered stream with stack-local
+  physical-list and roster-index bitmaps. Rank-selected chains and the two
+  mask/tier passes stay native; aliases cannot restart a pool. The caller gets
+  NULL on exhaustion and can relax eligibility. No new cave or global state.
+  Complete older pooled images report ``needs_fix`` and upgrade only this span
+  plus its section digest. The fix is mandatory even with the two options below
+  disabled or with the legacy retained-OLB filter policy. See sd/SD2_REPORT.md.
 
 * ``linebacker_penalty_fix`` - one byte, ``FUN_0017a6d0`` at 0x17AA34: ``jne`` -> ``je``.  The
   out-of-position penalty switch handles the DL and DB kinds as "``je ok`` for every allowed enum,
@@ -169,6 +178,7 @@ from typing import Mapping, Sequence
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 from .nfl2k5_draft_ai import _Asm
 from . import nfl2k5_modern_positions as modern
+from . import nfl2k5_lineup_iterator as lineup
 
 IMAGE_BASE = 0x10000
 
@@ -708,6 +718,7 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
            table_va: int = modern.SLOT_TABLE_VA, *, include_filter_lists: bool = True,
            probowl_ordered: bool = False) -> list[Site]:
     sites: list[Site] = creation_sites()
+    sites.append(Site("lineup_iterator", lineup.VA, (lineup.RETAIL,), lineup.replacement(), "lineup"))
 
     def add(label: str, va: int, before: bytes | Sequence[bytes], after: bytes, group: str = "data") -> None:
         befores = (before,) if isinstance(before, bytes) else tuple(before)
@@ -790,11 +801,16 @@ def site_states(payload: bytes, *, linebacker_penalty_fix: bool = True,
 
 
 def status(payload: bytes, *, linebacker_penalty_fix: bool = True, depth_chart_third_starter: bool = True) -> str:
-    """'retail', 'applied', or 'foreign' (bytes match neither; refuse to touch)."""
+    """Retail, applied, needs_fix (complete old pools), or foreign.
 
-    states = set(site_states(payload, linebacker_penalty_fix=linebacker_penalty_fix,
+    Only the exact old iterator plus the complete installed pool profile is
+    upgradeable. A partially written repair or any foreign site still refuses.
+    """
+
+    by_site = site_states(payload, linebacker_penalty_fix=linebacker_penalty_fix,
                              depth_chart_third_starter=depth_chart_third_starter,
-                             include_filter_lists=False).values())
+                             include_filter_lists=False)
+    states = set(by_site.values())
     filters = filter_list_status(payload)
     if filters == "foreign":
         return "foreign"
@@ -809,7 +825,18 @@ def status(payload: bytes, *, linebacker_penalty_fix: bool = True, depth_chart_t
     # It also recognizes pre-r64 pooled XBEs for a safe, explicit upgrade.
     if states == {"applied"}:
         return "applied"
+    if by_site.pop("lineup_iterator") == "retail" and set(by_site.values()) == {"applied"}:
+        return "needs_fix"
     return "foreign"
+
+
+def lineup_status(payload: bytes) -> str:
+    """Inspect the CPU exhaustion repair independently of the picker policy."""
+    try:
+        return _site_state(payload, Site("lineup_iterator", lineup.VA, (lineup.RETAIL,),
+                                         lineup.replacement(), "lineup"))
+    except (ValueError, struct.error):
+        return "foreign"
 
 
 def read_tables(payload: bytes) -> dict[str, object]:
@@ -907,13 +934,15 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
              "apply the Phase-1 scheme labels (nfl2k5_modern_positions) before the position pools")
     state = status(payload, linebacker_penalty_fix=linebacker_penalty_fix,
                    depth_chart_third_starter=depth_chart_third_starter)
-    _require(state in ("retail", "applied"), f"position-pool sites are {state}; refusing")
+    _require(state in ("retail", "applied", "needs_fix"), f"position-pool sites are {state}; refusing")
     current_filters = filter_list_status(payload)
     remove = current_filters == "applied" if roster_has_olb is None else not roster_has_olb
     if remove:
         _require(_filter_readers_ok(payload), "foreign position-filter reader; refusing to change list lengths")
     planned = _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload),
                      modern.layout_table(payload), include_filter_lists=False) if state == "retail" else []
+    if state == "needs_fix":
+        planned = [Site("lineup_iterator", lineup.VA, (lineup.RETAIL,), lineup.replacement(), "lineup")]
     if remove != (current_filters == "applied"):
         for site in filter_list_sites(probowl_ordered=_probowl_ordered(payload)):
             planned.append(site if remove else Site(site.label, site.va, (site.after,), site.befores[0], site.group))
@@ -943,6 +972,7 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
                      "already_applied": not edits, "experimental": True, "runtime_witnessed": False,
+                     "lineup_iterator": lineup_status(patched), "upgraded_lineup_iterator": state == "needs_fix",
                      "olb_filter_rows": "removed" if remove else "retained",
                      "roster_has_olb": roster_has_olb,
                      "filter_tables": [{"name": name, "va": f"0x{va:x}",

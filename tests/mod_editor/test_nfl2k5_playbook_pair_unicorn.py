@@ -196,6 +196,8 @@ class RetailMergeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from nfl2k5_playbook_position_recode import OuterImage,BOOK_ENTRIES
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(GAME)
         with OuterImage(GAME) as archive:
             cls.resources={code:archive.read_entry(BOOK_ENTRIES[code]) for code in ('KC','BAL','CIN','OAK')}
 
@@ -225,6 +227,8 @@ class RetailMergeTests(unittest.TestCase):
     def test_all_stock_choices_have_a_reproducible_capacity_census(self):
         from nfl2k5_playbook_position_recode import OuterImage,BOOK_ENTRIES
         counts={}
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(GAME)
         with OuterImage(GAME) as archive:
             for code,_ in pair.BOOKS:
                 raw=archive.read_entry(BOOK_ENTRIES[code]); book=parse_playbook_resource(raw)

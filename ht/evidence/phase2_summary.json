@@ -1,0 +1,5324 @@
+{
+  "label": "PROVED OFFLINE",
+  "teams": [
+    {
+      "team": "49ers '81",
+      "season": 1981,
+      "players": 45,
+      "omitted": 14,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1981_San_Francisco_49ers_season"
+    },
+    {
+      "team": "49ers '89",
+      "season": 1989,
+      "players": 47,
+      "omitted": 16,
+      "retail_ratings": 15,
+      "source": "https://en.wikipedia.org/wiki/1989_San_Francisco_49ers_season"
+    },
+    {
+      "team": "49ers '94",
+      "season": 1994,
+      "players": 54,
+      "omitted": 9,
+      "retail_ratings": 19,
+      "source": "https://en.wikipedia.org/wiki/1994_San_Francisco_49ers_season"
+    },
+    {
+      "team": "49ers '03",
+      "season": 2003,
+      "players": 53,
+      "omitted": 15,
+      "retail_ratings": 39,
+      "source": "https://en.wikipedia.org/wiki/2003_San_Francisco_49ers_season"
+    },
+    {
+      "team": "Bears '63",
+      "season": 1963,
+      "players": 37,
+      "omitted": 5,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1963_Chicago_Bears_season"
+    },
+    {
+      "team": "Bears '85",
+      "season": 1985,
+      "players": 45,
+      "omitted": 8,
+      "retail_ratings": 13,
+      "source": "https://en.wikipedia.org/wiki/1985_Chicago_Bears_season"
+    },
+    {
+      "team": "Bengals '81",
+      "season": 1981,
+      "players": 45,
+      "omitted": 11,
+      "retail_ratings": 13,
+      "source": "https://en.wikipedia.org/wiki/1981_Cincinnati_Bengals_season"
+    },
+    {
+      "team": "Bengals '88",
+      "season": 1988,
+      "players": 47,
+      "omitted": 12,
+      "retail_ratings": 20,
+      "source": "https://en.wikipedia.org/wiki/1988_Cincinnati_Bengals_season"
+    },
+    {
+      "team": "Bills '64",
+      "season": 1964,
+      "players": 34,
+      "omitted": 7,
+      "retail_ratings": 10,
+      "source": "https://en.wikipedia.org/wiki/1964_Buffalo_Bills_season"
+    },
+    {
+      "team": "Bills '90",
+      "season": 1990,
+      "players": 49,
+      "omitted": 15,
+      "retail_ratings": 11,
+      "source": "https://en.wikipedia.org/wiki/1990_Buffalo_Bills_season"
+    },
+    {
+      "team": "Broncos '77",
+      "season": 1977,
+      "players": 45,
+      "omitted": 5,
+      "retail_ratings": 17,
+      "source": "https://en.wikipedia.org/wiki/1977_Denver_Broncos_season"
+    },
+    {
+      "team": "Broncos '86",
+      "season": 1986,
+      "players": 45,
+      "omitted": 14,
+      "retail_ratings": 17,
+      "source": "https://en.wikipedia.org/wiki/1986_Denver_Broncos_season"
+    },
+    {
+      "team": "Broncos '98",
+      "season": 1998,
+      "players": 53,
+      "omitted": 9,
+      "retail_ratings": 35,
+      "source": "https://en.wikipedia.org/wiki/1998_Denver_Broncos_season"
+    },
+    {
+      "team": "Browns '64",
+      "season": 1964,
+      "players": 41,
+      "omitted": 1,
+      "retail_ratings": 9,
+      "source": "https://en.wikipedia.org/wiki/1964_Cleveland_Browns_season"
+    },
+    {
+      "team": "Browns '86",
+      "season": 1986,
+      "players": 45,
+      "omitted": 13,
+      "retail_ratings": 19,
+      "source": "https://en.wikipedia.org/wiki/1986_Cleveland_Browns_season"
+    },
+    {
+      "team": "Buccaneers '79",
+      "season": 1979,
+      "players": 45,
+      "omitted": 7,
+      "retail_ratings": 17,
+      "source": "https://en.wikipedia.org/wiki/1979_Tampa_Bay_Buccaneers_season"
+    },
+    {
+      "team": "Buccaneers '99",
+      "season": 1999,
+      "players": 53,
+      "omitted": 12,
+      "retail_ratings": 35,
+      "source": "https://en.wikipedia.org/wiki/1999_Tampa_Bay_Buccaneers_season"
+    },
+    {
+      "team": "Buccaneers '02",
+      "season": 2002,
+      "players": 53,
+      "omitted": 19,
+      "retail_ratings": 48,
+      "source": "https://en.wikipedia.org/wiki/2002_Tampa_Bay_Buccaneers_season"
+    },
+    {
+      "team": "Cardinals '75",
+      "season": 1975,
+      "players": 43,
+      "omitted": 6,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1975_St._Louis_Cardinals_(NFL)_season"
+    },
+    {
+      "team": "Chargers '63",
+      "season": 1963,
+      "players": 34,
+      "omitted": 6,
+      "retail_ratings": 13,
+      "source": "https://en.wikipedia.org/wiki/1963_San_Diego_Chargers_season"
+    },
+    {
+      "team": "Chargers '80",
+      "season": 1980,
+      "players": 45,
+      "omitted": 13,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1980_San_Diego_Chargers_season"
+    },
+    {
+      "team": "Chargers '94",
+      "season": 1994,
+      "players": 53,
+      "omitted": 13,
+      "retail_ratings": 21,
+      "source": "https://en.wikipedia.org/wiki/1994_San_Diego_Chargers_season"
+    },
+    {
+      "team": "Chiefs '69",
+      "season": 1969,
+      "players": 40,
+      "omitted": 9,
+      "retail_ratings": 11,
+      "source": "https://en.wikipedia.org/wiki/1969_Kansas_City_Chiefs_season"
+    },
+    {
+      "team": "Chiefs '93",
+      "season": 1993,
+      "players": 53,
+      "omitted": 20,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1993_Kansas_City_Chiefs_season"
+    },
+    {
+      "team": "Colts '70",
+      "season": 1970,
+      "players": 40,
+      "omitted": 9,
+      "retail_ratings": 10,
+      "source": "https://en.wikipedia.org/wiki/1970_Baltimore_Colts_season"
+    },
+    {
+      "team": "Cowboys '71",
+      "season": 1971,
+      "players": 40,
+      "omitted": 10,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1971_Dallas_Cowboys_season"
+    },
+    {
+      "team": "Cowboys '77",
+      "season": 1977,
+      "players": 45,
+      "omitted": 6,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1977_Dallas_Cowboys_season"
+    },
+    {
+      "team": "Cowboys '92",
+      "season": 1992,
+      "players": 48,
+      "omitted": 16,
+      "retail_ratings": 22,
+      "source": "https://en.wikipedia.org/wiki/1992_Dallas_Cowboys_season"
+    },
+    {
+      "team": "Dolphins '72",
+      "season": 1972,
+      "players": 46,
+      "omitted": 2,
+      "retail_ratings": 9,
+      "source": "https://en.wikipedia.org/wiki/1972_Miami_Dolphins_season"
+    },
+    {
+      "team": "Dolphins '84",
+      "season": 1984,
+      "players": 49,
+      "omitted": 8,
+      "retail_ratings": 20,
+      "source": "https://en.wikipedia.org/wiki/1984_Miami_Dolphins_season"
+    },
+    {
+      "team": "Eagles '60",
+      "season": 1960,
+      "players": 37,
+      "omitted": 2,
+      "retail_ratings": 11,
+      "source": "https://en.wikipedia.org/wiki/1960_Philadelphia_Eagles_season"
+    },
+    {
+      "team": "Eagles '80",
+      "season": 1980,
+      "players": 45,
+      "omitted": 14,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1980_Philadelphia_Eagles_season"
+    },
+    {
+      "team": "Eagles '04",
+      "season": 2004,
+      "players": 53,
+      "omitted": 20,
+      "retail_ratings": 37,
+      "source": "https://en.wikipedia.org/wiki/2004_Philadelphia_Eagles_season"
+    },
+    {
+      "team": "Falcons '80",
+      "season": 1980,
+      "players": 45,
+      "omitted": 15,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1980_Atlanta_Falcons_season"
+    },
+    {
+      "team": "Falcons '98",
+      "season": 1998,
+      "players": 53,
+      "omitted": 10,
+      "retail_ratings": 31,
+      "source": "https://en.wikipedia.org/wiki/1998_Atlanta_Falcons_season"
+    },
+    {
+      "team": "Giants '56",
+      "season": 1956,
+      "players": 36,
+      "omitted": 1,
+      "retail_ratings": 9,
+      "source": "https://en.wikipedia.org/wiki/1956_New_York_Giants_season"
+    },
+    {
+      "team": "Giants '86",
+      "season": 1986,
+      "players": 45,
+      "omitted": 10,
+      "retail_ratings": 22,
+      "source": "https://en.wikipedia.org/wiki/1986_New_York_Giants_season"
+    },
+    {
+      "team": "Giants '90",
+      "season": 1990,
+      "players": 47,
+      "omitted": 10,
+      "retail_ratings": 19,
+      "source": "https://en.wikipedia.org/wiki/1990_New_York_Giants_season"
+    },
+    {
+      "team": "Giants '03",
+      "season": 2003,
+      "players": 53,
+      "omitted": 20,
+      "retail_ratings": 30,
+      "source": "https://en.wikipedia.org/wiki/2003_New_York_Giants_season"
+    },
+    {
+      "team": "Jaguars '99",
+      "season": 1999,
+      "players": 53,
+      "omitted": 18,
+      "retail_ratings": 34,
+      "source": "https://en.wikipedia.org/wiki/1999_Jacksonville_Jaguars_season"
+    },
+    {
+      "team": "Jets '68",
+      "season": 1968,
+      "players": 40,
+      "omitted": 7,
+      "retail_ratings": 8,
+      "source": "https://en.wikipedia.org/wiki/1968_New_York_Jets_season"
+    },
+    {
+      "team": "Jets '98",
+      "season": 1998,
+      "players": 53,
+      "omitted": 15,
+      "retail_ratings": 37,
+      "source": "https://en.wikipedia.org/wiki/1998_New_York_Jets_season"
+    },
+    {
+      "team": "Lions '53",
+      "season": 1953,
+      "players": 33,
+      "omitted": 4,
+      "retail_ratings": 13,
+      "source": "https://en.wikipedia.org/wiki/1953_Detroit_Lions_season"
+    },
+    {
+      "team": "Lions '91",
+      "season": 1991,
+      "players": 47,
+      "omitted": 14,
+      "retail_ratings": 22,
+      "source": "https://en.wikipedia.org/wiki/1991_Detroit_Lions_season"
+    },
+    {
+      "team": "Oilers '61",
+      "season": 1961,
+      "players": 35,
+      "omitted": 8,
+      "retail_ratings": 6,
+      "source": "https://en.wikipedia.org/wiki/1961_Houston_Oilers_season"
+    },
+    {
+      "team": "Oilers '79",
+      "season": 1979,
+      "players": 45,
+      "omitted": 13,
+      "retail_ratings": 23,
+      "source": "https://en.wikipedia.org/wiki/1979_Houston_Oilers_season"
+    },
+    {
+      "team": "Packers '66",
+      "season": 1966,
+      "players": 40,
+      "omitted": 6,
+      "retail_ratings": 19,
+      "source": "https://en.wikipedia.org/wiki/1966_Green_Bay_Packers_season"
+    },
+    {
+      "team": "Packers '96",
+      "season": 1996,
+      "players": 53,
+      "omitted": 23,
+      "retail_ratings": 25,
+      "source": "https://en.wikipedia.org/wiki/1996_Green_Bay_Packers_season"
+    },
+    {
+      "team": "Packers '04",
+      "season": 2004,
+      "players": 55,
+      "omitted": 20,
+      "retail_ratings": 37,
+      "source": "https://en.wikipedia.org/wiki/2004_Green_Bay_Packers_season"
+    },
+    {
+      "team": "Panthers '96",
+      "season": 1996,
+      "players": 53,
+      "omitted": 15,
+      "retail_ratings": 27,
+      "source": "https://en.wikipedia.org/wiki/1996_Carolina_Panthers_season"
+    },
+    {
+      "team": "Panthers '03",
+      "season": 2003,
+      "players": 53,
+      "omitted": 14,
+      "retail_ratings": 49,
+      "source": "https://en.wikipedia.org/wiki/2003_Carolina_Panthers_season"
+    },
+    {
+      "team": "Patriots '85",
+      "season": 1985,
+      "players": 45,
+      "omitted": 13,
+      "retail_ratings": 18,
+      "source": "https://en.wikipedia.org/wiki/1985_New_England_Patriots_season"
+    },
+    {
+      "team": "Patriots '01",
+      "season": 2001,
+      "players": 54,
+      "omitted": 20,
+      "retail_ratings": 42,
+      "source": "https://en.wikipedia.org/wiki/2001_New_England_Patriots_season"
+    },
+    {
+      "team": "Patriots '03",
+      "season": 2003,
+      "players": 53,
+      "omitted": 16,
+      "retail_ratings": 48,
+      "source": "https://en.wikipedia.org/wiki/2003_New_England_Patriots_season"
+    },
+    {
+      "team": "Raiders '67",
+      "season": 1967,
+      "players": 40,
+      "omitted": 4,
+      "retail_ratings": 14,
+      "source": "https://en.wikipedia.org/wiki/1967_Oakland_Raiders_season"
+    },
+    {
+      "team": "Raiders '76",
+      "season": 1976,
+      "players": 43,
+      "omitted": 12,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1976_Oakland_Raiders_season"
+    },
+    {
+      "team": "Raiders '83",
+      "season": 1983,
+      "players": 49,
+      "omitted": 9,
+      "retail_ratings": 14,
+      "source": "https://en.wikipedia.org/wiki/1983_Los_Angeles_Raiders_season"
+    },
+    {
+      "team": "Rams '79",
+      "season": 1979,
+      "players": 45,
+      "omitted": 21,
+      "retail_ratings": 17,
+      "source": "https://en.wikipedia.org/wiki/1979_Los_Angeles_Rams_season"
+    },
+    {
+      "team": "Rams '99",
+      "season": 1999,
+      "players": 53,
+      "omitted": 14,
+      "retail_ratings": 37,
+      "source": "https://en.wikipedia.org/wiki/1999_St._Louis_Rams_season"
+    },
+    {
+      "team": "Ravens '00",
+      "season": 2000,
+      "players": 53,
+      "omitted": 11,
+      "retail_ratings": 37,
+      "source": "https://en.wikipedia.org/wiki/2000_Baltimore_Ravens_season"
+    },
+    {
+      "team": "Redskins '82",
+      "season": 1982,
+      "players": 49,
+      "omitted": 11,
+      "retail_ratings": 13,
+      "source": "https://en.wikipedia.org/wiki/1982_Washington_Redskins_season"
+    },
+    {
+      "team": "Redskins '87",
+      "season": 1987,
+      "players": 50,
+      "omitted": 63,
+      "retail_ratings": 14,
+      "source": "https://en.wikipedia.org/wiki/1987_Washington_Redskins_season"
+    },
+    {
+      "team": "Redskins '91",
+      "season": 1991,
+      "players": 47,
+      "omitted": 19,
+      "retail_ratings": 21,
+      "source": "https://en.wikipedia.org/wiki/1991_Washington_Redskins_season"
+    },
+    {
+      "team": "Saints '91",
+      "season": 1991,
+      "players": 47,
+      "omitted": 17,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1991_New_Orleans_Saints_season"
+    },
+    {
+      "team": "Saints '00",
+      "season": 2000,
+      "players": 53,
+      "omitted": 17,
+      "retail_ratings": 32,
+      "source": "https://en.wikipedia.org/wiki/2000_New_Orleans_Saints_season"
+    },
+    {
+      "team": "Seahawks '84",
+      "season": 1984,
+      "players": 49,
+      "omitted": 11,
+      "retail_ratings": 19,
+      "source": "https://en.wikipedia.org/wiki/1984_Seattle_Seahawks_season"
+    },
+    {
+      "team": "Seahawks '99",
+      "season": 1999,
+      "players": 53,
+      "omitted": 16,
+      "retail_ratings": 32,
+      "source": "https://en.wikipedia.org/wiki/1999_Seattle_Seahawks_season"
+    },
+    {
+      "team": "Steelers '75",
+      "season": 1975,
+      "players": 43,
+      "omitted": 0,
+      "retail_ratings": 12,
+      "source": "https://en.wikipedia.org/wiki/1975_Pittsburgh_Steelers_season"
+    },
+    {
+      "team": "Steelers '78",
+      "season": 1978,
+      "players": 45,
+      "omitted": 7,
+      "retail_ratings": 16,
+      "source": "https://en.wikipedia.org/wiki/1978_Pittsburgh_Steelers_season"
+    },
+    {
+      "team": "Steelers '95",
+      "season": 1995,
+      "players": 53,
+      "omitted": 10,
+      "retail_ratings": 20,
+      "source": "https://en.wikipedia.org/wiki/1995_Pittsburgh_Steelers_season"
+    },
+    {
+      "team": "Texans '62",
+      "season": 1962,
+      "players": 36,
+      "omitted": 2,
+      "retail_ratings": 9,
+      "source": "https://en.wikipedia.org/wiki/1962_Dallas_Texans_season"
+    },
+    {
+      "team": "Titans '99",
+      "season": 1999,
+      "players": 53,
+      "omitted": 14,
+      "retail_ratings": 36,
+      "source": "https://en.wikipedia.org/wiki/1999_Tennessee_Titans_season"
+    },
+    {
+      "team": "Vikings '69",
+      "season": 1969,
+      "players": 40,
+      "omitted": 5,
+      "retail_ratings": 15,
+      "source": "https://en.wikipedia.org/wiki/1969_Minnesota_Vikings_season"
+    },
+    {
+      "team": "Vikings '73",
+      "season": 1973,
+      "players": 40,
+      "omitted": 10,
+      "retail_ratings": 10,
+      "source": "https://en.wikipedia.org/wiki/1973_Minnesota_Vikings_season"
+    },
+    {
+      "team": "Vikings '98",
+      "season": 1998,
+      "players": 53,
+      "omitted": 13,
+      "retail_ratings": 33,
+      "source": "https://en.wikipedia.org/wiki/1998_Minnesota_Vikings_season"
+    }
+  ],
+  "players": 3492,
+  "previous_blocked_rows": 702,
+  "current_blocked_rows": 0,
+  "classifications": {
+    "INFERRED": 2665,
+    "DESIGN": 12193
+  },
+  "decisions_by_field": {
+    "ratings": 3492,
+    "depth": 3492,
+    "equipment": 3492,
+    "game_template": 3492,
+    "position": 869,
+    "display_name": 4,
+    "season_identity_alias": 8,
+    "weight": 1,
+    "identity_alias": 6,
+    "identity_disambiguation": 2
+  },
+  "disagreements": [
+    {
+      "team": "49ers '89",
+      "player": "Steve Young",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        75.98425196850393
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q740086",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Steve Young",
+      "field": "weight",
+      "players_csv": 215,
+      "wikidata": [
+        224.8715074287
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q740086",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Bill Romanowski",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        255.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4904220",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Chuck Thomas",
+      "field": "weight",
+      "players_csv": 270,
+      "wikidata": [
+        277.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5115745",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Harris Barton",
+      "field": "weight",
+      "players_csv": 292,
+      "wikidata": [
+        286.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3448586",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Bubba Paris",
+      "field": "weight",
+      "players_csv": 293,
+      "wikidata": [
+        299.8286765716
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q13581702",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Terry Tausch",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Rollin Putzier",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '89",
+      "player": "Larry Roberts",
+      "field": "weight",
+      "players_csv": 264,
+      "wikidata": [
+        270.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6491032",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Steve Young",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        75.98425196850393
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q740086",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Steve Young",
+      "field": "weight",
+      "players_csv": 215,
+      "wikidata": [
+        224.8715074287
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q740086",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Doug Brien",
+      "field": "weight",
+      "players_csv": 190,
+      "wikidata": [
+        180.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2850300",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Dedrick Dodge",
+      "field": "position",
+      "season": [
+        "CB"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Tim Harris",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Ken Norton Jr.",
+      "field": "weight",
+      "players_csv": 254,
+      "wikidata": [
+        236.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q263903",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Chris Dalman",
+      "field": "weight",
+      "players_csv": 297,
+      "wikidata": [
+        287.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5106350",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '94",
+      "player": "Harris Barton",
+      "field": "weight",
+      "players_csv": 292,
+      "wikidata": [
+        286.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3448586",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "James Jordan",
+      "field": "weight",
+      "players_csv": 225,
+      "wikidata": [
+        240.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6136966",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Rashad Holman",
+      "field": "jersey",
+      "season": [
+        26
+      ],
+      "article": [
+        25
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "John Keith",
+      "field": "position",
+      "season": [
+        "SS"
+      ],
+      "article": [
+        "FS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Brian Jennings",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Jeff Ulbrich",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Jerome Davis",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        308.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6182651",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Sean Moran",
+      "field": "weight",
+      "players_csv": 275,
+      "wikidata": [
+        320.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7441271",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Andrew Williams",
+      "field": "weight",
+      "players_csv": 263,
+      "wikidata": [
+        280.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4758927",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Travis Kirschke",
+      "field": "jersey",
+      "season": [
+        90
+      ],
+      "article": [
+        67
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "49ers '03",
+      "player": "Travis Kirschke",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bears '63",
+      "player": "Bob Jencks",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bears '63",
+      "player": "Bob Wetoska",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bears '63",
+      "player": "Bob Kilcullen",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bears '85",
+      "player": "Jim Morrissey",
+      "field": "height",
+      "players_csv": 75,
+      "wikidata": [
+        77.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3808363",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bears '85",
+      "player": "Tom Andrews",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bears '85",
+      "player": "William Perry",
+      "field": "weight",
+      "players_csv": 335,
+      "wikidata": [
+        350.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q510645",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bears '85",
+      "player": "Henry Waechter",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '81",
+      "player": "Oliver Davis",
+      "field": "position",
+      "season": [
+        "CB"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '81",
+      "player": "Don Bass",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '81",
+      "player": "Blair Bush",
+      "field": "weight",
+      "players_csv": 275,
+      "wikidata": [
+        268.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4924056",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Boomer Esiason",
+      "field": "height",
+      "players_csv": 77,
+      "wikidata": [
+        75.59055118110236
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q725373",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Solomon Wilcots",
+      "field": "weight",
+      "players_csv": 180,
+      "wikidata": [
+        189.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7558769",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "David Fulcher",
+      "field": "weight",
+      "players_csv": 228,
+      "wikidata": [
+        236.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5233892",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Leo Barker",
+      "field": "weight",
+      "players_csv": 221,
+      "wikidata": [
+        240.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6523545",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Ed Brady",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Joe Kelly",
+      "field": "weight",
+      "players_csv": 235,
+      "wikidata": [
+        227.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q14950949",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Bruce Kozerski",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Brian Blados",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bengals '88",
+      "player": "Jim Rourke",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '64",
+      "player": "Al Bemiller",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Mark Kelso",
+      "field": "weight",
+      "players_csv": 186,
+      "wikidata": [
+        177.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6768344",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Leonard Smith",
+      "field": "weight",
+      "players_csv": 190,
+      "wikidata": [
+        202.8252812102
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6525739",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Vernon Turner",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Keith McKeller",
+      "field": "weight",
+      "players_csv": 230,
+      "wikidata": [
+        245.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6384743",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Cornelius Bennett",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "ILB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Darryl Talley",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "ILB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Mark Pike",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Carlton Bailey",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Glenn Parker",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Glenn Parker",
+      "field": "weight",
+      "players_csv": 312,
+      "wikidata": [
+        305.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5569041",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Will Wolford",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        294.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q8003194",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Bruce Smith",
+      "field": "weight",
+      "players_csv": 265,
+      "wikidata": [
+        279.98707297495
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q952956",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Bills '90",
+      "player": "Leon Seals",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '77",
+      "player": "Bobby Maples",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '77",
+      "player": "Glenn Hyde",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '77",
+      "player": "John Grant",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '86",
+      "player": "Randy Robbins",
+      "field": "weight",
+      "players_csv": 182,
+      "wikidata": [
+        189.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7292399",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Broncos '86",
+      "player": "Simon Fletcher",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '86",
+      "player": "Andre Townsend",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Broncos '98",
+      "player": "Marcus Nash",
+      "field": "weight",
+      "players_csv": 195,
+      "wikidata": [
+        220.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4872832",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Broncos '98",
+      "player": "Byron Chamberlain",
+      "field": "weight",
+      "players_csv": 264,
+      "wikidata": [
+        242.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4903819",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Broncos '98",
+      "player": "Bill Romanowski",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        255.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4904220",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '64",
+      "player": "Lou Groza",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Browns '64",
+      "player": "Gary Collins",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Browns '64",
+      "player": "Sid Williams",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Mark Harper",
+      "field": "height",
+      "players_csv": 69,
+      "wikidata": [
+        76.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6793175",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Mark Harper",
+      "field": "weight",
+      "players_csv": 174,
+      "wikidata": [
+        227.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6793175",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "George Lilja",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Larry Williams",
+      "field": "weight",
+      "players_csv": 269,
+      "wikidata": [
+        292.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q18156902",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Paul Farren",
+      "field": "weight",
+      "players_csv": 251,
+      "wikidata": [
+        272.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7150594",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Sam Clancy",
+      "field": "height",
+      "players_csv": 79,
+      "wikidata": [
+        77.95275590551181
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3946327",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Browns '86",
+      "player": "Sam Clancy",
+      "field": "weight",
+      "players_csv": 250,
+      "wikidata": [
+        288.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3946327",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '79",
+      "player": "Gene Sanders",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Patrick Hape",
+      "field": "weight",
+      "players_csv": 262,
+      "wikidata": [
+        254.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7146659",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "John McLaughlin",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Todd Washington",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Jorge Diaz",
+      "field": "weight",
+      "players_csv": 315,
+      "wikidata": [
+        308.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6277921",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Jerry Wunsch",
+      "field": "jersey",
+      "season": [
+        71
+      ],
+      "article": [
+        70
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Warren Sapp",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        330.6933932775
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q180342",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "James Cannida",
+      "field": "weight",
+      "players_csv": 305,
+      "wikidata": [
+        315.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6130980",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '99",
+      "player": "Marcus Jones",
+      "field": "weight",
+      "players_csv": 278,
+      "wikidata": [
+        286.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6758259",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Rob Johnson",
+      "field": "weight",
+      "players_csv": 204,
+      "wikidata": [
+        211.64377169760002
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7340248",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Jermaine Phillips",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        72.83464566929133
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q532022",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "John Howell",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Jameel Cook",
+      "field": "weight",
+      "players_csv": 237,
+      "wikidata": [
+        225.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6127887",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Darian Barnes",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        72.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5222701",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Darian Barnes",
+      "field": "weight",
+      "players_csv": 240,
+      "wikidata": [
+        255.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5222701",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Ron Warner",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Dan Goodspeed",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Cornell Green",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Buccaneers '02",
+      "player": "Warren Sapp",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        330.6933932775
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q180342",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cardinals '75",
+      "player": "Dwayne Crump",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chargers '63",
+      "player": "Jacque MacKinnon",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chargers '80",
+      "player": "Bernard Jackson",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chargers '80",
+      "player": "Bob Rush",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chargers '80",
+      "player": "John Lee",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chargers '94",
+      "player": "Courtney Hall",
+      "field": "height",
+      "players_csv": 73,
+      "wikidata": [
+        74.01574803149606
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5178610",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chargers '94",
+      "player": "Reggie White",
+      "field": "weight",
+      "players_csv": 315,
+      "wikidata": [
+        296.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q21262083",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chargers '94",
+      "player": "John Parrella",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '69",
+      "player": "Curtis McClinton",
+      "field": "position",
+      "season": [
+        "FB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '69",
+      "player": "Chuck Hurston",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '69",
+      "player": "Remi Prudhomme",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Dave Krieg",
+      "field": "weight",
+      "players_csv": 200,
+      "wikidata": [
+        193.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q354839",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Dale Carter",
+      "field": "weight",
+      "players_csv": 194,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5210374",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Albert Lewis",
+      "field": "weight",
+      "players_csv": 205,
+      "wikidata": [
+        196.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4710729",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Bennie Thompson",
+      "field": "weight",
+      "players_csv": 220,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4889832",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Todd McNair",
+      "field": "weight",
+      "players_csv": 202,
+      "wikidata": [
+        196.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7812533",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Lonnie Marts",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "ILB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Derrick Graham",
+      "field": "weight",
+      "players_csv": 335,
+      "wikidata": [
+        310.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5263024",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "John Alt",
+      "field": "weight",
+      "players_csv": 307,
+      "wikidata": [
+        298.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6218866",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Lindsay Knapp",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Tim Newton",
+      "field": "weight",
+      "players_csv": 269,
+      "wikidata": [
+        280.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7804043",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Chiefs '93",
+      "player": "Pellom McDaniels",
+      "field": "weight",
+      "players_csv": 280,
+      "wikidata": [
+        295.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7161590",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Colts '70",
+      "player": "Jim O'Brien",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Colts '70",
+      "player": "Tom Goode",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Cowboys '77",
+      "player": "Jay Saldi",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Cowboys '77",
+      "player": "Jim Cooper",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Steve Beuerlein",
+      "field": "weight",
+      "players_csv": 220,
+      "wikidata": [
+        205.02990383205
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3498857",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Troy Aikman",
+      "field": "height",
+      "players_csv": 76,
+      "wikidata": [
+        77.55905511811022
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q525002",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Alvin Harper",
+      "field": "weight",
+      "players_csv": 218,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q449098",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Jimmy Smith",
+      "field": "weight",
+      "players_csv": 202,
+      "wikidata": [
+        213.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q14951154",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Kenneth Gant",
+      "field": "weight",
+      "players_csv": 215,
+      "wikidata": [
+        187.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4845826",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Emmitt Smith",
+      "field": "weight",
+      "players_csv": 216,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q1338802",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Tommie Agee",
+      "field": "weight",
+      "players_csv": 235,
+      "wikidata": [
+        218.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7819118",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Ken Norton Jr.",
+      "field": "weight",
+      "players_csv": 254,
+      "wikidata": [
+        236.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q263903",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Dale Hellestrae",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Erik Williams",
+      "field": "weight",
+      "players_csv": 311,
+      "wikidata": [
+        325.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q283348",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Kevin Gogan",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Kevin Gogan",
+      "field": "weight",
+      "players_csv": 325,
+      "wikidata": [
+        311.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4845820",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Cowboys '92",
+      "player": "Leon Lett",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Dolphins '72",
+      "player": "Billy Lothridge",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Dolphins '72",
+      "player": "Larry Seiple",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Dolphins '72",
+      "player": "Al Jenkins",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Dolphins '72",
+      "player": "Howard Kindig",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Dolphins '84",
+      "player": "Dan Marino",
+      "field": "weight",
+      "players_csv": 228,
+      "wikidata": [
+        218.25763956315
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q195367",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Dolphins '84",
+      "player": "Paul Lankford",
+      "field": "weight",
+      "players_csv": 178,
+      "wikidata": [
+        185.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7151949",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Dolphins '84",
+      "player": "Roy Foster",
+      "field": "weight",
+      "players_csv": 275,
+      "wikidata": [
+        282.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7372811",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Dolphins '84",
+      "player": "Ronnie Lee",
+      "field": "weight",
+      "players_csv": 236,
+      "wikidata": [
+        265.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7365911",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Dolphins '84",
+      "player": "Steve Clark",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Bobby Walston",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Norm Van Brocklin",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Jerry Reichow",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Jimmy Carr",
+      "field": "position",
+      "season": [
+        "HB"
+      ],
+      "article": [
+        "CB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Chuck Bednarik",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "Howard Keys",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '60",
+      "player": "John Wilcox",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '80",
+      "player": "Steve Kenney",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Freddie Mitchell",
+      "field": "weight",
+      "players_csv": 195,
+      "wikidata": [
+        184.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5496770",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "J. R. Reed",
+      "field": "position",
+      "season": [
+        "SS"
+      ],
+      "article": [
+        "FS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "L. J. Smith",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        258.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q1797776",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Mike Bartrum",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Keith Adams",
+      "field": "weight",
+      "players_csv": 223,
+      "wikidata": [
+        238.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5847936",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Mark Simoneau",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Artis Hicks",
+      "field": "height",
+      "players_csv": 76,
+      "wikidata": [
+        80.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2865796",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Artis Hicks",
+      "field": "weight",
+      "players_csv": 312,
+      "wikidata": [
+        335.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2865796",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Derrick Burgess",
+      "field": "weight",
+      "players_csv": 255,
+      "wikidata": [
+        264.554714622
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q730369",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Eagles '04",
+      "player": "Hugh Douglas",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        75.98425196850393
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5930574",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Steve DeBerg",
+      "field": "height",
+      "players_csv": 75,
+      "wikidata": [
+        70.07874015748031
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7612364",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Steve DeBerg",
+      "field": "weight",
+      "players_csv": 230,
+      "wikidata": [
+        165.34669663875
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7612364",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Ronnie Bradford",
+      "field": "weight",
+      "players_csv": 198,
+      "wikidata": [
+        188.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7365806",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Rod Monroe",
+      "field": "weight",
+      "players_csv": 265,
+      "wikidata": [
+        254.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q18630869",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Keith Brooking",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        79.13385826771653
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6384115",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Ruffin Hamilton",
+      "field": "height",
+      "players_csv": 73,
+      "wikidata": [
+        74.01574803149606
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7377922",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Bob Hallen",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Gene Williams",
+      "field": "weight",
+      "players_csv": 320,
+      "wikidata": [
+        310.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5531529",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Dave Widell",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Falcons '98",
+      "player": "Dave Widell",
+      "field": "weight",
+      "players_csv": 316,
+      "wikidata": [
+        310.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5230098",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '56",
+      "player": "Kyle Rote",
+      "field": "position",
+      "season": [
+        "DE",
+        "TE",
+        "WR"
+      ],
+      "article": [
+        "FB",
+        "HB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '56",
+      "player": "Henry Moore",
+      "field": "position",
+      "season": [
+        "CB",
+        "FS",
+        "SS"
+      ],
+      "article": [
+        "HB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '56",
+      "player": "Alex Webster",
+      "field": "position",
+      "season": [
+        "HB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '56",
+      "player": "Dick Modzelewski",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '86",
+      "player": "Lawrence Taylor",
+      "field": "weight",
+      "players_csv": 237,
+      "wikidata": [
+        244.71311102535
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q963129",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '86",
+      "player": "Pepper Johnson",
+      "field": "weight",
+      "players_csv": 259,
+      "wikidata": [
+        250.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4872097",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '86",
+      "player": "Billy Ard",
+      "field": "weight",
+      "players_csv": 250,
+      "wikidata": [
+        265.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4912116",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '86",
+      "player": "William Roberts",
+      "field": "weight",
+      "players_csv": 298,
+      "wikidata": [
+        291.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q8017649",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '86",
+      "player": "Damian Johnson",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '90",
+      "player": "Lawrence Taylor",
+      "field": "weight",
+      "players_csv": 237,
+      "wikidata": [
+        244.71311102535
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q963129",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '90",
+      "player": "Pepper Johnson",
+      "field": "weight",
+      "players_csv": 259,
+      "wikidata": [
+        250.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4872097",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '90",
+      "player": "William Roberts",
+      "field": "weight",
+      "players_csv": 298,
+      "wikidata": [
+        291.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q8017649",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '90",
+      "player": "Mike Fox",
+      "field": "weight",
+      "players_csv": 297,
+      "wikidata": [
+        285.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6846889",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Jesse Palmer",
+      "field": "weight",
+      "players_csv": 225,
+      "wikidata": [
+        219.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q10306813",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "David Tyree",
+      "field": "height",
+      "players_csv": 72,
+      "wikidata": [
+        72.0,
+        74.01574803149606
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3018916",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "David Tyree",
+      "field": "weight",
+      "players_csv": 206,
+      "wikidata": [
+        198.0,
+        206.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3018916",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Johnnie Harris",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Johnnie Harris",
+      "field": "height",
+      "players_csv": 72,
+      "wikidata": [
+        74.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6266074",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Ryan Clark",
+      "field": "position",
+      "season": [
+        "SS"
+      ],
+      "article": [
+        "FS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Ron Dayne",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        257.94084675645
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7363689",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Brian Mitchell",
+      "field": "weight",
+      "players_csv": 221,
+      "wikidata": [
+        195.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2924958",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Nick Greisen",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Nick Greisen",
+      "field": "weight",
+      "players_csv": 250,
+      "wikidata": [
+        242.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7027220",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Scott Peters",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Scott Peters",
+      "field": "weight",
+      "players_csv": 308,
+      "wikidata": [
+        300.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7437042",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "David Diehl",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Giants '03",
+      "player": "Michael Strahan",
+      "field": "weight",
+      "players_csv": 255,
+      "wikidata": [
+        275.57782773125
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q573258",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Jimmy Smith",
+      "field": "weight",
+      "players_csv": 202,
+      "wikidata": [
+        213.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q14951154",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Leon Searcy",
+      "field": "height",
+      "players_csv": 76,
+      "wikidata": [
+        77.16535433070865
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6524885",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Leon Searcy",
+      "field": "weight",
+      "players_csv": 320,
+      "wikidata": [
+        313.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6524885",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Steve Ingram",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Larry Smith",
+      "field": "weight",
+      "players_csv": 292,
+      "wikidata": [
+        310.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q16215106",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Chris White",
+      "field": "jersey",
+      "season": [
+        74
+      ],
+      "article": [
+        92
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Jaguars '99",
+      "player": "Corey Terry",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Jets '68",
+      "player": "Steve Thompson",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Richie Anderson",
+      "field": "weight",
+      "players_csv": 215,
+      "wikidata": [
+        230.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7330465",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Keith Byars",
+      "field": "weight",
+      "players_csv": 257,
+      "wikidata": [
+        238.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6384157",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Pepper Johnson",
+      "field": "weight",
+      "players_csv": 259,
+      "wikidata": [
+        250.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4872097",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Rob Holmberg",
+      "field": "weight",
+      "players_csv": 240,
+      "wikidata": [
+        234.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7340216",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Jim Bundren",
+      "field": "jersey",
+      "season": [
+        79
+      ],
+      "article": [
+        65
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "John Hudson",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Jets '98",
+      "player": "Matt O'Dwyer",
+      "field": "weight",
+      "players_csv": 305,
+      "wikidata": [
+        315.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6789139",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Lions '53",
+      "player": "Jim Martin",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "G",
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "Eddie Murray",
+      "field": "weight",
+      "players_csv": 195,
+      "wikidata": [
+        177.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5336344",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "Herman Moore",
+      "field": "weight",
+      "players_csv": 218,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q13582510",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "D. J. Dozier",
+      "field": "weight",
+      "players_csv": 210,
+      "wikidata": [
+        200.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5203642",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "David Little",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "Bubba Paris",
+      "field": "weight",
+      "players_csv": 293,
+      "wikidata": [
+        299.8286765716
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q13581702",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "Roman Fortin",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Lions '91",
+      "player": "Kelvin Pritchett",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '61",
+      "player": "George Blanda",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '61",
+      "player": "Doug Cline",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '61",
+      "player": "Gene Jones",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "CB",
+        "FS",
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '61",
+      "player": "Willis Perkins",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '79",
+      "player": "Rich Ellender",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '79",
+      "player": "David Carter",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "C",
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '79",
+      "player": "Mike Stensrud",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '79",
+      "player": "Ken Kennard",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Oilers '79",
+      "player": "Steve Baumgartner",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Andre Rison",
+      "field": "jersey",
+      "season": [
+        81
+      ],
+      "article": [
+        84
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Craig Newsome",
+      "field": "height",
+      "players_csv": 72,
+      "wikidata": [
+        75.19685039370079
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5181276",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Craig Newsome",
+      "field": "weight",
+      "players_csv": 188,
+      "wikidata": [
+        222.66688480685
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5181276",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Jeff Dellenbach",
+      "field": "jersey",
+      "season": [
+        66
+      ],
+      "article": [
+        67
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Jeff Dellenbach",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        290.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5573547",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Shannon Clavelle",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '96",
+      "player": "Keith McKenzie",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Craig Nall",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        227.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5181265",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Jason Horton",
+      "field": "height",
+      "players_csv": 72,
+      "wikidata": [
+        70.86614173228345
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3807405",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Darren Sharper",
+      "field": "weight",
+      "players_csv": 210,
+      "wikidata": [
+        220.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q1109820",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "James Whitley",
+      "field": "position",
+      "season": [
+        "SS"
+      ],
+      "article": [
+        "CB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Kabeer Gbaja-Biamila",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Grey Ruegamer",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Brad Bedell",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Kenny Peterson",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "R-Kal Truluck",
+      "field": "weight",
+      "players_csv": 260,
+      "wikidata": [
+        270.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7273266",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Packers '04",
+      "player": "Cullen Jenkins",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Steve Beuerlein",
+      "field": "weight",
+      "players_csv": 220,
+      "wikidata": [
+        205.02990383205
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3498857",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Michael Bates",
+      "field": "weight",
+      "players_csv": 215,
+      "wikidata": [
+        189.5975454791
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q572862",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Dwight Stone",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Winslow Oliver",
+      "field": "weight",
+      "players_csv": 200,
+      "wikidata": [
+        180.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q8025962",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Myron Baker",
+      "field": "jersey",
+      "season": [
+        56
+      ],
+      "article": [
+        53
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Matt Campbell",
+      "field": "weight",
+      "players_csv": 300,
+      "wikidata": [
+        284.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6788435",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Matt Elliott",
+      "field": "weight",
+      "players_csv": 295,
+      "wikidata": [
+        288.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6788606",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '96",
+      "player": "Mike Fox",
+      "field": "weight",
+      "players_csv": 297,
+      "wikidata": [
+        285.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6846889",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Steve Smith",
+      "field": "weight",
+      "players_csv": 195,
+      "wikidata": [
+        185.1883002354
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q683017",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Travares Tillman",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Jermaine Wiggins",
+      "field": "weight",
+      "players_csv": 260,
+      "wikidata": [
+        272.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570344",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Jason Kyle",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Jason Kyle",
+      "field": "weight",
+      "players_csv": 242,
+      "wikidata": [
+        235.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6162904",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Bruce Nelson",
+      "field": "jersey",
+      "season": [
+        72
+      ],
+      "article": [
+        70
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Kindal Moorehead",
+      "field": "weight",
+      "players_csv": 299,
+      "wikidata": [
+        285.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q16217487",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Panthers '03",
+      "player": "Julius Peppers",
+      "field": "weight",
+      "players_csv": 295,
+      "wikidata": [
+        286.6009408405
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q938260",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '85",
+      "player": "Smiley Creswell",
+      "field": "position",
+      "season": [
+        "CB",
+        "FS",
+        "SS"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '85",
+      "player": "Greg Hawthorne",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Adam Vinatieri",
+      "field": "weight",
+      "players_csv": 212,
+      "wikidata": [
+        205.02990383205
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q351092",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Patrick Pass",
+      "field": "weight",
+      "players_csv": 217,
+      "wikidata": [
+        238.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570671",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Jermaine Wiggins",
+      "field": "weight",
+      "players_csv": 260,
+      "wikidata": [
+        272.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570344",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Ted Johnson",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "ILB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Marty Moore",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        235.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570535",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Lonie Paxton",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Kenyatta Jones",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Greg Robinson-Randall",
+      "field": "weight",
+      "players_csv": 322,
+      "wikidata": [
+        335.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5569842",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Brandon Mitchell",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Riddick Parker",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Chris Sullivan",
+      "field": "weight",
+      "players_csv": 285,
+      "wikidata": [
+        279.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5108187",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '01",
+      "player": "Jace Sayler",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Adam Vinatieri",
+      "field": "weight",
+      "players_csv": 212,
+      "wikidata": [
+        205.02990383205
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q351092",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "J.J. Stokes",
+      "field": "weight",
+      "players_csv": 225,
+      "wikidata": [
+        218.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570156",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Antwan Harris",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Patrick Pass",
+      "field": "weight",
+      "players_csv": 217,
+      "wikidata": [
+        238.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5570671",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Brian Kinchen",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Willie McGinest",
+      "field": "position",
+      "season": [
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Dan Klecko",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Dan Klecko",
+      "field": "weight",
+      "players_csv": 275,
+      "wikidata": [
+        260.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4870443",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Roman Phifer",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Larry Izzo",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Don Davis",
+      "field": "position",
+      "season": [
+        "ILB"
+      ],
+      "article": [
+        "OLB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Richard Seymour",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Ty Warren",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Patriots '03",
+      "player": "Rick Lyle",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Raiders '67",
+      "player": "George Blanda",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "K"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Raiders '76",
+      "player": "Warren Bankston",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Raiders '83",
+      "player": "Cleo Montgomery",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "FB",
+        "HB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Raiders '83",
+      "player": "Ed Muransky",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Raiders '83",
+      "player": "Don Mosebar",
+      "field": "weight",
+      "players_csv": 295,
+      "wikidata": [
+        305.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4873896",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Raiders '83",
+      "player": "Johnny Robinson",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '79",
+      "player": "Jackie Slater",
+      "field": "weight",
+      "players_csv": 285,
+      "wikidata": [
+        277.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q1304479",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '79",
+      "player": "Reggie Doss",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Tony Horne",
+      "field": "weight",
+      "players_csv": 173,
+      "wikidata": [
+        190.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5593669",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Devin Bush",
+      "field": "position",
+      "season": [
+        "FS"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Jeff Robinson",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Leonard Little",
+      "field": "weight",
+      "players_csv": 263,
+      "wikidata": [
+        255.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5593450",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Ryan Tucker",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "T"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Andy McCollum",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Cameron Spikes",
+      "field": "weight",
+      "players_csv": 313,
+      "wikidata": [
+        325.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5026385",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Fred Miller",
+      "field": "weight",
+      "players_csv": 314,
+      "wikidata": [
+        320.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5495944",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Jeff Zgonina",
+      "field": "weight",
+      "players_csv": 281,
+      "wikidata": [
+        305.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5593303",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Rams '99",
+      "player": "Lionel Barnes",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "Marcus Nash",
+      "field": "weight",
+      "players_csv": 195,
+      "wikidata": [
+        220.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4872832",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "Corey Harris",
+      "field": "position",
+      "season": [
+        "FS",
+        "SS"
+      ],
+      "article": [
+        "CB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "Ray Lewis",
+      "field": "weight",
+      "players_csv": 240,
+      "wikidata": [
+        249.12235626905002
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q44428",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "John Hudson",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "Tony Siragusa",
+      "field": "weight",
+      "players_csv": 340,
+      "wikidata": [
+        350.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q726220",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Ravens '00",
+      "player": "Larry Webster",
+      "field": "weight",
+      "players_csv": 315,
+      "wikidata": [
+        297.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4873053",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '82",
+      "player": "Pat Ogrin",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '87",
+      "player": "Terry Orr",
+      "field": "position",
+      "season": [
+        "FB",
+        "HB"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '87",
+      "player": "Rick Kehr",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '87",
+      "player": "Joe Caravello",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Martin Mayhew",
+      "field": "weight",
+      "players_csv": 178,
+      "wikidata": [
+        172.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6776149",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Brian Mitchell",
+      "field": "weight",
+      "players_csv": 221,
+      "wikidata": [
+        195.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2924958",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "John Brandes",
+      "field": "position",
+      "season": [
+        "TE"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Andre Collins",
+      "field": "height",
+      "players_csv": 73,
+      "wikidata": [
+        76.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4754761",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Andre Collins",
+      "field": "weight",
+      "players_csv": 240,
+      "wikidata": [
+        230.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4754761",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Eric Williams",
+      "field": "weight",
+      "players_csv": 260,
+      "wikidata": [
+        282.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5387757",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Jumpy Geathers",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Redskins '91",
+      "player": "Jumpy Geathers",
+      "field": "weight",
+      "players_csv": 283,
+      "wikidata": [
+        290.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6311380",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Floyd Turner",
+      "field": "weight",
+      "players_csv": 199,
+      "wikidata": [
+        192.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5462553",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Bennie Thompson",
+      "field": "weight",
+      "players_csv": 220,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4889832",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Gene Atkins",
+      "field": "height",
+      "players_csv": 71,
+      "wikidata": [
+        72.83464566929133
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5531076",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Cedric Smith",
+      "field": "weight",
+      "players_csv": 250,
+      "wikidata": [
+        275.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5057146",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Larry Williams",
+      "field": "weight",
+      "players_csv": 269,
+      "wikidata": [
+        292.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q18156902",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '91",
+      "player": "Renaldo Turnbull",
+      "field": "height",
+      "players_csv": 76,
+      "wikidata": [
+        77.16535433070865
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7312514",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '00",
+      "player": "Doug Brien",
+      "field": "weight",
+      "players_csv": 190,
+      "wikidata": [
+        180.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q2850300",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '00",
+      "player": "Kevin Houser",
+      "field": "position",
+      "season": [
+        "FB"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Saints '00",
+      "player": "Keith Mitchell",
+      "field": "weight",
+      "players_csv": 245,
+      "wikidata": [
+        236.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6384780",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Saints '00",
+      "player": "Steve Gleason",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "SS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Seahawks '84",
+      "player": "Dave Krieg",
+      "field": "weight",
+      "players_csv": 200,
+      "wikidata": [
+        193.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q354839",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Seahawks '84",
+      "player": "Blair Bush",
+      "field": "weight",
+      "players_csv": 275,
+      "wikidata": [
+        268.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4924056",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Seahawks '84",
+      "player": "Edwin Bailey",
+      "field": "weight",
+      "players_csv": 265,
+      "wikidata": [
+        271.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5346236",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Seahawks '84",
+      "player": "Mike Fanning",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Charlie Rogers",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "FB",
+        "HB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Frank Beede",
+      "field": "position",
+      "season": [
+        "C"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Pete Kendall",
+      "field": "weight",
+      "players_csv": 286,
+      "wikidata": [
+        292.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7172058",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Floyd Wedderburn",
+      "field": "jersey",
+      "season": [
+        60
+      ],
+      "article": [
+        69
+      ],
+      "resolution": "season roster precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Floyd Wedderburn",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Floyd Wedderburn",
+      "field": "height",
+      "players_csv": 77,
+      "wikidata": [
+        79.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5462563",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Seahawks '99",
+      "player": "Floyd Wedderburn",
+      "field": "weight",
+      "players_csv": 333,
+      "wikidata": [
+        325.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5462563",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '75",
+      "player": "John Banaszak",
+      "field": "position",
+      "season": [
+        "ILB",
+        "OLB"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Steelers '78",
+      "player": "Ted Petersen",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "C"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Kordell Stewart",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Ernie Mills",
+      "field": "weight",
+      "players_csv": 198,
+      "wikidata": [
+        192.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5394634",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Deon Figures",
+      "field": "weight",
+      "players_csv": 193,
+      "wikidata": [
+        200.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5259999",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Tracy Greene",
+      "field": "weight",
+      "players_csv": 282,
+      "wikidata": [
+        270.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q21662928",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Brenden Stai",
+      "field": "weight",
+      "players_csv": 318,
+      "wikidata": [
+        312.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4961134",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "James Parrish",
+      "field": "weight",
+      "players_csv": 320,
+      "wikidata": [
+        310.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4846012",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Leon Searcy",
+      "field": "height",
+      "players_csv": 76,
+      "wikidata": [
+        77.16535433070865
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6524885",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Leon Searcy",
+      "field": "weight",
+      "players_csv": 320,
+      "wikidata": [
+        313.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q6524885",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Bill Johnson",
+      "field": "position",
+      "season": [
+        "DT"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Steelers '95",
+      "player": "Ray Seals",
+      "field": "weight",
+      "players_csv": 306,
+      "wikidata": [
+        293.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7298085",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Texans '62",
+      "player": "Eddie Wilson",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Texans '62",
+      "player": "Frank Jackson",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "FB",
+        "HB"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Texans '62",
+      "player": "Jimmy Saxton",
+      "field": "position",
+      "season": [
+        "HB"
+      ],
+      "article": [
+        "WR"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Texans '62",
+      "player": "Johnny Robinson",
+      "field": "position",
+      "season": [
+        "HB"
+      ],
+      "article": [
+        "FS"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Texans '62",
+      "player": "Curt Merz",
+      "field": "position",
+      "season": [
+        "G"
+      ],
+      "article": [
+        "DE",
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Steve McNair",
+      "field": "height",
+      "players_csv": 74,
+      "wikidata": [
+        75.19685039370079
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q167818",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Chris Sanders",
+      "field": "height",
+      "players_csv": 73,
+      "wikidata": [
+        76.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5107979",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Chris Sanders",
+      "field": "weight",
+      "players_csv": 188,
+      "wikidata": [
+        210.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q5107979",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Eddie George",
+      "field": "weight",
+      "players_csv": 235,
+      "wikidata": [
+        240.30386578165
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q80559",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Lorenzo Neal",
+      "field": "weight",
+      "players_csv": 255,
+      "wikidata": [
+        275.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3259488",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Phil Glover",
+      "field": "weight",
+      "players_csv": 241,
+      "wikidata": [
+        265.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7181925",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Zach Piller",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "G"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Zach Piller",
+      "field": "weight",
+      "players_csv": 321,
+      "wikidata": [
+        315.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q8063829",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Titans '99",
+      "player": "Brad Hopkins",
+      "field": "height",
+      "players_csv": 75,
+      "wikidata": [
+        77.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q4954009",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Vikings '69",
+      "player": "Bob Lee",
+      "field": "position",
+      "season": [
+        "QB"
+      ],
+      "article": [
+        "P"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Vikings '69",
+      "player": "Steve Smith",
+      "field": "position",
+      "season": [
+        "T"
+      ],
+      "article": [
+        "DE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Vikings '73",
+      "player": "Gary Ballman",
+      "field": "position",
+      "season": [
+        "WR"
+      ],
+      "article": [
+        "TE"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Vikings '73",
+      "player": "Doug Sutherland",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    },
+    {
+      "team": "Vikings '98",
+      "player": "Todd Bouman",
+      "field": "weight",
+      "players_csv": 236,
+      "wikidata": [
+        226.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q3530244",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Vikings '98",
+      "player": "Anthony Bass",
+      "field": "weight",
+      "players_csv": 200,
+      "wikidata": [
+        192.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q18631495",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Vikings '98",
+      "player": "Pete Bercich",
+      "field": "weight",
+      "players_csv": 248,
+      "wikidata": [
+        240.0
+      ],
+      "wikidata_url": "https://www.wikidata.org/wiki/Q7171849",
+      "resolution": "players.csv precedence"
+    },
+    {
+      "team": "Vikings '98",
+      "player": "John Randle",
+      "field": "position",
+      "season": [
+        "DE"
+      ],
+      "article": [
+        "DT"
+      ],
+      "resolution": "starter/depth chart, then season roster precedence"
+    }
+  ],
+  "design_numbers": [],
+  "uncertain_sizes": [
+    {
+      "team": "Browns '86",
+      "player": "Gerald McNeil",
+      "field": "weight",
+      "value": 150,
+      "label": "DESIGN",
+      "method": "game byte represents 150..405 lb",
+      "source_value": 140,
+      "source_basis": {
+        "label": "PROVED OFFLINE",
+        "url": "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv",
+        "line": 14879,
+        "scope": "career biography measurement"
+      }
+    }
+  ],
+  "duplicate_source_numbers": [
+    {
+      "team": "Chiefs '93",
+      "jersey": 38,
+      "players": [
+        {
+          "player": "Bruce Pickens",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1993_Kansas_City_Chiefs_season",
+                "line": 268,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        },
+        {
+          "player": "Kimble Anders",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_1993.csv",
+                "file": "roster_1993.csv",
+                "line": 22,
+                "kind": "nflverse"
+              }
+            ],
+            "method": "season roster"
+          }
+        }
+      ]
+    },
+    {
+      "team": "Eagles '60",
+      "jersey": 71,
+      "players": [
+        {
+          "player": "John Wilcox",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1960_Philadelphia_Eagles_season",
+                "line": 140,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        },
+        {
+          "player": "Riley Gunnels",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1960_Philadelphia_Eagles_season",
+                "line": 146,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        }
+      ]
+    },
+    {
+      "team": "Packers '96",
+      "jersey": 81,
+      "players": [
+        {
+          "player": "Andre Rison",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_1996.csv",
+                "file": "roster_1996.csv",
+                "line": 1408,
+                "kind": "nflverse"
+              }
+            ],
+            "method": "season roster"
+          }
+        },
+        {
+          "player": "Desmond Howard",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_1996.csv",
+                "file": "roster_1996.csv",
+                "line": 815,
+                "kind": "nflverse"
+              }
+            ],
+            "method": "season roster"
+          }
+        }
+      ]
+    },
+    {
+      "team": "Redskins '87",
+      "jersey": 89,
+      "players": [
+        {
+          "player": "Anthony Allen",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1987_Washington_Redskins_season",
+                "line": 346,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        },
+        {
+          "player": "Clarence Verdin",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1987_Washington_Redskins_season",
+                "line": 349,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        }
+      ]
+    },
+    {
+      "team": "Seahawks '99",
+      "jersey": 60,
+      "players": [
+        {
+          "player": "Greg Bloedorn",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_1999.csv",
+                "file": "roster_1999.csv",
+                "line": 155,
+                "kind": "nflverse"
+              }
+            ],
+            "method": "season roster"
+          }
+        },
+        {
+          "player": "Floyd Wedderburn",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_1999.csv",
+                "file": "roster_1999.csv",
+                "line": 1886,
+                "kind": "nflverse"
+              }
+            ],
+            "method": "season roster"
+          }
+        }
+      ]
+    },
+    {
+      "team": "Texans '62",
+      "jersey": 14,
+      "players": [
+        {
+          "player": "Tom Pennington",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1962_Dallas_Texans_season",
+                "line": 168,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        },
+        {
+          "player": "Bobby Ply",
+          "basis": {
+            "label": "PROVED OFFLINE",
+            "sources": [
+              {
+                "url": "https://en.wikipedia.org/wiki/1962_Dallas_Texans_season",
+                "line": 163,
+                "kind": "wikipedia_roster",
+                "label": "PROVED OFFLINE"
+              }
+            ],
+            "method": "season article"
+          }
+        }
+      ]
+    }
+  ],
+  "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db"
+}

@@ -1,0 +1,2712 @@
+{
+  "label": "PROVED OFFLINE",
+  "outer_entries_scanned": 4323,
+  "roster_resources": [
+    {
+      "outer": 5,
+      "name_id": "4a37581d",
+      "filename": null,
+      "main": true,
+      "players": 2547,
+      "teams": [
+        {
+          "name": "49ers",
+          "identity": 25,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Ahmed Plummer",
+            "Mike Rumph",
+            "Shawntae Spencer",
+            "Jimmy Williams",
+            "Rashad Holman"
+          ]
+        },
+        {
+          "name": "Bears",
+          "identity": 5,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Charles Tillman",
+            "Jerry Azumah",
+            "R.W. McQuarters",
+            "Todd McMillon",
+            "Alfonso Marshall"
+          ]
+        },
+        {
+          "name": "Bengals",
+          "identity": 6,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Deltha O'Neal",
+            "Tory James",
+            "Terrell Roberts",
+            "Keiwan Ratliff",
+            "Dennis Weathersby"
+          ]
+        },
+        {
+          "name": "Bills",
+          "identity": 3,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Troy Vincent",
+            "Nate Clements",
+            "Kevin Thomas",
+            "Terrence McGee",
+            "Ryan Denney"
+          ]
+        },
+        {
+          "name": "Broncos",
+          "identity": 8,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Champ Bailey",
+            "Kelly Herndon",
+            "Lenny Walls",
+            "Willie Middlebrooks",
+            "Jeff Shoate"
+          ]
+        },
+        {
+          "name": "Browns",
+          "identity": 30,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Anthony Henry",
+            "Daylon McCutcheon",
+            "Roosevelt Williams",
+            "Michael Lehan",
+            "Courtney Brown"
+          ]
+        },
+        {
+          "name": "Buccaneers",
+          "identity": 27,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Ronde Barber",
+            "Brian Kelly",
+            "Mario Edwards",
+            "Corey Ivy",
+            "Tom Knight"
+          ]
+        },
+        {
+          "name": "Cardinals",
+          "identity": 0,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Duane Starks",
+            "Renaldo Hill",
+            "David Macklin",
+            "Coby Rhinehart",
+            "Bert Berry"
+          ]
+        },
+        {
+          "name": "Chargers",
+          "identity": 24,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Quentin Jammer",
+            "Sammy Davis",
+            "Jamar Fletcher",
+            "Drayton Florence",
+            "Kevin House"
+          ]
+        },
+        {
+          "name": "Chiefs",
+          "identity": 13,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Eric Warfield",
+            "Dexter McCleon",
+            "William Bartee",
+            "Julian Battle",
+            "Eric Hicks"
+          ]
+        },
+        {
+          "name": "Colts",
+          "identity": 11,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Nicholas Harper",
+            "Joseph Jefferson",
+            "Jason David",
+            "Tahaya Hutchins",
+            "Donald Strickland"
+          ]
+        },
+        {
+          "name": "Cowboys",
+          "identity": 7,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Terence Newman",
+            "Pete Hunter",
+            "Donald Mitchell",
+            "Jacques Reeves",
+            "Bruce Thornton"
+          ]
+        },
+        {
+          "name": "Dolphins",
+          "identity": 14,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Patrick Surtain",
+            "Sam Madison",
+            "Reggie Howard",
+            "Will Poole",
+            "Adewale Ogunleye"
+          ]
+        },
+        {
+          "name": "Eagles",
+          "identity": 21,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Sheldon Brown",
+            "Lito Sheppard",
+            "Matt Ware",
+            "Dexter Wynn",
+            "Roderick Hood"
+          ]
+        },
+        {
+          "name": "Falcons",
+          "identity": 1,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "DeAngelo Hall",
+            "Jason Webster",
+            "Tod McBride",
+            "Aaron Beasley",
+            "Derek Ross"
+          ]
+        },
+        {
+          "name": "Giants",
+          "identity": 18,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Will Allen",
+            "William Peterson",
+            "Terry Cousin",
+            "Frank Walker",
+            "Michael Strahan"
+          ]
+        },
+        {
+          "name": "Jaguars",
+          "identity": 12,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Juran Bolden",
+            "Rashean Mathis",
+            "Dewayne Washington",
+            "Kiwaukee Thomas",
+            "Chris Thompson"
+          ]
+        },
+        {
+          "name": "Jets",
+          "identity": 19,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Donnie Abraham",
+            "David Barrett",
+            "Ray Mickens",
+            "Derrick Strait",
+            "Omare Lowe"
+          ]
+        },
+        {
+          "name": "Lions",
+          "identity": 9,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Fernando Bryant",
+            "Dre' Bly",
+            "Chris Cash",
+            "Andre' Goodman",
+            "Dainon Sidney"
+          ]
+        },
+        {
+          "name": "Packers",
+          "identity": 10,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Mike McKenzie",
+            "Al Harris",
+            "Ahmad Carroll",
+            "Michael Hawthorne",
+            "Bhawoh Jue"
+          ]
+        },
+        {
+          "name": "Panthers",
+          "identity": 4,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Ricky Manning",
+            "Artrell Hawkins",
+            "Chris Gamble",
+            "Terrance Shaw",
+            "Dante Wesley"
+          ]
+        },
+        {
+          "name": "Patriots",
+          "identity": 16,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Ty Law",
+            "Tyrone Poole",
+            "Otis Smith",
+            "Terrell Buckley",
+            "Jeff Burris"
+          ]
+        },
+        {
+          "name": "Raiders",
+          "identity": 20,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Charles Woodson",
+            "Phillip Buchanon",
+            "Denard Walker",
+            "Nnamdi Asomugha",
+            "Clarence Love"
+          ]
+        },
+        {
+          "name": "Rams",
+          "identity": 23,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Jerametrius Butler",
+            "Travis Fisher",
+            "DeJuan Groce",
+            "Kevin Garrett",
+            "Leonard Little"
+          ]
+        },
+        {
+          "name": "Ravens",
+          "identity": 2,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Chris McAlister",
+            "Gary Baxter",
+            "Corey Fuller",
+            "Lamont Brightful",
+            "Dale Carter"
+          ]
+        },
+        {
+          "name": "Redskins",
+          "identity": 29,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Shawn Springs",
+            "Fred Smoot",
+            "Walt Harris",
+            "Rashad Bauman",
+            "Ralph Brown"
+          ]
+        },
+        {
+          "name": "Saints",
+          "identity": 17,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Ashley Ambrose",
+            "Fred Thomas",
+            "Jason Craft",
+            "Fakhir Brown",
+            "Keyuo Craver"
+          ]
+        },
+        {
+          "name": "Seahawks",
+          "identity": 26,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Marcus Trufant",
+            "Bobby Taylor",
+            "Ken Lucas",
+            "Kris Richard",
+            "Chike Okeafor"
+          ]
+        },
+        {
+          "name": "Steelers",
+          "identity": 22,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Chad Scott",
+            "Deshea Townsend",
+            "Ricardo Colclough",
+            "Ike Taylor",
+            "Chidi Iwuoma"
+          ]
+        },
+        {
+          "name": "Texans",
+          "identity": 37,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Aaron Glenn",
+            "Dunta Robinson",
+            "Marcus Coleman",
+            "Kenny Wright",
+            "Vontez Duff"
+          ]
+        },
+        {
+          "name": "Titans",
+          "identity": 28,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Andre Dyson",
+            "Samari Rolle",
+            "Tony Beckham",
+            "Andre Woolfolk",
+            "Michael Waddell"
+          ]
+        },
+        {
+          "name": "Vikings",
+          "identity": 15,
+          "category": 0,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Brian Williams",
+            "Antoine Winfield",
+            "Ken Irvin",
+            "Eric Kelly",
+            "Kenny Mixon"
+          ]
+        },
+        {
+          "name": "****************",
+          "identity": 90,
+          "category": 2,
+          "current_nfl_pointer_members": 0,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 0,
+          "sample_names": []
+        },
+        {
+          "name": "****************",
+          "identity": 91,
+          "category": 2,
+          "current_nfl_pointer_members": 0,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 0,
+          "sample_names": []
+        },
+        {
+          "name": "Swamis",
+          "identity": 33,
+          "category": 5,
+          "current_nfl_pointer_members": 51,
+          "free_agent_pointer_members": 1,
+          "other_pointer_members": 0,
+          "players": 52,
+          "sample_names": [
+            "Kevin Mawae",
+            "Charles Woodson",
+            "Troy Vincent",
+            "Ty Law",
+            "Mike McKenzie"
+          ]
+        },
+        {
+          "name": "Risky Picks",
+          "identity": 92,
+          "category": 5,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Marvin Harrison",
+            "Terrell Owens",
+            "Randy Moss",
+            "Torry Holt",
+            "Anquan Boldin"
+          ]
+        },
+        {
+          "name": "Wingadoros",
+          "identity": 93,
+          "category": 5,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Torry Holt",
+            "Randy Moss",
+            "Marvin Harrison",
+            "Eric Moulds",
+            "Terrell Owens"
+          ]
+        },
+        {
+          "name": "Hammerheads",
+          "identity": 94,
+          "category": 5,
+          "current_nfl_pointer_members": 52,
+          "free_agent_pointer_members": 1,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Torry Holt",
+            "Anquan Boldin",
+            "Jerry Rice",
+            "Terrell Owens",
+            "Troy Brown"
+          ]
+        },
+        {
+          "name": "Cheesesteaks",
+          "identity": 95,
+          "category": 5,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Randy Moss",
+            "Jerry Rice",
+            "Terrell Owens",
+            "Dante' Hall",
+            "Matt Birk"
+          ]
+        },
+        {
+          "name": "Locos",
+          "identity": 96,
+          "category": 5,
+          "current_nfl_pointer_members": 50,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 50,
+          "sample_names": [
+            "Marvin Harrison",
+            "Steve Smith",
+            "Terrell Owens",
+            "Tim Dwight",
+            "Eric Moulds"
+          ]
+        },
+        {
+          "name": "Electra Shock",
+          "identity": 97,
+          "category": 5,
+          "current_nfl_pointer_members": 50,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 50,
+          "sample_names": [
+            "Randy Moss",
+            "Joe Jurevicius",
+            "Terrell Owens",
+            "Troy Brown",
+            "Dante' Hall"
+          ]
+        },
+        {
+          "name": "Funkmasters",
+          "identity": 98,
+          "category": 5,
+          "current_nfl_pointer_members": 51,
+          "free_agent_pointer_members": 2,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Jerry Rice",
+            "Wayne Chrebet",
+            "Terrell Owens",
+            "Torry Holt",
+            "Marvin Harrison"
+          ]
+        },
+        {
+          "name": "DreamTeam",
+          "identity": 99,
+          "category": 5,
+          "current_nfl_pointer_members": 49,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 49,
+          "sample_names": [
+            "Marvin Harrison",
+            "Terrell Owens",
+            "Tim Brown",
+            "Randy Moss",
+            "Torry Holt"
+          ]
+        },
+        {
+          "name": "FW Alumni",
+          "identity": 40,
+          "category": 1,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Olin Kreutz",
+            "Jeremy Newberry",
+            "Mike Flanagan",
+            "Brian Kelly",
+            "Marcus Trufant"
+          ]
+        },
+        {
+          "name": "GP Alumni",
+          "identity": 41,
+          "category": 1,
+          "current_nfl_pointer_members": 53,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 53,
+          "sample_names": [
+            "Casey Wiegmann",
+            "Brad Meester",
+            "Terence Newman",
+            "Jerametrius Butler",
+            "Eric Warfield"
+          ]
+        },
+        {
+          "name": "MW Alumni",
+          "identity": 42,
+          "category": 1,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "LeCharles Bentley",
+            "Cory Raymer",
+            "Ty Law",
+            "Charles Woodson",
+            "Troy Vincent"
+          ]
+        },
+        {
+          "name": "NE Alumni",
+          "identity": 43,
+          "category": 1,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Matt Birk",
+            "Tom Nalen",
+            "Ronde Barber",
+            "Will Allen",
+            "Aaron Beasley"
+          ]
+        },
+        {
+          "name": "SE Alumni",
+          "identity": 44,
+          "category": 1,
+          "current_nfl_pointer_members": 54,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Kevin Mawae",
+            "Jeff Mitchell",
+            "Champ Bailey",
+            "Patrick Surtain",
+            "Samari Rolle"
+          ]
+        },
+        {
+          "name": "SW Alumni",
+          "identity": 45,
+          "category": 1,
+          "current_nfl_pointer_members": 51,
+          "free_agent_pointer_members": 3,
+          "other_pointer_members": 0,
+          "players": 54,
+          "sample_names": [
+            "Barret Robbins",
+            "Steve McKinney",
+            "Chris McAlister",
+            "Aaron Glenn",
+            "Quentin Jammer"
+          ]
+        },
+        {
+          "name": "AFC",
+          "identity": 34,
+          "category": 1,
+          "current_nfl_pointer_members": 43,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 43,
+          "sample_names": [
+            "Kevin Mawae",
+            "Tom Nalen",
+            "Ty Law",
+            "Patrick Surtain",
+            "Chris McAlister"
+          ]
+        },
+        {
+          "name": "NFC",
+          "identity": 35,
+          "category": 1,
+          "current_nfl_pointer_members": 52,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 52,
+          "sample_names": [
+            "Mike Flanagan",
+            "Matt Birk",
+            "Olin Kreutz",
+            "Champ Bailey",
+            "Dre' Bly"
+          ]
+        },
+        {
+          "name": "NFL",
+          "identity": 31,
+          "category": 1,
+          "current_nfl_pointer_members": 52,
+          "free_agent_pointer_members": 0,
+          "other_pointer_members": 0,
+          "players": 52,
+          "sample_names": [
+            "Jeff Mitchell",
+            "Kevin Mawae",
+            "Ty Law",
+            "Chris McAlister",
+            "Champ Bailey"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 113,
+      "name_id": "9fa3c8f3",
+      "filename": "h-00-1975-cardinals-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Cardinals '75",
+          "identity": 100,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Cardinals Center",
+            "Cardinals Center",
+            "Cardinals Cornerback",
+            "Cardinals Cornerback",
+            "Cardinals Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 114,
+      "name_id": "dd77e959",
+      "filename": "h-01-1980-falcons-6.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Falcons '80",
+          "identity": 101,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Falcons Center",
+            "Falcons Center",
+            "Falcons Cornerback",
+            "Falcons Cornerback",
+            "Falcons Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 115,
+      "name_id": "f607e98b",
+      "filename": "h-01-1998-falcons-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Falcons '98",
+          "identity": 102,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Robbie Tobeck",
+            "Falcons Center",
+            "Ray Buchanan",
+            "Falcons Cornerback",
+            "Falcons Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 116,
+      "name_id": "bdfaafa2",
+      "filename": "h-02-2000-ravens-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Ravens '00",
+          "identity": 103,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Jeff Mitchell",
+            "Duane Starks",
+            "Chris Mcalister",
+            "Anthony Mitchell",
+            "Ravens Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 117,
+      "name_id": "20ae5c9f",
+      "filename": "h-03-1964-bills-7.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bills '64",
+          "identity": 104,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bills Center",
+            "Bills Center",
+            "Bills Cornerback",
+            "Bills Cornerback",
+            "Bills Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 118,
+      "name_id": "e5b51abe",
+      "filename": "h-03-1990-bills-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bills '90",
+          "identity": 105,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bills Center",
+            "Bills Center",
+            "Bills Cornerback",
+            "Bills Cornerback",
+            "Bills Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 119,
+      "name_id": "687a0d8f",
+      "filename": "h-04-1996-panthers-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Panthers '96",
+          "identity": 106,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Panthers Center",
+            "Frank Garcia",
+            "Panthers Center",
+            "Panthers Cornerback",
+            "Tyrone Poole"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 120,
+      "name_id": "7431c22a",
+      "filename": "h-04-2003-panthers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Panthers '03",
+          "identity": 169,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Jeff Mitchell",
+            "Bruce Nelson",
+            "Reggie Howard",
+            "Ricky Manning",
+            "Dante Wesley"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 121,
+      "name_id": "31bc2134",
+      "filename": "h-05-1963-bears-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bears '63",
+          "identity": 107,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bears Center",
+            "Bears Center",
+            "Bears Cornerback",
+            "Bears Cornerback",
+            "Bears Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 122,
+      "name_id": "ed46a120",
+      "filename": "h-05-1985-bears-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bears '85",
+          "identity": 108,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bears Center",
+            "Bears Center",
+            "Bears Cornerback",
+            "Bears Cornerback",
+            "Bears Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 123,
+      "name_id": "4454ffcd",
+      "filename": "h-06-1981-bengals-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bengals '81",
+          "identity": 109,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bengals Center",
+            "Bengals Center",
+            "Bengals Cornerback",
+            "Bengals Cornerback",
+            "Bengals Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 124,
+      "name_id": "404202c4",
+      "filename": "h-06-1988-bengals-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Bengals '88",
+          "identity": 110,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Bengals Center",
+            "Bengals Center",
+            "Bengals Cornerback",
+            "Bengals Cornerback",
+            "Bengals Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 125,
+      "name_id": "13d6ffb6",
+      "filename": "h-07-1971-cowboys-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Cowboys '71",
+          "identity": 113,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Cowboys Center",
+            "Cowboys Center",
+            "Cowboys Center",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 126,
+      "name_id": "7848aeff",
+      "filename": "h-07-1977-cowboys-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Cowboys '77",
+          "identity": 114,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Cowboys Center",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 127,
+      "name_id": "f0328982",
+      "filename": "h-07-1992-cowboys-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Cowboys '92",
+          "identity": 115,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Cowboys Center",
+            "Cowboys Center",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback",
+            "Cowboys Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 128,
+      "name_id": "df51d6df",
+      "filename": "h-08-1977-broncos-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Broncos '77",
+          "identity": 116,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Broncos Center",
+            "Broncos Center",
+            "Broncos Cornerback",
+            "Broncos Cornerback",
+            "Broncos Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 129,
+      "name_id": "5387a815",
+      "filename": "h-08-1986-broncos-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Broncos '86",
+          "identity": 117,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Broncos Center",
+            "Broncos Cornerback",
+            "Broncos Cornerback",
+            "Broncos Cornerback",
+            "Broncos Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 130,
+      "name_id": "fcab92b0",
+      "filename": "h-08-1998-broncos-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Broncos '98",
+          "identity": 118,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Tom Nalen",
+            "Broncos Center",
+            "Broncos Cornerback",
+            "Broncos Cornerback",
+            "Broncos Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 131,
+      "name_id": "32d5d164",
+      "filename": "h-09-1953-lions-6.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Lions '53",
+          "identity": 119,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Lions Center",
+            "Lions Cornerback",
+            "Lions Cornerback",
+            "Lions Cornerback",
+            "Lions Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 132,
+      "name_id": "cace4dd3",
+      "filename": "h-09-1991-lions-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Lions '91",
+          "identity": 120,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Lions Center",
+            "Lions Center",
+            "Lions Cornerback",
+            "Lions Cornerback",
+            "Lions Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 133,
+      "name_id": "91773d0d",
+      "filename": "h-10-1966-packers-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Packers '66",
+          "identity": 121,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Packers Center",
+            "Packers Center",
+            "Packers Cornerback",
+            "Packers Cornerback",
+            "Packers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 134,
+      "name_id": "253470f2",
+      "filename": "h-10-1996-packers-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Packers '96",
+          "identity": 122,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Packers Center",
+            "Packers Center",
+            "Doug Evans",
+            "Packers Cornerback",
+            "Packers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 135,
+      "name_id": "f4cff218",
+      "filename": "h-10-2004-packers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Packers '04",
+          "identity": 122,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Mike Flanagan",
+            "Grey Ruegamer",
+            "Rob Davis",
+            "Al Harris",
+            "Mike McKenzie"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 136,
+      "name_id": "755ded2c",
+      "filename": "h-11-1970-colts-5.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Colts '70",
+          "identity": 123,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Colts Center",
+            "Colts Center",
+            "Colts Cornerback",
+            "Colts Cornerback",
+            "Colts Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 137,
+      "name_id": "82a9c7e8",
+      "filename": "h-12-1999-jaguars-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Jaguars '99",
+          "identity": 124,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "John Wade",
+            "Aaron Beasley",
+            "Fernando Bryant",
+            "Jaguars Cornerback",
+            "Jaguars Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 138,
+      "name_id": "72b224dc",
+      "filename": "h-13-1962-texans-5.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Texans '62",
+          "identity": 125,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Texans Center",
+            "Texans Center",
+            "Texans Cornerback",
+            "Texans Cornerback",
+            "Texans Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 139,
+      "name_id": "d3a2e18d",
+      "filename": "h-13-1969-chiefs-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Chiefs '69",
+          "identity": 126,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chiefs Center",
+            "Chiefs Center",
+            "Chiefs Center",
+            "Chiefs Cornerback",
+            "Chiefs Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 140,
+      "name_id": "5d2c3421",
+      "filename": "h-13-1993-chiefs-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Chiefs '93",
+          "identity": 127,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chiefs Center",
+            "Dale Carter",
+            "Chiefs Cornerback",
+            "Chiefs Cornerback",
+            "Chiefs Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 141,
+      "name_id": "5e86933c",
+      "filename": "h-14-1972-dolphins-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Dolphins '72",
+          "identity": 128,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Dolphins Center",
+            "Dolphins Center",
+            "Dolphins Cornerback",
+            "Dolphins Cornerback",
+            "Dolphins Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 142,
+      "name_id": "f5f9a709",
+      "filename": "h-14-1984-dolphins-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Dolphins '84",
+          "identity": 129,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Dolphins Center",
+            "Dolphins Cornerback",
+            "Dolphins Cornerback",
+            "Dolphins Cornerback",
+            "Dolphins Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 143,
+      "name_id": "7ecd61b0",
+      "filename": "h-15-1969-vikings-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Vikings '69",
+          "identity": 130,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Vikings Center",
+            "Vikings Cornerback",
+            "Vikings Cornerback",
+            "Vikings Cornerback",
+            "Vikings Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 144,
+      "name_id": "2d7ca772",
+      "filename": "h-15-1973-vikings-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Vikings '73",
+          "identity": 131,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Vikings Center",
+            "Vikings Center",
+            "Vikings Cornerback",
+            "Vikings Cornerback",
+            "Vikings Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 145,
+      "name_id": "10c70403",
+      "filename": "h-15-1998-vikings-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Vikings '98",
+          "identity": 132,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Vikings Center",
+            "Vikings Center",
+            "Vikings Cornerback",
+            "Corey Fuller",
+            "Vikings Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 146,
+      "name_id": "1df981a2",
+      "filename": "h-16-1985-patriots-5.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Patriots '85",
+          "identity": 133,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Patriots Center",
+            "Patriots Center",
+            "Patriots Center",
+            "Patriots Cornerback",
+            "Patriots Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 147,
+      "name_id": "dd01bae1",
+      "filename": "h-16-2001-patriots-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Patriots '01",
+          "identity": 134,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Damien Woody",
+            "Grey Ruegamer",
+            "Ty Law",
+            "Otis Smith",
+            "Patriots Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 148,
+      "name_id": "e5c4b7f4",
+      "filename": "h-16-2003-patriots-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Patriots '03",
+          "identity": 170,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Damien Woody",
+            "Dan Koppen",
+            "Ty Law",
+            "Tyrone Poole",
+            "Asante Samuel"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 149,
+      "name_id": "45b91679",
+      "filename": "h-17-1991-saints-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Saints '91",
+          "identity": 135,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Saints Center",
+            "Saints Center",
+            "Saints Cornerback",
+            "Saints Cornerback",
+            "Saints Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 150,
+      "name_id": "324ca48e",
+      "filename": "h-17-2000-saints-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Saints '00",
+          "identity": 136,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Saints Center",
+            "Saints Cornerback",
+            "Kevin Mathis",
+            "Saints Cornerback",
+            "Saints Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 151,
+      "name_id": "1f7cb15c",
+      "filename": "h-18-1956-giants-6.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Giants '56",
+          "identity": 137,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Giants Center",
+            "Giants Center",
+            "Giants Cornerback",
+            "Giants Cornerback",
+            "Giants Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 152,
+      "name_id": "e302600f",
+      "filename": "h-18-1986-giants-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Giants '86",
+          "identity": 138,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Giants Center",
+            "Giants Center",
+            "Giants Cornerback",
+            "Giants Cornerback",
+            "Giants Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 153,
+      "name_id": "dade8d49",
+      "filename": "h-18-1990-giants-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Giants '90",
+          "identity": 139,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Giants Center",
+            "Giants Cornerback",
+            "Giants Cornerback",
+            "Giants Cornerback",
+            "Giants Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 154,
+      "name_id": "a7ab65fe",
+      "filename": "h-18-2003-giants-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Giants '03",
+          "identity": 139,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chris Bober",
+            "Giants Center",
+            "Will Allen",
+            "William Peterson",
+            "Ralph Brown"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 155,
+      "name_id": "59589c71",
+      "filename": "h-19-1968-jets-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Jets '68",
+          "identity": 140,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Jets Center",
+            "Jets Center",
+            "Jets Center",
+            "Jets Cornerback",
+            "Jets Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 156,
+      "name_id": "dd596a91",
+      "filename": "h-19-1998-jets-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Jets '98",
+          "identity": 141,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Kevin Mawae",
+            "Jets Center",
+            "Aaron Glenn",
+            "Ray Mickens",
+            "Otis Smith"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 157,
+      "name_id": "6f1f5185",
+      "filename": "h-20-1967-raiders-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Raiders '67",
+          "identity": 142,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Raiders Center",
+            "Raiders Cornerback",
+            "Raiders Cornerback",
+            "Raiders Cornerback",
+            "Raiders Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 158,
+      "name_id": "4d67dc19",
+      "filename": "h-20-1976-raiders-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Raiders '76",
+          "identity": 143,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Raiders Center",
+            "Raiders Center",
+            "Raiders Cornerback",
+            "Raiders Cornerback",
+            "Raiders Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 159,
+      "name_id": "db0595f0",
+      "filename": "h-20-1983-raiders-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Raiders '83",
+          "identity": 144,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Raiders Center",
+            "Raiders Center",
+            "Raiders Cornerback",
+            "Raiders Cornerback",
+            "Raiders Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 160,
+      "name_id": "f93dae13",
+      "filename": "h-21-1960-eagles-8.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Eagles '60",
+          "identity": 145,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Eagles Center",
+            "Eagles Center",
+            "Eagles Center",
+            "Eagles Cornerback",
+            "Eagles Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 161,
+      "name_id": "bdf77192",
+      "filename": "h-21-1980-eagles-5.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Eagles '80",
+          "identity": 146,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Eagles Center",
+            "Eagles Center",
+            "Eagles Cornerback",
+            "Eagles Cornerback",
+            "Eagles Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 162,
+      "name_id": "1a379207",
+      "filename": "h-21-2004-eagles-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Eagles '04",
+          "identity": 146,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Hank Fraley",
+            "Alonzo Ephraim",
+            "Bobby Taylor",
+            "Troy Vincent",
+            "Lito Sheppard"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 163,
+      "name_id": "be08360f",
+      "filename": "h-22-1975-steelers-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Steelers '75",
+          "identity": 147,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Steelers Center",
+            "Steelers Center",
+            "Steelers Center",
+            "Steelers Cornerback",
+            "Steelers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 164,
+      "name_id": "dd4c1ddb",
+      "filename": "h-22-1978-steelers-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Steelers '78",
+          "identity": 148,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Steelers Center",
+            "Steelers Center",
+            "Steelers Center",
+            "Steelers Cornerback",
+            "Steelers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 165,
+      "name_id": "75a43474",
+      "filename": "h-22-1995-steelers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Steelers '95",
+          "identity": 149,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Steelers Center",
+            "Steelers Cornerback",
+            "Steelers Cornerback",
+            "Steelers Cornerback",
+            "Steelers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 166,
+      "name_id": "a00e9373",
+      "filename": "h-23-1979-rams-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Rams '79",
+          "identity": 158,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Rams Center",
+            "Rams Center",
+            "Rams Center",
+            "Rams Cornerback",
+            "Rams Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 167,
+      "name_id": "c7e71339",
+      "filename": "h-23-1999-rams-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Rams '99",
+          "identity": 159,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Rams Center",
+            "Ryan Tucker",
+            "Andy Mccollum",
+            "Rams Cornerback",
+            "Dexter Mccleon"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 168,
+      "name_id": "064d0dc6",
+      "filename": "h-24-1963-chargers-8.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Chargers '63",
+          "identity": 150,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chargers Center",
+            "Chargers Center",
+            "Chargers Cornerback",
+            "Chargers Cornerback",
+            "Chargers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 169,
+      "name_id": "f1008cb2",
+      "filename": "h-24-1980-chargers-4.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Chargers '80",
+          "identity": 151,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chargers Center",
+            "Chargers Center",
+            "Chargers Cornerback",
+            "Chargers Cornerback",
+            "Chargers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 170,
+      "name_id": "ade367d4",
+      "filename": "h-24-1994-chargers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Chargers '94",
+          "identity": 152,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Chargers Center",
+            "Dave Binn",
+            "Chargers Center",
+            "Chargers Cornerback",
+            "Chargers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 171,
+      "name_id": "8dcc0a56",
+      "filename": "h-25-1981-49ers-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "49ers '81",
+          "identity": 155,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "49ers Center",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 172,
+      "name_id": "d8e527ea",
+      "filename": "h-25-1989-49ers-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "49ers '89",
+          "identity": 156,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "49ers Center",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 173,
+      "name_id": "ae32ac3c",
+      "filename": "h-25-1994-49ers-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "49ers '94",
+          "identity": 157,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "49ers Center",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback",
+            "49ers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 174,
+      "name_id": "b317e764",
+      "filename": "h-25-2003-49ers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "49ers '03",
+          "identity": 157,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Jeremy Newberry",
+            "49ers Center",
+            "49ers Center",
+            "Ahmed Plummer",
+            "Jason Webster"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 175,
+      "name_id": "d6b2a1ab",
+      "filename": "h-26-1984-seahawks-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Seahawks '84",
+          "identity": 153,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Seahawks Center",
+            "Seahawks Center",
+            "Seahawks Center",
+            "Seahawks Cornerback",
+            "Seahawks Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 176,
+      "name_id": "9174db49",
+      "filename": "h-26-1999-seahawks-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Seahawks '99",
+          "identity": 154,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Seahawks Center",
+            "Seahawks Center",
+            "Seahawks Center",
+            "Shawn Springs",
+            "Seahawks Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 177,
+      "name_id": "9fa81c6a",
+      "filename": "h-27-1979-buccaneers-3.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Buccaneers '79",
+          "identity": 160,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Buccanneers Center",
+            "Buccanneers Center",
+            "Buccanneers Cornerback",
+            "Buccanneers Cornerback",
+            "Buccanneers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 178,
+      "name_id": "582e5d31",
+      "filename": "h-27-1999-buccaneers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Buccaneers '99",
+          "identity": 161,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Buccanneers Center",
+            "Buccanneers Center",
+            "Buccanneers Center",
+            "Todd Washington",
+            "Donnie Abraham"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 179,
+      "name_id": "9b8b085e",
+      "filename": "h-27-2002-buccaneers-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Buccaneers '02",
+          "identity": 168,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Buccanneers Center",
+            "Ryan Benjamin",
+            "Brian Kelly",
+            "Ronde Barber",
+            "Corey Ivy"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 180,
+      "name_id": "54454c05",
+      "filename": "h-28-1961-oilers-5.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Oilers '61",
+          "identity": 162,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Oilers Center",
+            "Oilers Center",
+            "Oilers Cornerback",
+            "Oilers Cornerback",
+            "Oilers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 181,
+      "name_id": "87565c9c",
+      "filename": "h-28-1979-oilers-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Oilers '79",
+          "identity": 163,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Oilers Center",
+            "Oilers Cornerback",
+            "Oilers Cornerback",
+            "Oilers Cornerback",
+            "Oilers Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 182,
+      "name_id": "f05f75fc",
+      "filename": "h-28-1999-titans-0.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Titans '99",
+          "identity": 164,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Titans Center",
+            "Titans Center",
+            "Samari Rolle",
+            "Denard Walker",
+            "Titans Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 183,
+      "name_id": "76875ff5",
+      "filename": "h-29-1982-redskins-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Redskins '82",
+          "identity": 165,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Redskins Center",
+            "Redskins Cornerback",
+            "Redskins Cornerback",
+            "Redskins Cornerback",
+            "Redskins Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 184,
+      "name_id": "f6d74075",
+      "filename": "h-29-1987-redskins-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Redskins '87",
+          "identity": 166,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Redskins Center",
+            "Redskins Center",
+            "Redskins Cornerback",
+            "Redskins Cornerback",
+            "Redskins Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 185,
+      "name_id": "9b1a067c",
+      "filename": "h-29-1991-redskins-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Redskins '91",
+          "identity": 167,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Redskins Center",
+            "Redskins Center",
+            "Redskins Cornerback",
+            "Redskins Cornerback",
+            "Redskins Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 186,
+      "name_id": "7fe7a704",
+      "filename": "h-30-1964-browns-2.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Browns '64",
+          "identity": 111,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Browns Center",
+            "Browns Center",
+            "Browns Cornerback",
+            "Browns Cornerback",
+            "Browns Cornerback"
+          ]
+        }
+      ]
+    },
+    {
+      "outer": 187,
+      "name_id": "268fb20c",
+      "filename": "h-30-1986-browns-1.iff",
+      "main": false,
+      "players": 53,
+      "teams": [
+        {
+          "name": "Browns '86",
+          "identity": 112,
+          "category": 4,
+          "current_nfl_pointer_members": null,
+          "free_agent_pointer_members": null,
+          "other_pointer_members": null,
+          "players": 53,
+          "sample_names": [
+            "Browns Center",
+            "Browns Center",
+            "Browns Cornerback",
+            "Browns Cornerback",
+            "Browns Cornerback"
+          ]
+        }
+      ]
+    }
+  ],
+  "unrecognized_roster_outers": [],
+  "limitation": "All top-level archive ROST resources; not an exhaustive classification of arbitrary nested or unused bytes."
+}

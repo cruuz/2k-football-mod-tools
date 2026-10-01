@@ -1,0 +1,78 @@
+{
+  "classification": "PROVED OFFLINE",
+  "record": {
+    "descriptor": "0xb7f40c",
+    "context": "0xe5fc20",
+    "roster": "0xb336f4",
+    "slot_kinds": [
+      12,
+      12,
+      13,
+      13,
+      14,
+      14,
+      14,
+      16,
+      17,
+      18,
+      18
+    ],
+    "linebackers": [
+      {
+        "player": "0xb3142c",
+        "enum": 11,
+        "energy_address": "0xb5f574",
+        "before": 0.9842127561569214,
+        "after": 0.0,
+        "out_threshold": 0.25,
+        "in_threshold": 0.8,
+        "active": 11793504,
+        "native_eligibility_after": 0
+      },
+      {
+        "player": "0xb31480",
+        "enum": 11,
+        "energy_address": "0xb5f57c",
+        "before": 0.7693036794662476,
+        "after": 0.0,
+        "out_threshold": 0.25,
+        "in_threshold": 0.8,
+        "active": 0,
+        "native_eligibility_after": 0
+      },
+      {
+        "player": "0xb3157c",
+        "enum": 11,
+        "energy_address": "0xb5f594",
+        "before": 1.0,
+        "after": 0.0,
+        "out_threshold": 0.25,
+        "in_threshold": 0.8,
+        "active": 11793584,
+        "native_eligibility_after": 0
+      },
+      {
+        "player": "0xb31624",
+        "enum": 11,
+        "energy_address": "0xb5f5a4",
+        "before": 0.6971361041069031,
+        "after": 0.0,
+        "out_threshold": 0.25,
+        "in_threshold": 0.8,
+        "active": 0,
+        "native_eligibility_after": 0
+      },
+      {
+        "player": "0xb31678",
+        "enum": 11,
+        "energy_address": "0xb5f5ac",
+        "before": 0.5275464653968811,
+        "after": 0.0,
+        "out_threshold": 0.25,
+        "in_threshold": 0.8,
+        "active": 0,
+        "native_eligibility_after": 0
+      }
+    ]
+  }
+}

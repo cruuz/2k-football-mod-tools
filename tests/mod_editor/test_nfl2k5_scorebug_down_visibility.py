@@ -1,4 +1,10 @@
-"""Down sprites follow the native draw decision across retained HUD updates."""
+"""Down sprites follow the native draw decision across retained HUD updates.
+
+Beta 76 sb: ESPN draws no hang-time, ball-on or FUMBLE plate. While one of those retail events would show, and in
+the kick, point-after and phase-0 states, the down field carries the black ESPN plate's wordmark (one token) and
+those three plates stay hidden; FLAG keeps its plate and hides the down. After the down steps to 2nd, 3rd or 4th
+the label reads "Nth Down" (three drawn tokens) for 7 seconds of frames.
+"""
 from pathlib import Path
 import importlib.util
 import struct
@@ -15,6 +21,17 @@ import nfl2k5_scorebug_projection as projection
 RETAIL = ROOT / 'extracted/ESPN NFL 2K5 (USA)/default.xbe'
 NATIVE = RETAIL.is_file() and importlib.util.find_spec('unicorn') is not None
 DT = struct.unpack('<I', struct.pack('<f', 1 / 60))[0]
+FLAG, ESPN_EVENTS = 3, (2, 4, 5)         # element indices: 2 hang time, 3 FLAG, 4 ball on, 5 FUMBLE
+
+
+def shown(event):
+    return bool(event['binding'] and not event['slide'] <= event['minimum'])
+
+
+def expected_glyphs(events, down_glyphs=5):
+    """FLAG hides the label; hang time, ball on or FUMBLE put the ESPN wordmark there; otherwise the label."""
+    records = {e['index']: shown(e) for e in events}
+    return 0 if records[FLAG] else 1 if any(records[i] for i in ESPN_EVENTS) else down_glyphs
 
 
 class Sequence:
@@ -119,8 +136,9 @@ class DownVisibilityTests(unittest.TestCase):
             # The C engine is cdecl; the fixture runner expects its caller to
             # consume arguments. Execute that small caller as native code.
             call = m.alloc(32)
-            m.uc.mem_write(call, b'\x68' + struct.pack('<I', self.data) + b'\xe8' +
-                           struct.pack('<i', self.update - call - 10) + b'\x83\xc4\x04\xc3')
+            # b76 sb: sprite_update(State *, frame time bits); a zero frame time leaves the timers alone.
+            m.uc.mem_write(call, b'\x6a\x00\x68' + struct.pack('<I', self.data) + b'\xe8' +
+                           struct.pack('<i', self.update - call - 12) + b'\x83\xc4\x08\xc3')
             # Isolated gate cases include a one-frame pending event, the
             # closing down slide, and an unavailable binding. These are not
             # claimed to be captured live-game memory values.
@@ -142,7 +160,7 @@ class DownVisibilityTests(unittest.TestCase):
                 self.assertEqual(0 in entered and not any(i in entered for i in (2, 3, 4, 5)), expected)
                 self.assertEqual(seq.read()['visible_glyphs'], 5 if expected else 0)
                 for event in seq.read()['events']:
-                    self.assertEqual(event['visible'], bool(event_binding and event_slide > event['minimum']))
+                    self.assertEqual(event['visible'], event['index'] == FLAG and bool(event_binding and event_slide > event['minimum']))
             # An unavailable native binding may have no material pointer.
             # The owner must not write through address zero or hide the down.
             for record in range(0xa95aa8, 0xa95c68, 0x70):
@@ -166,15 +184,14 @@ class DownVisibilityTests(unittest.TestCase):
                 for frame in range(frames):
                     result = seq.step()
                     for event in result['events']:
-                        self.assertEqual(event['visible'], bool(event['binding'] and
-                            not event['slide'] <= event['minimum']), (wide, state, result))
-                    if state == 'pre_snap' and not any(e['visible'] for e in result['events']):
-                        self.assertEqual(result['visible_glyphs'], 5, (wide, state, result))
+                        self.assertEqual(event['visible'], event['index'] == FLAG and shown(event), (wide, state, result))
+                    if state == 'pre_snap':
+                        self.assertEqual(result['visible_glyphs'], expected_glyphs(result['events']), (wide, state, result))
                 self.assertEqual([e['index'] for e in result['events'] if e['visible']],
-                                 [] if active is None else [active])
+                                 [FLAG] if active == FLAG else [])
                 entered, _ = seq.native_draw()
                 self.assertEqual([i for i in entered if i >= 2], [] if active is None else [active])
-                self.assertEqual(result['visible_glyphs'], 5 if active is None else 0)
+                self.assertEqual(result['visible_glyphs'], 5 if active is None else 0 if active == FLAG else 1)
 
     def test_compact_material_mapping_matches_all_used_native_slots(self):
         seq = self.sequence(False)
@@ -201,8 +218,9 @@ class DownVisibilityTests(unittest.TestCase):
                 seq.configure(state, latch=latch)
                 for _ in range(45): result = seq.step()
                 entered, _ = seq.native_draw()
-                if state == 'kickoff':
-                    self.assertEqual(result['visible_glyphs'], 0)  # native Kickoff literal has no down tokens
+                if state in ('kickoff', 'after_play'):
+                    # b76 sb: the kickoff phase and the retail ball-on event both show ESPN's wordmark plate.
+                    self.assertEqual(result['visible_glyphs'], 1)
                 else:
                     self.assertEqual(result['visible_glyphs'] > 0, 0 in entered and not any(i in entered for i in (2, 3, 4, 5)))
                 if state == 'after_play':
@@ -213,9 +231,11 @@ class DownVisibilityTests(unittest.TestCase):
                 if state == 'pre_snap':
                     self.assertEqual(result['requests'], [1, 1, 0, 0, 0, 0])
                     for down in range(1, 5):
+                        previous = seq.machine.get(seq.machine.play + 4)
                         seq.configure('pre_snap', down=down)
                         result = seq.step()
-                        self.assertEqual(result['visible_glyphs'], 5)
+                        # b76 sb: a step to the next down reads "Nth Down" (the space token draws nothing).
+                        self.assertEqual(result['visible_glyphs'], 3 if down > 1 and down == previous + 1 else 5)
                         self.assertTrue(all(v in (0, 0xffffffff) for v in result['colors']))
 
 

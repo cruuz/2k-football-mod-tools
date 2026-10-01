@@ -160,8 +160,15 @@ def main():
         mask=grey>80
         n,labels,stats,_=cv2.connectedComponentsWithStats(mask.astype('uint8'))
         valid=np.zeros(mask.shape,bool)
+        kept=set()
         for _,(x,y,w,h,area) in enumerate(stats[1:],1):
-            if h>=10 and area>=18:valid[labels==_]=True
+            if h>=10 and area>=18:valid[labels==_]=True;kept.add(_)
+        # vb3 (2026-09-23): the ESPN logo cuts each letter with a thin line; its top slabs are 7-8 px tall, so the
+        # h>=10 rule dropped them ("the ESPN logo in the top right's cut off"). Keep a piece that sits on a kept
+        # letter across a gap of at most 4 px (reports/vb3_d1/rewatermark.py re-measured the shipped masks this way).
+        for _,(x,y,w,h,area) in enumerate(stats[1:],1):
+            if _ not in kept and area>=18 and any(x<stats[k][0]+stats[k][2] and stats[k][0]<x+w and 0<=stats[k][1]-(y+h)<=4 for k in kept):
+                valid[labels==_]=True
         ys,xs=np.where(valid)
         if not len(xs):
             raise ValueError('No stable watermark for '+tag)

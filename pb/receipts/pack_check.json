@@ -1,0 +1,132 @@
+{
+  "status": "PROVED OFFLINE",
+  "pack": "softdrink_giants_modern.2k5book",
+  "results": [
+    {
+      "team": "NYG",
+      "ok": true,
+      "totals": {
+        "formations": 43,
+        "formations_before": 43,
+        "plays": 269,
+        "plays_before": 269,
+        "nodes": 236,
+        "nodes_before": 0,
+        "cloned_nodes": 236,
+        "node_pool_bytes": 1888,
+        "name_pool_bytes": 4030,
+        "formation_capacity": 50,
+        "play_capacity": 270,
+        "node_capacity": 3500,
+        "net_formation_growth": 0,
+        "net_play_growth": 0,
+        "replaced_formations": 26,
+        "replaced_plays": 148,
+        "compiled_formations": 43,
+        "compiled_plays": 269,
+        "compiled_nodes": 1438
+      },
+      "stages": [
+        {
+          "name": "schema",
+          "title": "1. Schema and types",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "NFL 2K28 Giants Modern v0.1.0 by SOFTDRINK / Astra (CC0-1.0); authored on NYG",
+            "26 formation(s), 148 play(s)",
+            "the supplied book matches base.book_fingerprint exactly"
+          ]
+        },
+        {
+          "name": "budget",
+          "title": "2. Budget (50 formations / 270 plays / 3,500 nodes / 36 links / 15-node chains)",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "plays 269/270, formations 43/50, nodes 236/3500",
+            "replaces 26 formation(s) and 148 play(s); net growth 0 formation(s), 0 play(s)",
+            "Authored unique nodes only; complete retained-pool budget requires the compile stage"
+          ]
+        },
+        {
+          "name": "validator",
+          "title": "3. The ported retail play validator on every play",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "148 of 148 play(s) ran the full validator"
+          ]
+        },
+        {
+          "name": "class_flags",
+          "title": "4. Class-flag sanity (donor family kept, QB shape matches the class nibble)",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": []
+        },
+        {
+          "name": "legality",
+          "title": "5. Formation legality (NFL alignment rules)",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "\u201cGun Trips R\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Trips L\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Bunch R\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Bunch L\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Empty R\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Empty L\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cSingleback Ace R\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cSingleback Ace L\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cAce Wing R\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cAce Wing L\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cPistol Ace R\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cPistol Ace L\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cGun Doubles R\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Doubles L\u201d: shotgun, 1 back(s), TE WR3 WR2 WR HB",
+            "\u201cGun Y Trips R\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cGun Y Trips L\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cGun Wing R\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cGun Wing L\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cAce Bunch R\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cAce Bunch L\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cPistol Wing R\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cPistol Wing L\u201d: shotgun, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cUC Tight R\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cUC Tight L\u201d: under centre, 1 back(s), TE WR2 WR TE2 HB",
+            "\u201cPistol Strong R\u201d: shotgun, 2 back(s), TE WR2 WR FB HB",
+            "\u201cPistol Strong L\u201d: shotgun, 2 back(s), TE WR2 WR FB HB"
+          ]
+        },
+        {
+          "name": "donor",
+          "title": "6. Donor-header rule (a stock play of the same shape, never \u201cthe book's first play\u201d)",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "every donor is a stock play of the same shape and class"
+          ]
+        },
+        {
+          "name": "compile",
+          "title": "7. Dry compile through the real writer",
+          "ok": true,
+          "skipped": false,
+          "errors": [],
+          "notes": [
+            "compiled and reparsed: 43 formations, 269 plays, 1438 nodes, 24,389 bytes changed",
+            "play menus: every formation's play list ends (no play listed twice, groups 0-2 once each); 0 of the pack's menu links reuse a slot the formation already had"
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  ]
+}

@@ -400,6 +400,8 @@ CHOP_BLOCK_GUARDS = (
 
 def chop_block_status(payload: bytes) -> str:
     try:
+        from . import nfl2k5_era_rules as era
+        payload = era.underlying_view(payload)
         for va, size, digest in CHOP_BLOCK_GUARDS:
             off = rdata.offset_of(payload, va)
             blob = bytearray(payload[off:off + size])

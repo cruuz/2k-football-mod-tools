@@ -1,0 +1,258 @@
+{
+  "status": "PROVED OFFLINE",
+  "compiler_receipts": 64,
+  "teams": {
+    "ARZ": {
+      "screens": 2,
+      "screen_signature": "17626c75f1aaf6af46b6c5fa4e445da98700f3e8504cc76a4e9daab5b107f378",
+      "offense_sha256": "49c3882916c5d0a58570635ba168e27961d3c06f14913d573d487ae5e72dfdda",
+      "defense_sha256": "76cdf5602687b7c382d1825c5ef46f052acc320e0777487f81fbf46bcaaafc26",
+      "spy_records": []
+    },
+    "ATL": {
+      "screens": 22,
+      "screen_signature": "66a369e4da037ed19550a3381784337b34d64074ef3261ce2ac5e33dc753cbc1",
+      "offense_sha256": "4a5e8eac2f434fab2c966595f07968ae21648f8811a13296ca72c728ed368317",
+      "defense_sha256": "a28f4611936a9fefea68cf67f316481d9449ad812d60402c5831ba0778b80d24",
+      "spy_records": []
+    },
+    "BAL": {
+      "screens": 11,
+      "screen_signature": "f6c5c652be4caf7d7db4afdd379168971ed7564e7f2caecc0e350b34b26331a9",
+      "offense_sha256": "0b8bbd6d034766f6652cc3f4d3da3880b929c4830aaf436c7f2de946f23ca9b3",
+      "defense_sha256": "6157362603abbe892a9e161dbd7de756f2e543c378bc199b7d93c0a718268c70",
+      "spy_records": []
+    },
+    "BUF": {
+      "screens": 27,
+      "screen_signature": "12cb048c778c39a81f7f25c2c3cb03f40fbe49c706cebbdb2cf3c89aa59446d6",
+      "offense_sha256": "15dc83bae38d8e2df9574d13c63006efffb1607ec624c4fc4b57066fd2e2edf8",
+      "defense_sha256": "70cfab42fe6159a9f52fec2970efd9decd7a0dfd02ba4d1ded9a76072d056281",
+      "spy_records": []
+    },
+    "CAR": {
+      "screens": 13,
+      "screen_signature": "8050357662243d7b681f3b3185e6e5dbbd97e6cf80599567b64790b521a41c15",
+      "offense_sha256": "7274ea1dc13d6b50d2c47a42bf95d975d40b518ea18714c3b5572e89ed82089f",
+      "defense_sha256": "40530345d2073ee4cf87df756df96a394110b6753a5803dc957f284bbac96b55",
+      "spy_records": []
+    },
+    "CHI": {
+      "screens": 13,
+      "screen_signature": "dc020897e9bab0762a72869577a88a76a7cd8a8cdf7421aa2741f0709a551eaa",
+      "offense_sha256": "19df3f94a489ec6df5acc00b9ea7b4f31c2886d250af947465951dae58e62ffa",
+      "defense_sha256": "d77db7a1a1151b479e186c183a4102636ea3d186d2d5aee99eae7b01c2a2d8e8",
+      "spy_records": []
+    },
+    "CIN": {
+      "screens": 14,
+      "screen_signature": "b402554113b5a1a54a9b206dbb17c8e473b9c211954584c362265c0d48ec3388",
+      "offense_sha256": "adaac2c875922ae1a6c90a55d1009b31ac205c6eefa2a54bee15eded1b9d8dd6",
+      "defense_sha256": "41af1eace1b384329a40150c4e4769427171007633403df120f237dc1b2674bd",
+      "spy_records": []
+    },
+    "CLE": {
+      "screens": 3,
+      "screen_signature": "0159fe96cb792a664bfcd8d3452a9ec9b62c3340b427e186fc6e702bf273b356",
+      "offense_sha256": "a7331a2d6acbe4aba2a17dae3abccbc8234b7bc968cb6faae6cb31168cf642d4",
+      "defense_sha256": "b8593aa0d6593afebf0834c0b696fe32b504a64aa8758fdb113844598b5887c0",
+      "spy_records": []
+    },
+    "DAL": {
+      "screens": 3,
+      "screen_signature": "7814536b69c7dee7d610ec921176a57a3cf6ba3df8cce872f9f39ec5f57b5af5",
+      "offense_sha256": "08b44396d598a4155cba15d923dee2c110993842d91522301bd6c3f44f9ecdd2",
+      "defense_sha256": "c558e78d12b9aaaf521b218ab36d57e6a812c8ab9938e4338a53099266517b39",
+      "spy_records": []
+    },
+    "DEN": {
+      "screens": 13,
+      "screen_signature": "462e3bbb0f577962f4558c22c8a0ff4cc782b69115be3b602e2a57bdda5b205e",
+      "offense_sha256": "5362ddc41bf2b2a806bc52141daa5dad4a9b3789cfc57d67db050216beaed6c1",
+      "defense_sha256": "e6d58d52dc811bfefc068c7e3df1ce2a4fc948bc8a93e111c12d6d5a4fd25c23",
+      "spy_records": []
+    },
+    "DET": {
+      "screens": 24,
+      "screen_signature": "4a3323552daee19f5c47e6e15d63d437c5821287e7307743dda70456f835fb0c",
+      "offense_sha256": "c631fb257ee4ac99c604ae1dc93082c2f3e4bfdeb49a62dfe43f5a36ba19f3ec",
+      "defense_sha256": "4dc0e777b22e2529fe648f24f609989af484cde6363b7fd364e6ce6bc25261eb",
+      "spy_records": []
+    },
+    "GB": {
+      "screens": 11,
+      "screen_signature": "c80c4dbdfe5c0aa8a4899716f07a98898a53d2cae86c9b3fa89f80c55f12c995",
+      "offense_sha256": "a0b6373d8037a824cbc6e268ee94b0a82e7222ee86c800474481cb8806baa5fc",
+      "defense_sha256": "77c558f00d0f38983582284494ade72c3f37d7c1adb574c7eb8493fc6fda9e46",
+      "spy_records": []
+    },
+    "HOU": {
+      "screens": 3,
+      "screen_signature": "4964769cca55c19f07536976107060cd6ac16b32fc3adcce3b264c0b0ec05e32",
+      "offense_sha256": "f3b0b2f53036b0982a5a698b6a9fd57007486dc39fbd564e7f83c914bbe30386",
+      "defense_sha256": "780c6b5ad425601c8c79819978a683518340dfe6c9100ed23109cad1afbaa5a0",
+      "spy_records": []
+    },
+    "IND": {
+      "screens": 2,
+      "screen_signature": "46a79ba81cac25082db159cb7715d97e212c46e1557b49fac21c91439a043722",
+      "offense_sha256": "1654b016a334e85c739046047c6d7d35bd41967cebb014123c9526c3f9053d5b",
+      "defense_sha256": "3fd8c10fab7a32b2295ad68c38400e6298c8d115cb88189ad9905da273b6c1fc",
+      "spy_records": []
+    },
+    "JAX": {
+      "screens": 3,
+      "screen_signature": "9c195eed409160b59adec09ff7409c78e428e11560fffbd6977fac9c90d02c5a",
+      "offense_sha256": "a2b2ede83c5ffe37affd43a07154d18db7f62db42257ede36a1bbb77530159aa",
+      "defense_sha256": "ac7159f689e6dd9c20703524b48637a8792a84320cce5f6fdc9a9498c9cca553",
+      "spy_records": []
+    },
+    "KC": {
+      "screens": 20,
+      "screen_signature": "bb8ca18565e045e596f19835a9d50d3a4cc32b132f7205782ebcf82a0d188628",
+      "offense_sha256": "74f61632a9ff31dc093508de3b22d115f4e31e44a276313070f3c148da4577a5",
+      "defense_sha256": "45eca631519fe7f5609c58d55efaa2149d2ac565c54c56db451596a9c5a00e45",
+      "spy_records": [
+        {
+          "play_index": 21,
+          "slot": 5,
+          "intent": "spy",
+          "runtime_available": false,
+          "zone_donor_play_index": 8
+        }
+      ]
+    },
+    "MIA": {
+      "screens": 26,
+      "screen_signature": "6a996a151ba1053e94c5e069b2530fdad837467f64e31c63c76b331475079268",
+      "offense_sha256": "3afa67d430adad9c12c5e623dca9669e6bed0677dfb9b84b7439ca7817b9137d",
+      "defense_sha256": "308b13d2407cc4a5c1e820786d8ebd3b6f5bd5b2fd8eadc7507602b69b4fca41",
+      "spy_records": []
+    },
+    "MIN": {
+      "screens": 12,
+      "screen_signature": "cb502eb0397d38a045c03f3373b6a432796b209ac7c25ddea7df3bf96e8350f4",
+      "offense_sha256": "c56f9bc270f8920acda1713501f2585091d1f1839774bce589c8dc5ae2a6a3f9",
+      "defense_sha256": "6439bde2dcf527bc0885119ca22f970ea52060702568ec93864fefdd5769b590",
+      "spy_records": []
+    },
+    "NE": {
+      "screens": 10,
+      "screen_signature": "9a75890e2cdc98b72f971df4786feaa391d1517a0e1b9675c5bf2de21015f97b",
+      "offense_sha256": "5d29a81e63c21dd7c5d88a83b644d4b44ca5ff925f9c3993df755d3eb57ca88e",
+      "defense_sha256": "dce10eed44dbd329f22d257aca96f5add2d3368e99a2486f60938037826be970",
+      "spy_records": []
+    },
+    "NO": {
+      "screens": 14,
+      "screen_signature": "13c684029611fdcdae32dba997e180d1b85cbd60b8da752b9e1f02a86c993714",
+      "offense_sha256": "e3e7b05a3633c458180b51edc4d6eee9e3451a088deb1f778bb10a00d5a6e432",
+      "defense_sha256": "a354f14086b8ed3ae501fe25f7f946336aba91a5f0c7c68f7dafdc00bd88d970",
+      "spy_records": []
+    },
+    "NYG": {
+      "screens": 6,
+      "screen_signature": "2bd113b245e85c85dae93fb0e70ad3a55edcb8dcdf1484aae0cd9b0cf51f48e2",
+      "offense_sha256": "5fa6f7efd4c7b53587f9b0f9b8445277d14acc826f40a08aa4bd830b53489131",
+      "defense_sha256": "8abf9d28be6a9cc30230f045e717f67f25f6c90d57dc4b01e8f399208dfd23ce",
+      "spy_records": []
+    },
+    "NYJ": {
+      "screens": 21,
+      "screen_signature": "a66dace731615d16ffe758c3cae67ac1322513a991ae06410ff6adf125510336",
+      "offense_sha256": "a4fd2061eeda9c76646b9e32fca3b75e72ae22a0008e40d0c4c2bdee0fb0e6da",
+      "defense_sha256": "2ef701b617eaeb3c938b515a8fcfe42f3f8e2b7cd9b3943074354b0650d2658c",
+      "spy_records": []
+    },
+    "OAK": {
+      "screens": 11,
+      "screen_signature": "f118b1e4f70a33a29f0132fa83ec84d74408dd4a27f0eec361297809c9978606",
+      "offense_sha256": "90108360d40e32226bebfe076f4f65f363119f92b3c17654f9d429be212a500a",
+      "defense_sha256": "ee53589ce0b7e11ad70bf56f85c93fdfa83dacdea15797c090c4eccfff003573",
+      "spy_records": []
+    },
+    "PHI": {
+      "screens": 15,
+      "screen_signature": "763d436a1b4d9d61b3b1702cccd46945be8fb51088cea0b70687e0a3b765a224",
+      "offense_sha256": "d5120a137e03f5c54e5a0fddb1f8cec4f86e8297818d203247de60f1a39e0309",
+      "defense_sha256": "f3566f24921d3698223afca29e78a2b23e393dab90ccc861bf017605035201ea",
+      "spy_records": []
+    },
+    "PIT": {
+      "screens": 11,
+      "screen_signature": "d8ca41ddcf4730690316c4768e50bad4272f645fbbd4fe196697f23aa67e178a",
+      "offense_sha256": "b0771f8db29b62834e99323fdfe0809bd2933274b4c25d948a923b1e2874bcf6",
+      "defense_sha256": "3e48ccc9c334da7ba31a58ad39493cae311e3ee16f5204d0d29d60beb25c6ab6",
+      "spy_records": []
+    },
+    "SD": {
+      "screens": 23,
+      "screen_signature": "04839fe2183e1aec913c72f8291fd9c52a10de3ad1b24f8e60f960a37d820086",
+      "offense_sha256": "e1ae6c2733cc72e3b649359047cf099ec69ef820d0b8ccf51a40e9fa6813d480",
+      "defense_sha256": "4fd2a0545d14fdce42ebdde413d6568acca14e22498ab9cf980d67ba6f96b49a",
+      "spy_records": []
+    },
+    "SEA": {
+      "screens": 14,
+      "screen_signature": "cb9a5096721682825fa3a17f9e453bbcc6c20b925996acafe70d829fa2384cb8",
+      "offense_sha256": "93b472dfacc9a9b9b03475cb9298867f07df1f83d5e3e09995e8fb2d8b639354",
+      "defense_sha256": "acfe0ce13c138371fa8d54d8adfe9324b04ed9a6377b771912bc19873cb5dd10",
+      "spy_records": []
+    },
+    "SF": {
+      "screens": 22,
+      "screen_signature": "3b42a8f7f84bdfa50dfa11d884d28f158ffddce2b80310ffd217268c4c054bc2",
+      "offense_sha256": "b2b353ceb504cdfd9062328013d06180578a198a3f0d9d8f10aa629d5e119d66",
+      "defense_sha256": "aac827d8ba31c048ba112d460bc289077adf328c7b743fa5923a287bc61adf3b",
+      "spy_records": []
+    },
+    "STL": {
+      "screens": 3,
+      "screen_signature": "a1bb9a06230eab5de37840e4a5b9cc8a0cdc264d2869df5b1c9f633dcf1c82cf",
+      "offense_sha256": "3a7a10d6f2ff530f1c86654c248261cd0c78676b3af167613c7c5cbfcbfb13dc",
+      "defense_sha256": "7ffb133957e4a266e54378a3269db0f537516a3245d47b43e2977c19852ff39d",
+      "spy_records": []
+    },
+    "TB": {
+      "screens": 11,
+      "screen_signature": "3f7be17cd8f5c4126b006613920cb63438710465fe45fb1fd27b0d844b774c29",
+      "offense_sha256": "a66059a09ef50563c3bf4d228856dc67e361f23b48a4a717eada1659c17926b2",
+      "defense_sha256": "b3990bfda4646eff4bda21e5d23916b08c020c9eba544d4e7db14c896b0dede8",
+      "spy_records": []
+    },
+    "TEN": {
+      "screens": 12,
+      "screen_signature": "8df37f55b767c1b6fbf7896829a58af56f5a26dcc2ca5e233b77414772899e82",
+      "offense_sha256": "17302b40bf0d5dcc723ce8d61db85c34c0e1dd1c7f7b80d9fb5ec8a78248ded4",
+      "defense_sha256": "1f70015042a05dfb3ce10531b995b92da62dd00d98dda6e8388da0b7662b1959",
+      "spy_records": []
+    },
+    "WAS": {
+      "screens": 12,
+      "screen_signature": "0e2ab9c9cef8ddc30dff6e6b1a29aba104d11689541d179a2f89d39e59d649a2",
+      "offense_sha256": "5e78d309782d4f2e27702ae8c8f133a532156c253d9bfac4fa037a380a898606",
+      "defense_sha256": "f1f506dd77d5b0ec9addf38e2a2741cd62830ef8dd11141520627f0e246c9974",
+      "spy_records": []
+    }
+  },
+  "spy": {
+    "schema": "nfl2k5_qb_spy_lookup/v1",
+    "records": [
+      {
+        "asset_id": "book:KC",
+        "book": "KC",
+        "play_index": 21,
+        "slot": 5,
+        "resource_sha256": "45eca631519fe7f5609c58d55efaa2149d2ac565c54c56db451596a9c5a00e45",
+        "record": "4588b06c15000501b1355bd21a8e069e"
+      }
+    ],
+    "count": 1,
+    "capacity": 31,
+    "table_sha256": "c22d8a70976bb232d8d62a6395cc5c177e6cc1513caaa2c61d625039788d683c",
+    "experimental": true,
+    "runtime_witnessed": false
+  },
+  "screens": 407,
+  "runtime_witness": false
+}

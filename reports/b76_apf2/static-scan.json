@@ -1,0 +1,34 @@
+{
+  "classification": "PROVED OFFLINE",
+  "scope": "Aligned relative b/bl scan of the pinned .text; computed targets are not ruled out.",
+  "profiles": [
+    {
+      "profile": "base",
+      "text_start": "84630000",
+      "text_end": "84D0904C",
+      "downgrade_callers": [
+        "848E7FB4",
+        "8490376C"
+      ],
+      "direct_branch_targets_in_reservation": [],
+      "reservation": [
+        "84D0D100",
+        "84D0D320"
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "text_start": "84630000",
+      "text_end": "84D0A01C",
+      "downgrade_callers": [
+        "848E8E3C",
+        "84904634"
+      ],
+      "direct_branch_targets_in_reservation": [],
+      "reservation": [
+        "84D0D100",
+        "84D0D320"
+      ]
+    }
+  ]
+}

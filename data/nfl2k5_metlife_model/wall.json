@@ -1,0 +1,68 @@
+{
+  "schema": "metlife_model_wall/v1",
+  "notes": [
+    "The field wall of the MetLife model (b76-u5b): panels of the venue's wall atlas laid along the 1.8 m wall, each at its cell's own aspect (64 px per 1.8 m), so nothing is stretched.",
+    "DESIGN from game-day photos: Giants 2025 (giants.com game galleries v Dallas: royal-blue padded wall on a red base pad, 'NEW YORK FOOTBALL GIANTS' in huge white type, white 'ny GIANTS', the retired numbers in white boxes with black borders ('40', '14'), 'GO BIG BLUE' over a sunburst and the 'SINCE 1925' roundel at the ends); Jets 2026-09-20 ('MetLife Stadium Ready for the Jets White Out' gallery: white wraps with two green stripes, the JETS wordmark, 'NEW YORK JETS', 'J-E-T-S' and the plane roundel (the 2024 oval with the plane alone)).",
+    "Layouts run left to right as seen from the field, per region (sideline 91 m, end 36 m, corner arc 33 m). 'fill' is the plain base cell, sharing what the fixed panels leave; 'num' takes the next retired number of that sideline.",
+    "A retired number is a base panel of number_panel_m with its white box laid over it as a decal from the signage atlas (number_decals: cells in that atlas, the box's size in metres), 3 cm in front."
+  ],
+  "height_m": 1.8,
+  "atlas": [512, 256],
+  "venues": {
+    "s18": {
+      "cells": {
+        "logo": [0, 0, 512, 64],
+        "slogan": [0, 64, 512, 128],
+        "nyfg": [0, 128, 512, 192],
+        "roundel": [0, 192, 128, 256],
+        "base": [128, 192, 256, 256]
+      },
+      "numbers": [
+        [1, 4, 7, 10, 11, 14],
+        [16, 32, 40, 42, 50, 56]
+      ],
+      "layout": {
+        "sideline": ["fill", "num", "nyfg", "num", "logo", "num", "nyfg", "num", "logo", "num", "nyfg", "num", "fill"],
+        "end": ["fill", "slogan", "roundel", "slogan", "fill"],
+        "corner": ["fill", "logo", "fill"]
+      },
+      "number_panel_m": 1.8,
+      "number_decals": {
+        "atlas": "signs",
+        "size_m": [1.3, 1.1],
+        "cells": {
+          "num_1": [0, 400, 42, 436],
+          "num_4": [42, 400, 84, 436],
+          "num_7": [84, 400, 126, 436],
+          "num_10": [126, 400, 168, 436],
+          "num_11": [168, 400, 210, 436],
+          "num_14": [210, 400, 252, 436],
+          "num_16": [0, 436, 42, 472],
+          "num_32": [42, 436, 84, 472],
+          "num_40": [84, 436, 126, 472],
+          "num_42": [126, 436, 168, 472],
+          "num_50": [168, 436, 210, 472],
+          "num_56": [210, 436, 252, 472]
+        }
+      }
+    },
+    "s19": {
+      "cells": {
+        "logo": [0, 0, 512, 64],
+        "slogan": [0, 64, 512, 128],
+        "oval": [0, 128, 128, 192],
+        "base": [128, 128, 512, 192],
+        "chant": [0, 192, 512, 256]
+      },
+      "numbers": [
+        [],
+        []
+      ],
+      "layout": {
+        "sideline": ["fill", "logo", "fill", "slogan", "fill", "logo", "fill", "slogan", "fill"],
+        "end": ["fill", "oval", "logo", "oval", "fill"],
+        "corner": ["fill", "chant", "fill"]
+      }
+    }
+  }
+}

@@ -391,23 +391,31 @@ def _stage(disc, planned, directory, progress):
     return paths, hashes
 
 
-def _write_archive(fd, disc, geometry, containers, banks, progress):
+def _write_archive(fd, disc, geometry, containers, banks, progress, populated=()):
+    """``populated``: packs the caller already filled at their new places with the
+    source pack's leading bytes (the Crib cut and intro trim compaction)."""
     replacements = {disc.banks[name].external: path for name,path in banks.items()}
     table = bytearray(disc.header)
-    struct.pack_into('<I', table, 12+15*4, geometry['packs'][-1]['size']//2048)
+    for ordinal, p in enumerate(geometry['packs']):
+        struct.pack_into('<I', table, 12+ordinal*4, p['size']//2048)
     for e in geometry['entries']:
         table.extend(struct.pack('<3I', e['name_id'], e['size'], e['offset']//2048))
     table.extend(bytes(archive.align_up(len(table))-len(table)))
     archive.write_virtual(fd, geometry['packs'], 0, table)
-    # Any relocated F must receive all its bytes, even if entry positions did
-    # not change (e.g. a rebuild after earlier SPECIAL disc growth).
-    relocated_f = geometry['packs'][-1]['offset'] != disc.pack_extents['F'].byte_offset
+    # A pack that moved without the caller filling it (a relocated F, e.g. a
+    # rebuild after earlier SPECIAL disc growth), or whose virtual start moved
+    # (a spilled shrink, b76-f2), must receive all its bytes, even where entry
+    # positions did not change.
+    before = {p.name: p.virtual_start for p in disc.packs}
+    stale = [(p['virtual_start'], p['virtual_start'] + p['size']) for p in geometry['packs']
+             if p['virtual_start'] != before[p['name']]
+             or (p['offset'] != disc.pack_extents[p['name']].byte_offset and p['name'] not in populated)]
     for index, e in enumerate(geometry['entries']):
         progress('archive', index, len(geometry['entries']))
         old = disc.archive_entries[index]
         unchanged = old.virtual_offset == e['offset'] and old.size == e['size']
-        touches_f = e['offset'] + e['size'] > disc.packs[-1].virtual_start
-        if unchanged and index not in replacements and index not in containers and not (relocated_f and touches_f):
+        touches_stale = any(lo < e['offset'] + e['size'] and e['offset'] < hi for lo, hi in stale)
+        if unchanged and index not in replacements and index not in containers and not touches_stale:
             continue
         with ExitStack() as stack:
             if index in replacements:

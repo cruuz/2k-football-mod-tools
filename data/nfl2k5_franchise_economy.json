@@ -1,0 +1,1992 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "as_of": "2026-09-25",
+  "dollar_scale": {
+    "evidence": "DESIGN",
+    "real_dollars_per_game_dollar": 4
+  },
+  "cap": {
+    "dollars": 301200000,
+    "previous_dollars": 279200000,
+    "source": "https://www.nfl.com/news/2026-nfl-free-agency-questions-answers",
+    "previous_source": "https://www.nfl.com/news/nfl-sets-salary-cap-at-279-2-million-per-team-for-2025-season"
+  },
+  "minimums": {
+    "dollars": [
+      885000,
+      1005000,
+      1075000,
+      1145000,
+      1215000,
+      1215000,
+      1215000,
+      1300000
+    ],
+    "source": "https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf",
+    "article": "26 section 1(a), PDF page 188"
+  },
+  "market": [
+    {
+      "url": "https://overthecap.com/position/quarterback",
+      "rows": [
+        {
+          "player": "Patrick Mahomes",
+          "apy": 64000000
+        },
+        {
+          "player": "Dak Prescott",
+          "apy": 60000000
+        },
+        {
+          "player": "Joe Burrow",
+          "apy": 55000000
+        },
+        {
+          "player": "Josh Allen",
+          "apy": 55000000
+        },
+        {
+          "player": "Jordan Love",
+          "apy": 55000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/edge-rusher",
+      "rows": [
+        {
+          "player": "Will Anderson Jr.",
+          "apy": 50000000
+        },
+        {
+          "player": "Micah Parsons",
+          "apy": 46500000
+        },
+        {
+          "player": "Aidan Hutchinson",
+          "apy": 45000000
+        },
+        {
+          "player": "T.J. Watt",
+          "apy": 41000000
+        },
+        {
+          "player": "Danielle Hunter",
+          "apy": 40100000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/running-back",
+      "rows": [
+        {
+          "player": "Jahmyr Gibbs",
+          "apy": 22500000
+        },
+        {
+          "player": "Bijan Robinson",
+          "apy": 22250000
+        },
+        {
+          "player": "Jonathan Taylor",
+          "apy": 22000000
+        },
+        {
+          "player": "Saquon Barkley",
+          "apy": 20600000
+        },
+        {
+          "player": "Christian McCaffrey",
+          "apy": 19000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/fullback",
+      "rows": [
+        {
+          "player": "Patrick Ricard",
+          "apy": 3815000
+        },
+        {
+          "player": "Kyle Juszczyk",
+          "apy": 3750000
+        },
+        {
+          "player": "Alec Ingold",
+          "apy": 3750000
+        },
+        {
+          "player": "Reggie Gilliam",
+          "apy": 3600000
+        },
+        {
+          "player": "Connor Heyward",
+          "apy": 2250000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/wide-receiver",
+      "rows": [
+        {
+          "player": "Jaxon Smith-Njigba",
+          "apy": 42150000
+        },
+        {
+          "player": "Ja'Marr Chase",
+          "apy": 40250000
+        },
+        {
+          "player": "Drake London",
+          "apy": 35263500
+        },
+        {
+          "player": "Zay Flowers",
+          "apy": 35000000
+        },
+        {
+          "player": "Justin Jefferson",
+          "apy": 35000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/tight-end",
+      "rows": [
+        {
+          "player": "George Kittle",
+          "apy": 19100000
+        },
+        {
+          "player": "Trey McBride",
+          "apy": 19000000
+        },
+        {
+          "player": "Tucker Kraft",
+          "apy": 18750000
+        },
+        {
+          "player": "Kyle Pitts",
+          "apy": 17666667
+        },
+        {
+          "player": "Michael Mayer",
+          "apy": 15000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/left-tackle",
+      "rows": [
+        {
+          "player": "Laremy Tunsil",
+          "apy": 30100000
+        },
+        {
+          "player": "Rashawn Slater",
+          "apy": 28500000
+        },
+        {
+          "player": "Charles Cross",
+          "apy": 26100000
+        },
+        {
+          "player": "Christian Darrisaw",
+          "apy": 26000000
+        },
+        {
+          "player": "Bernhard Raimann",
+          "apy": 25000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/guard",
+      "rows": [
+        {
+          "player": "Peter Skoronski",
+          "apy": 25000000
+        },
+        {
+          "player": "Tyler Smith",
+          "apy": 24000000
+        },
+        {
+          "player": "Trey Smith",
+          "apy": 23500000
+        },
+        {
+          "player": "Matthew Bergeron",
+          "apy": 23500000
+        },
+        {
+          "player": "Luke Goedeke",
+          "apy": 22500000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/center",
+      "rows": [
+        {
+          "player": "Tyler Linderbaum",
+          "apy": 27000000
+        },
+        {
+          "player": "Creed Humphrey",
+          "apy": 18000000
+        },
+        {
+          "player": "Aaron Brewer",
+          "apy": 17500000
+        },
+        {
+          "player": "Cam Jurgens",
+          "apy": 17000000
+        },
+        {
+          "player": "Connor McGovern",
+          "apy": 13100000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/interior-defensive-line",
+      "rows": [
+        {
+          "player": "Jalen Carter",
+          "apy": 38000000
+        },
+        {
+          "player": "Quinnen Williams",
+          "apy": 35300000
+        },
+        {
+          "player": "Jeffery Simmons",
+          "apy": 35276000
+        },
+        {
+          "player": "Chris Jones",
+          "apy": 31750000
+        },
+        {
+          "player": "Vita Vea",
+          "apy": 30000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/linebacker",
+      "rows": [
+        {
+          "player": "Nick Herbig",
+          "apy": 25000000
+        },
+        {
+          "player": "Fred Warner",
+          "apy": 21000000
+        },
+        {
+          "player": "Jack Campbell",
+          "apy": 20250000
+        },
+        {
+          "player": "Roquan Smith",
+          "apy": 20000000
+        },
+        {
+          "player": "Azeez Al-Shaair",
+          "apy": 18000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/safety",
+      "rows": [
+        {
+          "player": "Derwin James",
+          "apy": 25200000
+        },
+        {
+          "player": "Kyle Hamilton",
+          "apy": 25100000
+        },
+        {
+          "player": "Kerby Joseph",
+          "apy": 21250000
+        },
+        {
+          "player": "Antoine Winfield, Jr.",
+          "apy": 21025000
+        },
+        {
+          "player": "Budda Baker",
+          "apy": 18000000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/cornerback",
+      "rows": [
+        {
+          "player": "Christian Gonzalez",
+          "apy": 33750000
+        },
+        {
+          "player": "Devon Witherspoon",
+          "apy": 33000000
+        },
+        {
+          "player": "Denzel Ward",
+          "apy": 31100000
+        },
+        {
+          "player": "Trent McDuffie",
+          "apy": 31000000
+        },
+        {
+          "player": "Ahmad Gardner",
+          "apy": 30100000
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/kicker",
+      "rows": [
+        {
+          "player": "Chris Boswell",
+          "apy": 7000000
+        },
+        {
+          "player": "Brandon Aubrey",
+          "apy": 7000000
+        },
+        {
+          "player": "Ka'imi Fairbairn",
+          "apy": 6640000
+        },
+        {
+          "player": "Harrison Butker",
+          "apy": 6400000
+        },
+        {
+          "player": "Jake Elliott",
+          "apy": 5666667
+        }
+      ]
+    },
+    {
+      "url": "https://overthecap.com/position/punter",
+      "rows": [
+        {
+          "player": "Jordan Stout",
+          "apy": 4100000
+        },
+        {
+          "player": "Michael Dickson",
+          "apy": 4050000
+        },
+        {
+          "player": "Logan Cooke",
+          "apy": 4000000
+        },
+        {
+          "player": "A.J. Cole",
+          "apy": 3950000
+        },
+        {
+          "player": "Braden Mann",
+          "apy": 3500000
+        }
+      ]
+    }
+  ],
+  "rookie_anchors": {
+    "evidence": "PROVED OFFLINE",
+    "kind": "OTC estimates, not signed contracts",
+    "source": "https://overthecap.com/draft",
+    "rows": [
+      {
+        "pick": 1,
+        "total": 58191906,
+        "bonus": 38781384,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "cap_number": 10580346
+          },
+          {
+            "year": 2027,
+            "cap_number": 13225433
+          },
+          {
+            "year": 2028,
+            "cap_number": 15870520
+          },
+          {
+            "year": 2029,
+            "cap_number": 18515607
+          }
+        ]
+      },
+      {
+        "pick": 6,
+        "total": 42582984,
+        "bonus": 27429444,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 6857361,
+            "cap_number": 7742361
+          },
+          {
+            "year": 2027,
+            "base_salary": 2820590,
+            "prorated_bonus": 6857361,
+            "cap_number": 9677951
+          },
+          {
+            "year": 2028,
+            "base_salary": 4756180,
+            "prorated_bonus": 6857361,
+            "cap_number": 11613541
+          },
+          {
+            "year": 2029,
+            "base_salary": 6691770,
+            "prorated_bonus": 6857361,
+            "cap_number": 13549131
+          }
+        ]
+      },
+      {
+        "pick": 12,
+        "total": 26493742,
+        "bonus": 15728176,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 3932044,
+            "cap_number": 4817044
+          },
+          {
+            "year": 2027,
+            "base_salary": 2089261,
+            "prorated_bonus": 3932044,
+            "cap_number": 6021305
+          },
+          {
+            "year": 2028,
+            "base_salary": 3293522,
+            "prorated_bonus": 3932044,
+            "cap_number": 7225566
+          },
+          {
+            "year": 2029,
+            "base_salary": 4497783,
+            "prorated_bonus": 3932044,
+            "cap_number": 8429827
+          }
+        ]
+      },
+      {
+        "pick": 18,
+        "total": 21570956,
+        "bonus": 12147968,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 3036992,
+            "cap_number": 3921992
+          },
+          {
+            "year": 2027,
+            "base_salary": 1865498,
+            "prorated_bonus": 3036992,
+            "cap_number": 4902490
+          },
+          {
+            "year": 2028,
+            "base_salary": 2845996,
+            "prorated_bonus": 3036992,
+            "cap_number": 5882988
+          },
+          {
+            "year": 2029,
+            "base_salary": 3826494,
+            "prorated_bonus": 3036992,
+            "cap_number": 6863486
+          }
+        ]
+      },
+      {
+        "pick": 24,
+        "total": 20010048,
+        "bonus": 11012760,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 2753190,
+            "cap_number": 3638190
+          },
+          {
+            "year": 2027,
+            "base_salary": 1794548,
+            "prorated_bonus": 2753190,
+            "cap_number": 4547738
+          },
+          {
+            "year": 2028,
+            "base_salary": 2704096,
+            "prorated_bonus": 2753190,
+            "cap_number": 5457286
+          },
+          {
+            "year": 2029,
+            "base_salary": 3613644,
+            "prorated_bonus": 2753190,
+            "cap_number": 6366834
+          }
+        ]
+      },
+      {
+        "pick": 30,
+        "total": 17695836,
+        "bonus": 9329700,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 2332425,
+            "cap_number": 3217425
+          },
+          {
+            "year": 2027,
+            "base_salary": 1689356,
+            "prorated_bonus": 2332425,
+            "cap_number": 4021781
+          },
+          {
+            "year": 2028,
+            "base_salary": 2493712,
+            "prorated_bonus": 2332425,
+            "cap_number": 4826137
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 52543,
+            "cap_number": 1217543
+          }
+        ]
+      },
+      {
+        "pick": 38,
+        "total": 12733900,
+        "bonus": 5721016,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 1430254,
+            "cap_number": 2315254
+          },
+          {
+            "year": 2027,
+            "base_salary": 1463814,
+            "prorated_bonus": 1430254,
+            "cap_number": 2894068
+          },
+          {
+            "year": 2028,
+            "base_salary": 2042628,
+            "prorated_bonus": 1430254,
+            "cap_number": 3472882
+          },
+          {
+            "year": 2029,
+            "base_salary": 2621442,
+            "prorated_bonus": 1430254,
+            "cap_number": 4051696
+          }
+        ]
+      },
+      {
+        "pick": 44,
+        "total": 11542256,
+        "bonus": 4854368,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 1213592,
+            "cap_number": 2098592
+          },
+          {
+            "year": 2027,
+            "base_salary": 1409648,
+            "prorated_bonus": 1213592,
+            "cap_number": 2623240
+          },
+          {
+            "year": 2028,
+            "base_salary": 1934296,
+            "prorated_bonus": 1213592,
+            "cap_number": 3147888
+          },
+          {
+            "year": 2029,
+            "base_salary": 2458944,
+            "prorated_bonus": 1213592,
+            "cap_number": 3672536
+          }
+        ]
+      },
+      {
+        "pick": 50,
+        "total": 9924280,
+        "bonus": 3677656,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 919414,
+            "cap_number": 1804414
+          },
+          {
+            "year": 2027,
+            "base_salary": 1336104,
+            "prorated_bonus": 919414,
+            "cap_number": 2255518
+          },
+          {
+            "year": 2028,
+            "base_salary": 1787208,
+            "prorated_bonus": 919414,
+            "cap_number": 2706622
+          },
+          {
+            "year": 2029,
+            "base_salary": 2238312,
+            "prorated_bonus": 919414,
+            "cap_number": 3157726
+          }
+        ]
+      },
+      {
+        "pick": 56,
+        "total": 8603540,
+        "bonus": 2717120,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 679280,
+            "cap_number": 1564280
+          },
+          {
+            "year": 2027,
+            "base_salary": 1276070,
+            "prorated_bonus": 679280,
+            "cap_number": 1955350
+          },
+          {
+            "year": 2028,
+            "base_salary": 1667140,
+            "prorated_bonus": 679280,
+            "cap_number": 2346420
+          },
+          {
+            "year": 2029,
+            "base_salary": 2058210,
+            "prorated_bonus": 679280,
+            "cap_number": 2737490
+          }
+        ]
+      },
+      {
+        "pick": 61,
+        "total": 8075214,
+        "bonus": 2332884,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 583221,
+            "cap_number": 1468221
+          },
+          {
+            "year": 2027,
+            "base_salary": 1252055,
+            "prorated_bonus": 583221,
+            "cap_number": 1835276
+          },
+          {
+            "year": 2028,
+            "base_salary": 1619110,
+            "prorated_bonus": 583221,
+            "cap_number": 2202331
+          },
+          {
+            "year": 2029,
+            "base_salary": 1986165,
+            "prorated_bonus": 583221,
+            "cap_number": 2569386
+          }
+        ]
+      },
+      {
+        "pick": 70,
+        "total": 7332904,
+        "bonus": 1793020,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 448255,
+            "cap_number": 1333255
+          },
+          {
+            "year": 2027,
+            "base_salary": 1218314,
+            "prorated_bonus": 448255,
+            "cap_number": 1666569
+          },
+          {
+            "year": 2028,
+            "base_salary": 1551628,
+            "prorated_bonus": 448255,
+            "cap_number": 1999883
+          },
+          {
+            "year": 2029,
+            "base_salary": 1884942,
+            "prorated_bonus": 448255,
+            "cap_number": 2333197
+          }
+        ]
+      },
+      {
+        "pick": 76,
+        "total": 7142736,
+        "bonus": 1654716,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 413679,
+            "cap_number": 1298679
+          },
+          {
+            "year": 2027,
+            "base_salary": 1209670,
+            "prorated_bonus": 413679,
+            "cap_number": 1623349
+          },
+          {
+            "year": 2028,
+            "base_salary": 1534340,
+            "prorated_bonus": 413679,
+            "cap_number": 1948019
+          },
+          {
+            "year": 2029,
+            "base_salary": 1859010,
+            "prorated_bonus": 413679,
+            "cap_number": 2272689
+          }
+        ]
+      },
+      {
+        "pick": 82,
+        "total": 7020028,
+        "bonus": 1565476,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 391369,
+            "cap_number": 1276369
+          },
+          {
+            "year": 2027,
+            "base_salary": 1204092,
+            "prorated_bonus": 391369,
+            "cap_number": 1595461
+          },
+          {
+            "year": 2028,
+            "base_salary": 1523184,
+            "prorated_bonus": 391369,
+            "cap_number": 1914553
+          },
+          {
+            "year": 2029,
+            "base_salary": 1842276,
+            "prorated_bonus": 391369,
+            "cap_number": 2233645
+          }
+        ]
+      },
+      {
+        "pick": 88,
+        "total": 6870582,
+        "bonus": 1456788,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 583221,
+            "cap_number": 1468221
+          },
+          {
+            "year": 2027,
+            "base_salary": 1252055,
+            "prorated_bonus": 583221,
+            "cap_number": 1835276
+          },
+          {
+            "year": 2028,
+            "base_salary": 1619110,
+            "prorated_bonus": 583221,
+            "cap_number": 2202331
+          }
+        ]
+      },
+      {
+        "pick": 93,
+        "total": 6827340,
+        "bonus": 1425336,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 356334,
+            "cap_number": 1241334
+          },
+          {
+            "year": 2027,
+            "base_salary": 1195334,
+            "prorated_bonus": 356334,
+            "cap_number": 1551668
+          },
+          {
+            "year": 2028,
+            "base_salary": 1505668,
+            "prorated_bonus": 356334,
+            "cap_number": 1862002
+          },
+          {
+            "year": 2029,
+            "base_salary": 1816002,
+            "prorated_bonus": 356334,
+            "cap_number": 2172336
+          }
+        ]
+      },
+      {
+        "pick": 100,
+        "total": 6726012,
+        "bonus": 1351644,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 337911,
+            "cap_number": 1222911
+          },
+          {
+            "year": 2027,
+            "base_salary": 1190728,
+            "prorated_bonus": 337911,
+            "cap_number": 1528639
+          },
+          {
+            "year": 2028,
+            "base_salary": 1496456,
+            "prorated_bonus": 337911,
+            "cap_number": 1834367
+          },
+          {
+            "year": 2029,
+            "base_salary": 1802184,
+            "prorated_bonus": 337911,
+            "cap_number": 2140095
+          }
+        ]
+      },
+      {
+        "pick": 106,
+        "total": 5647276,
+        "bonus": 1267276,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 316819,
+            "cap_number": 1201819
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 316819,
+            "cap_number": 1366819
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 316819,
+            "cap_number": 1481819
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 316819,
+            "cap_number": 1596819
+          }
+        ]
+      },
+      {
+        "pick": 112,
+        "total": 5596448,
+        "bonus": 1216448,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 304112,
+            "cap_number": 1189112
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 304112,
+            "cap_number": 1354112
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 304112,
+            "cap_number": 1469112
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 304112,
+            "cap_number": 1584112
+          }
+        ]
+      },
+      {
+        "pick": 118,
+        "total": 5553236,
+        "bonus": 1173236,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 293309,
+            "cap_number": 1178309
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 280544,
+            "cap_number": 1330544
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 280544,
+            "cap_number": 1445544
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 280544,
+            "cap_number": 1560544
+          }
+        ]
+      },
+      {
+        "pick": 129,
+        "total": 5449924,
+        "bonus": 1069924,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 267481,
+            "cap_number": 1152481
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 267481,
+            "cap_number": 1317481
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 267481,
+            "cap_number": 1432481
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 267481,
+            "cap_number": 1547481
+          }
+        ]
+      },
+      {
+        "pick": 136,
+        "total": 5182896,
+        "bonus": 802896,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 200724,
+            "cap_number": 1085724
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 200724,
+            "cap_number": 1250724
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 200724,
+            "cap_number": 1365724
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 200724,
+            "cap_number": 1480724
+          }
+        ]
+      },
+      {
+        "pick": 137,
+        "total": 5182896,
+        "bonus": 802896,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 200724,
+            "cap_number": 1085724
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 200724,
+            "cap_number": 1250724
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 200724,
+            "cap_number": 1365724
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 200724,
+            "cap_number": 1480724
+          }
+        ]
+      },
+      {
+        "pick": 146,
+        "total": 4919496,
+        "bonus": 539496,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 134874,
+            "cap_number": 1019874
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 134874,
+            "cap_number": 1184874
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 134874,
+            "cap_number": 1299874
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 134874,
+            "cap_number": 1414874
+          }
+        ]
+      },
+      {
+        "pick": 152,
+        "total": 4894996,
+        "bonus": 514996,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 128749,
+            "cap_number": 1013749
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 128749,
+            "cap_number": 1178749
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 128749,
+            "cap_number": 1293749
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 128749,
+            "cap_number": 1408749
+          }
+        ]
+      },
+      {
+        "pick": 157,
+        "total": 4887668,
+        "bonus": 507668,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 126917,
+            "cap_number": 1011917
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 126917,
+            "cap_number": 1176917
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 126917,
+            "cap_number": 1291917
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 126917,
+            "cap_number": 1406917
+          }
+        ]
+      },
+      {
+        "pick": 163,
+        "total": 4867284,
+        "bonus": 487284,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 121821,
+            "cap_number": 1006821
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 121821,
+            "cap_number": 1171821
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 121821,
+            "cap_number": 1286821
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 121821,
+            "cap_number": 1401821
+          }
+        ]
+      },
+      {
+        "pick": 169,
+        "total": 4831056,
+        "bonus": 451056,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 112764,
+            "cap_number": 997764
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 112764,
+            "cap_number": 1162764
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 112764,
+            "cap_number": 1277764
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 112764,
+            "cap_number": 1392764
+          }
+        ]
+      },
+      {
+        "pick": 176,
+        "total": 4766148,
+        "bonus": 386148,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 96537,
+            "cap_number": 981537
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 96537,
+            "cap_number": 1146537
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 96537,
+            "cap_number": 1261537
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 96537,
+            "cap_number": 1376537
+          }
+        ]
+      },
+      {
+        "pick": 177,
+        "total": 4766148,
+        "bonus": 386148,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 96537,
+            "cap_number": 981537
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 96537,
+            "cap_number": 1146537
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 96537,
+            "cap_number": 1261537
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 96537,
+            "cap_number": 1376537
+          }
+        ]
+      },
+      {
+        "pick": 186,
+        "total": 4689296,
+        "bonus": 309296,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 77324,
+            "cap_number": 962324
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 77324,
+            "cap_number": 1127324
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 77324,
+            "cap_number": 1242324
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 77324,
+            "cap_number": 1357324
+          }
+        ]
+      },
+      {
+        "pick": 192,
+        "total": 4667616,
+        "bonus": 287616,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 71904,
+            "cap_number": 956904
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 71904,
+            "cap_number": 1121904
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 71904,
+            "cap_number": 1236904
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 71904,
+            "cap_number": 1351904
+          }
+        ]
+      },
+      {
+        "pick": 197,
+        "total": 4658388,
+        "bonus": 278388,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 69597,
+            "cap_number": 954597
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 69597,
+            "cap_number": 1119597
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 69597,
+            "cap_number": 1234597
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 69597,
+            "cap_number": 1349597
+          }
+        ]
+      },
+      {
+        "pick": 203,
+        "total": 4651572,
+        "bonus": 271572,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 67893,
+            "cap_number": 952893
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 67893,
+            "cap_number": 1117893
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 67893,
+            "cap_number": 1232893
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 67893,
+            "cap_number": 1347893
+          }
+        ]
+      },
+      {
+        "pick": 209,
+        "total": 4631236,
+        "bonus": 251236,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 62809,
+            "cap_number": 947809
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 62809,
+            "cap_number": 1112809
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 62809,
+            "cap_number": 1227809
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 62809,
+            "cap_number": 1342809
+          }
+        ]
+      },
+      {
+        "pick": 216,
+        "total": 4590172,
+        "bonus": 210172,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 52543,
+            "cap_number": 937543
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 52543,
+            "cap_number": 1102543
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 52543,
+            "cap_number": 1217543
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 52543,
+            "cap_number": 1332543
+          }
+        ]
+      },
+      {
+        "pick": 223,
+        "total": 4550228,
+        "bonus": 170228,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 42557,
+            "cap_number": 927557
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 42557,
+            "cap_number": 1092557
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 40469,
+            "cap_number": 1205469
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 40469,
+            "cap_number": 1320469
+          }
+        ]
+      },
+      {
+        "pick": 229,
+        "total": 4540952,
+        "bonus": 160952,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 40238,
+            "cap_number": 925238
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 40238,
+            "cap_number": 1090238
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 296082,
+            "cap_number": 1346082
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 296082,
+            "cap_number": 1461082
+          }
+        ]
+      },
+      {
+        "pick": 234,
+        "total": 4534524,
+        "bonus": 154524,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 38631,
+            "cap_number": 923631
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 38631,
+            "cap_number": 1088631
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 38631,
+            "cap_number": 1203631
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 38631,
+            "cap_number": 1318631
+          }
+        ]
+      },
+      {
+        "pick": 240,
+        "total": 4514496,
+        "bonus": 134496,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 33624,
+            "cap_number": 918624
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 33624,
+            "cap_number": 1083624
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 33624,
+            "cap_number": 1198624
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 33624,
+            "cap_number": 1313624
+          }
+        ]
+      },
+      {
+        "pick": 246,
+        "total": 4507136,
+        "bonus": 127136,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 31784,
+            "cap_number": 916784
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 31784,
+            "cap_number": 1081784
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 31784,
+            "cap_number": 1196784
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 31784,
+            "cap_number": 1311784
+          }
+        ]
+      },
+      {
+        "pick": 252,
+        "total": 4502600,
+        "bonus": 122600,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 30650,
+            "cap_number": 915650
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 30650,
+            "cap_number": 1080650
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 30650,
+            "cap_number": 1195650
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 30650,
+            "cap_number": 1310650
+          }
+        ]
+      },
+      {
+        "pick": 253,
+        "total": 4502600,
+        "bonus": 122600,
+        "cap_hits": [
+          {
+            "year": 2026,
+            "base_salary": 885000,
+            "prorated_bonus": 30650,
+            "cap_number": 915650
+          },
+          {
+            "year": 2027,
+            "base_salary": 1050000,
+            "prorated_bonus": 30650,
+            "cap_number": 1080650
+          },
+          {
+            "year": 2028,
+            "base_salary": 1165000,
+            "prorated_bonus": 30650,
+            "cap_number": 1195650
+          },
+          {
+            "year": 2029,
+            "base_salary": 1280000,
+            "prorated_bonus": 30650,
+            "cap_number": 1310650
+          }
+        ]
+      }
+    ]
+  },
+  "draft_chart": {
+    "source": "https://overthecap.com/draft-trade-value-chart",
+    "name": "Fitzgerald-Spielberger",
+    "values": [
+      3000,
+      2649,
+      2443,
+      2297,
+      2184,
+      2092,
+      2014,
+      1946,
+      1887,
+      1833,
+      1785,
+      1741,
+      1700,
+      1663,
+      1628,
+      1595,
+      1564,
+      1535,
+      1508,
+      1482,
+      1457,
+      1434,
+      1411,
+      1389,
+      1369,
+      1349,
+      1330,
+      1311,
+      1294,
+      1276,
+      1260,
+      1244,
+      1228,
+      1213,
+      1198,
+      1184,
+      1170,
+      1157,
+      1143,
+      1131,
+      1118,
+      1106,
+      1094,
+      1082,
+      1071,
+      1060,
+      1049,
+      1038,
+      1028,
+      1018,
+      1007,
+      998,
+      988,
+      979,
+      969,
+      960,
+      951,
+      942,
+      934,
+      925,
+      917,
+      909,
+      900,
+      892,
+      885,
+      877,
+      869,
+      862,
+      854,
+      847,
+      840,
+      833,
+      826,
+      819,
+      812,
+      805,
+      799,
+      792,
+      786,
+      779,
+      773,
+      767,
+      761,
+      755,
+      749,
+      743,
+      737,
+      731,
+      725,
+      720,
+      714,
+      709,
+      703,
+      698,
+      692,
+      687,
+      682,
+      676,
+      671,
+      666,
+      661,
+      656,
+      651,
+      646,
+      642,
+      637,
+      632,
+      627,
+      623,
+      618,
+      613,
+      609,
+      604,
+      600,
+      595,
+      591,
+      587,
+      582,
+      578,
+      574,
+      570,
+      565,
+      561,
+      557,
+      553,
+      549,
+      545,
+      541,
+      537,
+      533,
+      529,
+      526,
+      522,
+      518,
+      514,
+      510,
+      507,
+      503,
+      499,
+      496,
+      492,
+      489,
+      485,
+      481,
+      478,
+      474,
+      471,
+      468,
+      464,
+      461,
+      457,
+      454,
+      451,
+      447,
+      444,
+      441,
+      438,
+      434,
+      431,
+      428,
+      425,
+      422,
+      419,
+      416,
+      412,
+      409,
+      406,
+      403,
+      400,
+      397,
+      394,
+      391,
+      388,
+      386,
+      383,
+      380,
+      377,
+      374,
+      371,
+      368,
+      366,
+      363,
+      360,
+      357,
+      354,
+      352,
+      349,
+      346,
+      344,
+      341,
+      338,
+      336,
+      333,
+      330,
+      328,
+      325,
+      323,
+      320,
+      318,
+      315,
+      312,
+      310,
+      307,
+      305,
+      302,
+      300,
+      298,
+      295,
+      293,
+      290,
+      288,
+      285,
+      283,
+      281,
+      278,
+      276,
+      274,
+      271,
+      269,
+      267,
+      264,
+      262,
+      260,
+      258
+    ]
+  },
+  "model": {
+    "evidence": "DESIGN",
+    "ovr_floor": 0.45,
+    "ovr_exponent": 3,
+    "decline_after_years_pro": [
+      12,
+      14,
+      14,
+      7,
+      7,
+      8,
+      8,
+      5,
+      8,
+      8,
+      7,
+      7,
+      10,
+      10,
+      10,
+      9,
+      8
+    ],
+    "decline_per_year": 0.08,
+    "decline_floor": 0.25,
+    "surplus_weight": 0.5,
+    "surplus_years_cap": 4,
+    "chart_to_player_units": 2,
+    "future_pick_discount": 0.75,
+    "growth": "Repeat the observed 2025-to-2026 ratio as a scenario, not a forecast"
+  }
+}

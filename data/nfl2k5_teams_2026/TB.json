@@ -1,0 +1,998 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "TB",
+ "name": "Tampa Bay Buccaneers",
+ "asset_code": "27",
+ "season": 2026,
+ "status": "Phase B job d7 (NFC South), 2026-09-23. RECOLOURED: the 2020 set (1997 design revived) with the 2014 flag logo, the darker pewter and the black collar and sleeve bands; home pants white, road pants pewter. Colours sourced; albedo INFERRED from 2026 photos.",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Todd Bowles",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status). Base defense from the nflverse depth charts since 2026-09-09: 'Base 3-4 D'."
+ },
+ "sources": {
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Tampa_Bay_Buccaneers&action=raw (2020 to present; 2026 notes)",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Tampa_Bay_Buccaneers_Uniforms_(2026).png (CC BY-SA)",
+  "road_photos": "https://www.buccaneers.com/photos/best-photos-of-bucs-vs-bengals-game-action (2026 week 1: white jersey, pewter pants)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (TB, 2026 NFL Record and Fact Book p.226)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "red": "#A71930",
+  "pewter": "#322F2B",
+  "orange": "#DC4405",
+  "black": "#000000",
+  "grey": "#B1BABF",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "jersey_red": "#B21C35",
+  "pewter": "#4B4641",
+  "retail_pewter": "#6D6353",
+  "retail_pants_pewter": "#605448",
+  "retail_red": "#880708",
+  "orange": "#DC4405",
+  "black": "#0E0E0E",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "logo_red": "#A71930",
+  "logo_grey": "#B1BABF",
+  "ez_red": "#A71930"
+ },
+ "marks": {
+  "club_logo": "club_logo.png",
+  "trims_27H0_torso": "trims_27H0_torso.png",
+  "trims_27A0_torso": "trims_27A0_torso.png",
+  "trims_27H0_sleeve": "trims_27H0_sleeve.png",
+  "trims_27A0_sleeve": "trims_27A0_sleeve.png",
+  "wordmark_27H0": "wordmark_27H0.png",
+  "wordmark_27A0": "wordmark_27A0.png",
+  "logo_silhouette": "logo_silhouette.png",
+  "logo_red": "logo_red.png",
+  "logo_black": "logo_black.png",
+  "logo_grey": "logo_grey.png",
+  "logo_white": "logo_white.png",
+  "logo_orange": "logo_orange.png",
+  "bucs_letters": "bucs_letters.png",
+  "bucs_shadow": "bucs_shadow.png",
+  "bucs_outline12": "bucs_outline12.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "27H0",
+   "note": "2026 home: Buccaneer-red jersey with the black collar, black BUCCANEERS chest wordmark, white numbers trimmed in orange and black, black sleeve bands and the ship on the sleeves, white pants with a black-red-orange-red-black stripe, black socks, dark pewter helmet with the 2014 flag",
+   "torso": {
+    "base_colour": "jersey_red",
+    "neck_donor": "27H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "trims_27H0_torso",
+      "center": [
+       276.0,
+       40.125
+      ],
+      "width": 296.5
+     },
+     {
+      "mark": "wordmark_27H0",
+      "center": [
+       160.5,
+       91.938
+      ],
+      "width": 49.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_red",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_27H0_sleeve",
+      "center": [
+       64.0,
+       66.562
+      ],
+      "width": 116.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "black",
+      2
+     ],
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "orange",
+      2
+     ],
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "black",
+      2
+     ]
+    ],
+    "swoosh_colour": "jersey_red"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "27H0",
+    "fill": "white",
+    "outline": "orange",
+    "outline_frac": 0.017,
+    "outline2": "black",
+    "outline2_frac": 0.024
+   },
+   "helmet_digits": {
+    "glyph_donor": "27H0",
+    "fill": "black"
+   },
+   "nameplate": {
+    "glyph_donor": "27H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "retail_pewter",
+    "shell": "pewter",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "jersey",
+      "tolerance": 0.32
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.1
+    }
+   },
+   "outer_index": 3842,
+   "splayer": {
+    "torso_donor_outer": 3842,
+    "torso_donor": "27H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "all",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "27A0",
+   "note": "2026 road: white jersey with the black collar, black BUCCANEERS chest wordmark, red numbers trimmed in orange and black, black sleeve bands and the ship on the sleeves, pewter pants with a black-red-orange-red-black stripe, black socks, dark pewter helmet with the 2014 flag",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "27H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "jersey_red"
+    },
+    "decorations": [
+     {
+      "mark": "trims_27A0_torso",
+      "center": [
+       276.0,
+       40.125
+      ],
+      "width": 296.5
+     },
+     {
+      "mark": "wordmark_27A0",
+      "center": [
+       162.5,
+       90.0
+      ],
+      "width": 45.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_27A0_sleeve",
+      "center": [
+       64.0,
+       67.562
+      ],
+      "width": 116.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pewter",
+    "stripe": [
+     [
+      "black",
+      2
+     ],
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "orange",
+      2
+     ],
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "black",
+      2
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "27A0",
+    "fill": "jersey_red",
+    "outline": "orange",
+    "outline_frac": 0.017,
+    "outline2": "black",
+    "outline2_frac": 0.024
+   },
+   "helmet_digits": {
+    "glyph_donor": "27A0",
+    "fill": "black"
+   },
+   "nameplate": {
+    "glyph_donor": "27A0",
+    "fill": "jersey_red"
+   },
+   "helmet": {
+    "shell_from": "retail_pewter",
+    "shell": "pewter",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "jersey",
+      "tolerance": 0.32
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "pewter",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.1
+    }
+   },
+   "outer_index": 4159,
+   "splayer": {
+    "torso_donor_outer": 4159,
+    "torso_donor": "27A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "all",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "pewter",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "Buccaneer-red jersey body, black collar ring, black BUCCANEERS wordmark under the collar, small NFL shield, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "red sleeve with a black cuff band and the black, red and pewter pirate ship",
+   "pants": "white with a black-red-orange-red-black side stripe, red maker mark",
+   "helmet": "dark pewter shell with the red flag, white skull and orange football logo, flag and shield decals",
+   "digit_jersey": "white numbers trimmed in orange and black",
+   "digit_arm": "white numbers trimmed in orange and black",
+   "digit_helmet": "black numbers",
+   "nameplate": "white letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: white pants, red torso, pewter helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: red jersey with a white number, white pants, pewter helmet with the flag logo, dark shading",
+   "team-select_helm": "menu render: pewter helmet with the red flag logo, black facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, black collar ring, black BUCCANEERS wordmark under the collar, small NFL shield, red maker marks; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with a black cuff band and the black, red and pewter pirate ship",
+   "pants": "dark pewter with a black-red-orange-red-black side stripe, white maker mark",
+   "helmet": "dark pewter shell with the red flag, white skull and orange football logo, flag and shield decals",
+   "digit_jersey": "red numbers trimmed in orange and black",
+   "digit_arm": "red numbers trimmed in orange and black",
+   "digit_helmet": "black numbers",
+   "nameplate": "red letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: pewter pants, white torso, pewter helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a red number, pewter pants, pewter helmet with the flag logo, grey shading",
+   "team-select_helm": "menu render: pewter helmet with the red flag logo, black facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "team end zone art: Buccaneer red paint with BUCCANEERS in the current wordmark (white letters, pewter drop shadow, black keyline) at both ends, as retail, and the 2014 flag logo at both ends in place of the 1997 ship and the old NFL shield (INFERRED: no 2025-2026 end zone photo was found)",
+   "center_logo": "the full-colour club logo at midfield",
+   "banner": "cloth fan banners in team colours with 2026 player names and chants"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Baker Mayfield": 0,
+   "Emeka Egbuka": 3,
+   "Bucky Irving": 5,
+   "Cade Otton": 0,
+   "Rueben Bain": 5,
+   "Zyon McCollum": 2,
+   "Alex Anzalone": 0,
+   "Vita Vea": 2,
+   "Antoine Winfield": 3,
+   "Tykee Smith": 4,
+   "Tristan Wirfs": 1,
+   "Ben Bredeson": 0,
+   "Graham Barton": 0,
+   "Chase McLaughlin": 0,
+   "Riley Dixon": 0,
+   "Jalon Daniels": 5,
+   "Rod Godwin": 4,
+   "Kenny Gainwell": 4,
+   "Payne Durham": 0,
+   "Yaya Diaby": 5,
+   "Benjamin Morrison": 4,
+   "Josiah Trotter": 4,
+   "Calijah Kancey": 5,
+   "Miles Killebrew": 3,
+   "Luke Goedeke": 0,
+   "Cody Mauch": 0,
+   "Dan Feeney": 0,
+   "Jalen McMillan": 3,
+   "Sean Tucker": 4,
+   "Ko Kieft": 0,
+   "Al-Quadin Muhammad": 4,
+   "Jacob Parrish": 4,
+   "Christian Rozeboom": 0,
+   "A'Shawn Robinson": 5,
+   "Benjamin Chukwuma": 5,
+   "Billy Schrauth": 0,
+   "Evan Deckers": 0,
+   "Ted Hurst": 5,
+   "Bauer Sharp": 0,
+   "Anthony Nelson": 0,
+   "Kevin Knowles": 4,
+   "SirVocea Dennis": 4,
+   "Rakeem Nunez-Roches": 5,
+   "Justin Skule": 0,
+   "Luke Haggard": 0,
+   "Tez Johnson": 4,
+   "David Walker": 4,
+   "Ayden Garnes": 5,
+   "Elijah Roberts": 4,
+   "Kameron Johnson": 4,
+   "Keionte Scott": 4,
+   "DeMonte Capehart": 5,
+   "Elijah Simmons": 5
+  },
+  "dreads": [
+   "Elijah Simmons",
+   "Yaya Diaby"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads by eye."
+ },
+ "venue": {
+  "prefix": "s27",
+  "notes": "Buccaneers home games at the retail stadium scene (Raymond James Stadium). End zones: Buccaneer red paint with BUCCANEERS in the current wordmark (white letters, pewter drop shadow, black keyline) at both ends, as retail, and the 2014 flag logo at both ends in place of the 1997 ship and the old NFL shield (INFERRED: no 2025-2026 end zone photo was found). Midfield: the full-colour 2014 flag (INFERRED). Fan banners: 2026 names and chants.",
+  "sources": [],
+  "endzone": {
+   "paint": "ez_red",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "bucs_outline12",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "bucs_shadow",
+     "colour": "pewter",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "bucs_letters",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_grey",
+     "colour": "logo_grey",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_grey",
+     "colour": "logo_grey",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "ez_red",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "bucs_outline12",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "bucs_shadow",
+     "colour": "pewter",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "bucs_letters",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_grey",
+     "colour": "logo_grey",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      102,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_grey",
+     "colour": "logo_grey",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      666,
+      64
+     ],
+     "height": 90,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "RAISE THE\nFLAGS",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "pewter",
+      "items": [
+       {
+        "text": "#6 MAYFIELD",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 14
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#7 IRVING",
+        "colour": "logo_red",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "#2 EGBUKA",
+        "colour": "white",
+        "center": [
+         192.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "pewter",
+      "items": [
+       {
+        "text": "#78 WIRFS",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#50 VEA",
+        "colour": "logo_red",
+        "center": [
+         192.0,
+         95.0
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "#31 WINFIELD",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO BUCS!",
+        "colour": "logo_red",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

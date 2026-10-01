@@ -71,6 +71,8 @@ class RetailTests(unittest.TestCase):
     def test_night_bundle_refit_matches_the_pins_and_keeps_the_wrappers(self):
         pins = json.loads(ma.PINS_PATH.read_text(encoding="utf-8"))
         pin = next(b for b in pins["bundles"] if b["name"] == "s13nd.iff")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACKS)
         with ma._outer_image()(PACKS) as archive:
             entry = archive.entries[pin["outer"]]
             self.assertEqual(entry.name_id, pin["name_id"])
@@ -96,6 +98,8 @@ class RetailTests(unittest.TestCase):
     def test_pins_cover_every_bundle_and_the_packs_read_as_retail(self):
         pins = json.loads(ma.PINS_PATH.read_text(encoding="utf-8"))
         self.assertEqual([b["name"] for b in pins["bundles"]], list(ma.VARIANTS))
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACKS)
         with ma._outer_image()(PACKS) as archive:
             found = ma.arrowhead_entries(archive)
             self.assertEqual(set(found), set(ma.VARIANTS))

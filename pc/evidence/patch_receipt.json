@@ -1,0 +1,64 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runtime_witnessed": false,
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "runtime_revision": 13,
+  "code_capacity": 5376,
+  "code_used": 5287,
+  "data_capacity": 128,
+  "placement_stub_bytes": 129,
+  "new_sites": [
+    {
+      "label": "playcall_layout_init",
+      "va": "0xac40c",
+      "size": 5,
+      "before": "e8fff5f7ff",
+      "after": "e815f04201"
+    },
+    {
+      "label": "LAST PLAY / offense_chose_a camera y",
+      "va": "0x4e9664",
+      "size": 4,
+      "before": "00000000",
+      "after": "000058c2"
+    },
+    {
+      "label": "playcallframe_choose camera y",
+      "va": "0x4f0e24",
+      "size": 4,
+      "before": "00000000",
+      "after": "000058c2"
+    },
+    {
+      "label": "play-call preview y endpoint",
+      "va": "0xa84ae0",
+      "size": 4,
+      "before": "986e123e",
+      "after": "0907b83c"
+    },
+    {
+      "label": "play-call preview y endpoint",
+      "va": "0xa84ae8",
+      "size": 4,
+      "before": "85eb113f",
+      "after": "2f20e63e"
+    },
+    {
+      "label": "play-call preview y endpoint",
+      "va": "0xa84af0",
+      "size": 4,
+      "before": "295c0f3f",
+      "after": "7701e13e"
+    },
+    {
+      "label": "play-call preview y endpoint",
+      "va": "0xa84af8",
+      "size": 4,
+      "before": "0000803f",
+      "after": "9224613f"
+    }
+  ],
+  "request_growth_bytes": 0,
+  "readback_status": "applied",
+  "manifest_regenerated": false
+}

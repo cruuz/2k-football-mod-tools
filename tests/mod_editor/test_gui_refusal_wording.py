@@ -17,7 +17,6 @@ from unittest import mock
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PIL import Image  # noqa: E402
-from PyQt5 import sip  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
 
 from mod_editor.apf_studio import gui  # noqa: E402
@@ -112,9 +111,11 @@ class DigitalFontConversionTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     def test_an_opaque_jpeg_becomes_a_white_alpha_mask(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -195,9 +196,11 @@ class AppleDoubleRefusalTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     class _UrlEvent:
         """Just enough of a QDropEvent for the panels' handlers."""

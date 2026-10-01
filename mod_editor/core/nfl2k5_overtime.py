@@ -498,6 +498,8 @@ def _site_state(payload: bytes, label: str, off: int, before: bytes, after: byte
 
 
 def _group_states(payload: bytes) -> dict[str, set[str]]:
+    from . import nfl2k5_era_rules as era
+    payload = era.underlying_view(payload)
     states: dict[str, set[str]] = {g: set() for g in GROUPS}
     for group, label, off, before, after in _sites(payload, 10, True, True, True):
         states[group].add(_site_state(payload, label, off, before, after))

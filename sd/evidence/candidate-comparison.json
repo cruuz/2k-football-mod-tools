@@ -1,0 +1,80 @@
+{
+  "C": {
+    "size": 6090037248,
+    "xbe_sha256": "780eb1251eba1fbb9261343a7eeab3d1608b2c953f163414b113b535b47e42fb",
+    "spans": {
+      "0xe8410": {
+        "size": 890,
+        "sha256": "30d5d5da652cadb99af025536dfd964e6af2df7783a2bff7397852bebb394ab6"
+      },
+      "0x189360": {
+        "size": 389,
+        "sha256": "5b2be3fdd1c09df3407d4768795ce7c13b2aa6ba64eb82b648ec0ee0c3cc61ab"
+      },
+      "0x4f59a0": {
+        "size": 16,
+        "sha256": "7c5334bc42b6b09f43f12ef08f89869fac9deaaa25cc7c0017d486494c79a9c0"
+      },
+      "0x4f5a38": {
+        "size": 1444,
+        "sha256": "d21c1488c49105786bea37d381a779fd2787cbf8a5b508d25fbe12869507a5a6"
+      },
+      "0x222230": {
+        "size": 18,
+        "sha256": "4bc324ed6d7014fc23d61c9bff0270e76952bd514f352f7f6166562f87c2c23d"
+      }
+    }
+  },
+  "D": {
+    "size": 8012931072,
+    "xbe_sha256": "f69ee7a3c4fb5e7a6eea50fe6ae0ece740a7f4e72efa85df507145dd85f96b44",
+    "spans": {
+      "0xe8410": {
+        "size": 890,
+        "sha256": "30d5d5da652cadb99af025536dfd964e6af2df7783a2bff7397852bebb394ab6"
+      },
+      "0x189360": {
+        "size": 389,
+        "sha256": "5b2be3fdd1c09df3407d4768795ce7c13b2aa6ba64eb82b648ec0ee0c3cc61ab"
+      },
+      "0x4f59a0": {
+        "size": 16,
+        "sha256": "7c5334bc42b6b09f43f12ef08f89869fac9deaaa25cc7c0017d486494c79a9c0"
+      },
+      "0x4f5a38": {
+        "size": 1444,
+        "sha256": "d21c1488c49105786bea37d381a779fd2787cbf8a5b508d25fbe12869507a5a6"
+      },
+      "0x222230": {
+        "size": 18,
+        "sha256": "4bc324ed6d7014fc23d61c9bff0270e76952bd514f352f7f6166562f87c2c23d"
+      }
+    }
+  },
+  "D_compact": {
+    "size": 5924454400,
+    "xbe_sha256": "f69ee7a3c4fb5e7a6eea50fe6ae0ece740a7f4e72efa85df507145dd85f96b44",
+    "spans": {
+      "0xe8410": {
+        "size": 890,
+        "sha256": "30d5d5da652cadb99af025536dfd964e6af2df7783a2bff7397852bebb394ab6"
+      },
+      "0x189360": {
+        "size": 389,
+        "sha256": "5b2be3fdd1c09df3407d4768795ce7c13b2aa6ba64eb82b648ec0ee0c3cc61ab"
+      },
+      "0x4f59a0": {
+        "size": 16,
+        "sha256": "7c5334bc42b6b09f43f12ef08f89869fac9deaaa25cc7c0017d486494c79a9c0"
+      },
+      "0x4f5a38": {
+        "size": 1444,
+        "sha256": "d21c1488c49105786bea37d381a779fd2787cbf8a5b508d25fbe12869507a5a6"
+      },
+      "0x222230": {
+        "size": 18,
+        "sha256": "4bc324ed6d7014fc23d61c9bff0270e76952bd514f352f7f6166562f87c2c23d"
+      }
+    }
+  }
+}

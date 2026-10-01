@@ -1,0 +1,17 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runs": [
+    {
+      "log": "focused-tests-final.log",
+      "summary": "40 passed, 1 skipped, 19 subtests passed in 11.48s"
+    },
+    {
+      "log": "build-regressions-final.log",
+      "summary": "60 passed, 64 subtests passed in 363.73s (0:06:03)"
+    }
+  ],
+  "passed": 100,
+  "subtests_passed": 83,
+  "skipped": 1,
+  "scope": "Compactor, build composition, layout tolerance, XDVDFS robustness, mod_build and build service regressions"
+}

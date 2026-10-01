@@ -22,7 +22,7 @@ class MaskQtTests(FacadeFixture):
 
     def test_live_checkbox_preview_undo_and_requested_row_edit(self):
         panel=self.panel;live=panel.situation_masks
-        self.assertEqual(live.bucket.count(),12)
+        self.assertEqual(live.bucket.count(),36)
         self.assertFalse(live.enabled.isChecked());self.assertFalse(self.facade.session.modifications)
         self.assertFalse(live.candidates.cellWidget(0,3).isEnabled())
         live.enabled.click();self.assertTrue(live.candidates.cellWidget(0,3).isEnabled())
@@ -70,9 +70,9 @@ class MaskQtTests(FacadeFixture):
         state=self.facade._playcalling.state(self.facade.session)
         self.assertEqual(state.situation_personnel_rows['O-ManBlock'][8],{'3':9})
         self.assertIn((3,8,{'3':9}),seen)
-        self.assertIn('Requires the matching v2',live.dependency.text())
+        self.assertIn('Requires the matching',live.dependency.text())
         self.assertFalse(self.facade.launcher.pass_fetch_status(kind='situations')['installed'])
-        live.check.click();self.assertIn('Requires the matching v2',live.dependency.text())
+        live.check.click();self.assertIn('Requires the matching',live.dependency.text())
         self.assertEqual(panel.candidate_table.item(0,5).text(),'0.5')
         self.assertEqual(panel.candidate_table.item(0,6).text(),'0.1')
         self.assertEqual(panel.candidate_table.item(0,7).text(),'2')
@@ -80,7 +80,7 @@ class MaskQtTests(FacadeFixture):
         self.assertEqual(panel.candidate_table.item(0,9).text(),'3 / 9')
         path=self.root/'installed.patch.toml';path.write_bytes(prepare(state,'base')['payload'])
         result={'installed':True,'enabled':True,'patch_path':str(path),'message':'Installed'}
-        live.patch_result(result);self.assertIn('Matching v2 situation patch installed and enabled',live.dependency.text())
+        live.patch_result(result);self.assertIn('Matching situation patch installed and enabled',live.dependency.text())
         live.bucket.setCurrentIndex(7);self.assertEqual(live.local_row.value(),-1)
         live.bucket.setCurrentIndex(8);self.assertEqual(live.local_row.value(),9)
         live.local_row.setValue(-1);live.write_local.click()

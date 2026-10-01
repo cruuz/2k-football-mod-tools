@@ -1,0 +1,726 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "ATL",
+ "name": "Atlanta Falcons",
+ "asset_code": "01",
+ "season": 2026,
+ "sources_uw": {"sleeve_logo_2026": "nike.com's 2026 Falcons Game jerseys (red): the falcon under the swoosh facing forward on both arms (mirrored on the left sleeve)"},
+ "status": "Phase B job d7 (NFC South), 2026-09-23. REDESIGNED 2026 set (unveiled 2026-04-02). Colours sourced; albedo INFERRED from the 2026 reveal photos.",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Kevin Stefanski",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status). Base defense from the nflverse depth charts since 2026-09-09: 'Base 3-4 D'."
+ },
+ "sources": {
+  "kit_rules": "https://news.sportslogos.net/2026/04/02/atlanta-falcons-officially-unveil-new-uniforms-for-2026-season/football/",
+  "team_release": "https://www.atlantafalcons.com/news/authentic-fast-timeless-atlanta-falcons-unveil-new-uniforms",
+  "espn": "https://www.espn.com/nfl/story/_/id/48378096/atlanta-falcons-new-uniforms-2026",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Atlanta_Falcons&action=raw",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (ATL, 2026 NFL Record and Fact Book p.148)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg",
+  "number_font": "traced from the team's 2026 number-set graphic (SportsLogos.net reveal image IMG_9627)",
+  "wordmarks": "traced from the 2026 chest close-up (SportsLogos.net reveal image IMG_9628)",
+  "head_coach": "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach (hired 2026-01-17)",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "red": "#A71930",
+  "black": "#000000",
+  "silver": "#A5ACAF",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "jersey_red": "#B81B36",
+  "black": "#0C0C0C",
+  "helmet_black": "#0C0C0C",
+  "silver": "#A5ACAF",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_red": "#A71930",
+  "field_black": "#111111",
+  "logo_red": "#A71930",
+  "logo_silver": "#A5ACAF",
+  "field_green": "#2E6B2E"
+ },
+ "marks": {
+  "club_logo": "club_logo.png",
+  "falcons_wordmark": "falcons_wordmark.png",
+  "atlanta_wordmark": "atlanta_wordmark.png",
+  "logo_silhouette": "logo_silhouette.png",
+  "logo_black": "logo_black.png",
+  "logo_white": "logo_white.png",
+  "logo_silver": "logo_silver.png",
+  "logo_red": "logo_red.png",
+  "atl_fill": "atl_fill.png",
+  "atl_outline30": "atl_outline30.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "01H0",
+   "note": "2026 home: red jersey, white FALCONS wordmark over white notched block numbers outlined in black, falcon logo on the sleeves, white pants with the silver-black-red-black-silver stripe, red socks, low-gloss black helmet, grey facemask",
+   "torso": {
+    "base_colour": "jersey_red",
+    "neck_donor": "01H7",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "falcons_wordmark",
+     "colour": "white",
+     "center": [
+      161,
+      92.5
+     ],
+     "width": 56
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_red",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "club_logo",
+      "center": [
+       57.5,
+       24
+      ],
+      "width": 36,
+      "mirror": false
+     },
+     {
+      "mark": "club_logo",
+      "center": [
+       70.5,
+       88
+      ],
+      "width": 36,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "silver",
+      2
+     ],
+     [
+      "white",
+      2
+     ],
+     [
+      "black",
+      4
+     ],
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "black",
+      4
+     ],
+     [
+      "white",
+      2
+     ],
+     [
+      "silver",
+      2
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "jersey_red"
+   },
+   "digits": {
+    "glyph_donor": "01H0",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/ATL/marks/ATL_2026_numbers.ttf",
+    "outline": "black",
+    "outline_frac": 0.035
+   },
+   "helmet_digits": {
+    "glyph_donor": "01H0",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/ATL/marks/ATL_2026_numbers.ttf",
+    "outline": "jersey_red",
+    "outline_frac": 0.045
+   },
+   "nameplate": {
+    "glyph_donor": "01H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "helmet_black",
+    "shell": "helmet_black",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.05
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "outer_index": 3622,
+   "splayer": {
+    "torso_donor_outer": 3633,
+    "torso_donor": "01H7",
+    "sleeve_from_donor": false
+   }
+  },
+  "away": {
+   "selector": "01A0",
+   "note": "2026 road: white jersey, black ATLANTA wordmark over red notched block numbers outlined in black, falcon logo on the sleeves, black pants with the silver-black-red-black-silver stripe (k2 2026-09-24, from the Wikipedia 2026 uniform diagram refs/img/wiki_ATL_uniforms_2026.png and SportsLogos 2026-04-02: white and black pants), white socks, low-gloss black helmet, grey facemask",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "01A7",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "atlanta_wordmark",
+     "colour": "black",
+     "center": [
+      161,
+      92.5
+     ],
+     "width": 56
+    },
+    "sleeve_swooshes": {
+     "colour": "jersey_red"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "club_logo",
+      "center": [
+       57.5,
+       24
+      ],
+      "width": 36,
+      "mirror": false
+     },
+     {
+      "mark": "club_logo",
+      "center": [
+       70.5,
+       88
+      ],
+      "width": 36,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "black",
+    "stripe": [
+     [
+      "silver",
+      2
+     ],
+     [
+      "white",
+      2
+     ],
+     [
+      "black",
+      4
+     ],
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "black",
+      4
+     ],
+     [
+      "white",
+      2
+     ],
+     [
+      "silver",
+      2
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "01H0",
+    "fill": "jersey_red",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/ATL/marks/ATL_2026_numbers.ttf",
+    "outline": "black",
+    "outline_frac": 0.035
+   },
+   "helmet_digits": {
+    "glyph_donor": "01H0",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/ATL/marks/ATL_2026_numbers.ttf",
+    "outline": "jersey_red",
+    "outline_frac": 0.045
+   },
+   "nameplate": {
+    "glyph_donor": "01H0",
+    "fill": "jersey_red"
+   },
+   "helmet": {
+    "shell_from": "helmet_black",
+    "shell": "helmet_black",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.05
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "outer_index": 3939,
+   "splayer": {
+    "torso_donor_outer": 3950,
+    "torso_donor": "01A7",
+    "sleeve_from_donor": false
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "red jersey body, white FALCONS wordmark on the chest, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "red sleeve with the full-colour falcon logo (black, red, white, silver)",
+   "pants": "white with a silver-black-red-black-silver side stripe, black maker mark",
+   "helmet": "black shell with the full-colour falcon logo, white and grey hardware, flag and shield decals",
+   "digit_jersey": "white numbers with a thin black outline",
+   "digit_arm": "white numbers with a thin black outline",
+   "digit_helmet": "white numbers with a red outline",
+   "nameplate": "white letters",
+   "socks00": "solid red",
+   "splayer": "far-away player atlas: white pants with dark stripe, red torso, black helmet, red socks, skin and glove patches",
+   "team-select_unif": "menu render: red jersey with a white number, white pants, black helmet with the falcon logo, dark shading",
+   "team-select_helm": "menu render: black helmet with the falcon logo, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, black ATLANTA wordmark on the chest, small NFL shield at the collar, red maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with the full-colour falcon logo (black, red, white, silver)",
+   "pants": "white with a silver-black-red-black-silver side stripe, black maker mark",
+   "helmet": "black shell with the full-colour falcon logo, white and grey hardware, flag and shield decals",
+   "digit_jersey": "red numbers with a thin black outline",
+   "digit_arm": "red numbers with a thin black outline",
+   "digit_helmet": "white numbers with a red outline",
+   "nameplate": "red letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants with dark stripe, white torso, black helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a red number, white pants, black helmet with the falcon logo, grey shading",
+   "team-select_helm": "menu render: black helmet with the falcon logo, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "team end zone art: unpainted turf with a large ATL in the 2026 block letters (black with a white outline), a falcon logo at each end (2026 week 2 bird's-eye photos show black ATL letters with a white outline and the falcon logo in the end zones; the exact 2026 layout is INFERRED)",
+   "center_logo": "the full-colour club logo at midfield",
+   "banner": "cloth fan banners in team colours with 2026 player names and chants"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Michael Penix": 4,
+   "Drake London": 2,
+   "Bijan Robinson": 4,
+   "Kyle Pitts": 4,
+   "Za'Darius Smith": 5,
+   "Mike Hughes": 4,
+   "Divine Deablo": 5,
+   "Gervon Dexter": 5,
+   "Xavier Watts": 3,
+   "Jessie Bates": 3,
+   "Jake Matthews": 0,
+   "Matthew Bergeron": 3,
+   "Ryan Neuzil": 0,
+   "Nick Folk": 0,
+   "Jake Bailey": 0,
+   "Tua Tagovailoa": 2,
+   "Jahan Dotson": 4,
+   "Brian Robinson": 5,
+   "Charlie Woerner": 0,
+   "Samson Ebukam": 5,
+   "Billy Bowman": 3,
+   "Kendal Daniels": 4,
+   "Brandon Dorlus": 5,
+   "Sydney Brown": 3,
+   "DeMarcco Hellams": 4,
+   "Jawaan Taylor": 5,
+   "Chris Lindstrom": 0,
+   "Corey Levin": 0,
+   "Cooper Rush": 0,
+   "Olamide Zaccheaus": 5,
+   "Austin Hooper": 0,
+   "Cameron Thomas": 0,
+   "C.J. Henderson": 4,
+   "Christian Harris": 5,
+   "LaCale London": 3,
+   "Michael Jerrell": 4,
+   "Kyle Hinton": 4,
+   "Liam McCullough": 0,
+   "Jack Strand": 0,
+   "Zachariah Branch": 4,
+   "Nick Muse": 0,
+   "Jared Ivey": 4,
+   "Malcolm DeWalt": 4,
+   "Harold Perkins": 4,
+   "Maason Smith": 4,
+   "Ethan Onianwa": 5,
+   "Chris Blair": 5,
+   "Yasir Abdullah": 4,
+   "Mike Ford": 4,
+   "Josh Woods": 4,
+   "Zach Harrison": 5,
+   "Bralen Trice": 4,
+   "Avieon Terrell": 4
+  },
+  "dreads": [
+   "Avieon Terrell",
+   "Billy Bowman",
+   "Brandon Dorlus",
+   "C.J. Henderson",
+   "Gervon Dexter",
+   "Harold Perkins",
+   "Jared Ivey",
+   "Jessie Bates",
+   "Kendal Daniels",
+   "Za'Darius Smith"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads by eye."
+ },
+ "venue": {
+  "prefix": "s01",
+  "notes": "Falcons home games at the retail Georgia Dome scene (Mercedes-Benz Stadium in 2026). End zones: unpainted turf with a large ATL in the 2026 block letters (black with a white outline), a falcon logo at each end (2026 week 2 bird's-eye photos show black ATL letters with a white outline and the falcon logo in the end zones; the exact 2026 layout is INFERRED). Midfield: the full-colour falcon logo (2026 photos). One retail texture set serves both end zones. Fan banners: 2026 names and chants.",
+  "sources": [],
+  "endzone": {
+   "paint": "field_green",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "atl_outline30",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 92,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "atl_fill",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 92,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      112,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      112,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      112,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      112,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      112,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      656,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      656,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      656,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      656,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_red",
+     "colour": "logo_red",
+     "center": [
+      656,
+      64
+     ],
+     "height": 88,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "RISE UP",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "DIRTY\nBIRDS",
+        "colour": "logo_red",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#7 BIJAN",
+        "colour": "logo_red",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "#5 LONDON",
+        "colour": "white",
+        "center": [
+         192.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#9 PENIX",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#8 PITTS",
+        "colour": "black",
+        "center": [
+         192.0,
+         95.0
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#3 BATES",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_red",
+      "items": [
+       {
+        "text": "RISE UP\nATL",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

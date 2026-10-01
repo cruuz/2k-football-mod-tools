@@ -20,6 +20,9 @@ import nfl_draft_weight_xbe_integrity_probe as probe  # noqa: E402
 class DraftWeightIntegrityProbeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (probe.XBE, probe.AUDIT) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL draft integrity sources missing: " + ", ".join(missing))
         cls.report = probe.generate()
 
     def test_exact_target_and_both_integrity_branches_are_bounded(self) -> None:

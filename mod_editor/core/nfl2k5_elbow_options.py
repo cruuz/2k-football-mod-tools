@@ -29,7 +29,9 @@ wristbands 14, sleeves 4, shoes 7, neck roll 5, turtleneck 4); elbow pads are th
 short one.
 
 The patch raises the two ``cmp dl, 9`` immediates to 15 and retargets the two backward
-wraps from 9 to 15. Four .text spans, ten changed bytes, no cave and no new data. The
+wraps from 9 to 15. Four .text spans (108 pinned bytes), no cave and no new data: it
+rewrites the two one-byte caps and each wrap's four-byte ``and``/``or`` immediates, 18
+bytes, of which eight differ from retail. The
 field stays four bits wide and the stored value stays in 0..15, so a patched image and a
 retail image read each other's rosters unchanged. Unwitnessed in game.
 """

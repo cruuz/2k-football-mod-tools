@@ -1,0 +1,56 @@
+{
+  "schema": "apf2k8_situation_mask/v3",
+  "classification": "EXPERIMENTAL",
+  "runtime_status": "UNWITNESSED",
+  "profile": "tu_1_1",
+  "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+  "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08; key 12 = phase 3 ordinary two-point offense",
+  "policies": {},
+  "personnel_rows": {},
+  "data_sha256": "208dec6e1e1d621510a9209241861970e0bb4f83587ebb9a5467aec714c5fcd5",
+  "formation_weights": {
+    "O-ManBlock": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "14": 4.0
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "hooks": [
+    [
+      2223423128,
+      2228282112
+    ],
+    [
+      2223416256,
+      2228283464
+    ],
+    [
+      2223422864,
+      2228284716
+    ]
+  ],
+  "code": {
+    "instructions": 815,
+    "branches": 140,
+    "sha256": "1393f050c5db7be6b772ba16fc740a805778f111afb4515df18b345e9c78abf4"
+  },
+  "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+  "limits": "Ordinary automatic offense in scrimmage phase 4 and ordinary two-point offense in phase 3; cached specials, explicit play/formation paths and special personnel rows bypass the policy.",
+  "weight_formula": "f32(native formation lottery weight * multiplier); category lottery unchanged; empty exclusion fallback retains original weights",
+  "revert": "Remove installed patch and restart Xenia; no game image or book bytes are changed. Set multiplier to 1 and reinstall to remove an individual override.",
+  "example_only": true,
+  "output_sha256": "9553365d7b8995aff14b2cb189dcb7d2935d94108b75810975428d788af3d7c9",
+  "output_file": "54540807-a3-example-tu_1_1.patch.toml"
+}

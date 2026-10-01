@@ -1,0 +1,1108 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runtime_witnessed": false,
+  "xbe_sha256": "28bc295730ae97bb3e1968d6967a748317358b1e1f2753513e5ffd1fd2db5124",
+  "boundary": "Native SITU relocation, imports, text reads and wide formatter; archive and presentation stubs.",
+  "moments": [
+    {
+      "row": 1,
+      "venue": "Lambeau Field",
+      "native_text": {
+        "preview": "Lambeau Field",
+        "menu": "Lambeau Field",
+        "report_without_player": "Lambeau Field",
+        "report_with_player": "Lambeau Field",
+        "venue_location_reader": "Lambeau Field",
+        "presentation": "Lambeau Field"
+      },
+      "presentation_location": "Lambeau Field - Green Bay, WI",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 2,
+      "venue": "Oakland-Alameda County Coliseum",
+      "native_text": {
+        "preview": "Oakland-Alameda County Coliseum",
+        "menu": "Oakland-Alameda County Coliseum",
+        "report_without_player": "Oakland-Alameda County Coliseum",
+        "report_with_player": "Oakland-Alameda County Coliseum",
+        "venue_location_reader": "Oakland-Alameda County Coliseum",
+        "presentation": "Oakland-Alameda County Coliseum"
+      },
+      "presentation_location": "Oakland-Alameda County Coliseum - Oakland, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 3,
+      "venue": "Municipal Stadium, Kansas City",
+      "native_text": {
+        "preview": "Municipal Stadium, Kansas City",
+        "menu": "Municipal Stadium, Kansas City",
+        "report_without_player": "Municipal Stadium, Kansas City",
+        "report_with_player": "Municipal Stadium, Kansas City",
+        "venue_location_reader": "Municipal Stadium, Kansas City",
+        "presentation": "Municipal Stadium, Kansas City"
+      },
+      "presentation_location": "Municipal Stadium, Kansas City - Kansas City, MO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 4,
+      "venue": "Three Rivers Stadium",
+      "native_text": {
+        "preview": "Three Rivers Stadium",
+        "menu": "Three Rivers Stadium",
+        "report_without_player": "Three Rivers Stadium",
+        "report_with_player": "Three Rivers Stadium",
+        "venue_location_reader": "Three Rivers Stadium",
+        "presentation": "Three Rivers Stadium"
+      },
+      "presentation_location": "Three Rivers Stadium - Pittsburgh, PA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 5,
+      "venue": "Oakland-Alameda County Coliseum",
+      "native_text": {
+        "preview": "Oakland-Alameda County Coliseum",
+        "menu": "Oakland-Alameda County Coliseum",
+        "report_without_player": "Oakland-Alameda County Coliseum",
+        "report_with_player": "Oakland-Alameda County Coliseum",
+        "venue_location_reader": "Oakland-Alameda County Coliseum",
+        "presentation": "Oakland-Alameda County Coliseum"
+      },
+      "presentation_location": "Oakland-Alameda County Coliseum - Oakland, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 6,
+      "venue": "Texas Stadium",
+      "native_text": {
+        "preview": "Texas Stadium",
+        "menu": "Texas Stadium",
+        "report_without_player": "Texas Stadium",
+        "report_with_player": "Texas Stadium",
+        "venue_location_reader": "Texas Stadium",
+        "presentation": "Texas Stadium"
+      },
+      "presentation_location": "Texas Stadium - Irving, TX",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 7,
+      "venue": "Candlestick Park",
+      "native_text": {
+        "preview": "Candlestick Park",
+        "menu": "Candlestick Park",
+        "report_without_player": "Candlestick Park",
+        "report_with_player": "Candlestick Park",
+        "venue_location_reader": "Candlestick Park",
+        "presentation": "Candlestick Park"
+      },
+      "presentation_location": "Candlestick Park - San Francisco, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 8,
+      "venue": "Miami Orange Bowl",
+      "native_text": {
+        "preview": "Miami Orange Bowl",
+        "menu": "Miami Orange Bowl",
+        "report_without_player": "Miami Orange Bowl",
+        "report_with_player": "Miami Orange Bowl",
+        "venue_location_reader": "Miami Orange Bowl",
+        "presentation": "Miami Orange Bowl"
+      },
+      "presentation_location": "Miami Orange Bowl - Miami, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 9,
+      "venue": "Candlestick Park",
+      "native_text": {
+        "preview": "Candlestick Park",
+        "menu": "Candlestick Park",
+        "report_without_player": "Candlestick Park",
+        "report_with_player": "Candlestick Park",
+        "venue_location_reader": "Candlestick Park",
+        "presentation": "Candlestick Park"
+      },
+      "presentation_location": "Candlestick Park - San Francisco, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 10,
+      "venue": "RFK Stadium",
+      "native_text": {
+        "preview": "RFK Stadium",
+        "menu": "RFK Stadium",
+        "report_without_player": "RFK Stadium",
+        "report_with_player": "RFK Stadium",
+        "venue_location_reader": "RFK Stadium",
+        "presentation": "RFK Stadium"
+      },
+      "presentation_location": "RFK Stadium - Raljon, MD",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 11,
+      "venue": "Cleveland Municipal Stadium",
+      "native_text": {
+        "preview": "Cleveland Municipal Stadium",
+        "menu": "Cleveland Municipal Stadium",
+        "report_without_player": "Cleveland Municipal Stadium",
+        "report_with_player": "Cleveland Municipal Stadium",
+        "venue_location_reader": "Cleveland Municipal Stadium",
+        "presentation": "Cleveland Municipal Stadium"
+      },
+      "presentation_location": "Cleveland Municipal Stadium - Cleveland, OH",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 12,
+      "venue": "Riverfront Stadium",
+      "native_text": {
+        "preview": "Riverfront Stadium",
+        "menu": "Riverfront Stadium",
+        "report_without_player": "Riverfront Stadium",
+        "report_with_player": "Riverfront Stadium",
+        "venue_location_reader": "Riverfront Stadium",
+        "presentation": "Riverfront Stadium"
+      },
+      "presentation_location": "Riverfront Stadium - Cincinnati, OH",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 13,
+      "venue": "Busch Memorial Stadium",
+      "native_text": {
+        "preview": "Busch Memorial Stadium",
+        "menu": "Busch Memorial Stadium",
+        "report_without_player": "Busch Memorial Stadium",
+        "report_with_player": "Busch Memorial Stadium",
+        "venue_location_reader": "Busch Memorial Stadium",
+        "presentation": "Busch Memorial Stadium"
+      },
+      "presentation_location": "Busch Memorial Stadium - St. Louis, MO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 14,
+      "venue": "Joe Robbie Stadium",
+      "native_text": {
+        "preview": "Joe Robbie Stadium",
+        "menu": "Joe Robbie Stadium",
+        "report_without_player": "Joe Robbie Stadium",
+        "report_with_player": "Joe Robbie Stadium",
+        "venue_location_reader": "Joe Robbie Stadium",
+        "presentation": "Joe Robbie Stadium"
+      },
+      "presentation_location": "Joe Robbie Stadium - Miami, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 15,
+      "venue": "Tampa Stadium",
+      "native_text": {
+        "preview": "Tampa Stadium",
+        "menu": "Tampa Stadium",
+        "report_without_player": "Tampa Stadium",
+        "report_with_player": "Tampa Stadium",
+        "venue_location_reader": "Tampa Stadium",
+        "presentation": "Tampa Stadium"
+      },
+      "presentation_location": "Tampa Stadium - Tampa, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 16,
+      "venue": "Mile High Stadium",
+      "native_text": {
+        "preview": "Mile High Stadium",
+        "menu": "Mile High Stadium",
+        "report_without_player": "Mile High Stadium",
+        "report_with_player": "Mile High Stadium",
+        "venue_location_reader": "Mile High Stadium",
+        "presentation": "Mile High Stadium"
+      },
+      "presentation_location": "Mile High Stadium - Denver, CO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 17,
+      "venue": "Mile High Stadium",
+      "native_text": {
+        "preview": "Mile High Stadium",
+        "menu": "Mile High Stadium",
+        "report_without_player": "Mile High Stadium",
+        "report_with_player": "Mile High Stadium",
+        "venue_location_reader": "Mile High Stadium",
+        "presentation": "Mile High Stadium"
+      },
+      "presentation_location": "Mile High Stadium - Denver, CO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 18,
+      "venue": "Rich Stadium",
+      "native_text": {
+        "preview": "Rich Stadium",
+        "menu": "Rich Stadium",
+        "report_without_player": "Rich Stadium",
+        "report_with_player": "Rich Stadium",
+        "venue_location_reader": "Rich Stadium",
+        "presentation": "Rich Stadium"
+      },
+      "presentation_location": "Rich Stadium - Orchard Park, NY",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 19,
+      "venue": "Mile High Stadium",
+      "native_text": {
+        "preview": "Mile High Stadium",
+        "menu": "Mile High Stadium",
+        "report_without_player": "Mile High Stadium",
+        "report_with_player": "Mile High Stadium",
+        "venue_location_reader": "Mile High Stadium",
+        "presentation": "Mile High Stadium"
+      },
+      "presentation_location": "Mile High Stadium - Kansas City, MO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 20,
+      "venue": "Rich Stadium",
+      "native_text": {
+        "preview": "Rich Stadium",
+        "menu": "Rich Stadium",
+        "report_without_player": "Rich Stadium",
+        "report_with_player": "Rich Stadium",
+        "venue_location_reader": "Rich Stadium",
+        "presentation": "Rich Stadium"
+      },
+      "presentation_location": "Rich Stadium - Orchard Park, NY",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 21,
+      "venue": "Qualcomm Stadium",
+      "native_text": {
+        "preview": "Qualcomm Stadium",
+        "menu": "Qualcomm Stadium",
+        "report_without_player": "Qualcomm Stadium",
+        "report_with_player": "Qualcomm Stadium",
+        "venue_location_reader": "Qualcomm Stadium",
+        "presentation": "Qualcomm Stadium"
+      },
+      "presentation_location": "Qualcomm Stadium - San Diego, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 22,
+      "venue": "Georgia Dome",
+      "native_text": {
+        "preview": "Georgia Dome",
+        "menu": "Georgia Dome",
+        "report_without_player": "Georgia Dome",
+        "report_with_player": "Georgia Dome",
+        "venue_location_reader": "Georgia Dome",
+        "presentation": "Georgia Dome"
+      },
+      "presentation_location": "Georgia Dome - Atlanta, GA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 23,
+      "venue": "Louisiana Superdome",
+      "native_text": {
+        "preview": "Louisiana Superdome",
+        "menu": "Louisiana Superdome",
+        "report_without_player": "Louisiana Superdome",
+        "report_with_player": "Louisiana Superdome",
+        "venue_location_reader": "Louisiana Superdome",
+        "presentation": "Louisiana Superdome"
+      },
+      "presentation_location": "Louisiana Superdome - New Orleans, LA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 24,
+      "venue": "3Com Park at Candlestick Point",
+      "native_text": {
+        "preview": "3Com Park at Candlestick Point",
+        "menu": "3Com Park at Candlestick Point",
+        "report_without_player": "3Com Park at Candlestick Point",
+        "report_with_player": "3Com Park at Candlestick Point",
+        "venue_location_reader": "3Com Park at Candlestick Point",
+        "presentation": "3Com Park at Candlestick Point"
+      },
+      "presentation_location": "3Com Park at Candlestick Point - San Francisco, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 25,
+      "venue": "Lincoln Financial Field",
+      "native_text": {
+        "preview": "Lincoln Financial Field",
+        "menu": "Lincoln Financial Field",
+        "report_without_player": "Lincoln Financial Field",
+        "report_with_player": "Lincoln Financial Field",
+        "venue_location_reader": "Lincoln Financial Field",
+        "presentation": "Lincoln Financial Field"
+      },
+      "presentation_location": "Lincoln Financial Field - Philadelphia, PA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 26,
+      "venue": "Hubert H. Humphrey Metrodome",
+      "native_text": {
+        "preview": "Hubert H. Humphrey Metrodome",
+        "menu": "Hubert H. Humphrey Metrodome",
+        "report_without_player": "Hubert H. Humphrey Metrodome",
+        "report_with_player": "Hubert H. Humphrey Metrodome",
+        "venue_location_reader": "Hubert H. Humphrey Metrodome",
+        "presentation": "Hubert H. Humphrey Metrodome"
+      },
+      "presentation_location": "Hubert H. Humphrey Metrodome - Minneapolis, MN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 27,
+      "venue": "University of Phoenix Stadium",
+      "native_text": {
+        "preview": "University of Phoenix Stadium",
+        "menu": "University of Phoenix Stadium",
+        "report_without_player": "University of Phoenix Stadium",
+        "report_with_player": "University of Phoenix Stadium",
+        "venue_location_reader": "University of Phoenix Stadium",
+        "presentation": "University of Phoenix Stadium"
+      },
+      "presentation_location": "University of Phoenix Stadium - Tempe, AZ",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 28,
+      "venue": "Raymond James Stadium",
+      "native_text": {
+        "preview": "Raymond James Stadium",
+        "menu": "Raymond James Stadium",
+        "report_without_player": "Raymond James Stadium",
+        "report_with_player": "Raymond James Stadium",
+        "venue_location_reader": "Raymond James Stadium",
+        "presentation": "Raymond James Stadium"
+      },
+      "presentation_location": "Raymond James Stadium - Tampa, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 29,
+      "venue": "Lucas Oil Stadium",
+      "native_text": {
+        "preview": "Lucas Oil Stadium",
+        "menu": "Lucas Oil Stadium",
+        "report_without_player": "Lucas Oil Stadium",
+        "report_with_player": "Lucas Oil Stadium",
+        "venue_location_reader": "Lucas Oil Stadium",
+        "presentation": "Lucas Oil Stadium"
+      },
+      "presentation_location": "Lucas Oil Stadium - Indianapolis, IN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 30,
+      "venue": "NRG Stadium",
+      "native_text": {
+        "preview": "NRG Stadium",
+        "menu": "NRG Stadium",
+        "report_without_player": "NRG Stadium",
+        "report_with_player": "NRG Stadium",
+        "venue_location_reader": "NRG Stadium",
+        "presentation": "NRG Stadium"
+      },
+      "presentation_location": "NRG Stadium - Houston, TX",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 31,
+      "venue": "Highmark Stadium",
+      "native_text": {
+        "preview": "Highmark Stadium",
+        "menu": "Highmark Stadium",
+        "report_without_player": "Highmark Stadium",
+        "report_with_player": "Highmark Stadium",
+        "venue_location_reader": "Highmark Stadium",
+        "presentation": "Highmark Stadium"
+      },
+      "presentation_location": "Highmark Stadium - Orchard Park, NY",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 32,
+      "venue": "Adelphia Coliseum",
+      "native_text": {
+        "preview": "Adelphia Coliseum",
+        "menu": "Adelphia Coliseum",
+        "report_without_player": "Adelphia Coliseum",
+        "report_with_player": "Adelphia Coliseum",
+        "venue_location_reader": "Adelphia Coliseum",
+        "presentation": "Adelphia Coliseum"
+      },
+      "presentation_location": "Adelphia Coliseum - Nashville, TN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 33,
+      "venue": "Foxboro Stadium",
+      "native_text": {
+        "preview": "Foxboro Stadium",
+        "menu": "Foxboro Stadium",
+        "report_without_player": "Foxboro Stadium",
+        "report_with_player": "Foxboro Stadium",
+        "venue_location_reader": "Foxboro Stadium",
+        "presentation": "Foxboro Stadium"
+      },
+      "presentation_location": "Foxboro Stadium - Foxboro, MA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 34,
+      "venue": "Reliant Stadium",
+      "native_text": {
+        "preview": "Reliant Stadium",
+        "menu": "Reliant Stadium",
+        "report_without_player": "Reliant Stadium",
+        "report_with_player": "Reliant Stadium",
+        "venue_location_reader": "Reliant Stadium",
+        "presentation": "Reliant Stadium"
+      },
+      "presentation_location": "Reliant Stadium - Houston, TX",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 35,
+      "venue": "Sun Life Stadium",
+      "native_text": {
+        "preview": "Sun Life Stadium",
+        "menu": "Sun Life Stadium",
+        "report_without_player": "Sun Life Stadium",
+        "report_with_player": "Sun Life Stadium",
+        "venue_location_reader": "Sun Life Stadium",
+        "presentation": "Sun Life Stadium"
+      },
+      "presentation_location": "Sun Life Stadium - Miami, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 36,
+      "venue": "New Meadowlands Stadium",
+      "native_text": {
+        "preview": "New Meadowlands Stadium",
+        "menu": "New Meadowlands Stadium",
+        "report_without_player": "New Meadowlands Stadium",
+        "report_with_player": "New Meadowlands Stadium",
+        "venue_location_reader": "New Meadowlands Stadium",
+        "presentation": "New Meadowlands Stadium"
+      },
+      "presentation_location": "New Meadowlands Stadium - East Rutherford, NJ",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 37,
+      "venue": "Qwest Field",
+      "native_text": {
+        "preview": "Qwest Field",
+        "menu": "Qwest Field",
+        "report_without_player": "Qwest Field",
+        "report_with_player": "Qwest Field",
+        "venue_location_reader": "Qwest Field",
+        "presentation": "Qwest Field"
+      },
+      "presentation_location": "Qwest Field - Seattle, WA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 38,
+      "venue": "Candlestick Park",
+      "native_text": {
+        "preview": "Candlestick Park",
+        "menu": "Candlestick Park",
+        "report_without_player": "Candlestick Park",
+        "report_with_player": "Candlestick Park",
+        "venue_location_reader": "Candlestick Park",
+        "presentation": "Candlestick Park"
+      },
+      "presentation_location": "Candlestick Park - San Francisco, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 39,
+      "venue": "Sports Authority Field at Mile High",
+      "native_text": {
+        "preview": "Sports Authority Field at Mile High",
+        "menu": "Sports Authority Field at Mile High",
+        "report_without_player": "Sports Authority Field at Mile High",
+        "report_with_player": "Sports Authority Field at Mile High",
+        "venue_location_reader": "Sports Authority Field at Mile High",
+        "presentation": "Sports Authority Field at Mile High"
+      },
+      "presentation_location": "Sports Authority Field at Mile High - Denver, CO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 40,
+      "venue": "Mercedes-Benz Superdome",
+      "native_text": {
+        "preview": "Mercedes-Benz Superdome",
+        "menu": "Mercedes-Benz Superdome",
+        "report_without_player": "Mercedes-Benz Superdome",
+        "report_with_player": "Mercedes-Benz Superdome",
+        "venue_location_reader": "Mercedes-Benz Superdome",
+        "presentation": "Mercedes-Benz Superdome"
+      },
+      "presentation_location": "Mercedes-Benz Superdome - New Orleans, LA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 41,
+      "venue": "Lambeau Field",
+      "native_text": {
+        "preview": "Lambeau Field",
+        "menu": "Lambeau Field",
+        "report_without_player": "Lambeau Field",
+        "report_with_player": "Lambeau Field",
+        "venue_location_reader": "Lambeau Field",
+        "presentation": "Lambeau Field"
+      },
+      "presentation_location": "Lambeau Field - Green Bay, WI",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 42,
+      "venue": "University of Phoenix Stadium",
+      "native_text": {
+        "preview": "University of Phoenix Stadium",
+        "menu": "University of Phoenix Stadium",
+        "report_without_player": "University of Phoenix Stadium",
+        "report_with_player": "University of Phoenix Stadium",
+        "venue_location_reader": "University of Phoenix Stadium",
+        "presentation": "University of Phoenix Stadium"
+      },
+      "presentation_location": "University of Phoenix Stadium - Tempe, AZ",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 43,
+      "venue": "Ford Field",
+      "native_text": {
+        "preview": "Ford Field",
+        "menu": "Ford Field",
+        "report_without_player": "Ford Field",
+        "report_with_player": "Ford Field",
+        "venue_location_reader": "Ford Field",
+        "presentation": "Ford Field"
+      },
+      "presentation_location": "Ford Field - Detroit, MI",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 44,
+      "venue": "U.S. Bank Stadium",
+      "native_text": {
+        "preview": "U.S. Bank Stadium",
+        "menu": "U.S. Bank Stadium",
+        "report_without_player": "U.S. Bank Stadium",
+        "report_with_player": "U.S. Bank Stadium",
+        "venue_location_reader": "U.S. Bank Stadium",
+        "presentation": "U.S. Bank Stadium"
+      },
+      "presentation_location": "U.S. Bank Stadium - Minneapolis, MN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 45,
+      "venue": "U.S. Bank Stadium",
+      "native_text": {
+        "preview": "U.S. Bank Stadium",
+        "menu": "U.S. Bank Stadium",
+        "report_without_player": "U.S. Bank Stadium",
+        "report_with_player": "U.S. Bank Stadium",
+        "venue_location_reader": "U.S. Bank Stadium",
+        "presentation": "U.S. Bank Stadium"
+      },
+      "presentation_location": "U.S. Bank Stadium - Minneapolis, MN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 46,
+      "venue": "Hard Rock Stadium",
+      "native_text": {
+        "preview": "Hard Rock Stadium",
+        "menu": "Hard Rock Stadium",
+        "report_without_player": "Hard Rock Stadium",
+        "report_with_player": "Hard Rock Stadium",
+        "venue_location_reader": "Hard Rock Stadium",
+        "presentation": "Hard Rock Stadium"
+      },
+      "presentation_location": "Hard Rock Stadium - Miami, FL",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 47,
+      "venue": "GEHA Field at Arrowhead Stadium",
+      "native_text": {
+        "preview": "GEHA Field at Arrowhead Stadium",
+        "menu": "GEHA Field at Arrowhead Stadium",
+        "report_without_player": "GEHA Field at Arrowhead Stadium",
+        "report_with_player": "GEHA Field at Arrowhead Stadium",
+        "venue_location_reader": "GEHA Field at Arrowhead Stadium",
+        "presentation": "GEHA Field at Arrowhead Stadium"
+      },
+      "presentation_location": "GEHA Field at Arrowhead Stadium - Kansas City, MO",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 48,
+      "venue": "SoFi Stadium",
+      "native_text": {
+        "preview": "SoFi Stadium",
+        "menu": "SoFi Stadium",
+        "report_without_player": "SoFi Stadium",
+        "report_with_player": "SoFi Stadium",
+        "venue_location_reader": "SoFi Stadium",
+        "presentation": "SoFi Stadium"
+      },
+      "presentation_location": "SoFi Stadium - Los Angeles, CA",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 49,
+      "venue": "U.S. Bank Stadium",
+      "native_text": {
+        "preview": "U.S. Bank Stadium",
+        "menu": "U.S. Bank Stadium",
+        "report_without_player": "U.S. Bank Stadium",
+        "report_with_player": "U.S. Bank Stadium",
+        "venue_location_reader": "U.S. Bank Stadium",
+        "presentation": "U.S. Bank Stadium"
+      },
+      "presentation_location": "U.S. Bank Stadium - Minneapolis, MN",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    },
+    {
+      "row": 50,
+      "venue": "Allegiant Stadium",
+      "native_text": {
+        "preview": "Allegiant Stadium",
+        "menu": "Allegiant Stadium",
+        "report_without_player": "Allegiant Stadium",
+        "report_with_player": "Allegiant Stadium",
+        "venue_location_reader": "Allegiant Stadium",
+        "presentation": "Allegiant Stadium"
+      },
+      "presentation_location": "Allegiant Stadium - Detroit, MI",
+      "historical_classification": "INFERRED",
+      "modern_modes": [
+        0,
+        1,
+        4,
+        5,
+        6
+      ],
+      "stadium_record_unchanged": true
+    }
+  ]
+}

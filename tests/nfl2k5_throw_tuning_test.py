@@ -65,9 +65,13 @@ ELBOW_SIZE = 0x1000
 
 
 def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | None = None, *,
-                         elbow: bool = False) -> bytes:
-    # ``elbow`` adds the Edit Player elbow-row .text window (beta 75). Off by default so the
-    # frozen beta 60/61 pack receipts, which hash this synthetic image, keep their base hash.
+                         elbow: bool = False, lineman: bool = False, display_list: bool = False) -> bytes:
+    # ``elbow`` adds the Edit Player elbow-row .text window (beta 75). ``lineman`` writes the
+    # overall dispatch and the dead cave the1wam's lineman rating adjustment uses; both spans
+    # already fall inside the main .text window. ``display_list`` (b76-z2) writes the frame
+    # chain end's NOP stores and the list runner the xemu display-list stability fix re-encodes,
+    # also inside the main .text window. All are off by default so the frozen beta 60/61 pack
+    # receipts, which hash this synthetic image, keep their base hash.
     buf = bytearray(TEXT_RAW + TEXT_SIZE)
     buf[0:4] = strength.XBE_MAGIC
     struct.pack_into("<I", buf, 0x104, IMAGE_BASE)
@@ -131,6 +135,16 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
         from mod_editor.core import nfl2k5_elbow_options as elbow_options
         for _label, va, retail, _patched in elbow_options.sites():   # the two Edit Player elbow rows
             off = ELBOW_RAW + (va - ELBOW_VA)
+            buf[off: off + len(retail)] = retail
+    if lineman:
+        from mod_editor.core import nfl2k5_lineman_rating as lineman_rating
+        for _label, va, retail, _patched in lineman_rating.sites():  # FUN_00246d60 and the dead cave
+            off = TEXT_RAW + (va - TEXT_VA)
+            buf[off: off + len(retail)] = retail
+    if display_list:
+        from mod_editor.core import nfl2k5_display_list_stability as display_list_fix
+        for _label, va, retail, _patched in display_list_fix.sites():  # 0x3352A and the runner 0x34130
+            off = TEXT_RAW + (va - TEXT_VA)
             buf[off: off + len(retail)] = retail
     from mod_editor.core import nfl2k5_season_cap as season_cap
     off = TEXT_RAW + season_cap.CONTEXT_VA - TEXT_VA

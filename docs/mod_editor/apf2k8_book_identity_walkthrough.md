@@ -69,8 +69,33 @@ fullback for a requested TE role, so the table shows **Requested TEs**. Actual
 saved rosters, the saved-book lifecycle and in-game lineups remain UNWITNESSED.
 See [the extended situation and lineup research](../research/apf_b71_apf3.md).
 
-For a local exclusion, **Live situations** offers the separate opt-in mask in
-twelve down/distance buckets. It needs the matching BASE/TU patch installed;
-an emptied draw falls back to its original candidates. The 23 representative
-preview queries remain distinct from these twelve live buckets. See the
-[situation-mask guide](../research/apf_b71_apf4.md).
+PROVED OFFLINE: **Live situations** offers separate formation multipliers,
+exclusions and personnel comparison rows for twelve actual down/distance
+buckets plus ordinary two-point offense in the native try phase. All 23 named
+coaching samples appear as explicit mappings to those controls. A sample such
+as **Red zone 25-21** edits the displayed down/distance bucket everywhere that
+bucket occurs. **4-minute** is a clock/score sample, not an independent stored
+native formation list. Other live downs and distances use their own buckets.
+
+Choose a formation multiplier of **0.25x, 0.5x, 1x, 2x or 4x**. This changes
+only the selected book and live bucket; **1x** removes the override. Higher
+multipliers increase relative weight. The candidate view shows native weight
+x multiplier = resulting formation weight, separately from the personnel
+curve x mean rating. These are not call percentages. The shared yardage
+sliders still affect every situation that interpolates them.
+
+DESIGN: enable the EXPERIMENTAL project option explicitly, confirm edits, then
+use **Review and install situation patch** for the BASE or TU 1.1 profile you
+launch. Export and Build produce patches and receipts but do not install them.
+Weight or try edits require v3. Restart Xenia after installation. Pending edits,
+Undo and saved projects include these controls; they do not silently replace an
+installed patch. Check the dependency message after changes. To revert one
+weight, stage **1x** and reinstall. To restore all native policy, remove the
+installed situation patch and restart Xenia.
+
+PROVED OFFLINE: an emptied exclusion draw retains its original candidates and
+weights. The two-point controls apply after the CPU chooses ordinary offense
+in phase 3; the displayed candidates are a scrimmage proxy and do not predict
+the kick-versus-two-point decision. Native kicks and cached Hail Mary/Clock
+calls use separate paths. Gameplay remains UNWITNESSED. See the
+[complete inventory and witness procedure](../research/apf_b76_a3.md).

@@ -52,6 +52,11 @@ RETAIL_LOGO = bytes.fromhex(
 )
 assert len(RETAIL_LOGO) == LOGO_SIZE
 
+# A blank logo (100 x 17 pixels of intensity 0) in the XBE run-length format: two 16-bit runs,
+# 1,023 + 677 pixels. Grown (extra patch space) layouts point the header here because the kernel
+# copies the logo before it loads any section (see nfl2k5_xbe_space.HEADER_LOGO_OFFSET).
+BLANK_LOGO = bytes.fromhex("fe0f960a")
+
 
 class BootLogoError(ValueError):
     """The boot logo cannot be relocated in this executable."""
@@ -138,5 +143,5 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                     "changed_byte_count": sum(1 for a, b in zip(payload, result) if a != b)}
 
 
-__all__ = ["BootLogoError", "LOGO_SIZE", "NEW_LOGO_VA", "RETAIL_LOGO", "RETAIL_LOGO_VA", "apply", "bitmap_is_retail",
+__all__ = ["BLANK_LOGO", "BootLogoError", "LOGO_SIZE", "NEW_LOGO_VA", "RETAIL_LOGO", "RETAIL_LOGO_VA", "apply", "bitmap_is_retail",
            "decode_pixels", "needed", "status"]

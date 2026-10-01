@@ -1,0 +1,216 @@
+...................................F.....F..............s                                              [100%]
+=================================== FAILURES ===================================
+_ ProviderIntegrityTests.test_all_external_writer_and_verifier_import_closures_are_exactly_pinned _
+
+self = <test_provider_integrity.ProviderIntegrityTests testMethod=test_all_external_writer_and_verifier_import_closures_are_exactly_pinned>
+
+    def test_all_external_writer_and_verifier_import_closures_are_exactly_pinned(self) -> None:
+        providers = (
+            Nfl2k5UnifiedVisualProvider(),
+            Nfl2k5ScorebugProvider(),
+            Apf2k8JerseyColorProvider(),
+            Apf2k8PantsColorProvider(),
+            Apf2k8HelmetColorProvider(),
+            Apf2k8ShoulderColorProvider(),
+        )
+        self.assertEqual(
+            [len(provider.module_pins) for provider in providers],
+            # The reviewed closure includes the original visual adapters and
+            # the integrated music, scorebug, animation and gameplay compilers.
+            # The unified visual provider includes standalone/SCNE Crib
+            # textures, bounded Crib/Stadium geometry, stock PLAY route copy,
+            # formation/play clone writer, fixed-slot audio, the fail-closed
+            # AUDO family-label loader, package-local equipment, and every
+            # local module in those exact import closures.
+            [331, 10, 8, 9, 8, 9]  # ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            # b76 p1: + the GAMEDATA presentation inventory (typed p8:346 marks).
+            # b76-z2: + the xemu display-list stability fix.
+            # b76-h1: + historic teams in Quick Game and its generated code.
+            # b76-m1: + 25 more Anniversary moments, its generated code and the One-pool reclassify it reuses.
+            # b76-vb3: + the 25th Anniversary kickoff gate and the two readers of the disc's retail special-teams
+            # data it imports (the core return-play module and the kickoff alignment tool).
+            # b76-k1: + 128 MB memory (K128) and the roster block in the extra heap.
+            # b76-vb3 E1: + the kickoff return blocking rule the gate carries.
+            # b76-vb3 D2: + the 4:3 widescreen menus owner.
+            # b76-u3 A: + the 2026 team names module (the scorebug guard recognizes its colour rows).
+            # b76-hm: + Modern helmets (the Guardian collection and the historic rosters read its states).
+            # DESIGN: fc adds the guarded economy owner and its original generated code.
+            # b76-pb (ig): + the complete-offense compiler, the authored-screen D pins and the native play-scoring gate.
+            # b76-fc3 (ig): + the roster-fill composition module the economy and the practice squad share.
+            # b76-pf P1: + the team-logo swap owner (the field swap's eighth pair).
+        )
+        for provider in providers:
+            entries = [provider.backend_module]
+            verifier = getattr(provider, "verifier_module", None)
+            if verifier:
+                entries.append(verifier)
+            expected_closure = local_import_closure(*entries)
+            if isinstance(provider, Nfl2k5UnifiedVisualProvider):
+                # The backend directly imports reviewed product audio modules
+                # and dynamically loads these seven adapters by exact path.
+                # Both package init files stay absent so their unrelated eager
+                # GUI/provider imports cannot escape the finite pin closure.
+                adapters = frozenset({
+                    "mod_editor/core/nfl2k5_momentum.py",
+                    "mod_editor/core/nfl2k5_momentum_code.py",
+                    "mod_editor/core/nfl2k5_defensive_try.py",
+                    "mod_editor/core/nfl2k5_zone_drop.py",
+    
+                    "mod_editor/core/nfl2k5_guardian_cap.py",
+                    "mod_editor/core/nfl2k5_animation.py",
+                    "mod_editor/core/nfl2k5_animation_math.py",
+                    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+                    "mod_editor/core/nfl2k5_scorebug_resources.py",
+                    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+                    "mod_editor/core/nfl2k5_music_policy.py",
+                    "mod_editor/core/nfl2k5_music_catalog.py",
+                    "mod_editor/core/nfl2k5_music_build.py",
+                    "mod_editor/core/nfl2k5_music_banks.py",
+                    "mod_editor/core/nfl2k5_music_metadata.py",
+                    "mod_editor/core/nfl2k5_music_storage.py",
+                    "mod_editor/core/nfl2k5_music_archive.py",
+                    "mod_editor/core/nfl2k5_xbe_space.py",
+                    "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
+                    "mod_editor/core/nfl2k5_season_cap.py",
+                    "mod_editor/core/nfl2k5_screen_timing.py",
+    
+                    "mod_editor/core/nfl2k5_audo_fixed_slots.py",
+                    "mod_editor/core/nfl2k5_safe_text_banks.py",
+                    "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
+                    "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+                    "mod_editor/core/nfl2k5_p8_texture_writer.py",
+                    "mod_editor/core/nfl2k5_unif_color_writer.py",
+                    "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+                })
+                expected_closure.update(local_import_closure(
+                    *adapters, exact_path_entries=frozenset({
+                        "mod_editor/core/nfl2k5_audo_fixed_slots.py",
+                        "mod_editor/core/nfl2k5_safe_text_banks.py",
+                        "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
+                        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+                        "mod_editor/core/nfl2k5_p8_texture_writer.py",
+                        "mod_editor/core/nfl2k5_unif_color_writer.py",
+                        "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+                    })
+                ))
+                self.assertNotIn("mod_editor/__init__.py", expected_closure)
+                self.assertNotIn("mod_editor/core/__init__.py", expected_closure)
+                self.assertNotIn("mod_editor/core/providers.py", expected_closure)
+>               self.assertEqual(len(provider.module_pins), len(expected_closure))
+E               AssertionError: 331 != 332
+
+tests/mod_editor/test_provider_integrity.py:292: AssertionError
+_ ProviderIntegrityTests.test_unified_registry_authorization_is_an_exact_contract _
+
+self = <test_provider_integrity.ProviderIntegrityTests testMethod=test_unified_registry_authorization_is_an_exact_contract>
+
+    def test_unified_registry_authorization_is_an_exact_contract(self) -> None:
+        provider = Nfl2k5UnifiedVisualProvider()
+        capability = self.registry.get("nfl2k5.uniforms.all_visual")
+        with tempfile.TemporaryDirectory() as temporary:
+            job = request(Path(temporary))
+>           provider._validate_capability(job, capability)
+
+tests/mod_editor/test_provider_integrity.py:400: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+mod_editor/core/providers.py:1130: in _validate_capability
+    _validate_pin_set(self.workspace, self.module_pins, "NFL unified visual backend")
+mod_editor/core/providers.py:319: in _validate_pin_set
+    _read_pinned_payload(workspace, relative, expected, f"{label} file {relative}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+workspace = PosixPath('/home/noah/2k-worktrees/b76-vb2')
+relative = 'mod_editor/core/nfl2k5_moment_venues.py'
+expected_sha256 = '514751f2fab711b4ff93a90a807b150354c5f4ed8c413cde5d5b6b2bf6172cc6'
+label = 'NFL unified visual backend file mod_editor/core/nfl2k5_moment_venues.py'
+
+    def _read_pinned_payload(
+        workspace: Path,
+        relative: str,
+        expected_sha256: str,
+        label: str,
+    ) -> _PinnedPayload:
+        """Read one allowlisted file through a stable descriptor.
+    
+        Provider pins are an execution boundary, not merely a release checksum.  A
+        multiply-linked file can be changed through an unseen alias, so it is
+        rejected along with symlinks.  The descriptor and pathname identities are
+        compared before and after the complete bounded read.
+        """
+    
+        relative_path = Path(relative)
+        if (
+            relative_path.is_absolute()
+            or not relative_path.parts
+            or any(part in {"", ".", ".."} for part in relative_path.parts)
+        ):
+            raise ProviderError(f"Allowlisted {label} path is not a safe relative path")
+        root = workspace.resolve(strict=True)
+        parent = root
+        for component in relative_path.parts[:-1]:
+            parent /= component
+            try:
+                parent_info = parent.lstat()
+            except FileNotFoundError as exc:
+                raise ProviderError(f"Allowlisted {label} parent is missing: {parent}") from exc
+            if not stat.S_ISDIR(parent_info.st_mode) or stat.S_ISLNK(parent_info.st_mode):
+                raise ProviderError(f"Allowlisted {label} parent must be a non-symlink directory")
+        path = root / relative_path
+        try:
+            supplied = path.lstat()
+        except FileNotFoundError as exc:
+            raise ProviderError(f"Allowlisted {label} is missing: {relative}") from exc
+        if (
+            not stat.S_ISREG(supplied.st_mode)
+            or stat.S_ISLNK(supplied.st_mode)
+            or supplied.st_nlink != 1
+            or not 0 < supplied.st_size <= 16 * 1024 * 1024
+        ):
+            raise ProviderError(
+                f"Allowlisted {label} must be a bounded, singly-linked regular file"
+            )
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
+        )
+        try:
+            opened = os.fstat(descriptor)
+            identity = (opened.st_dev, opened.st_ino)
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or opened.st_nlink != 1
+                or identity != (supplied.st_dev, supplied.st_ino)
+                or opened.st_size != supplied.st_size
+            ):
+                raise ProviderError(f"Allowlisted {label} changed before its pinned read")
+            chunks: list[bytes] = []
+            remaining = opened.st_size
+            while remaining:
+                chunk = os.read(descriptor, min(1024 * 1024, remaining))
+                if not chunk:
+                    raise ProviderError(f"Allowlisted {label} shortened during its pinned read")
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            if os.read(descriptor, 1):
+                raise ProviderError(f"Allowlisted {label} grew during its pinned read")
+            current = path.lstat()
+            if (
+                not stat.S_ISREG(current.st_mode)
+                or stat.S_ISLNK(current.st_mode)
+                or current.st_nlink != 1
+                or (current.st_dev, current.st_ino, current.st_size)
+                != (opened.st_dev, opened.st_ino, opened.st_size)
+            ):
+                raise ProviderError(f"Allowlisted {label} pathname changed during its pinned read")
+            payload = b"".join(chunks)
+        finally:
+            os.close(descriptor)
+        if hashlib.sha256(payload).hexdigest() != expected_sha256:
+>           raise ProviderError(f"Allowlisted {label} hash changed")
+E           mod_editor.core.providers.ProviderError: Allowlisted NFL unified visual backend file mod_editor/core/nfl2k5_moment_venues.py hash changed
+
+mod_editor/core/providers.py:307: ProviderError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_provider_integrity.py::ProviderIntegrityTests::test_all_external_writer_and_verifier_import_closures_are_exactly_pinned
+FAILED tests/mod_editor/test_provider_integrity.py::ProviderIntegrityTests::test_unified_registry_authorization_is_an_exact_contract
+2 failed, 54 passed, 1 skipped, 42 subtests passed in 112.10s (0:01:52)

@@ -94,8 +94,9 @@ class RetailTests(unittest.TestCase):
         out, _ = c.apply(self.retail)
         self.assertEqual(c.status(out), "applied")
         self.assertEqual(season.read_year(out), 2004)
-        for group in season.GROUPS:
+        for group in season.CALENDAR_GROUPS:
             self.assertEqual(season.group_status(out, group, year=2004), "applied")
+        self.assertEqual(season.group_status(out, "created_player_dates", year=2004), "retail")
         self.assertEqual(c.apply(out)[0], out)
 
     def test_every_partial_hook_and_table_refused_even_with_resealed_digest(self):

@@ -2,7 +2,9 @@
 
 The XBE is the private pinned USA executable. The climate ROST is synthesized
 and only its declared shape pin is substituted. All parsers, writers, read-back,
-allocation and publication paths run unchanged; no retail resource is bundled.
+allocation and publication paths run unchanged except native PLAY scoring,
+which is unrelated to this fixture's invented empty resources. No retail
+resource is bundled.
 """
 from dataclasses import replace
 import hashlib
@@ -153,6 +155,12 @@ class CompactBuildTests(unittest.TestCase):
         self.resource,digest=synthetic()
         self.pin=patch.object(weather,'SHAPE_SHA256',digest);self.pin.start();self.addCleanup(self.pin.stop)
         self.source=self.root/'source.iso';self.source.write_bytes(compact_image(self.retail,self.resource))
+        # Preserve the exact unchanged-copy assertion on an already compact
+        # input, while the build still runs the real compactor and extent gate.
+        from mod_editor.core import xdvdfs_compact
+        xdvdfs_compact.finish_private(self.source)
+        self.enterContext(patch.object(build, '_check_playbook_scoring',
+                                       return_value={'synthetic': True}))
         draft=weather.WeatherDraft(self.resource);draft.set_value(5,12,'temperature_f',15)
         self.document=draft.plan();self.plan_file=self.root/'climate.json'
         weather.write_json(self.plan_file,self.document)

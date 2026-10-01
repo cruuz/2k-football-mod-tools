@@ -53,6 +53,35 @@ class TemplateReleaseTests(unittest.TestCase):
                 release.audit_release(self.root,self.allowlist)
             path.unlink();self.files.remove(name);self.allow()
 
+    def test_externalized_marks_cannot_reenter_release_even_if_allowlisted(self):
+        boundary = json.loads((ROOT / "packaging/b76_private_paths.json").read_text())
+        for relative in boundary["paths"]:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / "docs/scorebug_template/1x/frame.png", path)
+            self.files.append(relative)
+            self.allow()
+            with self.assertRaisesRegex(release.ReleaseCheckError, r"private marks/evidence path is forbidden|forbidden extracted/build/local-data"):
+                release.audit_release(self.root, self.allowlist)
+            path.unlink()
+            parent = path.parent
+            while parent != self.root and not any(parent.iterdir()):
+                parent.rmdir()
+                parent = parent.parent
+            self.files.remove(relative)
+
+    def test_private_bytes_cannot_return_under_an_allowed_text_filename(self):
+        from unittest import mock
+        import hashlib
+        payload = b"neutral private fixture"
+        relative = "data/renamed.txt"
+        (self.root / relative).write_bytes(payload)
+        self.files.append(relative)
+        self.allow()
+        with mock.patch.object(release, "_private_boundary", return_value=(set(), {hashlib.sha256(payload).hexdigest()})):
+            with self.assertRaisesRegex(release.ReleaseCheckError, "private marks/evidence bytes are forbidden"):
+                release.audit_release(self.root, self.allowlist)
+
     def test_catalog_tampering_and_missing_catalog_do_not_create_an_exception(self):
         path=self.root/release.SCOREBUG_TEMPLATE_PNG_CATALOG
         original=path.read_bytes();path.write_bytes(original+b' ')

@@ -56,27 +56,56 @@ class Session:
         with self.log.open('a',encoding='utf-8',newline='\n') as f:
             f.write(json.dumps(dict(tool=request['tool'],request=request,response=response))+'\n')
 
-    def replay(self,request):
-        """Integrator only: installed TypeSafe SDK, environment key, no shell."""
+    def replay(self,request,*,tool='b72-s3-replay'):
+        """Integrator only: TypeSafe SDK or the same typed endpoint, env key, no shell."""
         self.guard(request)
         if not os.environ.get('TYPESAFE_API_KEY'):
             raise RuntimeError('TYPESAFE_API_KEY is not set; export it before replay. No answer was fabricated.')
-        try:
-            from typesafe_sdk import TypeSafeClient
-        except ImportError as exc:  # integrator-only path; never reached by a normal Studio install
-            raise RuntimeError(
-                'Replay needs the TypeSafe SDK, which the Studio does not ship. '
-                'Install it with: pip install typesafe-sdk. No answer was fabricated.'
-            ) from exc
         if request['tool']!='jev_ask':raise ValueError('Replay accepts raw typed jev_ask requests')
         start=time.monotonic()
-        result=TypeSafeClient().system_one(state=request['state'],questions=request['questions'])
-        meta=dict(tool='b72-s3-replay',model=result.model,input_tokens=result.usage.input_tokens or 0,
-                  output_tokens=result.usage.output_tokens or 0,latency_ms=round((time.monotonic()-start)*1000,2))
+        try:
+            from typesafe_sdk import TypeSafeClient
+        except ImportError:
+            # The Studio does not ship the SDK. The same typed System One
+            # endpoint the local jev server uses is called directly instead,
+            # so a headless job still journals a real answer rather than
+            # fabricating one. No key is stored or logged.
+            answers,model,usage=self._http_system_one(request)
+        else:
+            result=TypeSafeClient().system_one(state=request['state'],questions=request['questions'])
+            answers={k:v.model_dump() for k,v in result.answers.items()}
+            model=result.model
+            usage=dict(input_tokens=result.usage.input_tokens or 0,output_tokens=result.usage.output_tokens or 0)
+        meta=dict(tool=tool,model=model,input_tokens=int(usage.get('input_tokens') or 0),
+                  output_tokens=int(usage.get('output_tokens') or 0),
+                  latency_ms=round((time.monotonic()-start)*1000,2))
         meta['cost_usd']=meta['input_tokens']*PRICE_PER_TOKEN
-        response=dict(answers={k:v.model_dump() for k,v in result.answers.items()},meta=meta)
+        response=dict(answers=answers,meta=meta)
         # Global log is only written by an explicitly run outside-sandbox replay.
         USAGE.parent.mkdir(parents=True,exist_ok=True)
         with USAGE.open('a',encoding='utf-8') as f:f.write(json.dumps(meta)+'\n')
         self.record(request,response)
         return response['answers']
+
+    @staticmethod
+    def _http_system_one(request,attempts=4):
+        import httpx
+        base=os.environ.get('TYPESAFE_BASE_URL','https://api.typesafe.ai').rstrip('/')
+        model=os.environ.get('TYPESAFE_DEFAULT_MODEL','jev-latest')
+        payload=dict(state=request['state'],model=model,questions=request['questions'])
+        headers={'Authorization':'Bearer '+os.environ['TYPESAFE_API_KEY'].strip(),
+                 'Content-Type':'application/json'}
+        last='unknown'
+        for attempt in range(1,attempts+1):
+            try:
+                reply=httpx.post(base+'/v1/systemone',headers=headers,json=payload,timeout=60.)
+            except httpx.HTTPError as exc:
+                last=type(exc).__name__;time.sleep(.5*attempt);continue
+            if reply.status_code==200:
+                data=reply.json()
+                return data.get('answers',{}),data.get('model',model),data.get('usage',{})
+            if reply.status_code in (429,502,503,529) and attempt<attempts:
+                last='HTTP %d'%reply.status_code;time.sleep(min(10.,.8*2**(attempt-1)));continue
+            # The key never appears in a message; only the status and body do.
+            raise RuntimeError('TypeSafe HTTP %d: %s'%(reply.status_code,reply.text[:500]))
+        raise RuntimeError('TypeSafe request failed after %d attempts (%s)'%(attempts,last))

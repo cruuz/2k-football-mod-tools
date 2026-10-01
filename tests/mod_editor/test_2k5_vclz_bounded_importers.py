@@ -90,6 +90,16 @@ NOT_PNG_IMPORTERS = frozenset({
     # not a user import, and every applied bundle is pinned, so the fit is
     # proved once at author time rather than stepped down per build.
     "mod_editor/core/nfl2k5_modern_arrowhead.py",
+    # Modern MetLife (beta 76 u2) has Arrowhead's shape: shipped authored PNGs and palette rules painted
+    # into the retail P8 allocations of the decoded s18/s19 scenes, then the whole scene refit in its
+    # fixed span with the retail wrapper (scratch word included) kept; every applied bundle is pinned.
+    # When a full 256-entry palette misses the span it steps the authored textures down its own ladder.
+    "mod_editor/core/nfl2k5_modern_metlife.py",
+    # The static SCNE builder (beta 76 u5) quantizes the MetLife model's authored textures (fixed data drawn by
+    # tools/nfl2k5_metlife_model_art.py, never a user import) into P8 records of a scene it writes from scratch,
+    # then fits the whole scene in the retail stored span with a literal fill; every applied bundle is pinned
+    # (data/nfl2k5_metlife_model/pins.json), so the fit is proved once at author time.
+    "mod_editor/core/nfl2k5_scne_builder.py",
 })
 
 

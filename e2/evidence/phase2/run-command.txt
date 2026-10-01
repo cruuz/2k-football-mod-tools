@@ -1,0 +1,4 @@
+PROVED OFFLINE: final full-build invocation, started 2026-09-27 15:55:00 America/New_York.
+Build start Storage free bytes: 30554431488.
+Held shared lock: /home/noah/2k-worktrees/.b76-session/xemu.lock.
+ULTIMATE_NO_REEXEC=1 TMPDIR=/media/noah/Storage/.b76-research/e2/astra-build/tmp PYTHONDONTWRITEBYTECODE=1 nice -n 10 taskset -c 0-23 python3 /media/noah/Storage/.b76-research/e2/astra-build/build_e2.py /home/noah/2k-worktrees/b76-m2 /media/noah/Storage/.b76-research/e2/astra-build/candidate_B_e2.xiso.iso --recipe /media/noah/Storage/.b76-research/e2/astra-build/candidate_B_e2.json --project /media/noah/Storage/.b76-research/main/freeze/candB/league_project_k2_v52_frozen.json --roster-edits /media/noah/Storage/.b76-research/main/freeze/candB/league_roster_edits_candB_nofc.json

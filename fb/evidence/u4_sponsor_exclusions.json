@@ -1,0 +1,47 @@
+[
+  {
+    "venue": "s02",
+    "material": "ad03",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s09",
+    "material": "sign03",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s09",
+    "material": "sign01",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s21",
+    "material": "sign01",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s21",
+    "material": "sign02",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s21",
+    "material": "sign03",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s28",
+    "material": "ad_bb02",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s28",
+    "material": "ad_bb01_LIGHT_ad_bb01",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  },
+  {
+    "venue": "s28",
+    "material": "banner01",
+    "decision": "PROVED OFFLINE: already replaced by the selected u4 manifest, no new item"
+  }
+]

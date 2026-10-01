@@ -1,0 +1,2 @@
+PROVED OFFLINE: ARZ compiled
+PROVED OFFLINE: source-image discovery without environment override; both compiler gates passed; final bytes match verified composition.

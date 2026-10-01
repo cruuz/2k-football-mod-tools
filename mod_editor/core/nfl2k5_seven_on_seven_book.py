@@ -72,6 +72,7 @@ from .nfl2k5_playbook_inspector import (
     PLAY_SIZE,
     RESOURCE_HEADER_SIZE,
     STRING_BASE,
+    menu_link_problems,
     parse_playbook_resource,
 )
 
@@ -445,6 +446,8 @@ def verify(resource: bytes) -> dict[str, Any]:
     _require(len(resource) == RESOURCE_SIZE, "resource size changed")
     body = resource[RESOURCE_HEADER_SIZE:]
     book = parse_playbook_resource(resource, asset_id=ASSET_ID)
+    menu_problems = menu_link_problems(resource)
+    _require(not menu_problems, "a play menu the play call cannot walk to its end: " + "; ".join(menu_problems[:3]))
     names = {f.name: f.index for f in book.formations}
     play_names = {p.name: p.index for p in book.plays}
     for name, _d, _c, _p, _o in FORMATIONS:

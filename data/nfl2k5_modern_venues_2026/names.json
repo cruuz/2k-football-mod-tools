@@ -1,0 +1,525 @@
+{
+ "checked": "2026-09-24",
+ "rule": "Noah, 2026-09-23: keep the 2004 buildings. A venue that is still the same building takes its 2026 name; a team that moved to another building keeps the retail name, because the model is the old building. Only the name and display name change; the location, asset code and secondary label stay retail.",
+ "schema": "nfl2k5_modern_venues_2026_names/v1",
+ "venues": {
+  "s00": {
+   "building": "moved",
+   "now": "State Farm Stadium, Glendale (opened 2006)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s00",
+    "display_name": "Arizona Stadium",
+    "location": "Tempe, AZ",
+    "name": "Arizona Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "ARI"
+  },
+  "s01": {
+   "building": "moved",
+   "now": "Mercedes-Benz Stadium (opened 2017; the Georgia Dome was demolished)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s01",
+    "display_name": "The Georgia Dome",
+    "location": "Atlanta, GA",
+    "name": "Georgia Dome",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "ATL"
+  },
+  "s02": {
+   "building": "same",
+   "now": "M&T Bank Stadium (unchanged)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s02",
+    "display_name": "M&T Bank Stadium ",
+    "location": "Baltimore, MD",
+    "name": "M&T Bank Stadium ",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "BAL"
+  },
+  "s03": {
+   "building": "moved",
+   "now": "the new Highmark Stadium (opened 2026; the 2004 building is replaced)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s03",
+    "display_name": "Ralph Wilson Stadium",
+    "location": "Orchard Park, NY",
+    "name": "Ralph Wilson Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "BUF"
+  },
+  "s04": {
+   "building": "same",
+   "now": "Bank of America Stadium (unchanged; retail abbreviates the short name)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s04",
+    "display_name": "Bank of America Stadium",
+    "location": "Charlotte, NC",
+    "name": "B of A Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "CAR"
+  },
+  "s05": {
+   "building": "same",
+   "now": "Soldier Field (retail used a generic name)",
+   "rename": {
+    "display_name": "Soldier Field",
+    "name": "Soldier Field"
+   },
+   "retail": {
+    "asset_code": "s05",
+    "display_name": "Chicago Field",
+    "location": "Chicago, IL",
+    "name": "Chicago Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "CHI"
+  },
+  "s06": {
+   "building": "same",
+   "now": "Paycor Stadium (renamed 2022)",
+   "rename": {
+    "display_name": "Paycor Stadium",
+    "name": "Paycor Stadium"
+   },
+   "retail": {
+    "asset_code": "s06",
+    "display_name": "Paul Brown Stadium",
+    "location": "Cincinnati, OH",
+    "name": "Paul Brown Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "CIN"
+  },
+  "s07": {
+   "building": "moved",
+   "now": "AT&T Stadium (opened 2009)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s07",
+    "display_name": "Texas Stadium",
+    "location": "Irving, TX",
+    "name": "Texas Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "DAL"
+  },
+  "s08": {
+   "building": "same",
+   "now": "Empower Field at Mile High (renamed 2019)",
+   "rename": {
+    "display_name": "Empower Field at Mile High",
+    "name": "Empower Field"
+   },
+   "retail": {
+    "asset_code": "s08",
+    "display_name": "INVESCO Field at Mile High Stadium",
+    "location": "Denver, CO",
+    "name": "INVESCO Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "DEN"
+  },
+  "s09": {
+   "building": "same",
+   "now": "Ford Field (unchanged)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s09",
+    "display_name": "Ford Field",
+    "location": "Detroit, MI",
+    "name": "Ford Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "DET"
+  },
+  "s10": {
+   "building": "same",
+   "now": "Lambeau Field (unchanged)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s10",
+    "display_name": "Lambeau Field",
+    "location": "Green Bay, WI",
+    "name": "Lambeau Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "GB"
+  },
+  "s11": {
+   "building": "moved",
+   "now": "Lucas Oil Stadium (opened 2008)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s11",
+    "display_name": "The RCA Dome",
+    "location": "Indianapolis, IN",
+    "name": "RCA Dome",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "IND"
+  },
+  "s12": {
+   "building": "same",
+   "now": "EverBank Stadium (renamed 2023)",
+   "rename": {
+    "display_name": "EverBank Stadium",
+    "name": "EverBank Stadium"
+   },
+   "retail": {
+    "asset_code": "s12",
+    "display_name": "ALLTEL Stadium",
+    "location": "Jacksonville, FL",
+    "name": "ALLTEL Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "JAX"
+  },
+  "s13": {
+   "building": "same",
+   "now": "Arrowhead Stadium (the GEHA Field name ended and Arrowhead Stadium was restored on 2026-08-05)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s13",
+    "display_name": "Arrowhead Stadium",
+    "location": "Kansas City, MO",
+    "name": "Arrowhead Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/Arrowhead_Stadium",
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "KC"
+  },
+  "s14": {
+   "building": "same",
+   "now": "Hard Rock Stadium (renamed 2016)",
+   "rename": {
+    "display_name": "Hard Rock Stadium",
+    "name": "Hard Rock Stadium"
+   },
+   "retail": {
+    "asset_code": "s14",
+    "display_name": "Pro Player Stadium",
+    "location": "Miami, FL",
+    "name": "Pro Player Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "MIA"
+  },
+  "s15": {
+   "building": "moved",
+   "now": "U.S. Bank Stadium (opened 2016)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s15",
+    "display_name": "H. H. H. Metrodome",
+    "location": "Minneapolis, MN",
+    "name": "H. H. H. Metrodome",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "MIN"
+  },
+  "s16": {
+   "building": "same",
+   "now": "Gillette Stadium (unchanged)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s16",
+    "display_name": "Gillette Stadium",
+    "location": "Foxboro, MA",
+    "name": "Gillette Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "NE"
+  },
+  "s17": {
+   "building": "same",
+   "now": "Caesars Superdome (renamed 2021)",
+   "rename": {
+    "display_name": "Caesars Superdome",
+    "name": "Caesars Superdome"
+   },
+   "retail": {
+    "asset_code": "s17",
+    "display_name": "The Louisiana Super Dome",
+    "location": "New Orleans, LA",
+    "name": "Louisiana Super Dome",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "NO"
+  },
+  "s20": {
+   "building": "moved",
+   "now": "Allegiant Stadium, Paradise NV (opened 2020)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s20",
+    "display_name": "Network Associates Coliseum",
+    "location": "Oakland, CA",
+    "name": "Network Associates",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "LV"
+  },
+  "s21": {
+   "building": "same",
+   "now": "Lincoln Financial Field (unchanged)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s21",
+    "display_name": "Lincoln Financial Field",
+    "location": "Philadelphia, PA",
+    "name": "Lincoln Financial Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "PHI"
+  },
+  "s22": {
+   "building": "same",
+   "now": "Acrisure Stadium (renamed 2022)",
+   "rename": {
+    "display_name": "Acrisure Stadium",
+    "name": "Acrisure Stadium"
+   },
+   "retail": {
+    "asset_code": "s22",
+    "display_name": "Heinz Field",
+    "location": "Pittsburgh, PA",
+    "name": "Heinz Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "PIT"
+  },
+  "s23": {
+   "building": "moved",
+   "now": "SoFi Stadium (opened 2020)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s23",
+    "display_name": "Edward Jones Dome ",
+    "location": "St. Louis, MO",
+    "name": "Edward Jones Dome ",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "LAR"
+  },
+  "s24": {
+   "building": "moved",
+   "now": "SoFi Stadium (opened 2020)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s24",
+    "display_name": "QUALCOMM Stadium",
+    "location": "San Diego, CA",
+    "name": "QUALCOMM Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "LAC"
+  },
+  "s25": {
+   "building": "moved",
+   "now": "Levi's Stadium (opened 2014)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s25",
+    "display_name": "San Francisco Park",
+    "location": "San Francisco, CA",
+    "name": "San Francisco Park",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "SF"
+  },
+  "s26": {
+   "building": "same",
+   "now": "Lumen Field (renamed 2020)",
+   "rename": {
+    "display_name": "Lumen Field",
+    "name": "Lumen Field"
+   },
+   "retail": {
+    "asset_code": "s26",
+    "display_name": "Qwest Field",
+    "location": "Seattle, WA",
+    "name": "Qwest Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "SEA"
+  },
+  "s27": {
+   "building": "same",
+   "now": "Raymond James Stadium (retail used a generic name)",
+   "rename": {
+    "display_name": "Raymond James Stadium",
+    "name": "Raymond James Stadium"
+   },
+   "retail": {
+    "asset_code": "s27",
+    "display_name": "Tampa Bay Stadium",
+    "location": "Tampa, FL",
+    "name": "Tampa Bay Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "TB"
+  },
+  "s28": {
+   "building": "same",
+   "now": "Nissan Stadium (renamed 2015; its replacement opens in 2027)",
+   "rename": {
+    "display_name": "Nissan Stadium",
+    "name": "Nissan Stadium"
+   },
+   "retail": {
+    "asset_code": "s28",
+    "display_name": "Titans Coliseum",
+    "location": "Nashville, TN",
+    "name": "Titans Coliseum",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "TEN"
+  },
+  "s29": {
+   "building": "same",
+   "now": "Northwest Stadium (renamed 2025; retail used a generic name for FedExField)",
+   "rename": {
+    "display_name": "Northwest Stadium",
+    "name": "Northwest Stadium"
+   },
+   "retail": {
+    "asset_code": "s29",
+    "display_name": "Washington Field",
+    "location": "Raljon, MD",
+    "name": "Washington Field",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "WAS"
+  },
+  "s30": {
+   "building": "same",
+   "now": "Huntington Bank Field (renamed 2025)",
+   "rename": {
+    "display_name": "Huntington Bank Field",
+    "name": "Huntington Bank Field"
+   },
+   "retail": {
+    "asset_code": "s30",
+    "display_name": "The Cleveland Browns Stadium",
+    "location": "Cleveland, OH",
+    "name": "Cleveland Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "CLE"
+  },
+  "s37": {
+   "building": "same",
+   "now": "Reliant Stadium (NRG Stadium 2014-2026; the Reliant name was restored after the 2026 World Cup)",
+   "rename": null,
+   "retail": {
+    "asset_code": "s37",
+    "display_name": "Reliant Stadium",
+    "location": "Houston, TX",
+    "name": "Reliant Stadium",
+    "secondary_label": ""
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/NRG_Stadium",
+    "https://en.wikipedia.org/wiki/List_of_current_National_Football_League_stadiums"
+   ],
+   "team": "HOU"
+  }
+ }
+}

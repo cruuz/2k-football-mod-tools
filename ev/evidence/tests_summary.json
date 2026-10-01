@@ -1,0 +1,16 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "distinct_tests": 95,
+  "passed": 94,
+  "skipped": 1,
+  "skip_reason": "Optional SoFi private portrait images absent.",
+  "initial_runner_issues": [
+    "missing ASTRA_CALENDAR_ENGINE_REPORT.md copy",
+    "tests/mod_editor not on PYTHONPATH"
+  ],
+  "resolved": true,
+  "registry": "MOD_CAPABILITY_REGISTRY_VALIDATION_PASS schema=vc_mod_capability_registry/v1 games=3 surfaces=21 capabilities=207",
+  "full_build": false,
+  "xemu": false,
+  "nvme_free_bytes": 113766875136
+}

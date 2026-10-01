@@ -1,0 +1,1471 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "states_per_book": 784,
+  "world_states": 54096,
+  "books": [
+    {
+      "book": "ARZ",
+      "variant": "retail",
+      "resource_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+      "states": 784,
+      "seconds": 685.831531450036
+    },
+    {
+      "book": "ARZ",
+      "variant": "authored",
+      "resource_sha256": "491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de",
+      "states": 784,
+      "seconds": 499.5221716770902
+    },
+    {
+      "book": "ATL",
+      "variant": "retail",
+      "resource_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "states": 784,
+      "seconds": 642.5882870879723
+    },
+    {
+      "book": "ATL",
+      "variant": "authored",
+      "resource_sha256": "0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab",
+      "states": 784,
+      "seconds": 501.9858295910526
+    },
+    {
+      "book": "BAL",
+      "variant": "retail",
+      "resource_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+      "states": 784,
+      "seconds": 700.2051555630751
+    },
+    {
+      "book": "BAL",
+      "variant": "authored",
+      "resource_sha256": "eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc",
+      "states": 784,
+      "seconds": 540.3703760160133
+    },
+    {
+      "book": "BUF",
+      "variant": "retail",
+      "resource_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+      "states": 784,
+      "seconds": 708.4383370060241
+    },
+    {
+      "book": "BUF",
+      "variant": "authored",
+      "resource_sha256": "a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f",
+      "states": 784,
+      "seconds": 521.8332673730329
+    },
+    {
+      "book": "CAR",
+      "variant": "retail",
+      "resource_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+      "states": 784,
+      "seconds": 507.98330576193985
+    },
+    {
+      "book": "CAR",
+      "variant": "authored",
+      "resource_sha256": "24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642",
+      "states": 784,
+      "seconds": 493.4197213399457
+    },
+    {
+      "book": "CHI",
+      "variant": "retail",
+      "resource_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+      "states": 784,
+      "seconds": 442.8850022990955
+    },
+    {
+      "book": "CHI",
+      "variant": "authored",
+      "resource_sha256": "6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15",
+      "states": 784,
+      "seconds": 457.12412775005214
+    },
+    {
+      "book": "CIN",
+      "variant": "retail",
+      "resource_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "states": 784,
+      "seconds": 497.5652809130261
+    },
+    {
+      "book": "CIN",
+      "variant": "authored",
+      "resource_sha256": "1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002",
+      "states": 784,
+      "seconds": 489.79615756403655
+    },
+    {
+      "book": "CLE",
+      "variant": "retail",
+      "resource_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+      "states": 784,
+      "seconds": 436.06659608194605
+    },
+    {
+      "book": "CLE",
+      "variant": "authored",
+      "resource_sha256": "53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb",
+      "states": 784,
+      "seconds": 464.9996683750069
+    },
+    {
+      "book": "DAL",
+      "variant": "retail",
+      "resource_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "states": 784,
+      "seconds": 611.1872094790451
+    },
+    {
+      "book": "DAL",
+      "variant": "authored",
+      "resource_sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
+      "states": 784,
+      "seconds": 578.9531299760565
+    },
+    {
+      "book": "DEN",
+      "variant": "retail",
+      "resource_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+      "states": 784,
+      "seconds": 643.3274539710255
+    },
+    {
+      "book": "DEN",
+      "variant": "authored",
+      "resource_sha256": "7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a",
+      "states": 784,
+      "seconds": 564.5875334310113
+    },
+    {
+      "book": "DET",
+      "variant": "retail",
+      "resource_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+      "states": 784,
+      "seconds": 629.5639319950715
+    },
+    {
+      "book": "DET",
+      "variant": "authored",
+      "resource_sha256": "a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b",
+      "states": 784,
+      "seconds": 549.2521624910878
+    },
+    {
+      "book": "Editor",
+      "variant": "retail",
+      "resource_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "states": 784,
+      "seconds": 72.1824246600736
+    },
+    {
+      "book": "GB",
+      "variant": "retail",
+      "resource_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+      "states": 784,
+      "seconds": 752.2013460900635
+    },
+    {
+      "book": "GB",
+      "variant": "authored",
+      "resource_sha256": "20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875",
+      "states": 784,
+      "seconds": 569.3610961510567
+    },
+    {
+      "book": "GEN",
+      "variant": "retail",
+      "resource_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "states": 784,
+      "seconds": 523.2392400249373
+    },
+    {
+      "book": "HOU",
+      "variant": "retail",
+      "resource_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+      "states": 784,
+      "seconds": 710.8258472139714
+    },
+    {
+      "book": "HOU",
+      "variant": "authored",
+      "resource_sha256": "1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29",
+      "states": 784,
+      "seconds": 533.6082847829675
+    },
+    {
+      "book": "IND",
+      "variant": "retail",
+      "resource_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+      "states": 784,
+      "seconds": 732.8059204790043
+    },
+    {
+      "book": "IND",
+      "variant": "authored",
+      "resource_sha256": "cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff",
+      "states": 784,
+      "seconds": 576.6672351409215
+    },
+    {
+      "book": "JAX",
+      "variant": "retail",
+      "resource_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+      "states": 784,
+      "seconds": 662.6624617900234
+    },
+    {
+      "book": "JAX",
+      "variant": "authored",
+      "resource_sha256": "5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5",
+      "states": 784,
+      "seconds": 497.32079761999194
+    },
+    {
+      "book": "KC",
+      "variant": "retail",
+      "resource_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+      "states": 784,
+      "seconds": 697.9732128890464
+    },
+    {
+      "book": "KC",
+      "variant": "authored",
+      "resource_sha256": "78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8",
+      "states": 784,
+      "seconds": 499.4026630129665
+    },
+    {
+      "book": "MIA",
+      "variant": "retail",
+      "resource_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+      "states": 784,
+      "seconds": 628.2948582519311
+    },
+    {
+      "book": "MIA",
+      "variant": "authored",
+      "resource_sha256": "4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983",
+      "states": 784,
+      "seconds": 468.310924087069
+    },
+    {
+      "book": "MIN",
+      "variant": "retail",
+      "resource_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "states": 784,
+      "seconds": 457.7930455369642
+    },
+    {
+      "book": "MIN",
+      "variant": "authored",
+      "resource_sha256": "8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a",
+      "states": 784,
+      "seconds": 438.9455357550178
+    },
+    {
+      "book": "NE",
+      "variant": "retail",
+      "resource_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+      "states": 784,
+      "seconds": 438.2244975940557
+    },
+    {
+      "book": "NE",
+      "variant": "authored",
+      "resource_sha256": "332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455",
+      "states": 784,
+      "seconds": 439.01120035897475
+    },
+    {
+      "book": "NO",
+      "variant": "retail",
+      "resource_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+      "states": 784,
+      "seconds": 418.25544069788884
+    },
+    {
+      "book": "NO",
+      "variant": "authored",
+      "resource_sha256": "219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb",
+      "states": 784,
+      "seconds": 452.86887468001805
+    },
+    {
+      "book": "NYG",
+      "variant": "retail",
+      "resource_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+      "states": 784,
+      "seconds": 482.49174766696524
+    },
+    {
+      "book": "NYG",
+      "variant": "authored",
+      "resource_sha256": "046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed",
+      "states": 784,
+      "seconds": 476.4373233600054
+    },
+    {
+      "book": "NYJ",
+      "variant": "retail",
+      "resource_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+      "states": 784,
+      "seconds": 411.31341419101227
+    },
+    {
+      "book": "NYJ",
+      "variant": "authored",
+      "resource_sha256": "7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400",
+      "states": 784,
+      "seconds": 432.1900891390396
+    },
+    {
+      "book": "OAK",
+      "variant": "retail",
+      "resource_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+      "states": 784,
+      "seconds": 406.65107867401093
+    },
+    {
+      "book": "OAK",
+      "variant": "authored",
+      "resource_sha256": "6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8",
+      "states": 784,
+      "seconds": 475.6694020789582
+    },
+    {
+      "book": "PHI",
+      "variant": "retail",
+      "resource_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+      "states": 784,
+      "seconds": 411.0672860420309
+    },
+    {
+      "book": "PHI",
+      "variant": "authored",
+      "resource_sha256": "d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221",
+      "states": 784,
+      "seconds": 446.712360123056
+    },
+    {
+      "book": "PIT",
+      "variant": "retail",
+      "resource_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+      "states": 784,
+      "seconds": 542.002974639996
+    },
+    {
+      "book": "PIT",
+      "variant": "authored",
+      "resource_sha256": "e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac",
+      "states": 784,
+      "seconds": 650.9328019589884
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "resource_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "states": 784,
+      "seconds": 42.0472044829512
+    },
+    {
+      "book": "reference",
+      "variant": "retail",
+      "resource_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "states": 784,
+      "seconds": 548.4778631229419
+    },
+    {
+      "book": "SD",
+      "variant": "retail",
+      "resource_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+      "states": 784,
+      "seconds": 645.1773879650282
+    },
+    {
+      "book": "SD",
+      "variant": "authored",
+      "resource_sha256": "3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a",
+      "states": 784,
+      "seconds": 668.1179793099873
+    },
+    {
+      "book": "SEA",
+      "variant": "retail",
+      "resource_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+      "states": 784,
+      "seconds": 534.2673462659586
+    },
+    {
+      "book": "SEA",
+      "variant": "authored",
+      "resource_sha256": "3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc",
+      "states": 784,
+      "seconds": 638.7358412280446
+    },
+    {
+      "book": "SF",
+      "variant": "retail",
+      "resource_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+      "states": 784,
+      "seconds": 478.5808356120251
+    },
+    {
+      "book": "SF",
+      "variant": "authored",
+      "resource_sha256": "d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0",
+      "states": 784,
+      "seconds": 577.8684577039676
+    },
+    {
+      "book": "STL",
+      "variant": "retail",
+      "resource_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+      "states": 784,
+      "seconds": 657.3893826879794
+    },
+    {
+      "book": "STL",
+      "variant": "authored",
+      "resource_sha256": "9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918",
+      "states": 784,
+      "seconds": 626.4193471850595
+    },
+    {
+      "book": "TB",
+      "variant": "retail",
+      "resource_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "states": 784,
+      "seconds": 642.7882245159708
+    },
+    {
+      "book": "TB",
+      "variant": "authored",
+      "resource_sha256": "810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902",
+      "states": 784,
+      "seconds": 592.9872045309749
+    },
+    {
+      "book": "TEN",
+      "variant": "retail",
+      "resource_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+      "states": 784,
+      "seconds": 567.9056187729584
+    },
+    {
+      "book": "TEN",
+      "variant": "authored",
+      "resource_sha256": "327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad",
+      "states": 784,
+      "seconds": 586.727601911989
+    },
+    {
+      "book": "WAS",
+      "variant": "retail",
+      "resource_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+      "states": 784,
+      "seconds": 552.7067364769755
+    },
+    {
+      "book": "WAS",
+      "variant": "authored",
+      "resource_sha256": "338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3",
+      "states": 784,
+      "seconds": 441.7800026560435
+    },
+    {
+      "book": "WCO",
+      "variant": "retail",
+      "resource_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "states": 784,
+      "seconds": 575.0240142469993
+    }
+  ],
+  "calls": {
+    "0x20b180": 54096,
+    "0x20b820": 54096,
+    "0xe1a80": 1849,
+    "0x2096a0": 33282
+  },
+  "native_visits": {
+    "0x20b820": 54096,
+    "0x20b400": 54096,
+    "0x2093f0": 54096,
+    "0x20a240": 54045,
+    "0x2081b0": 50577,
+    "0x20a7f0": 50577,
+    "0x208820": 1288278,
+    "0x205660": 1216270,
+    "0x203f20": 1216270,
+    "0x20aa40": 50577,
+    "0x2096a0": 36750,
+    "0x207bf0": 59428,
+    "0x2815f0": 24084,
+    "0x281620": 35344
+  },
+  "authored_fault_count": 0,
+  "retail_control_fault_count": 51,
+  "unexpected_fault_count": 0,
+  "faults": [
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 126,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 127,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 128,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 130,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 131,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 132,
+      "input": {
+        "down": 4,
+        "distance": 1,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 133,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 134,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 135,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 136,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 137,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 138,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 139,
+      "input": {
+        "down": 4,
+        "distance": 3,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 140,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 141,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 142,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 143,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 144,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 145,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 146,
+      "input": {
+        "down": 4,
+        "distance": 5,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 147,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 148,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 149,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 150,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 151,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 152,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 153,
+      "input": {
+        "down": 4,
+        "distance": 10,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 154,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 155,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 156,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 157,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 158,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 159,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 160,
+      "input": {
+        "down": 4,
+        "distance": 20,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 161,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 162,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 163,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 164,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 165,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 166,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 167,
+      "input": {
+        "down": 4,
+        "distance": 99,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 753,
+      "input": {
+        "phase": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 754,
+      "input": {
+        "phase": 2
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 755,
+      "input": {
+        "phase": 3
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 777,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 1
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 778,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 5
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 779,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 20
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 780,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 50
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 781,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 80
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 782,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 95
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    },
+    {
+      "book": "PRACTICE",
+      "variant": "retail",
+      "state": 783,
+      "input": {
+        "direction": -1,
+        "down": 4,
+        "yard": 99
+      },
+      "error": "{\"kind\": \"unmapped-access\", \"pc\": \"0x2045f0\", \"address\": \"0x4\", \"size\": 4, \"access\": 19}",
+      "detail": {
+        "kind": "unmapped-access",
+        "pc": "0x2045f0",
+        "address": "0x4",
+        "size": 4,
+        "access": 19
+      }
+    }
+  ],
+  "receipt_sha256": {
+    "ARZ.json": "f8e5638d328b6ab8c50ce23baec35ac902464782ca47457001a2f84cc927fd7d",
+    "ATL.json": "c92c8a4f6b856cbe1b18b41d4355b1b5ed52993a6870a76f1d14d034c03f0ea3",
+    "BAL.json": "06c9894a7ddb625fea784a530936da71795faeccbf3dc3778212761febc8891b",
+    "BUF.json": "b5846f2e5e894edea1ca644c93d2a119830a064eb166ce9ed911d98a1ab5b36f",
+    "CAR.json": "6ea42eba1944b7db445b38d6bfaaa44172690d8e03ffd043ab8d29821b5fd720",
+    "CHI.json": "a996b50f7e5e835584bc9a20371e914ebbd535a7ed3e073fcb9fef13bbfe37d6",
+    "CIN.json": "d082942c0e7a8a5078ae68f34d9e3489bdb9ab575f056c5a95df53b09c2e7d3d",
+    "CLE.json": "caa299a0c727bca5044de6060be6205813558c5e1c3adec504dcad39ea7f2c77",
+    "DAL.json": "2ea0fee71ca4aaf4670594cb8f15eca42f9aff4125d25e292bf2e6deebc89617",
+    "DEN.json": "6cea31eb2c598acd8114679b04fa37f1387f94fdfb33f7afdc88cd88bd48076e",
+    "DET.json": "facc6890982b1e9be725629524422c072be84c2b82d2714110d6214adc149472",
+    "Editor.json": "57f4ccb3bb262e62f64ff2b8ef1cd6d75e1aac0304ba0d445d54baf9b17b409c",
+    "GB.json": "a3867e3cf8d3630c7510213a63e730d80284a1a1dbfd2fbf6a0c270a0a270331",
+    "GEN.json": "8ea60e09ec00162f4d3dd286e6d7f7095506d704fe6cd08019c8ef3804a9a389",
+    "HOU.json": "a77ee5fb28a2ba7aab8e2f89a38a4bc9712de58910d5702c264177c3e4b4bb79",
+    "IND.json": "0ecc64c60994a1dc6012a43c5e734ce6507ab77e48427ec662c2c9c6e787e129",
+    "JAX.json": "0b9d7c24e5ab4fcad23f3e1e25ac825a9658cba5d1ae2b3817ef1900072c5d2f",
+    "KC.json": "c1824bee4384429e2e582a68d992b6a4116f2c1eb649b26754b98acdae1f0043",
+    "MIA.json": "6fbe0218a6826e707c80f9f8c32e40b1ae2e22ec0baa6499e55c2f22ea7a80d6",
+    "MIN.json": "516735eeeaa93245946db795f50332f3c241430f79b7216025a455894b0c46ed",
+    "NE.json": "8a98da274df9d11852994bcf4da4f5585d0d35db09e6f0b8d0bacff02903b209",
+    "NO.json": "d57629abfe0120af161c8de4a6b8be0f9d6e07f6e2c31fca280b6c74d86c75ef",
+    "NYG.json": "ca62131f8491e75e9122edd9e4b576cdd304704484e91559622c273852c5fa17",
+    "NYJ.json": "d1a717e8a4955af537fab3f132ed205245b92161d7a06b0c4889f52e1c6819cd",
+    "OAK.json": "df023b6ef61223eb756b70ccf86483d88b36bd07975137dca61eb6d8dec7b8aa",
+    "PHI.json": "177e911265ae25d0c809b632540441caae6b6fbd3837409790f05811c8ec002e",
+    "PIT.json": "50bb8910c74167449f7a27083fc2e9bc09494ed2763b34fc4759aeab70e3870d",
+    "PRACTICE.json": "eb0389c60f68933e2cc40708f668c332eb14ce327bdb43615976636e43a7ce05",
+    "reference.json": "fe50a15b0ff2e1beb47e8a1c1149740be0bd9c96cbc7d45c8b9bd458a95b3821",
+    "SD.json": "5919e78303a1ee23524d8176e54181f599b5ea151e2196a189254f591c0d3e12",
+    "SEA.json": "edc4efaddb5b44f19846facda08e923b23b72de80cb684ec77ac62d791c94e3f",
+    "SF.json": "74001a79926f6390547b122be130e6dbc0861a773e20de7114769c20236691cc",
+    "STL.json": "3b200f9b7f4b621abfa0b90859e71a6444abee99c0bffb7aa31fda936e3e8b77",
+    "TB.json": "dd5ad292b66fd31c5225afc3148acfddb4f13836325f09d4b0c0c30b01c3ebe7",
+    "TEN.json": "c620d57074f6516df7349924c26c459156389d4bf6cc3174f86d9d8dc597d83d",
+    "WAS.json": "7b64542937c17b763b4a854ec29d05c8e56c8720b18787750caf3958d403c66f",
+    "WCO.json": "e3319891fd21fbcc64b24a3b25326ab92c1bb389359c1b2fdc31c30a4d9d3a01"
+  },
+  "control_scope": "PRACTICE has no special-teams formations. Full-match fourth-down/kick fixtures can give 0x20B820 a null formation. These native faults remain recorded; they are not PLAY table-index faults. All 37 retail resources separately pass the exhaustive per-play scorer sweep.",
+  "coverage": "Factored world-state experiment; all indexed PLAY scorer domains are exhausted by the separate sweep."
+}

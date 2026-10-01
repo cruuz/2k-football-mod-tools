@@ -20,6 +20,9 @@ import nfl_group36_runtime_receipt_verify as receipt  # noqa: E402
 class Group36RuntimeReceiptTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (receipt.REPORT,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL frozen runtime receipt missing: " + ", ".join(missing))
         cls.report = json.loads(receipt.REPORT.read_bytes())
 
     def test_frozen_claim_boundary_accepts_only_the_narrow_result(self) -> None:

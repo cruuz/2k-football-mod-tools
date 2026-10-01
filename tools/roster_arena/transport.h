@@ -1,12 +1,21 @@
-/* Full-arena compact team exports keep the same +91C00 overflow location.
- * Payloads are larger, but neither native 500-byte team nor 65-entry import
- * scratch arrays are widened. Two bounded retail import batches do the copy. */
+/* Compact team exports (b76-k1). The 352-byte overflow block sits right after the 0x70-byte header, the fixed
+ * records follow it and the strings follow them, so an export is exactly as large as its content: retail's own
+ * layout plus the block. The match export is carved from the in-game block's fixed 1.5 MB budget (0x84EB0), where
+ * the earlier full-arena export (0x92000 bytes, block at +0x91C00) left DIR_INTRO's heap empty. Exports written in
+ * that earlier layout (team saves) still import: the block is looked up at +0x70 first, then at +0x91C00.
+ * Neither the native 500-byte team nor the 65-entry import scratch arrays are widened; two bounded retail import
+ * batches do the copy. */
+#define EXPORT_BLOCK 0x70U
 void FC arena_size(u8 *t,u8 *other,u8 *stadium,u32 *fixed,u32 *strings) {
-    (void)t; (void)other; (void)stadium; *fixed=ARENA_SIZE; *strings=0;
+    ps_size(t,other,stadium,fixed,strings); *fixed+=352;
+}
+static NOINLINE u8 *export_block(u8 *src) {
+    u8 *b=src+EXPORT_BLOCK;
+    return U32(b,0)==0x52354b32 && U32(b,4)==0x00325653?b:src+BLOCK_OFFSET;
 }
 u8 * FC arena_export(u8 *t,u8 *other,u8 *stadium,u8 *out) {
     u8 *teams[2],*dest,*p,*b; u32 n=other?2:1,counts[2],i,j,k=0,at,text;
-    u32 fixed,strings,needed=0;
+    u32 fixed,strings;
     if(!t || !out || t==other || !integrity()) return 0;
     teams[0]=t; teams[1]=other;
     for(j=0;j<n;j++) {
@@ -14,16 +23,15 @@ u8 * FC arena_export(u8 *t,u8 *other,u8 *stadium,u8 *out) {
         counts[j]=B(teams[j],ACTIVE)+(u32)r;
     }
     ps_size(t,other,stadium,&fixed,&strings);
-    needed=fixed+strings;
-    if(needed>BLOCK_OFFSET || fixed>0x10000 || strings>BLOCK_OFFSET-0x10000) return 0;
-    zero(out,ARENA_SIZE); at=(u32)out+0x70; text=(u32)out+0x10000;
+    if(fixed<0x70 || fixed+strings>BLOCK_OFFSET || fixed>0x10000 || strings>BLOCK_OFFSET-0x10000) return 0;
+    zero(out,fixed+352+strings); at=(u32)out+0x70+352; text=(u32)out+fixed+352;
     if(stadium) { U32(out,0x10)=1; U32(out,0x14)=at; COPY(0x241F50)(stadium,&at,&text); }
     U32(out,0x30)=n; U32(out,0x34)=at;
     for(j=0;j<n;j++) COPY(0x2416E0)((u8 *)U32(teams[j],0x14c),&at,&text);
     U32(out,0x18)=n; U32(out,0x1c)=at;
     for(j=0;j<n;j++) COPY(0x241BD0)(teams[j],&at,&text);
     U32(out,0)=counts[0]+(other?counts[1]:0); U32(out,4)=at;
-    b=out+BLOCK_OFFSET; copy(b,block(),352);
+    b=out+EXPORT_BLOCK; copy(b,block(),352);
     U32(b,16)=0; U32(b,24)=0; U32(b,28)=0x100;
     for(i=0;i<160;i++) U16(b,32+2*i)=0xffff;
     for(j=0;j<n;j++) {
@@ -71,7 +79,7 @@ u32 FC arena_import(u8 *src,u8 *dst) {
     team=(u8 *)relative(src+0x1c); pool=(u8 *)relative(src+4);
     if(!team || !pool) return 0;
     if(B(team,RSV_VERSION)!=2) return ps_import(src,dst);
-    a=B(team,ACTIVE); reserves=B(team,RSV_COUNT); b=src+BLOCK_OFFSET;
+    a=B(team,ACTIVE); reserves=B(team,RSV_COUNT); b=export_block(src);
     if(a>65 || a+reserves!=n || reserves>reserve_limit(dst) || n>capacity(dst) ||
        B(team,RSV_MAGIC)!=0xa5 || U32(b,0)!=0x52354b32 || U32(b,4)!=0x00325653 ||
        U32(b,8)!=0x00200002 || U32(b,12)!=0x00020005 || crc(b)!=U32(b,20)) return 0;

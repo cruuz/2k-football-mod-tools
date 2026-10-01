@@ -1,0 +1,376 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.35,
+        "colour": [
+          70,
+          74,
+          78
+        ],
+        "depth": 0.12,
+        "material": "roof"
+      },
+      "inset": 0.0,
+      "name": "bk_board_nw",
+      "path": [
+        [
+          -61.597,
+          -76.178
+        ],
+        [
+          -43.003,
+          -88.022
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          74,
+          78
+        ],
+        "depth": 1.2,
+        "material": "bb_color"
+      },
+      "width": 21.946,
+      "y": [
+        21.352,
+        32.02
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -23.0,
+          23.0
+        ],
+        "y": [
+          33.9,
+          38.9
+        ],
+        "z": [
+          89.75,
+          89.95
+        ]
+      },
+      "materials": [
+        "ad_bb01",
+        "ad_bb02",
+        "temp_bottle_ad_bb01",
+        "temp_bottle_ad_bb02"
+      ]
+    }
+  ],
+  "env": null,
+  "help": "the 2014 northwest board, 72 x 35 ft",
+  "markers": {},
+  "name": "Acrisure Stadium",
+  "panels": [
+    {
+      "name": "bk_nw_legs",
+      "parts": [
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -57.561,
+              21.052,
+              -79.951
+            ],
+            [
+              -56.961,
+              21.052,
+              -79.951
+            ],
+            [
+              -56.961,
+              10.4,
+              -79.951
+            ],
+            [
+              -57.561,
+              10.4,
+              -79.951
+            ]
+          ],
+          "toward": [
+            -57.261,
+            15.726,
+            -82.951
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -56.961,
+              21.052,
+              -79.951
+            ],
+            [
+              -56.961,
+              21.052,
+              -79.351
+            ],
+            [
+              -56.961,
+              10.4,
+              -79.351
+            ],
+            [
+              -56.961,
+              10.4,
+              -79.951
+            ]
+          ],
+          "toward": [
+            -53.961,
+            15.726,
+            -79.651
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -56.961,
+              21.052,
+              -79.351
+            ],
+            [
+              -57.561,
+              21.052,
+              -79.351
+            ],
+            [
+              -57.561,
+              10.4,
+              -79.351
+            ],
+            [
+              -56.961,
+              10.4,
+              -79.351
+            ]
+          ],
+          "toward": [
+            -57.261,
+            15.726,
+            -76.351
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -57.561,
+              21.052,
+              -79.351
+            ],
+            [
+              -57.561,
+              21.052,
+              -79.951
+            ],
+            [
+              -57.561,
+              10.4,
+              -79.951
+            ],
+            [
+              -57.561,
+              10.4,
+              -79.351
+            ]
+          ],
+          "toward": [
+            -60.561,
+            15.726,
+            -79.651
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -48.284,
+              21.052,
+              -85.861
+            ],
+            [
+              -47.684,
+              21.052,
+              -85.861
+            ],
+            [
+              -47.684,
+              10.4,
+              -85.861
+            ],
+            [
+              -48.284,
+              10.4,
+              -85.861
+            ]
+          ],
+          "toward": [
+            -47.984,
+            15.726,
+            -88.861
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -47.684,
+              21.052,
+              -85.861
+            ],
+            [
+              -47.684,
+              21.052,
+              -85.261
+            ],
+            [
+              -47.684,
+              10.4,
+              -85.261
+            ],
+            [
+              -47.684,
+              10.4,
+              -85.861
+            ]
+          ],
+          "toward": [
+            -44.684,
+            15.726,
+            -85.561
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -47.684,
+              21.052,
+              -85.261
+            ],
+            [
+              -48.284,
+              21.052,
+              -85.261
+            ],
+            [
+              -48.284,
+              10.4,
+              -85.261
+            ],
+            [
+              -47.684,
+              10.4,
+              -85.261
+            ]
+          ],
+          "toward": [
+            -47.984,
+            15.726,
+            -82.261
+          ],
+          "uv_m": 2.0
+        },
+        {
+          "colour": [
+            70,
+            74,
+            78
+          ],
+          "material": "pole",
+          "quad": [
+            [
+              -48.284,
+              21.052,
+              -85.261
+            ],
+            [
+              -48.284,
+              21.052,
+              -85.861
+            ],
+            [
+              -48.284,
+              10.4,
+              -85.861
+            ],
+            [
+              -48.284,
+              10.4,
+              -85.261
+            ]
+          ],
+          "toward": [
+            -51.284,
+            15.726,
+            -85.561
+          ],
+          "uv_m": 2.0
+        }
+      ]
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Sports Video Group, 'Heinz Field, Pittsburgh Steelers Continue Partnership With Daktronics' (2014-04-29, https://www.sportsvideo.org/2014/04/29/heinz-field-pittsburg-steelers-continue-partnership-with-daktronics/): a display about 35 ft high by 72 ft wide (13HD) in the northwest end zone, supplementing the south board. StadiumsOfProFootball.com: a 35 x 73 ft HD scoreboard installed in the northwest corner before the 2014 season, and the 28 x 96 ft video board (Daktronics HD, 2007) over the open south end.",
+    "The retail s22 scene (PROVED OFFLINE): +z is the open south end, whose screen (digits2, 28.5 x 8.6 m, y 20.6 to 29.2) is already the 2007 board's size within 3 % (96 x 28 ft = 29.3 x 8.5 m), so it stays; u4's 2026 venue art renames its surround (ad_bb01) and takes its defunct sponsors off. The northwest corner is an open notch between the west upper deck's north end (x -77.9 to -57.3 at z -74.8 to -66.6) and the north stands' west end (x -50.0 to -43.2 at z -111.6 to -90.0), over the corner's floor at y 10.4 to 11.3.",
+    "The Heinz ketchup bottles came off the scoreboard when the stadium was renamed in July 2022 (TribLIVE, 'Heinz ketchup bottles removed from scoreboard at Acrisure Stadium'; CBS Pittsburgh, 'Ketchup bottles come down from newly named Acrisure Stadium'); one returned in 2023 outside the Heinz Gate, not on the board. The retail scene (PROVED OFFLINE) lays them on top of the south scoreboard (x +-9.1 to +-22.6, y 35.4 to 38.8, z 89.8, with the pouring drips at z 89.9; in the night and afternoon bundles in temp_bottle_group19); the kit cuts them.",
+    "Commons, 'Ptr-HeinzField-FILE.jpg' (2020 aerial from the north, r014): the board seen from behind in the north end's west part, a steel-framed box standing on two posts on the concourse deck, well west of the goalposts (reference only; no pose solved).",
+    "DESIGN (no inside photo of it): the board spans the northwest notch between the two stands' ends, square to the field centre (centre x -52.3, z -82.1), its top level with the stands' rims (32.0 m), on two 0.6 m steel posts down to the corner's floor, as the aerial shows; frame, body and posts in the retail roof and pole materials at a steel grey.",
+    "DESIGN (main, 2026-09-29): the boards' bodies and backs take bb_color, a plain retail material, at their dark colour (a solid panel from behind); the frame's material stays on the thin border only."
+  ],
+  "team": "PIT",
+  "venue": "s22"
+}

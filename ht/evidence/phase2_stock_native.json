@@ -1,0 +1,1584 @@
+{
+  "label": "PROVED OFFLINE",
+  "one_pool": true,
+  "loads": [
+    {
+      "flow": 1,
+      "team": "49ers '81",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "49ers '89",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "49ers '94",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 54
+    },
+    {
+      "flow": 1,
+      "team": "49ers '03",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Bears '63",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 1,
+      "team": "Bears '85",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Bengals '81",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Bengals '88",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "Bills '64",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 34
+    },
+    {
+      "flow": 1,
+      "team": "Bills '90",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 49
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '77",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '86",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Broncos '98",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Browns '64",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 41
+    },
+    {
+      "flow": 1,
+      "team": "Browns '86",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '79",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '99",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Buccaneers '02",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Cardinals '75",
+      "book": "E2R-ARZ-pb.iff",
+      "categories": 22,
+      "players": 43
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '63",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 34
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '80",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Chargers '94",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Chiefs '69",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Chiefs '93",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Colts '70",
+      "book": "E2R-IND-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '71",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '77",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Cowboys '92",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 48
+    },
+    {
+      "flow": 1,
+      "team": "Dolphins '72",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 46
+    },
+    {
+      "flow": 1,
+      "team": "Dolphins '84",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 49
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '60",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '80",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Eagles '04",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Falcons '80",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Falcons '98",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Giants '56",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 36
+    },
+    {
+      "flow": 1,
+      "team": "Giants '86",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Giants '90",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "Giants '03",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Jaguars '99",
+      "book": "E2R-JAX-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Jets '68",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Jets '98",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Lions '53",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 33
+    },
+    {
+      "flow": 1,
+      "team": "Lions '91",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "Oilers '61",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 35
+    },
+    {
+      "flow": 1,
+      "team": "Oilers '79",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Packers '66",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Packers '96",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Packers '04",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 55
+    },
+    {
+      "flow": 1,
+      "team": "Panthers '96",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Panthers '03",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '85",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '01",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 54
+    },
+    {
+      "flow": 1,
+      "team": "Patriots '03",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '67",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '76",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 1,
+      "team": "Raiders '83",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 49
+    },
+    {
+      "flow": 1,
+      "team": "Rams '79",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Rams '99",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Ravens '00",
+      "book": "E2R-BAL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '82",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 49
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '87",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 50
+    },
+    {
+      "flow": 1,
+      "team": "Redskins '91",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "Saints '91",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 1,
+      "team": "Saints '00",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Seahawks '84",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 49
+    },
+    {
+      "flow": 1,
+      "team": "Seahawks '99",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '75",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '78",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 1,
+      "team": "Steelers '95",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Texans '62",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 36
+    },
+    {
+      "flow": 1,
+      "team": "Titans '99",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '69",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '73",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 1,
+      "team": "Vikings '98",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "49ers '81",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "49ers '89",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "49ers '94",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 54
+    },
+    {
+      "flow": 3,
+      "team": "49ers '03",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Bears '63",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 3,
+      "team": "Bears '85",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Bengals '81",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Bengals '88",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "Bills '64",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 34
+    },
+    {
+      "flow": 3,
+      "team": "Bills '90",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 49
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '77",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '86",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Broncos '98",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Browns '64",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 41
+    },
+    {
+      "flow": 3,
+      "team": "Browns '86",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '79",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '99",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Buccaneers '02",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Cardinals '75",
+      "book": "E2R-ARZ-pb.iff",
+      "categories": 22,
+      "players": 43
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '63",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 34
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '80",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Chargers '94",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Chiefs '69",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Chiefs '93",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Colts '70",
+      "book": "E2R-IND-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '71",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '77",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Cowboys '92",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 48
+    },
+    {
+      "flow": 3,
+      "team": "Dolphins '72",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 46
+    },
+    {
+      "flow": 3,
+      "team": "Dolphins '84",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 49
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '60",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '80",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Eagles '04",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Falcons '80",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Falcons '98",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Giants '56",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 36
+    },
+    {
+      "flow": 3,
+      "team": "Giants '86",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Giants '90",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "Giants '03",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Jaguars '99",
+      "book": "E2R-JAX-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Jets '68",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Jets '98",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Lions '53",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 33
+    },
+    {
+      "flow": 3,
+      "team": "Lions '91",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "Oilers '61",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 35
+    },
+    {
+      "flow": 3,
+      "team": "Oilers '79",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Packers '66",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Packers '96",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Packers '04",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 55
+    },
+    {
+      "flow": 3,
+      "team": "Panthers '96",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Panthers '03",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '85",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '01",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 54
+    },
+    {
+      "flow": 3,
+      "team": "Patriots '03",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '67",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '76",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 3,
+      "team": "Raiders '83",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 49
+    },
+    {
+      "flow": 3,
+      "team": "Rams '79",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Rams '99",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Ravens '00",
+      "book": "E2R-BAL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '82",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 49
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '87",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 50
+    },
+    {
+      "flow": 3,
+      "team": "Redskins '91",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "Saints '91",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 3,
+      "team": "Saints '00",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Seahawks '84",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 49
+    },
+    {
+      "flow": 3,
+      "team": "Seahawks '99",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '75",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '78",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 3,
+      "team": "Steelers '95",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Texans '62",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 36
+    },
+    {
+      "flow": 3,
+      "team": "Titans '99",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '69",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '73",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 3,
+      "team": "Vikings '98",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "49ers '81",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "49ers '89",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "49ers '94",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 54
+    },
+    {
+      "flow": 7,
+      "team": "49ers '03",
+      "book": "E2R-SF-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Bears '63",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 7,
+      "team": "Bears '85",
+      "book": "E2R-CHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Bengals '81",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Bengals '88",
+      "book": "E2R-CIN-pb.iff",
+      "categories": 23,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "Bills '64",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 34
+    },
+    {
+      "flow": 7,
+      "team": "Bills '90",
+      "book": "E2R-BUF-pb.iff",
+      "categories": 25,
+      "players": 49
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '77",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '86",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Broncos '98",
+      "book": "E2R-DEN-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Browns '64",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 41
+    },
+    {
+      "flow": 7,
+      "team": "Browns '86",
+      "book": "E2R-CLE-pb.iff",
+      "categories": 21,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '79",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '99",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Buccaneers '02",
+      "book": "E2R-TB-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Cardinals '75",
+      "book": "E2R-ARZ-pb.iff",
+      "categories": 22,
+      "players": 43
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '63",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 34
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '80",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Chargers '94",
+      "book": "E2R-SD-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Chiefs '69",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Chiefs '93",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Colts '70",
+      "book": "E2R-IND-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '71",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '77",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Cowboys '92",
+      "book": "E2R-DAL-pb.iff",
+      "categories": 24,
+      "players": 48
+    },
+    {
+      "flow": 7,
+      "team": "Dolphins '72",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 46
+    },
+    {
+      "flow": 7,
+      "team": "Dolphins '84",
+      "book": "E2R-MIA-pb.iff",
+      "categories": 24,
+      "players": 49
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '60",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 37
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '80",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Eagles '04",
+      "book": "E2R-PHI-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Falcons '80",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Falcons '98",
+      "book": "E2R-ATL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Giants '56",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 36
+    },
+    {
+      "flow": 7,
+      "team": "Giants '86",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Giants '90",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "Giants '03",
+      "book": "E2R-NYG-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Jaguars '99",
+      "book": "E2R-JAX-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Jets '68",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Jets '98",
+      "book": "E2R-NYJ-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Lions '53",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 33
+    },
+    {
+      "flow": 7,
+      "team": "Lions '91",
+      "book": "E2R-DET-pb.iff",
+      "categories": 22,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "Oilers '61",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 35
+    },
+    {
+      "flow": 7,
+      "team": "Oilers '79",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Packers '66",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Packers '96",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Packers '04",
+      "book": "E2R-GB-pb.iff",
+      "categories": 24,
+      "players": 55
+    },
+    {
+      "flow": 7,
+      "team": "Panthers '96",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Panthers '03",
+      "book": "E2R-CAR-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '85",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '01",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 54
+    },
+    {
+      "flow": 7,
+      "team": "Patriots '03",
+      "book": "E2R-NE-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '67",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '76",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 7,
+      "team": "Raiders '83",
+      "book": "E2R-OAK-pb.iff",
+      "categories": 23,
+      "players": 49
+    },
+    {
+      "flow": 7,
+      "team": "Rams '79",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Rams '99",
+      "book": "E2R-STL-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Ravens '00",
+      "book": "E2R-BAL-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '82",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 49
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '87",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 50
+    },
+    {
+      "flow": 7,
+      "team": "Redskins '91",
+      "book": "E2R-WAS-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "Saints '91",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 47
+    },
+    {
+      "flow": 7,
+      "team": "Saints '00",
+      "book": "E2R-NO-pb.iff",
+      "categories": 21,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Seahawks '84",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 49
+    },
+    {
+      "flow": 7,
+      "team": "Seahawks '99",
+      "book": "E2R-SEA-pb.iff",
+      "categories": 22,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '75",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 43
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '78",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 45
+    },
+    {
+      "flow": 7,
+      "team": "Steelers '95",
+      "book": "E2R-PIT-pb.iff",
+      "categories": 23,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Texans '62",
+      "book": "E2R-KC-pb.iff",
+      "categories": 23,
+      "players": 36
+    },
+    {
+      "flow": 7,
+      "team": "Titans '99",
+      "book": "E2R-TEN-pb.iff",
+      "categories": 24,
+      "players": 53
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '69",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '73",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 40
+    },
+    {
+      "flow": 7,
+      "team": "Vikings '98",
+      "book": "E2R-MIN-pb.iff",
+      "categories": 26,
+      "players": 53
+    }
+  ],
+  "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+  "writer_sha256": "36b4c4810afa1b1c7622a07e2ebd162a42eac21a541fc093daceb689bea85e26",
+  "boundaries": "Archive delivery and allocator free substituted by the e2 native harness. No rendered gameplay."
+}

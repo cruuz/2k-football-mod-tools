@@ -1,0 +1,210 @@
+{
+  "classification": "PROVED OFFLINE",
+  "inputs": [
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/AX_REPORT.md",
+      "bytes": 14498,
+      "sha256": "564d1b9a7c4112154142629f24c6fa5553010d203c83e39efb090b7a242ee603"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/CONTACT_SHEET_juke.png",
+      "bytes": 2074627,
+      "sha256": "92e4466f3f8d083f1eefebf3c13b194ba575b37b88a39678049a4efad62647e2"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/CONTACT_SHEET_spin.png",
+      "bytes": 2375218,
+      "sha256": "d5bd719290cf29781a6311193910d99b056eb1a5428d1b07d115fd278c6aae94"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/CONTACT_SHEET_urianus_refs.png",
+      "bytes": 928519,
+      "sha256": "ae8761b314d3fea13d338eb3f57f00c3179933d8561c760d4c6cfc6f03385280"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_juke_patched_discharge.png",
+      "bytes": 150374,
+      "sha256": "2f084de8be5ceb12537d139b284143e05b1a085fa026f5a4c22794c0de74a565"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_juke_patched_ring.png",
+      "bytes": 142640,
+      "sha256": "387599586db18c85c5da5f26992f41f8749cf7ebbbd4609e2f2a4ff4b9197b87"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_juke_retail_discharge.png",
+      "bytes": 156939,
+      "sha256": "defe8b01fb7d4780871839a118e33228bc91e8cc84918b25ed922a52817004aa"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_juke_retail_ring.png",
+      "bytes": 150573,
+      "sha256": "9f6dea9c94f63b501b160eab2b53a7b46dd229c11c0d820e6ec1ef5130544d80"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_spin_patched_discharge.png",
+      "bytes": 153088,
+      "sha256": "16be7cc335894de2921bddc4b35666fb88076a47e1463552936a3a3ea4c7db79"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_spin_patched_ring.png",
+      "bytes": 147865,
+      "sha256": "8d85901cda2a91c1b0b216dba8f9d38965f95581d4d72726658151df50ef1a6f"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_spin_retail_discharge.png",
+      "bytes": 153360,
+      "sha256": "39332894aafee5212610034384387baa3637991eef6f8b9e5098561447e88785"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/barry_spin_retail_ring.png",
+      "bytes": 144535,
+      "sha256": "055de27559b0abc23b72f88e118427dd2ed0b7e9d59540bcfdfe5dc5dddc0f37"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_juke_patched_discharge.png",
+      "bytes": 138769,
+      "sha256": "a210c08dc6dda1a5cde731d2670f91cf7297b6e82240269687fc52dcfb67ad54"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_juke_patched_ring.png",
+      "bytes": 147419,
+      "sha256": "602a23d9054cce9b2e6b2f021ed2ed0bc51f2600ed4ca2f9e844a96fde5ed4c4"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_spin_patched_discharge.png",
+      "bytes": 160086,
+      "sha256": "951c474a191995a58880f03c5961ff680c03339811bc6d5224258acd0ef8b510"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_spin_patched_ring.png",
+      "bytes": 149387,
+      "sha256": "29b338fe44afe8b0a030371a758b12874d3c1cf0b7840380abfc26b148057638"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_spin_retail_discharge.png",
+      "bytes": 152597,
+      "sha256": "3a12f861c92dbec22342520691d7f883fd91a89a4e00b794159be73cc1b59966"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/craig_spin_retail_ring.png",
+      "bytes": 146427,
+      "sha256": "c9472fe13280c2e6a18cc850a04647d5c803b690053a1add2726d68390248e33"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_juke_patched_discharge.png",
+      "bytes": 142415,
+      "sha256": "c5ee705d46be8d3853865ea04abe773c148a7ff09a54f81cf549a97dc583fc3d"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_juke_patched_ring.png",
+      "bytes": 144189,
+      "sha256": "9752cc6015ab337a8fa876b05bc5bbe642950fef56d990ba537a660ef17d4c68"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_juke_retail_discharge.png",
+      "bytes": 160583,
+      "sha256": "d3a5488e2fd0df9167e1a545edc4f8e2292aa3be25669b6344612b40701174d9"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_juke_retail_ring.png",
+      "bytes": 146756,
+      "sha256": "57477acd57824fb32406180f36abe5c26612af46908251536ccdede2ee971ae5"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_spin_patched_discharge.png",
+      "bytes": 145902,
+      "sha256": "64a84782e88aee804c89ecfeddc0a5bdb7e2a7de54390496c09df40d8a6c8868"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_spin_patched_ring.png",
+      "bytes": 144828,
+      "sha256": "e159da804af042e517db3a36ca9e3662a2823ac33b253429f0c9b15a62517980"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_spin_retail_discharge.png",
+      "bytes": 149075,
+      "sha256": "85cfc44edf628b19ad060406effeec0e496fd9bd1f4208f94addc51737e31622"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/kelly_spin_retail_ring.png",
+      "bytes": 144051,
+      "sha256": "bd257a43ab3a91dd3364cf2691a153853e3ffda819d360670fe30ea3327c498b"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_Barry_discharge.png",
+      "bytes": 160129,
+      "sha256": "caff31fee29d42311e9ba05b91c925b29e29b6fb4829c2d94172a8dcca37230b"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_Kelly_should_look_like_(Sims)_ring.png",
+      "bytes": 173368,
+      "sha256": "f1e8f77c297febfb98d13c15f5311b4b58e4afc3619de659e90dd77644e698cf"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_Sims_discharge.png",
+      "bytes": 162922,
+      "sha256": "aca53dd73508f642b8a9dac6f4aa6725be6a2a333190cf25b9bbdc7a65a65944"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_Sims_should_look_like_(Barry)_ring.png",
+      "bytes": 161867,
+      "sha256": "a787dcc662f4692fb4f8d090ea962680f4ab554e043221014a3d0249bf9ccbf1"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_beta_75_Kelly_discharge.png",
+      "bytes": 134732,
+      "sha256": "018da2fb1160406556c5264a30f369a80bb69adffe60ee21142df83e0d858cc7"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/ref_Urianus_beta_75_Kelly_ring.png",
+      "bytes": 136376,
+      "sha256": "ee0e1d9ac0c44669d32274f5729730edea5de0916ebca763227af4751b2aa499"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_juke_patched_discharge.png",
+      "bytes": 137802,
+      "sha256": "760368a8f46903bed0e0e2f81ecd0e84046d36c964430afe6a8ed9c37845204d"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_juke_patched_ring.png",
+      "bytes": 142533,
+      "sha256": "066067fad6091e7cf5879cba7980274ae22c6df3e5da5ebc0ede9f54d1c50e3d"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_juke_retail_discharge.png",
+      "bytes": 150258,
+      "sha256": "4238d23fc209480ff5429dfcb79460fbf497ab786b1be92d85bbc2efb7036465"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_juke_retail_ring.png",
+      "bytes": 151693,
+      "sha256": "6ee449685e988a14a13966c382b311435a64247ddf14ad91e537da10dae19d35"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_spin_patched_discharge.png",
+      "bytes": 144146,
+      "sha256": "64fd7ba48d6bb5aaad93bb683e2533e6cb31f33507c169be9636cfce9508ee07"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_spin_patched_ring.png",
+      "bytes": 145880,
+      "sha256": "a10de49b895d13207daa9ab302a6e59ac3823385b2151b5d2b8f78c2bcbd6b68"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_spin_retail_discharge.png",
+      "bytes": 149481,
+      "sha256": "073b95b648df936c43261c494a01eaa6cac00c46c83efb2b640013846d9d3b88"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ax/sheet/sims_spin_retail_ring.png",
+      "bytes": 145624,
+      "sha256": "5cb5f0a72deb4868ada9f4967f37b7d10ac28ca0c09b3bfce2bae69806f65390"
+    },
+    {
+      "path": "/home/noah/2k-worktrees/beta-76/B76_APF_REPORT.md",
+      "bytes": 20187,
+      "sha256": "56dcb27b95b222e9e33ea3ccf43a16d112be8bba4d0193f667aef2f6f7772fd7"
+    }
+  ]
+}

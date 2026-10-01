@@ -1,0 +1,213 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "callbacks": [
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Cap screen",
+      "field": "League cap",
+      "native_callback": "0x366410",
+      "text": "301.20m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Cap screen",
+      "field": "Bills payroll",
+      "native_callback": "0x366440",
+      "text": "242.07m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Cap screen",
+      "field": "Bills cap space",
+      "native_callback": "0x366460",
+      "text": "59.12m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Contract summary",
+      "field": "Josh Allen fitted remaining contract",
+      "native_callback": "0x21c000",
+      "text": "5 years / 325.36m + 65.06m bonus"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Trade / roster list",
+      "field": "Josh Allen current cap charge",
+      "native_callback": "0x2b9cc0",
+      "text": "44.24m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Trade / roster list",
+      "field": "Josh Allen fitted total",
+      "native_callback": "0x2b9d40",
+      "text": "325.36m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Trade / roster list",
+      "field": "Josh Allen modeled release penalty",
+      "native_callback": "0x2b9da0",
+      "text": "65.06m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Re-sign / free-agent list",
+      "field": "Josh Allen current base charge",
+      "native_callback": "0x3624d0",
+      "text": "31.23m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Re-sign / free-agent list",
+      "field": "Josh Allen generated demand",
+      "native_callback": "0x3624f0",
+      "text": "65.07m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Negotiation annual schedule",
+      "field": "Annual base charge",
+      "native_callback": "0x347740",
+      "text": "31.23m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Negotiation annual schedule",
+      "field": "Annual amortized bonus",
+      "native_callback": "0x347790",
+      "text": "13.01m"
+    },
+    {
+      "evidence": "PROVED OFFLINE",
+      "screen": "Player card",
+      "field": "Salary text branch (fitted total)",
+      "native_callback": "0x3474c8..0x3474f3",
+      "text": "Salary : 325.36m"
+    }
+  ],
+  "vectors": [
+    {
+      "game_thousands": 0,
+      "real_dollars": 0,
+      "text": "0k"
+    },
+    {
+      "game_thousands": 1,
+      "real_dollars": 4000,
+      "text": "4k"
+    },
+    {
+      "game_thousands": 249,
+      "real_dollars": 996000,
+      "text": "996k"
+    },
+    {
+      "game_thousands": 250,
+      "real_dollars": 1000000,
+      "text": "1.00m"
+    },
+    {
+      "game_thousands": 13750,
+      "real_dollars": 55000000,
+      "text": "55.00m"
+    },
+    {
+      "game_thousands": 75300,
+      "real_dollars": 301200000,
+      "text": "301.20m"
+    },
+    {
+      "game_thousands": -1,
+      "real_dollars": -4000,
+      "text": "-4k"
+    },
+    {
+      "game_thousands": -25,
+      "real_dollars": -100000,
+      "text": "-100k"
+    },
+    {
+      "game_thousands": -75300,
+      "real_dollars": -301200000,
+      "text": "-301.20m"
+    },
+    {
+      "game_thousands": 655350,
+      "real_dollars": 2621400000,
+      "text": "2621.40m"
+    }
+  ],
+  "substituted_leaves": [],
+  "roster_sha256": "a4036686e6d7400d5def1e9aab15e73b841b67b2bececc7a90c41cde53ac1d34",
+  "xbe_sha256": "388486abb397d58856157ccb2c61e5fefc06b4a0d3f4f994bf7eede1865025fc",
+  "boundary": "Native text output, not a rendered screen. 13,750 is a formatter vector for $55M, not Allen APY read from the fitted record.",
+  "call_graph": {
+    "evidence": "PROVED OFFLINE",
+    "formatter": "0x31e580",
+    "direct_calls": [
+      "0x21c01a",
+      "0x21c045",
+      "0x21c150",
+      "0x21c19d",
+      "0x21ca8a",
+      "0x21cab5",
+      "0x21cbe1",
+      "0x21cc0c",
+      "0x2b9aee",
+      "0x2b9b75",
+      "0x2b9d29",
+      "0x2b9d8a",
+      "0x2b9de3",
+      "0x2badaa",
+      "0x2badfa",
+      "0x2c0644",
+      "0x2c066d",
+      "0x319c8f",
+      "0x347008",
+      "0x3470b5",
+      "0x3474d5",
+      "0x3475a1",
+      "0x3475eb",
+      "0x347617",
+      "0x347783",
+      "0x3477cb",
+      "0x347e63",
+      "0x347ee7",
+      "0x348636",
+      "0x34a042",
+      "0x34a09c",
+      "0x34a0ec",
+      "0x34a158",
+      "0x3624dc",
+      "0x362508",
+      "0x362728",
+      "0x3627af",
+      "0x36298a",
+      "0x362a79",
+      "0x362b69",
+      "0x362c46",
+      "0x363301",
+      "0x366429",
+      "0x36644c",
+      "0x366483",
+      "0x366517",
+      "0x369120",
+      "0x36918c",
+      "0x3691f8",
+      "0x369264",
+      "0x36fd3f"
+    ],
+    "tail_jumps": [],
+    "absolute_references": [],
+    "scope": "USA XBE direct machine-code calls; renderer layout and external UI scripts are not execution proof",
+    "other_currency_format": {
+      "address": "0xea7094",
+      "callers": [
+        "0x32e653",
+        "0x32e99a"
+      ],
+      "meaning": "Trivia game scores, separate from franchise dollars; left unchanged"
+    }
+  }
+}

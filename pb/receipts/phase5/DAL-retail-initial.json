@@ -1,0 +1,25 @@
+{
+  "schema": "nfl2k5-native-play-scoring/v1",
+  "status": "PROVED OFFLINE",
+  "resource_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "plays": 269,
+  "contexts": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "calls": {
+    "0x161e30": 1,
+    "0x1a9840": 269,
+    "0x1a9a80": 269,
+    "0x281580": 2152,
+    "0x2815f0": 592,
+    "0xe1440": 4018,
+    "0x281620": 2820
+  },
+  "faults": [],
+  "fault_count": 0,
+  "runtime_witness": false
+}

@@ -1,0 +1,85 @@
+{
+  "art": {
+    "arrow32.png": "a691a700d169278a677524690ea8d397015e6233f9cea380875c7a632d45bb13",
+    "digits.png": "c8aa2fca4e10dfa3e8cc8b1d9651984da3e0079965f8039dcec81dccc21a0ea5",
+    "geometry.json": "eaf0533470e1880957de1ef66b92f00be721ad2c8599ed7a0fa6b50922f507e4",
+    "meter128.png": "65e0ad70620a8253d19412236ef30466c8e19a38ad3a639400b3e9944d332980",
+    "meter64.png": "047695121f892fb6dc2d4e5f9610c1dc5a5d4b5e7191f2d412e1a2b568277209"
+  },
+  "font": {
+    "chunk_sha256": "c50787757ed93e12a789d6ba44702f5429fee5dfcec86153431aa81a93a7539d",
+    "chunk_size": 6688,
+    "name": "windmeter",
+    "name_va": "0xe67e48",
+    "push_va": "0xbabec"
+  },
+  "outer": {
+    "index": 346,
+    "name_id": 11965036,
+    "size": 2977184
+  },
+  "resources": [
+    {
+      "applied_decoded_sha256": "786ad2086e3791631fc3c4c114e59dc0e9d2e2068ab34fe47fd4feb3b5baca8d",
+      "applied_sha256": "301183ba966277c3b6ee73fe2f2474ed290ed1abee845dba118ae3854edcbfaa",
+      "chunk_index": 75,
+      "chunk_offset": 563632,
+      "decoded_size": 10496,
+      "fill": {
+        "compressed_bytes": 3048,
+        "exact_minimum_scratch": 0,
+        "filled_bytes": 3048,
+        "padding_bytes": 8,
+        "scratch_bytes": 16,
+        "stored_size": 3056,
+        "wrapper_identical": true
+      },
+      "retail_decoded_sha256": "720a0425339abe9f25fa833cd1f3803a8ddf0edee008055fbc3da551cfd495cd",
+      "retail_sha256": "be48267e6f4aba4c26f8ec900e421c9f87bd95d509cbeae4598800b0fc378891",
+      "scene": "KickArrow",
+      "span_size": 3088
+    },
+    {
+      "applied_decoded_sha256": "865f7d06af159737c4f102039da958b504a1215056e6593146dd8524f978ab85",
+      "applied_sha256": "f687172cbaa7cd3f4f392b43fbc275bab8e72eed2f6f12c8bba75f2d83867c66",
+      "chunk_index": 76,
+      "chunk_offset": 566720,
+      "decoded_size": 41088,
+      "fill": {
+        "compressed_bytes": 18980,
+        "exact_minimum_scratch": 39,
+        "filled_bytes": 22418,
+        "padding_bytes": 14,
+        "scratch_bytes": 96,
+        "stored_size": 22432,
+        "wrapper_identical": true
+      },
+      "retail_decoded_sha256": "b3064ebc3296bfff9b421d7a0079905fcd84c47070c190ee0e4f1431357700d6",
+      "retail_sha256": "7e7a35c0c0cd0054b10694a45365e6c1679dafbcc9d7e2f2269880dbfb05ae70",
+      "scene": "KickMeter",
+      "span_size": 22464
+    },
+    {
+      "applied_decoded_sha256": "5f33d670c923a1062ed44a56b1f74e91906762a343d9629eaab39379fca5eba7",
+      "applied_sha256": "65aa79fa266c8f3505c9142dca9d2976c8513df82f506001fce562ffbdd5163e",
+      "chunk_index": 77,
+      "chunk_offset": 589184,
+      "decoded_size": 3840,
+      "fill": {
+        "compressed_bytes": 1349,
+        "exact_minimum_scratch": 9,
+        "filled_bytes": 1366,
+        "padding_bytes": 10,
+        "scratch_bytes": 16,
+        "stored_size": 1376,
+        "wrapper_identical": true
+      },
+      "retail_decoded_sha256": "4ecb56cd0b1fdfe0badee2da508cb21559b4214db0e42b58ffcb6451fa09cbbc",
+      "retail_sha256": "a1028d833501be37d91f0b5f7d0f7f7d29448e550a09d14e7732bbc5028cac76",
+      "scene": "windmeter",
+      "span_size": 1408
+    }
+  ],
+  "runtime_witnessed": false,
+  "schema": "nfl2k5_kick_meter_2026_pins/v1"
+}

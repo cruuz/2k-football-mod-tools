@@ -1,0 +1,39 @@
+{
+  "classification": "PROVED OFFLINE",
+  "base": "6bd9b3d66d239a267f8d4f66e083b8a6eb320671",
+  "changed_team_rows": [
+    "CHI",
+    "PHI"
+  ],
+  "unchanged_team_rows": 50,
+  "changed_source_cells": [
+    "label_0",
+    "label_1",
+    "label_2",
+    "label_3",
+    "label_4",
+    "label_5",
+    "label_6",
+    "label_7",
+    "label_8",
+    "label_9",
+    "label_st",
+    "label_nd",
+    "label_rd",
+    "label_th",
+    "label_&",
+    "label_Goal",
+    "label_GOAL",
+    "label_and",
+    "label_OT",
+    "label_ST",
+    "label_ND",
+    "label_RD",
+    "label_TH",
+    "label_Inch",
+    "label_es",
+    "label_Down"
+  ],
+  "changed_official_marks": [],
+  "official_palette_unchanged": true
+}

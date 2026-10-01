@@ -212,6 +212,9 @@ class NflAudoImportCapacityAuditTests(unittest.TestCase):
         )
 
     def test_committed_tsv_has_one_exact_row_per_report_record(self) -> None:
+        missing = [str(path) for path in (MATRIX,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL audio capacity matrix missing: " + ", ".join(missing))
         report = json.loads(REPORT.read_bytes())
         lines = MATRIX.read_text(encoding="utf-8").splitlines()
         self.assertEqual(lines[0].split("\t"), list(audit.MATRIX_FIELDS))

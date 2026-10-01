@@ -23,7 +23,8 @@ def synthetic_disc(path):
     size = mod_build.tt.EXPECTED_XBE_SIZE
     assert len(xbe) <= size
     xbe += bytes(size - len(xbe))
-    directory = _dir_node([(64, size, 0x80, 'default.xbe')])
+    directory = _dir_node([(64, size, 0x80, 'default.xbe'),
+                           ((64 * 2048 + size) // 2048, 40 * 4096, 0x80, 'textures.bin')])
     image = bytearray(64 * 2048 + size + 40 * 4096)
     magic = b'MICROSOFT*XBOX*MEDIA'
     image[0x10000:0x10014] = magic
@@ -64,12 +65,22 @@ class CombinedBuildTests(unittest.TestCase):
         synthetic_disc(self.source)
         self.original = self.source.read_bytes()
         self.service = SyntheticProject(self.source)
+        # This fixture tests disc composition without a real PLAY archive.
+        scoring = mock.patch.object(mod_build, '_check_playbook_scoring', return_value={'synthetic': True})
+        scoring.start()
+        self.addCleanup(scoring.stop)
 
-    def test_plain_project_build_publishes_verified_identical_disc(self):
+    def test_plain_project_build_publishes_identical_files_in_compact_disc(self):
         target = self.root / 'unchanged.iso'
         receipt = mod_build.build(mod_build.BuildPlan(str(self.source), str(target)))
-        self.assertEqual(target.read_bytes(), self.original)
-        self.assertEqual(receipt['outcome']['source']['sha256'], receipt['outcome']['output']['sha256'])
+        from mod_editor.core import xdvdfs_compact as compact
+        def files(path):
+            with path.open('rb', buffering=0) as stream:
+                layout = compact.read_layout(stream)
+                return {k: compact.read_at(stream, e.byte_offset, e.size) for k, e in layout.entries.items()}
+        self.assertEqual(files(target), files(self.source))
+        self.assertLess(target.stat().st_size, len(self.original))
+        self.assertTrue(receipt['disc_compaction']['all_file_hashes_identical'])
 
     def test_single_copy_matches_historical_two_copy_composition(self):
         staged = self.root / 'old-stage.iso'

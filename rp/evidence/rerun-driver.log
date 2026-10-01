@@ -1,0 +1,6 @@
+{"name": "stage-2k5", "exit_code": 0, "seconds": 0.56}
+{"name": "release-2k5", "exit_code": 0, "seconds": 9.93}
+{"name": "runtime-2k5", "exit_code": 0, "seconds": 13.39}
+{"name": "test_b76_ed2_build_recursion", "exit_code": 0, "seconds": 1.82}
+{"name": "test_phase1_packaging", "exit_code": 0, "seconds": 2.62}
+FAILED []

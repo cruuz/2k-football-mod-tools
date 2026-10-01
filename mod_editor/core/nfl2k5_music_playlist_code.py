@@ -33,17 +33,17 @@ CODE = bytes.fromhex(
     "0000a1a4d3c500e9fcffffff51e8fcffffff59c70534000000010000005589e583e4f8e9fcffffff"
     "85c974225689cebac0c0e600e8fcffffff85c0752589f1bad4c0e600e8fcffffff85c075155ee8fc"
     "ffffffc7051400000000000000e907ffffff5ee8fcffffff833d3400000000740fe8fcffffffc705"
-    "3400000000000000c7051400000001000000c70508ccc30000000000e954fcffff83f90477555689"
-    "cee8fcffffff893590e2b90085f6743383fe02741883fe04750731c9e8fcffffffb9c0c0e600e8fc"
-    "ffffff5ec3c7051400000000000000e8fcffffffe8fcffffff5ec3c7051400000000000000e8fcff"
-    "ffff5ec3833d90e2b900047505e9ebfbffffe921ffffff60e8fcffffff833d1c00000000740ac705"
-    "2400000001000000c7051c00000000000000c7051800000000000000c7053400000000000000ff05"
-    "3000000061e9fcffffff60e8fcffffff830d3800000001e8fcffffff615589e583e4f8e9fcffffff"
-    "a1183bb700e8fcffffff60832538000000fee8fcffffff61c3e8fcffffff833d34000000000f8596"
-    "fdffff833d14000000007431608b1d18000000e8fcffffff891d18000000c7052400000000000000"
-    "c7052000000001000000c70598d3c5000200000061c39c60833d00000000007413837c2428017407"
-    "837c2428037505e8fcffffff619d51555789cfe9fcffffff60c7054494bd0000000000b9c0c0e600"
-    "e8fcffffff61c20800"
+    "3400000000000000c7051400000001000000c70508ccc30000000000e954fcffff83f904776e5689"
+    "cee8fcffffff893590e2b90085f6744c83fe02743183fe04752031c9390da4e2b9007511e8fcffff"
+    "ffb901000000e8fcffffff5ec3e8fcffffffb9c0c0e600e8fcffffff5ec3c7051400000000000000"
+    "e8fcffffffe8fcffffff5ec3c7051400000000000000e8fcffffff5ec3833d90e2b900047505e9d2"
+    "fbffffe908ffffff60e8fcffffff833d1c00000000740ac7052400000001000000c7051c00000000"
+    "000000c7051800000000000000c7053400000000000000ff053000000061e9fcffffff60e8fcffff"
+    "ff830d3800000001e8fcffffff615589e583e4f8e9fcffffffa1183bb700e8fcffffff6083253800"
+    "0000fee8fcffffff61c3e8fcffffff833d34000000000f857dfdffff833d14000000007431608b1d"
+    "18000000e8fcffffff891d18000000c7052400000000000000c7052000000001000000c70598d3c5"
+    "000200000061c39c60833d00000000007413837c2428017407837c2428037505e8fcffffff619d51"
+    "555789cfe9fcffffff60c7054494bd0000000000b9c0c0e600e8fcffffff61c20800"
 )
 RELOCATIONS = (
     (2, 1, 'state_data', 0),
@@ -153,43 +153,45 @@ RELOCATIONS = (
     (1280, 1, 'state_data', 0),
     (1290, 1, 'state_data', 0),
     (1322, 2, 'code', 0),
-    (1349, 2, 'game_music_switch', 0),
-    (1359, 2, 'code', 1200),
-    (1367, 1, 'state_data', 0),
-    (1376, 2, 'code', 1009),
-    (1381, 2, 'loading_start', 0),
-    (1389, 1, 'state_data', 0),
-    (1398, 2, 'code', 1009),
-    (1425, 2, 'code', 0),
-    (1431, 1, 'state_data', 0),
-    (1440, 1, 'state_data', 0),
-    (1450, 1, 'state_data', 0),
-    (1460, 1, 'state_data', 0),
-    (1470, 1, 'state_data', 0),
-    (1480, 1, 'state_data', 0),
-    (1492, 2, 'code', 0),
-    (1498, 1, 'state_data', 0),
-    (1504, 2, 'code', 1009),
-    (1526, 2, 'retail_halftime_exit_tail', 0),
-    (1533, 1, 'state_data', 0),
-    (1539, 2, 'code', 373),
-    (1546, 2, 'code', 0),
-    (1552, 1, 'state_data', 0),
-    (1565, 1, 'state_data', 0),
-    (1575, 1, 'state_data', 0),
-    (1580, 2, 'code', 1009),
-    (1586, 1, 'state_data', 0),
-    (1592, 1, 'state_data', 0),
-    (1602, 1, 'state_data', 0),
-    (1626, 1, 'state_data', 0),
-    (1648, 2, 'code', 373),
-    (1681, 2, 'code', 1200),
+    (1357, 2, 'code', 1200),
+    (1367, 2, 'game_music_switch', 0),
+    (1374, 2, 'game_music_switch', 0),
+    (1384, 2, 'code', 1200),
+    (1392, 1, 'state_data', 0),
+    (1401, 2, 'code', 1009),
+    (1406, 2, 'loading_start', 0),
+    (1414, 1, 'state_data', 0),
+    (1423, 2, 'code', 1009),
+    (1450, 2, 'code', 0),
+    (1456, 1, 'state_data', 0),
+    (1465, 1, 'state_data', 0),
+    (1475, 1, 'state_data', 0),
+    (1485, 1, 'state_data', 0),
+    (1495, 1, 'state_data', 0),
+    (1505, 1, 'state_data', 0),
+    (1517, 2, 'code', 0),
+    (1523, 1, 'state_data', 0),
+    (1529, 2, 'code', 1009),
+    (1551, 2, 'retail_halftime_exit_tail', 0),
+    (1558, 1, 'state_data', 0),
+    (1564, 2, 'code', 373),
+    (1571, 2, 'code', 0),
+    (1577, 1, 'state_data', 0),
+    (1590, 1, 'state_data', 0),
+    (1600, 1, 'state_data', 0),
+    (1605, 2, 'code', 1009),
+    (1611, 1, 'state_data', 0),
+    (1617, 1, 'state_data', 0),
+    (1627, 1, 'state_data', 0),
+    (1651, 1, 'state_data', 0),
+    (1673, 2, 'code', 373),
+    (1706, 2, 'code', 1200),
     (1129, 2, 'retail_pause_tail', 0),
     (1168, 2, 'retail_resume_tail', 0),
     (1196, 2, 'retail_preview_tail', 0),
-    (1486, 2, 'retail_player_init', 0),
-    (1516, 2, 'retail_halftime_tail', 0),
-    (1660, 2, 'retail_screen_tail', 0),
+    (1511, 2, 'retail_player_init', 0),
+    (1541, 2, 'retail_halftime_tail', 0),
+    (1685, 2, 'retail_screen_tail', 0),
 )
 LABELS = {
     'advance': 934,
@@ -201,7 +203,7 @@ LABELS = {
     'context': 1200,
     'context_start': 1258,
     'context_stop': 1238,
-    'draft_shared': 1664,
+    'draft_shared': 1689,
     'enqueue': 373,
     'enqueue_bad': 804,
     'enqueue_empty': 814,
@@ -210,19 +212,20 @@ LABELS = {
     'fill': 167,
     'filled': 196,
     'frame': 984,
-    'halftime_enter': 1490,
-    'halftime_exit': 1520,
+    'halftime_enter': 1515,
+    'halftime_exit': 1545,
     'init': 0,
     'init_done': 69,
-    'manual_done': 1621,
-    'manual_next': 1545,
+    'manual_done': 1646,
+    'manual_next': 1570,
     'mask_check': 82,
     'mask_same': 125,
     'mode': 1313,
-    'mode_loading': 1365,
-    'mode_play': 1353,
-    'mode_return': 1403,
-    'mode_stop': 1387,
+    'mode_game_music': 1373,
+    'mode_loading': 1390,
+    'mode_play': 1378,
+    'mode_return': 1428,
+    'mode_stop': 1412,
     'native_advance': 945,
     'native_preview': 1189,
     'native_preview_next': 998,
@@ -232,16 +235,16 @@ LABELS = {
     'omitted': 193,
     'packet': 708,
     'pause': 1113,
-    'player_inactive': 1448,
-    'player_init': 1423,
+    'player_inactive': 1473,
+    'player_init': 1448,
     'preview': 1172,
-    'profile_context': 1404,
-    'profile_other': 1418,
+    'profile_context': 1429,
+    'profile_other': 1443,
     'resume': 1133,
     'resume_tail': 1162,
-    'screen_done': 1652,
-    'screen_event': 1622,
-    'screen_queue': 1647,
+    'screen_done': 1677,
+    'screen_event': 1647,
+    'screen_queue': 1672,
     'selected': 502,
     'shared_start': 1288,
     'shuffle': 222,

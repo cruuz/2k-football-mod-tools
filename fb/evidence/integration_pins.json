@@ -1,0 +1,169 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base": "c1a8a769580afefcb8d7bb6c6e5391f83faa9f8e",
+  "model_checks": [
+    {
+      "model": "state_farm",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_state_farm_model/pins.json",
+      "sha256": "8877a752ee4b9c78815e81c81246f6f19bd205c3d0eb058977eb67c9bbdce047",
+      "pin_change": false
+    },
+    {
+      "model": "mercedes_benz",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_mercedes_benz_model/pins.json",
+      "sha256": "793a9aced1a99400b13555070043e00db4ee95611553053ac91cedeba868cbfd",
+      "pin_change": false
+    },
+    {
+      "model": "highmark",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_highmark_model/pins.json",
+      "sha256": "bfb374ab8aa5c9c6a96eaadc4670f3d4c3c34d058f4b3c6ab1596883ad39ea49",
+      "pin_change": false
+    },
+    {
+      "model": "att",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_att_model/pins.json",
+      "sha256": "9753c4976554eb26d1e93a3960dc77f7bdaf987672ccfd2dc64ae8a8b54fbb98",
+      "pin_change": false
+    },
+    {
+      "model": "lucas_oil",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_lucas_oil_model/pins.json",
+      "sha256": "3b61aa22272539d1f966315797f21e8e71297b98feeb8589ed19648c465dc489",
+      "pin_change": false
+    },
+    {
+      "model": "everbank",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_everbank_model/pins.json",
+      "sha256": "6845af59cf5fed3771d8fa3f3488f12e09b3668e235e01cc0ab22cd851c498a3",
+      "pin_change": false
+    },
+    {
+      "model": "hard_rock",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_hard_rock_model/pins.json",
+      "sha256": "7a3feb199e121949e349731d667928bad84aff2a15f473d072304d7cb389bb42",
+      "pin_change": false
+    },
+    {
+      "model": "usbank",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_usbank_model/pins.json",
+      "sha256": "1664f8ee1876e93e1c0dbcf30ed58f31ba01f3a5a3b640e423a85b5f4548f4fd",
+      "pin_change": false
+    },
+    {
+      "model": "sofi",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_sofi_model/pins.json",
+      "sha256": "c1b28ee29df0f99144eb24d1387d7dfe9aa5e32580d03c6f52700d0774207a2d",
+      "pin_change": false
+    },
+    {
+      "model": "levis",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_levis_model/pins.json",
+      "sha256": "c3e2c3b746fca5b6f4cd246d436c3e5b0f3d0c76d3c75205381f24522b34d73b",
+      "pin_change": false
+    },
+    {
+      "model": "allegiant",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_allegiant_model/pins.json",
+      "sha256": "28afcc8678a3036190a03497765e0f0659d5a803c85cefba76e156fdabf79ecf",
+      "pin_change": false
+    },
+    {
+      "model": "lambeau",
+      "changed_functions": [
+        "bundle_state",
+        "image_status",
+        "apply_to_image"
+      ],
+      "all_geometry_texture_generators_camera_builders_unchanged": true,
+      "pin_file": "data/nfl2k5_lambeau_model/pins.json",
+      "sha256": "17aaf65fbd12185e48170483fd44e7c8a56ebd58ee3071dfb9073531bc29282c",
+      "pin_change": false
+    }
+  ],
+  "registry_changes": [
+    {
+      "capability": "nfl2k5.stadiums_fields.modern_venues_2026",
+      "before": [
+        "d4dc3adef6ab77d41ea501b4e3b7613a52090be875ccade9f2962e953d143b11",
+        "9aa2283f8e3c15506a14ffbd0bfaa98e9834f76b8030a048065df2e93a846e96",
+        "81db236bfd1a982d50ad731175c6e0bcb474fc302a2a9d51f81a291916583991",
+        "705724db0c2f3416f82187265eaaff239f98e6c4d4efc01f19f9d312f375a66a"
+      ],
+      "after": [
+        "d4dc3adef6ab77d41ea501b4e3b7613a52090be875ccade9f2962e953d143b11",
+        "9aa2283f8e3c15506a14ffbd0bfaa98e9834f76b8030a048065df2e93a846e96",
+        "81db236bfd1a982d50ad731175c6e0bcb474fc302a2a9d51f81a291916583991",
+        "705724db0c2f3416f82187265eaaff239f98e6c4d4efc01f19f9d312f375a66a",
+        "3ff1c086a715022c54e264e43de30db5b6ebed042190bac5ab16bb1aa527f516",
+        "620bc9647348ffdd4ee5d349602cdb03b48880209bb4b0ddea0bf81396e69176"
+      ]
+    }
+  ]
+}

@@ -479,11 +479,13 @@ def _tools():
     return tx, inv, ResourceRecord, HEADER
 
 
-def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surface="turf", mean_value=None):
+def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surface="turf", mean_value=None, only=None):
     """Re-grade the green entries of a 256-entry B,G,R,A palette; others untouched.
 
     ``gain`` multiplies the lifted value; ``alpha_scale`` scales every entry's
     alpha (the divots layer). Linked outside matching is a separate transform.
+    ``only`` (256 flags) limits the grade to the flagged entries: the end-zone
+    pass flags the turf-like ones (:func:`turf_like_entries`).
     """
     require(len(palette) == 1024, "palette size")
     doc = normalize_settings(settings)
@@ -497,7 +499,8 @@ def regrade_palette(palette, *, gain=1.0, alpha_scale=1.0, settings=None, surfac
         h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         h *= 360
         new_a = min(255, max(0, round(a * alpha_scale)))
-        if not (45 <= h <= (180 if surface == "outside" else 150) and s > 0.15 and v > 0.10):
+        if not (45 <= h <= (180 if surface == "outside" else 150) and s > 0.15 and v > 0.10) or (
+                only is not None and not only[i]):
             if new_a != a:
                 out[i * 4 + 3] = new_a
             continue
@@ -519,6 +522,68 @@ def _palette_counts(out, system, texture):
     for index in indices:
         counts[index] += 1
     return counts
+
+
+# b76 u6 (2026-09-24): the end-zone pass grades grass, not paint. The retail end-zone
+# maps carry their own grass background, which must follow the graded turf, but
+# team paint also sits in the pass's hue window (45 to 150 degrees): the Rams' sol
+# #FFD100 went to (254, 232, 0), and the 2004 golds of the Saints, Packers,
+# Washington, Ravens, Steelers, Jaguars and 49ers went lemon. An end-zone or
+# midfield entry is graded only when it is turf-like against the same field's own
+# turf: the colour map's hue range (2nd to 98th percentile of its pixels) widened
+# by TURF_HUE_MARGIN (any hue when dark), no more saturated than the turf plus
+# TURF_SAT_MARGIN, and no brighter than the turf plus TURF_VAL_MARGIN unless nearly
+# grey (white paint blended into grass). Fields without a colour map measure
+# against their grass material colour. The turf, outside grass, divots, normal map,
+# tints and rigs are graded exactly as before.
+TURF_HUE_MARGIN = 15.0
+TURF_SAT_MARGIN = 0.15
+TURF_VAL_MARGIN = 0.12
+TURF_DARK_VALUE = 0.25
+TURF_GREY_SATURATION = 0.30
+
+
+def turf_envelope(palette, counts=None):
+    """(hue low, hue high, saturation high, value high) of a turf: the 2nd and 98th
+    percentiles of its entries weighted by pixel count (``counts``), or the one
+    colour of a material-only field (``palette`` of four bytes, ``counts`` None)."""
+    samples = []
+    for i in range(len(palette) // 4):
+        n = 1 if counts is None else counts[i]
+        if not n:
+            continue
+        b, g, r = palette[i * 4:i * 4 + 3]
+        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        samples.append((h * 360, s, v, n))
+    if not samples:
+        return None
+
+    def percentile(key, q):
+        items = sorted((sample[key], sample[3]) for sample in samples)
+        target, run = q * sum(n for _value, n in items), 0
+        for value, n in items:
+            run += n
+            if run >= target:
+                return value
+        return items[-1][0]
+    return percentile(0, 0.02), percentile(0, 0.98), percentile(1, 0.98), percentile(2, 0.98)
+
+
+def turf_like_entries(palette, envelope):
+    """256 flags for a B,G,R,A palette: True where the entry is grass (graded with
+    the turf), False where it is paint (kept). None when there is no turf."""
+    if envelope is None:
+        return None
+    h_lo, h_hi, s_hi, v_hi = envelope
+    flags = []
+    for i in range(256):
+        b, g, r = palette[i * 4:i * 4 + 3]
+        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        h *= 360
+        hue_ok = h_lo - TURF_HUE_MARGIN <= h <= h_hi + TURF_HUE_MARGIN or v <= TURF_DARK_VALUE
+        flags.append(hue_ok and s <= s_hi + TURF_SAT_MARGIN
+                     and (v <= v_hi + TURF_VAL_MARGIN or s <= TURF_GREY_SATURATION))
+    return flags
 
 
 def _green_entry(entry, *, hue_max=150):
@@ -786,7 +851,7 @@ def fit_fixed_span(span, decoded):
     raise tx.TxtrError("cannot keep the retail scratch word: " + "; ".join(attempts))
 
 
-def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=False):
+def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=False, painter=None):
     """Refit one compressed ``field`` SCNE span with the broadcast grass edits.
 
     Returns (new span, receipt). The span keeps its size and wrapper structure.
@@ -801,6 +866,10 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
     if modern_arrowhead:
         from . import nfl2k5_modern_arrowhead as arrowhead
         painted, _ = arrowhead.paint_scene(span, chunk)
+    elif painter is not None:
+        # Another stadium option (Modern MetLife) authors its marks on the retail field first, so the
+        # grade below and the single refit apply to the composed art, exactly as for Arrowhead.
+        painted, _ = painter(span, chunk)
     else:
         painted = output
     out = bytearray(painted)
@@ -811,6 +880,7 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
         for name in texture.get("mapped_material_names") or ():
             by_material[name] = texture
     field_rgb = None
+    turf = None  # the field's own turf before the grade, for the end-zone pass
     outside_linked = False
     # Material-only fields need their target before processing the outside map.
     if COLOR_MAP_MATERIAL not in by_material:
@@ -822,10 +892,15 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
                 word = struct.unpack_from("<I", out, base + field)[0]
                 new = regrade_colour_word(word, doc)
                 if field == 0x18:
+                    turf = turf_envelope(bytes(((word & 255), (word >> 8) & 255, (word >> 16) & 255, 255)))
                     field_rgb = ((new >> 16) & 255, (new >> 8) & 255, new & 255)
                 if new != word:
                     struct.pack_into("<I", out, base + field, new)
                     receipt["materials"].append(dict(material=material["name"], field=hex(field), before=hex(word), after=hex(new)))
+    if COLOR_MAP_MATERIAL in by_material and by_material[COLOR_MAP_MATERIAL]["format_name"] == "P8":
+        texture = by_material[COLOR_MAP_MATERIAL]
+        at = system + texture["palette_offset"]
+        turf = turf_envelope(bytes(out[at:at + 1024]), _palette_counts(out, system, texture))
     done_palettes = set()
     for name in (COLOR_MAP_MATERIAL, OUTSIDE_MATERIAL) + END_ZONE_MATERIALS:
         texture = by_material.get(name)
@@ -839,7 +914,8 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
         before = bytes(out[at:at + 1024])
         surface = "turf" if name == COLOR_MAP_MATERIAL else "outside" if name == OUTSIDE_MATERIAL else "endzones"
         mean = _green_mean_value(out, system, texture, before)
-        graded = regrade_palette(before, settings=doc, surface=surface, mean_value=mean)
+        only = turf_like_entries(before, turf) if surface == "endzones" else None
+        graded = regrade_palette(before, settings=doc, surface=surface, mean_value=mean, only=only)
         counts = _palette_counts(out, system, texture)
         if name == COLOR_MAP_MATERIAL:
             # Measure blue-green fields too, without changing their C4 grading mask.

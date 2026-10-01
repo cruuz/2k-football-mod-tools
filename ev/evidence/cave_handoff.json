@@ -1,0 +1,48 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "manifest_sha256": "8ccc2ba8c8794fd46416463b5240f87ebd4a3f7e89ca02c1269ed39e0598bc71",
+  "manifest_unchanged": true,
+  "reservation": {
+    "start": "0x133354",
+    "end_exclusive": "0x133358",
+    "size": 4,
+    "owner": "nfl2k5_season_length",
+    "basis": "existing season group super_bowl_venue_season0; no new cave",
+    "sofi_on": "c5321300",
+    "sofi_off_default": "e1321300",
+    "changed_byte": "0x133354 only; section SHA-1 repinned"
+  },
+  "sources": [
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "base_sha256": "ba1c8777ef8f5a302643dee4e372e97fb241669a4e2db330c43b9aac6e5a37f3",
+      "final_sha256": "70dee40f8c71b292d1602ca0412c6d4b93638a6e659a586abd83c7076c1c4fb9",
+      "manifest_sha256": "d2f86b4b6a869cd1ac639f433552ac319526daaaf6346b53ab180821aa931ffc"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_season_length.py",
+      "base_sha256": "1346dd254f3bddccefe67ee54f9f29cce894f9e89cb279530d995fed86c910bc",
+      "final_sha256": "836ddd4e512ee54951dc4fa6b7e22659b997314098676ddf86b7c1c88181c3c8",
+      "manifest_sha256": "1346dd254f3bddccefe67ee54f9f29cce894f9e89cb279530d995fed86c910bc"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_calendar_engine.py",
+      "base_sha256": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
+      "final_sha256": "6280db8045eb8f115186ae89dab2313df54ef3c429391ced63c33d24a4e9afb0",
+      "manifest_sha256": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_modern_venues_2026.py",
+      "base_sha256": "068cdab0d69657077db8dbec34143d75a6c954f92bba898ed97f8e6c33efbb88",
+      "final_sha256": "c5ad33c0c08b18bc4762248fd9d647670f64d407473bcacbf3bb5a58a67baafa",
+      "manifest_sha256": "27211f71a24cc08c024132897249983fef32be48f2f579694428c2ca91048603"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_stadium_shared_art.py",
+      "base_sha256": "25cffe10c780d5482caa5e699e2a686c769e6b10f9fa73af20f24a010fd569aa",
+      "final_sha256": "b29cd12fedb1a469f07bcd9e35e840f9c2e710be0a248809cd9bf04263e3c0a3",
+      "manifest_sha256": null
+    }
+  ],
+  "action": "DESIGN: main regenerates after integration; include SoFi-on/off route coverage. No regeneration performed here."
+}

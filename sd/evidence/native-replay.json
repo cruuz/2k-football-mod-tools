@@ -1,0 +1,178 @@
+{
+  "classification": "PROVED OFFLINE",
+  "method": "Unicorn x86 executes bytes and mapped pages from the captured RAM; no game callee mocked for lineup replay.",
+  "iterator": {
+    "captured": [
+      "0xb31624",
+      "0xb31678",
+      "0xb3157c",
+      "0xb31480",
+      "0xb3142c",
+      "0xb31624",
+      "0xb31678",
+      "0xb3157c",
+      "0xb31480",
+      "0xb3142c",
+      "0xb31624",
+      "0xb31678",
+      "0xb3157c",
+      "0xb31480",
+      "0xb3142c",
+      "0xb31624"
+    ],
+    "retail_pair": [
+      "0xb31624",
+      "0xb31678",
+      "0x0"
+    ],
+    "clear_mask": [
+      "0xb31624",
+      "0xb31678",
+      "0x0"
+    ],
+    "proposal": [
+      "0xb31624",
+      "0xb31678",
+      "0x0"
+    ]
+  },
+  "caller": {
+    "captured": {
+      "candidates": [
+        "0xb31624",
+        "0xb31678",
+        "0xb3157c",
+        "0xb31480",
+        "0xb3142c",
+        "0xb31624",
+        "0xb31678",
+        "0xb3157c",
+        "0xb31480",
+        "0xb3142c",
+        "0xb31624",
+        "0xb31678",
+        "0xb3157c",
+        "0xb31480",
+        "0xb3142c",
+        "0xb31624"
+      ],
+      "return_points": [],
+      "instructions": 8866,
+      "end_pc": "0x1893e0",
+      "lineup": [
+        "0xb30f40",
+        "0xb30d9c",
+        "0xb30eec",
+        "0xb30fe8",
+        "0xb3157c",
+        "0xb3142c",
+        "0x0",
+        "0xb30d48",
+        "0xb31b64",
+        "0xb31138",
+        "0xb30c4c"
+      ]
+    },
+    "retail_pair": {
+      "candidates": [
+        "0xb31624",
+        "0xb31678"
+      ],
+      "return_points": [
+        "0x1894d6"
+      ],
+      "instructions": 4313,
+      "end_pc": "0x1894d6",
+      "lineup": [
+        "0xb30f40",
+        "0xb30d9c",
+        "0xb30eec",
+        "0xb30fe8",
+        "0xb3157c",
+        "0xb3142c",
+        "0x0",
+        "0xb30d48",
+        "0xb31b64",
+        "0xb31138",
+        "0xb30c4c"
+      ]
+    },
+    "clear_mask": {
+      "candidates": [
+        "0xb31624",
+        "0xb31678"
+      ],
+      "return_points": [
+        "0x1894d6"
+      ],
+      "instructions": 4408,
+      "end_pc": "0x1894d6",
+      "lineup": [
+        "0xb30f40",
+        "0xb30d9c",
+        "0xb30eec",
+        "0xb30fe8",
+        "0xb3157c",
+        "0xb3142c",
+        "0x0",
+        "0xb30d48",
+        "0xb31b64",
+        "0xb31138",
+        "0xb30c4c"
+      ]
+    },
+    "proposal": {
+      "candidates": [
+        "0xb31624",
+        "0xb31678"
+      ],
+      "return_points": [
+        "0x1894d6"
+      ],
+      "instructions": 4223,
+      "end_pc": "0x1894d6",
+      "lineup": [
+        "0xb30f40",
+        "0xb30d9c",
+        "0xb30eec",
+        "0xb30fe8",
+        "0xb3157c",
+        "0xb3142c",
+        "0x0",
+        "0xb30d48",
+        "0xb31b64",
+        "0xb31138",
+        "0xb30c4c"
+      ]
+    }
+  },
+  "proposed_repair_full_lineup": {
+    "candidates": [
+      "0xb31624",
+      "0xb31678",
+      "0xb3157c",
+      "0xb31480",
+      "0xb3142c",
+      "0xb31624",
+      "0xb31678"
+    ],
+    "return_points": [
+      "0x18a7a7"
+    ],
+    "instructions": 18617,
+    "end_pc": "0x18a7a7",
+    "lineup": [
+      "0xb30f40",
+      "0xb30d9c",
+      "0xb30eec",
+      "0xb30fe8",
+      "0xb3157c",
+      "0xb3142c",
+      "0xb31480",
+      "0xb30d48",
+      "0xb31b64",
+      "0xb31138",
+      "0xb30c4c"
+    ]
+  }
+}

@@ -111,6 +111,7 @@ def build_synthetic_xbe() -> bytes:
         buf[off(site.va):off(site.va) + site.size] = site.befores[0]
     for site in pools.creation_sites():
         buf[off(site.va):off(site.va) + site.size] = site.befores[0]
+    buf[off(pools.lineup.VA):off(pools.lineup.VA) + pools.lineup.SIZE] = pools.lineup.RETAIL
     _repin(buf)
     return bytes(buf)
 

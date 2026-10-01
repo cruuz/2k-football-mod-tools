@@ -1,0 +1,972 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -31.0,
+          -99.5
+        ],
+        [
+          31.0,
+          -99.5
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.16,
+        "material": "cement02"
+      },
+      "width": 60.96,
+      "y": [
+        22.094,
+        33.066
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -31.0,
+          99.5
+        ],
+        [
+          31.0,
+          99.5
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.16,
+        "material": "cement02"
+      },
+      "width": 60.96,
+      "y": [
+        22.094,
+        33.066
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_ne",
+      "path": [
+        [
+          72.385,
+          -82.397
+        ],
+        [
+          76.978,
+          -72.843
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 1.0,
+        "material": "cement02"
+      },
+      "width": 10.058,
+      "y": [
+        44.8,
+        58.211
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_nw",
+      "path": [
+        [
+          -72.385,
+          -82.397
+        ],
+        [
+          -76.978,
+          -72.843
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 1.0,
+        "material": "cement02"
+      },
+      "width": 10.058,
+      "y": [
+        44.8,
+        58.211
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_se",
+      "path": [
+        [
+          72.385,
+          82.397
+        ],
+        [
+          76.978,
+          72.843
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 1.0,
+        "material": "cement02"
+      },
+      "width": 10.058,
+      "y": [
+        44.8,
+        58.211
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 0.12,
+        "material": "cement02"
+      },
+      "inset": 0.3,
+      "name": "bk_board_sw",
+      "path": [
+        [
+          -72.385,
+          82.397
+        ],
+        [
+          -76.978,
+          72.843
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          34
+        ],
+        "depth": 1.0,
+        "material": "cement02"
+      },
+      "width": 10.058,
+      "y": [
+        44.8,
+        58.211
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -26.0,
+          26.0
+        ],
+        "y": [
+          21.5,
+          36.0
+        ],
+        "z_abs": [
+          99.0,
+          99.8
+        ]
+      },
+      "materials": [
+        "ad01",
+        "ad02",
+        "ad_bb02"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "digits1"
+    }
+  ],
+  "env": null,
+  "help": "the 2017 end-zone boards, 200 x 36 ft, and the corner notch suites' 33 x 44 ft boards",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_n",
+    "jumboMarkerB": "bk_board_s"
+  },
+  "move": [
+    {
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "min_abs_z": 95.0,
+      "onto": "bk_board_n",
+      "shape": "digits1"
+    },
+    {
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "min_abs_z": 95.0,
+      "onto": "bk_board_s",
+      "shape": "digits1"
+    },
+    {
+      "materials": [
+        "digit_colen"
+      ],
+      "min_abs_z": 95.0,
+      "onto": "bk_board_n",
+      "shape": "group57"
+    },
+    {
+      "materials": [
+        "digit_colen"
+      ],
+      "min_abs_z": 95.0,
+      "onto": "bk_board_s",
+      "shape": "group47"
+    }
+  ],
+  "name": "M&T Bank Stadium",
+  "panels": [
+    {
+      "name": "bk_notch_suites",
+      "parts": [
+        {
+          "colour_from": "LIGHT_wall01",
+          "material": "LIGHT_wall01",
+          "quad": [
+            [
+              71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              76.1,
+              44.6,
+              -71.9
+            ],
+            [
+              76.1,
+              36.8,
+              -71.9
+            ],
+            [
+              71.1,
+              36.8,
+              -82.3
+            ]
+          ],
+          "toward": [
+            69.094,
+            40.7,
+            -74.934
+          ],
+          "uv_m": 7.8
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              76.1,
+              44.6,
+              -71.9
+            ],
+            [
+              86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              86.3,
+              36.8,
+              -75.7
+            ],
+            [
+              76.1,
+              36.8,
+              -71.9
+            ]
+          ],
+          "toward": [
+            83.269,
+            40.7,
+            -69.248
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              80.8,
+              36.8,
+              -88.4
+            ],
+            [
+              86.3,
+              36.8,
+              -75.7
+            ]
+          ],
+          "toward": [
+            88.027,
+            40.7,
+            -84.277
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              71.1,
+              36.8,
+              -82.3
+            ],
+            [
+              80.8,
+              36.8,
+              -88.4
+            ]
+          ],
+          "toward": [
+            73.881,
+            40.7,
+            -89.902
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              76.1,
+              44.6,
+              -71.9
+            ]
+          ],
+          "toward": [
+            78.575,
+            49.6,
+            -79.575
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "LIGHT_wall01",
+          "material": "LIGHT_wall01",
+          "quad": [
+            [
+              -71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              -76.1,
+              44.6,
+              -71.9
+            ],
+            [
+              -76.1,
+              36.8,
+              -71.9
+            ],
+            [
+              -71.1,
+              36.8,
+              -82.3
+            ]
+          ],
+          "toward": [
+            -69.094,
+            40.7,
+            -74.934
+          ],
+          "uv_m": 7.8
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -76.1,
+              44.6,
+              -71.9
+            ],
+            [
+              -86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              -86.3,
+              36.8,
+              -75.7
+            ],
+            [
+              -76.1,
+              36.8,
+              -71.9
+            ]
+          ],
+          "toward": [
+            -83.269,
+            40.7,
+            -69.248
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              -80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              -80.8,
+              36.8,
+              -88.4
+            ],
+            [
+              -86.3,
+              36.8,
+              -75.7
+            ]
+          ],
+          "toward": [
+            -88.027,
+            40.7,
+            -84.277
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              -71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              -71.1,
+              36.8,
+              -82.3
+            ],
+            [
+              -80.8,
+              36.8,
+              -88.4
+            ]
+          ],
+          "toward": [
+            -73.881,
+            40.7,
+            -89.902
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -71.1,
+              44.6,
+              -82.3
+            ],
+            [
+              -80.8,
+              44.6,
+              -88.4
+            ],
+            [
+              -86.3,
+              44.6,
+              -75.7
+            ],
+            [
+              -76.1,
+              44.6,
+              -71.9
+            ]
+          ],
+          "toward": [
+            -78.575,
+            49.6,
+            -79.575
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "LIGHT_wall01",
+          "material": "LIGHT_wall01",
+          "quad": [
+            [
+              71.1,
+              44.6,
+              82.3
+            ],
+            [
+              76.1,
+              44.6,
+              71.9
+            ],
+            [
+              76.1,
+              36.8,
+              71.9
+            ],
+            [
+              71.1,
+              36.8,
+              82.3
+            ]
+          ],
+          "toward": [
+            69.094,
+            40.7,
+            74.934
+          ],
+          "uv_m": 7.8
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              76.1,
+              44.6,
+              71.9
+            ],
+            [
+              86.3,
+              44.6,
+              75.7
+            ],
+            [
+              86.3,
+              36.8,
+              75.7
+            ],
+            [
+              76.1,
+              36.8,
+              71.9
+            ]
+          ],
+          "toward": [
+            83.269,
+            40.7,
+            69.248
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              86.3,
+              44.6,
+              75.7
+            ],
+            [
+              80.8,
+              44.6,
+              88.4
+            ],
+            [
+              80.8,
+              36.8,
+              88.4
+            ],
+            [
+              86.3,
+              36.8,
+              75.7
+            ]
+          ],
+          "toward": [
+            88.027,
+            40.7,
+            84.277
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              80.8,
+              44.6,
+              88.4
+            ],
+            [
+              71.1,
+              44.6,
+              82.3
+            ],
+            [
+              71.1,
+              36.8,
+              82.3
+            ],
+            [
+              80.8,
+              36.8,
+              88.4
+            ]
+          ],
+          "toward": [
+            73.881,
+            40.7,
+            89.902
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              71.1,
+              44.6,
+              82.3
+            ],
+            [
+              80.8,
+              44.6,
+              88.4
+            ],
+            [
+              86.3,
+              44.6,
+              75.7
+            ],
+            [
+              76.1,
+              44.6,
+              71.9
+            ]
+          ],
+          "toward": [
+            78.575,
+            49.6,
+            79.575
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "LIGHT_wall01",
+          "material": "LIGHT_wall01",
+          "quad": [
+            [
+              -71.1,
+              44.6,
+              82.3
+            ],
+            [
+              -76.1,
+              44.6,
+              71.9
+            ],
+            [
+              -76.1,
+              36.8,
+              71.9
+            ],
+            [
+              -71.1,
+              36.8,
+              82.3
+            ]
+          ],
+          "toward": [
+            -69.094,
+            40.7,
+            74.934
+          ],
+          "uv_m": 7.8
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -76.1,
+              44.6,
+              71.9
+            ],
+            [
+              -86.3,
+              44.6,
+              75.7
+            ],
+            [
+              -86.3,
+              36.8,
+              75.7
+            ],
+            [
+              -76.1,
+              36.8,
+              71.9
+            ]
+          ],
+          "toward": [
+            -83.269,
+            40.7,
+            69.248
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -86.3,
+              44.6,
+              75.7
+            ],
+            [
+              -80.8,
+              44.6,
+              88.4
+            ],
+            [
+              -80.8,
+              36.8,
+              88.4
+            ],
+            [
+              -86.3,
+              36.8,
+              75.7
+            ]
+          ],
+          "toward": [
+            -88.027,
+            40.7,
+            84.277
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -80.8,
+              44.6,
+              88.4
+            ],
+            [
+              -71.1,
+              44.6,
+              82.3
+            ],
+            [
+              -71.1,
+              36.8,
+              82.3
+            ],
+            [
+              -80.8,
+              36.8,
+              88.4
+            ]
+          ],
+          "toward": [
+            -73.881,
+            40.7,
+            89.902
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -71.1,
+              44.6,
+              82.3
+            ],
+            [
+              -80.8,
+              44.6,
+              88.4
+            ],
+            [
+              -86.3,
+              44.6,
+              75.7
+            ],
+            [
+              -76.1,
+              44.6,
+              71.9
+            ]
+          ],
+          "toward": [
+            -78.575,
+            49.6,
+            79.575
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Baltimore Ravens (baltimoreravens.com, 2017-01-31, 'Ravens Announce M&T Bank Stadium Enhancements'): 'Two dramatic, 4K ultra-high definition video displays, which will double the width of the stadium's current standard HD boards, will remain positioned behind each end zone below the upper level'; 'These new boards, measuring approximately 200 feet wide and 36 feet high'; 'New suites will be built into each open notch of the stadium's upper bowl' with 'video boards, measuring approximately 33 feet wide and 44 feet high ... atop each of the four suites'. Its new LED ribbon above the club level has no published size and is not built.",
+    "Baltimore Ravens press release (2018-11-16, 'M&T Bank Stadium Upgrades'): the four corner boards 'measuring approximately 33 feet wide and 44 feet high' installed where 'New suite/hospitality areas appear in each notch of the stadium's upper bowl'. SouthBMore (2019-07-24): 'two new, two-level suites in the corner notches between the upper decks on the west side' for 2018, and 'The final two two-level corner notch suites on the eastern side of the upper deck are also now ready' (2019); 'four new 33 ft. by 44 ft. ... video boards on top of the four new corner notch suites'.",
+    "The retail s02 scene (PROVED OFFLINE): each end's 2004 board is a 29.1 x 10.6 m feed quad (digits1, jumbo_tron) at z -99.5 and +99.5, y 22.3 to 32.9, on the front of a 57.2 m housing box (group57 at -z, group141 at +z: the frame ad__bb01, sponsor columns ad01 and ad02 and a header ad_bb02 in the 2026 venue art, lights) with the clock and play-clock digits (digits1; the colons in group57 and group47). The upper bowl's four corners are open notches between each side deck's end wall and the end deck's corner wall, over a floor on the club level's roof at 36.8 m (x 71.1 to 86.3, z 71.9 to 88.4, mirrored), the same in all nine bundles.",
+    "INFERRED: the retail cityscape's city lights stand at -z, where downtown lies north of the stadium, so -z is taken as north (and +x east in the kit's frame); the ends' boards and the four corners are the same size each, so the names are the only thing that depends on it.",
+    "Commons 'M&T Bank Stadium.jpg' (2021-10-24): a corner board in portrait standing in the notch over the new suites, its top near the upper decks' rims, and the end board below the upper level. Commons 'M&T Bank Stadium 20220706.jpg' (2022 aerial): a structure in each of the four notches.",
+    "DESIGN: each end board centred on its housing (x -30.48 to 30.48, 2 m past the box on each side), 0.3 m in front of it, centred on the old feed's height (22.10 to 33.07 m); the housing's venue-art panels behind it (ad01, ad02, ad_bb02: the old board's housing) are cut and the clock and play-clock digits move onto it. Each notch takes a two-level suite block on its floor, up to 44.6 m (the side deck's end wall at the front): the front in the retail suite glass (LIGHT_wall01), the back and sides in the retail light cement, a flat roof; on the roof a 33 x 44 ft board square to the block's front, its face 0.9 m behind it, on a 1 m body. Frames and bodies are the plain retail dark cement (cement02), with no stretched texture on the backs."
+  ],
+  "team": "BAL",
+  "venue": "s02"
+}

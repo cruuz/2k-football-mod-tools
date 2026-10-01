@@ -1,0 +1,231 @@
+{
+  "schema": "nfl2k5_board_kit/v1",
+  "venue": "s08",
+  "name": "Empower Field at Mile High",
+  "team": "DEN",
+  "help": "the 2023 board, 225 x 72 ft, and the two north corner displays, 98 x 30 ft",
+  "sources": [
+    "Wikipedia, Empower Field at Mile High (fetched 2026-09-25, st/renov/DEN.txt): 'In August 2023, the Broncos debuted the improvements, including the new scoreboard, measuring 225 ft wide by 72 ft tall, making it the fifth-largest screen in any NFL stadium' (The Colorado Sun, 26 August 2023: 'The scoreboard is 225 feet wide and 72 feet high'); the 2013 board on the south end zone; 'Bucky the Bronco ... on top of the main scoreboard'.",
+    "The retail s08 scene (PROVED OFFLINE): the main board at the south end (+z), a 40.8 x 11 m feed quad at z 120.2, y 23.7 to 34.7, on its structure (screen, screen01 to 04) with the logo on top (y 42.1 to 48.6); two corner boards at the north end (x +-78, z -92 to -108) stay.",
+    "Daktronics, 25 May 2023, 'Denver Broncos Add to Game-Day Experience with 24,500 Square Feet of LED Displays from Daktronics in 2023': the two north end zone corner displays 'will measure 30 feet high by 98 feet wide and will also be HDR-capable' (SVG News, 27 September 2023, prints '3- by 98-ft.', a slip for the maker's 30). The retail scene has a board in each north corner housing (markers A and B; feed boards 17.3 x 8.4 m tilted about 12 degrees toward the field, each beside an ad panel, adBoard01, under one white frame): the kit grows each into one 98 x 30 ft display across the housing's face at the same tilt (lean), centred on the old board and panel together (the old board's black surround stays at the outer end, as a bezel; moved to cover it, the display would uncover the panel's opening at the inner end), and cuts the old feed board and the ad panel.",
+    "The rule on the 2026 venue art (main, 2026-09-28 21:26): the kit never covers the venue art on a structure that still stands in 2026; it may remove a venue-art panel that belongs to a board housing the renovation replaced. The corner ad panels (adBoard01) belong to the housings the 2023 displays replaced, as the south board's screen04 and screen04a panels belonged to the old south board (pass 1). The same holds for the old south scoreboard's housing (its white face, the HOME OF THE BRONCOS panel and the flags on top, screen, adBoard03 and flags), which the 2023 board replaced and now stands in front of, and for the white strips between each corner board and its panel: all cut (bk.covered_venue_art found them covered)."
+  ],
+  "env": null,
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -40.0,
+          40.0
+        ],
+        "y": [
+          20.0,
+          46.0
+        ],
+        "z_abs": [
+          118.0,
+          121.0
+        ]
+      },
+      "materials": [
+        "jumbo_tron",
+        "screen04",
+        "screen04a"
+      ]
+    },
+    {
+      "materials": [
+        "jumbo_tron",
+        "adBoard01"
+      ],
+      "box": {
+        "x": [
+          50.0,
+          92.0
+        ],
+        "y": [
+          50.0,
+          63.0
+        ],
+        "z": [
+          -122.0,
+          -88.0
+        ]
+      }
+    },
+    {
+      "materials": [
+        "jumbo_tron",
+        "adBoard01"
+      ],
+      "box": {
+        "x": [
+          -92.0,
+          -50.0
+        ],
+        "y": [
+          50.0,
+          63.0
+        ],
+        "z": [
+          -122.0,
+          -88.0
+        ]
+      }
+    },
+    {
+      "materials": [
+        "screen",
+        "adBoard03",
+        "flags"
+      ],
+      "box": {
+        "x": [
+          -35.3,
+          35.3
+        ],
+        "y": [
+          23.2,
+          45.4
+        ],
+        "z": [
+          120.5,
+          121.7
+        ]
+      }
+    },
+    {
+      "materials": [
+        "screen"
+      ],
+      "box": {
+        "x": [
+          68.8,
+          71.6
+        ],
+        "y": [
+          52.0,
+          61.3
+        ],
+        "z": [
+          -109.2,
+          -106.8
+        ]
+      }
+    },
+    {
+      "materials": [
+        "screen"
+      ],
+      "box": {
+        "x": [
+          -73.8,
+          -70.8
+        ],
+        "y": [
+          52.0,
+          61.1
+        ],
+        "z": [
+          -105.9,
+          -103.5
+        ]
+      }
+    }
+  ],
+  "move": [
+    {
+      "dy": 3.546,
+      "materials": [
+        "logo"
+      ],
+      "min_abs_z": 110.0,
+      "shape": "group262"
+    }
+  ],
+  "boards": [
+    {
+      "frame": {
+        "border": 0.5,
+        "depth": 0.12,
+        "material": "screen03"
+      },
+      "inset": 0.35,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -34.29,
+          120.2
+        ],
+        [
+          34.29,
+          120.2
+        ]
+      ],
+      "structure": {
+        "depth": 3.0,
+        "material": "screen03"
+      },
+      "width": 68.58,
+      "y": [
+        23.3,
+        45.246
+      ]
+    },
+    {
+      "name": "bk_board_nw",
+      "path": [
+        [
+          -86.81,
+          -93.27
+        ],
+        [
+          -60.12,
+          -116.09
+        ]
+      ],
+      "width": 29.87,
+      "y": [
+        52.0,
+        60.932
+      ],
+      "lean": 1.957,
+      "inset": 0.3,
+      "frame": {
+        "material": "screen01",
+        "border": 0.3,
+        "depth": 0.1
+      }
+    },
+    {
+      "name": "bk_board_ne",
+      "path": [
+        [
+          84.67,
+          -96.46
+        ],
+        [
+          57.97,
+          -119.34
+        ]
+      ],
+      "width": 29.87,
+      "y": [
+        52.0,
+        60.932
+      ],
+      "lean": 1.957,
+      "inset": 0.3,
+      "frame": {
+        "material": "screen01",
+        "border": 0.3,
+        "depth": 0.1
+      }
+    }
+  ],
+  "markers": {
+    "jumboMarkerCShape": "bk_board_s",
+    "jumboMarkerAShape": "bk_board_nw",
+    "jumboMarkerB": "bk_board_ne"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "classification": "PROVED OFFLINE",
+  "requested_tree_head": "f9b14039e5bb56ae2d8f028e31e7cc19f13f7e12",
+  "requested_tree_entry": "100644 blob a42b7485218614b4f236925e776739cb7ca3d510\thw/ide/atapi.c",
+  "available_source": "/home/noah/xemu-2k5-edition/src/xemu-0.8.136-2k5ed/hw/ide/atapi.c",
+  "blob": "a42b7485218614b4f236925e776739cb7ca3d510",
+  "sha256": "5e8f0ce1f1f158bd95dc78c54bd7b6dc38366e92c338e3402d6b819afad3c479",
+  "fatigue_divisor": 20.0,
+  "fatigue_in_threshold_raw": 16,
+  "fatigue_in_threshold_normalized": 0.8,
+  "format_field_limit_sectors": 4294967296,
+  "signed_lba_boundary_bytes": 4398046511104,
+  "conservative_sector_increment_cap_bytes": 4398046509056
+}

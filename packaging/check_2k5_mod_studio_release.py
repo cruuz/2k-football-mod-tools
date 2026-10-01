@@ -16,6 +16,17 @@ import xml.etree.ElementTree as ET
 
 MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 
+PRIVATE_BOUNDARY = "packaging/b76_private_paths.json"
+PRIVATE_BOUNDARY_SHA256 = "32d92f4a0fa03facfbfbab146b1feef36bf911b7680ee4936f6a96ce231e02c1"
+
+
+def _private_boundary():
+    data = (Path(__file__).resolve().parents[1] / PRIVATE_BOUNDARY).read_bytes()
+    if hashlib.sha256(data).hexdigest() != PRIVATE_BOUNDARY_SHA256:
+        raise ReleaseCheckError("private marks boundary hash changed")
+    doc = json.loads(data)
+    return set(doc["paths"]), set(doc["blobs"].values())
+
 # Product target catalogs are decoded metadata: selectors, dimensions, hashes,
 # offsets, ownership labels, and constraints. They contain no compressed game
 # spans, decoded pixels, audio, or other retail payload. ``reports/`` remains a
@@ -24,11 +35,17 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # product data instead of ``reports/``, but are held to the same immutable
 # contract so a release cannot silently acquire retail payloads.
 REVIEWED_METADATA: dict[str, tuple[int, str, str | int]] = {
+    # Source-labelled historic player facts and derived ratings, no game payload.
+    "data/nfl2k5_historic_rosters/manifest.json": (
+        29_855_432,
+        "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+        "nfl2k5_historic_rosters/v1",
+    ),
     # Bounded music routing evidence: names, addresses and hashes only. The
     # all_modes_proved field explicitly excludes audible/gameplay certification.
     "reports/music_playlist_contexts.v1.json": (
-        24_085,
-        "24a9e6b4e5d1a305ed6b1102991d87f27f6efb98de2e4c4e42246d1bcbca3f40",
+        24_799,
+        "327d8e73f276005d2f65bbe84b4df7c914fd9cbbf7f5a94552e09660a6e8222f",
         1,
     ),
     "reports/guardian_cap_receipt.v1.json": (
@@ -113,7 +130,7 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str | int]] = {
     ),
     "reports/assets/uniform_texture_sharing.v2.json": (
         415_528,
-        "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf",
+        "992ea79c46c98fe218712540d0fb3159685eee2de67edb01b1659f1897d51c88",
         "uniform_texture_sharing_audit/v2",
     ),
     "mod_editor/data/nfl2k5_crib_catalog.v1.json": (
@@ -301,7 +318,7 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "732d9ce2c36613931da690ce954547d8845d7ee519be8779099d573f576ffd84"
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "5442dd0db8eeac3ba269401c3e9c94a9bf492cfcf153f0f325361e17294e80fd"
 
 
 def _scorebug_template_pngs(root: Path) -> dict:
@@ -309,8 +326,8 @@ def _scorebug_template_pngs(root: Path) -> dict:
     if not catalog.exists():
         return {}
     with catalog.open("rb") as stream:
-        data = stream.read(128 * 1024 + 1)
-    if (len(data) > 128 * 1024
+        data = stream.read(256 * 1024 + 1)
+    if (len(data) > 256 * 1024
             or hashlib.sha256(data).hexdigest() != SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256):
         raise ReleaseCheckError("reviewed scorebar PNG catalog hash changed")
     document = json.loads(data)
@@ -547,6 +564,7 @@ def _validate_reviewed_metadata(
 
 
 def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
+    private_paths, private_hashes = _private_boundary()
     try:
         root_info = root.lstat()
     except FileNotFoundError as exc:
@@ -567,6 +585,8 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
+        if relative in private_paths:
+            raise ReleaseCheckError(f"private marks/evidence path is forbidden: {relative}")
         folded = relative.casefold()
         if folded in folded_paths:
             raise ReleaseCheckError(f"case-colliding release path: {relative}")
@@ -585,6 +605,10 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             continue
         if not stat.S_ISREG(info.st_mode):
             raise ReleaseCheckError(f"special release filesystem entry is forbidden: {relative}")
+        with path.open("rb") as handle:
+            private_digest = hashlib.file_digest(handle, "sha256").hexdigest()
+        if private_digest in private_hashes:
+            raise ReleaseCheckError(f"private marks/evidence bytes are forbidden: {relative}")
         # more than one link is a hard link; Windows directory-listing stats report 0 (unknown), never 1
         if info.st_nlink > 1:
             raise ReleaseCheckError(f"hardlinked release file is forbidden: {relative}")

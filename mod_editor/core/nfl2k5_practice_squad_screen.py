@@ -162,7 +162,7 @@ def _owned_state(payload):
             # so normalize this exact, fully validated owner shape for the pin.
             from . import nfl2k5_position_pools as pools
             if pools.filter_list_status(payload) == "applied":
-                _require(pools.status(payload) == "applied", "foreign position-pool filter owner")
+                _require(pools.status(payload) in ("applied", "needs_fix"), "foreign position-pool filter owner")
                 site = next(s for s in pools.filter_list_sites() if s.va == va + 0xF4)
                 content = content[:0xF4] + site.befores[0] + content[0xF4 + site.size:]
         if va == 0x6E4E0 and content[:5] != bytes.fromhex("5155578bf9"):

@@ -1,0 +1,47 @@
+{
+  "status": "PROVED OFFLINE",
+  "method": "Direct E8 target scan; inspect code context in disassembly; excludes indirect dispatch.",
+  "calls": {
+    "0x2815f0": [
+      "0x207d90"
+    ],
+    "0x281620": [
+      "0x207e09"
+    ],
+    "0x281580": [
+      "0x203fd1"
+    ],
+    "0x208820": [
+      "0x17e21a",
+      "0x17f5fd",
+      "0x2097fe",
+      "0x20a8b5",
+      "0x20a9bc",
+      "0x20ab05",
+      "0x20abf1"
+    ],
+    "0x2096a0": [
+      "0x17f79b",
+      "0x189e5d",
+      "0x20a482",
+      "0x20b73f",
+      "0x20b86d",
+      "0x20b881",
+      "0x20b96c"
+    ],
+    "0x20b820": [
+      "0xa2ec5",
+      "0xa3436",
+      "0xaa67e",
+      "0x152c27",
+      "0x1531e2",
+      "0x17e335"
+    ],
+    "0x20a7f0": [
+      "0x20b94c"
+    ],
+    "0x20aa40": [
+      "0x20b958"
+    ]
+  }
+}

@@ -1,0 +1,285 @@
+{
+ "schema": "nfl2k5_lucas_oil_model_art/v1",
+ "art": {
+  "los_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "2601ac6129c693a8140a4a6f268a054acb11433601ffe5d609c0137538b58dd6"
+  },
+  "los_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "973b3f27481d148952b5628eb2a230020a016a2cd57d25758c06a0d22cb39c46"
+  },
+  "los_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "9240e285e63605c4d86d1dad21e295b9017913f13d2e7140504efb2a65646556"
+  },
+  "los_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "los_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "c1a92ea9a42ae01d7354ec47f04e9351035daac0655d957b5226d151b1f10b1b"
+  },
+  "LIGHT_los_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "2e51003a82f8da75abe4c1816b72a77e06bad4ca55d53bcf5fc4110efdf743a8"
+  },
+  "LIGHT_los_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_los_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "los_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "los_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "los_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98"
+  },
+  "los_roof_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "989f2533024d9df39a02a5aa5904a2150ac68fc73ea837adaf1a0a8afbf5006b"
+  },
+  "los_truss": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "b9c16bc179886908b4b4c406e16b89f21e7e6123296eb5b15edade612e20f38f"
+  },
+  "los_panel_top": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "313b2c7490349b916cdc004db282e566ac6026da4a4f9ca7f5004024a13881ef"
+  },
+  "los_fixed_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "a45690321273e306a1dc4b1586652019308fd2cae9f3ac8a81d6aa3ffb2e4812"
+  },
+  "los_roof_letters": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "4c5e0a52b7f96a7ab96697d58ccffc2dc64041142256ccf61c07fc444e05593c"
+  },
+  "LIGHT_los_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b"
+  },
+  "LIGHT_los_window": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "39b2b5cd17435b1e746385a1a3f8f19c7c67ab8d009a5bb0d66004412b3b3525"
+  },
+  "LIGHT_los_window_n": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "f0c6fa2054650b6ba54ce2ecc3c2bfac0f3525f35ee238ed96830eba1d77212f"
+  },
+  "los_window_frame": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "6418d2e5161d81bf838fda2a86fafa7ba985f3ed64b5f4079a56ce52cdc27937"
+  },
+  "LIGHT_los_facade_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9"
+  },
+  "los_brick": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "b3a6e39d7b008e905df24ff8d432e815a1755bdaac43e30d389a71b39e0448a5"
+  },
+  "los_arch_windows": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "1136c24ad04c5086cf7148fc1331addc6b6a3957ad24b6b15a6336e222060687"
+  },
+  "los_tower_cap": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d3227408d0b2b7147901768c6c2bade216f1486f16e5c822e3d432709ac77f53"
+  },
+  "los_logo": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "07f786919a48ba023ac76851c12c19fdb1a4fae4915d5a49da1aa8578718b448"
+  },
+  "LIGHT_los_board_wing": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "7203d026e4d209974d08b67c74bbbc2aaa60230500d988ed23a110623b3ee33e"
+  },
+  "los_banners": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "053d386b565aab72d4e8b50dd7e86aae5b4304a9c9cbf4b6d142a17433073b8d"
+  },
+  "LIGHT_los_clerestory": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "a89343723644fe24310ce0d8d7949356f46277c720b42b0e83c85f57f7e53bdb"
+  },
+  "LIGHT_los_clerestory_n": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "9876ed2f21125bd2c1bbeec52ecb5fea417d45ead90db58bd549c574b138fdf4"
+  },
+  "los_flag": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "bf0018e59d553ea8dcabc4fe8fabfb27544cfbb9ecf8a6912b165661ea096da5"
+  },
+  "los_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "los_lawn": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7"
+  },
+  "los_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "los_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "los_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "LIGHT_los_towers": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "8ba0678e840fa2651072ee596da7d8e8194f88ee34003fd364023a7e9c984426"
+  },
+  "LIGHT_los_towers_n": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "90d201a907ea5379ba71856fdd0d492bd75b1059cb768db40a5a61f45acb42e6"
+  },
+  "los_sky_d": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "d59ca8ca7fe248af218ffdcfa26da871402d35070ecf1a86ef9c05778ee3fca8"
+  },
+  "los_sky_a": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "75ec96d1d8788f409ccd56549758cd88642a82b0e48a31994b06032ada9df459"
+  },
+  "los_sky_n": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "4d68e724893d9e8258030ae5e5199b1c211a4ac82b89d153726928e7a9a01fdc"
+  }
+ }
+}

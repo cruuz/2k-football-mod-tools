@@ -1,0 +1,596 @@
+[
+ {
+  "aspect": "16:9",
+  "reference": "obs/frames/frame_000621.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 687,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 7,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": "obs/frames/frame_001526.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 6,
+   "home_score": 21,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 3,
+   "clock": 54,
+   "play_clock": 9,
+   "down": 1,
+   "distance": 10,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": "obs/frames/frame_002229.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 6,
+   "home_score": 21,
+   "away_timeouts": 3,
+   "home_timeouts": 2,
+   "quarter": 4,
+   "clock": 727,
+   "play_clock": 11,
+   "down": 3,
+   "distance": 1,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": "mnf/frames/frame_000280.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 14,
+   "away_timeouts": 3,
+   "home_timeouts": 1,
+   "quarter": 2,
+   "clock": 390,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 8,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": "mnf/frames/frame_000361.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 14,
+   "away_timeouts": 3,
+   "home_timeouts": 0,
+   "quarter": 2,
+   "clock": 81,
+   "play_clock": 9,
+   "down": 3,
+   "distance": 2,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 900,
+   "play_clock": 40,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    0,
+    0
+   ],
+   "away_record": [
+    0,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 7,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 512,
+   "play_clock": 40,
+   "down": 1,
+   "distance": 10,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 2
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 17,
+   "home_score": 20,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 4,
+   "clock": 95,
+   "play_clock": 21,
+   "down": 2,
+   "distance": 6,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    10,
+    5,
+    1
+   ],
+   "away_record": [
+    8,
+    7,
+    1
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "16:9",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 10,
+   "home_score": 13,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 3,
+   "clock": 301,
+   "play_clock": 18,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    12,
+    4,
+    0
+   ],
+   "away_record": [
+    11,
+    5,
+    0
+   ],
+   "season": "playoffs",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": "obs/frames/frame_000621.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 687,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 7,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": "obs/frames/frame_001526.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 6,
+   "home_score": 21,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 3,
+   "clock": 54,
+   "play_clock": 9,
+   "down": 1,
+   "distance": 10,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": "obs/frames/frame_002229.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 6,
+   "home_score": 21,
+   "away_timeouts": 3,
+   "home_timeouts": 2,
+   "quarter": 4,
+   "clock": 727,
+   "play_clock": 11,
+   "down": 3,
+   "distance": 1,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": "mnf/frames/frame_000280.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 14,
+   "away_timeouts": 3,
+   "home_timeouts": 1,
+   "quarter": 2,
+   "clock": 390,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 8,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": "mnf/frames/frame_000361.png",
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 14,
+   "away_timeouts": 3,
+   "home_timeouts": 0,
+   "quarter": 2,
+   "clock": 81,
+   "play_clock": 9,
+   "down": 3,
+   "distance": 2,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 900,
+   "play_clock": 40,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    0,
+    0
+   ],
+   "away_record": [
+    0,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 7,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 1,
+   "clock": 512,
+   "play_clock": 40,
+   "down": 1,
+   "distance": 10,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    0,
+    1,
+    0
+   ],
+   "away_record": [
+    1,
+    0,
+    0
+   ],
+   "season": "regular",
+   "phase": 2
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 17,
+   "home_score": 20,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 4,
+   "clock": 95,
+   "play_clock": 21,
+   "down": 2,
+   "distance": 6,
+   "possession": "home",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    10,
+    5,
+    1
+   ],
+   "away_record": [
+    8,
+    7,
+    1
+   ],
+   "season": "regular",
+   "phase": 4
+  }
+ },
+ {
+  "aspect": "4:3",
+  "reference": null,
+  "state": {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 10,
+   "home_score": 13,
+   "away_timeouts": 3,
+   "home_timeouts": 3,
+   "quarter": 3,
+   "clock": 301,
+   "play_clock": 18,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "event": "standard",
+   "goal_to_go": false,
+   "broadcast": "monday_night",
+   "home_record": [
+    12,
+    4,
+    0
+   ],
+   "away_record": [
+    11,
+    5,
+    0
+   ],
+   "season": "playoffs",
+   "phase": 4
+  }
+ }
+]

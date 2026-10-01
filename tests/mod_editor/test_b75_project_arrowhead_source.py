@@ -49,6 +49,10 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
         self.original = self.source.read_bytes()
         self.service = SyntheticProject(self.source)
         self.retail_reads: list[str] = []
+        # The source-path fixture has no PLAY archive. Keep real final disc
+        # compaction and extent checks, and isolate the unrelated scoring gate.
+        self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
+                                             return_value={"synthetic": True}))
 
     # -- stand-ins ---------------------------------------------------------
     def _colour_module(self):

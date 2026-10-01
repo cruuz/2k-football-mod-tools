@@ -15,7 +15,7 @@ import sys
 import tempfile
 
 from .errors import ValidationError
-from .platform_compat import long_path, publish_no_replace
+from .platform_compat import absolute_path, io_path, long_path, paths_alias, publish_no_replace, validate_output_path
 
 
 def _busy(path: Path, detail: str = "") -> ValidationError:
@@ -84,11 +84,10 @@ def _linux_probe(path: Path, identity: os.stat_result) -> None:
 
 def assert_image_available(image: Path) -> None:
     """Refuse an observed reader/mapping; never write or eject the image."""
-    path = Path(image).expanduser()
+    path = io_path(absolute_path(image))
     info = path.lstat()
     if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode):
         raise ValidationError(f"Choose a regular disc image, not a link: {path}")
-    path = path.resolve(strict=True)
     if sys.platform == "win32":
         _windows_probe(path)
     elif sys.platform.startswith("linux"):
@@ -113,7 +112,8 @@ def assert_image_available(image: Path) -> None:
 
 def check_image_destination(target: Path, *, overwrite: bool = False):
     """Capture an available destination before expensive work starts."""
-    target = Path(target)
+    validate_output_path(target)
+    target = io_path(target)
     if target.is_symlink():
         raise ValidationError("The output image must not be a symbolic link.")
     if not target.exists():
@@ -126,6 +126,7 @@ def check_image_destination(target: Path, *, overwrite: bool = False):
 
 def publish_image(staging: Path, target: Path, previous) -> None:
     """Publish completed bytes; refuse a newly appeared, changed or open target."""
+    staging, target = io_path(staging), io_path(target)
     if previous is None:
         publish_no_replace(staging, target)
         return
@@ -143,17 +144,19 @@ def copy_image(source: Path, target: Path, *, overwrite: bool = False) -> None:
     All readers/writers close before publication. Failure removes only our temp.
     Source may be open for reading; an existing destination may not be in use.
     """
-    source = Path(source).expanduser().resolve(strict=True)
-    requested = Path(target).expanduser().absolute()
+    validate_output_path(target)
+    source = io_path(absolute_path(source))
+    source.stat()
+    requested = io_path(absolute_path(target))
     if requested.is_symlink():
         raise ValidationError("The output image must not be a symbolic link.")
-    target = requested.resolve(strict=False)
-    if target == source or (target.exists() and os.path.samefile(source, target)):
+    target = requested
+    if paths_alias(target, source):
         raise ValidationError("Choose an output image separate from the source.")
     previous = check_image_destination(target, overwrite=overwrite)
     target.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=".image-", suffix=".copying", dir=target.parent)
-    temporary = Path(name).resolve()
+    temporary = io_path(name)
     try:
         with os.fdopen(fd, "wb") as writer, source.open("rb") as reader:
             shutil.copyfileobj(reader, writer, 1024 * 1024)

@@ -1,0 +1,686 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "f_sha256": "35d855af3921c42f93e4c525a2868a2294fbd6e5cc717eaf9f6b141a43ea8e2c",
+  "g_sha256": "983eeeb076b7b6b30587def0fd6c6f31c3daea4d7c4efbffd5828646c0d9dfde",
+  "body_sha256": "699ec8974a2649ba98d9a9257fbccb87e36f99ed8cae0ce22138992c06c84037",
+  "unchanged_original_edits": 6162,
+  "unchanged_original_metadata_keys": [
+    "schema",
+    "name",
+    "author",
+    "source_body_sha256",
+    "players",
+    "moves",
+    "coaches",
+    "teams",
+    "notes",
+    "special_teams"
+  ],
+  "unchanged_named_field_values": 224143,
+  "unexpected_named_field_changes": 0,
+  "all_52_team_record_bytes_equal": true,
+  "special_teams_entries_unchanged": 32,
+  "unrelated_history_streams_preserved": 615,
+  "replaced_history_players": 1932,
+  "pool": {
+    "used_before": 36866,
+    "used_after": 33295,
+    "capacity": 50000,
+    "free_after": 16705,
+    "preserved_players": 615,
+    "replaced_players": 1932,
+    "roundtrip_verified": true,
+    "schema": "nfl2k5_franchise_history/v1",
+    "base_year": 2026,
+    "source_seasons": 6203,
+    "source_body_sha256": "a988ac94aaba6f41c0f3bac6e6baf3609b446668537412c66d46df4718e8acfb",
+    "output_body_sha256": "699ec8974a2649ba98d9a9257fbccb87e36f99ed8cae0ce22138992c06c84037"
+  },
+  "unsigned_members": 236,
+  "retired_historical_fa_aliases": 5,
+  "colleges_changed": 398,
+  "minimum_fallbacks": 48,
+  "minimum_below_floor": 0,
+  "original_50_fallbacks_review": [
+    {
+      "index": 31,
+      "name": "Wydett Williams",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 55,
+      "name": "Malcolm DeWalt",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 58,
+      "name": "Jack Strand",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 112,
+      "name": "Ethan Burke",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 139,
+      "name": "Joe Fagnano",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 226,
+      "name": "Aaron Hall",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 233,
+      "name": "Albert Reese",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 240,
+      "name": "Tyrel Dodson",
+      "current_kind": "modeled",
+      "floor": 1300000,
+      "charge": 1320000
+    },
+    {
+      "index": 250,
+      "name": "Haynes King",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 266,
+      "name": "Skyler Thomas",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 287,
+      "name": "Scott Daly",
+      "current_kind": "observed",
+      "floor": 955556,
+      "charge": 960000
+    },
+    {
+      "index": 315,
+      "name": "Jayden Loving",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 366,
+      "name": "Dohnte Meyers",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 393,
+      "name": "Camden Brown",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 479,
+      "name": "Bishop Fitzgerald",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 485,
+      "name": "Eric O'Neill",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 533,
+      "name": "J. Michael Sturdivant",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 596,
+      "name": "Kapena Gushiken",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 606,
+      "name": "Tahj Chambers",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 630,
+      "name": "Darius Slayton",
+      "current_kind": "observed",
+      "floor": 1155556,
+      "charge": 1160000
+    },
+    {
+      "index": 649,
+      "name": "Bryan Thomas",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 691,
+      "name": "Xavier Nwankpa",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 697,
+      "name": "Jack Pyburn",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 700,
+      "name": "Bryson Eason",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 708,
+      "name": "Diego Pounds",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 727,
+      "name": "Kahlil Benson",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 754,
+      "name": "DJ Herman",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 813,
+      "name": "Jacob Thomas",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 828,
+      "name": "Brett Thorson",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 879,
+      "name": "Erick Hunter",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 885,
+      "name": "Channing Canada",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 891,
+      "name": "Tanner Arkin",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 921,
+      "name": "Mason Murphy",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 924,
+      "name": "CJ Donaldson",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 980,
+      "name": "Dominic Zvada",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 994,
+      "name": "Ben Mann",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1132,
+      "name": "Rocco Underwood",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1156,
+      "name": "Zach Ertz",
+      "current_kind": "observed",
+      "floor": 293600,
+      "charge": 280000
+    },
+    {
+      "index": 1205,
+      "name": "Kevin Jobity",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1232,
+      "name": "Wesley Bailey",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1275,
+      "name": "Rodney Shelley",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1296,
+      "name": "Jacob Spomer",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1348,
+      "name": "James Thompson",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1379,
+      "name": "Avery Smith",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1464,
+      "name": "Jalon Daniels",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1467,
+      "name": "Ayden Garnes",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1562,
+      "name": "Drew Stevens",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1588,
+      "name": "Tanoa Togiai",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1644,
+      "name": "Collin Wright",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    },
+    {
+      "index": 1653,
+      "name": "Sabastian Harsh",
+      "current_kind": "modeled",
+      "floor": 885000,
+      "charge": 920000
+    }
+  ],
+  "team_totals": [
+    {
+      "team": "SF",
+      "players": 53,
+      "payroll": 205900000,
+      "cap": 301200000,
+      "room": 95300000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "CHI",
+      "players": 53,
+      "payroll": 246976000,
+      "cap": 301200000,
+      "room": 54224000,
+      "within_cap": true,
+      "observed": 44
+    },
+    {
+      "team": "CIN",
+      "players": 53,
+      "payroll": 288812000,
+      "cap": 301200000,
+      "room": 12388000,
+      "within_cap": true,
+      "observed": 46
+    },
+    {
+      "team": "BUF",
+      "players": 53,
+      "payroll": 241672000,
+      "cap": 301200000,
+      "room": 59528000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "DEN",
+      "players": 53,
+      "payroll": 276720000,
+      "cap": 301200000,
+      "room": 24480000,
+      "within_cap": true,
+      "observed": 49
+    },
+    {
+      "team": "CLE",
+      "players": 53,
+      "payroll": 185888000,
+      "cap": 301200000,
+      "room": 115312000,
+      "within_cap": true,
+      "observed": 43
+    },
+    {
+      "team": "TB",
+      "players": 53,
+      "payroll": 276700000,
+      "cap": 301200000,
+      "room": 24500000,
+      "within_cap": true,
+      "observed": 44
+    },
+    {
+      "team": "ARZ",
+      "players": 53,
+      "payroll": 212684000,
+      "cap": 301200000,
+      "room": 88516000,
+      "within_cap": true,
+      "observed": 47
+    },
+    {
+      "team": "SD",
+      "players": 53,
+      "payroll": 253484000,
+      "cap": 301200000,
+      "room": 47716000,
+      "within_cap": true,
+      "observed": 43
+    },
+    {
+      "team": "KC",
+      "players": 53,
+      "payroll": 273700000,
+      "cap": 301200000,
+      "room": 27500000,
+      "within_cap": true,
+      "observed": 41
+    },
+    {
+      "team": "IND",
+      "players": 53,
+      "payroll": 250052000,
+      "cap": 301200000,
+      "room": 51148000,
+      "within_cap": true,
+      "observed": 43
+    },
+    {
+      "team": "DAL",
+      "players": 53,
+      "payroll": 244264000,
+      "cap": 301200000,
+      "room": 56936000,
+      "within_cap": true,
+      "observed": 47
+    },
+    {
+      "team": "MIA",
+      "players": 53,
+      "payroll": 103096000,
+      "cap": 301200000,
+      "room": 198104000,
+      "within_cap": true,
+      "observed": 41
+    },
+    {
+      "team": "PHI",
+      "players": 53,
+      "payroll": 208056000,
+      "cap": 301200000,
+      "room": 93144000,
+      "within_cap": true,
+      "observed": 48
+    },
+    {
+      "team": "ATL",
+      "players": 53,
+      "payroll": 192564000,
+      "cap": 301200000,
+      "room": 108636000,
+      "within_cap": true,
+      "observed": 46
+    },
+    {
+      "team": "NYG",
+      "players": 53,
+      "payroll": 207108000,
+      "cap": 301200000,
+      "room": 94092000,
+      "within_cap": true,
+      "observed": 44
+    },
+    {
+      "team": "JAX",
+      "players": 53,
+      "payroll": 228672000,
+      "cap": 301200000,
+      "room": 72528000,
+      "within_cap": true,
+      "observed": 44
+    },
+    {
+      "team": "NYJ",
+      "players": 53,
+      "payroll": 182424000,
+      "cap": 301200000,
+      "room": 118776000,
+      "within_cap": true,
+      "observed": 48
+    },
+    {
+      "team": "DET",
+      "players": 53,
+      "payroll": 228344000,
+      "cap": 301200000,
+      "room": 72856000,
+      "within_cap": true,
+      "observed": 46
+    },
+    {
+      "team": "GB",
+      "players": 53,
+      "payroll": 210204000,
+      "cap": 301200000,
+      "room": 90996000,
+      "within_cap": true,
+      "observed": 47
+    },
+    {
+      "team": "CAR",
+      "players": 53,
+      "payroll": 225140000,
+      "cap": 301200000,
+      "room": 76060000,
+      "within_cap": true,
+      "observed": 43
+    },
+    {
+      "team": "NE",
+      "players": 53,
+      "payroll": 246296000,
+      "cap": 301200000,
+      "room": 54904000,
+      "within_cap": true,
+      "observed": 42
+    },
+    {
+      "team": "OAK",
+      "players": 53,
+      "payroll": 237388000,
+      "cap": 301200000,
+      "room": 63812000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "STL",
+      "players": 53,
+      "payroll": 281940000,
+      "cap": 301200000,
+      "room": 19260000,
+      "within_cap": true,
+      "observed": 49
+    },
+    {
+      "team": "BAL",
+      "players": 53,
+      "payroll": 279536000,
+      "cap": 301200000,
+      "room": 21664000,
+      "within_cap": true,
+      "observed": 44
+    },
+    {
+      "team": "WAS",
+      "players": 53,
+      "payroll": 252428000,
+      "cap": 301200000,
+      "room": 48772000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "NO",
+      "players": 53,
+      "payroll": 168900000,
+      "cap": 301200000,
+      "room": 132300000,
+      "within_cap": true,
+      "observed": 46
+    },
+    {
+      "team": "SEA",
+      "players": 53,
+      "payroll": 283268000,
+      "cap": 301200000,
+      "room": 17932000,
+      "within_cap": true,
+      "observed": 49
+    },
+    {
+      "team": "PIT",
+      "players": 53,
+      "payroll": 275044000,
+      "cap": 301200000,
+      "room": 26156000,
+      "within_cap": true,
+      "observed": 42
+    },
+    {
+      "team": "HOU",
+      "players": 53,
+      "payroll": 200916000,
+      "cap": 301200000,
+      "room": 100284000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "TEN",
+      "players": 53,
+      "payroll": 264540000,
+      "cap": 301200000,
+      "room": 36660000,
+      "within_cap": true,
+      "observed": 45
+    },
+    {
+      "team": "MIN",
+      "players": 53,
+      "payroll": 243200000,
+      "cap": 301200000,
+      "room": 58000000,
+      "within_cap": true,
+      "observed": 43
+    }
+  ]
+}

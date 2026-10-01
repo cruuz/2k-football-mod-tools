@@ -225,8 +225,22 @@ class BuildTagTests(unittest.TestCase):
     def test_the_build_tag_looks_like_a_release_tag(self) -> None:
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
 
-    def test_the_build_tag_matches_the_linux_update_hotfix(self) -> None:
-        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-75")
+    def test_the_build_tag_matches_beta_76(self) -> None:
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-76")
+
+    def test_beta_76_is_offered_to_both_previous_published_releases(self) -> None:
+        # The shared release tag drives discovery for both product versions.
+        # A republished older hotfix must not conceal beta 76.
+        for installed in ("beta-75", "beta-74.1", "beta-75.1"):
+            with self.subTest(installed=installed), _serve([
+                _release("beta-74.1"), _release("beta-76"), _release("beta-75"),
+                _release("beta-77", draft=True),
+            ]):
+                status = update_check.check(installed)
+            self.assertTrue(status.available)
+            self.assertEqual(status.latest_tag, "beta-76")
+        with _serve([_release("beta-76"), _release("beta-75")]):
+            self.assertFalse(update_check.check("beta-76").available)
 
     def test_hotfix_tags_order_after_their_beta_and_before_the_next(self) -> None:
         """beta-62.1 is newer than beta-62, older than beta-63, and beta-62 is never offered to a 62.1 build."""

@@ -1,0 +1,10 @@
+{
+  "build_source_fingerprints": 483,
+  "changed": [],
+  "board_spec_non_name_fields_identical": true,
+  "board_name_before": "NRG Stadium",
+  "board_name_after": "Reliant Stadium",
+  "base": "7fe724b5",
+  "disc_build_run": false,
+  "emulator_run": false
+}

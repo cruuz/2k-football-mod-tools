@@ -1,0 +1,11 @@
+DESIGN: Copying disc image: 8,388,608/8,012,931,072
+DESIGN: Copying disc image: 1,979,711,488/8,012,931,072
+DESIGN: Copying disc image: 4,009,754,624/8,012,931,072
+DESIGN: Copying disc image: 4,764,729,344/8,012,931,072
+DESIGN: Copying disc image: 7,717,519,360/8,012,931,072
+DESIGN: Verifying disc files: 152,043,520/299,999,232
+DESIGN: Compacting disc image: 251,658,240/319,197,184
+DESIGN: Compacting disc image: 37,748,736/301,813,760
+DESIGN: Verifying disc files: 232,783,872/307,972,096
+PROVED OFFLINE: private build compaction matches the standalone image byte for byte
+PROVED OFFLINE: {"classification": "PROVED OFFLINE", "output_deleted": true, "nvme_free_bytes": 114196725760, "storage_free_bytes": 20820230144}

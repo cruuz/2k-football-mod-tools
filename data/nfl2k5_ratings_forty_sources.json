@@ -1,0 +1,3510 @@
+{
+ "schema": "nfl2k5.forty_sources.v1",
+ "evidence": "sourced data (cited pages); times checked against the fetched page where it could be fetched (PROVED OFFLINE for those)",
+ "about": "Cited 40-yard dash times for players in the m2 team-seasons (WR, CB, S, RB, edge rushers) that the nflverse combine file lacks. The ratings model uses them after 2K's own retail speed and the nflverse combine time, in the order combine, pro_day, other, and maps every time onto 2K5's scale the same way as a combine 40 (speed = 315.1 - 50.7 x forty). An entry with forty null records that the search found no usable time; that player keeps the position profile, flagged speed_source 'profile' in the manifest.",
+ "kinds": {
+  "combine": "an NFL combine time the nflverse file lacks (for example before 2000)",
+  "pro_day": "a college pro-day time",
+  "other": "a cited time whose event the source does not name"
+ },
+ "method": "Found 2026-09-23 by web research (Wikipedia pre-draft measurables tables first, then team, school and news pages); quote holds the words on the page (table cells joined with '...'); times the source calls alleged, self-reported, projected or high school are rejected.",
+ "players": {
+  "00-0000147": {
+   "name": "Elijah Alexander",
+   "position": "OLB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no pre-draft measurables. Web searches (general and limited to nflcombineresults.com) found no page with a 40 time. Pre-2001, so no DraftScout profile.",
+   "checked_url": "https://en.wikipedia.org/wiki/Elijah_Alexander"
+  },
+  "00-0000204": {
+   "name": "Eric Allen",
+   "position": "CB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": 4.46,
+   "kind": "other",
+   "event": "Pre-draft measurables, 1988 (event not stated)",
+   "source_url": "https://en.wikipedia.org/wiki/Eric_Allen",
+   "quote": "40-yard dash: 4.46 s [table has no footnote or citation]",
+   "note": "Wikipedia table (4.46, with 10/20-yard splits 1.58/2.62, shuttle 4.19, bench 14) has no source line; the drill set looks like 1988 NFL Combine data but no fetched page says so. Search result text credited 'At the Combine, he recorded a 40 yard dash of 4.46 seconds' to ras.football, which returned 403 (unverified). Eagles.com (https://www.philadelphiaeagles.com/news/didinger-eric-allen-belongs-in-the-hall-14275211) says 'He ran the 40-yard dash in 4.48 seconds' without naming the event.",
+   "found_on_page": true
+  },
+  "00-0001681": {
+   "name": "Dan Brandenburg",
+   "position": "OLB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia article has no measurables table or 40 time. The Indiana Football Hall of Fame page (https://ifca-hof.org/inductee/brandenburg-dan/) confirms he \"participated in the NFL's Scouting Combine in Indianapolis\" but gives no time. UNVERIFIED LEAD: a search snippet from the Buffalo News article 'Brandenburg opens gate to success' says he ran 4.52 at the NFL scouting combine (1996) and 4.43 in personal workouts, but the article is paywalled (TollBit) and could not be read, so the time is not used.",
+   "checked_url": "https://en.wikipedia.org/wiki/Dan_Brandenburg"
+  },
+  "00-0004440": {
+   "name": "Anthony Dorsett",
+   "position": "FS",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": 4.47,
+   "kind": "other",
+   "event": "Pre-draft measurables, 1996 (event not stated on the page)",
+   "source_url": "https://en.wikipedia.org/wiki/Anthony_Dorsett",
+   "quote": "40-yard dash 4.47 s",
+   "note": "Time is in the Wikipedia pre-draft table (template dash = 4.47, with 10/20 splits, arm and hand span) but the table has no source note and no citation, so Combine vs Pro Day is unknown. nflcombineresults.com has a page titled 'Anthony Dorsett | Combine Results | CB - Pittsburgh' but it could not be read to confirm.",
+   "found_on_page": true
+  },
+  "00-0006155": {
+   "name": "Lennox Gordon",
+   "position": "HB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables; web searches (general and limited to nflcombineresults.com) found no 40 time. Pre-2001, so no DraftScout profile. Wikipedia gives birth date April 9, 1978 (input says 1978-09-09); college (New Mexico) matches.",
+   "checked_url": "https://en.wikipedia.org/wiki/Lennox_Gordon"
+  },
+  "00-0006395": {
+   "name": "Donovan Greer",
+   "position": "CB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. One web search (PFR, NFL.com, profootballarchives results) found no sourced 40. Undrafted in 1997.",
+   "checked_url": "https://en.wikipedia.org/wiki/Donovan_Greer"
+  },
+  "00-0006795": {
+   "name": "Phil Hansen",
+   "position": "DE",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia (Phil_Hansen_(American_football)) has no measurables table. BuffaloBills.com on his 1991 pre-draft Bills workout: 'We did mostly the short burst tests, no 40-yard dashes. He wanted a time for a five-yard burst and a 10-yard burst.' No 40 found.",
+   "checked_url": "https://www.buffalobills.com/news/bills-all-time-draft-memories-phil-hansen-2140369"
+  },
+  "00-0006960": {
+   "name": "Johnnie Harris",
+   "position": "FS",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Johnnie_Harris_(American_football)) has no measurables table or 40 time; one web search found nothing; Raiders all-time roster bio fetched, no 40 time.",
+   "checked_url": "https://www.raiders.com/history/all-time-roster/bios-h/johnnie-harris"
+  },
+  "00-0008400": {
+   "name": "James Jett",
+   "position": "WR",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": 4.49,
+   "kind": "combine",
+   "event": "NFL Combine, 1993",
+   "source_url": "https://en.wikipedia.org/wiki/James_Jett",
+   "quote": "40-yard dash 4.49 s ... All values from NFL Combine",
+   "note": "Pre-2000 Combine, so not in nflverse. Wikipedia's footnote cites nflcombineresults.com ('James Jett, Combine Results, WR - West Virginia').",
+   "found_on_page": true
+  },
+  "00-0008761": {
+   "name": "Henry Jones",
+   "position": "CB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 mention on Wikipedia (1991 first-round pick). Searches found no sourced time; FantasyPros 1991 combine page did not render data and nflcombineresults.com returned 404.",
+   "checked_url": "https://en.wikipedia.org/wiki/Henry_Jones_(American_football)"
+  },
+  "00-0008921": {
+   "name": "Randy Jordan",
+   "position": "HB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": 4.46,
+   "kind": "combine",
+   "event": "NFL Combine, 1993",
+   "source_url": "https://en.wikipedia.org/wiki/Randy_Jordan",
+   "quote": "40-yard dash: 4.46 s [table footnote: All values from NFL Combine]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Table cites 'Randy Jordan NFL Combine Results', NFLCombineResults.com (third-party combine database).",
+   "found_on_page": true
+  },
+  "00-0009288": {
+   "name": "Terry Kirby",
+   "position": "HB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": 4.64,
+   "kind": "other",
+   "event": "Pre-draft measurables, 1993 (event not stated)",
+   "source_url": "https://en.wikipedia.org/wiki/Terry_Kirby",
+   "quote": "40-yard dash 4.64 s",
+   "note": "Wikipedia table (height 6 ft 1 1/4 in, 221 lb, arm 33 in, hand 9 1/2 in, 40 4.64 s) has no caption, footnote or citation saying whether it is from the NFL Combine or a Pro Day. The arm and hand measurements suggest the 1993 Combine, but that is not stated, so kind is 'other'.",
+   "found_on_page": true
+  },
+  "00-0009960": {
+   "name": "Jonathan Linton",
+   "position": "HB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no pre-draft measurables table. One search (UNC, 1998 draft) and the goheels.com roster page gave no 40 time. Pre-2000 draft, so no nflverse Combine data.",
+   "checked_url": "https://en.wikipedia.org/wiki/Jonathan_Linton"
+  },
+  "00-0010092": {
+   "name": "Kamil Loud",
+   "position": "WR",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found only FantasyPros 1998 NFL Combine pages, whose data tables did not render for the fetcher, so no quotable time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Kamil_Loud"
+  },
+  "00-0010786": {
+   "name": "Jeremy McDaniel",
+   "position": "WR",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table and no 40 in the text. One web search (PFR, ESPN, footballdb results) found no sourced 40. Undrafted in 1999.",
+   "checked_url": "https://en.wikipedia.org/wiki/Jeremy_McDaniel"
+  },
+  "00-0012191": {
+   "name": "Gabe Northern",
+   "position": "OLB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia (1996 draft). Searches found no sourced time; FantasyPros 1996 combine page did not render data and nflcombineresults.com returned 404.",
+   "checked_url": "https://en.wikipedia.org/wiki/Gabe_Northern"
+  },
+  "00-0012820": {
+   "name": "Marlo Perry",
+   "position": "OLB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. Searches found no sourced 40 (1994 draft; FantasyPros 1994 Combine page is JS-rendered and showed no rows; nflcombineresults.com returned 404).",
+   "checked_url": "https://en.wikipedia.org/wiki/Marlo_Perry"
+  },
+  "00-0013111": {
+   "name": "Marquez Pope",
+   "position": "SS",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with a time; Fresno Athletic Hall of Fame page (fresnoahof.org) has none.",
+   "checked_url": "https://en.wikipedia.org/wiki/Marquez_Pope"
+  },
+  "00-0013122": {
+   "name": "Daryl Porter",
+   "position": "CB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Boston College, born January 16, 1974) has no measurables table or 40 time; one web search found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Daryl_Porter_(safety)"
+  },
+  "00-0013235": {
+   "name": "Shawn Price",
+   "position": "DE",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table (its infobox gives a birth date of March 30, 1970 while the text says March 28). One web search found no sourced 40, and the FantasyPros 1993 Combine 40 page did not show him. Undrafted in 1993.",
+   "checked_url": "https://en.wikipedia.org/wiki/Shawn_Price"
+  },
+  "00-0013499": {
+   "name": "Andre Reed",
+   "position": "WR",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table and no 40 in the text. One web search (Pro Football Hall of Fame, Bills, Pro-Football-Reference, footballdb results) found no sourced 40 time. 1985 draft, pre-2000.",
+   "checked_url": "https://en.wikipedia.org/wiki/Andre_Reed"
+  },
+  "00-0013979": {
+   "name": "Sam Rogers",
+   "position": "OLB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia article has no pre-draft measurables. Web searches (general and limited to nflcombineresults.com) found no page with a 40 time. Pre-2001, so no DraftScout profile.",
+   "checked_url": "https://en.wikipedia.org/wiki/Sam_Rogers_(linebacker)"
+  },
+  "00-0014116": {
+   "name": "Orpheus Roye",
+   "position": "DE",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table and no 40 in the text. One web search (PFR, footballdb, nolefan.org, Steelers Takeaways results) found no sourced 40. 1996 6th-round pick, pre-2000.",
+   "checked_url": "https://en.wikipedia.org/wiki/Orpheus_Roye"
+  },
+  "00-0014512": {
+   "name": "Kurt Schulz",
+   "position": "FS",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia. One search found only a third-party nflcombineresults.com player page, which came back empty to the fetcher (could not be read, so not used); EWU Hall of Fame page (goeags.com) has no time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Kurt_Schulz"
+  },
+  "00-0015091": {
+   "name": "Antowain Smith",
+   "position": "HB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Houston, born March 14, 1972) has no measurables table or 40 time; Buffalo Bills 1997 draft story has none. UNVERIFIED LEAD: a search snippet from ras.football (https://ras.football/2019/12/21/antowain-smith-ras/) says \"At the Combine, he recorded a 40 yard dash of 4.48 seconds\" (1997 NFL Combine), but that page refused every fetch (HTTP 429/403) and the nflcombineresults.com player page (i=23096) returned no content, so the time is not used.",
+   "checked_url": "https://en.wikipedia.org/wiki/Antowain_Smith"
+  },
+  "00-0015111": {
+   "name": "Bruce Smith",
+   "position": "DE",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": 4.71,
+   "kind": "other",
+   "event": "Pre-draft workout before the 1985 NFL Draft (venue not stated)",
+   "source_url": "https://www.profootballhof.com/news/the-drafting-of-the-class-of-09-bruce-smith",
+   "quote": "In fact, he ran a blistering 4.71 in the 40-yard-dash prior to the draft, an unheard of number for a defensive lineman of that size.",
+   "note": "Wikipedia article has no measurables table. The Pro Football Hall of Fame article gives the time but does not say whether it was run at the 1985 combine camp or a workout, so kind is other.",
+   "found_on_page": true
+  },
+  "00-0015314": {
+   "name": "Thomas Smith",
+   "position": "CB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no pre-draft measurables. Web searches (general and limited to nflcombineresults.com) found no page with a 40 time. Pre-2001, so no DraftScout profile.",
+   "checked_url": "https://en.wikipedia.org/wiki/Thomas_Smith_(cornerback)"
+  },
+  "00-0016076": {
+   "name": "Josh Taves",
+   "position": "DE",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Northeastern) has no measurables table or 40 time; one web search found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Josh_Taves"
+  },
+  "00-0016331": {
+   "name": "Thurman Thomas",
+   "position": "HB",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": 4.47,
+   "kind": "combine",
+   "event": "NFL Scouting Combine, 1988",
+   "source_url": "https://en.wikipedia.org/wiki/Thurman_Thomas",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.47 s\"; table note: \"All values from NFL Combine\"",
+   "note": "Pre-2000 combine (not in nflverse data).",
+   "found_on_page": true
+  },
+  "00-0016340": {
+   "name": "William Thomas",
+   "position": "OLB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia (1991 draft). Searches and the SI Eagles article found no time; FantasyPros 1991 combine page did not render data and nflcombineresults.com returned 404.",
+   "checked_url": "https://en.wikipedia.org/wiki/William_Thomas_(linebacker)"
+  },
+  "00-0017829": {
+   "name": "Jermaine Williams",
+   "position": "HB",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (Houston RB, undrafted 1997). Search and the Raiders.com all-time roster bio found no 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Jermaine_Williams_(American_football)"
+  },
+  "00-0017860": {
+   "name": "Kevin R. Williams",
+   "position": "WR",
+   "teams": [
+    "bills_1999"
+   ],
+   "forty": 4.49,
+   "kind": "other",
+   "event": "Pre-draft measurables, 1993 (event not stated)",
+   "source_url": "https://en.wikipedia.org/wiki/Kevin_Williams_(wide_receiver,_born_1971)",
+   "quote": "40-yard dash: 4.49 s [table has no footnote or citation]",
+   "note": "CONFLICT, use with care. Wikipedia table (4.49 with 10/20-yard splits 1.57/2.60, shuttle 4.61, arm and hand measurements) gives no source line; the drill set looks like 1993 NFL Combine data but no fetched page says so. The same article's body says 'he was the fastest player (4.28 seconds in the 40 yards)' in a college context, and a FanSided list (https://fansided.com/2015/02/18/15-fastest-40-times-nfl-history/) lists Kevin Williams, Miami, 1993 at 4.28 as an 'official' combine time. Neither 4.28 claim comes from an authoritative page, so the table value is recorded.",
+   "found_on_page": true
+  },
+  "00-0019986": {
+   "name": "Juqua Parker",
+   "position": "DE",
+   "teams": [
+    "eagles_2010"
+   ],
+   "forty": null,
+   "note": "Played at Oklahoma State as Juqua Thomas. No measurables table or 40 time on Wikipedia; one search (as Juqua Thomas, 2001 pro day) found nothing.",
+   "checked_url": "https://en.wikipedia.org/wiki/Juqua_Parker"
+  },
+  "00-0020421": {
+   "name": "Raymond Perryman",
+   "position": "FS",
+   "teams": [
+    "raiders_2001"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (titled Ray Perryman) has no measurables table. One web search plus the NAU Hall of Fame article (https://nauathletics.com/news/2018/9/18/general-2018-nau-hall-of-fame-inductee-ray-perryman) found no 40 time. 2001 5th-round pick.",
+   "checked_url": "https://en.wikipedia.org/wiki/Ray_Perryman"
+  },
+  "00-0020712": {
+   "name": "James Harrison",
+   "position": "OLB",
+   "teams": [
+    "patriots_2017",
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (2002 undrafted, Kent State). Search summaries attributed 4.85 (and once 4.98) to a Behind the Steel Curtain article, but that page returned HTTP 403 (also its AMP copy), so no time could be quoted. 12up and Fandom pages had no time or were blocked.",
+   "checked_url": "https://en.wikipedia.org/wiki/James_Harrison_(American_football)"
+  },
+  "00-0020840": {
+   "name": "Ryan Clark",
+   "position": "FS",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. NFL.com: 'Clark, who wasn't invited to the combine, had a really, really good pro day at LSU in 2001, running lights-out.' No time given there or in any fetched page.",
+   "checked_url": "https://www.nfl.com/news/pro-days-are-important-as-nfl-stars-like-victor-cruz-can-attest-0ap1000000145961"
+  },
+  "00-0021645": {
+   "name": "Tracy White",
+   "position": "OLB",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": 4.54,
+   "kind": "pro_day",
+   "event": "Howard Pro Day, 2003",
+   "source_url": "https://en.wikipedia.org/wiki/Tracy_White",
+   "quote": "40-yard dash: 4.54 s [table footnote: Measurables were taken at Pro Day.]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0021647": {
+   "name": "Jerheme Urban",
+   "position": "WR",
+   "teams": [
+    "cardinals_2008"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with a 40 time (Trinity TX, undrafted 2003; only track results and coaching pages).",
+   "checked_url": "https://en.wikipedia.org/wiki/Jerheme_Urban"
+  },
+  "00-0021654": {
+   "name": "Joselio Hanson",
+   "position": "CB",
+   "teams": [
+    "eagles_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Texas Tech, born August 13, 1981) has no measurables table or 40 time; one web search found no page with a time (an LA Sentinel profile was returned but blocked the fetch, HTTP 403).",
+   "checked_url": "https://en.wikipedia.org/wiki/Joselio_Hanson"
+  },
+  "00-0021891": {
+   "name": "Ivan Taylor",
+   "position": "CB",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "rejected: the only time (4.18) is hedged on the page ('timed allegedly as fast as'), probably a hand time; he keeps 2K's own retail speed as Ike Taylor anyway",
+   "checked_url": "https://en.wikipedia.org/wiki/Ike_Taylor",
+   "rejected": {
+    "forty": 4.18,
+    "source_url": "https://en.wikipedia.org/wiki/Ike_Taylor",
+    "quote": "Leading up to the draft, he was timed allegedly as fast as 4.18 seconds in the 40-yard dash at his pro day."
+   }
+  },
+  "00-0021927": {
+   "name": "David Tyree",
+   "position": "WR",
+   "teams": [
+    "giants_2007"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia. One search: the result summary quoted The Daily Orange (Apr 2003, https://www.dailyorange.com/2003/04/in-the-driver-8217-s-seat-wr-tyree-wants-to-buy-new-car-with-first-nfl-paycheck/) as saying Tyree had 'a pro day on which he ran a 4.45-second 40-yard dash', but that page returned 403 on every fetch attempt, so 4.45 (Syracuse Pro Day, 2003) is an unverified lead and not used.",
+   "checked_url": "https://en.wikipedia.org/wiki/David_Tyree"
+  },
+  "00-0021949": {
+   "name": "Chris Johnson",
+   "position": "CB",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": 4.23,
+   "kind": "other",
+   "event": "Pre-draft timing coming out of Louisville, 2003 (venue not stated)",
+   "source_url": "https://www.packers.com/news/speedster-johnson-back-in-action-2472506",
+   "quote": "Johnson, who was timed at an astonishing 4.23 seconds in the 40-yard dash coming out of the University of Louisville (although the tattoos on the back of his calves will let you know he once sprinted the distance in 4.18), was sidelined for his entire rookie season after injuring his right knee in a training camp collision with Donald Driver.",
+   "note": "Official Packers.com article (Oct 20, 2004). The Packers' July 7, 2003 signing article (https://www.packers.com/news/packers-sign-7th-round-cb-chris-johnson-2476580) also says he \"timed at a mercurial 4.23 seconds in the 40-yard dash\". Neither names the venue (probably his Louisville pro day or a private workout; unverified), so kind is other. The 4.18 is a tattoo anecdote, not used. Wikipedia (Chris_Johnson_(cornerback,_born_1979)) has a measurables table (caption \"Values from Pro Day\") with height and weight only.",
+   "found_on_page": true
+  },
+  "00-0022059": {
+   "name": "Robert Mathis",
+   "position": "DE",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables. Not invited to the Combine (Colts.com). DraftScout's 2003 profile has blank Combine and Pro Day sections; its '40 Time 4.67' (low 4.57, high 4.78) is a projection, not a measured time, so it was not used. Three searches and two Colts.com articles gave no measured 40.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=1168&DraftYear=2003"
+  },
+  "00-0022247": {
+   "name": "Mike Adams",
+   "position": "SS",
+   "teams": [
+    "broncos_2012"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Delaware, undrafted 2004) has no Pre-draft measurables table and no 40 time; one web search for a Delaware pro day 40 found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Mike_Adams_(safety)"
+  },
+  "00-0022250": {
+   "name": "Willie Parker",
+   "position": "HB",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": 4.28,
+   "kind": "other",
+   "event": "Reported clocking, event not specified (pre-2004 draft, North Carolina)",
+   "source_url": "https://www.tarheeltimes.com/article10841.aspx",
+   "quote": "Willie Parker, who has been clocked at 4.28 seconds in the 40-yard dash...",
+   "note": "Wikipedia has no measurables table. Tar Heel Times (2/7/2006, 'Spotlight shines on unsung Parker') and the North State Journal (2020: \"known as 'Fast Willie' because of his blazing 4.28 speed in the 40-yard dash\") both give 4.28 but neither says where it was run. A UNC athletics 'Top 10 40-Yard Dash Times' page (2003) reportedly lists 4.37, but its text could not be read.",
+   "found_on_page": true
+  },
+  "00-0022344": {
+   "name": "Randall Gay",
+   "position": "CB",
+   "teams": [
+    "patriots_2007",
+    "saints_2009"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search ('Randall Gay LSU pro day 40-yard dash 2004') found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Randall_Gay"
+  },
+  "00-0022409": {
+   "name": "Jordan Babineaux",
+   "position": "FS",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. One web search plus the Southern Arkansas Hall of Fame bio (https://muleriderathletics.com/honors/hall-of-fame/jordan-babineaux/129) found no 40 time. Undrafted in 2004.",
+   "checked_url": "https://en.wikipedia.org/wiki/Jordan_Babineaux"
+  },
+  "00-0022421": {
+   "name": "Ruvell Martin",
+   "position": "WR",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (Saginaw Valley State, undrafted 2004). Search, the Muskegon Sports Hall of Fame page and PlayerProfiler (404) found no 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Ruvell_Martin"
+  },
+  "00-0022427": {
+   "name": "Wes Welker",
+   "position": "WR",
+   "teams": [
+    "patriots_2007",
+    "patriots_2011"
+   ],
+   "forty": 4.65,
+   "kind": "pro_day",
+   "event": "Pro Day, 2004",
+   "source_url": "https://en.wikipedia.org/wiki/Wes_Welker",
+   "quote": "40-yard dash 4.65 s ... All values from Pro Day",
+   "note": "Footnote says only 'All values from Pro Day' (no school named); it cites a 2004 DraftScout profile titled 'Wes Welker - Texas Tech, WR' and ras.football.",
+   "found_on_page": true
+  },
+  "00-0022828": {
+   "name": "Nathan Jones",
+   "position": "CB",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": null,
+   "note": "Wikipedia (Nate Jones (cornerback), Rutgers, born 1982) has no measurables table. Two searches and the 247Sports 'Knights to Remember' article found no 40 time; PlayerProfiler has no page.",
+   "checked_url": "https://en.wikipedia.org/wiki/Nate_Jones_(cornerback)"
+  },
+  "00-0023186": {
+   "name": "Leigh Torrence",
+   "position": "CB",
+   "teams": [
+    "saints_2010",
+    "saints_2011"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (2005 undrafted, Stanford). Two searches found no sourced 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Leigh_Torrence"
+  },
+  "00-0023316": {
+   "name": "Raymond Ventrone",
+   "position": "SS",
+   "teams": [
+    "patriots_2007"
+   ],
+   "forty": null,
+   "note": "Wikipedia measurables table ('Values from Pro Day') has height and weight only, no 40. Patriots.com (Apr 30, 2005) has only a self-reported claim that he would \"run under 4.4\" in the 40 a few times that spring, not a measured time. A 4.46 Villanova pro day time in search results belongs to his brother Ross Ventrone (2010), not Ray.",
+   "checked_url": "https://www.patriots.com/news/villanova-s-ventrone-right-where-he-wanted-to-be-130881"
+  },
+  "00-0023351": {
+   "name": "Santonio Thomas",
+   "position": "DE",
+   "teams": [
+    "patriots_2007"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables. DraftScout's 2005 Miami profile shows a Pro Day date (03/03/2005) but a blank 40 (only a 5.20 projection, not used). One web search found no 40 time.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=55090&DraftYear=2005"
+  },
+  "00-0023367": {
+   "name": "Nate Washington",
+   "position": "WR",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": 4.53,
+   "kind": "other",
+   "event": "Pre-draft workouts, 2005 (type of workout not stated)",
+   "source_url": "https://247sports.com/nfl/pittsburgh-steelers/Article/Snapshot-Nate-Washington-104203496/",
+   "quote": "He was timed at 4.53 seconds in the 40-yard dash at his pre-draft workouts",
+   "note": "Wikipedia has no measurables. Undated 247Sports Steelers 'Snapshot' profile; does not say whether the workout was a pro day. DraftScout's 2005 Tiffin profile has blank Combine and Pro Day sections (only a 4.55 projection, not used).",
+   "found_on_page": true
+  },
+  "00-0023376": {
+   "name": "Antwain Spann",
+   "position": "CB",
+   "teams": [
+    "patriots_2007"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with a pro day time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Antwain_Spann"
+  },
+  "00-0023498": {
+   "name": "Matt McCoy",
+   "position": "OLB",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "San Diego State Pro Day, March 19, 2005",
+   "source_url": "https://www.packers.com/news/gil-brandt-s-nfl-draft-analysis-by-position-linebackers-2458660",
+   "quote": "He was not invited to the combine, but he did have his Pro Day on March 19. ... He ran two 40s for times of 4.59 twice.",
+   "note": "Gil Brandt's 2005 linebacker draft analysis (April 11, 2005) on packers.com. Wikipedia has no measurables table.",
+   "found_on_page": true
+  },
+  "00-0023567": {
+   "name": "James Sanders",
+   "position": "FS",
+   "teams": [
+    "patriots_2007"
+   ],
+   "forty": 4.65,
+   "kind": "pro_day",
+   "event": "Fresno State Pro Day, March 4, 2005",
+   "source_url": "https://en.wikipedia.org/wiki/James_Sanders_(American_football)",
+   "quote": "Pre-draft measurables: 40-yard dash 4.65 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=58385&DraftYear=2005), which shows 'Dates: 03/04/2005' and '40 Yrd Dash: 4.65' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0023569": {
+   "name": "Matt Giordano",
+   "position": "SS",
+   "teams": [
+    "saints_2010"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Pro Day (California), 2005",
+   "source_url": "https://en.wikipedia.org/wiki/Matt_Giordano",
+   "quote": "40-yard dash: \"4.48 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class.",
+   "found_on_page": true
+  },
+  "00-0023693": {
+   "name": "Chase Blackburn",
+   "position": "OLB",
+   "teams": [
+    "giants_2007",
+    "giants_2010",
+    "giants_2011"
+   ],
+   "forty": 4.78,
+   "kind": "pro_day",
+   "event": "Akron Pro Day, 2005",
+   "source_url": "https://en.wikipedia.org/wiki/Chase_Blackburn",
+   "quote": "40-yard dash: \"4.78 s\"; caption: \"All values from Akron's Pro Day\"",
+   "note": "Undrafted in 2005.",
+   "found_on_page": true
+  },
+  "00-0023727": {
+   "name": "Dimitri Patterson",
+   "position": "CB",
+   "teams": [
+    "eagles_2010"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (2005 undrafted, Southeast Missouri State). Searches found no sourced time; semissourian.com returned 403 and the SEMO roster bio did not render.",
+   "checked_url": "https://en.wikipedia.org/wiki/Dimitri_Patterson"
+  },
+  "00-0023757": {
+   "name": "Chris Reis",
+   "position": "SS",
+   "teams": [
+    "saints_2009"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Georgia Tech) has no measurables table or 40 time; one web search found no page with a time (Georgia Tech pro day article checked was from 2019).",
+   "checked_url": "https://en.wikipedia.org/wiki/Chris_Reis"
+  },
+  "00-0023847": {
+   "name": "Jeff Charleston",
+   "position": "DE",
+   "teams": [
+    "saints_2009",
+    "saints_2010",
+    "saints_2011"
+   ],
+   "forty": 4.83,
+   "kind": "pro_day",
+   "event": "Pro Day (Idaho State)",
+   "source_url": "https://en.wikipedia.org/wiki/Jeff_Charleston",
+   "quote": "40-yard dash: \"4.83 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; the school is from his college, and the year is not stated.",
+   "found_on_page": true
+  },
+  "00-0023918": {
+   "name": "Jarrett Bush",
+   "position": "CB",
+   "teams": [
+    "packers_2014"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (Utah State, undrafted 2006). Two searches found no 40 time; PlayerProfiler has no page.",
+   "checked_url": "https://en.wikipedia.org/wiki/Jarrett_Bush"
+  },
+  "00-0024017": {
+   "name": "Pierre Woods",
+   "position": "OLB",
+   "teams": [
+    "patriots_2007"
+   ],
+   "forty": 4.75,
+   "kind": "pro_day",
+   "event": "Michigan Pro Day, March 17, 2006",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=10129&DraftYear=2006",
+   "quote": "Pro Day Results ... Dates: 03/17/06 ... 40 Yrd Dash: 4.75",
+   "note": "Conflict: Wikipedia's table gives the same 4.75 but its note (uncited) says 'All values from NFL Scouting Combine except shuttle, 3-cone, broad and vertical jump (Michigan Pro Day)'. DraftScout's Combine section is blank and lists the 4.75 (with the bench, jumps, shuttle and 3-cone) under the 03/17/06 Pro Day, and nflverse has no Combine 40, so Pro Day was used. Wikipedia names the Michigan Pro Day.",
+   "found_on_page": true
+  },
+  "00-0024061": {
+   "name": "Tramon Williams",
+   "position": "CB",
+   "teams": [
+    "packers_2014"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "Louisiana Tech Pro Day, 2006",
+   "source_url": "https://en.wikipedia.org/wiki/Tramon_Williams",
+   "quote": "40-yard dash 4.57 s | All values from Louisiana Tech's Pro Day",
+   "note": "Undrafted 2006.",
+   "found_on_page": true
+  },
+  "00-0024095": {
+   "name": "Anthony Madison",
+   "position": "CB",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. A search summary said 'At his pro day, he recorded a 40 yard dash of 4.42 seconds' (apparently from ras.football), but RAS returns 403, the American Football Database mirror returns 402 and PlayerProfiler has no page, so no fetched page confirms it. Unverified 4.42, left null.",
+   "checked_url": "https://en.wikipedia.org/wiki/Anthony_Madison"
+  },
+  "00-0024129": {
+   "name": "Blake Costanzo",
+   "position": "OLB",
+   "teams": [
+    "49ers_2011"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables. DraftScout's 2006 Lafayette profile has blank Combine and Pro Day sections. Two web searches plus a Lafayette College news profile (2011) and a Jets team-site article (2007) gave no 40 time.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=24643&DraftYear=2006"
+  },
+  "00-0024178": {
+   "name": "Kevin Dockery",
+   "position": "CB",
+   "teams": [
+    "giants_2007"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Mississippi State, born January 8, 1984) has no measurables table or 40 time; one web search found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Kevin_Dockery"
+  },
+  "00-0024345": {
+   "name": "Domenik Hixon",
+   "position": "WR",
+   "teams": [
+    "giants_2007"
+   ],
+   "forty": null,
+   "note": "rejected: 4.48 is credited to NFLDraftScout.com without an event and may be a projection; the player says he broke his foot at his pro day",
+   "checked_url": "https://bleacherreport.com/articles/1356312-domenik-hixon-updated-fantasy-football-analysis-outlook",
+   "rejected": {
+    "forty": 4.48,
+    "source_url": "https://bleacherreport.com/articles/1356312-domenik-hixon-updated-fantasy-football-analysis-outlook",
+    "quote": "He possesses decent speed (4.48-second 40-yard dash, according to NFLDraftScout.com)"
+   }
+  },
+  "00-0024452": {
+   "name": "T.J. Rushing",
+   "position": "CB",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": 4.41,
+   "kind": "pro_day",
+   "event": "Pro Day, 2006",
+   "source_url": "https://en.wikipedia.org/wiki/T._J._Rushing",
+   "quote": "40-yard dash 4.41 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Stanford). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0024467": {
+   "name": "Dave Tollefson",
+   "position": "DE",
+   "teams": [
+    "giants_2007",
+    "giants_2010",
+    "giants_2011"
+   ],
+   "forty": 4.72,
+   "kind": "pro_day",
+   "event": "Northwest Missouri State Pro Day, 2006",
+   "source_url": "https://en.wikipedia.org/wiki/Dave_Tollefson",
+   "quote": "40-yard dash: 4.72 s [table footnote: All values from Northwest Missouri State's Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote.",
+   "found_on_page": true
+  },
+  "00-0024495": {
+   "name": "Ahmad Brooks",
+   "position": "OLB",
+   "teams": [
+    "49ers_2011",
+    "49ers_2012"
+   ],
+   "forty": 4.69,
+   "kind": "other",
+   "event": "Individual workout for NFL scouts before the 2006 supplemental draft, June 22, 2006",
+   "source_url": "https://www.espn.com/nfl/news/story?id=2497057",
+   "quote": "Ahmad Brooks, LB, Virginia 6-3 3/8, 260 pounds, 4.69 40-yard dash ... prepare him for his June 22 individual workout for NFL scouts",
+   "note": "Wikipedia has no pre-draft measurables. ESPN Scouts Inc. scouting report dated June 22, 2006; workout location not stated. Supplemental draft prospect, so no Combine. Search summaries also mentioned other reported times (4.68, 4.72) that were not seen on a fetched page.",
+   "found_on_page": true
+  },
+  "00-0024535": {
+   "name": "Eric Weems",
+   "position": "WR",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. NFL Draft Scout profile shows '40 Low: 4.42 40 Time: 4.52 40 High: 4.63' but its Combine Results and Pro Day Results sections are empty, so the figures are not tied to any measured event (likely scout estimates); not used. Falcons.com and The Falcoholic pages gave no time.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=32024&DraftYear=2007"
+  },
+  "00-0024559": {
+   "name": "Danny Ware",
+   "position": "HB",
+   "teams": [
+    "giants_2007",
+    "giants_2010",
+    "giants_2011"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (DJ Ware, Georgia) has no measurables table or 40 time; one web search for a Georgia 2007 pro day 40 found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/DJ_Ware"
+  },
+  "00-0024638": {
+   "name": "Geoffrey Pope",
+   "position": "CB",
+   "teams": [
+    "giants_2007"
+   ],
+   "forty": 4.25,
+   "kind": "pro_day",
+   "event": "Pro Day, 2007",
+   "source_url": "https://en.wikipedia.org/wiki/Geoff_Pope_(American_football)",
+   "quote": "Pope ran a 4.25 40-yard dash at his Pro Day prior to the 2007 NFL draft.",
+   "note": "Article title is Geoff Pope. Sentence in the Pre-draft section; no measurables table. School of the Pro Day not named (he played at Eastern Michigan and Howard). A 4.25 is very fast and is probably a hand time.",
+   "found_on_page": true
+  },
+  "00-0024697": {
+   "name": "Melvin Bullitt",
+   "position": "SS",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search ('Melvin Bullitt Texas A&M pro day 40-yard dash') returned no page with his 2007 pro day time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Melvin_Bullitt"
+  },
+  "00-0024756": {
+   "name": "Matt Willis",
+   "position": "WR",
+   "teams": [
+    "broncos_2012"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (2007 undrafted, UCLA). UCLA bio mentions 'excellent speed' and 400-meter hurdles but no 40 time; search found none.",
+   "checked_url": "https://en.wikipedia.org/wiki/Matt_Willis_(American_football)"
+  },
+  "00-0024813": {
+   "name": "Pierre Thomas",
+   "position": "HB",
+   "teams": [
+    "saints_2009",
+    "saints_2011"
+   ],
+   "forty": 4.65,
+   "kind": "pro_day",
+   "event": "Illinois Pro Day, March 14, 2007",
+   "source_url": "https://en.wikipedia.org/wiki/Pierre_Thomas_(American_football)",
+   "quote": "Pre-draft measurables: 40-yard dash 4.65 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=9833&DraftYear=2007), which shows 'Dates: 03/14/07' and '40 Yrd Dash: 4.65' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0025453": {
+   "name": "Usama Young",
+   "position": "FS",
+   "teams": [
+    "saints_2009",
+    "saints_2010"
+   ],
+   "forty": 4.39,
+   "kind": "pro_day",
+   "event": "Kent State Pro Day, March 9, 2007",
+   "source_url": "https://en.wikipedia.org/wiki/Usama_Young",
+   "quote": "Pre-draft measurables: 40-yard dash 4.39 s [...] Values all from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=26663&DraftYear=2007), which shows 'Dates: 03/09/07' and '40 Yrd Dash: 4.39' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0025523": {
+   "name": "Clint Session",
+   "position": "OLB",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia. A search snippet from ras.football (Clint Session RAS page) said he ran 4.57 at his pro day, but ras.football returned HTTP 403 and web.archive.org is blocked, so it could not be read or quoted. Post-Gazette 2007 Pitt pro day article did not render; WalterFootball has no time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Clint_Session"
+  },
+  "00-0025557": {
+   "name": "William Gay",
+   "position": "CB",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Louisville Pro Day, 2007",
+   "source_url": "https://en.wikipedia.org/wiki/William_Gay_(cornerback)",
+   "quote": "40-yard dash: 4.48 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college. The article's 'clocked at 4.4 in the 40-yard dash' is a high school figure and was not used.",
+   "found_on_page": true
+  },
+  "00-0025629": {
+   "name": "Keyunta Dawson",
+   "position": "DE",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table and no 40 in the text. One web search (Texas Tech, 247Sports, PFR, On3 results) found no sourced 40. 2007 7th-round pick.",
+   "checked_url": "https://en.wikipedia.org/wiki/Keyunta_Dawson"
+  },
+  "00-0025668": {
+   "name": "Michael Adams",
+   "position": "CB",
+   "teams": [
+    "cardinals_2008"
+   ],
+   "forty": null,
+   "note": "Wikipedia measurables table ('Values from Pro Day') has height and weight only, no 40; one web search found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Michael_Adams_(American_football)"
+  },
+  "00-0025719": {
+   "name": "Akeem Jordan",
+   "position": "OLB",
+   "teams": [
+    "eagles_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. One web search plus the JMU Athletics Hall of Fame bio (https://jmusports.com/honors/jmu-athletics-hall-of-fame/akeem-jordan/127) found no 40 time. Undrafted in 2007.",
+   "checked_url": "https://en.wikipedia.org/wiki/Akeem_Jordan"
+  },
+  "00-0025753": {
+   "name": "James Ihedigbo",
+   "position": "SS",
+   "teams": [
+    "lions_2015",
+    "patriots_2011",
+    "ravens_2012"
+   ],
+   "forty": 4.77,
+   "kind": "pro_day",
+   "event": "Pro Day workout (UMass), 2007",
+   "source_url": "https://en.wikipedia.org/wiki/James_Ihedigbo",
+   "quote": "40-yard dash: \"4.77 s\"; caption: \"Results taken from Pro Day workout.\"",
+   "note": "The caption does not name the school; UMass is his college. Undrafted in 2007.",
+   "found_on_page": true
+  },
+  "00-0025833": {
+   "name": "Patrick Bailey",
+   "position": "OLB",
+   "teams": [
+    "steelers_2008"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (Duke LB, undrafted 2008). Search found no 40 time; PlayerProfiler has no page.",
+   "checked_url": "https://en.wikipedia.org/wiki/Patrick_Bailey_(American_football)"
+  },
+  "00-0025992": {
+   "name": "Samuel Giguere",
+   "position": "WR",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "Canadian (Sherbrooke, CIS). Wikipedia (Sam Giguere) has no measurables table. A search summary claimed 4.69, but the page it came from (3DownNation) gives 4.69 for Jacob Dearborn, not Giguere, so it was rejected. CFL.ca player page returned 403. No sourced 40 found.",
+   "checked_url": "https://en.wikipedia.org/wiki/Sam_Gigu%C3%A8re"
+  },
+  "00-0026019": {
+   "name": "Danny Woodhead",
+   "position": "HB",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": 4.38,
+   "kind": "pro_day",
+   "event": "Pro Day, 2008",
+   "source_url": "https://en.wikipedia.org/wiki/Danny_Woodhead",
+   "quote": "40-yard dash 4.38 s ... All values from Pro Day ... According to a report on NFLDraftWatch.net, he ran the 40-yard dash in times of 4.33 to 4.38 seconds",
+   "note": "Article text cites an NFLDraftWatch.net report of 4.33 to 4.38; the table value 4.38 is used. Footnote does not name the school (Chadron State player); it cites Gil Brandt's NFL.com 'Pro day updates' (April 26, 2008) and DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0026071": {
+   "name": "Kyle Arrington",
+   "position": "CB",
+   "teams": [
+    "patriots_2011",
+    "patriots_2014"
+   ],
+   "forty": null,
+   "note": "Wikipedia article has no measurables table or 40 time; one web search found no page with a time; Hofstra roster bio fetched, no 40 time.",
+   "checked_url": "https://gohofstra.com/sports/football/roster/kyle-arrington/761"
+  },
+  "00-0026121": {
+   "name": "Lynell Hamilton",
+   "position": "HB",
+   "teams": [
+    "saints_2009"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (San Diego State) has no measurables table or 40 time; one web search found no page with a time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Lynell_Hamilton"
+  },
+  "00-0026280": {
+   "name": "Brandon Carr",
+   "position": "CB",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": 4.43,
+   "kind": "pro_day",
+   "event": "Central Michigan Pro Day, 2008",
+   "source_url": "https://en.wikipedia.org/wiki/Brandon_Carr",
+   "quote": "40-yard dash 4.43 s ... All values from Central Michigan's Pro Day",
+   "note": "Grand Valley State player; the table says he tested at Central Michigan's Pro Day. Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0026289": {
+   "name": "Tim Hightower",
+   "position": "HB",
+   "teams": [
+    "cardinals_2008"
+   ],
+   "forty": 4.62,
+   "kind": "pro_day",
+   "event": "Richmond Pro Day, 2008",
+   "source_url": "https://en.wikipedia.org/wiki/Tim_Hightower",
+   "quote": "40-yard dash: \"4.62 s\"; caption: \"All values from Richmond Pro Day\"; text: \"Hightower was not invited to the 2008 NFL Scouting Combine, but performed well at Richmond's 'pro day'.\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0026293": {
+   "name": "Matt Slater",
+   "position": "WR",
+   "teams": [
+    "patriots_2011",
+    "patriots_2014",
+    "patriots_2016",
+    "patriots_2017"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Pro Day, 2008 (college: UCLA)",
+   "source_url": "https://en.wikipedia.org/wiki/Matthew_Slater",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.44 s\"; table note: \"All values from Pro Day\"",
+   "note": "Article is Matthew Slater (UCLA, born September 9, 1985). Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0026348": {
+   "name": "Ervin Baldwin",
+   "position": "DE",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": null,
+   "note": "No measurables table on Wikipedia (2008 7th round, Michigan State). A search snippet said his Michigan State athletics bio says he 'runs 4.75 in the 40', but the msuspartans.com roster page came back truncated twice, so it could not be quoted. 247Sports and PlayerProfiler have no time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Ervin_Baldwin"
+  },
+  "00-0026357": {
+   "name": "Brett Swain",
+   "position": "WR",
+   "teams": [
+    "49ers_2011"
+   ],
+   "forty": 4.41,
+   "kind": "pro_day",
+   "event": "San Diego State Pro Day, 2008",
+   "source_url": "https://www.packers.com/news/wr-swain-shows-he-has-speed-2423842",
+   "quote": "He got a chance to change that at San Diego State's pro day, and Swain made the most of it, turning in a 4.41 in the 40, one of the attributes that attracted the Packers to use their second seventh-round pick, No. 217 overall, on Swain.",
+   "note": "Packers.com article dated Apr 26, 2008. Wikipedia (Brett_Swain_(gridiron_football)) has no measurables table.",
+   "found_on_page": true
+  },
+  "00-0026369": {
+   "name": "Cary Williams",
+   "position": "CB",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": 4.43,
+   "kind": "pro_day",
+   "event": "Pro Day, 2008 (Washburn)",
+   "source_url": "https://en.wikipedia.org/wiki/Cary_Williams",
+   "quote": "40-yard dash 4.43 s | All values from Pro Day",
+   "note": "Footnote does not name the school; he finished at Washburn. Article: 'During his Pro Day, Williams had a 330-pound squat, 245-pound bench press...'",
+   "found_on_page": true
+  },
+  "00-0026371": {
+   "name": "Alex Hall",
+   "position": "OLB",
+   "teams": [
+    "giants_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia's measurables table (caption \"Values from Pro Day\") lists only height and weight, no 40. One web search plus the Eagles article \"Eagles Looking To Maximize Hall's Skills\" found no 40 time. 2008 7th-round pick.",
+   "checked_url": "https://en.wikipedia.org/wiki/Alex_Hall_(American_football)"
+  },
+  "00-0026391": {
+   "name": "Kennard Cox",
+   "position": "CB",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Pittsburgh, born August 17, 1985) has no measurables table or 40 time; one web search found no page with a time; Pitt roster page fetched, no time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Kennard_Cox"
+  },
+  "00-0026432": {
+   "name": "Lance Ball",
+   "position": "HB",
+   "teams": [
+    "broncos_2012"
+   ],
+   "forty": 4.56,
+   "kind": "pro_day",
+   "event": "Pro Day, March 12-13, 2008",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=10912&DraftYear=2008",
+   "quote": "Pro Day Results ... Dates: 03/12/08 03/13/08 ... 40 Yrd Dash: 4.56",
+   "note": "DraftScout profile 'Lance Ball, RB, Maryland', 2008; Combine section blank; pro day site not named. Matches the 4.56 pro day figure that search results attributed to ras.football (which refused the fetch). Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0026515": {
+   "name": "Tony Carter",
+   "position": "CB",
+   "teams": [
+    "broncos_2012"
+   ],
+   "forty": 4.41,
+   "kind": "pro_day",
+   "event": "Pro Day, March 16, 2009",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=3861&DraftYear=2009",
+   "quote": "Pro Day Results ... Dates: 03/16/09 ... 40 Yrd Dash: 4.41",
+   "note": "DraftScout profile 'Tony Carter, CB, Florida State', 2009; Combine section blank; pro day site not named. Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0026578": {
+   "name": "Colt Anderson",
+   "position": "SS",
+   "teams": [
+    "eagles_2010"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "Pro Day, 2009",
+   "source_url": "https://en.wikipedia.org/wiki/Colt_Anderson",
+   "quote": "40-yard dash 4.53 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Montana player). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0026672": {
+   "name": "Ramon Humber",
+   "position": "OLB",
+   "teams": [
+    "colts_2009",
+    "saints_2010",
+    "saints_2011"
+   ],
+   "forty": 4.61,
+   "kind": "other",
+   "event": "PlayerProfiler workout metrics (unlabeled; most likely North Dakota State Pro Day, 2009)",
+   "source_url": "https://www.playerprofiler.com/nfl/ramon-humber/",
+   "quote": "40-Yard Dash 4.61",
+   "note": "Wikipedia table 'Values from Pro Day' lists only height 5 ft 10 3/4 in and weight 224 lb, no 40. PlayerProfiler value has no Combine/Pro Day label.",
+   "found_on_page": true
+  },
+  "00-0026674": {
+   "name": "Jacob Lacey",
+   "position": "CB",
+   "teams": [
+    "colts_2009"
+   ],
+   "forty": 4.45,
+   "kind": "pro_day",
+   "event": "Oklahoma State Pro Day, March 11, 2009",
+   "source_url": "https://en.wikipedia.org/wiki/Jacob_Lacey",
+   "quote": "Pre-draft measurables: 40-yard dash 4.45 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=72672&DraftYear=2009), which shows 'Dates: 03/11/09' and '40 Yrd Dash: 4.45' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0027150": {
+   "name": "Julian Edelman",
+   "position": "WR",
+   "teams": [
+    "patriots_2011",
+    "patriots_2014",
+    "patriots_2016"
+   ],
+   "forty": 4.52,
+   "kind": "pro_day",
+   "event": "Kent State Pro Day, March 12, 2009",
+   "source_url": "https://en.wikipedia.org/wiki/Julian_Edelman",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.52 s\"; table note: \"All values from Kent State Pro Day\"; body: \"At his March 12 Pro Day, Edelman ran the short shuttle in 3.92 seconds\"",
+   "note": "Date of the pro day taken from the article body sentence.",
+   "found_on_page": true
+  },
+  "00-0027188": {
+   "name": "Chad Hall",
+   "position": "WR",
+   "teams": [
+    "49ers_2012",
+    "eagles_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia's measurables table (caption \"All values from Pro Day\") lists only height and weight, no 40. Two web searches: results say he worked out at a Pro Day at the University of Utah before the Eagles signed him (March 2010), but no page gave a 40 time; the Eagles article \"Hall Goes From The Air Force To The NFL\" has no time and the usafa.af.mil article returned 403.",
+   "checked_url": "https://en.wikipedia.org/wiki/Chad_Hall"
+  },
+  "00-0027195": {
+   "name": "Rafael Bush",
+   "position": "FS",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with his 2010 pro day time; SC State Athletics HOF spotlight page has none.",
+   "checked_url": "https://en.wikipedia.org/wiki/Rafael_Bush"
+  },
+  "00-0027232": {
+   "name": "Sergio Brown",
+   "position": "FS",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": 4.49,
+   "kind": "pro_day",
+   "event": "Notre Dame Pro Day, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Sergio_Brown",
+   "quote": "40-yard dash: 4.49 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college. The article's other figure (4.38) is a high school track time and was not used.",
+   "found_on_page": true
+  },
+  "00-0027261": {
+   "name": "Duke Calhoun",
+   "position": "WR",
+   "teams": [
+    "giants_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia article (Memphis, born September 1, 1987) has no measurables table or 40 time; one web search found no page with a time; Raiders.com signing story and Memphis roster bio fetched, no time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Duke_Calhoun"
+  },
+  "00-0027265": {
+   "name": "Victor Cruz",
+   "position": "WR",
+   "teams": [
+    "giants_2011"
+   ],
+   "forty": 4.45,
+   "kind": "pro_day",
+   "event": "Boston College Pro Day, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Victor_Cruz_(American_football)",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.45 s\"; table note: \"All values from Boston College's Pro Day.\"",
+   "note": "UMass prospect; the Wikipedia caption says the workout was at Boston College's Pro Day.",
+   "found_on_page": true
+  },
+  "00-0027375": {
+   "name": "Tramaine Brock",
+   "position": "CB",
+   "teams": [
+    "49ers_2011",
+    "49ers_2012",
+    "vikings_2017"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with a time; Belhaven news page (2010) and PlayerProfiler have no 40.",
+   "checked_url": "https://en.wikipedia.org/wiki/Tramaine_Brock"
+  },
+  "00-0027440": {
+   "name": "Sam Shields",
+   "position": "CB",
+   "teams": [
+    "packers_2014",
+    "packers_2015"
+   ],
+   "forty": 4.3,
+   "kind": "pro_day",
+   "event": "Miami Pro Day, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Sam_Shields",
+   "quote": "40-yard dash 4.30 s | All values from Miami's Pro Day",
+   "note": "Undrafted 2010.",
+   "found_on_page": true
+  },
+  "00-0027479": {
+   "name": "Marcus Brown",
+   "position": "CB",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": 4.47,
+   "kind": "pro_day",
+   "event": "Pro Day, March 17, 2010",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=85364&DraftYear=2010",
+   "quote": "Pro Day Results ... Dates: 03/17/10 ... 40 Yrd Dash: 4.47 ... 40 Time Range: 4.35-4.48",
+   "note": "DraftScout lists him as 'Marcus Brown, SS, Arkansas State', 6-1 195, 2010 (the only Marcus Brown in its Arkansas State 2010 list); pro day site not named. Wikipedia has no measurables. A Seahawks fan blog (Hawkstrap, April 27, 2010) said he 'runs 4.37 in the forty'.",
+   "found_on_page": true
+  },
+  "00-0027481": {
+   "name": "Joe Pawelek",
+   "position": "OLB",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with his 2010 pro day time (only a 247Sports high school recruiting profile).",
+   "checked_url": "https://en.wikipedia.org/wiki/Joe_Pawelek"
+  },
+  "00-0027482": {
+   "name": "Josh Pinkard",
+   "position": "CB",
+   "teams": [
+    "seahawks_2010"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table (article says he 'was also invited to the NFL combine'). A search summary said USC's official 2010 Pro Day 40 list shows him as 'Did not run', but that usctrojans.com page (https://usctrojans.com/sports/2017/6/15/blog-2010-03-official-40-times-html) did not render for WebFetch. No sourced 40 found.",
+   "checked_url": "https://en.wikipedia.org/wiki/Josh_Pinkard"
+  },
+  "00-0027495": {
+   "name": "George Johnson",
+   "position": "DE",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.84,
+   "kind": "other",
+   "event": "PlayerProfiler workout metrics (unlabeled; most likely Rutgers Pro Day, 2010)",
+   "source_url": "https://www.playerprofiler.com/nfl/george-johnson/",
+   "quote": "40-Yard Dash 4.84",
+   "note": "Wikipedia (George_Johnson_(defensive_end)) has no measurables table and one search found no Pro Day article. PlayerProfiler profile confirmed as the Rutgers edge rusher born 1987; its value has no Combine/Pro Day label.",
+   "found_on_page": true
+  },
+  "00-0027531": {
+   "name": "Chris Ivory",
+   "position": "HB",
+   "teams": [
+    "saints_2011"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Toledo Pro Day, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Ivory",
+   "quote": "40-yard dash 4.48 s | All values from Toledo's Pro Day",
+   "note": "Tiffin player who worked out at Toledo's Pro Day. Undrafted 2010.",
+   "found_on_page": true
+  },
+  "00-0027547": {
+   "name": "Marcus Sherels",
+   "position": "CB",
+   "teams": [
+    "vikings_2017"
+   ],
+   "forty": 4.37,
+   "kind": "pro_day",
+   "event": "Minnesota Pro Day, March 10, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Marcus_Sherels",
+   "quote": "Pre-draft measurables: 40-yard dash 4.37 s [...] All values from Minnesota's Pro Day.",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=77853&DraftYear=2010), which shows 'Dates: 03/10/10' and '40 Yrd Dash: 4.37' under Pro Day results.",
+   "found_on_page": true
+  },
+  "00-0027595": {
+   "name": "Bryan Walters",
+   "position": "WR",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables. DraftScout's 2010 Cornell profile has blank Combine and Pro Day sections. Two web searches and the Cornell Alumni Magazine profile gave no 40 time (a Dynasty League Football profile refused the fetch).",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=86448&DraftYear=2010"
+  },
+  "00-0027914": {
+   "name": "Andrew Sendejo",
+   "position": "SS",
+   "teams": [
+    "vikings_2017"
+   ],
+   "forty": 4.65,
+   "kind": "pro_day",
+   "event": "Rice Pro Day, 2010",
+   "source_url": "https://en.wikipedia.org/wiki/Andrew_Sendejo",
+   "quote": "40-yard dash: 4.65 s [table footnote: All values from Rice's Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote.",
+   "found_on_page": true
+  },
+  "00-0028128": {
+   "name": "Colin Jones",
+   "position": "FS",
+   "teams": [
+    "49ers_2011"
+   ],
+   "forty": 4.38,
+   "kind": "pro_day",
+   "event": "TCU Pro Day, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/Colin_Jones_(American_football)",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.38 s\"; table note: \"All values from TCU's Pro Day\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0028140": {
+   "name": "Jacquian Williams",
+   "position": "OLB",
+   "teams": [
+    "giants_2011"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "South Florida Pro Day, 2011",
+   "source_url": "https://bleacherreport.com/articles/1652177-can-jacquian-williams-be-the-best-new-york-giants-linebacker-in-2013",
+   "quote": "He ran a 4.53 40-yard dash at the South Florida pro day leading up to the 2011 NFL draft.",
+   "note": "Wikipedia's measurables table lists 4.55 s but has no caption saying where it was run, so the Bleacher Report line (which names the event) is used. Reported range 4.53 to 4.55.",
+   "found_on_page": true
+  },
+  "00-0028157": {
+   "name": "Malcolm Williams",
+   "position": "FS",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": null,
+   "note": "rejected: the player's own statement to student media, to one decimal ('Ran a 4.4')",
+   "checked_url": "https://tcu360.com/2011/05/03/malcolm-williams-is-packing-his-bags-for-the-nfl-after-unlikely-football-journey-12558579/",
+   "rejected": {
+    "forty": 4.4,
+    "source_url": "https://tcu360.com/2011/05/03/malcolm-williams-is-packing-his-bags-for-the-nfl-after-unlikely-football-journey-12558579/",
+    "quote": "That shot came March 10 at the TCU Pro Day. ... \"I was praying 'please let me run a 4.4,'\" Williams said. \"Ran a 4.4.\""
+   }
+  },
+  "00-0028224": {
+   "name": "Chris Harris",
+   "position": "CB",
+   "teams": [
+    "broncos_2012"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Pro Day, 2011 (college: Kansas)",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Harris_Jr.",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.48 s\"; table note: \"All values from Pro Day\"",
+   "note": "Article is Chris Harris Jr. (Kansas, born June 18, 1989). Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0028237": {
+   "name": "Chris Hogan",
+   "position": "WR",
+   "teams": [
+    "patriots_2016",
+    "patriots_2017"
+   ],
+   "forty": 4.5,
+   "kind": "pro_day",
+   "event": "Pro Day at Fordham, March 8, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Hogan_(American_football)",
+   "quote": "Pre-draft measurables: 40-yard dash 4.50 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (http://draftscout.com/dsprofile.php?PlayerId=65406&DraftYear=2011), which shows 'Dates: 03/08@Fordham' and '40 Yrd Dash: 4.50' under Pro Day results. Wikipedia's note does not name the school; DraftScout gives the location.",
+   "found_on_page": true
+  },
+  "00-0028242": {
+   "name": "Joe Hastings",
+   "position": "WR",
+   "teams": [
+    "49ers_2011"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Pro Day, 2011 (college: Washburn)",
+   "source_url": "https://en.wikipedia.org/wiki/Joe_Hastings_(American_football)",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.51 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0028250": {
+   "name": "Alex Silvestro",
+   "position": "DE",
+   "teams": [
+    "patriots_2011"
+   ],
+   "forty": null,
+   "note": "Wikipedia has no measurables table. Two web searches (player name, and Rutgers 2011 pro day results) found no sourced 40. Undrafted in 2011.",
+   "checked_url": "https://en.wikipedia.org/wiki/Alex_Silvestro"
+  },
+  "00-0028279": {
+   "name": "Bryan Hall",
+   "position": "DE",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia (checked both the American_football and gridiron_football titles); one search found no page with his 2011 pro day time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Bryan_Hall_(gridiron_football)"
+  },
+  "00-0028339": {
+   "name": "Mario Addison",
+   "position": "DE",
+   "teams": [
+    "bills_2021"
+   ],
+   "forty": 4.7,
+   "kind": "pro_day",
+   "event": "Pro Day, 2011 (Troy)",
+   "source_url": "https://en.wikipedia.org/wiki/Mario_Addison",
+   "quote": "40-yard dash 4.70 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2011.",
+   "found_on_page": true
+  },
+  "00-0028409": {
+   "name": "DuJuan Harris",
+   "position": "HB",
+   "teams": [
+    "packers_2014"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Troy Pro Day, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/DuJuan_Harris",
+   "quote": "Pre-draft measurables: 40-yard dash 4.44 s [...] All values from Troy Pro Day",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0028434": {
+   "name": "Doug Baldwin",
+   "position": "WR",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Stanford Pro Day, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/Doug_Baldwin",
+   "quote": "40-yard dash: 4.48 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0028443": {
+   "name": "Michael Morgan",
+   "position": "OLB",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": null,
+   "note": "Wikipedia article is titled Mike Morgan (linebacker, born 1988) and has no measurables table. One web search found no sourced pro day 40. Undrafted in 2011.",
+   "checked_url": "https://en.wikipedia.org/wiki/Mike_Morgan_(linebacker,_born_1988)"
+  },
+  "00-0028454": {
+   "name": "Jonathan Freeny",
+   "position": "OLB",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.72,
+   "kind": "pro_day",
+   "event": "Pro Day, March 9, 2011",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=77106&DraftYear=2011",
+   "quote": "Pro Day Results ... Dates: 03/09/11 ... 40 Yrd Dash: 4.72 ... 40 Time Range: 4.72 twice",
+   "note": "DraftScout profile 'Jonathan Freeny, DE, Rutgers', 2011; Combine section blank; pro day site not named. Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0028495": {
+   "name": "Justin Trattou",
+   "position": "DE",
+   "teams": [
+    "giants_2011"
+   ],
+   "forty": 4.72,
+   "kind": "pro_day",
+   "event": "Pro Day, 2011 (Florida)",
+   "source_url": "https://en.wikipedia.org/wiki/Justin_Trattou",
+   "quote": "40-yard dash 4.72 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2011.",
+   "found_on_page": true
+  },
+  "00-0028536": {
+   "name": "Bryan Braman",
+   "position": "DE",
+   "teams": [
+    "eagles_2017"
+   ],
+   "forty": null,
+   "note": "Wikipedia table ('All values from Pro Day', 2011) lists 20-yard shuttle, vertical, broad jump and bench but no 40; one search found no page with a 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Bryan_Braman"
+  },
+  "00-0028564": {
+   "name": "Isa Abdul-Quddus",
+   "position": "FS",
+   "teams": [
+    "lions_2015",
+    "saints_2011"
+   ],
+   "forty": 4.47,
+   "kind": "pro_day",
+   "event": "Fordham Pro Day, March 2011",
+   "source_url": "https://fordhamsports.com/news/2011/3/8/030811aab_74",
+   "quote": "After that it was out to Murphy Field for the 40-yard dash where Abdul-Quddus paced the Fordham competitors with a 4.47, tying Monmouth wide receiver Chris Hogan for the top 40 time on the day.",
+   "note": "Wikipedia has no measurables table. Source is Fordham Athletics, \"Fordham Football Shines at Pro Day\" (March 8, 2011). Undrafted in 2011.",
+   "found_on_page": true
+  },
+  "00-0028702": {
+   "name": "Chris Matthews",
+   "position": "WR",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "Kentucky Pro Day, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Matthews_(gridiron_football)",
+   "quote": "40-yard dash: 4.57 s [table footnote: All values from Kentucky Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote.",
+   "found_on_page": true
+  },
+  "00-0028767": {
+   "name": "Sterling Moore",
+   "position": "FS",
+   "teams": [
+    "cowboys_2014",
+    "patriots_2011",
+    "saints_2017"
+   ],
+   "forty": 4.59,
+   "kind": "other",
+   "event": "Not stated on the source page (probably his 2011 SMU pro day; unverified)",
+   "source_url": "https://www.playerprofiler.com/nfl/sterling-moore/",
+   "quote": "4.59 ... 40-Yard Dash",
+   "note": "WEAK SOURCE: PlayerProfiler lists a 4.59 40 with no event attribution. Wikipedia has no measurables table; two web searches found no page stating where he ran it (a search summary claimed an SMU pro day 4.59 but cited no page). Undrafted in 2011, so no Combine time exists in nflverse. Use with caution or drop.",
+   "found_on_page": true
+  },
+  "00-0028834": {
+   "name": "Craig Robertson",
+   "position": "OLB",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.76,
+   "kind": "pro_day",
+   "event": "North Texas Pro Day, 2011",
+   "source_url": "https://en.wikipedia.org/wiki/Craig_Robertson_(American_football)",
+   "quote": "40-yard dash 4.76 s ... All values from North Texas's Pro Day",
+   "note": "Table cites DraftScout.com and ras.football.",
+   "found_on_page": true
+  },
+  "00-0028899": {
+   "name": "Rodney McLeod",
+   "position": "SS",
+   "teams": [
+    "colts_2022",
+    "eagles_2017"
+   ],
+   "forty": 4.6,
+   "kind": "pro_day",
+   "event": "Virginia Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Rodney_McLeod",
+   "quote": "40-yard dash 4.60 s | All values from Virginia's Pro Day",
+   "note": "Undrafted 2012.",
+   "found_on_page": true
+  },
+  "00-0028908": {
+   "name": "Michael Thomas",
+   "position": "SS",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Stanford Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Michael_Thomas_(defensive_back)",
+   "quote": "40-yard dash: 4.51 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0028924": {
+   "name": "Tashaun Gipson",
+   "position": "FS",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "Wyoming Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Tashaun_Gipson",
+   "quote": "40-yard dash: 4.57 s [table footnote: All values from Wyoming's Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote.",
+   "found_on_page": true
+  },
+  "00-0028984": {
+   "name": "Brian Tyms",
+   "position": "WR",
+   "teams": [
+    "patriots_2014"
+   ],
+   "forty": null,
+   "note": "Florida A&M's official pro day story (3/16/2012) says 'results of the 40-yard dash and shuttle runs were kept away from the general public' (it gives only his 38-inch vertical). A search summary attributes a 4.40 at FAMU's pro day to the SFGate article 'Rookie wideout Tyms runs toward future', but that page would not load (3 tries). Not found in DraftScout's FAMU lists. Lead only: 4.40, unverified.",
+   "checked_url": "https://famuathletics.com/ViewArticle.dbml?ATCLID=205398625"
+  },
+  "00-0029000": {
+   "name": "Cole Beasley",
+   "position": "WR",
+   "teams": [
+    "bills_2021",
+    "cowboys_2014"
+   ],
+   "forty": 4.49,
+   "kind": "pro_day",
+   "event": "SMU Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Cole_Beasley",
+   "quote": "40-yard dash: 4.49 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0029004": {
+   "name": "Lance Dunbar",
+   "position": "HB",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": 4.47,
+   "kind": "pro_day",
+   "event": "North Texas Pro Day, March 13, 2012",
+   "source_url": "http://draftscout.com/dsprofile.php?PlayerId=82508&DraftYear=2012",
+   "quote": "Pro Day (03/13/12) ... 40 Yrd Dash: 4.47",
+   "note": "Wikipedia has no measurables table. draftscout also lists a 40 range of 4.47-4.57. A search snippet from the North Texas Daily (ntdaily.com, UNT hosts NFL Pro Day at Apogee) said he ran 4.50 and 4.47 at the pro day, but that page returned errors (429/404) when fetched. Undrafted in 2012.",
+   "found_on_page": true
+  },
+  "00-0029007": {
+   "name": "Adrian Hamilton",
+   "position": "OLB",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": 4.81,
+   "kind": "pro_day",
+   "event": "Pro Day, March 21, 2012",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=65300&DraftYear=2012",
+   "quote": "Pro Day Results ... Dates: 03/21/12 ... 40 Yrd Dash: 4.81 ... 40 Time Range: 4.81-4.87",
+   "note": "DraftScout profile for Adrian Hamilton, Prairie View A&M, 2012 (listed DE/OLB/ILB); Combine section blank; pro day site not named. Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0029065": {
+   "name": "Johnson Bademosi",
+   "position": "CB",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 4.41,
+   "kind": "pro_day",
+   "event": "Stanford Pro Day, 2012",
+   "source_url": "https://www.si.com/more-sports/2012/03/01/pro-days",
+   "quote": "Andrew Luck's throwing session has ended at Stanford ... Other marks from the day include 40 times of 4.41 seconds for defensive back Johnson Bademosi and 5.23 seconds for tackle Jonathan Martin.",
+   "note": "Wikipedia has no measurables. From Tony Pauline's '2012 NFL Draft Pro Day Tracker' on SI.com. The Stanford Daily (April 2, 2012) reported a rounded '4.3-second 40-yard dash'; PlayerProfiler lists 4.44 without saying where.",
+   "found_on_page": true
+  },
+  "00-0029165": {
+   "name": "Tony Jerod-Eddie",
+   "position": "DE",
+   "teams": [
+    "49ers_2012"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia; one search found no page with his 2012 pro day time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Tony_Jerod-Eddie"
+  },
+  "00-0029191": {
+   "name": "DeShawn Shead",
+   "position": "FS",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "Pro Day, 2012 (Portland State)",
+   "source_url": "https://en.wikipedia.org/wiki/DeShawn_Shead",
+   "quote": "40-yard dash 4.53 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2012.",
+   "found_on_page": true
+  },
+  "00-0029295": {
+   "name": "Jeremy Lane",
+   "position": "CB",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Pro Day, 2012 (Northwestern State)",
+   "source_url": "https://en.wikipedia.org/wiki/Jeremy_Lane",
+   "quote": "40-yard dash 4.48 s | All values from Pro Day",
+   "note": "Footnote does not name the school.",
+   "found_on_page": true
+  },
+  "00-0029372": {
+   "name": "Omar Brown",
+   "position": "FS",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": 4.73,
+   "kind": "pro_day",
+   "event": "Marshall Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Omar_Brown_(defensive_back,_born_1988)",
+   "quote": "40-yard dash: 4.73 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college. Infobox confirms Marshall, born June 6, 1988.",
+   "found_on_page": true
+  },
+  "00-0029388": {
+   "name": "Deonte Thompson",
+   "position": "WR",
+   "teams": [
+    "ravens_2012"
+   ],
+   "forty": 4.31,
+   "kind": "pro_day",
+   "event": "Central Florida Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Deonte_Thompson",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.31 s\"; table note: \"All values from Central Florida Pro Day\"",
+   "note": "Florida player; the Wikipedia caption says the values are from Central Florida's (UCF) pro day.",
+   "found_on_page": true
+  },
+  "00-0029410": {
+   "name": "Tavon Wilson",
+   "position": "SS",
+   "teams": [
+    "patriots_2014"
+   ],
+   "forty": 4.52,
+   "kind": "pro_day",
+   "event": "Illinois Pro Day, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Tavon_Wilson",
+   "quote": "40-yard dash 4.52 s | All values from Illinois' Pro Day",
+   "note": "Table also lists 10-yard split 1.60 s and 20-yard split 2.56 s.",
+   "found_on_page": true
+  },
+  "00-0029479": {
+   "name": "Emmanuel Lamur",
+   "position": "OLB",
+   "teams": [
+    "vikings_2017"
+   ],
+   "forty": 4.63,
+   "kind": "pro_day",
+   "event": "Pro Day (Kansas State), 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Emmanuel_Lamur",
+   "quote": "40-yard dash: \"4.63 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class. Undrafted in 2012.",
+   "found_on_page": true
+  },
+  "00-0029570": {
+   "name": "Nate Ebner",
+   "position": "SS",
+   "teams": [
+    "patriots_2014",
+    "patriots_2016"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "Ohio State Pro Day, March 9, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Nate_Ebner",
+   "quote": "Pre-draft measurables: 40-yard dash 4.53 s [...] All values from Ohio State's Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=80137&DraftYear=2012), which shows 'Dates: 03/09/12' and '40 Yrd Dash: 4.53' under Pro Day results.  The same Wikipedia article's prose also says 'He ran the 40-yard-dash in 4.48' without naming the event; the table value is used.",
+   "found_on_page": true
+  },
+  "00-0029664": {
+   "name": "Josh Gordon",
+   "position": "WR",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.52,
+   "kind": "pro_day",
+   "event": "Pro day workout before the 2012 supplemental draft",
+   "source_url": "https://en.wikipedia.org/wiki/Josh_Gordon",
+   "quote": "40-yard dash: 4.52 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Table cites DraftScout.com and MockDraftable; place and date of the pro day are not stated. The article's '40: 4.40' is a high school recruiting figure and was not used.",
+   "found_on_page": true
+  },
+  "00-0029747": {
+   "name": "Chris Banjo",
+   "position": "SS",
+   "teams": [
+    "packers_2014",
+    "packers_2015",
+    "saints_2017"
+   ],
+   "forty": 4.5,
+   "kind": "pro_day",
+   "event": "SMU Pro Day, April 14, 2012",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Banjo",
+   "quote": "Pre-draft measurables: 40-yard dash 4.50 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=81838&DraftYear=2012), which shows 'Dates: 04/14/12' and '40 Yrd Dash: 4.50' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college. DraftScout lists him in the 2012 draft class (pro day April 2012) even though his NFL rookie season was 2013.",
+   "found_on_page": true
+  },
+  "00-0029792": {
+   "name": "Paul Worrilow",
+   "position": "OLB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Delaware Pro Day, March 14, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/Paul_Worrilow",
+   "quote": "Pre-draft measurables: 40-yard dash 4.59 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=97650&DraftYear=2013), which shows 'Dates: 03/14/13' and '40 Yrd Dash: 4.59' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0029848": {
+   "name": "Nick Williams",
+   "position": "WR",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Pro Day, 2013 (college: Connecticut)",
+   "source_url": "https://en.wikipedia.org/wiki/Nick_Williams_(wide_receiver)",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.59 s\"; table note: \"All values from Pro Day\"",
+   "note": "Article confirms UConn, born November 23, 1990. Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0029942": {
+   "name": "Marcus Burley",
+   "position": "CB",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.4,
+   "kind": "other",
+   "event": "Pre-draft workout, event not labeled (Delaware, 2013 draft class)",
+   "source_url": "https://www.playerprofiler.com/nfl/marcus-burley/",
+   "quote": "40-Yard Dash 4.40",
+   "note": "LOW CONFIDENCE: stats-site value (PlayerProfiler 'Workout Metrics', event not labeled). Search snippets attribute a faster pro day time to Seattle Times (\"ran a 4.34 time in the 40 at his Pro Day\") and ESPN's 2013 draft profile (4.35), but both pages blocked or failed the fetch, so those times are not used. Wikipedia has no measurables table.",
+   "found_on_page": true
+  },
+  "00-0029955": {
+   "name": "LaRoy Reynolds",
+   "position": "OLB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Pro Day, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/LaRoy_Reynolds",
+   "quote": "40-yard dash 4.59 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Virginia). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0029958": {
+   "name": "Steven Terrell",
+   "position": "FS",
+   "teams": [
+    "seahawks_2014"
+   ],
+   "forty": 4.39,
+   "kind": "other",
+   "event": "Pre-draft workout, 2013 (venue not stated; undrafted and not at the NFL Combine, so likely Texas A&M Pro Day)",
+   "source_url": "https://www.playerprofiler.com/nfl/steven-terrell/",
+   "quote": "40-Yard Dash 4.39 96th",
+   "note": "PlayerProfiler page (Texas A&M, Safety) does not say where the time was run. PlayerProfiler's methodology article (Apr 25, 2021) says pro day 40 times are adjusted by +0.05 seconds on the site, so if this is a pro day time the raw clocking may have been 0.05 faster. Wikipedia has no measurables table; the Texans.com A&M pro day article is from 2017 and the Jaguars 2013 UDFA bios give no time.",
+   "found_on_page": true
+  },
+  "00-0030010": {
+   "name": "Brandon Copeland",
+   "position": "OLB",
+   "teams": [
+    "lions_2015"
+   ],
+   "forty": 4.72,
+   "kind": "pro_day",
+   "event": "Pro Day, 2013 (college: Penn)",
+   "source_url": "https://en.wikipedia.org/wiki/Brandon_Copeland_(linebacker)",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.72 s\"; table note: \"All values from Pro Day\"",
+   "note": "Article is Brandon Copeland (linebacker), Penn, born July 2, 1991. Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0030035": {
+   "name": "Adam Thielen",
+   "position": "WR",
+   "teams": [
+    "vikings_2017",
+    "vikings_2022"
+   ],
+   "forty": 4.45,
+   "kind": "other",
+   "event": "NFL Super Regional Combine, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/Adam_Thielen",
+   "quote": "completing the 40-yard dash in 4.45 seconds and impressing in the three-cone drill with a time of 6.77 seconds ... All values from Super Regional Combine",
+   "note": "Regional combine for non-invited prospects, not the NFL Scouting Combine.",
+   "found_on_page": true
+  },
+  "00-0030131": {
+   "name": "Andy Mulumba",
+   "position": "OLB",
+   "teams": [
+    "packers_2015"
+   ],
+   "forty": 4.8,
+   "kind": "pro_day",
+   "event": "Pro Day, March 13, 2013",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=114433&DraftYear=2013",
+   "quote": "Pro Day Results ... Dates: 03/13/13 ... 40 Yrd Dash: 4.80 ... 40 Time Range: 4.80-4.84",
+   "note": "DraftScout profile 'Andy Mulumba, DE, Eastern Michigan', 2013; Combine section blank; pro day site not named. His pre-draft trainer's marketing page (https://impact-sportsperformance.com/combine/) claims 'I ran a 4.78 at my Pro Day'; the independent DraftScout time is used. Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0030196": {
+   "name": "Jeff Heath",
+   "position": "FS",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "GLIAC Pro Day, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/Jeff_Heath_(American_football)",
+   "quote": "40-yard dash 4.48 s | All values from GLIAC's Pro Day",
+   "note": "Regional GLIAC (Great Lakes Intercollegiate Athletic Conference) pro day. Undrafted 2013.",
+   "found_on_page": true
+  },
+  "00-0030198": {
+   "name": "Cameron Lawrence",
+   "position": "OLB",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia. Searches for a 2013 Mississippi State Pro Day time found nothing. A search snippet mentioned a 4.66 at a Scout.com combine before his high school junior season, but that is a high school time and the hailstate.com roster bio did not render, so it could not be quoted.",
+   "checked_url": "https://en.wikipedia.org/wiki/Cameron_Lawrence_(American_football)"
+  },
+  "00-0030208": {
+   "name": "Kenneth Boatright",
+   "position": "DE",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": 4.77,
+   "kind": "pro_day",
+   "event": "Pro Day, 2013 (college: Southern Illinois)",
+   "source_url": "https://en.wikipedia.org/wiki/Kenneth_Boatright",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.77 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0030383": {
+   "name": "Duron Harmon",
+   "position": "SS",
+   "teams": [
+    "patriots_2014",
+    "patriots_2016",
+    "patriots_2017"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Rutgers Pro Day, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/Duron_Harmon",
+   "quote": "40-yard dash 4.51 s | All values from Rutger's Pro Day",
+   "note": "Footnote spelled 'Rutger's' on the page. Article also says 'Harmon performed all of the required combine and positional drills for scouts and team representatives from all 32 NFL teams.'",
+   "found_on_page": true
+  },
+  "00-0030387": {
+   "name": "Steven Means",
+   "position": "DE",
+   "teams": [
+    "eagles_2017"
+   ],
+   "forty": 4.73,
+   "kind": "other",
+   "event": "Pre-draft workout, 2013 (venue not stated; AP says he had no combine invite and worked out at Buffalo's pro day)",
+   "source_url": "https://www.playerprofiler.com/nfl/steven-means/",
+   "quote": "40-Yard Dash 4.73 62nd",
+   "note": "PlayerProfiler page (Buffalo, EDGE) does not say where the time was run. PlayerProfiler's methodology article (Apr 25, 2021) says pro day 40 times are adjusted by +0.05 seconds on the site, so if this is a pro day time the raw clocking may have been 0.05 faster. AP story on buccaneers.com (May 21, 2013) confirms 'Means impressed the Bucs during Buffalo's pro day in Orchard Park, N.Y.' but gives no time; a search snippet mentioning a 4.6 could not be traced to a fetched page. Wikipedia has no measurables table.",
+   "found_on_page": true
+  },
+  "00-0030513": {
+   "name": "Latavius Murray",
+   "position": "HB",
+   "teams": [
+    "vikings_2017"
+   ],
+   "forty": 4.38,
+   "kind": "pro_day",
+   "event": "Central Florida (UCF) Pro Day, March 20, 2013",
+   "source_url": "https://en.wikipedia.org/wiki/Latavius_Murray",
+   "quote": "Pre-draft measurables: 40-yard dash 4.38 s [...] All values from Central Florida Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=83828&DraftYear=2013), which shows 'Dates: 03/20/13' and '40 Yrd Dash: 4.38' under Pro Day results.",
+   "found_on_page": true
+  },
+  "00-0030699": {
+   "name": "Deji Olatoye",
+   "position": "CB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.46,
+   "kind": "pro_day",
+   "event": "Oklahoma pro day, 2014 (per Wikipedia footnote)",
+   "source_url": "https://en.wikipedia.org/wiki/Deji_Olatoye",
+   "quote": "40-yard dash: 4.46 s [table footnote: All values from Oklahoma pro day.]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Odd location: he played at North Carolina A&T, yet the footnote says Oklahoma pro day and its cited reference is titled 'Deji Olatoye, DS #88 CB, Nebraska' (NFLDraftScout.com). Value and 'pro day' are as stated; the venue label may be wrong.",
+   "found_on_page": true
+  },
+  "00-0030743": {
+   "name": "Bernard Reedy",
+   "position": "WR",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 4.52,
+   "kind": "pro_day",
+   "event": "Pro Day, March 11, 2014",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=111602&DraftYear=2014",
+   "quote": "Pro Day Results ... Dates: 03/11/14 ... 40 Yrd Dash: 4.52 ... 40 Time Range: 4.52-4.54",
+   "note": "DraftScout profile 'Bernard Reedy, WR, Toledo', 2014; Combine section blank; pro day site not named. Corroborated by AtlantaFalcons.com (June 18, 2014): 'he still never got an invite to the NFL Combine ... showing off that 4.52 40-yard speed'. Wikipedia has no measurables.",
+   "found_on_page": true
+  },
+  "00-0030752": {
+   "name": "Jay Elliott",
+   "position": "OLB",
+   "teams": [
+    "packers_2014",
+    "packers_2015"
+   ],
+   "forty": 4.8,
+   "kind": "other",
+   "event": "Pre-draft workout, 2014 (venue not stated; undrafted, likely Toledo Pro Day)",
+   "source_url": "https://www.playerprofiler.com/nfl/jayrone-elliott/",
+   "quote": "40-Yard Dash 4.80 21st",
+   "note": "Player is Jayrone Elliott (Toledo). PlayerProfiler does not say where the time was run. PlayerProfiler's methodology article (Apr 25, 2021) says pro day 40 times are adjusted by +0.05 seconds on the site. CONFLICT: search snippets from a Hustle Belt article (May 10, 2014) said he ran 4.67 at his Pro Day, but that page returned HTTP 403 so it could not be quoted. Wikipedia has no measurables table. Low confidence.",
+   "found_on_page": true
+  },
+  "00-0030761": {
+   "name": "Joe Thomas",
+   "position": "OLB",
+   "teams": [
+    "packers_2015"
+   ],
+   "forty": 4.7,
+   "kind": "pro_day",
+   "event": "South Carolina State Pro Day, April 2, 2014",
+   "source_url": "https://en.wikipedia.org/wiki/Joe_Thomas_(linebacker)",
+   "quote": "Pre-draft measurables: 40-yard dash 4.70 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=96941&DraftYear=2014), which shows 'Dates: 04/02/14' and '40 Yrd Dash: 4.70' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0030892": {
+   "name": "Bruce Gaston",
+   "position": "DE",
+   "teams": [
+    "packers_2014"
+   ],
+   "forty": 4.95,
+   "kind": "pro_day",
+   "event": "Purdue Pro Day, March 2014",
+   "source_url": "https://www.dnainfo.com/chicago/20140513/ashburn/st-rita-purdue-alum-bruce-gaston-heads-arizona-as-free-agent/",
+   "quote": "He also ran a 4.95-second 40-yard dash at his Pro Day in March.",
+   "note": "Wikipedia (Bruce_Gaston_(American_football)) has no measurables table. DNAinfo Chicago article dated May 13, 2014 (per URL), so the Pro Day is March 2014. Undrafted 2014.",
+   "found_on_page": true
+  },
+  "00-0031218": {
+   "name": "Malcolm Butler",
+   "position": "CB",
+   "teams": [
+    "patriots_2014",
+    "patriots_2016",
+    "patriots_2017"
+   ],
+   "forty": 4.62,
+   "kind": "pro_day",
+   "event": "Pro Day, 2014 (caption says \"Alabama's Pro Day\")",
+   "source_url": "https://en.wikipedia.org/wiki/Malcolm_Butler",
+   "quote": "40-yard dash: \"4.62 s\"; caption: \"All values are from Alabama's Pro Day\"",
+   "note": "He played at West Alabama; the Wikipedia caption reads \"Alabama's Pro Day\", which may mean West Alabama's. Not verified further. Undrafted in 2014.",
+   "found_on_page": true
+  },
+  "00-0031228": {
+   "name": "Taylor Gabriel",
+   "position": "WR",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.4,
+   "kind": "pro_day",
+   "event": "Pro Day, 2014 (Abilene Christian)",
+   "source_url": "https://en.wikipedia.org/wiki/Taylor_Gabriel",
+   "quote": "40-yard dash 4.40 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2014.",
+   "found_on_page": true
+  },
+  "00-0031253": {
+   "name": "K'Waun Williams",
+   "position": "CB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "Pittsburgh Pro Day, 2014",
+   "source_url": "https://en.wikipedia.org/wiki/K%27Waun_Williams",
+   "quote": "40-yard dash 4.53 s | All values from Pittsburgh's Pro Day",
+   "note": "Undrafted 2014.",
+   "found_on_page": true
+  },
+  "00-0031276": {
+   "name": "Tyler Patmon",
+   "position": "CB",
+   "teams": [
+    "cowboys_2014"
+   ],
+   "forty": 4.57,
+   "kind": "other",
+   "event": "PlayerProfiler workout metrics (unlabeled; most likely Oklahoma State Pro Day, 2014)",
+   "source_url": "https://www.playerprofiler.com/nfl/tyler-patmon/",
+   "quote": "40-Yard Dash 4.57",
+   "note": "Wikipedia has no measurables table. PlayerProfiler value has no Combine/Pro Day label. Undrafted 2014.",
+   "found_on_page": true
+  },
+  "00-0031297": {
+   "name": "Dee Ford",
+   "position": "DE",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Auburn Pro Day, 2014",
+   "source_url": "https://en.wikipedia.org/wiki/Dee_Ford",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.59 s\"; table note: \"All values from Auburn's Pro Day\"",
+   "note": "Wikipedia article confirms Auburn, born March 19, 1991.",
+   "found_on_page": true
+  },
+  "00-0031357": {
+   "name": "C.J. Goodwin",
+   "position": "CB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.41,
+   "kind": "pro_day",
+   "event": "Pro Day, 2014",
+   "source_url": "https://en.wikipedia.org/wiki/C._J._Goodwin",
+   "quote": "40-yard dash 4.41 s ... All values from Pro Day",
+   "note": "Check: the table's cited DraftScout profile lists 'C.J. Goodwin, WR, Rutgers' with Pro Day 'Dates: 03/20/14 04/12/14@DetroitSRC' and 40 Yrd Dash 4.41, so the 4.41 may come from the Detroit Super Regional Combine rather than a pro day, and the Rutgers label does not match his colleges (California (PA), Fairmont State).",
+   "found_on_page": true
+  },
+  "00-0031500": {
+   "name": "Efe Obada",
+   "position": "DE",
+   "teams": [
+    "bills_2021"
+   ],
+   "forty": 4.68,
+   "kind": "other",
+   "event": "Not stated on the source page",
+   "source_url": "https://www.playerprofiler.com/nfl/efe-obada/bio/",
+   "quote": "4.68 ... 40-Yard Dash",
+   "note": "WEAK SOURCE: PlayerProfiler lists 4.68 with no event, date or attribution. He had no college career; Wikipedia has no measurables table and no 40 in the text (it says he was signed by the Panthers on 25 May 2017 through the NFL's International Player Pathway Program). No Combine or school pro day exists for him. Use with caution or drop.",
+   "found_on_page": true
+  },
+  "00-0031657": {
+   "name": "Isaiah Johnson",
+   "position": "SS",
+   "teams": [
+    "lions_2015"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Pro Day, 2015 (Georgia Tech)",
+   "source_url": "https://en.wikipedia.org/wiki/Isaiah_Johnson_(safety,_born_May_1992)",
+   "quote": "40-yard dash 4.59 s | All values from Pro Day",
+   "note": "Identity confirmed: Georgia Tech safety born May 16, 1992; career history lists Detroit Lions (2015). Footnote does not name the school.",
+   "found_on_page": true
+  },
+  "00-0031682": {
+   "name": "Terron Ward",
+   "position": "HB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.56,
+   "kind": "pro_day",
+   "event": "Pro Day (Oregon State), 2015",
+   "source_url": "https://en.wikipedia.org/wiki/Terron_Ward",
+   "quote": "40-yard dash: \"4.56 s\"; caption: \"All values are from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class. Undrafted in 2015.",
+   "found_on_page": true
+  },
+  "00-0031687": {
+   "name": "Raheem Mostert",
+   "position": "HB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.38,
+   "kind": "pro_day",
+   "event": "Pro Day (Purdue), 2015",
+   "source_url": "https://en.wikipedia.org/wiki/Raheem_Mostert",
+   "quote": "40-yard dash: \"4.38 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class. Undrafted in 2015.",
+   "found_on_page": true
+  },
+  "00-0031787": {
+   "name": "Jake Kumerow",
+   "position": "WR",
+   "teams": [
+    "bills_2021",
+    "bills_2022"
+   ],
+   "forty": 4.54,
+   "kind": "pro_day",
+   "event": "Pro Day at Wisconsin, March 11, 2015",
+   "source_url": "https://en.wikipedia.org/wiki/Jake_Kumerow",
+   "quote": "Pre-draft measurables: 40-yard dash 4.54 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=112573&DraftYear=2015), which shows 'Dates: 03/11/15@Wisconsin' and '40 Yrd Dash: 4.54' under Pro Day results. Wikipedia's note does not name the school; DraftScout gives the location.",
+   "found_on_page": true
+  },
+  "00-0031847": {
+   "name": "Josh Keyes",
+   "position": "OLB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.72,
+   "kind": "other",
+   "event": "Pre-draft workout, 2015 (venue not stated; he was not at the NFL Combine, so likely Boston College Pro Day)",
+   "source_url": "https://www.playerprofiler.com/nfl/josh-keyes/",
+   "quote": "40-Yard Dash 4.72 41st",
+   "note": "PlayerProfiler workout metrics do not say where the time was run. PlayerProfiler's methodology article (Apr 25, 2021) says pro day 40 times are adjusted by +0.05 seconds on the site, so if this is a pro day time the raw clocking may have been 0.05 faster. Wikipedia (Josh_Keyes_(American_football)) has no measurables table; On3 BC pro day article returned 403.",
+   "found_on_page": true
+  },
+  "00-0031856": {
+   "name": "Brandon King",
+   "position": "SS",
+   "teams": [
+    "patriots_2016",
+    "patriots_2017"
+   ],
+   "forty": 4.49,
+   "kind": "pro_day",
+   "event": "Auburn Pro Day, March 3, 2015",
+   "source_url": "https://en.wikipedia.org/wiki/Brandon_King_(linebacker)",
+   "quote": "40-yard dash: \"4.49 s\"; caption: \"All values from Auburn's Pro Day\"; text: \"King was not ranked as a top safety prospect and did not receive an invitation to the NFL Combine.\" and \"On March 3, 2015, King participated at Auburn's pro day\"",
+   "note": "Wikipedia article is titled Brandon King (linebacker). Undrafted in 2015.",
+   "found_on_page": true
+  },
+  "00-0032048": {
+   "name": "Mack Brown",
+   "position": "HB",
+   "teams": [
+    "vikings_2017"
+   ],
+   "forty": 4.66,
+   "kind": "other",
+   "event": "Pre-draft workout, event not labeled (Florida, 2015 draft class)",
+   "source_url": "https://www.playerprofiler.com/nfl/mack-brown/",
+   "quote": "40-Yard Dash 4.66",
+   "note": "LOW CONFIDENCE: stats-site value (PlayerProfiler 'Workout Metrics'), which does not say whether it was a pro day or other workout. Wikipedia (Mack_Brown_(running_back)) has no measurables table; Vikings.com profile (Oct 30, 2017) has no 40 time.",
+   "found_on_page": true
+  },
+  "00-0032452": {
+   "name": "Trevor Bates",
+   "position": "OLB",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 4.72,
+   "kind": "pro_day",
+   "event": "Maine Pro Day, March 2016",
+   "source_url": "https://www.pressherald.com/2016/03/22/westbrooks-bates-puts-on-a-show-for-nfl-scouts/",
+   "quote": "Bates was disappointed to be clocked in 4.72 in the 40-yard dash, saying he was running in the mid-4.6s in Tampa, but otherwise was happy with his performance.",
+   "note": "Wikipedia has no measurables table. Portland Press Herald, March 22, 2016. A search summary attributed 4.78 at the Maine Pro Day to a Pats Pulpit article (not fetched).",
+   "found_on_page": true
+  },
+  "00-0032521": {
+   "name": "Mike Hilton",
+   "position": "CB",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.55,
+   "kind": "pro_day",
+   "event": "Ole Miss Pro Day, 2016",
+   "source_url": "https://en.wikipedia.org/wiki/Mike_Hilton",
+   "quote": "40-yard dash 4.55 s ... All values from Ole Miss' Pro Day",
+   "note": "Table cites DraftScout.com; page text puts the Ole Miss pro day on March 28, 2016.",
+   "found_on_page": true
+  },
+  "00-0032592": {
+   "name": "Sharrod Neasman",
+   "position": "FS",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": null,
+   "note": "No measurables table or 40 time on Wikipedia. One search: the result summary attributed a 4.55 pro day 40 to a Houston Chronicle article (chron.com/sports/texans/article/Florida-Atlantic-safety-Sharrod-Neasman-draws-7243373.php), but that page would not load for the fetcher (also tried houstonchronicle.com and two National Football Post articles, no body text), so 4.55 is unverified and not used. PlayerProfiler (https://www.playerprofiler.com/nfl/sharrod-neasman/) shows '4.73' with no event label and it conflicts with the 4.55 lead, so not used either.",
+   "checked_url": "https://en.wikipedia.org/wiki/Sharrod_Neasman"
+  },
+  "00-0032596": {
+   "name": "Brian Poole",
+   "position": "CB",
+   "teams": [
+    "falcons_2016"
+   ],
+   "forty": 4.5,
+   "kind": "pro_day",
+   "event": "Florida Pro Day, 2016",
+   "source_url": "https://en.wikipedia.org/wiki/Brian_Poole_(American_football)",
+   "quote": "40-yard dash 4.50 s ... All values from Florida Gators Pro Day",
+   "note": "Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0032641": {
+   "name": "Donte Deayon",
+   "position": "CB",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "Boise State Pro Day, March 31, 2016",
+   "source_url": "https://en.wikipedia.org/wiki/Donte_Deayon",
+   "quote": "Pre-draft measurables: 40-yard dash 4.57 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=122688&DraftYear=2016), which shows 'Dates: 03/31/16' and '40 Yrd Dash: 4.57' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0032674": {
+   "name": "Nicholas Grigsby",
+   "position": "OLB",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Pro Day, 2016 (college: Pittsburgh)",
+   "source_url": "https://en.wikipedia.org/wiki/Nicholas_Grigsby",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.51 s\"; table note: \"All values are from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0032730": {
+   "name": "Eric Lee",
+   "position": "DE",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 4.56,
+   "kind": "pro_day",
+   "event": "South Florida Pro Day, March 2016",
+   "source_url": "https://gousfbulls.com/news/2016/3/21/210821968.aspx",
+   "quote": "Lee wowed scouts with a 40-yard dash time of 4.56 seconds along with 24 bench press reps of 225 pounds.",
+   "note": "Official USF release 'Former Bulls Impress Scouts at USF Pro Day' (fetched by m2 2026-09-23); PlayerProfiler lists 4.77 without an event, which is not used.",
+   "found_on_page": true
+  },
+  "00-0032881": {
+   "name": "Tommylee Lewis",
+   "position": "WR",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Pro Day, 2016 (Northern Illinois)",
+   "source_url": "https://en.wikipedia.org/wiki/Tommylee_Lewis",
+   "quote": "40-yard dash 4.48 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2016.",
+   "found_on_page": true
+  },
+  "00-0032980": {
+   "name": "Marcus Johnson",
+   "position": "WR",
+   "teams": [
+    "eagles_2017"
+   ],
+   "forty": 4.39,
+   "kind": "pro_day",
+   "event": "Texas Pro Day, March 23, 2016",
+   "source_url": "https://en.wikipedia.org/wiki/Marcus_Johnson_(wide_receiver)",
+   "quote": "40-yard dash 4.39 s | All values from Texas Pro Day on March 23, 2016.",
+   "note": "Undrafted 2016.",
+   "found_on_page": true
+  },
+  "00-0033040": {
+   "name": "Tyreek Hill",
+   "position": "WR",
+   "teams": [
+    "chiefs_2019",
+    "chiefs_2021"
+   ],
+   "forty": 4.29,
+   "kind": "pro_day",
+   "event": "West Alabama Pro Day, 2016",
+   "source_url": "https://en.wikipedia.org/wiki/Tyreek_Hill",
+   "quote": "40-yard dash: \"4.29 s\"; caption: \"All values from West Alabama Pro Day.\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0033114": {
+   "name": "Mike Thomas",
+   "position": "WR",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.54,
+   "kind": "pro_day",
+   "event": "Pro Day, 2016 (Southern Miss)",
+   "source_url": "https://en.wikipedia.org/wiki/Mike_Thomas_(wide_receiver,_born_1994)",
+   "quote": "40-yard dash 4.54 s | All values from Pro Day",
+   "note": "Identity confirmed: Southern Miss WR born August 16, 1994 (Rams, Bengals). Footnote does not name the school.",
+   "found_on_page": true
+  },
+  "00-0033308": {
+   "name": "Matt Breida",
+   "position": "HB",
+   "teams": [
+    "49ers_2019",
+    "bills_2021"
+   ],
+   "forty": 4.38,
+   "kind": "pro_day",
+   "event": "Georgia Southern Pro Day, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Matt_Breida",
+   "quote": "However, he performed well at his pro day, running a 4.38 40-yard dash, recording a 42-inch vertical jump and an 11-Foot-2 broad jump, and completing 23 reps on the bench press test. [table: 40-yard dash 4.38 s; footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Table footnote says only 'Pro Day'; school (Georgia Southern) taken from his college.",
+   "found_on_page": true
+  },
+  "00-0033381": {
+   "name": "Adam Butler",
+   "position": "DE",
+   "teams": [
+    "patriots_2017"
+   ],
+   "forty": 5.23,
+   "kind": "pro_day",
+   "event": "Vanderbilt Pro Day, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Adam_Butler_(American_football)",
+   "quote": "40-yard dash: 5.23 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0033382": {
+   "name": "Austin Carr",
+   "position": "WR",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.62,
+   "kind": "pro_day",
+   "event": "Northwestern Pro Day, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Austin_Carr_(American_football)",
+   "quote": "40-yard dash: \"4.62 s\"; caption: \"All values from Northwestern's Pro Day.\"",
+   "note": "Undrafted in 2017.",
+   "found_on_page": true
+  },
+  "00-0033481": {
+   "name": "Marcus Kemp",
+   "position": "WR",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.54,
+   "kind": "pro_day",
+   "event": "Hawaii Pro Day, March 20, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Marcus_Kemp",
+   "quote": "Pre-draft measurables: 40-yard dash 4.54 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=130198&DraftYear=2017), which shows 'Dates: 03/20/17' and '40 Yrd Dash: 4.54' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0033770": {
+   "name": "Justin Hardee",
+   "position": "CB",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.36,
+   "kind": "pro_day",
+   "event": "Illinois Pro Day, March 16, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Justin_Hardee",
+   "quote": "Pre-draft measurables: 40-yard dash 4.36 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=123329&DraftYear=2017), which shows 'Dates: 03/16/17' and '40 Yrd Dash: 4.36' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0033838": {
+   "name": "Trey Edmunds",
+   "position": "HB",
+   "teams": [
+    "saints_2017"
+   ],
+   "forty": 4.48,
+   "kind": "pro_day",
+   "event": "Pro Day, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Trey_Edmunds",
+   "quote": "40-yard dash 4.48 s ... All values from Pro Day",
+   "note": "Footnote does not name the school; it cites a DraftScout profile titled 'Trey Edmunds, Maryland, RB, 2017'.",
+   "found_on_page": true
+  },
+  "00-0033897": {
+   "name": "Joe Mixon",
+   "position": "HB",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.5,
+   "kind": "pro_day",
+   "event": "Oklahoma Pro Day, March 8, 2017",
+   "source_url": "https://www.nfl.com/news/joe-mixon-runs-4-50-40-yard-dash-at-oklahoma-pro-day-0ap3000000791366",
+   "quote": "Joe Mixon runs 4.50 40-yard dash at Oklahoma pro day ... Mixon ran an official (time will be sent to NFL teams) 4.50-second 40-yard dash, per NFL Media senior analyst Gil Brandt.",
+   "note": "Not at the 2017 NFL Combine. Wikipedia's measurables table (sourced to DraftScout) shows 4.45 s with note \"All values from Oklahoma's Pro Day\"; the NFL.com official time (4.50) is used here.",
+   "found_on_page": true
+  },
+  "00-0033973": {
+   "name": "Elijah Lee",
+   "position": "OLB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.69,
+   "kind": "pro_day",
+   "event": "Kansas State Pro Day, 2017",
+   "source_url": "https://en.wikipedia.org/wiki/Elijah_Lee",
+   "quote": "At Kansas State's pro day, Lee worked out with Minnesota Vikings linebackers coach Adam Zimmer. ... Lee ran the 40-yard dash in 4.69 seconds",
+   "note": "Did not attend the 2017 NFL Combine (missed the deadline). The same article's measurables table shows 4.72 s with note \"All values are from Pro Day\"; the body text value, which names the event, is used.",
+   "found_on_page": true
+  },
+  "00-0034091": {
+   "name": "George Odum",
+   "position": "FS",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": 4.45,
+   "kind": "pro_day",
+   "event": "Central Arkansas Pro Day, March 27, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/George_Odum",
+   "quote": "Pre-draft measurables: 40-yard dash 4.45 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=127848&DraftYear=2018), which shows 'Dates: 03/27/18' and '40 Yrd Dash: 4.45' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0034096": {
+   "name": "Emmanuel Moseley",
+   "position": "CB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.42,
+   "kind": "pro_day",
+   "event": "Tennessee Pro Day, March 19, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Emmanuel_Moseley",
+   "quote": "Pre-draft measurables: 40-yard dash 4.42 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=131992&DraftYear=2018), which shows 'Dates: 03/19/18' and '40 Yrd Dash: 4.42' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0034115": {
+   "name": "Jeff Wilson",
+   "position": "HB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "North Texas Pro Day, 2018",
+   "source_url": "https://ninernoise.com/2018/07/18/49ers-2018-series-running-back-jeff-wilson/",
+   "quote": "Wilson ran a 4.57 40-yard time at his pro day, which is a little slower than most coaches would ideally like.",
+   "note": "Undrafted 2018 (North Texas). The same 4.57 appears in Wikipedia's measurables table (Jeff_Wilson_(American_football), note \"All values from NFL Combine/Pro Day\") and in NBC Sports Bay Area (Jan 2, 2021) as his 2018 draft workout time. The article says \"his pro day\" without naming the site; he played at North Texas.",
+   "found_on_page": true
+  },
+  "00-0034203": {
+   "name": "Darious Williams",
+   "position": "CB",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "UAB Pro Day, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Darious_Williams",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.44 s\"; table note: \"All values from UAB's Pro Day\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0034263": {
+   "name": "Tarvarius Moore",
+   "position": "FS",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.32,
+   "kind": "pro_day",
+   "event": "Southern Miss Pro Day, March 29, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Tarvarius_Moore",
+   "quote": "40-yard dash: \"4.32 s\"; caption: \"All values from Southern Miss' Pro Day\"; text: \"On March 29, 2018, he attended Southern Mississippi's pro day and performed all of the combine and positional drills.\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0034386": {
+   "name": "Justin Watson",
+   "position": "WR",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Penn Pro Day, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Justin_Watson_(wide_receiver)",
+   "quote": "40-yard dash 4.44 s ... All values from Pro Day",
+   "note": "Footnote cites The Daily Pennsylvanian, 'Justin Watson shows out at Penn football's Pro Day in advance of NFL Draft' (March 19, 2018), plus DraftScout and ESPN.",
+   "found_on_page": true
+  },
+  "00-0034395": {
+   "name": "Daurice Fountain",
+   "position": "WR",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.57,
+   "kind": "pro_day",
+   "event": "Pro Day, 2018 (college: Northern Iowa)",
+   "source_url": "https://en.wikipedia.org/wiki/Daurice_Fountain",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.57 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0034431": {
+   "name": "Zaire Franklin",
+   "position": "OLB",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.62,
+   "kind": "pro_day",
+   "event": "Syracuse Pro Day (caption says 2017; he was a 2018 draftee)",
+   "source_url": "https://en.wikipedia.org/wiki/Zaire_Franklin",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.62 s\"; table note: \"All values from 2017 Syracuse Pro Day\"",
+   "note": "Caption year reads 2017 although he entered the 2018 draft; value used as quoted.",
+   "found_on_page": true
+  },
+  "00-0034446": {
+   "name": "Jalen Davis",
+   "position": "CB",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Pro Day, 2018 (college: Utah State)",
+   "source_url": "https://en.wikipedia.org/wiki/Jalen_Davis",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.44 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0034573": {
+   "name": "Charvarius Ward",
+   "position": "CB",
+   "teams": [
+    "49ers_2023",
+    "chiefs_2019",
+    "chiefs_2021"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Middle Tennessee State Pro Day, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Charvarius_Ward",
+   "quote": "40-yard dash 4.44 s ... All values from Middle Tennessee State Pro Day",
+   "note": "Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0034612": {
+   "name": "Demone Harris",
+   "position": "DE",
+   "teams": [
+    "chiefs_2019"
+   ],
+   "forty": 4.89,
+   "kind": "pro_day",
+   "event": "Pro Day (Buffalo), 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Demone_Harris",
+   "quote": "40-yard dash: \"4.89 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class. Undrafted in 2018.",
+   "found_on_page": true
+  },
+  "00-0034646": {
+   "name": "Brandon Powell",
+   "position": "WR",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Florida Pro Day, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Brandon_Powell_(American_football)",
+   "quote": "40-yard dash: 4.59 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0034680": {
+   "name": "Armani Watts",
+   "position": "SS",
+   "teams": [
+    "chiefs_2019",
+    "chiefs_2021"
+   ],
+   "forty": 4.64,
+   "kind": "pro_day",
+   "event": "Texas A&M Pro Day, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Armani_Watts",
+   "quote": "40-yard dash 4.64 s | All values from NFL Combine/Pro Day",
+   "note": "Wikipedia footnote is the mixed 'NFL Combine/Pro Day'. 247Sports (https://247sports.com/college/texas-am/Article/Texas-AMs-Armani-Watts-elects-not-to-run-at-the-NFL-Combine-115864626/): 'Watts elected not to run' the 40 at the Combine and 'will instead run at the Aggies' Pro Day on March 27', so the 4.64 is the Pro Day time. Conflict: DallasCowboys.com scout notebook says 'I heard that he ran in the low 4.7s after not running at the Combine' (hearsay).",
+   "found_on_page": true
+  },
+  "00-0034730": {
+   "name": "Marcell Harris",
+   "position": "SS",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": null,
+   "note": "Wikipedia table ('All values from NFL Combine') lists only height, weight, arms, hands and 16 bench reps, no 40. One search and PlayerProfiler showed no 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Marcell_Harris"
+  },
+  "00-0034834": {
+   "name": "Sam Hubbard",
+   "position": "DE",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.95,
+   "kind": "pro_day",
+   "event": "Ohio State Pro Day, March 22, 2018",
+   "source_url": "https://en.wikipedia.org/wiki/Sam_Hubbard",
+   "quote": "40-yard dash: \"4.95 s\"; caption: \"All values from NFL Combine/Ohio State's Pro Day\"; text: \"He attended the NFL Scouting Combine in Indianapolis and completed the majority of combine drills, but opted to skip the 40-yard dash and bench press.\" and \"On March 22, 2018, he participated at Ohio State's pro day and performed positional drills, the 40-yard dash, 20-yard dash, and 10-yard dash.\"",
+   "note": "",
+   "found_on_page": true
+  },
+  "00-0034860": {
+   "name": "Dante Pettis",
+   "position": "WR",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": null,
+   "note": "rejected: a stats-site value with no event for a player who sat out both the combine and his pro day",
+   "checked_url": "https://www.playerprofiler.com/nfl/dante-pettis/",
+   "rejected": {
+    "forty": 4.53,
+    "source_url": "https://www.playerprofiler.com/nfl/dante-pettis/",
+    "quote": "40-Yard Dash 4.53"
+   }
+  },
+  "00-0034982": {
+   "name": "Dre Greenlaw",
+   "position": "OLB",
+   "teams": [
+    "49ers_2019"
+   ],
+   "forty": 4.73,
+   "kind": "pro_day",
+   "event": "Arkansas Pro Day, March 11, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Dre_Greenlaw",
+   "quote": "Pre-draft measurables, 40-yard dash: \"4.73 s\"; table caption: \"All values from NFL Combine/Pro Day\"",
+   "note": "Wikipedia's caption mixes Combine and Pro Day, but he did not run the 40 at the Combine. draftscout.com (https://draftscout.com/dsprofile.php?PlayerId=1003122&DraftYear=2019) lists \"Pro Day (03/11/19)\" with \"40 Yrd Dash: 4.73\" and no full Combine workout. The Arkansas Democrat-Gazette (https://www.arkansasonline.com/news/2019/mar/12/ex-razorbacks-get-new-shot-at-pro-day-2/) wrote: \"Linebacker Dre Greenlaw was hand-timed at 4.53 seconds in the 40-yard dash after not running in Indianapolis due to a tight hamstring.\" So 4.53 was a hand time at the same Pro Day; 4.73 is the time draftscout and Wikipedia list.",
+   "found_on_page": true
+  },
+  "00-0034987": {
+   "name": "E.J. Speed",
+   "position": "OLB",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.6,
+   "kind": "pro_day",
+   "event": "Pro Day, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/E._J._Speed",
+   "quote": "40-yard dash 4.60 s ... All values from Pro Day ... Notably, he posted an unimpressive 4.60 in the 40-yard dash, despite his name.",
+   "note": "Footnote does not name the school (Tarleton State player). Table cites DraftScout.com and ESPN.",
+   "found_on_page": true
+  },
+  "00-0035020": {
+   "name": "Demetrius Flannigan-Fowles",
+   "position": "OLB",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": 4.58,
+   "kind": "pro_day",
+   "event": "Arizona Pro Day, March 15, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Demetrius_Flannigan-Fowles",
+   "quote": "Pre-draft measurables: 40-yard dash 4.58 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=1019438&DraftYear=2019), which shows 'Dates: 03/15/19' and '40 Yrd Dash: 4.58' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0035148": {
+   "name": "Darwin Thompson",
+   "position": "HB",
+   "teams": [
+    "chiefs_2019"
+   ],
+   "forty": 4.55,
+   "kind": "pro_day",
+   "event": "Utah State Pro Day, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Darwin_Thompson",
+   "quote": "40-yard dash: 4.55 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0035341": {
+   "name": "Trenton Irwin",
+   "position": "WR",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": null,
+   "note": "Did not run: DraftScout's Pro Day section (04/04/19) has measurements but a blank 40 and 'No Workout-Hamstring'; Stanford's official pro day notebook says late-season injuries sidelined him. DraftScout's '40 Time 4.54' (low 4.44, high 4.64) is a projection and PlayerProfiler's 4.59 has no stated source, so neither was used. Wikipedia's table (All values from Pro Day) has size only.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=1002528&DraftYear=2019"
+  },
+  "00-0035357": {
+   "name": "Cameron Lewis",
+   "position": "CB",
+   "teams": [
+    "bills_2021",
+    "bills_2022"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Pro Day, 2019 (Buffalo)",
+   "source_url": "https://en.wikipedia.org/wiki/Cam_Lewis",
+   "quote": "40-yard dash 4.51 s | All values from Pro Day",
+   "note": "Article title is Cam Lewis; identity confirmed (born April 13, 1997, Buffalo Bills). Footnote does not name the school. Undrafted 2019.",
+   "found_on_page": true
+  },
+  "00-0035607": {
+   "name": "Marquise Copeland",
+   "position": "DE",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 5.0,
+   "kind": "pro_day",
+   "event": "Pro Day, 2019 (Cincinnati)",
+   "source_url": "https://en.wikipedia.org/wiki/Marquise_Copeland",
+   "quote": "40-yard dash 5.00 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2019.",
+   "found_on_page": true
+  },
+  "00-0035634": {
+   "name": "Alex Brown",
+   "position": "CB",
+   "teams": [
+    "chiefs_2019"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "Pro Day, 2019 (South Carolina State)",
+   "source_url": "https://en.wikipedia.org/wiki/Alex_Brown_(cornerback)",
+   "quote": "40-yard dash 4.44 s | All values from Pro Day",
+   "note": "Identity confirmed (South Carolina State CB born August 30, 1996, Chiefs). Footnote does not name the school. Undrafted 2019.",
+   "found_on_page": true
+  },
+  "00-0035663": {
+   "name": "Taylor Rapp",
+   "position": "FS",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.78,
+   "kind": "pro_day",
+   "event": "Washington Pro Day, April 1, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Taylor_Rapp",
+   "quote": "40-yard dash: \"4.78 s\"; caption: \"All values from NFL Combine/Pro Day\"; text: \"On April 1, 2019, he performed at Ohio State's Pro Day and severely hampered his draft stock after posting a unimpressive time in the [40-yard] dash.\" and \"Dane Brugler of The Athletic reported many NFL teams flagged Rapp for a hip flexor issue and stated his injury probably contributed to his slow time in the 40.\"",
+   "note": "Wikipedia's text says \"Ohio State's Pro Day\", an apparent error: Rapp played at Washington, and search results (Behind the Steel Curtain, UW Dawg Pound, April 2, 2019) describe the Washington pro day held Monday April 1, 2019. insidethestar.com wrote: \"Rapp posted a 40 yard dash in the 4.7s, with some people reporting it was a high as 4.77 seconds.\" So reported times are 4.77 to 4.78; the time was slowed by a hip flexor issue per the Wikipedia text.",
+   "found_on_page": true
+  },
+  "00-0035669": {
+   "name": "Nick Scott",
+   "position": "SS",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.45,
+   "kind": "pro_day",
+   "event": "Penn State Pro Day, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Nick_Scott_(American_football)",
+   "quote": "40-yard dash 4.45 s | All values from Pro Day",
+   "note": "Table also lists 10-yard split 1.53 s and 20-yard split 2.56 s.",
+   "found_on_page": true
+  },
+  "00-0035696": {
+   "name": "Duke Shelley",
+   "position": "CB",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Kansas State Pro Day, 2019",
+   "source_url": "https://en.wikipedia.org/wiki/Duke_Shelley",
+   "quote": "40-yard dash: 4.51 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0035715": {
+   "name": "Derrick Gore",
+   "position": "HB",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.63,
+   "kind": "pro_day",
+   "event": "Pro Day, 2019 (Louisiana-Monroe)",
+   "source_url": "https://en.wikipedia.org/wiki/Derrick_Gore",
+   "quote": "40-yard dash 4.63 s | All values from Pro Day",
+   "note": "Footnote does not name the school. Undrafted 2019.",
+   "found_on_page": true
+  },
+  "00-0035933": {
+   "name": "Michael Hoecht",
+   "position": "DE",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": null,
+   "note": "rejected: a self-organised, self-recorded video workout (all pro days were cancelled in March 2020)",
+   "checked_url": "https://3downnation.com/2020/03/23/brown-university-dl-michael-hoecht-posts-insane-40-yard-dash-in-virtual-pro-day/",
+   "rejected": {
+    "forty": 4.65,
+    "source_url": "https://3downnation.com/2020/03/23/brown-university-dl-michael-hoecht-posts-insane-40-yard-dash-in-virtual-pro-day/",
+    "quote": "The six-foot-four, 295-pound defensive tackle ran a blazing 4.65 forty-yard dash on his first attempt and followed that up with a 4.68 on his second attempt. ... Brown University defensive lineman Michael Hoecht posted a video on Monday of him performing combine drills ahead of next month's NFL and CFL drafts."
+   }
+  },
+  "00-0036222": {
+   "name": "Isaiah Rodgers",
+   "position": "CB",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.28,
+   "kind": "pro_day",
+   "event": "UMass Pro Day, 2020",
+   "source_url": "https://en.wikipedia.org/wiki/Isaiah_Rodgers",
+   "quote": "40-yard dash: 4.28 s [table footnote: Values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Article body also says he ran a 4.28-second 40-yard dash at his pro day after his senior season at UMass.",
+   "found_on_page": true
+  },
+  "00-0036253": {
+   "name": "Julian Blackmon",
+   "position": "FS",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": null,
+   "note": "Wikipedia's measurables table (\"All values from NFL Combine\") has height, weight, arm, hand, wingspan and Wonderlic but no 40. One web search: he was at the 2020 Combine but did not do drills while recovering from an injury; no Pro Day 40 found. ESPN's recruiting (high school) profile lists a 4.52 with no event or date; not used because it is not a pre-draft NFL time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Julian_Blackmon"
+  },
+  "00-0036321": {
+   "name": "Chase Young",
+   "position": "DE",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": null,
+   "note": "Wikipedia measurables table ('All values from NFL Combine') has height, weight, arms, hands, wingspan and Wonderlic only, no 40. He skipped Combine drills; Eleven Warriors: 'he'll only participate in position drills at Ohio State's March 25 pro day.' No sourced 40 found.",
+   "checked_url": "https://www.elevenwarriors.com/ohio-state-football/2020/02/112446/chase-young-thinks-hes-the-best-player-in-the-2020-nfl-draft-and-he-doesnt-need-nfl-scouting-combine-to-prove-that"
+  },
+  "00-0036341": {
+   "name": "Khalid Kareem",
+   "position": "DE",
+   "teams": [
+    "bengals_2021",
+    "colts_2022"
+   ],
+   "forty": null,
+   "note": "Wikipedia measurables table (All values from NFL Combine) has no 40. DraftScout shows combine 'DNR/No Workout-Medical/Shoulder' and only scouting estimates (40 Low 4.68, 40 Time 4.79, 40 High 4.87), which are not measured times and were not used. No 2020 Notre Dame Pro Day time found.",
+   "checked_url": "https://draftscout.com/dsprofile.php?PlayerId=1017962&DraftYear=2020"
+  },
+  "00-0036378": {
+   "name": "Michael Danna",
+   "position": "DE",
+   "teams": [
+    "chiefs_2021",
+    "chiefs_2023"
+   ],
+   "forty": 4.77,
+   "kind": "other",
+   "event": "2020 pre-draft 40 reported by NJ.com (site of run not stated)",
+   "source_url": "https://247sports.com/college/michigan/Article/Michigan-football-NFL-Draft-preview-Can-Mike-Danna-find-the-right-situation-146388289/",
+   "quote": "According to NJ.com, Danna ran a 4.77-second 40-yard dash.",
+   "note": "Wikipedia (Mike Danna) measurables table 'All values from Pro Day' lists height, weight, arms, hands, wingspan only, no 40. The 247Sports article does not say where the 4.77 was run; the NJ.com original was not fetched.",
+   "found_on_page": true
+  },
+  "00-0036410": {
+   "name": "Tee Higgins",
+   "position": "WR",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": 4.59,
+   "kind": "pro_day",
+   "event": "Clemson Pro Day, March 12, 2020",
+   "source_url": "https://draftscout.com/dsprofile.php?PlayerId=1021682&DraftYear=2020",
+   "quote": "Pro Day Results ... Dates: 03/12/20 ... 40 Yrd Dash: 4.59 ... 40 Time Range: 4.58-4.59/No Full Workout-Pectoral",
+   "note": "DraftScout's Combine section reads 'DNR/No Workout-Choice', so the 40 is from the Pro Day. Wikipedia's table also lists 4.59 (mixed footnote 'All values from NFL Combine/Pro Day'). The Clemson Insider (March 12, 2020) reported faster times: 'Higgins clocked in at 4.54 and 4.56 on his two 40-yard dash attempts'.",
+   "found_on_page": true
+  },
+  "00-0036415": {
+   "name": "Van Jefferson",
+   "position": "WR",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": null,
+   "note": "Wikipedia's measurables table (\"All values from NFL Combine\") has no 40. One web search (si.com, turfshowtimes.com): a Jones fracture found at the 2020 Combine kept him out of all testing, and Florida's March 31 pro day was canceled (COVID-19). The only speed data found was Senior Bowl GPS tracking (21.05 mph), which is not a 40 time.",
+   "checked_url": "https://en.wikipedia.org/wiki/Van_Jefferson"
+  },
+  "00-0036419": {
+   "name": "Terrell Lewis",
+   "position": "OLB",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": null,
+   "note": "Never ran a 40 in the pre-draft process. SI (March 31, 2020): he \"opted to hold off on the 40-yard dash until Alabama's Pro Day\" ... \"which was obviously never held due to the coronavirus pandemic.\" Wikipedia measurables table ('All values from NFL Combine') has no 40.",
+   "checked_url": "https://www.si.com/college/alabama/bamanfl/alabama-linebacker-terrell-lewis-2020-nfl-draft"
+  },
+  "00-0036432": {
+   "name": "Clay Johnston",
+   "position": "OLB",
+   "teams": [
+    "bengals_2021"
+   ],
+   "forty": null,
+   "note": "Wikipedia table ('All values from NFL Combine', 2020) has height, weight, arm, hand and bench (18 reps) but no 40; a knee injury ended his final college season (therams.com draft page). Only time found was ESPN high school recruiting testing, 4.78 (Class of 2015, https://www.espn.com/college-sports/football/recruiting/player/combine/_/id/197102/clay-johnston), not a pre-draft time, so not used.",
+   "checked_url": "https://en.wikipedia.org/wiki/Clay_Johnston_(American_football)"
+  },
+  "00-0036480": {
+   "name": "Dayo Odeyingbo",
+   "position": "DE",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": null,
+   "note": "Did not run: tore his Achilles in training in January 2021. The Vanderbilt Hustler: 'Odeyingbo didn't get the opportunity to post results in the 40-yard dash, bench press or broad jump due to his achilles injury'. Wikipedia's pre-draft table (All values from Pro Day) has size measurements only, no 40.",
+   "checked_url": "https://vanderbilthustler.com/2021/04/29/2021-nfl-draft-profile-dayo-odeyingbo/"
+  },
+  "00-0036482": {
+   "name": "Mike Strachan",
+   "position": "WR",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.54,
+   "kind": "pro_day",
+   "event": "West Virginia University Pro Day, March 2021",
+   "source_url": "https://en.wikipedia.org/wiki/Mike_Strachan_(wide_receiver)",
+   "quote": "40-yard dash: 4.54 s [table footnote: All values from NFL Combine]",
+   "note": "Wikipedia labels the table 'All values from NFL Combine' (citing NFL.com and draftscout.com), but the 2021 Combine held no on-field workouts, so kind is set to Pro Day. The Tribune (Nassau), 22 Mar 2021 (https://www.tribune242.com/news/2021/mar/22/michael-strachan-boosts-his-nfl-draft-stock-pro-da/) says he worked out at the West Virginia University pro day and 'He ran a 4.6 secs 40-yard dash'; Colts.com draft page says he 'ran a 4.50 40-yard dash' with no event named. Sources disagree (4.50 / 4.54 / 4.6); the two-decimal Wikipedia value is recorded.",
+   "found_on_page": true
+  },
+  "00-0036632": {
+   "name": "Joshua Kaindoh",
+   "position": "DE",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.68,
+   "kind": "pro_day",
+   "event": "Pro Day, 2021 (college: Florida State)",
+   "source_url": "https://en.wikipedia.org/wiki/Joshua_Kaindoh",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.68 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0036677": {
+   "name": "Zayne Anderson",
+   "position": "FS",
+   "teams": [
+    "chiefs_2021"
+   ],
+   "forty": 4.44,
+   "kind": "pro_day",
+   "event": "BYU Pro Day, March 26, 2021",
+   "source_url": "https://en.wikipedia.org/wiki/Zayne_Anderson",
+   "quote": "Pre-draft measurables: 40-yard dash 4.44 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=1026979&DraftYear=2021), which shows 'Dates: 03/26/21' and '40 Yrd Dash: 4.44' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0036682": {
+   "name": "Malik Herring",
+   "position": "DE",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": null,
+   "note": "Wikipedia table ('All values from Pro Day', 2021) lists height, weight, arm, hand and wingspan only, no 40; he was recovering from a torn ACL suffered in Senior Bowl practices. One search summary also said he did not work out at Georgia's pro day because of the ACL (redandblack.com article returned 429, not read).",
+   "checked_url": "https://en.wikipedia.org/wiki/Malik_Herring"
+  },
+  "00-0036842": {
+   "name": "Kene Nwangwu",
+   "position": "HB",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 4.31,
+   "kind": "pro_day",
+   "event": "Pro Day, 2021 (Iowa State)",
+   "source_url": "https://en.wikipedia.org/wiki/Kene_Nwangwu",
+   "quote": "40-yard dash 4.31 s | All values from Pro Day",
+   "note": "Footnote does not name the school. 2021 draft class (no in-person Combine that year).",
+   "found_on_page": true
+  },
+  "00-0036862": {
+   "name": "Ben Skowronek",
+   "position": "WR",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.68,
+   "kind": "other",
+   "event": "Pre-draft 40, 2021 (venue not stated)",
+   "source_url": "https://ramblinfan.com/2021/07/04/la-rams-3-ways-ben-skowronek-contributes-offense-year/",
+   "quote": "Skowronek ran a 4.68 -second 40-yard dash.",
+   "note": "Weak source (FanSided fan blog) and venue not stated. Wikipedia's measurables table ('All values from Pro Day') has no 40, and 247Sports says he 'did not participate in the throwing aspect of Pro Day as he continued to nurse a foot injury', so he likely did not run at Notre Dame's Pro Day. PlayerProfiler lists a different value, 4.64 (19th percentile), also without venue. Treat as low confidence.",
+   "found_on_page": true
+  },
+  "00-0036863": {
+   "name": "Chris Garrett",
+   "position": "OLB",
+   "teams": [
+    "rams_2021"
+   ],
+   "forty": 4.81,
+   "kind": "pro_day",
+   "event": "Pro Day, 2021 (Concordia-St. Paul prospect)",
+   "source_url": "https://en.wikipedia.org/wiki/Chris_Garrett_(linebacker)",
+   "quote": "40-yard dash: 4.81 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Table cites DraftScout.com; the pro day's host school is not stated.",
+   "found_on_page": true
+  },
+  "00-0037192": {
+   "name": "George Karlaftis",
+   "position": "DE",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": 4.71,
+   "kind": "pro_day",
+   "event": "Purdue Pro Day, March 29, 2022",
+   "source_url": "https://bleacherreport.com/articles/10031179-george-karlaftis-david-bell-highlight-purdue-pro-day-ahead-of-2022-nfl-draft",
+   "quote": "George Karlaftis, David Bell Highlight Purdue Pro Day Ahead of 2022 NFL Draft [...] The 6'4'', 266-pound edge-rusher ran his 40-yard dash outside despite a wind chill below freezing, and ESPN's Adam Schefter reported a source on the scene clocked it at 4.71 seconds",
+   "note": "Wikipedia also lists 4.71 s but its note says 'All values from NFL Combine/Pro Day' without separating them; Bleacher Report pins the 4.71 to Purdue Pro Day. Time is an unofficial scout clocking reported by ESPN's Adam Schefter.",
+   "found_on_page": true
+  },
+  "00-0037216": {
+   "name": "Justyn Ross",
+   "position": "WR",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": 4.64,
+   "kind": "pro_day",
+   "event": "Clemson Pro Day, March 17, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Justyn_Ross",
+   "quote": "40-yard dash: \"4.64 s\"; caption: \"All values from NFL Combine/Pro Day\"",
+   "note": "Wikipedia's caption mixes Combine and Pro Day, but he did not run at the Combine. 247Sports (https://247sports.com/article/clemson-football-justyn-ross-pro-day-measurements-40-yard-dash-ahead-of-2022-nfl-draft-184595585/): \"Clemson wide receiver Justyn Ross did not run at the NFL Scouting Combine earlier this spring due to a foot injury.\" and \"The former four-star prospect per the 247Sports Composite ran a 4.63 time in the 40-yard dash.\" The Clemson Insider (March 17, 2022, https://www.theclemsoninsider.com/2022/03/17/40-yard-dash-times-from-clemsons-pro-day/) listed unofficial pro day times of 4.56 (first attempt) and 4.65 (second attempt). Reported range 4.56 to 4.65. Undrafted in 2022.",
+   "found_on_page": true
+  },
+  "00-0037274": {
+   "name": "Esezi Otomewo",
+   "position": "DE",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 5.01,
+   "kind": "pro_day",
+   "event": "Pro day, Monday April 4, 2022 (Minnesota)",
+   "source_url": "https://heavy.com/sports/nfl/minnesota-vikings/golden-gophers-esezi-otomewo-nfl-news/",
+   "quote": "Golden Gophers edge rusher Esezi Otomewo garnered plenty of interest at his pro day on Monday, April 4, with 10 teams on hand to watch the redshirt senior. ... struggled in the 40-yard dash with a 5.01 40-time (Pro Football Network's Tony Pauline reported that Otomewo, who is still working back from a knee injury slowed down at the 30-yard mark)",
+   "note": "Still recovering from a knee injury from the bowl game. Wikipedia's table also lists 5.01 but with the mixed footnote 'All values from NFL Combine/Pro Day'; he did not test at the Combine, so the 40 is from his pro day.",
+   "found_on_page": true
+  },
+  "00-0037288": {
+   "name": "Christian Benford",
+   "position": "CB",
+   "teams": [
+    "bills_2022"
+   ],
+   "forty": 4.53,
+   "kind": "pro_day",
+   "event": "Pro Day, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Christian_Benford",
+   "quote": "40-yard dash 4.53 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Villanova). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0037301": {
+   "name": "Theo Jackson",
+   "position": "FS",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 4.46,
+   "kind": "pro_day",
+   "event": "Pro Day, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Theo_Jackson_(American_football)",
+   "quote": "40-yard dash 4.46 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Tennessee player). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0037323": {
+   "name": "Rodney Thomas",
+   "position": "FS",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "event": "Pro Day, 2022 (college: Yale)",
+   "source_url": "https://en.wikipedia.org/wiki/Rodney_Thomas_II",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.51 s\"; table note: \"All values from Pro Day\"",
+   "note": "Article is Rodney Thomas II (Yale, born June 26, 1998). Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0037395": {
+   "name": "Dallis Flowers",
+   "position": "CB",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.43,
+   "kind": "pro_day",
+   "event": "Pro Day (Pittsburg State), 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Dallis_Flowers",
+   "quote": "40-yard dash: \"4.43 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class. Undrafted in 2022.",
+   "found_on_page": true
+  },
+  "00-0037401": {
+   "name": "Forrest Rhyne",
+   "position": "OLB",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.69,
+   "kind": "pro_day",
+   "event": "Pro Day, 2022 (college: Villanova)",
+   "source_url": "https://en.wikipedia.org/wiki/Forrest_Rhyne",
+   "quote": "Pre-draft measurables table, 40-yard dash: \"4.69 s\"; table note: \"All values from Pro Day\"",
+   "note": "Caption does not name the pro day site.",
+   "found_on_page": true
+  },
+  "00-0037499": {
+   "name": "Luiji Vilain",
+   "position": "OLB",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 4.81,
+   "kind": "pro_day",
+   "event": "Wake Forest Pro Day, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Luiji_Vilain",
+   "quote": "40-yard dash: 4.81 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0037525": {
+   "name": "Jordan Mason",
+   "position": "HB",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": 4.58,
+   "kind": "pro_day",
+   "event": "Georgia Tech Pro Day, March 14, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Jordan_Mason",
+   "quote": "Pre-draft measurables: 40-yard dash 4.58 s [...] All values from Pro Day",
+   "note": "Confirmed by the DraftScout profile cited in the Wikipedia table (https://draftscout.com/dsprofile.php?PlayerId=1018140&DraftYear=2022), which shows 'Dates: 03/14/22' and '40 Yrd Dash: 4.58' under Pro Day results. Wikipedia's note does not name the school; the pro day location is taken as his college.",
+   "found_on_page": true
+  },
+  "00-0037549": {
+   "name": "Darrell Baker",
+   "position": "FS",
+   "teams": [
+    "colts_2022"
+   ],
+   "forty": 4.43,
+   "kind": "pro_day",
+   "event": "Georgia Southern Pro Day, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Darrell_Baker_Jr.",
+   "quote": "40-yard dash: 4.43 s [table footnote: All values from Pro Day]",
+   "note": "Wikipedia 'Pre-draft measurables' table; quote joins the 40-yard dash cell and the table footnote. Article is 'Darrell Baker Jr.'. Footnote says only 'Pro Day'; school taken from his college.",
+   "found_on_page": true
+  },
+  "00-0037638": {
+   "name": "Benton Whitley",
+   "position": "OLB",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": 4.8,
+   "kind": "pro_day",
+   "event": "Pro Day, 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Benton_Whitley",
+   "quote": "40-yard dash 4.80 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Holy Cross). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0037830": {
+   "name": "Samuel Womack",
+   "position": "CB",
+   "teams": [
+    "49ers_2023"
+   ],
+   "forty": 4.4,
+   "kind": "pro_day",
+   "event": "Pro Day (Toledo), 2022",
+   "source_url": "https://en.wikipedia.org/wiki/Samuel_Womack",
+   "quote": "40-yard dash: \"4.40 s\"; caption: \"All values from Pro Day\"",
+   "note": "The caption says only \"Pro Day\"; school and year are from his college and draft class.",
+   "found_on_page": true
+  },
+  "00-0038130": {
+   "name": "Andrew Booth",
+   "position": "CB",
+   "teams": [
+    "vikings_2022"
+   ],
+   "forty": null,
+   "note": "Never ran a pre-draft 40. Wikipedia table ('All values from NFL Combine', 2022) has only height, weight, arm, hand and wingspan. AJC, 17 Mar 2022: 'Booth also didn't test at the NFL scouting combine because of a hamstring injury'; he also did not work out at Clemson's pro day and was set for core muscle surgery.",
+   "checked_url": "https://www.ajc.com/sports/atlanta-falcons/andrew-booth-doesnt-participate-in-clemson-pro-day-will-undergo-surgery/XL4F3Z6S3VCC7LQR7TIVOZH63M/"
+  },
+  "00-0038956": {
+   "name": "Ekow Boye-Doe",
+   "position": "CB",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": 4.39,
+   "kind": "pro_day",
+   "event": "Pro Day, 2023",
+   "source_url": "https://en.wikipedia.org/wiki/Ekow_Boye-Doe",
+   "quote": "40-yard dash 4.39 s ... All values from Pro Day",
+   "note": "Footnote does not name the school (Kansas State). Table cites DraftScout.com.",
+   "found_on_page": true
+  },
+  "00-0038983": {
+   "name": "BJ Thompson",
+   "position": "DE",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": 4.58,
+   "kind": "pro_day",
+   "event": "His pro day (Stephen F. Austin), 2023",
+   "source_url": "https://www.kshb.com/sports/chiefs-add-stephen-f-austin-pass-rush-specialist-in-5th-round",
+   "quote": "Thompson ran a 4.58 40-yard dash and posted a 37 1/2-inch vertical jump at his pro day.",
+   "note": "Wikipedia (B._J._Thompson_(American_football)) lists 4.61 s in a measurables table with no Combine/Pro Day label, citing NFL.com, DraftScout and PFF (Shrine Bowl weigh-in); the KSHB line names the event, so it is used. Reported range 4.58 to 4.61.",
+   "found_on_page": true
+  },
+  "00-0039006": {
+   "name": "Felix Anudike-Uzomah",
+   "position": "DE",
+   "teams": [
+    "chiefs_2023"
+   ],
+   "forty": null,
+   "note": "Never ran a 40 in the pre-draft process. PFN (March 31, 2023): \"Defender Felix Anudike-Uzomah, who did not run the 40 at the Combine, chose not to run the 40 at his pro day.\" He was excused from Combine testing with a right foot injury. Wikipedia's measurables table has no 40.",
+   "checked_url": "https://www.profootballnetwork.com/pro-day-news-and-rumors-felix-anudike-uzomah-jammie-robinson-and-deuce-vaughn-headline-florida-state-and-kansas-state-pro-days/"
+  }
+ }
+}

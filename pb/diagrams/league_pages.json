@@ -1,0 +1,386 @@
+{
+  "ARZ": {
+    "status": "DESIGN",
+    "page": "ARZ.svg",
+    "plays": [
+      59,
+      60,
+      58,
+      85,
+      57,
+      97
+    ]
+  },
+  "ATL": {
+    "status": "DESIGN",
+    "page": "ATL.svg",
+    "plays": [
+      55,
+      56,
+      70,
+      61,
+      80,
+      89
+    ]
+  },
+  "BAL": {
+    "status": "DESIGN",
+    "page": "BAL.svg",
+    "plays": [
+      55,
+      8,
+      9,
+      56,
+      86,
+      88
+    ]
+  },
+  "BUF": {
+    "status": "DESIGN",
+    "page": "BUF.svg",
+    "plays": [
+      66,
+      68,
+      72,
+      95,
+      70,
+      112
+    ]
+  },
+  "CAR": {
+    "status": "DESIGN",
+    "page": "CAR.svg",
+    "plays": [
+      59,
+      57,
+      58,
+      56,
+      61,
+      100
+    ]
+  },
+  "CHI": {
+    "status": "DESIGN",
+    "page": "CHI.svg",
+    "plays": [
+      50,
+      52,
+      51,
+      53,
+      76,
+      82
+    ]
+  },
+  "CIN": {
+    "status": "DESIGN",
+    "page": "CIN.svg",
+    "plays": [
+      53,
+      52,
+      51,
+      50,
+      78,
+      93
+    ]
+  },
+  "CLE": {
+    "status": "DESIGN",
+    "page": "CLE.svg",
+    "plays": [
+      61,
+      60,
+      62,
+      63,
+      93,
+      98
+    ]
+  },
+  "DAL": {
+    "status": "DESIGN",
+    "page": "DAL.svg",
+    "plays": [
+      57,
+      61,
+      55,
+      83,
+      89,
+      62
+    ]
+  },
+  "DEN": {
+    "status": "DESIGN",
+    "page": "DEN.svg",
+    "plays": [
+      53,
+      55,
+      52,
+      51,
+      78,
+      92
+    ]
+  },
+  "DET": {
+    "status": "DESIGN",
+    "page": "DET.svg",
+    "plays": [
+      56,
+      55,
+      57,
+      58,
+      78,
+      88
+    ]
+  },
+  "GB": {
+    "status": "DESIGN",
+    "page": "GB.svg",
+    "plays": [
+      57,
+      58,
+      63,
+      87,
+      98,
+      65
+    ]
+  },
+  "HOU": {
+    "status": "DESIGN",
+    "page": "HOU.svg",
+    "plays": [
+      59,
+      58,
+      65,
+      63,
+      57,
+      84
+    ]
+  },
+  "IND": {
+    "status": "DESIGN",
+    "page": "IND.svg",
+    "plays": [
+      52,
+      53,
+      54,
+      81,
+      90,
+      99
+    ]
+  },
+  "JAX": {
+    "status": "DESIGN",
+    "page": "JAX.svg",
+    "plays": [
+      54,
+      53,
+      59,
+      78,
+      55,
+      84
+    ]
+  },
+  "KC": {
+    "status": "DESIGN",
+    "page": "KC.svg",
+    "plays": [
+      50,
+      51,
+      53,
+      49,
+      85,
+      57
+    ]
+  },
+  "MIA": {
+    "status": "DESIGN",
+    "page": "MIA.svg",
+    "plays": [
+      58,
+      59,
+      60,
+      80,
+      86,
+      102
+    ]
+  },
+  "MIN": {
+    "status": "DESIGN",
+    "page": "MIN.svg",
+    "plays": [
+      14,
+      16,
+      13,
+      43,
+      49,
+      94
+    ]
+  },
+  "NE": {
+    "status": "DESIGN",
+    "page": "NE.svg",
+    "plays": [
+      47,
+      41,
+      40,
+      39,
+      75,
+      44
+    ]
+  },
+  "NO": {
+    "status": "DESIGN",
+    "page": "NO.svg",
+    "plays": [
+      56,
+      57,
+      61,
+      55,
+      80,
+      86
+    ]
+  },
+  "NYG": {
+    "status": "DESIGN",
+    "page": "NYG.svg",
+    "plays": [
+      61,
+      64,
+      68,
+      59,
+      65,
+      76
+    ]
+  },
+  "NYJ": {
+    "status": "DESIGN",
+    "page": "NYJ.svg",
+    "plays": [
+      53,
+      54,
+      58,
+      52,
+      79,
+      56
+    ]
+  },
+  "OAK": {
+    "status": "DESIGN",
+    "page": "OAK.svg",
+    "plays": [
+      49,
+      47,
+      48,
+      77,
+      86,
+      55
+    ]
+  },
+  "PHI": {
+    "status": "DESIGN",
+    "page": "PHI.svg",
+    "plays": [
+      58,
+      57,
+      72,
+      80,
+      85,
+      93
+    ]
+  },
+  "PIT": {
+    "status": "DESIGN",
+    "page": "PIT.svg",
+    "plays": [
+      58,
+      62,
+      64,
+      57,
+      87,
+      60
+    ]
+  },
+  "SD": {
+    "status": "DESIGN",
+    "page": "SD.svg",
+    "plays": [
+      14,
+      15,
+      16,
+      36,
+      47,
+      55
+    ]
+  },
+  "SEA": {
+    "status": "DESIGN",
+    "page": "SEA.svg",
+    "plays": [
+      57,
+      58,
+      62,
+      83,
+      88,
+      97
+    ]
+  },
+  "SF": {
+    "status": "DESIGN",
+    "page": "SF.svg",
+    "plays": [
+      55,
+      56,
+      62,
+      77,
+      83,
+      95
+    ]
+  },
+  "STL": {
+    "status": "DESIGN",
+    "page": "STL.svg",
+    "plays": [
+      0,
+      1,
+      2,
+      22,
+      3,
+      29
+    ]
+  },
+  "TB": {
+    "status": "DESIGN",
+    "page": "TB.svg",
+    "plays": [
+      53,
+      59,
+      54,
+      77,
+      52,
+      88
+    ]
+  },
+  "TEN": {
+    "status": "DESIGN",
+    "page": "TEN.svg",
+    "plays": [
+      56,
+      65,
+      66,
+      55,
+      88,
+      103
+    ]
+  },
+  "WAS": {
+    "status": "DESIGN",
+    "page": "WAS.svg",
+    "plays": [
+      60,
+      67,
+      64,
+      59,
+      89,
+      102
+    ]
+  }
+}

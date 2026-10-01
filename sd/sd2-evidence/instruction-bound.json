@@ -1,0 +1,8 @@
+{
+  "classification": "PROVED OFFLINE",
+  "full_scan_cases": 1568,
+  "max_instructions": 4983,
+  "max_physical_list_visits": 17,
+  "duplicate_list_visits": 0,
+  "method": "Absent cursor forces complete scan; native helpers run, hook counts every instruction and E7640 list entry."
+}

@@ -1,0 +1,75 @@
+{
+  "affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "results": [
+    {
+      "module": "test_apf_b76_situation_weights",
+      "exit": 0,
+      "seconds": 5.104,
+      "log": "test_apf_b76_situation_weights.log"
+    },
+    {
+      "module": "test_apf_b76_situation_weights_qt",
+      "exit": 0,
+      "seconds": 0.993,
+      "log": "test_apf_b76_situation_weights_qt.log"
+    },
+    {
+      "module": "test_apf_b72_personnel_rows",
+      "exit": 0,
+      "seconds": 2.582,
+      "log": "test_apf_b72_personnel_rows.log"
+    },
+    {
+      "module": "test_apf_b71_situation_mask",
+      "exit": 0,
+      "seconds": 2.918,
+      "log": "test_apf_b71_situation_mask.log"
+    },
+    {
+      "module": "test_apf_b71_situation_mask_qt",
+      "exit": 0,
+      "seconds": 2.457,
+      "log": "test_apf_b71_situation_mask_qt.log"
+    },
+    {
+      "module": "test_apf_b71_situation_mask_install",
+      "exit": 0,
+      "seconds": 1.272,
+      "log": "test_apf_b71_situation_mask_install.log"
+    },
+    {
+      "module": "test_apf_playcalling_editor_qt",
+      "exit": 0,
+      "seconds": 5.519,
+      "log": "test_apf_playcalling_editor_qt.log"
+    },
+    {
+      "module": "test_apf_playcalling_editor_build",
+      "exit": 0,
+      "seconds": 91.796,
+      "log": "test_apf_playcalling_editor_build.log"
+    },
+    {
+      "module": "test_apf_b71_editor_workflow",
+      "exit": 0,
+      "seconds": 2.804,
+      "log": "test_apf_b71_editor_workflow.log"
+    },
+    {
+      "module": "test_apf_b71_editor_workflow_qt",
+      "exit": 0,
+      "seconds": 3.285,
+      "log": "test_apf_b71_editor_workflow_qt.log"
+    }
+  ],
+  "test_count": 62
+}

@@ -1,0 +1,19 @@
+{
+  "classification": "PROVED OFFLINE",
+  "folder": "/media/noah/Storage/.b76-research/sb/sb2",
+  "files": {
+    "SB2_side_by_side_169.png": {
+      "bytes": 4452913,
+      "sha256": "566bc3f5a1f50f9233b8ae56ce68340e0fadb9a0fce6f55f3251be76fb0200fd"
+    },
+    "SB2_side_by_side_43.png": {
+      "bytes": 4452301,
+      "sha256": "c755f352d0bb27f7b6434599ca6d2853336054e7e925de1cbef38ec4cf074895"
+    },
+    "SB2_broadcast_overlays.png": {
+      "bytes": 1716118,
+      "sha256": "a7785a1a13c28587818089fc453870b797388a3a1acd746a8e54fe1e28ebebbd"
+    }
+  },
+  "render": "Unicorn owner plus existing xemu fragment model; GPU calibration unresolved; no in-game witness"
+}

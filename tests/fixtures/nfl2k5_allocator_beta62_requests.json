@@ -14,7 +14,7 @@
  [
   "nfl2k5_scorebug_runtime",
   "code",
-  4096,
+  5376,
   16
  ],
  [
@@ -222,18 +222,6 @@
   16
  ],
  [
-  "nfl2k5_guardian_cap_overlay",
-  "code",
-  2048,
-  16
- ],
- [
-  "nfl2k5_guardian_cap_overlay",
-  "data",
-  336,
-  16
- ],
- [
   "nfl2k5_camera",
   "code",
   512,
@@ -382,5 +370,89 @@
   "read_only",
   4,
   4
+ ],
+ [
+  "nfl2k5_historic_teams_quick_game",
+  "code",
+  1280,
+  16
+ ],
+ [
+  "nfl2k5_historic_teams_quick_game",
+  "data",
+  16,
+  16
+ ],
+ [
+  "nfl2k5_espn25_more_moments",
+  "code",
+  2560,
+  16
+ ],
+ [
+  "nfl2k5_espn25_more_moments",
+  "data",
+  16,
+  16
+ ],
+ [
+  "nfl2k5_anniversary_kickoff",
+  "code",
+  3584,
+  16
+ ],
+ [
+  "nfl2k5_anniversary_kickoff",
+  "data",
+  736,
+  16
+ ],
+ [
+  "nfl2k5_widescreen_menus",
+  "code",
+  128,
+  16
+ ],
+ [
+  "nfl2k5_team_logo_swap",
+  "read_only",
+  64,
+  4
+ ],
+ [
+  "nfl2k5_k128",
+  "code",
+  1024,
+  16
+ ],
+ [
+  "nfl2k5_stock_books",
+  "code",
+  1536,
+  16
+ ],
+ [
+  "nfl2k5_moment_venues",
+  "code",
+  2304,
+  16
+ ],
+ [
+  "nfl2k5_era_rules",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_era_rules",
+  "data",
+  16,
+  16
+ ],
+ [
+  "nfl2k5_era_rules",
+  "read_only",
+  2176,
+  16
  ]
 ]

@@ -1,0 +1,243 @@
+{
+ "schema": "nfl2k5_allegiant_model_art/v1",
+ "art": {
+  "ag_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "ea44808b595551a3b8fa9ed7f44a8cf74dbfe88a54f7e0db81389ed94cd4de7d"
+  },
+  "ag_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "3acd44617a47b1320c94f3e11f2123693662edb77437ccf4b034ba513fa1c94d"
+  },
+  "ag_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "96766c37f77e7ebd253a31121e92d61c75f8836efb142f7139bdb220e2ba64ae"
+  },
+  "ag_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "ag_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "053cbeb75754c34307e53f1412f31cd6e89edf41e1126d15c198f142837f0545"
+  },
+  "LIGHT_ag_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "76ca5f5a07491c4feffa46f7c3d149b1bc50850050dd766ad3ab696ef089002c"
+  },
+  "LIGHT_ag_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_ag_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "ag_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "ag_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "ag_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "ag_roof_under": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "cde1ee9c967b542a575473f7882dfb832555cfba2f76ec507681a7adfca896be"
+  },
+  "ag_roof_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "80af8508f94d38d7a9afdcb3fb058313ffbef59b05a054c67d67386f20d14e9b"
+  },
+  "ag_roof_rim": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "98924b29eaa3093b78ce2fbe57b75c427948f9f1326f72a1085212ad08d32495"
+  },
+  "LIGHT_ag_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_ag_lanai": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "c1a79964952f30859b449a467a03779f4b3e0e3f0692a6b5a81dfb1c9bff9848"
+  },
+  "ag_torch": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "dd736b18f58e79c0bf9a7e92aa49853595ff46f331a8ceff770b12ecd6846d4f"
+  },
+  "LIGHT_ag_flame": {
+   "size": [
+    32,
+    64
+   ],
+   "sha256": "67a8c7c06f87dd8fa9cd1aa45700ade433ec00e5890524d92ab224e61afbc1c4"
+  },
+  "LIGHT_ag_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "b17830e6827001127909b839551df88536d677df5ec940354b71f0f29f663ca2"
+  },
+  "ag_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "75625aabdafca82dfcf44253bf8db695c7d18f914121e112dd6b7cd9a2bed201"
+  },
+  "ag_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "33f70012664721bbe97aa6238ce58d0eac549f3be2d14d05418bea4c4fd5a10e"
+  },
+  "ag_glass_out": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "96ccae1d7f87303b90a5025ba963d99159f95b48165c65ac47245f1ac7cb837d"
+  },
+  "LIGHT_ag_lines": {
+   "size": [
+    64,
+    8
+   ],
+   "sha256": "fb294f5c059de3821cede20ac143f047fb6c91508e64e1bf827b3f902a1279c3"
+  },
+  "LIGHT_ag_mesh": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "959b74054671c1c0a07fde01f0b9967660e436731b9278b1ef5718caba494133"
+  },
+  "ag_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "ag_ground": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "f06cdc005220a07e95932b1f4e865f2a0a892e264dc4ba48049ea07b048a80f9"
+  },
+  "ag_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "ag_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "ag_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "LIGHT_ag_strip": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5a06592f7570eb3da4a8b81fc0118953db806373aba2e4d820395b69feca2c60"
+  },
+  "ag_pyramid": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "22b59b25c6945cd3d157a2a420d89d4d73f4a3afb2e3a4434d3cd7b7d030146c"
+  },
+  "ag_hills": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "2a0b898ae6c172dfeb504f79a223c41447be24724e3b8dd03e3b08003cf1870e"
+  },
+  "field/ag_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "32a87c349cca87455208a886c44bd9fc67adf24eba6c832c9a35edb5c9eb3941"
+  },
+  "field/ag_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "d1d5d231eceadf083cd521edd44d2d2547478f8ba276b6f59a0c9f22e223e9e0"
+  }
+ }
+}

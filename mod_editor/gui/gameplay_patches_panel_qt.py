@@ -49,9 +49,11 @@ PATCHES = (
     ("momentum_contact", "Running start in contact (experimental, unwitnessed)",
      "Retail: speed and weight already affect contact. Patch: a sustained running start can give "
      "the ball carrier a small extra boost through contact. Experimental / Unwitnessed. Requires player momentum."),
-    ("team_names_2026", "2026 team names",
-     "Retail: 2004 team names. Patch: modern names in the disc roster, with L.A., L Vegas, "
-     "LA and Cmdrs short forms where space is limited. Existing saves keep their names. "
+    ("team_names_2026", "2026 team names and colours",
+     "Retail: 2004 team names and menu colours. Patch: the 2026 names on every screen of new disc rosters "
+     "(Los Angeles Chargers LAC, Las Vegas Raiders LV, Los Angeles Rams LAR, Arizona Cardinals ARI, "
+     "Washington Commanders) and every team's 2026 menu colours; the game's team lookups are patched to keep "
+     "finding every team, and playbook files and team art keep their names. Existing saves keep their names. "
      "EXPERIMENTAL / UNWITNESSED."),
     ("coverage_slider", "Coverage slider response (experimental)", tt.coverage_slider_patch.HELP_TEXT),
     ("scramble_tuning", "Slow-QB acceleration (experimental)", tt.scramble_tuning_patch.HELP_TEXT),
@@ -176,9 +178,9 @@ PATCHES = (
      "three defensive linemen wait at normal line positions. One defensive end is assigned a four-second delay before "
      "rushing. Power Pocket stays your choice; turn it Off to test the delayed rush. Needs a disc image. "
      "EXPERIMENTAL / UNWITNESSED: huddle break, repeated snaps and the actual delay still need Noah's play test."),
-    ("player_star", "White star outline under the players you tag",
+    ("player_star", "Gold star under the players you tag",
      "Retail: the game draws a coloured circle under the player a controller is driving and nothing under anyone else. "
-     "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a closed white five-point outline at his feet "
+     "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a bold gold five-point star with a white rim at his feet "
      "whenever he is on the field, whoever is controlling him, in games, practice and franchise, following the same HUD and "
      "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
      "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
@@ -323,7 +325,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),
-    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
+    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white outline star with a white rim.", NOT_TESTED),
     "depth_roles": ("X / Z / SLWR receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
     "depth_chart_rows": ("SPECIAL: 13 rows and complete player names (experimental)",
                          "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", NOT_TESTED),
@@ -683,9 +685,11 @@ class GameplayPatchesPanel(QWidget):
                 self.badges[key].setText("ADVANCED / UNWITNESSED" if enabled else "Unrecognized source data")
                 self.badges[key].setVisible(True)
                 continue
-            check.setEnabled(value == "retail" and not needs_image and key not in r62_ui.UNAVAILABLE)
+            upgrade = key == "position_pools" and value == "needs_fix"
+            check.setEnabled((value == "retail" or upgrade) and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
+                   "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
                    "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
                               "(changed by another tool), so it can't be added here.",
                    "partial": "Only one half of this change is on the source (executable or name pool), so it can't be added here.",
@@ -697,6 +701,7 @@ class GameplayPatchesPanel(QWidget):
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
+                      "needs_fix": "Needs CPU lineup fix",
                       "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
             self.badges[key].setText(badge)
             self.badges[key].setVisible(bool(badge))
@@ -931,7 +936,7 @@ class GameplayPatchesPanel(QWidget):
             self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
-        for key in ("coin_defer", "decided_clock"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "k128_memory", "k128_roster_heap", "k128_early"):
             if key in self.checks and (self._state or {}).get(key) == "applied":
                 box = self.checks[key]
                 box.blockSignals(True)

@@ -4278,6 +4278,7 @@ class StudioSession:
                             "Replace it again before saving."
                         )
 
+        from mod_editor.core.nfl2k5_project_fit import for_save
         return save_project_archive(
             catalog=self._project_catalog_router,
             asset_io=self._project_io_router,
@@ -4295,7 +4296,7 @@ class StudioSession:
             audio_annotations=self.audio_annotations,
             build_settings=self.build_settings,
             my_career_events=self.my_career_events,
-            fit_receipts=getattr(self, '_project_fit_receipts', {}),
+            fit_receipts=for_save(self),
             uniform_colors=(
                 {
                     "selector": selector,
@@ -4690,6 +4691,7 @@ class StudioSession:
                 raise
             from mod_editor.core.nfl2k5_project_fit import restore
             restore(self, loaded.fit_receipts or {})
+            self.project_open_notes = loaded.open_notes
             return len(loaded.edits) + (
                 new_text.modified_count if new_text is not None else 0
             ) + len(new_audio) + len(new_annotations) + len(new_unif_colors) \

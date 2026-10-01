@@ -1,0 +1,42 @@
+{
+  "classification": "PROVED OFFLINE",
+  "boundary": "Native select, stage, decode and bind; GDB transport mocked. The ordinary current filename uses the retail fixture body; the stock alias uses the pinned one-pool body. Candidate E modern recipe contents are checked by the main-only catalog and lab.",
+  "cases": [
+    {
+      "case": "original",
+      "sides": {
+        "home": {
+          "filename": "E2R-GB-pb.iff",
+          "pointer": 38797312,
+          "canonical_sha256": "29ea54e27d1860bc45bcf1d120698718c23873830a0c473a40f179497ef74602",
+          "matches": true
+        },
+        "away": {
+          "filename": "E2R-DAL-pb.iff",
+          "pointer": 38928384,
+          "canonical_sha256": "d8425ca16c74f8c37df52f4b8b9223c0d5b59eb18354d2a3c308d4bc9a625fa1",
+          "matches": true
+        }
+      }
+    },
+    {
+      "case": "mixed",
+      "sides": {
+        "home": {
+          "filename": "E2R-CHI-pb.iff",
+          "pointer": 38797312,
+          "canonical_sha256": "c600e76437070bab35c01e7626b309fae04528c6664f4f16029fa4461b01e1cb",
+          "matches": true
+        },
+        "away": {
+          "filename": "CHI-pb.iff",
+          "pointer": 38928384,
+          "canonical_sha256": "663bac4aad1b12dbe6e2b6152fc851a278a40864ecab27b6cdbdeea67aa4b63c",
+          "matches": true
+        }
+      }
+    }
+  ],
+  "changed_payload_rejected": true,
+  "missing_dump_rejected": true
+}

@@ -1,0 +1,137 @@
+title_name = "All-Pro Football 2K8"
+title_id = "54540807"
+hash = "5447E5428AA2D52A"
+
+[[patch]]
+name = "Ability-based charge cap (experimental, unwitnessed)"
+desc = "Level 2 and its ring follow charge abilities at any tier; discharge follows consumed level. QB no-arm gate preserved. Gameplay UNWITNESSED."
+author = "2K Football Mod Tools"
+is_enabled = true
+
+[[patch.be32]]
+address = 0x848C5288
+value = 0x48447E78
+
+[[patch.be32]]
+address = 0x84D0D100
+value = 0x817D0044
+
+[[patch.be32]]
+address = 0x84D0D104
+value = 0x816B0024
+
+[[patch.be32]]
+address = 0x84D0D108
+value = 0x556B0110
+
+[[patch.be32]]
+address = 0x84D0D10C
+value = 0x2B0B0000
+
+[[patch.be32]]
+address = 0x84D0D110
+value = 0x409A0034
+
+[[patch.be32]]
+address = 0x84D0D114
+value = 0x817D0044
+
+[[patch.be32]]
+address = 0x84D0D118
+value = 0x816B0028
+
+[[patch.be32]]
+address = 0x84D0D11C
+value = 0x556B05FA
+
+[[patch.be32]]
+address = 0x84D0D120
+value = 0x2B0B0000
+
+[[patch.be32]]
+address = 0x84D0D124
+value = 0x409A0020
+
+[[patch.be32]]
+address = 0x84D0D128
+value = 0x817D0044
+
+[[patch.be32]]
+address = 0x84D0D12C
+value = 0x816B002C
+
+[[patch.be32]]
+address = 0x84D0D130
+value = 0x556B010C
+
+[[patch.be32]]
+address = 0x84D0D134
+value = 0x2B0B0000
+
+[[patch.be32]]
+address = 0x84D0D138
+value = 0x409A000C
+
+[[patch.be32]]
+address = 0x84D0D13C
+value = 0x3B600000
+
+[[patch.be32]]
+address = 0x84D0D140
+value = 0x48000008
+
+[[patch.be32]]
+address = 0x84D0D144
+value = 0x3B600001
+
+[[patch.be32]]
+address = 0x84D0D148
+value = 0x4BBB8164
+
+[[patch.be32]]
+address = 0x84AA6050
+value = 0x48267100
+
+[[patch.be32]]
+address = 0x84AA6100
+value = 0xED9E06F2
+
+[[patch.be32]]
+address = 0x84AA66CC
+value = 0x60000000
+
+[[patch.be32]]
+address = 0x84AA673C
+value = 0xFF1DF000
+
+[[patch.be32]]
+address = 0x84AA6940
+value = 0x60000000
+
+[[patch.be32]]
+address = 0x84D0D150
+value = 0x816A01A8
+
+[[patch.be32]]
+address = 0x84D0D154
+value = 0x556B577E
+
+[[patch.be32]]
+address = 0x84D0D158
+value = 0x2B0B0004
+
+[[patch.be32]]
+address = 0x84D0D15C
+value = 0xFFC0E090
+
+[[patch.be32]]
+address = 0x84D0D160
+value = 0x409A0008
+
+[[patch.be32]]
+address = 0x84D0D164
+value = 0xFFC09090
+
+[[patch.be32]]
+address = 0x84D0D168
+value = 0x4BD98EEC

@@ -1,0 +1,17 @@
+{
+  "label": "PROVED OFFLINE",
+  "results": [
+    {
+      "path": "ht/evidence/retail_audit.json",
+      "bytes": 9449321,
+      "sha256": "fe67914c868081a5dbef56ad6e0577ded72601655863069f3042eb4f582b64bf",
+      "identical": true
+    },
+    {
+      "path": "data/nfl2k5_historic_rosters/manifest.json",
+      "bytes": 7160605,
+      "sha256": "cc18fba3436847e476ef138c6d8a2786b7ecb9d2b0861fadbb258db6c034a407",
+      "identical": true
+    }
+  ]
+}

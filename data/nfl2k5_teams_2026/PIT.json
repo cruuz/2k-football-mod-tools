@@ -1,0 +1,948 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "PIT",
+  "name": "Pittsburgh Steelers",
+  "asset_code": "22",
+  "season": 2026,
+  "status": "Phase B job d2, 2026-09-23. SORT: kept its 2004 look (the 1997 design: Futura Condensed numbers, Northwestern sleeve stripes, gold pants with one black stripe, black helmet with a gold stripe and a right-side Steelmark). Rebuilt as the Nike cut (collar shield, swooshes, solid socks) in the sourced 2026 palette.",
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "3-4",
+    "note": "nflverse roster_2026 week 3: 53 active. Base defense from the nflverse 2026 depth charts (pos_grp 'Base 3-4 D' in every snapshot since 2026-09-09).",
+    "head_coach": "Mike McCarthy",
+    "depth_since": "2026-09-09",
+    "head_coach_source": "https://www.steelers.com/team/coaches-roster/mike-mccarthy (Head Coach; 'introducing Mike McCarthy as their 17th head coach', January 27, 2026); confirmed 2026-09-23, matches nflverse games.csv (used only for the career record)"
+  },
+  "sources": {
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Pittsburgh_Steelers_Uniforms_2025.png (CC BY-SA, 2025 set; no 2026 change found)",
+    "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_Pittsburgh_Steelers&action=raw",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (PIT, 2026 NFL Record and Fact Book p.128)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/PIT.svg",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "black": "#000000",
+    "gold": "#FFB612",
+    "white": "#FFFFFF"
+  },
+  "albedo": {
+    "jersey_black": "#12121B",
+    "black": "#000000",
+    "gold": "#FFB612",
+    "white": "#FFFFFF",
+    "helmet_retail_black": "#000000",
+    "retail_stripe_gold": "#F4A000",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A",
+    "tan": "#D6C7A1",
+    "dark": "#1A1A1A"
+  },
+  "marks": {
+    "team_logo_full": "club_logo.png",
+    "pit_h_fragL": "pit_h_fragL.png",
+    "pit_h_fragR": "pit_h_fragR.png",
+    "pit_a_fragL": "pit_a_fragL.png",
+    "pit_a_fragR": "pit_a_fragR.png",
+    "pit_h_sleeve": "pit_h_sleeve.png",
+    "pit_a_sleeve": "pit_a_sleeve.png",
+    "steelmark_white": "steelmark_white.png",
+    "steelmark_grey": "steelmark_grey.png",
+    "steelmark_black": "steelmark_black.png",
+    "steelmark_red": "steelmark_red.png",
+    "steelmark_blue": "steelmark_blue.png",
+    "steelmark_yellow": "steelmark_yellow.png",
+    "ez_pittsburgh_fill": "ez_PITTSBURGH_fill.png",
+    "ez_pittsburgh_outline": "ez_PITTSBURGH_outline.png",
+    "ez_steelers_fill": "ez_STEELERS_fill.png",
+    "ez_steelers_outline": "ez_STEELERS_outline.png",
+    "steelers_script": "Pittsburgh_Steelers_Script.png",
+    "acrisure": "Acrisure_Stadium_logo.png",
+    "swoosh": "swoosh.png",
+    "swoosh_v": "swoosh_v.png",
+    "swoosh_black": "swoosh_black.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "22H0",
+      "note": "2026 home: black jersey, white Futura Condensed numbers, gold-white Northwestern sleeve stripes, Steelmark on the left chest; gold pants with one black stripe; black socks; black helmet with a gold centre stripe, white numbers front and back, Steelmark on the right side only",
+      "torso": {
+        "base_colour": "jersey_black",
+        "neck_donor": "22N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "white"
+        },
+        "decorations": [
+          {
+            "mark": "team_logo_full",
+            "center": [
+              201.0,
+              75.5
+            ],
+            "width": 20.5
+          },
+          {
+            "mark": "pit_h_fragL",
+            "center": [
+              294.5,
+              104.5
+            ],
+            "width": 19.0
+          },
+          {
+            "mark": "pit_h_fragR",
+            "center": [
+              484.5,
+              104.5
+            ],
+            "width": 19.0
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "jersey_black",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "pit_h_sleeve",
+            "center": [
+              64.0,
+              60.0
+            ],
+            "width": 128.0
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "gold",
+        "stripe": [
+          [
+            "black",
+            17
+          ]
+        ],
+        "swoosh_colour": "black"
+      },
+      "socks": {
+        "colour": "jersey_black"
+      },
+      "digits": {
+        "glyph_donor": "22H0",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "22H0",
+        "fill": "gold"
+      },
+      "helmet": {
+        "shell_from": "helmet_retail_black",
+        "shell": "black",
+        "recolour": [
+          {
+            "from": "retail_stripe_gold",
+            "to": "gold"
+          }
+        ],
+        "decal": {
+          "mark": "team_logo_full",
+          "boxes": {
+            "lower": [
+              40,
+              44,
+              112,
+              108
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": []
+      },
+      "outer_index": 3798,
+      "splayer": {
+        "torso_donor_outer": 3798,
+        "torso_donor": "22H0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ]
+      }
+    },
+    "away": {
+      "selector": "22A0",
+      "note": "2026 away: white jersey, black Futura Condensed numbers, gold sleeve stripes outlined in black, Steelmark on the left chest; gold pants with one black stripe; black socks; the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "22N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "black"
+        },
+        "decorations": [
+          {
+            "mark": "team_logo_full",
+            "center": [
+              201.0,
+              75.5
+            ],
+            "width": 20.5
+          },
+          {
+            "mark": "pit_a_fragL",
+            "center": [
+              294.5,
+              104.5
+            ],
+            "width": 19.0
+          },
+          {
+            "mark": "pit_a_fragR",
+            "center": [
+              484.625,
+              104.5
+            ],
+            "width": 19.25
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "pit_a_sleeve",
+            "center": [
+              64.0,
+              60.0
+            ],
+            "width": 128.0
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "gold",
+        "stripe": [
+          [
+            "black",
+            17
+          ]
+        ],
+        "swoosh_colour": "black"
+      },
+      "socks": {
+        "colour": "jersey_black"
+      },
+      "digits": {
+        "glyph_donor": "22A0",
+        "fill": "black"
+      },
+      "nameplate": {
+        "glyph_donor": "22A0",
+        "fill": "gold",
+        "outline": "black",
+        "outline_frac": 0.042
+      },
+      "helmet": {
+        "shell_from": "helmet_retail_black",
+        "shell": "black",
+        "recolour": [
+          {
+            "from": "retail_stripe_gold",
+            "to": "gold"
+          }
+        ],
+        "decal": {
+          "mark": "team_logo_full",
+          "boxes": {
+            "lower": [
+              40,
+              44,
+              112,
+              108
+            ]
+          }
+        }
+      },
+      "card": {
+        "recolour": []
+      },
+      "outer_index": 4115,
+      "splayer": {
+        "torso_donor_outer": 4115,
+        "torso_donor": "22A0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ]
+      }
+    }
+  },
+  "part_intents": {
+    "home": {
+      "torso": "black jersey body with a small full-colour Steelmark on the left chest, NFL shield at the collar, white maker marks at the shoulders, gold and white stripe pieces at the armpits; the light grey patch is the neck opening",
+      "sleeve": "black sleeve with gold and white Northwestern stripes (gold, white, gold, white, gold)",
+      "pants": "gold pants with one black side stripe, black maker mark",
+      "helmet": "black shell, gold centre stripe, full-colour Steelmark (yellow, red, blue hypocycloids in a grey ring), white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain white numbers",
+      "digit_arm": "plain white numbers",
+      "digit_helmet": "plain white numbers",
+      "nameplate": "gold letters",
+      "socks00": "solid black",
+      "splayer": "far-away player atlas: gold pants with a black stripe, black torso, black helmet, black socks, skin and glove patches",
+      "team-select_unif": "menu render: black jersey with white numbers, gold and white sleeve stripes, gold pants, black helmet with the Steelmark",
+      "team-select_helm": "menu render: black helmet with the Steelmark, black facemask, a dark bar and a yellow UI strip below"
+    },
+    "away": {
+      "torso": "white jersey body with a small full-colour Steelmark on the left chest, NFL shield at the collar, black maker marks at the shoulders, gold stripe pieces outlined in black at the armpits; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with gold stripes outlined in black",
+      "pants": "gold pants with one black side stripe, black maker mark",
+      "helmet": "black shell, gold centre stripe, full-colour Steelmark (yellow, red, blue hypocycloids in a grey ring), white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain black numbers",
+      "digit_arm": "plain black numbers",
+      "digit_helmet": "plain white numbers",
+      "nameplate": "gold letters with a black outline",
+      "socks00": "solid black",
+      "splayer": "far-away player atlas: gold pants with a black stripe, white torso, black helmet, black socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with black numbers, gold sleeve stripes, gold pants, black helmet with the Steelmark",
+      "team-select_helm": "menu render: black helmet with the Steelmark, black facemask, a dark bar and a yellow UI strip below"
+    },
+    "venue": {
+      "endzone": "unpainted grass end zone with gold block letters trimmed in black (PITTSBURGH north, STEELERS south)",
+      "center_logo": "Steelmark: grey ring with the yellow hypocycloid (no target at s22)",
+      "banner": "cloth fan banners and stadium boards: black, gold, white and tan with Steelers text, the Steelmark, the Acrisure Stadium mark and Nike swooshes"
+    }
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Drew Allar": 0,
+      "Spencer Anderson": 4,
+      "Keeanu Benton": 4,
+      "Germie Bernard": 4,
+      "Yahya Black": 3,
+      "Chris Boswell": 0,
+      "Jaquan Brisker": 3,
+      "Carson Bruener": 0,
+      "Dylan Cook": 0,
+      "Jamel Dean": 4,
+      "Rico Dowdle": 3,
+      "Gennings Dunker": 0,
+      "Brandin Echols": 4,
+      "Daylen Everette": 3,
+      "Troy Fautanu": 2,
+      "Zach Frazier": 0,
+      "Pat Freiermuth": 0,
+      "Derrick Harmon": 3,
+      "Eli Heidenreich": 0,
+      "Nick Herbig": 1,
+      "Cameron Heyward": 3,
+      "Alex Highsmith": 2,
+      "Brock Hoffman": 0,
+      "Cole Holcomb": 0,
+      "Will Howard": 0,
+      "Max Iheanachor": 5,
+      "Rayshawn Jenkins": 4,
+      "Cameron Johnston": 0,
+      "Sebastian Joseph": 4,
+      "Joey Porter": 4,
+      "Asante Samuel": 3,
+      "Kevin Jobity": 2,
+      "Christian Kuntz": 0,
+      "Ryan McCollum": 0,
+      "Mason McCormick": 0,
+      "DK Metcalf": 5,
+      "Riley Nowakowski": 3,
+      "Michael Pittman": 2,
+      "Patrick Queen": 3,
+      "Jalen Ramsey": 4,
+      "Aaron Rodgers": 0,
+      "Gabe Rubio": 0,
+      "Mason Rudolph": 0,
+      "Jack Sawyer": 0,
+      "Ben Skowronek": 0,
+      "Robert Spears-Jennings": 3,
+      "Robert Tonyan": 0,
+      "Jaylen Warren": 3,
+      "Darnell Washington": 5,
+      "T.J. Watt": 0,
+      "Kaden Wetjen": 0,
+      "Payton Wilson": 0,
+      "Roman Wilson": 1
+    },
+    "dreads": [
+      "Keeanu Benton",
+      "Brandin Echols",
+      "Max Iheanachor",
+      "Rayshawn Jenkins",
+      "Asante Samuel",
+      "Riley Nowakowski",
+      "Jalen Ramsey",
+      "Jaylen Warren",
+      "Darnell Washington"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots on u1's Giants scale (INFERRED); the automatic cheek estimate stays in faces.json as skin_lab. Dreads and twists by eye."
+  },
+  "venue": {
+    "prefix": "s22",
+    "notes": "Steelers home games at Acrisure Stadium (the retail Heinz Field venue record s22, kept as the stadium). End zones: unpainted grass with gold letters trimmed in black, PITTSBURGH at the north end and STEELERS at the south (the regular-season look; the late-season all-gold end zones are not modelled). s22 has no midfield texture (u4 is scoping a native fix), so center_logo is authored but has no target yet. Walls: the 2004 streak strips become black strips with the Steelers stencil script, a full-colour Steelmark, the STEELER COUNTRY banner and Hall of Honor names (week 1 2026 photos show black wall pads with gold numbers and white names under a tan STEELER COUNTRY banner). Boards: HEINZ FIELD becomes the Acrisure Stadium mark, Reebok becomes the Nike swoosh; Gatorade, ESPN, Wilson and Riddell stay. banner01 (Steelmark and stencil letters, a cut-out) stays retail: the Steelmark and the stencil script are unchanged. Fan banner texts are 2026 players and common fan phrases (INFERRED fan content).",
+    "sources": [
+      "https://www.steelers.com/photos/photos-best-of-week-1-vs-falcons (2026-09-13, Acrisure Stadium)",
+      "https://steelersnow.com/steelers-bring-back-gold-end-zones-at-acrisure-stadium-2/ (north end zone PITTSBURGH, south STEELERS, gold trimmed in black)",
+      "https://commons.wikimedia.org/wiki/File:Pittsburgh_Steelers_Script.svg (public domain)",
+      "https://commons.wikimedia.org/wiki/File:Acrisure_Stadium_logo.svg (public domain)",
+      "https://commons.wikimedia.org/wiki/File:Logo_NIKE.svg (public domain)"
+    ],
+    "endzone": {
+      "paint": "black",
+      "paint_alpha": 0.0,
+      "marks": [
+        {
+          "mark": "ez_pittsburgh_outline",
+          "colour": "black",
+          "center": [
+            384,
+            64
+          ],
+          "height": 64,
+          "stretch": 1.12
+        },
+        {
+          "mark": "ez_pittsburgh_fill",
+          "colour": "gold",
+          "center": [
+            384,
+            64
+          ],
+          "height": 64,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "endzone_south": {
+      "paint": "black",
+      "paint_alpha": 0.0,
+      "marks": [
+        {
+          "mark": "ez_steelers_outline",
+          "colour": "black",
+          "center": [
+            384,
+            64
+          ],
+          "height": 70,
+          "stretch": 1.12
+        },
+        {
+          "mark": "ez_steelers_fill",
+          "colour": "gold",
+          "center": [
+            384,
+            64
+          ],
+          "height": 70,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "outline_mark": "steelmark_grey",
+      "outline": "#A5ACAF",
+      "fill_mark": "steelmark_yellow",
+      "fill": "gold",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "dark",
+            "items": [
+              {
+                "text": "STEELER\nNATION",
+                "colour": "gold",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "gold",
+            "items": [
+              {
+                "text": "HERE WE GO\nSTEELERS",
+                "colour": "black",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#90 WATT",
+                "colour": "black",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 17
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "gold",
+            "items": [
+              {
+                "text": "#4 METCALF",
+                "colour": "black",
+                "center": [
+                  192,
+                  31
+                ],
+                "height": 17
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "dark",
+            "items": [
+              {
+                "text": "#8 RODGERS",
+                "colour": "gold",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 17
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "DEFENSE !!\nDEFENSE !!",
+                "colour": "black",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "dark",
+            "items": [
+              {
+                "text": "WELCOME TO\nSTEELTOWN",
+                "colour": "gold",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 14
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "gold",
+            "items": [
+              {
+                "text": "GO",
+                "colour": "black",
+                "center": [
+                  25,
+                  96
+                ],
+                "height": 20
+              },
+              {
+                "text": "GO",
+                "colour": "black",
+                "center": [
+                  103,
+                  96
+                ],
+                "height": 20
+              },
+              {
+                "mark": "steelmark_white",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              },
+              {
+                "mark": "steelmark_grey",
+                "colour": "#A5ACAF",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              },
+              {
+                "mark": "steelmark_black",
+                "colour": "black",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              },
+              {
+                "mark": "steelmark_red",
+                "colour": "#C60C30",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              },
+              {
+                "mark": "steelmark_blue",
+                "colour": "#00539B",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              },
+              {
+                "mark": "steelmark_yellow",
+                "colour": "gold",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 40
+              }
+            ]
+          }
+        ]
+      },
+      "steelerswall01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              256,
+              64
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "mark": "steelers_script",
+                "colour": "gold",
+                "center": [
+                  128,
+                  32
+                ],
+                "width": 190
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              256,
+              128
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "mark": "steelmark_white",
+                "colour": "white",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "mark": "steelmark_grey",
+                "colour": "#A5ACAF",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "mark": "steelmark_black",
+                "colour": "black",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "mark": "steelmark_red",
+                "colour": "#C60C30",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "mark": "steelmark_blue",
+                "colour": "#00539B",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "mark": "steelmark_yellow",
+                "colour": "gold",
+                "center": [
+                  34,
+                  96
+                ],
+                "width": 50
+              },
+              {
+                "text": "PITTSBURGH STEELERS",
+                "colour": "gold",
+                "center": [
+                  152,
+                  96
+                ],
+                "height": 14,
+                "max_width": 178
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              128,
+              256,
+              192
+            ],
+            "bg": "tan",
+            "items": [
+              {
+                "text": "STEELER COUNTRY",
+                "colour": "black",
+                "center": [
+                  128,
+                  160
+                ],
+                "height": 22,
+                "max_width": 240
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              192,
+              256,
+              256
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "12   32   36   58   75   86   92",
+                "colour": "gold",
+                "center": [
+                  128,
+                  212
+                ],
+                "height": 14,
+                "max_width": 240
+              },
+              {
+                "text": "BRADSHAW HARRIS BETTIS LAMBERT GREENE WARD HARRISON",
+                "colour": "white",
+                "center": [
+                  128,
+                  238
+                ],
+                "height": 9,
+                "max_width": 246
+              }
+            ]
+          }
+        ]
+      },
+      "ad_bb01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              191,
+              76
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "mark": "acrisure",
+                "colour": "white",
+                "center": [
+                  96,
+                  38
+                ],
+                "width": 120
+              }
+            ]
+          },
+          {
+            "slot": [
+              192,
+              0,
+              256,
+              176
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "swoosh_v",
+                "colour": "black",
+                "center": [
+                  224,
+                  46
+                ],
+                "width": 20
+              },
+              {
+                "mark": "swoosh_v",
+                "colour": "black",
+                "center": [
+                  224,
+                  132
+                ],
+                "width": 20
+              }
+            ]
+          }
+        ]
+      },
+      "ad_bb02": {
+        "banners": [
+          {
+            "slot": [
+              130,
+              86,
+              254,
+              162
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "swoosh",
+                "colour": "black",
+                "center": [
+                  192,
+                  124
+                ],
+                "width": 92
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "notes_d2": {
+    "neck_donor": "22N0 is a synthetic clean neck mask (the retail 22H0 neck grey connected to the top edge only): art.py reads every near-grey pixel as neck, and the retail torsos carry grey mesh dots (about 1,900 on the away) and a grey NFL shield under the V"
+  }
+}

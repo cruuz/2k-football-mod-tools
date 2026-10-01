@@ -58,6 +58,8 @@ def digest(path: Path) -> str:
 class RuntimeResultV2Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not REPORT.is_file():
+            raise unittest.SkipTest(f"private xemu diagnostic result absent: {REPORT}")
         cls.document = json.loads(REPORT.read_bytes())
 
     def test_checked_positive_result_is_narrow_and_derived(self) -> None:
@@ -214,6 +216,17 @@ class RuntimeResultV2Tests(unittest.TestCase):
                 result._verify_png(path, "fixture")
 
     def test_frozen_offline_and_workflow_semantics_are_consistent(self) -> None:
+        required = [ROOT / result.OFFLINE_ARTIFACTS[key]["path"] for key in (
+            "expanded_geometry_manifest", "expanded_recipe", "force_n_spec",
+            "visibility_unlock_spec",
+        )]
+        required.extend(
+            ROOT / result.RUNS[name]["artifacts"][key]["path"]
+            for name in result.RUN_NAMES for key in ("workflow_manifest", "config")
+        )
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            self.skipTest("private frozen group36 workflow evidence absent: " + ", ".join(missing))
         result._verify_offline_semantics(ROOT)
         for name in result.RUN_NAMES:
             result._verify_workflow_semantics(ROOT, name)

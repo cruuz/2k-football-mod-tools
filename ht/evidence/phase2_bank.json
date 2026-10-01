@@ -1,0 +1,466 @@
+{
+  "label": "PROVED OFFLINE",
+  "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+  "writer_sha256": "36b4c4810afa1b1c7622a07e2ebd162a42eac21a541fc093daceb689bea85e26",
+  "aliases": 75,
+  "entry_cost": 76,
+  "directory_bytes": 912,
+  "projected_e2_entries": 4527,
+  "alias_bytes": 943056,
+  "aligned_alias_bytes": 1032192,
+  "additional_xbe_allocations": 0,
+  "code_used": 1275,
+  "code_allocation": 1280,
+  "files": [
+    {
+      "team": "49ers '81",
+      "file": "HTS-h-25-1981-49ers-3.iff",
+      "bytes": 12288,
+      "sha256": "ff1c75829db26805dce19c00256b982ea83cf716035d65c0bdb7bcb589341f93"
+    },
+    {
+      "team": "49ers '89",
+      "file": "HTS-h-25-1989-49ers-3.iff",
+      "bytes": 12544,
+      "sha256": "cf16a2c174c4a6dfbbc9510f97a6e61ac633af9dca61491af99596e756a8a4c1"
+    },
+    {
+      "team": "49ers '94",
+      "file": "HTS-h-25-1994-49ers-2.iff",
+      "bytes": 13264,
+      "sha256": "62e6c62316d7a94a283890a3ed095dbbc419b64709dfdb21b350739d28677e9c"
+    },
+    {
+      "team": "49ers '03",
+      "file": "HTS-h-25-2003-49ers-0.iff",
+      "bytes": 13072,
+      "sha256": "8422316b6f14fb14eb547d425100fb8b7e4cdb4ea16426456707e0b853462b11"
+    },
+    {
+      "team": "Bears '63",
+      "file": "HTS-h-05-1963-bears-2.iff",
+      "bytes": 11280,
+      "sha256": "e861eb3bedd4fe8404c4c2fbe8b5987e5cb129356e00c40eb842573c6a79eb37"
+    },
+    {
+      "team": "Bears '85",
+      "file": "HTS-h-05-1985-bears-1.iff",
+      "bytes": 12176,
+      "sha256": "af0ff69252c5a121c6f540f18aec46313083192f81afb8446ad6bc9fc5a86208"
+    },
+    {
+      "team": "Bengals '81",
+      "file": "HTS-h-06-1981-bengals-1.iff",
+      "bytes": 12560,
+      "sha256": "9e9d1a4688df90cebc48231779e68c997a95961e200a9639fc6546539cccf59a"
+    },
+    {
+      "team": "Bengals '88",
+      "file": "HTS-h-06-1988-bengals-1.iff",
+      "bytes": 12768,
+      "sha256": "d7813965079bac881a7483b94b5cc2af7701f6b67af7c292456464191c60ab40"
+    },
+    {
+      "team": "Bills '64",
+      "file": "HTS-h-03-1964-bills-7.iff",
+      "bytes": 11040,
+      "sha256": "3ca9c7ff9675bf17298461d6a21cad8d20dab093489054f1b8be6274d338f33d"
+    },
+    {
+      "team": "Bills '90",
+      "file": "HTS-h-03-1990-bills-2.iff",
+      "bytes": 12608,
+      "sha256": "bf558e032a05a31b9287d7ddb6bc804c37c75004a4f69d308fc22af94141c0c7"
+    },
+    {
+      "team": "Broncos '77",
+      "file": "HTS-h-08-1977-broncos-2.iff",
+      "bytes": 12400,
+      "sha256": "0f924b6a4aa76e5c5f07721397528d9f35636438e523906c3a0726cf6c6b7524"
+    },
+    {
+      "team": "Broncos '86",
+      "file": "HTS-h-08-1986-broncos-1.iff",
+      "bytes": 12432,
+      "sha256": "f77491a529c892e0d5804becd6a4b24f56910f8b3d12718edc15488261995be2"
+    },
+    {
+      "team": "Broncos '98",
+      "file": "HTS-h-08-1998-broncos-0.iff",
+      "bytes": 13232,
+      "sha256": "de9c59570358eaf9aa4ffe3be750308fd912b87a13f75f8cbae26430e74256e3"
+    },
+    {
+      "team": "Browns '64",
+      "file": "HTS-h-30-1964-browns-2.iff",
+      "bytes": 12016,
+      "sha256": "e7b5c0f0e04d63c1449bae32a25d047caf6b89cc9ea7cb710a1029591ff78cef"
+    },
+    {
+      "team": "Browns '86",
+      "file": "HTS-h-30-1986-browns-1.iff",
+      "bytes": 12528,
+      "sha256": "684f30bae1a45f71d6548da86158280facb545ef47478083fa3044438adb9b15"
+    },
+    {
+      "team": "Buccaneers '79",
+      "file": "HTS-h-27-1979-buccaneers-3.iff",
+      "bytes": 12912,
+      "sha256": "d7a41368cb8f616ac4f17dba90a8475bbc1566b9e47d0e9ae23327770993f2c4"
+    },
+    {
+      "team": "Buccaneers '99",
+      "file": "HTS-h-27-1999-buccaneers-0.iff",
+      "bytes": 13472,
+      "sha256": "972d76e6cae4984b6d37dc1501241e3886432e6c92d2c2328c95d3ca57a351fa"
+    },
+    {
+      "team": "Buccaneers '02",
+      "file": "HTS-h-27-2002-buccaneers-0.iff",
+      "bytes": 13248,
+      "sha256": "80e73a142a39088dea741e44402c7a3a41264c1e74386cc61a300abc6e007ce0"
+    },
+    {
+      "team": "Cardinals '75",
+      "file": "HTS-h-00-1975-cardinals-3.iff",
+      "bytes": 12256,
+      "sha256": "f4616bd643fcbf17a65469b3cdf7325f13155a64bc2437ebf0f4ddcae069cb9b"
+    },
+    {
+      "team": "Chargers '63",
+      "file": "HTS-h-24-1963-chargers-8.iff",
+      "bytes": 11488,
+      "sha256": "660d9f5664d9ccae672fd29f5c427e365667a8fef151b870c584f81f77daad2d"
+    },
+    {
+      "team": "Chargers '80",
+      "file": "HTS-h-24-1980-chargers-4.iff",
+      "bytes": 12688,
+      "sha256": "3339ce6bc1d9bf6d6345df06521b613e1a8f04b3576735b387af9016d40f7a2c"
+    },
+    {
+      "team": "Chargers '94",
+      "file": "HTS-h-24-1994-chargers-0.iff",
+      "bytes": 13536,
+      "sha256": "5245cbc73f41a800e1556e8b4decee623631c3539938ad4dbbd8d6e03c23d2e7"
+    },
+    {
+      "team": "Chiefs '69",
+      "file": "HTS-h-13-1969-chiefs-4.iff",
+      "bytes": 11824,
+      "sha256": "73007e79f3c8ea7a339260019fda7a170ed20db4446c7d470f012a8079a83da6"
+    },
+    {
+      "team": "Chiefs '93",
+      "file": "HTS-h-13-1993-chiefs-2.iff",
+      "bytes": 13200,
+      "sha256": "00df1613c9a748bc9ce632420d6a74fe19810559ab7a17920b7dc0d9150b1eaa"
+    },
+    {
+      "team": "Colts '70",
+      "file": "HTS-h-11-1970-colts-5.iff",
+      "bytes": 11696,
+      "sha256": "540962dd279ddc66b93e908dd10668e8a5f840782587f8a690834801aed09aef"
+    },
+    {
+      "team": "Cowboys '71",
+      "file": "HTS-h-07-1971-cowboys-4.iff",
+      "bytes": 11952,
+      "sha256": "6b3c318858dd1ed6e2905720f75dab42802002093ca5bfafc7d37a431f18691c"
+    },
+    {
+      "team": "Cowboys '77",
+      "file": "HTS-h-07-1977-cowboys-3.iff",
+      "bytes": 12560,
+      "sha256": "f306f337dcc7412c27766daeb5f3e283dbe83ba919afeb3823fb14ecba1ee252"
+    },
+    {
+      "team": "Cowboys '92",
+      "file": "HTS-h-07-1992-cowboys-2.iff",
+      "bytes": 12800,
+      "sha256": "7e0815948d232547bf9c8acf9a09a0a56089f818968d1676f930fbbddd89b605"
+    },
+    {
+      "team": "Dolphins '72",
+      "file": "HTS-h-14-1972-dolphins-4.iff",
+      "bytes": 12656,
+      "sha256": "0ebbb1ab6d168bc9c70e2411af6cbdf7c3fc026804b7042112f43cd3ce4304fc"
+    },
+    {
+      "team": "Dolphins '84",
+      "file": "HTS-h-14-1984-dolphins-3.iff",
+      "bytes": 13024,
+      "sha256": "6fa14c0f8a570ed65415eed3415424409b706f6b40f33736d0a276be51e1e9e8"
+    },
+    {
+      "team": "Eagles '60",
+      "file": "HTS-h-21-1960-eagles-8.iff",
+      "bytes": 11632,
+      "sha256": "5c590da72136074ecf92a06fcd6ce18df57fe9378a39f0feb76a1f601b369fb8"
+    },
+    {
+      "team": "Eagles '80",
+      "file": "HTS-h-21-1980-eagles-5.iff",
+      "bytes": 12592,
+      "sha256": "d641f78b81580e21b6ffd9e083d742fe96d7d2669ae121358dd6195943e4a45b"
+    },
+    {
+      "team": "Eagles '04",
+      "file": "HTS-h-21-2004-eagles-0.iff",
+      "bytes": 13072,
+      "sha256": "291192f2b8188ae31170c038513190e32d97a08c97930958e68bfb4ccadad8cf"
+    },
+    {
+      "team": "Falcons '80",
+      "file": "HTS-h-01-1980-falcons-6.iff",
+      "bytes": 12448,
+      "sha256": "89f977cda6d860995d7bc5c00516227c942734001dfb9803a19abc93d5edb072"
+    },
+    {
+      "team": "Falcons '98",
+      "file": "HTS-h-01-1998-falcons-1.iff",
+      "bytes": 13216,
+      "sha256": "76350374dc9ab78e185446cad1902683fdaaa5b2679471aea3ea58a94c6e07fd"
+    },
+    {
+      "team": "Giants '56",
+      "file": "HTS-h-18-1956-giants-6.iff",
+      "bytes": 11280,
+      "sha256": "58b2082b4dba41d3f1f6e0ed006f24f511aa9088462d83a2599e673025fae585"
+    },
+    {
+      "team": "Giants '86",
+      "file": "HTS-h-18-1986-giants-2.iff",
+      "bytes": 12304,
+      "sha256": "b23c0296cc9cb2ad5ce51439db952414a559a6512cbd25d92344619b0ffae0c9"
+    },
+    {
+      "team": "Giants '90",
+      "file": "HTS-h-18-1990-giants-2.iff",
+      "bytes": 12512,
+      "sha256": "b9ed78300eae7b8725c41f3d24de3c8f5d85234dab93440a94a1cee31076d88b"
+    },
+    {
+      "team": "Giants '03",
+      "file": "HTS-h-18-2003-giants-0.iff",
+      "bytes": 13008,
+      "sha256": "f35ed87a0d4e4db7a90b7a8ada088c59fbfbae8a3c7d8348c3849fd8553ff5c4"
+    },
+    {
+      "team": "Jaguars '99",
+      "file": "HTS-h-12-1999-jaguars-1.iff",
+      "bytes": 13152,
+      "sha256": "be975899d9d1b692cde54c045bd6043348e4e1ac47002cf1a4ddca46f7195e4a"
+    },
+    {
+      "team": "Jets '68",
+      "file": "HTS-h-19-1968-jets-4.iff",
+      "bytes": 11648,
+      "sha256": "e301323fab5b8939e667c5f16f8e5daccb38de3d27c5475f09f8832b5551a73b"
+    },
+    {
+      "team": "Jets '98",
+      "file": "HTS-h-19-1998-jets-0.iff",
+      "bytes": 13024,
+      "sha256": "620ed871bf0d6897d9cb903357144b60c4b6bc1ccea648a4f1df0d7e3652b9bc"
+    },
+    {
+      "team": "Lions '53",
+      "file": "HTS-h-09-1953-lions-6.iff",
+      "bytes": 10960,
+      "sha256": "e17bc97a66bb2c20931e0919a00c95bd5dc5a8351a28f6c0c3f4b0f33e2a1eae"
+    },
+    {
+      "team": "Lions '91",
+      "file": "HTS-h-09-1991-lions-3.iff",
+      "bytes": 12560,
+      "sha256": "5ee6bf7ac96564e59eb41a10ade4d6a7b002e60bf0a08e8e3ea675fb2b8a121f"
+    },
+    {
+      "team": "Oilers '61",
+      "file": "HTS-h-28-1961-oilers-5.iff",
+      "bytes": 11328,
+      "sha256": "c3b7abe09f024b86682c593504ea5fdc6983e64aef6f5a275e4eb8894a1e306e"
+    },
+    {
+      "team": "Oilers '79",
+      "file": "HTS-h-28-1979-oilers-2.iff",
+      "bytes": 12496,
+      "sha256": "f0eed15c35ea960636d33a044c678ad3bdf4cc1472c8432cf28a7dc63164f7f1"
+    },
+    {
+      "team": "Packers '66",
+      "file": "HTS-h-10-1966-packers-3.iff",
+      "bytes": 11984,
+      "sha256": "838f617b93f62c7d1b68d3609486347215c779ac2dd919ec8c3b03fc491fd84e"
+    },
+    {
+      "team": "Packers '96",
+      "file": "HTS-h-10-1996-packers-2.iff",
+      "bytes": 13376,
+      "sha256": "030165603d81bb9c6880e722e2a5f06b60633f1b114a4fdd380661db5f0670f0"
+    },
+    {
+      "team": "Packers '04",
+      "file": "HTS-h-10-2004-packers-0.iff",
+      "bytes": 13392,
+      "sha256": "a10c06cbd1d303e6d57f018dbd9ed9701af20f014dd8dabd92180d3b5eafd09e"
+    },
+    {
+      "team": "Panthers '96",
+      "file": "HTS-h-04-1996-panthers-1.iff",
+      "bytes": 13440,
+      "sha256": "2102d179abf5ffdd2d6c9c92ae74125ea93a06b4a27cb17687842d53604f1282"
+    },
+    {
+      "team": "Panthers '03",
+      "file": "HTS-h-04-2003-panthers-0.iff",
+      "bytes": 13072,
+      "sha256": "52c326ae654efff844591d5e365830ad23c9dd0a9f62d3ba8ed7bfa2ecc49251"
+    },
+    {
+      "team": "Patriots '85",
+      "file": "HTS-h-16-1985-patriots-5.iff",
+      "bytes": 12624,
+      "sha256": "5de73890d9e345649da2c13f9daa455e98b2f84fb29604f4ff1c85d83f6ac953"
+    },
+    {
+      "team": "Patriots '01",
+      "file": "HTS-h-16-2001-patriots-0.iff",
+      "bytes": 13312,
+      "sha256": "e235ac0c8796a647e4caefff3ba90f29d753daff91ec6042b562ca9b5a7fe3ef"
+    },
+    {
+      "team": "Patriots '03",
+      "file": "HTS-h-16-2003-patriots-0.iff",
+      "bytes": 12976,
+      "sha256": "1871306147b73e067c663630b40fff0f7708cb7b1baadac66746bc30f98639c2"
+    },
+    {
+      "team": "Raiders '67",
+      "file": "HTS-h-20-1967-raiders-1.iff",
+      "bytes": 11840,
+      "sha256": "ca794e6adb148a1d67241fe0e9458a733ae3b2c82dd7ea8fc2b8437e50405a87"
+    },
+    {
+      "team": "Raiders '76",
+      "file": "HTS-h-20-1976-raiders-0.iff",
+      "bytes": 12224,
+      "sha256": "633429a7c12261e77a3d044afe221a1f08a0e40cd94b3c89e63ee1fd29bf07a6"
+    },
+    {
+      "team": "Raiders '83",
+      "file": "HTS-h-20-1983-raiders-0.iff",
+      "bytes": 12832,
+      "sha256": "df3d8cccc113d34e9fa1b198d2424ba571fde4964ccf8a0b08358f183825c08a"
+    },
+    {
+      "team": "Rams '79",
+      "file": "HTS-h-23-1979-rams-4.iff",
+      "bytes": 12208,
+      "sha256": "be44eb23910d3536805334cedfa22ac0b3b2233927dae15bfc59b31b89a78152"
+    },
+    {
+      "team": "Rams '99",
+      "file": "HTS-h-23-1999-rams-2.iff",
+      "bytes": 13088,
+      "sha256": "8b57db077906010e03b0d10b1a910d3ea52bfe092cf3d2066785329819d5b916"
+    },
+    {
+      "team": "Ravens '00",
+      "file": "HTS-h-02-2000-ravens-0.iff",
+      "bytes": 13184,
+      "sha256": "549dbf951976b5cd00444c3c3fad9df36425019649baec08a109cebb7a7e635b"
+    },
+    {
+      "team": "Redskins '82",
+      "file": "HTS-h-29-1982-redskins-2.iff",
+      "bytes": 12896,
+      "sha256": "67df056e082b39e50a5c094ce40a3bc6ca12012c05e48a9fa26bf85579610272"
+    },
+    {
+      "team": "Redskins '87",
+      "file": "HTS-h-29-1987-redskins-2.iff",
+      "bytes": 13040,
+      "sha256": "f189611558951c86f8b85c36fccd9b91e015350f714ed2792bed02f902712dcd"
+    },
+    {
+      "team": "Redskins '91",
+      "file": "HTS-h-29-1991-redskins-2.iff",
+      "bytes": 12736,
+      "sha256": "7f965c269bcc8b4a487261da0c41c7e7720f96073f76abc454dbe1fcce6dc5f7"
+    },
+    {
+      "team": "Saints '91",
+      "file": "HTS-h-17-1991-saints-4.iff",
+      "bytes": 12640,
+      "sha256": "7958abe403ccf757fea4f71685b6466b127cc116f74deb7dc91f1062bee32492"
+    },
+    {
+      "team": "Saints '00",
+      "file": "HTS-h-17-2000-saints-2.iff",
+      "bytes": 13120,
+      "sha256": "efc6f1d17c92b66cb0f3923464f7c5bcc0a6f01e8e066f20efd5b08b5d63dd6a"
+    },
+    {
+      "team": "Seahawks '84",
+      "file": "HTS-h-26-1984-seahawks-1.iff",
+      "bytes": 12992,
+      "sha256": "2248559b5fd482600c7de77172731440b5779d772714f88b70098f42932e3046"
+    },
+    {
+      "team": "Seahawks '99",
+      "file": "HTS-h-26-1999-seahawks-1.iff",
+      "bytes": 13280,
+      "sha256": "7002236e3fd56d4f29cdce423758a21586deba9235e58dc69e2934b5f7db06d3"
+    },
+    {
+      "team": "Steelers '75",
+      "file": "HTS-h-22-1975-steelers-1.iff",
+      "bytes": 12352,
+      "sha256": "838e7a9c83d1ae47b183917e98142c1544d469cb2181169cb4d72338b02b2376"
+    },
+    {
+      "team": "Steelers '78",
+      "file": "HTS-h-22-1978-steelers-1.iff",
+      "bytes": 12544,
+      "sha256": "8b2d3b49cb2a71aa3786a397901767e8baec5c8c8d1a48d512abf8922e63e3b0"
+    },
+    {
+      "team": "Steelers '95",
+      "file": "HTS-h-22-1995-steelers-0.iff",
+      "bytes": 13488,
+      "sha256": "f8323a0c0fe8c750c44e6145e1ea442541440e52e347af479281b94bae3db28f"
+    },
+    {
+      "team": "Texans '62",
+      "file": "HTS-h-13-1962-texans-5.iff",
+      "bytes": 11392,
+      "sha256": "b621820c5846af42494e5f2080786998f758b31fc6952739185b78d3ff07c915"
+    },
+    {
+      "team": "Titans '99",
+      "file": "HTS-h-28-1999-titans-0.iff",
+      "bytes": 13168,
+      "sha256": "df2948db35168f7c564c18516b6b7fd83e7dc3999eceddbd88ac419d05580f49"
+    },
+    {
+      "team": "Vikings '69",
+      "file": "HTS-h-15-1969-vikings-4.iff",
+      "bytes": 11936,
+      "sha256": "12038d4ad25f71e372377a04c6c34498415963b3eb257c20b45f186a545323b5"
+    },
+    {
+      "team": "Vikings '73",
+      "file": "HTS-h-15-1973-vikings-3.iff",
+      "bytes": 11936,
+      "sha256": "c76f7c54c29a397af7405932581aa10ee4776bbd08f86d40a60763550b0d19da"
+    },
+    {
+      "team": "Vikings '98",
+      "file": "HTS-h-15-1998-vikings-0.iff",
+      "bytes": 13232,
+      "sha256": "3c4e034373e35acb2e8097d1dffb0a7c2d50e9a76f7d4846467f12e5d3718f53"
+    }
+  ]
+}

@@ -18,6 +18,16 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tools.player_star.audit import RETAIL
 
 HAVE_UNICORN = importlib.util.find_spec('unicorn') is not None
+ALL_SPANS = ['star_runtime_372d40', 'star_runtime_3ddd50', 'star_runtime_38b0d0', 'star_runtime_2c9110', 'star_runtime_31e650']
+
+
+def star_passes(star='under_edge'):
+    """(outer tip, outer notch, inner tip, inner notch, diffuse, height) of each drawn pass of the installed table."""
+    va, _size, code = next(row for row in ps.CAVES if row[0] <= ps.SYMBOLS['star_passes'] < row[0]+len(row[2]))
+    code = ps._star_code(va, code, star)
+    start, end = ps.SYMBOLS['star_passes'] - va, ps.SYMBOLS['star_passes_end'] - va
+    rows = [struct.unpack_from('<4fIf', code, at) for at in range(start, end, 24)]
+    return [row for row in rows if row[4] >> 24]
 
 
 class ShapeTests(unittest.TestCase):
@@ -45,7 +55,9 @@ class PatchTests(unittest.TestCase):
         cls.legacy = bytes(buf)
         for name, revision, pins in (
                 ('thin', 'thin_v1', ps.LEGACY_OUTLINE_PINS),
-                ('bold', 'bold_v2', ps.LEGACY_BOLD_OUTLINE_PINS)):
+                ('bold', 'bold_v2', ps.LEGACY_BOLD_OUTLINE_PINS),
+                ('filled', 'filled_v3', ps.LEGACY_FILLED_PINS),
+                ('badge', 'gold_badge_v4', ps.LEGACY_BADGE_C_PINS)):
             buf = bytearray(cls.retail)
             at = ps._offset(buf, ps.DRAW_CALL_VA)
             buf[at:at+5] = ps.PATCHED_DRAW_CALL
@@ -65,7 +77,7 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(ps.status(self.legacy), 'legacy')
         self.assertTrue(ps.read_settings(self.legacy)['needs_upgrade'])
         self.assertEqual(ps.status(self.patched), 'applied')
-        self.assertEqual(ps.read_settings(self.patched)['renderer'], 'white_star_filled')
+        self.assertEqual(ps.read_settings(self.patched)['renderer'], 'white_outline_star_under_edge')
         upgraded, receipt = ps.apply(self.legacy)
         self.assertEqual(upgraded, self.patched)
         self.assertTrue(receipt['controller_gate_restored'])
@@ -86,7 +98,7 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt['upgraded_renderer'], 'thin_v1')
         self.assertFalse(receipt['controller_gate_restored'])
-        self.assertEqual(ps.read_settings(upgraded)['renderer_revision'], 'filled_contrast_v3')
+        self.assertEqual(ps.read_settings(upgraded)['renderer_revision'], 'outline_star_v5')
         dispatched, receipt = tt._apply_all(self.thin, None, catch_slider=False, player_star=True)
         self.assertEqual(dispatched, self.patched)
         self.assertEqual(receipt['player_star_patch']['upgraded_renderer'], 'thin_v1')
@@ -112,9 +124,11 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt['upgraded_renderer'], 'bold_contrast_v2')
         self.assertFalse(receipt['controller_gate_restored'])
-        self.assertEqual([edit['label'] for edit in receipt['edits']], ['star_runtime_31e650'])
-        allowed = set(range(ps._offset(self.bold, ps.SYMBOLS['star_inset']),
-                            ps._offset(self.bold, ps.SYMBOLS['star_inset'])+4))
+        # the outline star (job km2) rewrites all five spans
+        self.assertEqual([edit['label'] for edit in receipt['edits']], ALL_SPANS)
+        allowed = set()
+        for va, size, _ in ps.CAVES:
+            allowed.update(range(ps._offset(self.bold, va), ps._offset(self.bold, va)+size))
         for section in _sections(self.bold):
             allowed.update(range(section.header_offset+36, section.header_offset+56))
         self.assertTrue(all(i in allowed for i, (a, b) in enumerate(zip(self.bold, upgraded)) if a != b))
@@ -125,8 +139,53 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(repeat, dispatched)
         self.assertTrue(receipt['player_star_patch']['already_applied'])
 
+    def test_exact_filled_white_star_upgrades_to_the_outline_star(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+
+        self.assertEqual(ps.status(self.filled), 'legacy')
+        settings = ps.read_settings(self.filled)
+        self.assertEqual(settings['renderer_revision'], 'filled_contrast_v3')
+        self.assertEqual(settings['renderer'], 'white_star_filled')
+        self.assertTrue(settings['needs_upgrade'])
+        upgraded, receipt = ps.apply(self.filled)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt['upgraded_renderer'], 'filled_contrast_v3')
+        self.assertEqual([edit['label'] for edit in receipt['edits']], ALL_SPANS)
+        self.assertEqual(ps.read_settings(upgraded)['renderer_revision'], 'outline_star_v5')
+        dispatched, receipt = tt._apply_all(self.filled, None, catch_slider=False, player_star=True)
+        self.assertEqual(dispatched, self.patched)
+        self.assertEqual(receipt['player_star_patch']['upgraded_renderer'], 'filled_contrast_v3')
+
+    def test_badge_c_upgrades_to_the_outline_star_and_the_outline_variant_is_one_flag(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+
+        self.assertEqual(ps.status(self.badge), 'legacy')
+        settings = ps.read_settings(self.badge)
+        self.assertEqual((settings['renderer_revision'], settings['renderer']), ('gold_badge_v4', 'gold_star_white_rim'))
+        self.assertTrue(settings['needs_upgrade'])
+        upgraded, receipt = ps.apply(self.badge)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt['upgraded_renderer'], 'gold_badge_v4')
+        self.assertEqual([edit['label'] for edit in receipt['edits']], ALL_SPANS)
+        dispatched, receipt = tt._apply_all(self.badge, None, catch_slider=False, player_star=True)
+        self.assertEqual(dispatched, self.patched)
+        # the outline-only variant: the under-edge pass's alpha byte at zero, still 'applied'
+        outline, receipt = ps.apply(self.patched, 'outline')
+        self.assertEqual((ps.status(outline), ps.installed_star(outline)), ('applied', 'outline'))
+        alpha = ps._offset(outline, ps.SYMBOLS['star_passes'] + 19)
+        self.assertEqual((self.patched[alpha], outline[alpha]), (0xC8, 0))
+        digests = set()
+        for section in _sections(outline):
+            digests.update(range(section.header_offset+36, section.header_offset+56))
+        self.assertTrue(all(i in digests or i == alpha for i, (a, b) in enumerate(zip(self.patched, outline)) if a != b))
+        self.assertEqual(ps.apply(outline, 'under_edge')[0], self.patched)
+        self.assertEqual(ps.apply(outline, 'outline')[1]['changed_bytes'], 0)
+        self.assertEqual(ps.apply(self.badge, 'outline')[0], outline)
+        with self.assertRaises(ps.PlayerStarError):
+            ps.apply(self.patched, 'gold')
+
     def test_modified_and_mixed_sites_fail_closed(self):
-        for source in (self.retail, self.legacy, self.thin, self.bold, self.patched):
+        for source in (self.retail, self.legacy, self.thin, self.bold, self.filled, self.badge, self.patched):
             for _, va, code in ps.sites():
                 b = bytearray(source)
                 b[ps._offset(b, va)] ^= 1
@@ -248,7 +307,7 @@ class DrawTests(unittest.TestCase):
         self.assertEqual(new.u32(ps.STAR_COUNT_VA)&255, 1)
         self.assertEqual(len(new.strips), 6)
 
-    def test_all_22_get_one_filled_star_pair_across_modes_and_control_assignments(self):
+    def test_all_22_get_the_outline_star_pair_across_modes_and_control_assignments(self):
         for mode in range(9):
             for controlled in ((), (0,), (3, 12)):
                 with self.subTest(mode=mode, controlled=controlled):
@@ -269,45 +328,63 @@ class DrawTests(unittest.TestCase):
                         self.assertTrue(all(v[3] == 0xFFFFFFFF for v in strip['vertices']))
                         mat = strip['material']
                         self.assertEqual(struct.unpack_from('<I', mat, 0x18)[0],
-                                         0xFF101010 if index%2 == 0 else 0xFFFFFFFF)
+                                         0xC80E0E10 if index%2 == 0 else 0xFFFFFFFF)
                         self.assertEqual(struct.unpack_from('<I', mat, 0x30)[0], 0)
                         self.assertEqual(struct.unpack_from('<I', mat, 0x60)[0]&0x0F000000, 0)
 
-    def test_geometry_is_a_complete_filled_star_at_interpolated_feet(self):
+    def test_geometry_is_an_even_outline_star_at_interpolated_feet(self):
         vm = self.Machine(self.fixed)
         vm.entities([1])
         vm.frame()
         cx, cz = vm.centers[0]
+        passes = star_passes()
         self.assertEqual(len(vm.strips), 2)
-        for strip, scale, height in zip(vm.strips, (1.125, 1), (5, 5.5)):
+        # the dark under-edge first (lower), then the white outline
+        self.assertEqual([p[4] for p in passes], [0xC80E0E10, 0xFFFFFFFF])
+        self.assertEqual([p[5] for p in passes], [5.0, 5.5])
+        for strip, (ot, on, it, inn, _diffuse, height) in zip(vm.strips, passes):
             vertices = strip['vertices']
-            self.assertEqual(vertices[:2], vertices[-2:])
-            outer = vertices[::2][:-1]
-            for j, (x, y, z, _) in enumerate(vertices[:-2]):
-                i, inner = divmod(j, 2)
-                radius = (108 if i%2 == 0 else 51)*scale*(0 if inner else 1)
-                angle = -math.pi/2+i*math.pi/5
-                self.assertAlmostEqual(x, cx+radius*math.cos(angle), places=3)
-                self.assertAlmostEqual(z, cz+radius*math.sin(angle), places=3)
+            self.assertEqual(len(vertices), 22)
+            for i in (0, 1):                               # ray 10 repeats ray 0 and closes the strip
+                for a, b in zip(vertices[i][:3], vertices[20+i][:3]):
+                    self.assertAlmostEqual(a, b, places=3)
+            outer, inner = [], []
+            for j, (x, y, z, _) in enumerate(vertices):
+                k, is_inner = divmod(j, 2)
+                r = ((it if k % 2 == 0 else inn) if is_inner else (ot if k % 2 == 0 else on))
+                angle = k*math.pi/5
+                self.assertAlmostEqual(x, cx + r*math.sin(angle), places=2)
+                self.assertAlmostEqual(z, cz - r*math.cos(angle), places=2)
                 self.assertEqual(y, height)
-            # Strip winding alternates. Ten consistently wound triangles tile
-            # the whole polygon; ten repeated-centre triangles have zero area.
-            def signed_area(a, b, c):
-                return ((b[0]-a[0])*(c[2]-a[2])-(b[2]-a[2])*(c[0]-a[0]))/2
-            areas = [signed_area(*vertices[i:i+3]) * (-1 if i%2 else 1) for i in range(20)]
-            filled = [area for area in areas if area != 0]
-            self.assertEqual(len(filled), 10)
-            self.assertTrue(all(area < 0 for area in filled))
-            polygon = sum(outer[i][0]*outer[(i+1)%10][2]-outer[(i+1)%10][0]*outer[i][2]
-                          for i in range(10))/2
-            self.assertAlmostEqual(sum(abs(area) for area in filled), abs(polygon), delta=0.01)
-            center = (cx, height, cz, 0xFFFFFFFF)
-            self.assertEqual(vertices[1::2], [center]*11)
-            # Each visible triangle shares its complete radial edges with its
-            # neighbours. No hole, overlap, or rounded duplicate at a join.
-            for i in range(10):
-                self.assertEqual(vertices[2*i+1], center)
-                self.assertEqual(vertices[2*i+2], vertices[(2*i+2)%20])
+                if k < 10:
+                    (inner if is_inner else outer).append((x, z))
+            def area(points):
+                return abs(sum(points[i][0]*points[(i+1) % 10][1] - points[(i+1) % 10][0]*points[i][1] for i in range(10)))/2
+            def tri(a, b, c):
+                return abs((b[0]-a[0])*(c[2]-a[2])-(b[2]-a[2])*(c[0]-a[0]))/2
+            covered = sum(tri(*vertices[i:i+3]) for i in range(20))
+            self.assertAlmostEqual(covered, area(outer) - area(inner), delta=0.5)
+        # the white outline is the star (tips 86.4, notches 29.376) and its 8 cm inward mitred offset:
+        # every inner edge lies 8 cm inside its outer edge
+        ot, on, it, inn = passes[1][:4]
+        def point(r, k):
+            return (r*math.sin(k*math.pi/5), -r*math.cos(k*math.pi/5))
+        for k in range(10):
+            a, b = point(ot if k % 2 == 0 else on, k), point(on if k % 2 == 0 else ot, k+1)
+            p = point(it if k % 2 == 0 else inn, k)
+            length = math.hypot(b[0]-a[0], b[1]-a[1])
+            distance = abs((b[0]-a[0])*(a[1]-p[1]) - (a[0]-p[0])*(b[1]-a[1]))/length
+            self.assertAlmostEqual(distance, 8.0, places=3)
+        self.assertAlmostEqual(on/ot, 0.34, places=4)
+        self.assertEqual(ot, struct.unpack('<f', struct.pack('<f', 86.4))[0])
+
+    def test_the_outline_variant_draws_only_the_white_pass(self):
+        outline, _ = ps.apply(self.fixed, 'outline')
+        vm = self.Machine(outline)
+        vm.entities([1, 1])
+        vm.frame()
+        self.assertEqual(len(vm.strips), 2)
+        self.assertTrue(all(struct.unpack_from('<I', strip['material'], 0x18)[0] == 0xFFFFFFFF for strip in vm.strips))
 
     def test_untagged_and_control_changes_preserve_retail_rendering_and_shared_material(self):
         from tools.player_star.emulate import MATERIAL
@@ -354,7 +431,7 @@ class DrawTests(unittest.TestCase):
         vm.entities([1])
         original = bytes(vm.uc.mem_read(MATERIAL, 128))
         vm.frame()
-        for strip, color in zip(vm.strips, (0xFF101010, 0xFFFFFFFF)):
+        for strip, color in zip(vm.strips, (0xC80E0E10, 0xFFFFFFFF)):
             expected = bytearray(original)
             struct.pack_into('<I', expected, 0x18, color)
             struct.pack_into('<I', expected, 0x30, 0)

@@ -1,0 +1,2559 @@
+.....F...........F.....F.F................  [100%]
+=================================== FAILURES ===================================
+__ PipelineTests.test_complete_offense_runs_first_and_reaches_final_menu_gate __
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, image_size = 3293184, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmpe8dlv0_s/source.xbe', target='/tmp/tmpe8dlv0_s/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x73253ac74b00>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_nfl2k5_complete_offense.PipelineTests testMethod=test_complete_offense_runs_first_and_reaches_final_menu_gate>
+
+    def test_complete_offense_runs_first_and_reaches_final_menu_gate(self):
+        events=[]
+>       receipt=self.run_build([ROOT/'data/playbooks/modern_gun_core.2k5book',PACK],events)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_nfl2k5_complete_offense.py:111:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/mod_editor/test_nfl2k5_complete_offense.py:106: in run_build
+    return mod_build.build(mod_build.BuildPlan(str(source),str(target),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpe8dlv0_s/source.xbe', target='/tmp/tmpe8dlv0_s/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x73253ac74b00>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+___ LeagueTests.test_league_recipe_resolves_all_books_and_preserves_specials ___
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, image_size = 3293184, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmpzvmvp6q3/source.xbe', target='/tmp/tmpzvmvp6q3/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f2316ba0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_nfl2k5_modern_league.LeagueTests testMethod=test_league_recipe_resolves_all_books_and_preserves_specials>
+
+    def test_league_recipe_resolves_all_books_and_preserves_specials(self):
+        recipe=json.loads((ROOT/'pb/recipes/all_teams.json').read_text())['overrides']
+        final=json.loads((ROOT/'pb/recipes/final_playbooks.json').read_text())['overrides']
+        self.assertEqual(recipe['playbook_packs'],final['playbook_packs'])
+        self.assertEqual(set(recipe['playbook_packs'][:32]),{'<stack>/'+r['pack'] for r in self.manifest})
+        for flag in ('read_option_runtime','playbook_pair'):
+            self.assertFalse(recipe[flag])
+        self.assertTrue(recipe['qb_spy'])
+        # PROVED OFFLINE: the production preset supplies these enabled owners.
+        from mod_editor.core import mod_build
+        plan=mod_build.apply_preset(mod_build.BuildPlan('',''),'softdrink_experimental')
+        self.assertEqual(plan.screen_timing,'D')
+        self.assertTrue(plan.xemu_display_list_fix)
+        events=[]
+        fixture=complete_tests.PipelineTests()
+>       fixture.run_build([ROOT/r['pack'] for r in self.manifest],events)
+
+tests/mod_editor/test_nfl2k5_modern_league.py:86:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/mod_editor/test_nfl2k5_complete_offense.py:106: in run_build
+    return mod_build.build(mod_build.BuildPlan(str(source),str(target),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpzvmvp6q3/source.xbe', target='/tmp/tmpzvmvp6q3/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f2316ba0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='ARZ') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '65e2686a61ad4bb0c003533ef5a0bde6971c9ff4a1dc36df564b2d7ecddae77d' != 'cf4bf1a935e0cc869c5f1c9317ba45aaf74916017cbbac0eecc01cfcc4ea994c'
+E                   - 65e2686a61ad4bb0c003533ef5a0bde6971c9ff4a1dc36df564b2d7ecddae77d
+E                   + cf4bf1a935e0cc869c5f1c9317ba45aaf74916017cbbac0eecc01cfcc4ea994c
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='ATL') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '2908d505626446b0adf9d1f002182a2092fc2b08834ed3f1aea74f405a579854' != 'fe4afa7745dfbebe9cd20de1498f56cf8e70523e1784ebfa131667c538260eaa'
+E                   - 2908d505626446b0adf9d1f002182a2092fc2b08834ed3f1aea74f405a579854
+E                   + fe4afa7745dfbebe9cd20de1498f56cf8e70523e1784ebfa131667c538260eaa
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='BAL') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'a9cc5343e6b4a8b38b058d1893983766b2fc65a233c0b5e8bd1c359e447fb892' != 'e7cbc1d05d1f1cb7b70a18df16c7a5592fe3404852580a32f78dbb536600bf76'
+E                   - a9cc5343e6b4a8b38b058d1893983766b2fc65a233c0b5e8bd1c359e447fb892
+E                   + e7cbc1d05d1f1cb7b70a18df16c7a5592fe3404852580a32f78dbb536600bf76
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='BUF') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'd47b023a5bf6b60c490bab285c74fee8ac13a6e7364a7a385edf1a6351239ac7' != '6cdf370384d11749a2ee8c2ab89f685baeb8a29071a0c596168362562fa977f7'
+E                   - d47b023a5bf6b60c490bab285c74fee8ac13a6e7364a7a385edf1a6351239ac7
+E                   + 6cdf370384d11749a2ee8c2ab89f685baeb8a29071a0c596168362562fa977f7
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='CAR') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'f61105853411cd58dcf6a28e7c7f653f61457c584a5098a6d1e5d6455690026c' != 'e27709f37877848b1f6b581a586637b74b40e16c05bc6e3054002aa66519a06d'
+E                   - f61105853411cd58dcf6a28e7c7f653f61457c584a5098a6d1e5d6455690026c
+E                   + e27709f37877848b1f6b581a586637b74b40e16c05bc6e3054002aa66519a06d
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='CHI') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '59a18e82447c3e95f0e2cf7ed806c906c514927c28f76c347704882ba32bc7b6' != '17f3ca7a86ca3722a99a82eb0688093712f51de283cf79c10156e422ea43e698'
+E                   - 59a18e82447c3e95f0e2cf7ed806c906c514927c28f76c347704882ba32bc7b6
+E                   + 17f3ca7a86ca3722a99a82eb0688093712f51de283cf79c10156e422ea43e698
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='CIN') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '1d8966e6d33401e59ea33bc42182683e3dadd5d179670a15001347da7903372b' != '2449f2ed0c76e4b7d879fb30e96373da1faa5dbde884e3cc4f52e0b316e8875c'
+E                   - 1d8966e6d33401e59ea33bc42182683e3dadd5d179670a15001347da7903372b
+E                   + 2449f2ed0c76e4b7d879fb30e96373da1faa5dbde884e3cc4f52e0b316e8875c
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='CLE') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '38170583dbd400491e566561228559da614a918876c95271587a7a3fef7304b9' != '6e22ef99b55c0d4af6ad7c1394192f5603f80793d8b9d31e3ab8e0ad2be0e6fb'
+E                   - 38170583dbd400491e566561228559da614a918876c95271587a7a3fef7304b9
+E                   + 6e22ef99b55c0d4af6ad7c1394192f5603f80793d8b9d31e3ab8e0ad2be0e6fb
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='DAL') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'd4b90401b191549c283e66d9bcbb9840be26d838979c58e736b2d551886477ca' != '72a4de58732717b826c38ca4d006e18cc772469b90c86e10e81372481a04714f'
+E                   - d4b90401b191549c283e66d9bcbb9840be26d838979c58e736b2d551886477ca
+E                   + 72a4de58732717b826c38ca4d006e18cc772469b90c86e10e81372481a04714f
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='DEN') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '3fa2b6dad24dfb79489604857425e7cfe1f457e7c98063fdd3a194f20a85167a' != 'b78f20e4850c94ada66302733b2acee0065fdea1fbb2e365d8b73ff436dbe779'
+E                   - 3fa2b6dad24dfb79489604857425e7cfe1f457e7c98063fdd3a194f20a85167a
+E                   + b78f20e4850c94ada66302733b2acee0065fdea1fbb2e365d8b73ff436dbe779
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='DET') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '03d95fc7c7301c74bcb3f761fa693c0ddc20152ec5eea0f90b2c1ffb7e8c1435' != 'ba3320df477d147dab58824d678c9fa72d9f96eefa1db5892e359db6545b0789'
+E                   - 03d95fc7c7301c74bcb3f761fa693c0ddc20152ec5eea0f90b2c1ffb7e8c1435
+E                   + ba3320df477d147dab58824d678c9fa72d9f96eefa1db5892e359db6545b0789
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='GB') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'b01c85252d59a9e8dc9180c2f8905953183b6543b084e8f820d934d77a842a3f' != 'b2a4dd123218680c3b62ae289daef64cea033a40006791ad17b1c7a7852d0b7d'
+E                   - b01c85252d59a9e8dc9180c2f8905953183b6543b084e8f820d934d77a842a3f
+E                   + b2a4dd123218680c3b62ae289daef64cea033a40006791ad17b1c7a7852d0b7d
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='HOU') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '6398d625f8a021df80a57b4a2caf06ce70a633c491f95b4e8224c477ea033f13' != '9d949bd6dc1bab35afbcbb99e6e11ee259cbd3fe3c025418c6f8679f5cdc3df5'
+E                   - 6398d625f8a021df80a57b4a2caf06ce70a633c491f95b4e8224c477ea033f13
+E                   + 9d949bd6dc1bab35afbcbb99e6e11ee259cbd3fe3c025418c6f8679f5cdc3df5
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='IND') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'f9b38ec4299049a17e37a9d9182709e9a80a6db0d2d4c0e18c637c2a92e97aa7' != '74513f662e1bbdf9a77b4d95b5193f65742678eea420cef698f408a1cc9921c2'
+E                   - f9b38ec4299049a17e37a9d9182709e9a80a6db0d2d4c0e18c637c2a92e97aa7
+E                   + 74513f662e1bbdf9a77b4d95b5193f65742678eea420cef698f408a1cc9921c2
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='JAX') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '34f6ba54558aa55d0a0eeff74498508e340894f95e924fb45df2f41c9296630c' != '4392172b3d56de4fc7995e764336ddc079a6ad299fb48104c9782f75739890c8'
+E                   - 34f6ba54558aa55d0a0eeff74498508e340894f95e924fb45df2f41c9296630c
+E                   + 4392172b3d56de4fc7995e764336ddc079a6ad299fb48104c9782f75739890c8
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='KC') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '624dde9bf69e76bae7e50c4b7d501179bc1639c954669650369af9b4f6234034' != '1c77db4331f37580598a714316cd1968eeb5307359418ee5ae5cc96a16cba3ed'
+E                   - 624dde9bf69e76bae7e50c4b7d501179bc1639c954669650369af9b4f6234034
+E                   + 1c77db4331f37580598a714316cd1968eeb5307359418ee5ae5cc96a16cba3ed
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='MIA') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '3d35d42402f055ca7e351d3187bf5c82925075b5148dcbde6372a576991d603a' != 'f2304f83696fd3f20fbb2219cfb153cd06add8785fffec548b61d6537371f506'
+E                   - 3d35d42402f055ca7e351d3187bf5c82925075b5148dcbde6372a576991d603a
+E                   + f2304f83696fd3f20fbb2219cfb153cd06add8785fffec548b61d6537371f506
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='MIN') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '95916e31abb88255edd1fa5c68c4ae99615c57accc35ec8837c1d04ce8c05d0f' != '99ddbf5d6d7849d27f0b25ddaae5ae026f374570f43469bd5b0540df83beb1e8'
+E                   - 95916e31abb88255edd1fa5c68c4ae99615c57accc35ec8837c1d04ce8c05d0f
+E                   + 99ddbf5d6d7849d27f0b25ddaae5ae026f374570f43469bd5b0540df83beb1e8
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='NE') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '17966016ac7d710b3d3d4f6f34f770111d59485f553feb0ef49a19e4420e97a0' != '4f174b492e32b621bc52a6e5688c1a2099be1350eb8ad7b5ee7f6e73ce5b39d0'
+E                   - 17966016ac7d710b3d3d4f6f34f770111d59485f553feb0ef49a19e4420e97a0
+E                   + 4f174b492e32b621bc52a6e5688c1a2099be1350eb8ad7b5ee7f6e73ce5b39d0
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='NO') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'c6d30b385ecdcfb1f1c22d0b1ba5ce147c1101987aaa12661626aa663d4387dd' != 'a288ac32cc6049d2fc5f7a193e824f1574bf3318abff2abde911f68fe6c58108'
+E                   - c6d30b385ecdcfb1f1c22d0b1ba5ce147c1101987aaa12661626aa663d4387dd
+E                   + a288ac32cc6049d2fc5f7a193e824f1574bf3318abff2abde911f68fe6c58108
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='NYG') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'b62d83d1f37fff9d1def82b370f8bb62fd1dc2237bf351dd9d50b6452625d6b3' != 'be28a7cfd1c17c9a3862bd0bc1cc2bc6007ebae829a48568e9eb2cadf7294f13'
+E                   - b62d83d1f37fff9d1def82b370f8bb62fd1dc2237bf351dd9d50b6452625d6b3
+E                   + be28a7cfd1c17c9a3862bd0bc1cc2bc6007ebae829a48568e9eb2cadf7294f13
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='NYJ') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'e64bbb3030da312163e04dc8a9b774156f80476841c1828fc1ee7648e30f1036' != '72c62404dcf243ed9bf03d2eacbdbd4087a1cc19fa30be389381370beeefc272'
+E                   - e64bbb3030da312163e04dc8a9b774156f80476841c1828fc1ee7648e30f1036
+E                   + 72c62404dcf243ed9bf03d2eacbdbd4087a1cc19fa30be389381370beeefc272
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='OAK') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '9a8ea64b559f145032d016517fa06cdd830b4643dcd425feebd3da00650c5103' != '1f09d449640815ec6b54249564a473727c1af6b599edafd13ed47f7989f8f979'
+E                   - 9a8ea64b559f145032d016517fa06cdd830b4643dcd425feebd3da00650c5103
+E                   + 1f09d449640815ec6b54249564a473727c1af6b599edafd13ed47f7989f8f979
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='PHI') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'ecf72effa52f015ebbfee06462dcba5a863ebbf0c742c1c6b253194357b6fa74' != '13b45613b5b6d7adff42b103a5ffa9bdd44910dff494d36fad21f63fff38daac'
+E                   - ecf72effa52f015ebbfee06462dcba5a863ebbf0c742c1c6b253194357b6fa74
+E                   + 13b45613b5b6d7adff42b103a5ffa9bdd44910dff494d36fad21f63fff38daac
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='PIT') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '91464eb2f67b3da7f50421d49c72e65993b94e49df077846020667cd939bd978' != '734f47be89d51e9ccd2cdaed84fd395e08df29b2e8d538c807da8d3ce5808fff'
+E                   - 91464eb2f67b3da7f50421d49c72e65993b94e49df077846020667cd939bd978
+E                   + 734f47be89d51e9ccd2cdaed84fd395e08df29b2e8d538c807da8d3ce5808fff
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='SD') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '7692773338fc750daf583143f4e7b0120dd463c24cadd315501610ed6f10e8a1' != '8f6bced697e92862011bf80a86a608da935c9d93caef93d9753d82d6ac7a3174'
+E                   - 7692773338fc750daf583143f4e7b0120dd463c24cadd315501610ed6f10e8a1
+E                   + 8f6bced697e92862011bf80a86a608da935c9d93caef93d9753d82d6ac7a3174
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='SEA') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: 'dbcb943d4904e0845c24b8a7bd8c2488c139c7e173219aa24093a99138d87801' != '52118e0458b82f6c89bb7389b93ccc97f6c661d5a1834409da253acecb9b9c17'
+E                   - dbcb943d4904e0845c24b8a7bd8c2488c139c7e173219aa24093a99138d87801
+E                   + 52118e0458b82f6c89bb7389b93ccc97f6c661d5a1834409da253acecb9b9c17
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='SF') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '0b27643c1cd048c48a3217f4c13411016296262d75f32f5e1fabb3938a5b1f72' != 'd0f630ee176833b1a0916cbc1b1ca0a765ffdc9db463ac7d74f31b2b479b18d9'
+E                   - 0b27643c1cd048c48a3217f4c13411016296262d75f32f5e1fabb3938a5b1f72
+E                   + d0f630ee176833b1a0916cbc1b1ca0a765ffdc9db463ac7d74f31b2b479b18d9
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='STL') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '33a29656ab0dd47ce19bb8d4af507d59172e3f0876ea74f5d285fd9ce664db80' != '4950c816868f8a12f4d6b71444e17af792978c8c0a1f0a63b066192f925bef93'
+E                   - 33a29656ab0dd47ce19bb8d4af507d59172e3f0876ea74f5d285fd9ce664db80
+E                   + 4950c816868f8a12f4d6b71444e17af792978c8c0a1f0a63b066192f925bef93
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='TB') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '2593ab0df45f319ed2509b0ad6a727f432585e3c68e195a8094c6784125ca085' != 'e79536a370e85a36f13835d7b37817fad5020bb88329d3bc06d70f779665fd33'
+E                   - 2593ab0df45f319ed2509b0ad6a727f432585e3c68e195a8094c6784125ca085
+E                   + e79536a370e85a36f13835d7b37817fad5020bb88329d3bc06d70f779665fd33
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='TEN') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '26b0390816c95f8da9eba0b30401464fae0f648ce9f04768ffe7b57526d3c476' != '80e7fda262df5674c9b59fa125f930729a7869bac945f6fe75ed2772c8041592'
+E                   - 26b0390816c95f8da9eba0b30401464fae0f648ce9f04768ffe7b57526d3c476
+E                   + 80e7fda262df5674c9b59fa125f930729a7869bac945f6fe75ed2772c8041592
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+_ RetailLeagueTests.test_replay_receipts_cover_every_formation_page_and_current_pack (team='WAS') _
+
+self = <test_nfl2k5_modern_league.RetailLeagueTests testMethod=test_replay_receipts_cover_every_formation_page_and_current_pack>
+
+    def test_replay_receipts_cover_every_formation_page_and_current_pack(self):
+        receipt=json.loads((ROOT/'pb/receipts/league-offline.json').read_text())
+        self.assertEqual(receipt['build_menu_gate'],{'books':37,'problems':0})
+        self.assertFalse(receipt['runtime_witness'])
+        self.assertEqual(set(receipt['teams']),set(p.TEAM_BOOKS))
+        with OuterImage(IMAGE) as image:
+            for team,row in receipt['teams'].items():
+                with self.subTest(team=team):
+                    raw=image.read_entry(BOOK_ENTRIES[team]);stock=i.parse_playbook_resource(raw)
+                    self.assertEqual(row['compile']['source_sha256'],hashlib.sha256(raw).hexdigest())
+>                   self.assertEqual(row['pack_sha256'],hashlib.sha256((ROOT/row['pack']).read_bytes()).hexdigest())
+E                   AssertionError: '9d5438ecf56d1cf56d1add61965322b0a733d4c84a7cf3c5a31cbe4a06f2e837' != '77c60e2c53cf63a90618e1b8f4aefea51f4ddf4f60dd3d314f20fba52bb4d78e'
+E                   - 9d5438ecf56d1cf56d1add61965322b0a733d4c84a7cf3c5a31cbe4a06f2e837
+E                   + 77c60e2c53cf63a90618e1b8f4aefea51f4ddf4f60dd3d314f20fba52bb4d78e
+
+tests/mod_editor/test_nfl2k5_modern_league.py:119: AssertionError
+__ PipelineTests.test_complete_offense_runs_first_and_reaches_final_menu_gate __
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, image_size = 3293184, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmpkunwf9th/source.xbe', target='/tmp/tmpkunwf9th/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f2488d10>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <tests.mod_editor.test_nfl2k5_complete_offense.PipelineTests testMethod=test_complete_offense_runs_first_and_reaches_final_menu_gate>
+
+    def test_complete_offense_runs_first_and_reaches_final_menu_gate(self):
+        events=[]
+>       receipt=self.run_build([ROOT/'data/playbooks/modern_gun_core.2k5book',PACK],events)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_nfl2k5_complete_offense.py:111:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/mod_editor/test_nfl2k5_complete_offense.py:106: in run_build
+    return mod_build.build(mod_build.BuildPlan(str(source),str(target),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmpkunwf9th/source.xbe', target='/tmp/tmpkunwf9th/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f2488d10>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+______ Books.test_build_orders_all_offense_before_defense_then_menu_gate _______
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+>           offset, length = xc.xbe_extent(descriptor, size)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mod_editor/core/nfl2k5_throw_tuning.py:752:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools/nfl_uniform_color_xiso_direct_patch.py:692: in xbe_extent
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:663: in file_extent
+    entries, _directory = parse_xdvdfs(descriptor, image_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/nfl_uniform_color_xiso_direct_patch.py:484: in parse_xdvdfs
+    base_offset = locate_xdvdfs_base(descriptor, image_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, image_size = 3293184, require_entry = 'default.xbe'
+
+    def locate_xdvdfs_base(
+        descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+    ) -> int:
+        """Find the byte where this image's game partition starts.
+
+        A dump of an Xbox disc is not one canonical file. Which byte the game
+        partition begins at depends on how the disc was read, and every one of
+        these is a legitimate dump of the same game:
+
+        * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+        * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+        * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+        Assuming ``0`` is what made the editor reject other people's dumps with a
+        magic-mismatch, so the base is discovered rather than assumed. Only offsets
+        carrying the magic at both ends of the header sector are accepted, which is
+        a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+        data supplies by accident.
+        """
+        for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+            return base
+        # The known offsets are only a fast path. Rippers exist that we have never
+        # seen and cannot enumerate, and guessing from a list is exactly what made
+        # this reject legal dumps in the first place, so fall back to FINDING the
+        # filesystem: search sector-aligned positions for the 20-byte magic and
+        # confirm the candidate really is a header by requiring the magic at BOTH
+        # ends of its sector and a root directory that fits inside the image.
+        # Nothing carried the required file; fall back to any real filesystem so
+        # a non-game Xbox image still parses rather than being called corrupt.
+        if require_entry is not None:
+            for base in iter_xdvdfs_bases(descriptor, image_size):
+                return base
+        identified = identify_non_xdvdfs_image(descriptor, image_size)
+>       raise PatchError(
+            "No Xbox XDVDFS filesystem was found in this image. The known "
+            "game-partition offsets ("
+            + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+            + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+            "were searched sector by sector. "
+            + (identified or "This does not look like an Xbox disc image.")
+        )
+E       nfl_uniform_color_xiso_direct_patch.PatchError: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+tools/nfl_uniform_color_xiso_direct_patch.py:369: PatchError
+
+The above exception was the direct cause of the following exception:
+
+plan = BuildPlan(source='/tmp/tmprv8yko5c/source.xbe', target='/tmp/tmprv8yko5c/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f216a3f0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+>               receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+
+mod_editor/core/mod_build.py:1360:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/mod_build.py:2303: in _build
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1046: in _check_playbook_scoring
+    payload = _xbe_bytes(target)
+              ^^^^^^^^^^^^^^^^^^
+mod_editor/core/mod_build.py:1033: in _xbe_bytes
+    off, length = tt.image_xbe_extent(fd, size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+descriptor = 11, size = 3293184
+
+    def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
+        """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+        Resolved through the image's directory (whatever the game partition's base
+        and wherever the file was placed), never assumed from the retail rip."""
+
+        xc = _xdvdfs_module()
+        try:
+            offset, length = xc.xbe_extent(descriptor, size)
+        except xc.PatchError as exc:
+>           raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+E           mod_editor.core.nfl2k5_throw_tuning.ThrowTuningError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/nfl2k5_throw_tuning.py:754: ThrowTuningError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_build_orders_all_offense_before_defense_then_menu_gate>
+
+    def test_build_orders_all_offense_before_defense_then_menu_gate(self):
+        recipe=json.loads((ROOT/'pb/recipes/final_playbooks.json').read_text())['overrides']
+        for flag in ('playbook_pair','read_option_runtime'):self.assertFalse(recipe[flag])
+        self.assertNotIn('qb_spy',recipe)
+        paths=[Path(p.replace('<stack>',str(ROOT))) for p in recipe['playbook_packs']]
+>       events=[];PipelineTests().run_build(list(reversed(paths)),events)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:53:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/mod_editor/test_nfl2k5_complete_offense.py:106: in run_build
+    return mod_build.build(mod_build.BuildPlan(str(source),str(target),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+plan = BuildPlan(source='/tmp/tmprv8yko5c/source.xbe', target='/tmp/tmprv8yko5c/out.xbe', overwrite=False, throw=False, max_d...nlock=False, music_userlist=False, music_project=None, music_library=None, commentary=[], name='', author='', notes='')
+progress = <mod_editor.core.build_io.StageProgress object at 0x7324f216a3f0>
+_project_builder = None
+
+    def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
+        """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+        from .build_io import StageProgress
+        progress = StageProgress(progress)
+        stage: Path | None = None
+        try:
+            blockers = validate_plan(plan)
+            if blockers:
+                raise ValueError("\n".join(blockers))
+            r62 = _validated_r62_plan_options(plan)
+            require_build_source(plan.source)
+            source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+            if source == target.resolve():
+                raise ValueError("target must not be the source")
+            from .image_use import check_image_destination, publish_image
+            if target.exists() and os.path.samefile(source, target):
+                raise ValueError("target must not be the source")
+            previous_target = check_image_destination(target, overwrite=plan.overwrite)
+            with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
+                directory = Path(folder)
+                stage = directory
+                edits = None
+                project_result = None
+                effective_source = source
+                if _project_builder is not None or plan.music_project:
+                    preflight_plan(plan, progress)
+                if _project_builder is not None:
+                    # All plan refusals run before materializing project textures or
+                    # creating the first disc copy. Revalidate against the staged
+                    # resources below before consuming that private intermediate.
+                    project_directory = directory / "project"
+                    project_directory.mkdir()
+                    effective_source = project_directory / "source.iso"
+                    project_result = _project_builder(effective_source)
+                    if effective_source.is_symlink() or effective_source.stat().st_nlink != 1:
+                        raise ValueError("Project builder did not produce a private image")
+                    from . import nfl2k5_modern_color as colour
+                    original_colour_receipt = colour.read_image_receipt(source)
+                    if original_colour_receipt is not None:
+                        colour._save_image_receipt(effective_source, original_colour_receipt)
+                if plan.music_project:
+                    if not tt.is_disc_image(source):
+                        raise ValueError("Music replacements need a disc image")
+                    project_library = []
+                    edits = _prepare_music_project(effective_source, plan.music_project, directory,
+                        progress or (lambda *_: None), library_result=project_library)
+                    if project_library:
+                        if plan.music_library:
+                            raise ValueError("Choose the Music project or the separate music library, then build again.")
+                        plan = replace(plan, music_library=project_library[0])
+                receipt = _build(replace(plan, source=str(effective_source), target=str(directory / target.name), overwrite=False), progress,
+                                 music_edits=edits, r62_options=r62, _consume_source=project_result is not None,
+                                 _retail_source=source)
+                if project_result is not None:
+                    receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
+                    receipt["source"] = str(source)
+                if plan.music_shuffle or plan.music_library:
+                    library = _core_module("nfl2k5_music_banks")
+                    expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
+                    checked = library.revalidate_playlist(directory / target.name, expected=expected)
+                    receipt["music_shuffle_validation"] = checked
+                    for step in receipt["steps"]:
+                        preflight = step.get("music_shuffle_preflight")
+                        if preflight is not None:
+                            preflight.update(checked)
+                progress("Hashing the verified disc", 0, 0)
+                from .build_feedback import measure, compare, _digest
+                # One read of the output. The source's hash comes from the pass
+                # that copied it (the project builder's receipt, or this build's
+                # own copy); beta 73 read the 6 GB source again here to get it.
+                source_sha256 = (project_result.source_sha256
+                                 if project_result is not None and getattr(project_result, "source_sha256", "")
+                                 else receipt.get("source_sha256"))
+                if source_sha256:
+                    receipt["outcome"] = compare(
+                        {"sha256": source_sha256, "size": source.stat().st_size},
+                        _digest(directory / target.name))
+                else:
+                    receipt["outcome"] = measure(source, directory / target.name)
+                if progress:
+                    progress(receipt["outcome"]["message"], 0, 0)
+                progress("Publishing the verified disc", 0, 0)
+                from . import nfl2k5_modern_color as colour
+                colour_receipt = colour.read_image_receipt(directory / target.name)
+                venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
+                venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
+                publish_image(directory / target.name, target, previous_target)
+                if colour_receipt is not None:
+                    colour._save_image_receipt(target, colour_receipt)
+                else:
+                    colour.receipt_path(target).unlink(missing_ok=True)
+                if venues26 is not None:
+                    if venues_receipt is not None:
+                        venues26._save_receipt(target, venues_receipt)
+                    else:
+                        venues26.receipt_path(target).unlink(missing_ok=True)
+                receipt["stage_seconds"] = progress.finish()
+                receipt["target"] = str(target)
+                receipt["result"]["path"] = str(target)
+                return receipt
+        except ValueError as exc:
+            source = Path(plan.source)
+>           raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+E           ValueError: disc image has no default.xbe: No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image. This image is: unknown image. No Xbox XDVDFS filesystem was found in this image. The known game-partition offsets (0x0, 0x18300000, 0xFD90000, 0x2080000) were checked and then the first 1024 MiB were searched sector by sector. This does not look like an Xbox disc image.
+
+mod_editor/core/mod_build.py:1412: ValueError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='ARZ') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '76cdf5602687b7c382d1825c5ef46f052acc320e0777487f81fbf46bcaaafc26' != '491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de'
+E               - 76cdf5602687b7c382d1825c5ef46f052acc320e0777487f81fbf46bcaaafc26
+E               + 491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='ATL') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'a28f4611936a9fefea68cf67f316481d9449ad812d60402c5831ba0778b80d24' != '0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab'
+E               - a28f4611936a9fefea68cf67f316481d9449ad812d60402c5831ba0778b80d24
+E               + 0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='BAL') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '6157362603abbe892a9e161dbd7de756f2e543c378bc199b7d93c0a718268c70' != 'eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc'
+E               - 6157362603abbe892a9e161dbd7de756f2e543c378bc199b7d93c0a718268c70
+E               + eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='BUF') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '70cfab42fe6159a9f52fec2970efd9decd7a0dfd02ba4d1ded9a76072d056281' != 'a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f'
+E               - 70cfab42fe6159a9f52fec2970efd9decd7a0dfd02ba4d1ded9a76072d056281
+E               + a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='CAR') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '40530345d2073ee4cf87df756df96a394110b6753a5803dc957f284bbac96b55' != '24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642'
+E               - 40530345d2073ee4cf87df756df96a394110b6753a5803dc957f284bbac96b55
+E               + 24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='CHI') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'd77db7a1a1151b479e186c183a4102636ea3d186d2d5aee99eae7b01c2a2d8e8' != '6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15'
+E               - d77db7a1a1151b479e186c183a4102636ea3d186d2d5aee99eae7b01c2a2d8e8
+E               + 6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='CIN') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '41af1eace1b384329a40150c4e4769427171007633403df120f237dc1b2674bd' != '1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002'
+E               - 41af1eace1b384329a40150c4e4769427171007633403df120f237dc1b2674bd
+E               + 1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='CLE') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'b8593aa0d6593afebf0834c0b696fe32b504a64aa8758fdb113844598b5887c0' != '53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb'
+E               - b8593aa0d6593afebf0834c0b696fe32b504a64aa8758fdb113844598b5887c0
+E               + 53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='DAL') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'c558e78d12b9aaaf521b218ab36d57e6a812c8ab9938e4338a53099266517b39' != '09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f'
+E               - c558e78d12b9aaaf521b218ab36d57e6a812c8ab9938e4338a53099266517b39
+E               + 09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='DEN') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'e6d58d52dc811bfefc068c7e3df1ce2a4fc948bc8a93e111c12d6d5a4fd25c23' != '7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a'
+E               - e6d58d52dc811bfefc068c7e3df1ce2a4fc948bc8a93e111c12d6d5a4fd25c23
+E               + 7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='DET') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '4dc0e777b22e2529fe648f24f609989af484cde6363b7fd364e6ce6bc25261eb' != 'a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b'
+E               - 4dc0e777b22e2529fe648f24f609989af484cde6363b7fd364e6ce6bc25261eb
+E               + a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='GB') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '77c558f00d0f38983582284494ade72c3f37d7c1adb574c7eb8493fc6fda9e46' != '20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875'
+E               - 77c558f00d0f38983582284494ade72c3f37d7c1adb574c7eb8493fc6fda9e46
+E               + 20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='HOU') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '780c6b5ad425601c8c79819978a683518340dfe6c9100ed23109cad1afbaa5a0' != '1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29'
+E               - 780c6b5ad425601c8c79819978a683518340dfe6c9100ed23109cad1afbaa5a0
+E               + 1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='IND') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '3fd8c10fab7a32b2295ad68c38400e6298c8d115cb88189ad9905da273b6c1fc' != 'cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff'
+E               - 3fd8c10fab7a32b2295ad68c38400e6298c8d115cb88189ad9905da273b6c1fc
+E               + cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='JAX') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'ac7159f689e6dd9c20703524b48637a8792a84320cce5f6fdc9a9498c9cca553' != '5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5'
+E               - ac7159f689e6dd9c20703524b48637a8792a84320cce5f6fdc9a9498c9cca553
+E               + 5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='KC') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '45eca631519fe7f5609c58d55efaa2149d2ac565c54c56db451596a9c5a00e45' != '78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8'
+E               - 45eca631519fe7f5609c58d55efaa2149d2ac565c54c56db451596a9c5a00e45
+E               + 78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='MIA') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '308b13d2407cc4a5c1e820786d8ebd3b6f5bd5b2fd8eadc7507602b69b4fca41' != '4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983'
+E               - 308b13d2407cc4a5c1e820786d8ebd3b6f5bd5b2fd8eadc7507602b69b4fca41
+E               + 4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='MIN') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '6439bde2dcf527bc0885119ca22f970ea52060702568ec93864fefdd5769b590' != '8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a'
+E               - 6439bde2dcf527bc0885119ca22f970ea52060702568ec93864fefdd5769b590
+E               + 8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='NE') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'dce10eed44dbd329f22d257aca96f5add2d3368e99a2486f60938037826be970' != '332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455'
+E               - dce10eed44dbd329f22d257aca96f5add2d3368e99a2486f60938037826be970
+E               + 332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='NO') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'a354f14086b8ed3ae501fe25f7f946336aba91a5f0c7c68f7dafdc00bd88d970' != '219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb'
+E               - a354f14086b8ed3ae501fe25f7f946336aba91a5f0c7c68f7dafdc00bd88d970
+E               + 219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='NYG') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '8abf9d28be6a9cc30230f045e717f67f25f6c90d57dc4b01e8f399208dfd23ce' != '046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed'
+E               - 8abf9d28be6a9cc30230f045e717f67f25f6c90d57dc4b01e8f399208dfd23ce
+E               + 046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='NYJ') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '2ef701b617eaeb3c938b515a8fcfe42f3f8e2b7cd9b3943074354b0650d2658c' != '7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400'
+E               - 2ef701b617eaeb3c938b515a8fcfe42f3f8e2b7cd9b3943074354b0650d2658c
+E               + 7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='OAK') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'ee53589ce0b7e11ad70bf56f85c93fdfa83dacdea15797c090c4eccfff003573' != '6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8'
+E               - ee53589ce0b7e11ad70bf56f85c93fdfa83dacdea15797c090c4eccfff003573
+E               + 6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='PHI') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'f3566f24921d3698223afca29e78a2b23e393dab90ccc861bf017605035201ea' != 'd4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221'
+E               - f3566f24921d3698223afca29e78a2b23e393dab90ccc861bf017605035201ea
+E               + d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='PIT') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '3e48ccc9c334da7ba31a58ad39493cae311e3ee16f5204d0d29d60beb25c6ab6' != 'e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac'
+E               - 3e48ccc9c334da7ba31a58ad39493cae311e3ee16f5204d0d29d60beb25c6ab6
+E               + e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='SD') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '4fd2a0545d14fdce42ebdde413d6568acca14e22498ab9cf980d67ba6f96b49a' != '3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a'
+E               - 4fd2a0545d14fdce42ebdde413d6568acca14e22498ab9cf980d67ba6f96b49a
+E               + 3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='SEA') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'acfe0ce13c138371fa8d54d8adfe9324b04ed9a6377b771912bc19873cb5dd10' != '3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc'
+E               - acfe0ce13c138371fa8d54d8adfe9324b04ed9a6377b771912bc19873cb5dd10
+E               + 3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='SF') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'aac827d8ba31c048ba112d460bc289077adf328c7b743fa5923a287bc61adf3b' != 'd28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0'
+E               - aac827d8ba31c048ba112d460bc289077adf328c7b743fa5923a287bc61adf3b
+E               + d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='STL') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '7ffb133957e4a266e54378a3269db0f537516a3245d47b43e2977c19852ff39d' != '9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918'
+E               - 7ffb133957e4a266e54378a3269db0f537516a3245d47b43e2977c19852ff39d
+E               + 9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='TB') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'b3990bfda4646eff4bda21e5d23916b08c020c9eba544d4e7db14c896b0dede8' != '810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902'
+E               - b3990bfda4646eff4bda21e5d23916b08c020c9eba544d4e7db14c896b0dede8
+E               + 810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='TEN') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: '1f70015042a05dfb3ce10531b995b92da62dd00d98dda6e8388da0b7662b1959' != '327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad'
+E               - 1f70015042a05dfb3ce10531b995b92da62dd00d98dda6e8388da0b7662b1959
+E               + 327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+_ Books.test_final_rate_receipts_fit_sourced_baselines_within_three_points (team='WAS') _
+
+self = <test_nfl2k5_dc_defenses.Books testMethod=test_final_rate_receipts_fit_sourced_baselines_within_three_points>
+
+    def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
+        summary=ROOT/'pb/receipts/defense/selector-summary.json'
+        if not summary.is_file():self.skipTest('Run composition and sweep first')
+        sims=json.loads(summary.read_text())['teams']
+        profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
+        real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
+        manifest=json.loads((ROOT/'pb/defense_manifest.json').read_text())['teams']
+        composition=json.loads((ROOT/'pb/receipts/defense/composition.json').read_text())['teams']
+        for row in manifest:
+            t=row['team']
+            with self.subTest(team=t):
+>               self.assertEqual(composition[t]['resource_sha256'],row['compile']['replacement_sha256'])
+E               AssertionError: 'f1f506dd77d5b0ec9addf38e2a2741cd62830ef8dd11141520627f0e246c9974' != '338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3'
+E               - f1f506dd77d5b0ec9addf38e2a2741cd62830ef8dd11141520627f0e246c9974
+E               + 338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3
+
+tests/mod_editor/test_nfl2k5_dc_defenses.py:74: AssertionError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_nfl2k5_complete_offense.py::PipelineTests::test_complete_offense_runs_first_and_reaches_final_menu_gate
+FAILED tests/mod_editor/test_nfl2k5_modern_league.py::LeagueTests::test_league_recipe_resolves_all_books_and_preserves_specials
+SUBFAILED(team='ARZ') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='ATL') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='BAL') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='BUF') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='CAR') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='CHI') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='CIN') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='CLE') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='DAL') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='DEN') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='DET') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='GB') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='HOU') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='IND') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='JAX') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='KC') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='MIA') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='MIN') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='NE') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='NO') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='NYG') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='NYJ') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='OAK') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='PHI') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='PIT') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='SD') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='SEA') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='SF') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='STL') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='TB') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='TEN') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+SUBFAILED(team='WAS') tests/mod_editor/test_nfl2k5_modern_league.py::RetailLeagueTests::test_replay_receipts_cover_every_formation_page_and_current_pack
+FAILED tests/mod_editor/test_nfl2k5_dc_defenses.py::PipelineTests::test_complete_offense_runs_first_and_reaches_final_menu_gate
+FAILED tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_build_orders_all_offense_before_defense_then_menu_gate
+SUBFAILED(team='ARZ') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='ATL') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='BAL') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='BUF') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='CAR') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='CHI') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='CIN') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='CLE') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='DAL') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='DEN') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='DET') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='GB') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='HOU') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='IND') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='JAX') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='KC') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='MIA') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='MIN') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='NE') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='NO') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='NYG') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='NYJ') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='OAK') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='PHI') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='PIT') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='SD') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='SEA') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='SF') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='STL') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='TB') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='TEN') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+SUBFAILED(team='WAS') tests/mod_editor/test_nfl2k5_dc_defenses.py::Books::test_final_rate_receipts_fit_sourced_baselines_within_three_points
+68 failed, 38 passed, 5653 subtests passed in 264.05s (0:04:24)

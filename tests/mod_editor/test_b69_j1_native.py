@@ -29,6 +29,8 @@ class FieldShoeTests(unittest.TestCase):
         native.NativeEquipmentTests.setUpClass()
         cls.retail = native.NativeEquipmentTests.retail
         cls.by_id, cls.groups = writer.load_targets()
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(INDEX.parents[1])
         cls.archive = parse_archive(INDEX)
         # data/nfl2k5_team_names_2026.json pins Bears asset code 05.
         cls.bears = next(t for t in cls.by_id.values() if t.set_selector == '05H0' and t.name == 'shoes10')

@@ -27,6 +27,8 @@ class NativeTests(unittest.TestCase):
         for path in (RETAIL / 'default.xbe', RETAIL / 'vc_53450030/0'):
             if not path.is_file():
                 raise unittest.SkipTest('private retail evidence absent: ' + str(path))
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         cls.catalog = e.Catalog.load(RETAIL)
 
     def test_all_fifty_native_name_year_lookups(self):

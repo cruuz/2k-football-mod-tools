@@ -192,9 +192,10 @@ def _prerequisites(payload, base_year):
     # Direct site reader avoids recursion through the public season projections.
     sections = _sections(payload)
     states = {}
-    for group in season.GROUPS:
+    for group in season.CALENDAR_GROUPS:
         values = set()
-        for site in season.group_sites(group, year=base_year):
+        for site in season.group_sites(group, year=base_year,
+                                     super_bowl_venue=season.read_super_bowl_venue(payload)):
             off = season._offset(payload, site.va, sections)
             got = payload[off:off + site.size]
             if site.retail == site.patched and got == site.retail:

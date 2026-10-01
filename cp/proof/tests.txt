@@ -1,0 +1,52 @@
+test_every_site_is_retail_on_the_real_executable (tests.nfl2k5_season_length_test.RetailXbeSmokeTests.test_every_site_is_retail_on_the_real_executable) ... ok
+test_calendar_records_are_well_formed (tests.nfl2k5_season_length_test.SiteTableTests.test_calendar_records_are_well_formed) ... ok
+test_dob_formatter_calls_land_where_retail_did (tests.nfl2k5_season_length_test.SiteTableTests.test_dob_formatter_calls_land_where_retail_did) ... ok
+test_grid_row_bounds (tests.nfl2k5_season_length_test.SiteTableTests.test_grid_row_bounds) ... ok
+test_sites_do_not_overlap_and_keep_their_size (tests.nfl2k5_season_length_test.SiteTableTests.test_sites_do_not_overlap_and_keep_their_size) ... ok
+test_year_sites_encode_the_requested_year (tests.nfl2k5_season_length_test.SiteTableTests.test_year_sites_encode_the_requested_year) ... ok
+test_foreign_bytes_are_refused (tests.nfl2k5_season_length_test.SyntheticXbeTests.test_foreign_bytes_are_refused) ... ok
+test_full_apply_round_trip (tests.nfl2k5_season_length_test.SyntheticXbeTests.test_full_apply_round_trip) ... ok
+test_retail_status (tests.nfl2k5_season_length_test.SyntheticXbeTests.test_retail_status) ... ok
+test_year_only_apply (tests.nfl2k5_season_length_test.SyntheticXbeTests.test_year_only_apply) ... ok
+test_calendar_and_mycareer_compose_in_both_orders (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_calendar_and_mycareer_compose_in_both_orders) ... ok
+test_every_year_both_directions_wrap_and_preserve_other_bits (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_every_year_both_directions_wrap_and_preserve_other_bits) ... ok
+test_february_day_limit_and_clamp_including_leap_2000 (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_february_day_limit_and_clamp_including_leap_2000) ... ok
+test_full_instruction_pins_and_partial_companion_refuse (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_full_instruction_pins_and_partial_companion_refuse) ... ok
+test_manifest_recorder_assigns_all_date_instructions_to_season (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_manifest_recorder_assigns_all_date_instructions_to_season) ... ok
+test_new_career_dob_survives_native_save_and_cold_load (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_new_career_dob_survives_native_save_and_cold_load) ... ok
+test_option_off_keeps_retail_default_limits_and_rookie_marker (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_option_off_keeps_retail_default_limits_and_rookie_marker) ... ok
+test_policy_uses_requested_build_year_and_checks_encoding_limit (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_policy_uses_requested_build_year_and_checks_encoding_limit) ... ok
+test_season_alone_initializes_january_2004_and_preserves_rookie (tests.mod_editor.test_nfl2k5_created_player_dates.CreatedPlayerDatesTests.test_season_alone_initializes_january_2004_and_preserves_rookie) ... ok
+test_2026_executable_defaults_to_2004_and_follows_the_season_index (tests.mod_editor.test_nfl2k5_my_career_vb1.BirthYearTests.test_2026_executable_defaults_to_2004_and_follows_the_season_index) ... ok
+test_birth_year_row_steps_1981_to_2008 (tests.mod_editor.test_nfl2k5_my_career_vb1.BirthYearTests.test_birth_year_row_steps_1981_to_2008) ... ok
+test_retail_year_executable_defaults_to_1982 (tests.mod_editor.test_nfl2k5_my_career_vb1.BirthYearTests.test_retail_year_executable_defaults_to_1982) ... ok
+test_season_create_player_defaults_to_2004_without_mycareer_creation (tests.mod_editor.test_nfl2k5_my_career_vb1.BirthYearTests.test_season_create_player_defaults_to_2004_without_mycareer_creation) ... ok
+test_retail_2004_auto_dependencies_and_year_status (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_retail_2004_auto_dependencies_and_year_status) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 50.646s
+
+OK
+	Command being timed: "python3 -m unittest tests.nfl2k5_season_length_test tests.mod_editor.test_nfl2k5_created_player_dates tests.mod_editor.test_nfl2k5_my_career_vb1.BirthYearTests tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_retail_2004_auto_dependencies_and_year_status -v"
+	User time (seconds): 49.78
+	System time (seconds): 1.03
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:50.83
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 289624
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 387097
+	Voluntary context switches: 26
+	Involuntary context switches: 157
+	Swaps: 0
+	File system inputs: 336
+	File system outputs: 240
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

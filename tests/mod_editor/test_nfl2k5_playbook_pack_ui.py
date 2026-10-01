@@ -144,6 +144,8 @@ class PackInstallDialogTests(unittest.TestCase):
         from PyQt5.QtWidgets import QApplication
 
         cls.app = QApplication.instance() or QApplication([])
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(EXTRACT)
         with recode.OuterImage(EXTRACT) as archive:
             cls.resource = archive.read_entry(recode.BOOK_ENTRIES["ATL"])
 
@@ -266,7 +268,7 @@ class CreatePlayWizardExtrasTests(unittest.TestCase):
         from mod_editor.gui import create_play_wizard_qt as wiz
 
         self.assertEqual([value for _label, value in wiz.AUDIBLE_GROUPS], [None, 0, 1, 2, 3])
-        self.assertIn("Inherit", wiz.AUDIBLE_GROUPS[0][0])
+        self.assertIn("group 3", wiz.AUDIBLE_GROUPS[0][0])
 
     def test_facade_passes_the_group_through_to_the_link_request(self) -> None:
         import inspect as _inspect

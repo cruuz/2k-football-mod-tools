@@ -1,0 +1,150 @@
+
+ADDRESS 0x8002b430
+8002b430: push ebp
+8002b431: mov ebp, esp
+8002b433: sub esp, 0x14
+8002b436: mov eax, dword ptr [ebp + 8]
+8002b439: mov edx, dword ptr [ebp + 0xc]
+8002b43c: and byte ptr [ebp - 8], 0
+8002b440: push ebx
+8002b441: mov ebx, dword ptr [edx + 0x5c]
+8002b444: push esi
+8002b445: mov esi, dword ptr [eax + 0x18]
+8002b448: cmp byte ptr [esi + 0x28], 0
+8002b44c: mov eax, dword ptr [ebx + 0x18]
+8002b44f: push edi
+8002b450: mov edi, dword ptr [ebx + 4]
+8002b453: mov dword ptr [ebp - 0x10], eax
+8002b456: mov eax, dword ptr [eax + 8]
+8002b459: mov dword ptr [ebp - 0x14], esi
+8002b45c: mov dword ptr [ebp - 0xc], eax
+8002b45f: mov dword ptr [ebp - 4], edi
+8002b462: je 0x8002b46e
+8002b464: mov esi, 0xc000026e
+8002b469: jmp 0x8002b5b0
+8002b46e: mov cl, byte ptr [eax + 0x20]
+8002b471: test cl, 2
+8002b474: je 0x8002b480
+8002b476: mov esi, 0xc0000010
+8002b47b: jmp 0x8002b5b0
+8002b480: test edi, edi
+8002b482: jne 0x8002b48e
+8002b484: xor esi, esi
+8002b486: mov dword ptr [edx + 0x14], esi
+8002b489: jmp 0x8002b5b0
+8002b48e: mov byte ptr [ebp + 0xb], cl
+8002b491: and byte ptr [ebp + 0xb], 1
+8002b495: je 0x8002b4c8
+8002b497: mov edx, dword ptr [ebx + 0x10]
+8002b49a: mov eax, dword ptr [esi + 8]
+8002b49d: cmp edx, eax
+8002b49f: mov edi, dword ptr [ebx + 0xc]
+8002b4a2: mov ecx, dword ptr [esi + 4]
+8002b4a5: jb 0x8002b4b5
+8002b4a7: ja 0x8002b5ab
+8002b4ad: cmp edi, ecx
+8002b4af: jae 0x8002b5ab
+8002b4b5: sub ecx, edi
+8002b4b7: sbb eax, edx
+8002b4b9: xor edx, edx
+8002b4bb: cmp edx, eax
+8002b4bd: jb 0x8002b4ff
+8002b4bf: ja 0x8002b4fc
+8002b4c1: cmp dword ptr [ebp - 4], ecx
+8002b4c4: jb 0x8002b4ff
+8002b4c6: jmp 0x8002b4fc
+8002b4c8: cmp dword ptr [ebx + 0x10], 0
+8002b4cc: jne 0x8002b5ab
+8002b4d2: mov edx, dword ptr [ebx + 0xc]
+8002b4d5: mov eax, dword ptr [eax + 4]
+8002b4d8: cmp edx, eax
+8002b4da: jae 0x8002b5ab
+8002b4e0: mov ecx, eax
+8002b4e2: sub ecx, edx
+8002b4e4: cmp edi, ecx
+8002b4e6: jb 0x8002b4ff
+8002b4e8: add eax, 0x7ff
+8002b4ed: and eax, 0xfffff800
+8002b4f2: sub eax, edx
+8002b4f4: cmp edi, eax
+8002b4f6: jb 0x8002b4fc
+8002b4f8: mov byte ptr [ebp - 8], 1
+8002b4fc: mov dword ptr [ebp - 4], ecx
+8002b4ff: mov ecx, dword ptr [ebp + 0xc]
+8002b502: test byte ptr [ecx + 4], 1
+8002b506: jne 0x8002b533
+8002b508: cmp byte ptr [ebp + 0xb], 0
+8002b50c: jne 0x8002b533
+8002b50e: mov eax, dword ptr [ebp - 0xc]
+8002b511: mov eax, dword ptr [eax]
+8002b513: push dword ptr [ebp - 8]
+8002b516: mov edx, 0x800
+8002b51b: push dword ptr [ebp - 4]
+8002b51e: mul edx
+8002b520: add eax, dword ptr [ebx + 0xc]
+8002b523: adc edx, dword ptr [ebx + 0x10]
+8002b526: push edx
+8002b527: push eax
+8002b528: push ecx
+8002b529: push esi
+8002b52a: call 0x8001daba
+8002b52f: mov esi, eax
+8002b531: jmp 0x8002b5b0
+8002b533: push 7
+8002b535: pop ecx
+8002b536: mov esi, ebx
+8002b538: lea edi, [ebx - 0x24]
+8002b53b: rep movsd dword ptr es:[edi], dword ptr [esi]
+8002b53d: and byte ptr [ebx - 0x21], 0
+8002b541: push dword ptr [ebx + 4]
+8002b544: mov esi, dword ptr [ebp + 0xc]
+8002b547: push esi
+8002b548: call 0x80015ff3
+8002b54d: mov eax, dword ptr [ebp - 0xc]
+8002b550: test byte ptr [eax + 0x20], 1
+8002b554: jne 0x8002b565
+8002b556: mov eax, dword ptr [eax]
+8002b558: mov ecx, 0x800
+8002b55d: mul ecx
+8002b55f: add dword ptr [ebx - 0x18], eax
+8002b562: adc dword ptr [ebx - 0x14], edx
+8002b565: mov eax, dword ptr [ebp - 4]
+8002b568: lea ecx, [eax + 0x7ff]
+8002b56e: and ecx, 0xfffff800
+8002b574: mov dword ptr [ebx - 0x20], ecx
+8002b577: cmp dword ptr [ebx + 4], eax
+8002b57a: jne 0x8002b585
+8002b57c: mov ecx, dword ptr [ebp - 0x10]
+8002b57f: test byte ptr [ecx + 3], 1
+8002b583: je 0x8002b59d
+8002b585: mov dword ptr [ebx + 4], eax
+8002b588: mov eax, dword ptr [esi + 0x5c]
+8002b58b: sub eax, 0x24
+8002b58e: and dword ptr [eax + 0x20], 0
+8002b592: mov dword ptr [eax + 0x1c], 0x8002ce39
+8002b599: mov byte ptr [eax + 3], 0x40
+8002b59d: mov eax, dword ptr [ebp - 0x14]
+8002b5a0: mov ecx, dword ptr [eax]
+8002b5a2: mov edx, esi
+8002b5a4: call 0x80015959
+8002b5a9: jmp 0x8002b5bf
+8002b5ab: mov esi, 0xc0000011
+8002b5b0: mov ecx, dword ptr [ebp + 0xc]
+8002b5b3: xor dl, dl
+8002b5b5: mov dword ptr [ecx + 0x10], esi
+8002b5b8: call 0x8001647e
+8002b5bd: mov eax, esi
+8002b5bf: pop edi
+8002b5c0: pop esi
+8002b5c1: pop ebx
+8002b5c2: leave
+8002b5c3: ret 8
+
+DATA 0x800123d8
+800123d8: 80026337 00000000 00000000 8002650b  b'7c\x02\x80\x00\x00\x00\x00\x00\x00\x00\x00\x0be\x02\x80'
+800123e8: 8002650b 80025d9a 80016667 80016667  b'\x0be\x02\x80\x9a]\x02\x80gf\x01\x80gf\x01\x80'
+800123f8: 80016667 80016667 80016667 80016667  b'gf\x01\x80gf\x01\x80gf\x01\x80gf\x01\x80'
+80012408: 80016667 80026289 80016667 80016667  b'gf\x01\x80\x89b\x02\x80gf\x01\x80gf\x01\x80'
+80012418: 80016667 00001000 00002000 ffffffff  b'gf\x01\x80\x00\x10\x00\x00\x00 \x00\x00\xff\xff\xff\xff'
+80012428: 00000000 00000000 800267d8 80026a0a  b'\x00\x00\x00\x00\x00\x00\x00\x00\xd8g\x02\x80\nj\x02\x80'
+REFS 0x800361ec ['0x8002acab', '0x8002ad4c', '0x8002aea5', '0x8002b080', '0x8002b22e', '0x8002b5db', '0x8002b79c', '0x8002b972']

@@ -1,0 +1,22 @@
+ARZ {'man': 27.47, 'zone': 72.53, 'split_family': 56.15, 'blitz': 28.3, 'cover0': 0.0, 'replacement': 14.04, 'modern': 100.0}
+ATL {'man': 32.48, 'zone': 67.52, 'split_family': 42.85, 'blitz': 35.75, 'cover0': 0.0, 'replacement': 16.5, 'modern': 100.0}
+BAL {'man': 28.5, 'zone': 71.5, 'split_family': 53.92, 'blitz': 32.57, 'cover0': 0.0, 'replacement': 14.82, 'modern': 100.0}
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/sweep.py", line 75, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/sweep.py", line 70, in main
+    r=sweep(t,xbe,(ROOT/f'.scratch/pb3/compiled/{t}.bin').read_bytes())
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/sweep.py", line 45, in sweep
+    data=distribution(s,offense_code,yardline,down)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/selector.py", line 128, in distribution
+    witness=s.select(offense_code,yardline,down,prevent=prevent,matchup=matchup)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/selector.py", line 86, in select
+    self.call(0x20b820,ecx=TEAM,edx=OUTPUT,args=(0,))
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/selector.py", line 73, in call
+    if self.uc.reg_read(r.UC_X86_REG_EIP)!=STOP:raise RuntimeError(f'Native selector did not return: {addr:x}, pc={self.uc.reg_read(r.UC_X86_REG_EIP):x}, ecx={self.uc.reg_read(r.UC_X86_REG_ECX):x}, edx={self.uc.reg_read(r.UC_X86_REG_EDX):x}, stack={bytes(self.uc.mem_read(self.uc.reg_read(r.UC_X86_REG_ESP),40)).hex()}, stubs={self.stub_calls}')
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Native selector did not return: 20b820, pc=e07d5, ecx=fffff520, edx=1, stack=bc400002050000009815000220fce5005dab2000f9fffffffc990002981500020000000000000002, stubs={'0x20b400': 4, '0x207ef0': 4, '0x1889c0': 4, '0x2045f0': 4, '0x205660': 431, '0x204ab0': 3, '0x208420': 3}

@@ -1,0 +1,733 @@
+{
+  "status": "DESIGN",
+  "owner": "main",
+  "runtime_witness": false,
+  "task": "Headless Giants game: enter all 26 offense menus, run every smoke case, then report evidence before any 31-team expansion.",
+  "recipe": "data/playbooks/softdrink_giants_modern.2k5book",
+  "recipe_sha256": "54de0fda070ca2b031022ffbb6a480ddd8fdd4f46b63355e39698f00318536f3",
+  "lab_storage": "Use a main-owned lab output directory outside pb scratch. The source XISO is 6300499968 bytes, larger than the 4 GB pb scratch limit.",
+  "build": {
+    "playbook_packs": [
+      "data/playbooks/softdrink_giants_modern.2k5book"
+    ],
+    "playbook_pair": false,
+    "read_option_runtime": false
+  },
+  "source_requirements": [
+    "Start from a source/project with the pinned retail NYG PLAY body. Rebuild from clean source if earlier PLAY features are already baked.",
+    "Merge this pack into the SOFTDRINK roster project through its existing Build flow. Verify Likely at NYG TE1.",
+    "Do not combine another offensive pack targeting NYG. Defense packs may compose after this pack."
+  ],
+  "game": {
+    "home": "NYG",
+    "away": "DAL",
+    "mode": "Quick Game",
+    "human_offense": "NYG",
+    "difficulty": "All Pro",
+    "quarter_minutes": 5,
+    "weather": "clear",
+    "play_call": "formation",
+    "note": "No per-game performance outcome is predicted. Use main's normal roster and controller setup."
+  },
+  "cases": [
+    {
+      "status": "DESIGN",
+      "play_index": 59,
+      "name": "01 Inside Zone",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "Inside Zone",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 0,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 60,
+      "name": "01 Counter",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "Counter",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 1,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 61,
+      "name": "01 TE Seam",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 62,
+      "name": "01 Levels",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "Levels",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 3,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 63,
+      "name": "01 Flood",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "Flood",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 64,
+      "name": "01 TE Drag",
+      "formation_index": 0,
+      "formation": "Gun Trips R",
+      "concept": "TE Drag",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 5,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 65,
+      "name": "02 Outside Zone",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Outside Zone",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 0,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 66,
+      "name": "02 Downhill",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Downhill",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 1,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 68,
+      "name": "02 Y Cross",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Y Cross",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 3,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 69,
+      "name": "02 Drive",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "Drive",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 7,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 70,
+      "name": "02 RB Slip",
+      "formation_index": 1,
+      "formation": "Gun Trips L",
+      "concept": "RB Slip",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 10,
+      "te1_slot": 6,
+      "menu_slot": 5,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12",
+        "0x18"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 72,
+      "name": "03 End Around",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "End Around",
+      "play_type": "run",
+      "personnel": "11",
+      "primary_slot": null,
+      "te1_slot": 6,
+      "menu_slot": 1,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x11",
+        "0x13",
+        "0x15",
+        "0x16"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 74,
+      "name": "03 Dagger",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "Dagger",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 3,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 75,
+      "name": "03 Stick",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "Stick",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 76,
+      "name": "03 Mesh",
+      "formation_index": 2,
+      "formation": "Gun Bunch R",
+      "concept": "Mesh",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 5,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 99,
+      "name": "07 PA Boot",
+      "formation_index": 6,
+      "formation": "Singleback Ace R",
+      "concept": "PA Boot",
+      "play_type": "pa_pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12",
+        "0x14",
+        "0x17"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 87,
+      "name": "05 TE Seam",
+      "formation_index": 4,
+      "formation": "Gun Empty R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 4,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 109,
+      "name": "09 TE Seam",
+      "formation_index": 8,
+      "formation": "Ace Wing R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 121,
+      "name": "11 TE Seam",
+      "formation_index": 10,
+      "formation": "Pistol Ace R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 133,
+      "name": "13 TE Seam",
+      "formation_index": 12,
+      "formation": "Gun Doubles R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "11",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 145,
+      "name": "15 TE Seam",
+      "formation_index": 14,
+      "formation": "Gun Y Trips R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 157,
+      "name": "17 TE Seam",
+      "formation_index": 16,
+      "formation": "Gun Wing R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 169,
+      "name": "19 TE Seam",
+      "formation_index": 18,
+      "formation": "Ace Bunch R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 179,
+      "name": "21 TE Seam",
+      "formation_index": 20,
+      "formation": "Pistol Wing R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 207,
+      "name": "23 TE Seam",
+      "formation_index": 22,
+      "formation": "UC Tight R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "12",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    },
+    {
+      "status": "DESIGN",
+      "play_index": 223,
+      "name": "25 TE Seam",
+      "formation_index": 24,
+      "formation": "Pistol Strong R",
+      "concept": "TE Seam",
+      "play_type": "pass",
+      "personnel": "21",
+      "primary_slot": 6,
+      "te1_slot": 6,
+      "menu_slot": 2,
+      "opcodes": [
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x06",
+        "0x11",
+        "0x12"
+      ]
+    }
+  ],
+  "menu_sweep": [
+    {
+      "formation": "Gun Trips R",
+      "formation_index": 0
+    },
+    {
+      "formation": "Gun Trips L",
+      "formation_index": 1
+    },
+    {
+      "formation": "Gun Bunch R",
+      "formation_index": 2
+    },
+    {
+      "formation": "Gun Bunch L",
+      "formation_index": 3
+    },
+    {
+      "formation": "Gun Empty R",
+      "formation_index": 4
+    },
+    {
+      "formation": "Gun Empty L",
+      "formation_index": 5
+    },
+    {
+      "formation": "Singleback Ace R",
+      "formation_index": 6
+    },
+    {
+      "formation": "Singleback Ace L",
+      "formation_index": 7
+    },
+    {
+      "formation": "Ace Wing R",
+      "formation_index": 8
+    },
+    {
+      "formation": "Ace Wing L",
+      "formation_index": 9
+    },
+    {
+      "formation": "Pistol Ace R",
+      "formation_index": 10
+    },
+    {
+      "formation": "Pistol Ace L",
+      "formation_index": 11
+    },
+    {
+      "formation": "Gun Doubles R",
+      "formation_index": 12
+    },
+    {
+      "formation": "Gun Doubles L",
+      "formation_index": 13
+    },
+    {
+      "formation": "Gun Y Trips R",
+      "formation_index": 14
+    },
+    {
+      "formation": "Gun Y Trips L",
+      "formation_index": 15
+    },
+    {
+      "formation": "Gun Wing R",
+      "formation_index": 16
+    },
+    {
+      "formation": "Gun Wing L",
+      "formation_index": 17
+    },
+    {
+      "formation": "Ace Bunch R",
+      "formation_index": 18
+    },
+    {
+      "formation": "Ace Bunch L",
+      "formation_index": 19
+    },
+    {
+      "formation": "Pistol Wing R",
+      "formation_index": 20
+    },
+    {
+      "formation": "Pistol Wing L",
+      "formation_index": 21
+    },
+    {
+      "formation": "UC Tight R",
+      "formation_index": 22
+    },
+    {
+      "formation": "UC Tight L",
+      "formation_index": 23
+    },
+    {
+      "formation": "Pistol Strong R",
+      "formation_index": 24
+    },
+    {
+      "formation": "Pistol Strong L",
+      "formation_index": 25
+    }
+  ],
+  "retained_checks": [
+    "Field goal attempt",
+    "Punt attempt",
+    "Kickoff/return",
+    "Defensive goal-line selection",
+    "Offensive default audible selection"
+  ],
+  "observations": [
+    "Capture roster/TE1, team-select and Giants book identity.",
+    "For each case record formation index, play index, menu page, call screenshot, successful snap, assignment behavior, dead ball and return to play call.",
+    "On zone runs inspect all five OL targets and lateral steps, plus HB exchange and path, versus even and odd fronts.",
+    "On screens record finite hold, three releasing OL, two protectors, HB release/catch point and throw timing.",
+    "On TE calls verify actual Likely player identity, eligible release, seam depth and drag direction.",
+    "On end around, counter and PA boot record transfer/fake, puller/rollout clearance and no frozen actor.",
+    "Record any menu freeze, snap mismatch, premature OL release or failed handoff as a failure, even if the play gained yards."
+  ],
+  "acceptance": "All requested menus terminate; every smoke case snaps and returns to play call; preserve screenshots/logs and per-play result JSON. No production claim or expansion go from offline passes alone.",
+  "followup": "After smoke, use Practice to execute all 148 catalog plays on both hashes and representative fronts before production release. Main explicitly grants go for the other 31 books."
+}

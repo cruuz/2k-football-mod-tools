@@ -21,7 +21,7 @@ import apf_stadium_catalog_position_patch as writer  # noqa: E402
 import apf_stadium_catalog_position_verify as verifier  # noqa: E402
 
 
-SAMPLE = ROOT / "reports/asset_samples/apf_scene/stadium_node3_nonretail_zero_recipe.json"
+SAMPLE = ROOT / "tests/fixtures/apf_stadium_node3_nonretail_zero_recipe.json"
 GAME_DIR = ROOT / "extracted/All-Pro Football 2K8 (USA)"
 
 
@@ -147,26 +147,30 @@ class CatalogPositionTests(unittest.TestCase):
             writer._validate_stored0_capacity(3_299_082, drift)
 
     def test_writer_refuses_symlink_inputs_parent_and_existing_output(self):
-        with tempfile.TemporaryDirectory(dir=ROOT) as name:
-            directory = Path(name)
+        with tempfile.TemporaryDirectory() as name:
+            directory = Path(name).resolve()
+            game = directory / "source"
+            game.mkdir()
+            recipe = directory / "source-recipe.json"
+            recipe.write_text("{}", encoding="utf-8", newline="\n")
             game_link = directory / "game"
-            game_link.symlink_to(GAME_DIR, target_is_directory=True)
+            game_link.symlink_to(game, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "game directory"):
-                writer.write_output(game_link, SAMPLE, directory / "out1")
+                writer.write_output(game_link, recipe, directory / "out1")
             recipe_link = directory / "recipe.json"
-            recipe_link.symlink_to(SAMPLE)
+            recipe_link.symlink_to(recipe)
             with self.assertRaisesRegex(writer.PatchError, "recipe"):
-                writer.write_output(GAME_DIR, recipe_link, directory / "out2")
+                writer.write_output(game, recipe_link, directory / "out2")
             real_parent = directory / "real"
             real_parent.mkdir()
             parent_link = directory / "parent"
             parent_link.symlink_to(real_parent, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "parent"):
-                writer.write_output(GAME_DIR, SAMPLE, parent_link / "out3")
+                writer.write_output(game, recipe, parent_link / "out3")
             existing = directory / "existing"
             existing.mkdir()
             with self.assertRaisesRegex(writer.PatchError, "existing"):
-                writer.write_output(GAME_DIR, SAMPLE, existing)
+                writer.write_output(game, recipe, existing)
 
     def test_verification_artifact_refuses_output_directory_and_existing_path(self):
         with tempfile.TemporaryDirectory() as name:

@@ -79,23 +79,52 @@ def source_hash(session):
     return session.cache.source.sha256
 
 
+def _prune(session, receipts, keys=None):
+    """Keep current groups only. A fit is a cache entry, never edit history."""
+    edits = {e.asset_id: e.replacement_sha256 for e in session.iter_project_png_edits()}
+    active = set(keys.values()) if keys is not None else None
+    result = {}
+    for key, rows in receipts.items():
+        if not rows:
+            continue
+        row = rows[0]
+        if row.get('kind') == 'project_art':
+            body = {k: row[k] for k in ('kind', 'source', 'inputs', 'targets')}
+            if (row['source'] == source_hash(session) and key == digest(body)
+                    and all(edits.get(asset) == sha for asset, sha in row['inputs'].items())):
+                result[key] = [row]
+        elif active is None or key in active:
+            result[key] = rows
+    from mod_editor.studio.project_archive import _fit_receipts
+    return _fit_receipts(result)
+
+
+def for_save(session):
+    receipts = getattr(session, '_project_fit_receipts', {})
+    if not receipts:
+        return {}
+    keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session), session=session)
+    return _prune(session, receipts, keys)
+
+
 def remember(session, rows):
     """Called after a completed fit transaction, never by a background open."""
     keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session), session=session)
-    receipts = dict(getattr(session, '_project_fit_receipts', {}))
+    receipts = _prune(session, getattr(session, '_project_fit_receipts', {}), keys)
     grouped = {}
     for row in rows:
         key = keys.get(row['asset_id'])
         if key is not None and row.get('fit_status') != 'fit pending':
             grouped.setdefault(key, []).append(dict(row))
     receipts.update(grouped)
-    session._project_fit_receipts = receipts
+    session._project_fit_receipts = _prune(session, receipts, keys)
 
 
 def restore(session, receipts):
     from .equipment_staging import _remember_fit
     from .nfl2k5_uniform_equipment_writer import load_targets
     keys = equipment_keys(session.cache.pack0, session.iter_edits(), source_hash(session), session=session)
+    receipts = _prune(session, receipts, keys)
     targets, _ = load_targets() if keys else ({}, {})
     rows = []
     for asset_id, key in keys.items():
@@ -111,7 +140,7 @@ def remember_art(session, records):
     """Bind a verified provider fit to the session's original authored paths."""
     edits = list(session.iter_project_png_edits())
     by_path = {str(e.replacement_path.resolve()): e for e in edits}
-    receipts = dict(getattr(session, '_project_fit_receipts', {}))
+    receipts = _prune(session, getattr(session, '_project_fit_receipts', {}))
     groups = {}
     for record in records:
         selected = [by_path[path] for path in record.get('paths', ()) if path in by_path]
@@ -120,21 +149,25 @@ def remember_art(session, records):
         inputs = {e.asset_id: e.replacement_sha256 for e in selected}
         group = groups.setdefault(digest(inputs), dict(inputs=inputs, targets=[]))
         group['targets'].extend(t for t in record['targets'] if t not in group['targets'])
+    measured = {asset for group in groups.values() for asset in group['inputs']}
+    receipts = {k: rows for k, rows in receipts.items()
+                if rows[0].get('kind') != 'project_art'
+                or not (rows[0]['inputs'].keys() & measured)}
     for group in groups.values():
         inputs = group['inputs']
         body = dict(kind='project_art', source=source_hash(session), inputs=inputs,
                     targets=group['targets'])
         key = digest(body)
-        receipts[key] = [dict(body, asset_id=asset_id, fit_status='fits') for asset_id in inputs]
-    session._project_fit_receipts = receipts
-    restore_art(session, receipts)
+        receipts[key] = [dict(body, asset_id=next(iter(inputs)), fit_status='fits')]
+    session._project_fit_receipts = _prune(session, receipts)
+    restore_art(session, session._project_fit_receipts)
 
 
 def restore_art(session, receipts):
     """Hash just the recorded source spans. PNG validation happens in the loader."""
     from . import nfl2k5_uniform_equipment_writer as writer
     edits = {e.asset_id: e.replacement_sha256 for e in session.iter_project_png_edits()}
-    accepted, spans = {}, {}
+    accepted, spans, accepted_keys = {}, {}, set()
     packs = None
     for key, rows in receipts.items():
         if not rows or rows[0].get('kind') != 'project_art':
@@ -163,7 +196,10 @@ def restore_art(session, receipts):
                 valid = False
                 break
         if valid:
-            accepted.update((r['asset_id'], r) for r in rows if r['asset_id'] in row['inputs'])
+            accepted_keys.add(key)
+            accepted.update((asset_id, row) for asset_id in row['inputs'])
+    session._project_fit_receipts = {key: rows for key, rows in receipts.items()
+        if rows and (rows[0].get('kind') != 'project_art' or key in accepted_keys)}
     session._art_fit_receipts = accepted
     session._art_fit_identity = edits
 

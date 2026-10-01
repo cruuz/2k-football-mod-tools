@@ -1,5 +1,148 @@
 # `.2k5patch` formats and operation registry
 
+## Format 3: finished SOFTDRINK game files (Beta 76)
+
+Format 3 is a separate file-content contract. Formats 1 and 2 remain unchanged.
+Format 2 cannot express this install through its existing envelope: its checked
+image-size chain, directory-field addresses and before sectors require the
+author's partition layout. A compact result applied to arbitrarily repacked
+inputs would violate those invariants. Format 3 resolves every input by XDVDFS
+path and content hash and writes a new compact image. Old readers safely reject
+`format: 3`; they must never interpret these rows as image-offset operations.
+
+The ZIP64 container retains `kind: "2k5patch"`, `game: "nfl2k5-xbox"`, an empty
+`payload.bin`, and `manifest.json` (at most 16 MiB). The required
+`file_contract` is `"source-copy-v1"` and `min_reader_version` is **4**.
+Earlier, unpublished Format 3 packs are refused with a re-export diagnostic.
+Earlier Format 3 readers refuse the new reader requirement before installation.
+Formats 1 and 2 retain their existing compatibility behavior.
+ZIP central-directory metadata is bounded to 16 MiB and 24,098 entries before
+it is materialized by the ZIP reader.
+The `files` table records every finished file, including unchanged and empty
+files. Each row carries a case-folded path, `before` and `after` objects with
+exact byte size and SHA-256, the compact output `offset`, and one of:
+
+* `copy`: before and after identities are identical; read the user's file.
+* `runs`: edits and optional growth/shrinkage, with a streamed `operations/NNNN.bin` member.
+  Each record is little-endian `<QI32s32s>`: file-relative offset, literal
+  length, SHA-256 of the intersecting retail span, SHA-256 of the new span, then literal
+  bytes. Records are ascending, nonoverlapping and at most 1 MiB each. Bytes
+  between records come from the user's verified file. Appended spans use the
+  empty SHA-256 when wholly beyond retail EOF; every growth byte must be
+  covered by a literal or source-copy record. Shrinkage retains only the declared
+  output prefix. The literal member may be empty.
+  An optional `copies` member descriptor references `operations/NNNN-copies-GGGG.bin`.
+  Its records are little-endian `<QQI32s32s>`: output file offset, **source file
+  offset**, length, SHA-256 of the intersecting original destination span, and
+  SHA-256 of the referenced source span (also the resulting output span).
+  Copy records contain no literal bytes. Source offsets can be any byte offset
+  within the **original retail file**, including beyond a shortened output's
+  end. An optional `cross_copies` list contains additional copy-member descriptors
+  with the same `member`, `length`, `sha256` and `compressed_bytes` fields, plus
+  `source_path`: a case-folded disc path in the manifest's verified file inventory.
+  Each such member uses the identical record encoding, with its source offsets
+  relative to that named file. Source paths may not repeat within one row;
+  the row's own path uses `copies`. Missing or unverified source paths refuse.
+  Copies always read the immutable input, so swaps and moves do not depend
+  on output order. Lengths are positive and at most 1 MiB, and the whole source
+  span must exist. Each member is sorted by output offset; merging all streams
+  must give nonoverlapping output spans. Gaps read the same-offset source bytes.
+
+`replace` is no longer an accepted Format 3 mode. The exporter never chooses a
+complete replacement, even if it would compress better. Cross-file references
+are necessary for E: a supplemental audit found another 532,692,992 literal
+bytes matching other retail files after same-file exclusion alone. In particular,
+retail `/f` supplies large spans to finished `/e` and `/d`.
+
+Every member, including `copies`, has its own uncompressed `length` and `sha256`.
+Export builds a shared index of every complete 4 KiB window in **every retail
+file**, at 512-byte source alignment, including windows crossing 1 MiB read boundaries.
+This alignment follows the measured shifted content in SOFTDRINK E. Every
+changed output 4 KiB grain is looked up in that index. A BLAKE2b-96 lookup key
+narrows candidates; byte equality, never that key alone, authorizes a copy.
+All offsets sharing a key remain candidates. Adjacent literals and contiguous
+source copies coalesce separately within 1 MiB windows. Identical same-offset
+grains remain implicit source copies. No stored literal 4 KiB grain can equal
+an indexed window in any source file; final partial grains and shorter common sequences
+are outside this exclusion guarantee. This is a measured byte-content rule,
+not a claim about ownership or uniqueness of every smaller byte sequence.
+Growth and shrinkage retain full before/after file identities.
+`full_copy_bytes`, `full_deflated_bytes` and payload `compressed_bytes` report
+the per-file baselines. `literal_bytes`, `source_copy_bytes` and
+`source_copy_records` describe the encoding; these informational counts do not
+replace reconstruction validation. Inspect/export receipts give their totals, actual ZIP
+size and separately measured embedded-source contribution.
+
+`metadata` holds base64-encoded bounded XDVDFS descriptor/directory records
+from the finished disc, with relocated output pointers. Metadata plus aligned
+file extents must tile a compact output without overlaps or gaps, starting at
+sector 32. The prefix, sector padding and final 32-sector alignment are zero.
+Source file offsets, padding, timestamps, directory layout and video prefix
+are not input identities. All required source files must match; harmless extra
+files are ignored. Missing, duplicate, cyclic, overlapping, out-of-bounds or
+content-modified inputs refuse. The inherited partition locator supports known
+raw offsets and scans the first 1 GiB for other sector-aligned partitions.
+
+Export currently requires the finished disc to retain the base's file set.
+It pins the retail USA executable when authoring a release. Other USA file
+revision adapters, added/deleted finished files, and PS2 installs are outside
+this version. `result.sha256` is the author's whole-image digest for comparison,
+not an input gate. Repacking normalizes unused bytes, so a noncompact author's
+image can have a different container hash while every game file is identical.
+
+Check verifies source-file identities and replays changed files, checking both
+members, span hashes, bounds, ordering and the resulting file SHA-256.
+Apply opens the source read-only, verifies all required files, then writes a
+unique temporary sibling in 1 MiB blocks. It verifies reconstructed file hashes,
+reparses the written XDVDFS tree, reads every output file back for SHA-256, and
+hashes the whole output. Only then, after closing all image and ZIP handles,
+does it atomically rename. Source timestamps/size/descriptor identity must stay
+stable during installation. Source/output and pack/output aliases are refused,
+including hard links. In-place application is forbidden. Failed or cancelled
+transactions remove their temporary files and preserve existing destinations.
+Space is checked for one full output image, even where zero blocks stay sparse.
+An existing destination needs that much additional free space until commit.
+There are no extracted game files or compiler caches on this path.
+
+`assets/` carries streamed editable sources and their SHA-256s, up to 20,000
+members and 8 GiB total. The source manifest contains the effective frozen
+preset/overrides, a portable league-project JSON and its referenced PNGs, the
+roster, playbooks, intro, venue-art directories and official marks directory
+when supplied by the recipe. Exact original recipe/project documents are also
+retained. `@pack/assets/...` references are resolved into the user's extraction
+folder. No pack-supplied code is executed. Unavailable authoring sources refuse
+export rather than silently producing a recipe with missing assets.
+
+For a separate source download, `--sources-out FILE.2k5sources` writes a ZIP with
+`sources.json` (`softdrink_source_bundle/v1`) and the same hashed asset records.
+The main patch pins this whole optional file by size and SHA-256 and still
+includes the frozen recipe. A wrong companion file refuses extraction.
+`Customize SOFTDRINK 2K28…` extracts and resolves sources, loads the Build
+controls, and supplies the league project to the full Studio builder. Users
+can adjust Build options, omit league artwork, or use **Choose SOFTDRINK league
+artwork…** to select families or individual edits and save a separate project.
+Customization is a full authoring build, with its existing resource/time costs;
+the fast finished-byte installation always installs the complete frozen release.
+The full build is not run by pack export, check, extraction or install.
+
+Release authoring, from the checkout root:
+
+```sh
+python tools/nfl2k5_modpack.py export-files --base RETAIL.xiso.iso --patched FINISHED.xiso.iso --out SOFTDRINK-2K28.2k5patch --recipe FROZEN_RECIPE.json --json
+python tools/nfl2k5_modpack.py check SOFTDRINK-2K28.2k5patch --image MY_DISC.iso
+python tools/nfl2k5_modpack.py apply SOFTDRINK-2K28.2k5patch --source MY_DISC.iso --out SOFTDRINK-2K28.xiso.iso --json
+python tools/nfl2k5_modpack.py extract SOFTDRINK-2K28.2k5patch --out editable-sources --customize
+```
+
+For recipes frozen before the 42-image marks boundary, supply `--marks-pack DIR`
+with the complete current marks pack. A recipe pointing to the older five-image
+folder, including G's initial frozen recipe, needs this override too. All 42
+reviewed sources are validated before export. These private packs contain finished
+game-derived bytes and marks; keep all packs, source bundles and disc images
+outside Git. See `docs/official_marks_pack.md`.
+
+The following sections document legacy formats 1 and 2.
+
 Format 2 carries ordered, typed operations. Same-size exports continue to write
 format 1 by default; pass `format_version=2` to opt in. Loading, checking,
 applying, extracting assets, and recognising recipes support both versions.
@@ -47,7 +190,8 @@ member names are refused. A pack never supplies executable handler code.
 retain their existing behaviour. `.2k5mod` is a replacement-source project archive,
 not another extension for a finished disc patch; its own schema is unchanged.
 There was no HMAC/signature on the modpack archive to migrate. Existing XBE section
-digests and the SPECIAL storage/rows validators are retained.
+digests are transported unchanged. SPECIAL validates its versioned loader storage
+layout; current gameplay recognizers remain the responsibility of gameplay writers.
 
 ## Operation envelope
 
@@ -69,7 +213,7 @@ Format 1 keeps its existing, more permissive run-only container-size behaviour.
 | ID | Name | Version | Implemented behaviour |
 | --- | --- | --- | --- |
 | 0 | `byte_runs` | 1 | Sorted, nonoverlapping runs within this operation; original `replace` run fields and before/after SHA-256s; concatenated new bytes |
-| 1 | `xbe_grow` | 1 | Recognised retail-storage → SPECIAL-storage transition; append full XBE and repoint `default.xbe` via the existing storage writer |
+| 1 | `xbe_grow` | 1 | Recognised retail-storage → SPECIAL-storage transition; append full XBE and repoint `default.xbe` via checked file-growth spans |
 | 2 | `file_replace` | 1 | Resolve a named file through XDVDFS and replace its existing, same-size extent |
 | 3 | `file_grow` | 1, 2 | Append a larger named file and repoint its directory sector/length; version 2 also carries retained intermediate allocations before that file |
 | 4 | `file_add` | reserved | Contract/design below; currently refuses as an unknown operation |
@@ -133,12 +277,20 @@ and remain usable by those readers. Frozen synthetic packs produced by both
 shipped exporters cover format 1 Basic and format 2 SPECIAL Advanced in
 `tests/fixtures/modpack_legacy/`; their ZIP identities and applied bytes are pinned.
 
-`xbe_grow` uses that same envelope plus strict SPECIAL validation: old XBE length
-`0xB65000`, new length `0xB77000`, recognised original final-section storage,
-and `rows.status(new_xbe) == "applied"`. Execution calls
-`nfl2k5_depth_chart_storage.write_image_xbe` directly. Its extracted
-`image_file_node(read, partition, image_size, path)` resolver is shared by the
-writer and the projected checker, including nested file paths.
+`xbe_grow` uses that same envelope plus strict SPECIAL storage validation: old
+XBE length `0xB65000`, new length `0xB77000`, recognised original final-section
+storage, and `storage.state(new_xbe) == "applied"`. This checks the section's
+location, size, loader permissions, retained retail content and unused padding.
+The operation describes loader allocation, not a particular gameplay revision.
+Requiring the current `rows.status` broke packs from the original Beta 60 and
+Beta 61 writers when later gameplay row and pool layouts changed.
+
+Execution uses the common checked file-growth spans and the same final byte,
+hash and directory-extent verification. The gameplay builder's
+`write_image_xbe` keeps its current-layout recognizer. Its
+`image_file_node(read, partition, image_size, path)` resolver remains shared by
+the builder and projected checker, including nested file paths. Frozen original
+writer outputs and invalid-storage refusal tests cover this compatibility boundary.
 
 ## Export, check, and transactional apply
 

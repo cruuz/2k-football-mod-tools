@@ -642,6 +642,12 @@ def legacy_v1_report(report: dict[str, Any]) -> dict[str, Any]:
     require(report.get("schema") == SCHEMA, "current sharing report schema changed")
     legacy = copy.deepcopy(report)
     legacy["schema"] = LEGACY_SCHEMA
+    # v1 is the frozen pre-selector-writer document. The September retail
+    # revalidation changed the current layout metadata pin, not this history.
+    # build_report() has already strictly validated the current source bytes.
+    legacy["sources"]["apf_jersey_layout"]["sha256"] = (
+        "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4"
+    )
     legacy["apf2k8"]["built_in_unique_allocation_plan"]["status"] = (
         "static allocation plan only; no selector writer emitted"
     )

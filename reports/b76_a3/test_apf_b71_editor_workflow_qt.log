@@ -1,0 +1,14 @@
+test_all_blockers_inline_clean_rows_stage_and_pending_survives_book_refresh (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_all_blockers_inline_clean_rows_stage_and_pending_survives_book_refresh) ... ok
+test_clear_is_draft_only_and_failed_write_keeps_pending (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_clear_is_draft_only_and_failed_write_keeps_pending) ... ok
+test_confirm_personnel_runs_review_without_an_extra_click_or_details (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_confirm_personnel_runs_review_without_an_extra_click_or_details) ... ok
+test_mixed_queue_masks_rows_audibles_and_retirement_one_confirm_one_undo (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_mixed_queue_masks_rows_audibles_and_retirement_one_confirm_one_undo) ... ok
+test_owned_book_confirmation_does_not_nest_a_blocking_worker (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_owned_book_confirmation_does_not_nest_a_blocking_worker) ... ok
+test_pending_blockers_wrap_within_studio_table_and_keep_clear_visible (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_pending_blockers_wrap_within_studio_table_and_keep_clear_visible) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_switch_project_clears_drafts_even_with_same_source (tests.mod_editor.test_apf_b71_editor_workflow_qt.QueueQtTests.test_switch_project_clears_drafts_even_with_same_source) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.769s
+
+OK

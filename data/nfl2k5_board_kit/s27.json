@@ -1,0 +1,509 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.6,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.15,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -24.6,
+          -116.3
+        ],
+        [
+          24.6,
+          -116.3
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 3.0,
+        "material": "cement_walls"
+      },
+      "width": 48.768,
+      "y": [
+        19.6,
+        37.888
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.6,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.15,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -24.6,
+          116.3
+        ],
+        [
+          24.6,
+          116.3
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 3.0,
+        "material": "cement_walls"
+      },
+      "width": 48.768,
+      "y": [
+        19.6,
+        37.888
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.4,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.12,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_nw",
+      "path": [
+        [
+          -62.22,
+          -107.38
+        ],
+        [
+          -51.49,
+          -117.91
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.2,
+        "material": "cement_walls"
+      },
+      "width": 13.1064,
+      "y": [
+        19.1,
+        37.693
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.4,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.12,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_ne",
+      "path": [
+        [
+          51.49,
+          -117.91
+        ],
+        [
+          62.22,
+          -107.38
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.2,
+        "material": "cement_walls"
+      },
+      "width": 13.1064,
+      "y": [
+        19.1,
+        37.693
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.4,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.12,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_sw",
+      "path": [
+        [
+          -51.49,
+          117.91
+        ],
+        [
+          -62.22,
+          107.38
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.2,
+        "material": "cement_walls"
+      },
+      "width": 13.1064,
+      "y": [
+        19.1,
+        37.693
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.4,
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.12,
+        "material": "lambert10"
+      },
+      "inset": 0.3,
+      "name": "bk_board_se",
+      "path": [
+        [
+          62.22,
+          107.38
+        ],
+        [
+          51.49,
+          117.91
+        ]
+      ],
+      "structure": {
+        "colour": [
+          70,
+          70,
+          74
+        ],
+        "depth": 0.2,
+        "material": "cement_walls"
+      },
+      "width": 13.1064,
+      "y": [
+        19.1,
+        37.693
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -21.0,
+          21.0
+        ],
+        "y": [
+          37.6,
+          46.0
+        ],
+        "z_abs": [
+          118.5,
+          123.5
+        ]
+      },
+      "materials": [
+        "concrete"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "bigwallbanner2"
+      ],
+      "shape": "group226"
+    },
+    {
+      "materials": [
+        "bigwallbanner"
+      ],
+      "shape": "group227"
+    },
+    {
+      "materials": [
+        "bigwallbanner"
+      ],
+      "shape": "group228"
+    },
+    {
+      "materials": [
+        "bigwallbanner2"
+      ],
+      "shape": "group229"
+    }
+  ],
+  "env": null,
+  "help": "the 2016 end-zone boards, 160 x 60 ft, and four 61 x 43 ft corner displays",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_n",
+    "jumboMarkerCShape": "bk_board_s"
+  },
+  "move": [
+    {
+      "materials": [
+        "digit_away_score_L",
+        "digit_away_score_R",
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "onto": "bk_board_n",
+      "shape": "bk_group448"
+    },
+    {
+      "materials": [
+        "digit_away_score_L",
+        "digit_away_score_R",
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "onto": "bk_board_s",
+      "shape": "bk_group447"
+    }
+  ],
+  "name": "Raymond James Stadium",
+  "panels": [
+    {
+      "name": "bk_corner_faces",
+      "parts": [
+        {
+          "colour_from": "concrete",
+          "material": "concrete",
+          "quad": [
+            [
+              -62.22,
+              39.97,
+              -107.38
+            ],
+            [
+              -51.49,
+              39.97,
+              -117.91
+            ],
+            [
+              -51.49,
+              12.77,
+              -117.91
+            ],
+            [
+              -62.22,
+              12.52,
+              -107.38
+            ]
+          ],
+          "toward": [
+            0.0,
+            20.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "concrete",
+          "material": "concrete",
+          "quad": [
+            [
+              62.22,
+              39.97,
+              -107.38
+            ],
+            [
+              51.49,
+              39.97,
+              -117.91
+            ],
+            [
+              51.49,
+              12.77,
+              -117.91
+            ],
+            [
+              62.22,
+              12.52,
+              -107.38
+            ]
+          ],
+          "toward": [
+            0.0,
+            20.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "concrete",
+          "material": "concrete",
+          "quad": [
+            [
+              -62.22,
+              39.97,
+              107.38
+            ],
+            [
+              -51.49,
+              39.97,
+              117.91
+            ],
+            [
+              -51.49,
+              0.02,
+              117.91
+            ],
+            [
+              -62.22,
+              0.02,
+              107.38
+            ]
+          ],
+          "toward": [
+            0.0,
+            20.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "concrete",
+          "material": "concrete",
+          "quad": [
+            [
+              62.22,
+              39.97,
+              107.38
+            ],
+            [
+              51.49,
+              39.97,
+              117.91
+            ],
+            [
+              51.49,
+              12.77,
+              117.91
+            ],
+            [
+              62.22,
+              12.52,
+              107.38
+            ]
+          ],
+          "toward": [
+            0.0,
+            20.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "replace": [
+    {
+      "keep": [
+        "concrete",
+        "scorerails_premipped",
+        "coveshops1",
+        "digit_away_score_L",
+        "digit_away_score_R",
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "shape": "group448"
+    },
+    {
+      "keep": [
+        "concrete",
+        "scorerails_premipped",
+        "digit_away_score_L",
+        "digit_away_score_R",
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "shape": "group447"
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Daktronics, 'Daktronics Providing New Display System for Raymond James Stadium' (16 June 2016): two main end-zone displays 'measuring 60 feet high by 160 feet wide for 9,600 square feet each', one over each end zone; four corner displays about 61 x 43 ft; four 7 x 45 ft scoreboard displays, two above each main display; two 6 x 680 ft sideline ribbons.",
+    "st2's solved photo pose (PROVED OFFLINE): Commons 'Chiefs at Buccaneers' 2022 (r036), 10 points on both goalposts and the far end line and goal line corners, rms 2.96 px, hfov 30.75 deg: with the published 160 ft width the far (-z, Buccaneer Cove) board's face stands at z -116.6, its bottom 19.6 m over the field, centred on x 0.2 (st/t2/tb/work/r036_pose.json).",
+    "st2's pose r036 (PROVED OFFLINE) also sees the far-left corner display (a stats page with RAYMOND JAMES under it) standing clear above the stands' corner: with the published 43 ft width its bottom reads 19.1 m over the field (its top 37.7 m, level with the main board) along the line of sight through the corner at x about -56 to -61, z -113 to -130 (the depth hangs on the lens: +-7 m). DESIGN: each corner display hangs on its corner tower's field face, where the 2004 flag banner was (the retail face from (+-62.22, +-107.38) to (+-51.49, +-117.91), 15.0 m wide, its top 40.0 m), centred on it and 0.3 m proud with a 0.2 m body into the face, so it stands clear above the stands as the photo shows and reads as mounted on the tower; the other three corners mirror it ('installed in each corner').",
+    "The retail s27 scene (PROVED OFFLINE): each corner structure (group226 to group229) is a hollow concrete tower (top 39.97 m) whose field face is the 2004 flag banner (bigwallbanner, bigwallbanner2: 10.7 x 27.5 m at x +-51.5 to 62.2, z +-107.4 to 117.9, from 12.5 m up over a concrete lower front; at the south-west corner the banner runs to the ground); the photo shows no banner there, so the banners go and one panel in the retail concrete closes each tower's face (from the lower front's top, or from the ground at the south-west).",
+    "The retail s27 scene (PROVED OFFLINE): each end's 2004 scoreboard assembly is one shape (group448 at -z, group447 at +z): a 25.6 x 8.7 m feed quad at y 33.4 to 42.1, the score, clock and play clock digits under it (y 26.4 to 31.9), sponsor panels (lambert64/63, lambert65, lambert88), the flag banners and header (lambert5, lambert10), the grey housing (lambert8), the concrete tower (x +-20, y 0 to 45.2) and the rails; group448 also carries the Buccaneer Cove shop fronts (coveshops1), kept.",
+    "INFERRED: the +z (south) board mirrors the measured -z one (the release gives both the same size; the pose saw only the far end).",
+    "DESIGN: the four 7 x 45 ft scoreboard strips above the main boards and the sideline ribbons are left for a later schema key; the boards' frames and bodies take the retail black panel (lambert10) in a dark grey, so its light top band reads dark too.",
+    "DESIGN (main, 2026-09-29): the boards' bodies and backs take cement_walls, a plain retail material, at their dark colour (a solid panel from behind); the frame's material stays on the thin border only."
+  ],
+  "team": "TB",
+  "venue": "s27"
+}

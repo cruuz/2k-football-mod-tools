@@ -199,9 +199,11 @@ class ApfAudioEncoderGuiTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(

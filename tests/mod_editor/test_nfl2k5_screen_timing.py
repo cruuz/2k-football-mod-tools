@@ -28,6 +28,8 @@ def retail_books():
     if not index.is_file():
         raise unittest.SkipTest('Retail extracted vc_53450030/0 and its archive packs are absent')
     from nfl_outer import parse_archive, read_entry_bytes
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(index.parents[1])
     arc = parse_archive(index)
     return {i: read_entry_bytes(arc, arc.entries[i])[:32 + insp.BODY_SIZE] for i in range(307, 344)}
 

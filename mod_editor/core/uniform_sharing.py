@@ -21,7 +21,7 @@ from .errors import ValidationError
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REPORT = ROOT / "reports/assets/uniform_texture_sharing.v2.json"
 REPORT_SIZE = 415_528
-REPORT_SHA256 = "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf"
+REPORT_SHA256 = "992ea79c46c98fe218712540d0fb3159685eee2de67edb01b1659f1897d51c88"
 REPORT_SCHEMA = "uniform_texture_sharing_audit/v2"
 DEFAULT_PANTS_REPORT = ROOT / "reports/assets/apf_pants_family_layout.json"
 PANTS_REPORT_SIZE = 274_895

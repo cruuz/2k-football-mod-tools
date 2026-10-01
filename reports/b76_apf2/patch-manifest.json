@@ -1,0 +1,262 @@
+{
+  "classification": "PROVED OFFLINE",
+  "baseline": "b640f9e5c1b8141d67e96d635a7b56ee0ace580d",
+  "cpu_affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "patches": [
+    {
+      "profile": "base",
+      "module_hash": "5447E5428AA2D52A",
+      "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "path": "reports/b76_apf2/patches/54540807-charge-abilities-base.patch.toml",
+      "sha256": "a607ccee84b9882f485b2093e0df23ee1292eea624a4f1daf51d31167d7356bd",
+      "receipt_sha256": "9b2636c0e209fd7e81473fe09edafa144d72569cca30a2d7edff80860df14d00",
+      "revision": 3,
+      "word_count": 138,
+      "exact_revert": true,
+      "legacy_payloads_match_baseline": [
+        {
+          "revision": 1,
+          "enabled": false,
+          "sha256": "070a6808db27fbcce6a911aa5e39dfed1771dc0915e97bbf41395ac6fd5111d7"
+        },
+        {
+          "revision": 1,
+          "enabled": true,
+          "sha256": "ec470776e8a4f0e2360dabdb0568783d4f52b262855fc49073e03aae45e97d92"
+        },
+        {
+          "revision": 2,
+          "enabled": false,
+          "sha256": "f167e1651c8019a6f9fda21bb274aee600c92b6f92016b469edf36d871f1ec43"
+        },
+        {
+          "revision": 2,
+          "enabled": true,
+          "sha256": "ecbd712eb417141510d5556e76dc5055333a419e2396124fa3fd091929f56390"
+        }
+      ],
+      "move_hooks": [
+        {
+          "site": "848E7F94",
+          "base_site": "848E7F94",
+          "family": "finesse",
+          "original_pair": "896b0024556b07fe",
+          "cave": "84D0D180",
+          "length": 64,
+          "signature_matches": [
+            "848E7F94"
+          ]
+        },
+        {
+          "site": "848E7FA0",
+          "base_site": "848E7FA0",
+          "family": "finesse",
+          "original_pair": "816b0024556b2ffe",
+          "cave": "84D0D1C0",
+          "length": 64,
+          "signature_matches": [
+            "848E7FA0"
+          ]
+        },
+        {
+          "site": "848C4BA4",
+          "base_site": "848C4BA4",
+          "family": "finesse",
+          "original_pair": "897e0024556b07fe",
+          "cave": "84D0D200",
+          "length": 52,
+          "signature_matches": [
+            "848C4BA4"
+          ]
+        },
+        {
+          "site": "848C4BEC",
+          "base_site": "848C4BEC",
+          "family": "finesse",
+          "original_pair": "817e0024556b0108",
+          "cave": "84D0D234",
+          "length": 52,
+          "signature_matches": [
+            "848C4BEC"
+          ]
+        },
+        {
+          "site": "848C4C18",
+          "base_site": "848C4C18",
+          "family": "power",
+          "original_pair": "815e0024554a014a",
+          "cave": "84D0D268",
+          "length": 36,
+          "signature_matches": [
+            "848C4C18"
+          ]
+        },
+        {
+          "site": "848C4C40",
+          "base_site": "848C4C40",
+          "family": "power",
+          "original_pair": "817e0024556b018c",
+          "cave": "84D0D28C",
+          "length": 36,
+          "signature_matches": [
+            "848C4C40"
+          ]
+        },
+        {
+          "site": "848BA3CC",
+          "base_site": "848BA3CC",
+          "family": "power",
+          "original_pair": "816b0024556b018c",
+          "cave": "84D0D2B0",
+          "length": 44,
+          "signature_matches": [
+            "848BA3CC"
+          ]
+        },
+        {
+          "site": "848BA3FC",
+          "base_site": "848BA3FC",
+          "family": "power",
+          "original_pair": "816b0024556b014a",
+          "cave": "84D0D2DC",
+          "length": 44,
+          "signature_matches": [
+            "848BA3FC"
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "module_hash": "CEA825F7C2012F5A",
+      "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+      "path": "reports/b76_apf2/patches/54540807-charge-abilities-tu_1_1.patch.toml",
+      "sha256": "d06802db9be43acbbe4102bff4c1d97efb091fbcdac6411f16c61b6558fa9e2e",
+      "receipt_sha256": "18d787ebdabfd8dfd82a4d87fb586513b9ea77a642c0737c01e13eddaf22f0b9",
+      "revision": 3,
+      "word_count": 138,
+      "exact_revert": true,
+      "legacy_payloads_match_baseline": [
+        {
+          "revision": 1,
+          "enabled": false,
+          "sha256": "499b3b295ea5a5343d15a2321640bfb9231437af2d0971d8f0d4f0ec04d467a9"
+        },
+        {
+          "revision": 1,
+          "enabled": true,
+          "sha256": "945a01b344bd4e58c6e267064423671fe97f1be375f390095de379c05ba59b44"
+        },
+        {
+          "revision": 2,
+          "enabled": false,
+          "sha256": "cb024b0050f89d02a796a6b6e273cf69db939ec0581c87184f510ae2c7fa4967"
+        },
+        {
+          "revision": 2,
+          "enabled": true,
+          "sha256": "0041810f240e156ef950838ea47d67a1b3921561506afa622dfb65cbd4932556"
+        }
+      ],
+      "move_hooks": [
+        {
+          "site": "848E8E1C",
+          "base_site": "848E7F94",
+          "family": "finesse",
+          "original_pair": "896b0024556b07fe",
+          "cave": "84D0D180",
+          "length": 64,
+          "signature_matches": [
+            "848E8E1C"
+          ]
+        },
+        {
+          "site": "848E8E28",
+          "base_site": "848E7FA0",
+          "family": "finesse",
+          "original_pair": "816b0024556b2ffe",
+          "cave": "84D0D1C0",
+          "length": 64,
+          "signature_matches": [
+            "848E8E28"
+          ]
+        },
+        {
+          "site": "848C59DC",
+          "base_site": "848C4BA4",
+          "family": "finesse",
+          "original_pair": "897e0024556b07fe",
+          "cave": "84D0D200",
+          "length": 52,
+          "signature_matches": [
+            "848C59DC"
+          ]
+        },
+        {
+          "site": "848C5A24",
+          "base_site": "848C4BEC",
+          "family": "finesse",
+          "original_pair": "817e0024556b0108",
+          "cave": "84D0D234",
+          "length": 52,
+          "signature_matches": [
+            "848C5A24"
+          ]
+        },
+        {
+          "site": "848C5A50",
+          "base_site": "848C4C18",
+          "family": "power",
+          "original_pair": "815e0024554a014a",
+          "cave": "84D0D268",
+          "length": 36,
+          "signature_matches": [
+            "848C5A50"
+          ]
+        },
+        {
+          "site": "848C5A78",
+          "base_site": "848C4C40",
+          "family": "power",
+          "original_pair": "817e0024556b018c",
+          "cave": "84D0D28C",
+          "length": 36,
+          "signature_matches": [
+            "848C5A78"
+          ]
+        },
+        {
+          "site": "848BB204",
+          "base_site": "848BA3CC",
+          "family": "power",
+          "original_pair": "816b0024556b018c",
+          "cave": "84D0D2B0",
+          "length": 44,
+          "signature_matches": [
+            "848BB204"
+          ]
+        },
+        {
+          "site": "848BB234",
+          "base_site": "848BA3FC",
+          "family": "power",
+          "original_pair": "816b0024556b014a",
+          "cave": "84D0D2DC",
+          "length": 44,
+          "signature_matches": [
+            "848BB234"
+          ]
+        }
+      ]
+    }
+  ]
+}

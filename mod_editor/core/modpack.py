@@ -151,6 +151,8 @@ def _atomic_replace(part, target) -> None:
 
 def _regular_path(path: Path | str, what: str) -> Path:
     path = Path(path).expanduser()
+    if platform_compat.IS_WINDOWS and len(str(path.absolute())) >= 240:
+        path = Path(platform_compat.long_path(path.absolute()))
     try:
         info = os.lstat(path)
     except FileNotFoundError as exc:
@@ -723,6 +725,16 @@ class Pack:
         return data
 
 
+def _zip_directory_guard(path: Path) -> None:
+    """Bound ZIP metadata before ZipFile materializes its central directory."""
+    with path.open("rb") as stream:
+        footer = zipfile._EndRecData(stream)
+    _require(footer is not None, "not a ZIP archive")
+    _require(footer[zipfile._ECD_SIZE] <= 16 * 1024 * 1024
+             and footer[zipfile._ECD_ENTRIES_TOTAL] <= 24_098,
+             "pack ZIP directory exceeds the metadata budget")
+
+
 def load(pack_path: Path | str) -> Pack:
     """Open and validate a ``.2k5patch`` (manifest fully, payload and assets lazily)."""
 
@@ -730,8 +742,10 @@ def load(pack_path: Path | str) -> Pack:
     size = os.lstat(path).st_size
     _require(size > 0, "patch file is empty")
     try:
+        _zip_directory_guard(path)
         with zipfile.ZipFile(path) as archive:
             infos = archive.infolist()
+            _require(len(infos) <= 24_098, "too many ZIP members")
             names = {info.filename for info in infos}
             _require(len(names) == len(infos), "pack contains duplicate ZIP members")
             _require(MANIFEST_MEMBER in names and PAYLOAD_MEMBER in names, "not a 2K5 disc patch (manifest.json / payload.bin missing)")
@@ -746,8 +760,11 @@ def load(pack_path: Path | str) -> Pack:
     _require(len(text) == info.file_size, "manifest member is not the declared length")
     try:
         document = json.loads(text.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as exc:
         raise ModpackError(f"manifest is not valid JSON: {exc}") from exc
+    if isinstance(document, dict) and document.get("format") == 3:
+        from . import modpack_files
+        return modpack_files.load(path, document)
     manifest = parse_manifest(document)
     if document["format"] == 1:
         _require(size <= MAX_PACK_BYTES, f"patch file is {size} bytes; not a 2K5 disc patch")
@@ -762,6 +779,9 @@ def inspect(pack: Pack | Path | str) -> dict[str, Any]:
     """Everything a person needs to decide whether to apply a pack."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
+    if loaded.manifest.raw.get("format") == 3:
+        from . import modpack_files
+        return modpack_files.inspect(loaded)
     manifest = loaded.manifest
     return {
         "path": str(loaded.path),
@@ -794,6 +814,9 @@ def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite:
     """Write every asset (verified) plus ``recipe.json`` and ``manifest.json`` under ``directory``."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
+    if loaded.manifest.raw.get("format") == 3:
+        from . import modpack_files
+        return modpack_files.extract_assets(loaded, directory, overwrite=overwrite)
     root = Path(directory).expanduser()
     root.mkdir(parents=True, exist_ok=True)
     written: list[str] = []
@@ -956,7 +979,9 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                 if label == "kick_rules" and after == "power_only":
                     operations.append({"op": "kick_power", "enabled": True, "status": after})
                 else:
-                    operations.append({"op": label, "enabled": after == "applied", "status": after})
+                    operations.append({"op": label,
+                                       "enabled": after == "applied" or (label == "position_pools" and after == "needs_fix"),
+                                       "status": after})
         try:
             before = tt.infer_settings(tt.read_curves(base_xbe), tt.arc_table_status(base_xbe))
             after = tt.infer_settings(tt.read_curves(patched_xbe), tt.arc_table_status(patched_xbe))
@@ -1750,6 +1775,9 @@ def check(pack: Pack | Path | str, image: Path | str, *, hash_image: bool = Fals
     """Dry run: which runs match, which are already applied, which mismatch."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
+    if loaded.manifest.raw.get("format") == 3:
+        from . import modpack_files
+        return modpack_files.check(loaded, image, progress=progress)
     with closing(loaded):
         path = _regular_path(image, "disc image")
         fd = _open(path, os.O_RDONLY)
@@ -1900,7 +1928,7 @@ def apply(
     """
 
     if in_place:
-        _require(target_iso is None or Path(target_iso).expanduser().resolve() == Path(source_iso).expanduser().resolve(),
+        _require(target_iso is None or platform_compat.paths_alias(target_iso, source_iso),
                  "in-place apply patches the source itself; give one path")
         return apply_in_place(pack, source_iso, progress=progress)
     _require(target_iso is not None, "a target path is required unless in_place=True")
@@ -1909,6 +1937,9 @@ def apply(
     report = progress or _no_progress
     loaded = pack if isinstance(pack, Pack) else load(pack)
     manifest = loaded.manifest
+    if manifest.raw.get("format") == 3:
+        from . import modpack_files
+        return modpack_files.apply(loaded, source_iso, target_iso, overwrite=overwrite, progress=progress)
     if manifest.patch_operations:
         return _apply_modular(loaded, source_iso, target_iso, overwrite=overwrite, in_place=False,
                               hash_streams=hash_streams, progress=progress, block=block)
@@ -2027,6 +2058,7 @@ def apply_in_place(pack: Pack | Path | str, image: Path | str, *, progress: Prog
     report = progress or _no_progress
     loaded = pack if isinstance(pack, Pack) else load(pack)
     manifest = loaded.manifest
+    _require(manifest.raw.get("format") != 3, "File packs always create a new image. Choose a separate output path.")
     if manifest.patch_operations:
         return _apply_modular(loaded, image, image, overwrite=True, in_place=True,
                               hash_streams=True, progress=progress, block=BLOCK)

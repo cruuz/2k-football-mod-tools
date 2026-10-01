@@ -1,0 +1,512 @@
+{
+  "schema": 1,
+  "classification": "INFERRED",
+  "source": "e2/moment_audit.json; existing sources only, no new network",
+  "moments": [
+    {
+      "row": 1,
+      "date": "1967-12-31",
+      "venue": "Lambeau Field",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196712310gnb.htm",
+        "https://www.profootballhof.com/football-history/the-ice-bowl",
+        "https://www.profootballhof.com/football-history/the-ice-bowl"
+      ]
+    },
+    {
+      "row": 2,
+      "date": "1968-11-17",
+      "venue": "Oakland-Alameda County Coliseum",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196811170rai.htm",
+        "https://www.profootballhof.com/news/heidi",
+        "https://www.profootballhof.com/news/heidi"
+      ]
+    },
+    {
+      "row": 3,
+      "date": "1971-12-25",
+      "venue": "Municipal Stadium, Kansas City",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197112250kan.htm",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf"
+      ]
+    },
+    {
+      "row": 4,
+      "date": "1972-12-23",
+      "venue": "Three Rivers Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197212230pit.htm"
+      ]
+    },
+    {
+      "row": 5,
+      "date": "1974-12-21",
+      "venue": "Oakland-Alameda County Coliseum",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler"
+      ]
+    },
+    {
+      "row": 6,
+      "date": "1979-12-16",
+      "venue": "Texas Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown"
+      ]
+    },
+    {
+      "row": 7,
+      "date": "1980-12-07",
+      "venue": "Candlestick Park",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198012070sfo.htm",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090"
+      ]
+    },
+    {
+      "row": 8,
+      "date": "1982-01-02",
+      "venue": "Miami Orange Bowl",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201020mia.htm",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami"
+      ]
+    },
+    {
+      "row": 9,
+      "date": "1982-01-10",
+      "venue": "Candlestick Park",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201100sfo.htm"
+      ]
+    },
+    {
+      "row": 10,
+      "date": "1983-10-02",
+      "venue": "RFK Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198310020was.htm",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555"
+      ]
+    },
+    {
+      "row": 11,
+      "date": "1987-01-11",
+      "venue": "Cleveland Municipal Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198701110cle.htm"
+      ]
+    },
+    {
+      "row": 12,
+      "date": "1987-09-20",
+      "venue": "Riverfront Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198709200cin.htm"
+      ]
+    },
+    {
+      "row": 13,
+      "date": "1987-11-08",
+      "venue": "Busch Memorial Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198711080crd.htm",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946"
+      ]
+    },
+    {
+      "row": 14,
+      "date": "1989-01-22",
+      "venue": "Joe Robbie Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198901220cin.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII"
+      ]
+    },
+    {
+      "row": 15,
+      "date": "1991-01-27",
+      "venue": "Tampa Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199101270buf.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV"
+      ]
+    },
+    {
+      "row": 16,
+      "date": "1992-01-04",
+      "venue": "Mile High Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199201040den.htm",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers"
+      ]
+    },
+    {
+      "row": 17,
+      "date": "1992-10-04",
+      "venue": "Mile High Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199210040den.htm"
+      ]
+    },
+    {
+      "row": 18,
+      "date": "1993-01-03",
+      "venue": "Rich Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199301030buf.htm"
+      ]
+    },
+    {
+      "row": 19,
+      "date": "1994-10-17",
+      "venue": "Mile High Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199410170den.htm"
+      ]
+    },
+    {
+      "row": 20,
+      "date": "1997-09-21",
+      "venue": "Rich Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199709210buf.htm",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086"
+      ]
+    },
+    {
+      "row": 21,
+      "date": "1998-01-25",
+      "venue": "Qualcomm Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199801250den.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII"
+      ]
+    },
+    {
+      "row": 22,
+      "date": "2000-01-30",
+      "venue": "Georgia Dome",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200001300oti.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV"
+      ]
+    },
+    {
+      "row": 23,
+      "date": "2002-02-03",
+      "venue": "Louisiana Superdome",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200202030nwe.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI"
+      ]
+    },
+    {
+      "row": 24,
+      "date": "2003-01-05",
+      "venue": "3Com Park at Candlestick Point",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200301050sfo.htm"
+      ]
+    },
+    {
+      "row": 25,
+      "date": "2004-01-11",
+      "venue": "Lincoln Financial Field",
+      "classification": "INFERRED",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200401110phi.htm"
+      ]
+    },
+    {
+      "row": 26,
+      "date": "1999-01-17",
+      "venue": "Hubert H. Humphrey Metrodome",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+        "https://www.atlantafalcons.com/news/1998-nfc-championship-game-postgame-notes",
+        "https://www.nfl.com/news/1998-nfc-championship-09000d5d8060961f"
+      ]
+    },
+    {
+      "row": 27,
+      "date": "2008-02-03",
+      "venue": "University of Phoenix Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII"
+      ]
+    },
+    {
+      "row": 28,
+      "date": "2009-02-01",
+      "venue": "Raymond James Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII"
+      ]
+    },
+    {
+      "row": 29,
+      "date": "2012-02-05",
+      "venue": "Lucas Oil Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI"
+      ]
+    },
+    {
+      "row": 30,
+      "date": "2017-02-05",
+      "venue": "NRG Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI"
+      ]
+    },
+    {
+      "row": 31,
+      "date": "2022-11-13",
+      "venue": "Highmark Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 32,
+      "date": "2000-01-08",
+      "venue": "Adelphia Coliseum",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    {
+      "row": 33,
+      "date": "2002-01-19",
+      "venue": "Foxboro Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    {
+      "row": 34,
+      "date": "2004-02-01",
+      "venue": "Reliant Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
+      ]
+    },
+    {
+      "row": 35,
+      "date": "2010-02-07",
+      "venue": "Sun Life Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
+      ]
+    },
+    {
+      "row": 36,
+      "date": "2010-12-19",
+      "venue": "New Meadowlands Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands"
+      ]
+    },
+    {
+      "row": 37,
+      "date": "2011-01-08",
+      "venue": "Qwest Field",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake"
+      ]
+    },
+    {
+      "row": 38,
+      "date": "2012-01-14",
+      "venue": "Candlestick Park",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Catch_III"
+      ]
+    },
+    {
+      "row": 39,
+      "date": "2013-01-12",
+      "venue": "Sports Authority Field at Mile High",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle"
+      ]
+    },
+    {
+      "row": 40,
+      "date": "2013-02-03",
+      "venue": "Mercedes-Benz Superdome",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    {
+      "row": 41,
+      "date": "2015-01-11",
+      "venue": "Lambeau Field",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs"
+      ]
+    },
+    {
+      "row": 42,
+      "date": "2015-02-01",
+      "venue": "University of Phoenix Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
+      ]
+    },
+    {
+      "row": 43,
+      "date": "2015-12-03",
+      "venue": "Ford Field",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ]
+    },
+    {
+      "row": 44,
+      "date": "2018-01-14",
+      "venue": "U.S. Bank Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds"
+      ]
+    },
+    {
+      "row": 45,
+      "date": "2018-02-04",
+      "venue": "U.S. Bank Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Philly_Special",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII"
+      ]
+    },
+    {
+      "row": 46,
+      "date": "2020-02-02",
+      "venue": "Hard Rock Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV"
+      ]
+    },
+    {
+      "row": 47,
+      "date": "2022-01-23",
+      "venue": "GEHA Field at Arrowhead Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/13_seconds_game"
+      ]
+    },
+    {
+      "row": 48,
+      "date": "2022-02-13",
+      "venue": "SoFi Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
+      ]
+    },
+    {
+      "row": 49,
+      "date": "2022-12-17",
+      "venue": "U.S. Bank Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 50,
+      "date": "2024-02-11",
+      "venue": "Allegiant Stadium",
+      "classification": "INFERRED",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII"
+      ]
+    }
+  ]
+}

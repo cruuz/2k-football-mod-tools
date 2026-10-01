@@ -1,0 +1,74 @@
+{
+ "schema": "b76-s14-mark-legibility/v1",
+ "tag": "espn_replaced_primaries",
+ "logos_rev": "3dd4087d5",
+ "contrast_ratio": 3.0,
+ "oklab_distance": 0.2,
+ "espn_unchanged": {},
+ "threshold": null,
+ "below_threshold": [],
+ "method": "1. ``texel_share``: the s12 survey (reports/b76_s12/mark_contrast.py), unchanged: the share of opaque mark texels\n   (alpha above 128) whose WCAG contrast against the team's wing tint is at least 3:1.\n2. ``edge_share``: the same test on the mark's silhouette only (opaque texels with a transparent 4-neighbour).\n   A mark reads as a shape when its outline stands off the wing, even where its fill matches the wing.\n3. ``rendered``: the offline native render of the team against itself (the all-teams sheet state) three times:\n   with the mark, with an empty mark cell, and with the mark's own silhouette in flat white. The mark's footprint\n   is every 1080p pixel the white silhouette changes, so parts of a mark that vanish into the wing still count.\n   Each footprint pixel is compared with the empty render at the same pixel (the wing there), so the wing's own\n   coverage, the P8 atlas and the display resampling are all included. ``rendered_share`` is the share of\n   footprint pixels at 3:1 or better; ``standoff`` (the measure the threshold uses) also counts a pixel whose\n   colour differs from the wing by OKLab distance 0.20 or more, a hue change such as the Giants' red keyline on\n   a blue wing that luminance contrast alone misses. Each is the lower of the two sides.\n\nThe threshold is the lowest ``standoff`` among the marks ESPN draws unchanged on its 2026 bar (DEN, KC, LV and\nHOU in the 2026 broadcasts measured here). A mark below it is recoloured only when a cited on-dark colourway\ndiffers from the primary (reports/b76_s14/author.py MARKS).",
+ "rows": [
+  {
+   "team": "NYG",
+   "wing": "#3567FF",
+   "texel_share": 1.0,
+   "edge_share": 1.0,
+   "median_contrast": 3.31,
+   "mark_median_rgb": [
+    0,
+    29,
+    103
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.0,
+     "standoff": 0.009,
+     "median_contrast": 1.07,
+     "median_oklab_distance": 0.108,
+     "mark_pixels": 15388
+    },
+    "home": {
+     "rendered_share": 0.0,
+     "standoff": 0.008,
+     "median_contrast": 1.09,
+     "median_oklab_distance": 0.103,
+     "mark_pixels": 15146
+    }
+   },
+   "rendered_share": 0.0,
+   "standoff": 0.008
+  },
+  {
+   "team": "LAR",
+   "wing": "#317BFF",
+   "texel_share": 0.0,
+   "edge_share": 0.0,
+   "median_contrast": 2.79,
+   "mark_median_rgb": [
+    0,
+    53,
+    148
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.0,
+     "standoff": 0.028,
+     "median_contrast": 1.24,
+     "median_oklab_distance": 0.144,
+     "mark_pixels": 10617
+    },
+    "home": {
+     "rendered_share": 0.0,
+     "standoff": 0.027,
+     "median_contrast": 1.18,
+     "median_oklab_distance": 0.12,
+     "mark_pixels": 10590
+    }
+   },
+   "rendered_share": 0.0,
+   "standoff": 0.027
+  }
+ ],
+ "note": "Offline model only; the calibration gate reports FAIL. No in-game result is claimed."
+}

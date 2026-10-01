@@ -9,13 +9,22 @@ import tempfile
 import unittest
 
 from mod_editor.core.errors import ValidationError
-from mod_editor.core.menu_modes import DEFAULT_REPORT_DIR, inspect_main_menu
+from mod_editor.core.menu_modes import DEFAULT_REPORT_DIR, _REPORT_PINS, inspect_main_menu
 
 
 ADDRESS = re.compile(r"0x[0-9a-fA-F]+")
 
 
 class NamedMainMenuInspectorTests(unittest.TestCase):
+    def require_apf_reports(self) -> None:
+        keys = ("state", "closure", "apf_frontend", "apf_labels", "apf_text")
+        missing = [
+            _REPORT_PINS[key].filename for key in keys
+            if not (DEFAULT_REPORT_DIR / _REPORT_PINS[key].filename).is_file()
+        ]
+        if missing:
+            self.skipTest("Private APF menu proof reports missing: " + ", ".join(missing))
+
     def test_nfl_named_rows_initial_state_and_layouts(self) -> None:
         value = inspect_main_menu(" NFL2K5 ")
         self.assertEqual(value["game"], "NFL 2K5")
@@ -39,6 +48,7 @@ class NamedMainMenuInspectorTests(unittest.TestCase):
         self.assertFalse(value["mutation_supported"])
 
     def test_apf_separates_quicknav_from_unproved_layout_mainmenu(self) -> None:
+        self.require_apf_reports()
         value = inspect_main_menu("apf2k8")
         self.assertEqual(value["game"], "APF 2K8")
         self.assertEqual(value["state"]["proved_executable_route_count"], 8)
@@ -57,6 +67,8 @@ class NamedMainMenuInspectorTests(unittest.TestCase):
     def test_public_results_expose_no_executable_address_or_mutation_contract(self) -> None:
         for game in ("nfl2k5", "apf2k8"):
             with self.subTest(game=game):
+                if game == "apf2k8":
+                    self.require_apf_reports()
                 value = inspect_main_menu(game)
                 encoded = json.dumps(value, sort_keys=True)
                 self.assertIsNone(ADDRESS.search(encoded))

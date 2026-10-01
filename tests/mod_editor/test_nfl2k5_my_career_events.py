@@ -230,11 +230,13 @@ class HostBudgetTests(unittest.TestCase):
             'tools/mycareer_mode/b69_budget.json':
                 '738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73',
             'tools/mycareer_mode/runtime.c':
-                '531c01cb085d450bf762094d78ad7471165f81ae7fe8ba127135eeab83d52db3',
+                '5e3085d95c38e3410d7c0b814a11549816aec9968ed61bb155d35d731c0dbf56',
             'tools/mycareer_mode/runtime.S':
                 '74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64',
             'mod_editor/core/nfl2k5_my_career_mode.py':
-                '5f4c8d0aa77e39077b9f6e8438f412bf82e3ed7f80973ce102c700e6d838de6d',
+                # Integrated era/context and CP companion validation. CP2 only
+                # refreshes this stale host pin; native code/budget pins stay fixed.
+                '96434e5fe8e686bfa72a475b30cd6aa213e4eb3c9bdfef477f645c29017528a9',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

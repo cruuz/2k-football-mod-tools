@@ -80,12 +80,16 @@ OPCODE_NAMES: dict[int, str] = {
     0x1C: "Defense Align",
 }
 
-# Lateral lane table (retail 0x520fe8), centimetres, index 0..15; 17 = none.
+# Lateral lane table (retail 0x520fe8), centimetres, index 0..16; 17 = none.
 LANE_TABLE_CM: tuple[float, ...] = (
     -685.8, -533.4, -457.2, -381.0, -304.8, -228.6, -152.4, -76.2, 0.0, 76.2,
     152.4, 228.6, 304.8, 381.0, 457.2, 533.4, 685.8,
 )
 LANE_NONE = 17
+# Take/fake handoff uses a separate nine-entry hole table, 0x521030.
+# Native 0x2B6620 mirrors nonzero holes with 9-hole, and 0x281343
+# indexes exactly nine scoring entries. These are NOT rush-lane indices.
+HANDOFF_HOLE_CM = (0.0, 533.4, 381.0, 228.6, 76.2, -76.2, -228.6, -381.0, -533.4)
 # Named spot tables (retail 0xaabb30 / 0xaabb3c) used by Block Leg type 9.
 NAMED_SPOT_X_FT: tuple[int, ...] = (11, -14, 2, -6, 7, -11, -2, 8, -9, 37, -36, 0)
 NAMED_SPOT_Y_FT: tuple[int, ...] = (2, 2, 2, 2, 11, 11, 11, 30, 30, 10, 9, 0)
@@ -189,8 +193,8 @@ OPERAND_SCHEMAS: dict[int, tuple[OperandSpec, ...]] = {
     0x13: (SLOT, _int("k", 4, "K")),
     0x14: (SLOT, _int("k", 4, "K")),
     0x15: (_int("mode", 2, "Mode (2 = follow slot)"), X, Y, _int("a", 2, "A"), _int("b", 4, "B"), _int("slot", 4, "Follow slot"), _int("c", 4, "C")),
-    0x16: (_int("a", 4, "A"), T, _int("lane", 4, "Aim lane")),
-    0x17: (_int("a", 4, "A"), T, _int("lane", 4, "Aim lane")),
+    0x16: (_int("a", 4, "A"), T, _int("hole", 4, "Handoff hole", {i: str(i) for i in range(9)})),
+    0x17: (_int("a", 4, "A"), T, _int("hole", 4, "Handoff hole", {i: str(i) for i in range(9)})),
     0x18: (_int("mode", 2, "Mode"), X, Y, _int("a", 2, "A"), _int("b", 4, "B"), _int("c", 4, "C"), _int("d", 4, "D")),
     0x19: (_int("a", 3, "A"), X, Y, _int("b", 4, "B"), _int("c", 3, "C"), _int("d", 1, "D"), _int("e", 4, "E")),
     0x1A: (_int("kind", 3, "Condition kind", {0: "Assignment test", 1: "Play header test", 4: "Position / velocity", 5: "Target geometry", 6: "Follow decision", 7: "Personnel test"}), X, Y,
@@ -372,6 +376,8 @@ def encode_operands(op: int, values: Sequence) -> int:
         return ((i(0, 2) << 14) | (_enc_x(v[1]) << 24) | (_enc_y(v[2]) << 16) | (i(3, 2) << 8)
                 | i(4, 4) | (i(5, 4) << 4) | (i(6, 4) << 10))
     if op in (0x16, 0x17):
+        if isinstance(v[2], bool) or not 0 <= float(v[2]) <= 8 or int(v[2]) != v[2]:
+            raise ValueError("Take/fake handoff hole must be an integer 0 through 8, not a rush lane")
         return i(0, 4) | (_enc_time(v[1]) << 4) | (i(2, 4) << 28)
     if op == 0x18:
         return ((i(0, 2) << 14) | (_enc_x(v[1]) << 24) | (_enc_y(v[2]) << 16) | (i(3, 2) << 12)

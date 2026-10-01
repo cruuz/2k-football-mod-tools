@@ -24,6 +24,14 @@ RECIPES = ROOT / "reports/asset_samples/apf_roster"
 class APFJerseySelectorPatchTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        required = [SOURCE] + [RECIPES / name for name in (
+            "jersey_wasps_identity.v1.json",
+            "jersey_wasps_4_to_21_targeted.v1.json",
+            "jersey_all_24_built_in_unique.v1.json",
+        )]
+        missing = [path for path in required if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest(f"private APF jersey-selector authority is absent: {missing[0]}")
         cls.source = patch._validate_source(SOURCE)
 
     def build(self, recipe: str) -> patch.BuildResult:

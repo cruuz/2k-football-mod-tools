@@ -10,7 +10,6 @@ import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5 import sip  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.apf_studio.custom_team_appearance_qt import (  # noqa: E402
@@ -72,9 +71,11 @@ class CustomTeamAppearanceGuiTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     def test_panel_has_only_safe_slots_and_exact_banks(self) -> None:
         panel = CustomTeamAppearancePanel(_Facade(), _run_task)

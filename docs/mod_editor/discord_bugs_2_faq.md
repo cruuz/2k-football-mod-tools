@@ -85,26 +85,27 @@ results remain experimental and unwitnessed until the listed comparisons are pla
   the disc you will build, then open the Xbox save in Rosters and choose
   **Use this save's roster on the disc...**. With a disc roster open, the same
   action in **Tools** lets you choose a save directly. Save `roster_edits.json`,
-  review the counts and skipped players, then Build with **Include exported
+  review the player and team counts, then Build with **Include exported
   Rosters edits**. The action supplies the Build path automatically and writes
-  a neighboring `roster_edits.receipt.json` with the full comparison.
-  **EXPERIMENTAL / UNWITNESSED:** this action requires the r64 Rosters wiring
-  patch in builds that do not yet show it.
+  a neighboring `roster_edits.receipt.json` with the export results.
+  Beta 76 replaces the supported player roster, including players whose names
+  differ from the original disc. Older exports must be exported again.
 
   Ordinary **Export roster edits (.json)...** exports only changes made in
   the editor session. Opening a complete community save and exporting without
-  changing anything does not export that save's roster. The new action compares
-  the whole loaded save, including edits made here, with the current disc.
+  changing anything does not export that save's roster. The save-to-disc action
+  exports the whole loaded player roster, including edits made here.
   Export again with the new action after changing the save or the source disc.
 
-  Names must fit the disc's existing name pool or reuse an existing string;
-  oversized names are skipped, never shortened. Ambiguous identities, missing
-  player slots, unavailable colleges, team capacity limits, reserve changes and
-  injured-reserve ownership are reported. An added player needs an empty,
-  unowned NFL record and enough name space; a draft prospect, template or an
-  existing free agent is not an empty record. Disc-only players are retained.
+  The player and team tables must have matching capacity, and names must fit
+  the disc's existing name storage. Unsupported names, colleges or membership
+  refuse the export instead of silently skipping players. Active teams,
+  reserves, free agents and specialist slots are included. Disc presentation,
+  existing star tags and undecoded fields stay on the disc. A replacement player
+  does not inherit the old occupant's career history.
   A pooled-position disc and a retail-position save are refused rather than
   silently changing what a player's position means. Franchise saves use their
-  roster arena, but season progress, schedule, statistics and reserve/IR
-  ownership remain in the save. The game can load an HDD roster or franchise
+  roster arena, but season progress, schedule and saved statistics remain in
+  the save. A save with injured-reserve ownership must be used on the HDD.
+  **In-game use remains unwitnessed for this export.** The game can load an HDD roster or franchise
   instead of the disc roster, so test a fresh disc-roster load as well.

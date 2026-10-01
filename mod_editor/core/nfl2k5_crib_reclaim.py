@@ -126,7 +126,9 @@ def _inspect(disc):
 
 
 def _geometry(disc):
-    geometry = archive.layout(disc, {i: len(TOMBSTONE) for i, *_ in MOVIES})
+    # spill: on a source whose pack F already shrank (a custom intro or the intro
+    # trim), the packs before F give up the rest of the cut (b76-f2).
+    geometry = archive.layout(disc, {i: len(TOMBSTONE) for i, *_ in MOVIES}, spill=True)
     # Directories remain fixed. Compact ordinary files after the last directory
     # while preserving the video partition/header and any earlier fixed files.
     root_sector, root_size = struct.unpack("<II", disc.read(8, disc.partition + 0x10014))
@@ -246,7 +248,8 @@ def rebuild(source, output, *, expected_plan=None, overwrite=False, progress=Non
                             data = disc.read(min(archive.BLOCK, item["size"] - at), item["old_offset"] + at)
                             archive.write_all(fd, data, item["offset"] + at)
                     archive.write_all(fd, struct.pack("<II", item["sector"], item["size"]), item["node"])
-                banks._write_archive(fd, disc, geometry, {i: TOMBSTONE for i, *_ in MOVIES}, {}, progress)
+                banks._write_archive(fd, disc, geometry, {i: TOMBSTONE for i, *_ in MOVIES}, {}, progress,
+                                     populated=archive.PACK_NAMES)
                 archive.write_named(fd, lambda n, at: io.pread(fd, n, at), disc.partition, "default.xbe",
                                     lambda n, at: replacement[at:at+n], len(replacement))
                 os.ftruncate(fd, geometry["image_size"])

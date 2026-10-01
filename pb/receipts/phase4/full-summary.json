@@ -1,0 +1,730 @@
+{
+ "steps": [
+  "xbe",
+  "playbook_packs",
+  "defense_playbook_packs",
+  "position_pools",
+  "depth_chart_rows",
+  "kickoff_alignment",
+  "kickoff_returns",
+  "seven_on_seven_book",
+  "depth_roles",
+  "screen_timing",
+  "season_2026",
+  "team_history",
+  "prospect_names",
+  "player_tags",
+  "roster_edits",
+  "team_names_2026",
+  "scorebug_runtime",
+  "guardian_overlay",
+  "xbe_space",
+  "weather_haze",
+  "modern_color_xbe",
+  "modern_naming",
+  "roster_arena_growth",
+  "crib_reclaim",
+  "position_pool_filters",
+  "espn25_rosters",
+  "espn25_more_moments",
+  "historic_styles",
+  "modern_color_bundles",
+  "modern_metlife",
+  "modern_venues_2026",
+  "modern_metlife_model",
+  "modern_sofi",
+  "espn_marks_2026",
+  "espn_wipes_boards_2026",
+  "custom_intro"
+ ],
+ "applied": {
+  "throw": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+  "max_deep_yards": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+  "realistic_flight": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+  "arc_by_distance": "read back: (max_deep_yards=80.0, arc=0.0, realistic_flight=True, arc_by_distance=True)",
+  "catch_slider": "applied",
+  "draft_ai": "applied",
+  "returner_fix": "applied",
+  "progression": "applied",
+  "scheme_labels": "applied",
+  "camera": "applied",
+  "kick_rules": "applied",
+  "kickoff_alignment": "applied",
+  "xbe_space": "applied",
+  "momentum": "applied",
+  "momentum_contact": "applied",
+  "momentum_collisions": "applied",
+  "guardian_overlay": "applied",
+  "my_career": "applied",
+  "franchise_autosave": "applied",
+  "custom_intro": "applied",
+  "crib_reclaim": "applied",
+  "screen_hooks": "applied",
+  "coverage_trail": "applied",
+  "weekly_prep": "applied",
+  "weekly_prep_cpu": "applied",
+  "weekly_prep_remember": "applied",
+  "deep_zone_facing": "applied",
+  "deep_zone_bail": "applied",
+  "cpu_money_downs": "applied",
+  "coin_defer": "applied",
+  "decided_clock": "applied",
+  "cpu_scrambles": "applied",
+  "historic_teams_quick_game": "applied",
+  "espn25_more_moments": "applied",
+  "k128_memory": "applied",
+  "k128_roster_heap": "applied",
+  "accelerated_clock": "applied",
+  "franchise_edit_player": "applied",
+  "reserves_16": "applied",
+  "created_teams_extra": "applied",
+  "defensive_try": "applied",
+  "zone_drop_cap": "applied",
+  "all_stadiums": "applied",
+  "music_shuffle": "applied",
+  "practice_squad_screen": "applied",
+  "abilities": "applied",
+  "qb_spy": "applied",
+  "calendar_engine": "applied",
+  "coverage_slider": "applied",
+  "scramble_tuning": "applied",
+  "chop_block_toggle": "applied",
+  "dynamic_kickoff": "applied",
+  "position_pools": "applied",
+  "depth_chart_rows": "applied",
+  "season_cap": "applied",
+  "season_2026": "applied",
+  "team_names_2026": "applied",
+  "modern_naming": "applied",
+  "widescreen": "applied",
+  "overtime": "applied",
+  "team_column": "applied",
+  "seven_on_seven": "applied",
+  "team_history": "applied",
+  "position_row": "applied",
+  "probowl_order": "applied",
+  "elbow_options": "applied",
+  "the1wam_lineman_rating": "applied",
+  "xemu_display_list_fix": "applied",
+  "penalties": "applied",
+  "kick_laces": "applied",
+  "franchise_practice": "applied",
+  "practice_squad": "applied",
+  "depth_locks": "applied",
+  "prospect_names": "applied",
+  "player_star": "applied",
+  "player_tags": "applied",
+  "roster_edits": "edited",
+  "weather_haze": "applied",
+  "modern_color": "applied",
+  "modern_metlife": "applied",
+  "modern_venues_2026": "applied",
+  "modern_metlife_model": "applied",
+  "modern_sofi": "applied",
+  "espn_marks_2026": "applied",
+  "espn_wipes_boards_2026": "applied",
+  "espn25_rosters": "applied",
+  "playbook_packs": "step defense_playbook_packs+playbook_packs",
+  "screen_timing": "applied",
+  "edge_rename": "applied",
+  "scorebug_runtime": "applied",
+  "music_policy": "applied",
+  "music_unlock": "applied",
+  "music_userlist": "applied"
+ },
+ "not_applied": {},
+ "not_inspected": {
+  "momentum_collision_level": "no inspection row (a setting of another option, or an input)",
+  "scorebug_watermark": "no inspection row (a setting of another option, or an input)",
+  "accelerated_clock_minimum_seconds": "no inspection row (a setting of another option, or an input)",
+  "decided_clock_margin": "no inspection row (a setting of another option, or an input)",
+  "decided_clock_seconds": "no inspection row (a setting of another option, or an input)",
+  "abilities_lock_right_stick": "no inspection row (a setting of another option, or an input)",
+  "abilities_lock_special_moves": "no inspection row (a setting of another option, or an input)",
+  "abilities_lock_speedster": "no inspection row (a setting of another option, or an input)"
+ },
+ "expected_foreign": {
+  "depth_roles": "custom books (packs, 7-on-7) read foreign without allow_custom; the step reports applied",
+  "scorebug": "static scorebar inspector vs the sprite-grown HUD (same on the Berman disc A)"
+ },
+ "xbe_space_allocations": [
+  {
+   "owner": "nfl2k5_boot_logo",
+   "kind": "code",
+   "size": 690,
+   "align": 16,
+   "va": 21733376,
+   "raw": 12021760
+  },
+  {
+   "owner": "nfl2k5_scorebug_runtime",
+   "kind": "data",
+   "size": 128,
+   "align": 16,
+   "va": 21737472,
+   "raw": 12025856
+  },
+  {
+   "owner": "nfl2k5_defensive_try",
+   "kind": "code",
+   "size": 1440,
+   "align": 16,
+   "va": 21735488,
+   "raw": 12023872
+  },
+  {
+   "owner": "nfl2k5_defensive_try",
+   "kind": "data",
+   "size": 1040,
+   "align": 16,
+   "va": 21737600,
+   "raw": 12025984
+  },
+  {
+   "owner": "nfl2k5_momentum",
+   "kind": "code",
+   "size": 1408,
+   "align": 16,
+   "va": 21860352,
+   "raw": 12095488
+  },
+  {
+   "owner": "nfl2k5_momentum",
+   "kind": "data",
+   "size": 2064,
+   "align": 16,
+   "va": 21738640,
+   "raw": 12027024
+  },
+  {
+   "owner": "nfl2k5_zone_drop",
+   "kind": "code",
+   "size": 80,
+   "align": 16,
+   "va": 21861760,
+   "raw": 12096896
+  },
+  {
+   "owner": "nfl2k5_abilities_runtime",
+   "kind": "code",
+   "size": 1344,
+   "align": 16,
+   "va": 21864448,
+   "raw": 12099584,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_accelerated_clock",
+   "kind": "code",
+   "size": 1024,
+   "align": 16,
+   "va": 21865792,
+   "raw": 12100928,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_accelerated_clock",
+   "kind": "data",
+   "size": 4,
+   "align": 4,
+   "va": 21962752,
+   "raw": 12197888,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_accelerated_clock",
+   "kind": "read_only",
+   "size": 8,
+   "align": 4,
+   "va": 22048768,
+   "raw": 12283904,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_anniversary_kickoff",
+   "kind": "code",
+   "size": 3584,
+   "align": 16,
+   "va": 21866816,
+   "raw": 12101952,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_anniversary_kickoff",
+   "kind": "data",
+   "size": 736,
+   "align": 16,
+   "va": 21962768,
+   "raw": 12197904,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_calendar",
+   "kind": "code",
+   "size": 1024,
+   "align": 16,
+   "va": 21870400,
+   "raw": 12105536,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_calendar",
+   "kind": "read_only",
+   "size": 2048,
+   "align": 16,
+   "va": 22048784,
+   "raw": 12283920,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_camera",
+   "kind": "code",
+   "size": 512,
+   "align": 16,
+   "va": 21871424,
+   "raw": 12106560,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_camera",
+   "kind": "read_only",
+   "size": 320,
+   "align": 16,
+   "va": 22050832,
+   "raw": 12285968,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_coin_defer",
+   "kind": "code",
+   "size": 384,
+   "align": 16,
+   "va": 21871936,
+   "raw": 12107072,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_coin_defer",
+   "kind": "data",
+   "size": 4,
+   "align": 4,
+   "va": 21963504,
+   "raw": 12198640,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_coin_defer",
+   "kind": "read_only",
+   "size": 128,
+   "align": 4,
+   "va": 22051152,
+   "raw": 12286288,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_coverage_slider",
+   "kind": "code",
+   "size": 16,
+   "align": 16,
+   "va": 21872320,
+   "raw": 12107456,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_coverage_trail",
+   "kind": "code",
+   "size": 640,
+   "align": 16,
+   "va": 21872336,
+   "raw": 12107472,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_cpu_money_downs",
+   "kind": "code",
+   "size": 2048,
+   "align": 16,
+   "va": 21872976,
+   "raw": 12108112,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_cpu_scrambles",
+   "kind": "code",
+   "size": 128,
+   "align": 16,
+   "va": 21875024,
+   "raw": 12110160,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_cpu_scrambles",
+   "kind": "read_only",
+   "size": 4,
+   "align": 4,
+   "va": 22051280,
+   "raw": 12286416,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_decided_clock",
+   "kind": "code",
+   "size": 384,
+   "align": 16,
+   "va": 21875152,
+   "raw": 12110288,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_decided_clock",
+   "kind": "read_only",
+   "size": 8,
+   "align": 4,
+   "va": 22051284,
+   "raw": 12286420,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_deep_zone",
+   "kind": "code",
+   "size": 2048,
+   "align": 16,
+   "va": 21875536,
+   "raw": 12110672,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_deep_zone",
+   "kind": "data",
+   "size": 256,
+   "align": 16,
+   "va": 21963520,
+   "raw": 12198656,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_defensive_try_stats",
+   "kind": "code",
+   "size": 2048,
+   "align": 16,
+   "va": 21877584,
+   "raw": 12112720,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_defensive_try_stats",
+   "kind": "read_only",
+   "size": 4096,
+   "align": 16,
+   "va": 22051296,
+   "raw": 12286432,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_espn25_more_moments",
+   "kind": "code",
+   "size": 2560,
+   "align": 16,
+   "va": 21879632,
+   "raw": 12114768,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_espn25_more_moments",
+   "kind": "data",
+   "size": 16,
+   "align": 16,
+   "va": 21963776,
+   "raw": 12198912,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_franchise_autosave",
+   "kind": "code",
+   "size": 1536,
+   "align": 16,
+   "va": 21882192,
+   "raw": 12117328,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_franchise_autosave",
+   "kind": "data",
+   "size": 128,
+   "align": 16,
+   "va": 21963792,
+   "raw": 12198928,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_franchise_autosave",
+   "kind": "read_only",
+   "size": 512,
+   "align": 16,
+   "va": 22055392,
+   "raw": 12290528,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_franchise_edit_player",
+   "kind": "read_only",
+   "size": 704,
+   "align": 16,
+   "va": 22055904,
+   "raw": 12291040,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_guardian_overlay",
+   "kind": "code",
+   "size": 496,
+   "align": 16,
+   "va": 21883728,
+   "raw": 12118864,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_historic_teams_quick_game",
+   "kind": "code",
+   "size": 1280,
+   "align": 16,
+   "va": 21884224,
+   "raw": 12119360,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_historic_teams_quick_game",
+   "kind": "data",
+   "size": 16,
+   "align": 16,
+   "va": 21963920,
+   "raw": 12199056,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_music_playlist",
+   "kind": "code",
+   "size": 2048,
+   "align": 16,
+   "va": 21885504,
+   "raw": 12120640,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_music_playlist",
+   "kind": "data",
+   "size": 512,
+   "align": 16,
+   "va": 21963936,
+   "raw": 12199072,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_music_playlist",
+   "kind": "read_only",
+   "size": 1024,
+   "align": 16,
+   "va": 22056608,
+   "raw": 12291744,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_my_career",
+   "kind": "data",
+   "size": 4096,
+   "align": 16,
+   "va": 21964448,
+   "raw": 12199584,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_practice_squad_screen",
+   "kind": "code",
+   "size": 4096,
+   "align": 16,
+   "va": 21895744,
+   "raw": 12130880,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_practice_squad_screen",
+   "kind": "data",
+   "size": 256,
+   "align": 16,
+   "va": 21968544,
+   "raw": 12203680,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_qb_spy",
+   "kind": "code",
+   "size": 2048,
+   "align": 16,
+   "va": 21899840,
+   "raw": 12134976,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_qb_spy",
+   "kind": "data",
+   "size": 768,
+   "align": 16,
+   "va": 21968800,
+   "raw": 12203936,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_qb_spy",
+   "kind": "read_only",
+   "size": 512,
+   "align": 16,
+   "va": 22057632,
+   "raw": 12292768,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_roster_storage",
+   "kind": "code",
+   "size": 82,
+   "align": 16,
+   "va": 21901888,
+   "raw": 12137024,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_scramble_tuning",
+   "kind": "code",
+   "size": 160,
+   "align": 16,
+   "va": 21901984,
+   "raw": 12137120,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_screen_hooks",
+   "kind": "code",
+   "size": 640,
+   "align": 16,
+   "va": 21902144,
+   "raw": 12137280,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_weekly_prep",
+   "kind": "code",
+   "size": 1536,
+   "align": 16,
+   "va": 21902784,
+   "raw": 12137920,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_widescreen_menus",
+   "kind": "code",
+   "size": 128,
+   "align": 16,
+   "va": 21904320,
+   "raw": 12139456,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_roster_arena_growth",
+   "kind": "code",
+   "size": 8192,
+   "align": 16,
+   "va": 21904448,
+   "raw": 12139584,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_my_career",
+   "kind": "code",
+   "size": 20480,
+   "align": 16,
+   "va": 21912640,
+   "raw": 12147776,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_scorebug_runtime",
+   "kind": "code",
+   "size": 5376,
+   "align": 16,
+   "va": 21933120,
+   "raw": 12168256,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_k128",
+   "kind": "code",
+   "size": 1024,
+   "align": 16,
+   "va": 21938496,
+   "raw": 12173632,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_my_career_m3",
+   "kind": "data",
+   "size": 4096,
+   "align": 16,
+   "va": 22040576,
+   "raw": 12275712,
+   "owner_offset": 0
+  },
+  {
+   "owner": "nfl2k5_xbe_space_directory",
+   "kind": "read_only",
+   "size": 4096,
+   "align": 4096,
+   "va": 22044672,
+   "raw": 12279808
+  }
+ ],
+ "xbe_space_by_kind": {
+  "code": [
+   33,
+   70484
+  ],
+  "data": [
+   15,
+   14120
+  ],
+  "read_only": [
+   12,
+   13460
+  ]
+ },
+ "appended_and_growth_bytes": {
+  "scorebug_runtime:resources.appended_bytes": 327520,
+  "scorebug_runtime:resources.growth": 327680,
+  "scorebug_runtime:image_growth": 206338048,
+  "scorebug_runtime:xbe_transport.image_growth": 12300288,
+  "guardian_overlay:image_growth": 194125824,
+  "espn25_more_moments:image_growth": 229265408,
+  "historic_styles:image_growth": 1391798272
+ },
+ "sprite_hud": {
+  "appended_bytes": 327520,
+  "native_heap_bytes": 330880,
+  "texture_count": 34,
+  "quads": 50,
+  "font_count": 0,
+  "outer_index": 346,
+  "outer_size_before": 2977184,
+  "outer_size_after": 3304704,
+  "growth": 327680
+ },
+ "legacy_accel_ramp_disabled_by_momentum_profile": false,
+ "play_intents_summary": "Final playbooks paired: 0 read option plays, 1 QB spy assignments. EXPERIMENTAL / UNWITNESSED.",
+ "outcome": "The copy differs from your source. Review the Build summary for its selected contents and any edits kept original.",
+ "output": {
+  "sha256": "735a95bb6eab910c51573266b6fb5755333b62435a8a5288a5c30319d7b882ed",
+  "size": 7475951616
+ },
+ "stack": "/home/noah/2k-worktrees/b76-x2",
+ "stack_head": "6f7815db541c5a1ffbba2b0da1245d2123ffc501",
+ "recipe": "/media/noah/Storage/.b76-research/pb/astra-build/phase4.KuDOys/recipe.json",
+ "skipped_pending": {},
+ "seconds": 2703
+}

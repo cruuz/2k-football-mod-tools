@@ -19,12 +19,29 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import tempfile
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from mod_editor.core import modpack  # noqa: E402
+
+
+def cmd_export_files(args):
+    from mod_editor.core import modpack_files, modpack_sources
+    with tempfile.TemporaryDirectory(prefix="pack-sources-", dir=Path(args.out).parent) as work:
+        recipe, assets = ({}, {}) if not args.recipe else modpack_sources.prepare(args.recipe, work, stack=ROOT, marks_pack=args.marks_pack)
+        if args.sources_out:
+            modpack._require(bool(assets), "--sources-out requires --recipe")
+            recipe["sources_bundle"] = modpack_sources.write_bundle(args.sources_out, recipe, assets, overwrite=args.overwrite)
+            # Keep the exact frozen recipe available even without the source download.
+            assets = {"assets/documents/frozen-recipe.json": Path(args.recipe)}
+        receipt = modpack_files.export(args.base, args.patched, args.out, name=args.name, recipe=recipe,
+                                       source_assets=assets, overwrite=args.overwrite, progress=_progress(not args.json))
+    print(json.dumps(receipt, indent=2))
+    return 0
 
 
 def _progress(enabled: bool):
@@ -156,6 +173,9 @@ def cmd_apply(args: argparse.Namespace) -> int:
                                 hash_streams=not args.no_hash, progress=_progress(not args.json))
     if args.json:
         print(json.dumps(receipt, indent=1))
+    elif receipt.get("format") == 3:
+        print(f"Installed '{receipt['name']}': {receipt['files_verified']} game files verified in {receipt['elapsed_seconds']} s. "
+              f"Open {receipt['target']['path']} in xemu.")
     else:
         target = receipt["target"]
         print(f"Applied '{receipt['name']}': {receipt['runs']} run(s), {_human(receipt['bytes'])} written to {target['path']} "
@@ -174,7 +194,16 @@ def cmd_apply(args: argparse.Namespace) -> int:
 
 
 def cmd_extract(args: argparse.Namespace) -> int:
-    receipt = modpack.extract_assets(args.pack, args.out, overwrite=args.overwrite)
+    from mod_editor.core import modpack_sources
+    pack = modpack.load(args.pack)
+    if args.sources_file:
+        recipe = modpack_sources.extract_bundle(args.sources_file, args.out, pack.manifest.recipe.get("sources_bundle", {}))
+        receipt = dict(directory=args.out, assets=pack.manifest.recipe["sources_bundle"].get("asset_count", 0), files=[])
+    else:
+        receipt = modpack.extract_assets(pack, args.out, overwrite=args.overwrite)
+        recipe = pack.manifest.recipe
+    if args.customize:
+        receipt["customization"] = modpack_sources.materialize(recipe, args.out)
     if args.json:
         print(json.dumps(receipt, indent=1))
     else:
@@ -185,6 +214,18 @@ def cmd_extract(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
+
+    files = sub.add_parser("export-files", help="make a layout-independent finished-disc pack, without rebuilding")
+    files.add_argument("--base", required=True, help="clean USA Xbox retail image")
+    files.add_argument("--patched", required=True, help="finished SOFTDRINK image")
+    files.add_argument("--out", required=True)
+    files.add_argument("--name", default="SOFTDRINK 2K28")
+    files.add_argument("--recipe", help="frozen ultimate recipe; embeds the league project, roster and all referenced sources")
+    files.add_argument("--sources-out", help="optional separate .2k5sources ZIP, pinned by the main pack")
+    files.add_argument("--marks-pack", help="official marks source folder for recipes frozen before the external marks boundary")
+    files.add_argument("--overwrite", action="store_true")
+    files.add_argument("--json", action="store_true")
+    files.set_defaults(run=cmd_export_files)
 
     export = sub.add_parser("export", help="write a .2k5patch from base + patched images")
     export.add_argument("--base", required=True, help="the disc image the patched copy was built from")
@@ -234,12 +275,14 @@ def main(argv: list[str] | None = None) -> int:
     extract.add_argument("--out", required=True)
     extract.add_argument("--overwrite", action="store_true")
     extract.add_argument("--json", action="store_true")
+    extract.add_argument("--customize", action="store_true", help="resolve portable sources into editable Studio recipe/project JSON")
+    extract.add_argument("--sources-file", help="matching optional .2k5sources companion")
     extract.set_defaults(run=cmd_extract)
 
     args = parser.parse_args(argv)
     try:
         return args.run(args)
-    except modpack.ModpackError as exc:
+    except (ValueError, OSError, zipfile.BadZipFile) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 

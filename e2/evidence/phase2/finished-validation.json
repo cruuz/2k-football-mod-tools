@@ -1,0 +1,16 @@
+{
+  "classification": "PROVED OFFLINE",
+  "full_build_exit_code": 0,
+  "final_disc_proof_exit_code": 0,
+  "full_native_exit_code": 0,
+  "fresh_inspection_exit_code": 0,
+  "final_reader_regression_exit_code": 0,
+  "final_scope_regression_exit_code": 0,
+  "full_native_tests": 17,
+  "reader_tests": 43,
+  "reader_optional_skips": 2,
+  "reader_subtests": 219,
+  "scope_tests": 27,
+  "scope_subtests": 165,
+  "inspection_reader_commit": "bff8a3876335f3327b713150ba75bf1117a3acb8"
+}

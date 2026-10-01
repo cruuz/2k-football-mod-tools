@@ -1,0 +1,489 @@
+{
+  "retrieved_at": "2026-09-29T14:45:30.001416+00:00",
+  "attribution": "nflverse contributors; CC-BY-4.0; https://github.com/nflverse/nflverse-data",
+  "assets": [
+    {
+      "tag": "contracts",
+      "file": "data/historical_contracts.parquet",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/contracts/historical_contracts.parquet",
+      "updated_at": "2026-09-29T13:56:25Z",
+      "bytes": 11104198,
+      "sha256": "8295dfb366de9e0ea9a98bdf45f034d75b66bda74c09c723b5bceab2688b4316"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2000.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2000.csv",
+      "updated_at": "2023-09-06T06:54:27Z",
+      "bytes": 463106,
+      "sha256": "c4b205ea7b5506c72ba38f246b7e812ffedc9612e320a4099f5c57ec26d0e30f"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2001.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2001.csv",
+      "updated_at": "2023-09-06T06:55:01Z",
+      "bytes": 463481,
+      "sha256": "33f2579b74b295f60186a5cc988f8b0292e0f9a302eeb20ce2e47ee90f40b445"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2002.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2002.csv",
+      "updated_at": "2023-09-06T17:09:10Z",
+      "bytes": 520088,
+      "sha256": "a08b5d5fe070c0819bc27ac15ca3d47c7b2dd504fbd6c62d34e00c16a082021a"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2003.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2003.csv",
+      "updated_at": "2023-09-06T17:12:50Z",
+      "bytes": 522453,
+      "sha256": "6d9f530bcbacbf9de2d2a220987d3beb55419155f8661355b1fbe405ab6722ca"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2004.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2004.csv",
+      "updated_at": "2023-09-06T17:16:19Z",
+      "bytes": 531465,
+      "sha256": "4d9c9041c1b1cca9eb757baa6c2d59a19c3c428a3ea094832231df37e219e078"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2005.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2005.csv",
+      "updated_at": "2023-09-06T17:20:00Z",
+      "bytes": 530445,
+      "sha256": "c88034255064b5f1ec1aa76175ca6b69ad7857904d08e13eb77c23eef592ced2"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2006.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2006.csv",
+      "updated_at": "2023-09-06T17:23:40Z",
+      "bytes": 537777,
+      "sha256": "4ec3ed1331da5046fb4a3136720374a93d98ea502950c1c010e1d0535952b2d1"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2007.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2007.csv",
+      "updated_at": "2023-09-06T17:27:12Z",
+      "bytes": 545618,
+      "sha256": "1aa1dd25da3616e5ddf31de3b18d4731edb5032ea14c1803b35cc3413186d5dd"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2008.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2008.csv",
+      "updated_at": "2023-09-06T17:30:41Z",
+      "bytes": 552257,
+      "sha256": "6c7f2c475012defda7f260addabde03e90a9ae288ed2fc4aef53ea40ab76eeb9"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2009.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2009.csv",
+      "updated_at": "2023-09-06T17:34:11Z",
+      "bytes": 565709,
+      "sha256": "d3f9373f22db37a2bb962ae3dc3d15c65f51c2b240f13d241b4fd292aff9721e"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2010.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2010.csv",
+      "updated_at": "2023-09-06T17:37:39Z",
+      "bytes": 587908,
+      "sha256": "0c9dfde110e6c989bbecd830602b2562124b89388e1aac39b5287376f2370dd1"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2011.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2011.csv",
+      "updated_at": "2023-09-06T17:41:10Z",
+      "bytes": 585051,
+      "sha256": "6acc11a2b5f692db03e1945e0329da93f6b5debed3f99feed39eca470ab4cee5"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2012.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2012.csv",
+      "updated_at": "2023-09-06T17:44:39Z",
+      "bytes": 604547,
+      "sha256": "90628fcdadd9f2dde083bc77d41139cedc9fefd1fcc09f2ce8675823de23291b"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2013.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2013.csv",
+      "updated_at": "2023-09-06T17:48:05Z",
+      "bytes": 622434,
+      "sha256": "abf73c2b1ef10914af78f6b7397338508bd0c9f0372d2f0667a630e06a4484ed"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2014.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2014.csv",
+      "updated_at": "2023-09-06T17:51:33Z",
+      "bytes": 643337,
+      "sha256": "f3c3e9cced60d99ebdcb410b76ffeda72b207b7045983b7a63f677ad9a34814f"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2015.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2015.csv",
+      "updated_at": "2023-09-06T17:55:06Z",
+      "bytes": 673221,
+      "sha256": "63807a50226a94f6724b3694198b41661c76211707115b2d52975237ebc4ecb6"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2016.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2016.csv",
+      "updated_at": "2023-09-13T00:43:42Z",
+      "bytes": 875173,
+      "sha256": "c7a57a4816d05ef651f4c56b8209c38b98e3d60582ddd60cb8048ef657472ca1"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2017.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2017.csv",
+      "updated_at": "2023-09-13T00:49:07Z",
+      "bytes": 958517,
+      "sha256": "22584ad80445611edff6dcbc6dce9ab596bdc484430d8aac298725da15697fd4"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2018.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2018.csv",
+      "updated_at": "2023-09-13T00:54:20Z",
+      "bytes": 997735,
+      "sha256": "60c7f1dabb508acc800ef81b4f69892511b1f78246bdb2cca6115a506c523b0a"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2019.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2019.csv",
+      "updated_at": "2023-09-13T00:59:44Z",
+      "bytes": 1001234,
+      "sha256": "b00259cfddf2146512569423275dc17e142d31ddb13bfba6b0b826c9d3d810da"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2020.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2020.csv",
+      "updated_at": "2023-09-13T01:04:58Z",
+      "bytes": 988000,
+      "sha256": "dcf25143db7b54ac488d042b6c24142340effced1d6c8599b2084a9f412b3ed2"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2021.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2021.csv",
+      "updated_at": "2023-09-13T01:10:36Z",
+      "bytes": 953822,
+      "sha256": "a95e57ebe1df25224a4d19ed43aaffc5c2097a8b369954178b8592537ff77d34"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2022.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2022.csv",
+      "updated_at": "2023-09-13T01:16:11Z",
+      "bytes": 980115,
+      "sha256": "864719595d14909c73bd14110adcdcfc304c6621de9ba34feafb83666fac43c9"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2023.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2023.csv",
+      "updated_at": "2024-03-14T07:18:12Z",
+      "bytes": 967354,
+      "sha256": "f98283e6ef420babc597092b5483109a4570f9b5f63b7bfcce69643290960b6c"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2024.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2024.csv",
+      "updated_at": "2025-03-14T07:16:10Z",
+      "bytes": 1005701,
+      "sha256": "97721aa9092edb15c1357f2dac359dba72f63c81cc0e69408c65c229c91f50c1"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2025.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2025.csv",
+      "updated_at": "2026-03-14T07:33:08Z",
+      "bytes": 1010039,
+      "sha256": "531ee5de386037bb17de3e3e3d50f7b4ed08789526bbaae9876fdd3dfb4d04ad"
+    },
+    {
+      "tag": "rosters",
+      "file": "data/roster_2026.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2026.csv",
+      "updated_at": "2026-09-29T14:03:38Z",
+      "bytes": 952127,
+      "sha256": "ec6ad3959ea0846ab9badcf6aeff7a6c2dc83cd24070bbf6ce255b9112cb596a"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2000.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2000.csv",
+      "updated_at": "2026-08-13T12:42:49Z",
+      "bytes": 713904,
+      "sha256": "955a8b895920a2b01ecf02cb1eb29c2df7a9385c5e11385ae09107963dc0cf9a"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2001.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2001.csv",
+      "updated_at": "2026-08-13T12:42:24Z",
+      "bytes": 719623,
+      "sha256": "dfa161eb8a851c8cc3ff0088f24810daf47db4f098c3d920a60836cd7312bf4a"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2002.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2002.csv",
+      "updated_at": "2026-08-13T12:42:19Z",
+      "bytes": 739224,
+      "sha256": "d81c84f3694d8e3e5f228a854aa3caf72d9eeb52f4eb1d312f47d5cbc40d47d4"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2003.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2003.csv",
+      "updated_at": "2026-08-13T12:41:50Z",
+      "bytes": 725260,
+      "sha256": "b25c71e80850a9b9abd1147eb073bd196b32f4a4ae83d2d2702abc83b0f147d3"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2004.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2004.csv",
+      "updated_at": "2026-08-13T12:42:03Z",
+      "bytes": 742556,
+      "sha256": "e8c8353a2826e5cab14dc27c20cae9286bd671c6ddf7e0cf4eb244a07459d84b"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2005.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2005.csv",
+      "updated_at": "2026-08-13T12:44:58Z",
+      "bytes": 741188,
+      "sha256": "09968f4edcb50292741e1b3815e76a1e0d08ea97af5e697f2846b97085db733a"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2006.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2006.csv",
+      "updated_at": "2026-08-13T12:45:46Z",
+      "bytes": 734188,
+      "sha256": "e2489849c95d875326e73da0916550e73fe5393216423120b84560b93cc09979"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2007.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2007.csv",
+      "updated_at": "2026-08-13T12:45:40Z",
+      "bytes": 748113,
+      "sha256": "40545c443bdf4020d522b740f7ad16e441f23d08a7d726729e9b2be035366793"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2008.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2008.csv",
+      "updated_at": "2026-08-13T12:45:31Z",
+      "bytes": 743132,
+      "sha256": "1f79617f3448b0467e9cb4a1d73d171adb0f4fa8df92969d96c70030632d0c55"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2009.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2009.csv",
+      "updated_at": "2026-08-13T12:48:01Z",
+      "bytes": 783489,
+      "sha256": "1d18048fed34be4faf476b07de46f4c158e419e03cfb12deb54b93cc26fdd130"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2010.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2010.csv",
+      "updated_at": "2026-08-13T12:48:55Z",
+      "bytes": 797858,
+      "sha256": "a0ea4f139f49cb0542a2f74a4a72a2a72a8eee37f80c81f073d878abc97159b8"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2011.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2011.csv",
+      "updated_at": "2026-08-13T12:49:21Z",
+      "bytes": 792017,
+      "sha256": "f8a8e44ccf198570e3c1b05b7dd1430c7d05bdd977dd85a42398b3e97013dff4"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2012.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2012.csv",
+      "updated_at": "2026-08-13T12:48:48Z",
+      "bytes": 796636,
+      "sha256": "6cdfbf3b291cf1349b33fe8e90542d8ae54cca3726769866f94feaf866b329b5"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2013.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2013.csv",
+      "updated_at": "2026-08-13T12:51:27Z",
+      "bytes": 787236,
+      "sha256": "342fd27eef619a2aec4a74abf8f689e6b14fab526ae1300095b2654a3981882b"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2014.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2014.csv",
+      "updated_at": "2026-08-13T12:53:02Z",
+      "bytes": 811368,
+      "sha256": "9f7aee274dddd6b27ec66ae493507aebf5779ed81d4735a53b87bbf28030f7a1"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2015.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2015.csv",
+      "updated_at": "2026-08-13T12:52:07Z",
+      "bytes": 810770,
+      "sha256": "91cc6edbfe16bdc08c680c58ea6d8525c6b7668ef9b94ebdcc6ef9156fcd92d0"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2016.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2016.csv",
+      "updated_at": "2026-08-13T12:53:13Z",
+      "bytes": 815379,
+      "sha256": "17063fa01736c41b30ffbb15a284f64611fd8a517bfae5d4cdb0ebb19da78801"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2017.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2017.csv",
+      "updated_at": "2026-08-13T16:45:20Z",
+      "bytes": 819510,
+      "sha256": "ee3ed8e1b9f7998b7b7b43ec1139e1d69186818ad3e2ce100e4467f163f1ca3c"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2018.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2018.csv",
+      "updated_at": "2026-08-13T16:45:28Z",
+      "bytes": 828709,
+      "sha256": "8d66bc2dde26951038f6cb68edfcc9082c36423ec7df8185aa7b1b61906c866b"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2019.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2019.csv",
+      "updated_at": "2026-08-13T16:46:05Z",
+      "bytes": 830001,
+      "sha256": "324b77e6027839c15bad5d32a6d83d07f998e71e0a1e682a37543efeb5219064"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2020.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2020.csv",
+      "updated_at": "2026-08-26T07:35:52Z",
+      "bytes": 870722,
+      "sha256": "ac90bb97fd0cb8f8ae7783226c50f5db64bb375e99eaedbd32e97b8b16cf1a94"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2021.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2021.csv",
+      "updated_at": "2026-08-13T16:48:29Z",
+      "bytes": 911478,
+      "sha256": "2edb2190fa41c92eed8e997c0ba1ff6c737a0fe6d996129487fe34cb63264c6f"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2022.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2022.csv",
+      "updated_at": "2026-08-13T16:48:41Z",
+      "bytes": 877892,
+      "sha256": "af2d534b208af43d4b17bcba242dc949f2d40b367253f78c882c19eee9dfc937"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2023.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2023.csv",
+      "updated_at": "2026-08-13T16:49:02Z",
+      "bytes": 849941,
+      "sha256": "0cc79526a678907817713a7f603b75c4424a1cd4dfc98daa2b3018af80312b9c"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2024.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2024.csv",
+      "updated_at": "2026-08-13T16:49:31Z",
+      "bytes": 872095,
+      "sha256": "fbad4e9f1b892e3870a51a4eea808d692cde14ed6dbacd67cce3a0def8ddcbaa"
+    },
+    {
+      "tag": "stats_player",
+      "file": "data/stats_player_reg_2025.csv",
+      "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2025.csv",
+      "updated_at": "2026-08-13T16:51:50Z",
+      "bytes": 882104,
+      "sha256": "aaa8559478dd8d58569c93e278239e70e9411e79ee649c99d8d506030cd42b12"
+    }
+  ],
+  "stat_semantics": {
+    "url": "https://raw.githubusercontent.com/nflverse/nflfastR/master/R/calculate_stats.R",
+    "retrieved_at": "2026-09-29T15:42:14.310404+00:00",
+    "sha256": "0ccd41c78355ee89c08929c79e81dac75b4d3f7b22d691cddd4f7f875acfac28",
+    "bytes": 29754,
+    "updated_at": "2026-09-29T15:42:14.310404+00:00"
+  },
+  "derived_inputs": [
+    {
+      "file": "/media/noah/Storage/.b76-research/fa/source_manifest.json",
+      "sha256": "3556e7e2f86756d0fe94f15b92ff7889e2941405b4c86238d9720e3e045b7bb5",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "/media/noah/Storage/.b76-research/fa/audit_f.py",
+      "sha256": "432092dddcb4022cc93dfa37cd9af942441429dee674251d932385acf88f52d0",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "fr/identities.csv",
+      "sha256": "446728cb10e255c707ff0b0992aa4ee018c2ac6c5e99c2a9defc8f06000d0ab9",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "fc/data/contract_audit.json",
+      "sha256": "dc34704beaf7219119f377584a753ae03b74973d09625deee061e7780e98e466",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "fc/data/identity_review.json",
+      "sha256": "d25edeffde21b1a4aecf94353ce1c5fdcb221e40c2cafa34348d1f7f9df66d1e",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "data/nfl2k5_franchise_economy.json",
+      "sha256": "73e7001ef30ea592563358f0d9d96f8f9c017a05a83b231b373e5f48c757f8e6",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    },
+    {
+      "file": "/media/noah/Storage/.b76-research/main/freeze/candF/league_roster_edits_candE_dc.json",
+      "sha256": "35d855af3921c42f93e4c525a2868a2294fbd6e5cc717eaf9f6b141a43ea8e2c",
+      "date": "2026-09-29",
+      "role": "existing F input or audit definition, not a new upstream data download"
+    }
+  ]
+}

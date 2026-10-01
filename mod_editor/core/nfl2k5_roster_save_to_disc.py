@@ -1,10 +1,12 @@
-"""Compare a signed Xbox save with the CURRENT disc, exporting ordinary roster edits.
+"""Export a signed Xbox save for the CURRENT disc, with replay validation.
 
 EXPERIMENTAL / UNWITNESSED. No source writes or executable changes. Names are
 matched within their pool, with play-by-play ID, star tag and team membership
 as disambiguators. A renamed player needs a unique nonzero play-by-play ID plus
 unchanged birth bits. Ordinals alone and star bits alone never establish identity.
-Reserve ownership and franchise state cannot travel through the v1 edits lane.
+Reserve ownership and franchise state cannot travel through the legacy v1 merge.
+The UI uses v2 replacement: supported player fields and complete memberships,
+without identity matching. Franchise state remains in the signed save.
 """
 from __future__ import annotations
 
@@ -123,6 +125,10 @@ class ExportResult:
     @property
     def summary(self) -> str:
         r = self.receipt
+        if r.get("mode") == "replace_roster":
+            return (f"Roster prepared: {r['replaced']} player slots and {len(r['teams'])} teams. "
+                    "No unmatched players were skipped.\n"
+                    "Build with Include exported Rosters edits. Franchise progress stays in the Xbox save.")
         return (f"Matched: {r['matched']}. Added in free slots: {r['added']}. "
                 f"Changed: {r['changed']}. Unmatched: {r['unmatched']}. "
                 f"Skipped items: {len(r['skipped'])}.\n"
@@ -139,8 +145,11 @@ class ExportResult:
 
 
 def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
-            name: str = "Xbox save roster for disc") -> ExportResult:
-    """Return v1 edits and an exact receipt without mutating either input.
+            name: str = "Xbox save roster for disc", replace_roster: bool = False) -> ExportResult:
+    """Return replay-checked edits and a receipt without mutating either input.
+
+    ``replace_roster`` exports every supported player slot and membership using
+    v2. The default retains the legacy identity-merge API for comparison tools.
 
     The source must come from SaveContainer (signature verified). In-session
     edits are included. The target's current bytes, rather than its original
@@ -164,6 +173,29 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
             "Use a save and disc with the same position scheme; no conversion was exported.")
     _check_structure(disc, "Disc")
     _check_structure(save, "Xbox save")
+    if replace_roster:
+        from . import nfl2k5_roster_snapshot as snapshot
+        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+        save_bytes = save.to_body()
+        franchise = is_franchise_save(save_bytes)
+        if (any(p.record.on_injured_reserve for p in save.players)
+                or franchise and FranchiseSave(save_bytes).injured_reserve()):
+            raise SaveToDiscError("This roster has injured-reserve ownership in the save. "
+                                  "Use the signed Xbox save on the HDD to keep that ownership.")
+        edits = snapshot.document(save, name=name)
+        before = disc.to_body()
+        after, replay = rr.apply_body(before, edits, scheme=disc.scheme)
+        receipt = {"schema": RECEIPT_SCHEMA, "experimental": True, "witnessed": False,
+                   "mode": "replace_roster", "source_kind": "franchise save" if franchise else "roster save",
+                   "source_note": "Replaces player slots, active teams, reserves, free agents and specialists. "
+                                  "Franchise progress stays in the Xbox save. Disc presentation stays on the disc.",
+                   "matched": 0, "added": 0, "changed": replay["players_changed"],
+                   "unmatched": 0, "skipped": [], "replaced": len(save.players),
+                   "teams": [{"index": t.index, "save_active": len(t.slots)} for t in save.teams],
+                   "disc_body_sha256": _hash(before), "save_sha256": _hash(save_bytes),
+                   "result_body_sha256": _hash(after), "edits_sha256": _hash(json_text(edits).encode("utf-8")),
+                   "replay": replay}
+        return ExportResult(edits, receipt)
     from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
     save_bytes = save.to_body()
     franchise = is_franchise_save(save_bytes)
@@ -424,9 +456,10 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
     return ExportResult(edits, receipt)
 
 
-def from_file(disc: Path | str | rr.RosterDocument, source: Path | str) -> ExportResult:
+def from_file(disc: Path | str | rr.RosterDocument, source: Path | str, *,
+              replace_roster: bool = False) -> ExportResult:
     target = disc if isinstance(disc, rr.RosterDocument) else rr.load_image(disc, detect=True)
-    return compare(target, load_save(source))
+    return compare(target, load_save(source), replace_roster=replace_roster)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -434,8 +467,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--disc", required=True, type=Path)
     parser.add_argument("--save", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--replace-roster", action="store_true",
+                        help="Replace the supported player roster, as the Studio button does")
     args = parser.parse_args(argv)
-    result = from_file(args.disc, args.save)
+    result = from_file(args.disc, args.save, replace_roster=args.replace_roster)
     output = args.output.expanduser().resolve()
     receipt_path = output.with_suffix(".receipt.json")
     if (output.suffix.lower() != ".json" or receipt_path == output

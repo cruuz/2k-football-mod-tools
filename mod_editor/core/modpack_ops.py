@@ -208,8 +208,11 @@ class FileReplace:
             m._require(digest(read, new["size"]) == new["sha256"],
                        f"{op['path']}: expected-after file hash differs from append payload")
         if cls.special:
-            from . import nfl2k5_depth_chart_rows as rows
-            m._require(rows.status(read(new["size"], 0)) == "applied", "expected a complete SPECIAL XBE")
+            # xbe_grow v1 describes the SPECIAL loader allocation, not a
+            # particular gameplay revision. Old packs carry earlier row/pool
+            # layouts; requiring today's rows.status rejects their exact bytes.
+            m._require(storage.state(read(new["size"], 0)) == "applied",
+                       "unrecognised SPECIAL storage transition")
         start = view.partition + new["sector"] * 2048
         if cls.grow:
             append_start = start - prefix
@@ -255,9 +258,9 @@ class XbeGrow(FileGrow):
     special = True
     versions = (1,)
 
-    @staticmethod
-    def execute(op, pack, descriptor, spans):
-        storage.write_image_xbe(descriptor, blob_reader(pack, op["payload"])(op["after"]["size"], 0))
+    # Use the common checked file-growth spans. The gameplay builder's
+    # write_image_xbe recognizer intentionally accepts only current layouts;
+    # replaying a versioned transport operation must also accept older ones.
 
 
 class FileShrink(FileReplace):
@@ -505,8 +508,7 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
                    and new.size == storage.FILE_SIZE and growing)
         # The implicit SPECIAL path must remain a recognised storage transition.
         if special:
-            from . import nfl2k5_depth_chart_rows as rows
-            m._require(rows.status(m._pread_exact(patched, new.size, new.byte_offset, name)) == "applied",
+            m._require(storage.state(m._pread_exact(patched, new.size, new.byte_offset, name)) == "applied",
                        "unrecognised SPECIAL storage transition")
         shrinking = new.size < old.size
         if shrinking:

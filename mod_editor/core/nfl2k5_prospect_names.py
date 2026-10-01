@@ -495,7 +495,11 @@ def resource_status(resource: bytes) -> str:
 
 
 def _read_resource(path: Path | str) -> bytes:
+    from . import nfl2k5_roster_arena as arena
     with _rost._outer_image()(path) as archive:
+        if arena.grown_outer(archive, ROST_OUTER_INDEX):
+            # read-only: a roster grown for 16 reserves / extra created teams, as the growth migrated it
+            return arena.inspection_resource(archive, ROST_OUTER_INDEX)
         entry = _rost._entry(archive)
         return archive.read(entry.virtual_offset, entry.size)
 

@@ -1,0 +1,7 @@
+{
+  "status": "PROVED OFFLINE",
+  "jev_attempted": true,
+  "jev_executed": false,
+  "reason": "MCP tool call requires approval, but approval policy is never",
+  "fallback": "DESIGN: manual report review against code and offline receipts; no model audit judgment claimed"
+}

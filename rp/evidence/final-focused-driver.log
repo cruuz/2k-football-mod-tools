@@ -1,0 +1,6 @@
+{'name': 'test_build_panel_qt', 'exit_code': 0, 'seconds': 5.17}
+{'name': 'test_ux_build_plan_coverage_qt', 'exit_code': 0, 'seconds': 3.32}
+{'name': 'test_b76_release_build_controls', 'exit_code': 0, 'seconds': 2.52}
+{'name': 'test_b76_release_texts', 'exit_code': 0, 'seconds': 0.97}
+{'name': 'test_build_data_allowlist', 'exit_code': 0, 'seconds': 0.06}
+{'name': 'board-kit-data', 'exit_code': 0, 'seconds': 0.21}

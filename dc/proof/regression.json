@@ -1,0 +1,41 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "exit_code": 1,
+  "passed": 414,
+  "failed": 8,
+  "subtests_passed": 405,
+  "seconds": 4304.13,
+  "collected": 422,
+  "suite_counts": {
+    "dc/test_depth_import.py": 11,
+    "tests/mod_editor/test_nfl2k5_roster_records.py": 110,
+    "tests/mod_editor/test_nfl2k5_depth_locks.py": 22,
+    "tests/mod_editor/test_nfl2k5_depth_chart_rows.py": 21,
+    "tests/mod_editor/test_nfl2k5_special_roles.py": 8,
+    "tests/mod_editor/test_xbe_patch_memory_writes.py": 119,
+    "tests/mod_editor/test_xbe_patch_cave_references.py": 131
+  },
+  "failed_tests": [
+    "tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::CaveReferenceTests::test_practice_squad_spans_preserve_stack_owners",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ReverseOwnerOrderTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ReverseOwnerOrderTests::test_practice_squad_spans_preserve_stack_owners",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ScaleoutOwnerTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ScaleoutOwnerTests::test_practice_squad_spans_preserve_stack_owners",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ScaleoutReverseOwnerTests::test_kickoff_contact_readiness_and_pose_guards_are_complete_owned_hooks",
+    "tests/mod_editor/test_xbe_patch_cave_references.py::ScaleoutReverseOwnerTests::test_practice_squad_spans_preserve_stack_owners"
+  ],
+  "baseline_reproduction": "baseline_gates.json",
+  "log_sha256": "85f4c4a172eb723b555e184221d323e5df9bf956c5ef1373b2367f307c0ba5be",
+  "nice": 10,
+  "cores": "0-23",
+  "environment": {
+    "DISPLAY": "unset",
+    "QT_QPA_PLATFORM": "offscreen",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "all_roster_depth_special_tests_passed": 172,
+  "all_memory_write_tests_passed": 119,
+  "cave_reference_passed": 123,
+  "cave_reference_failed": 8
+}

@@ -77,7 +77,8 @@ class SiteTableTests(unittest.TestCase):
         for (a0, a1, la), (b0, _b1, lb) in zip(spans, spans[1:]):
             self.assertLessEqual(a1, b0, f"{la} overlaps {lb}")
         self.assertEqual(len(season.WEEK_SITES), 143)          # 49 from the first sweep + 94 missed row literals
-        self.assertEqual(len(season.year_sites(2026)), 8)      # 4 imm32 + 1 imm8 + rookie birth base/top + DOB line
+        self.assertEqual(len(season.year_sites(2026)), 8)
+        self.assertEqual(len(season.group_sites("created_player_dates")), 9)
         self.assertEqual(len(season.calendar_sites()), 2)
         self.assertEqual(len(season.group_sites("playoffs_14")), 13)
         self.assertEqual(len(season.group_sites("preseason")), 3)
@@ -85,7 +86,7 @@ class SiteTableTests(unittest.TestCase):
     def test_year_sites_encode_the_requested_year(self) -> None:
         by_label = {site.label: site for site in season.year_sites(2026)}
         for site in season.year_sites(2026):
-            if site.size == 4:
+            if site.label in {label for label, _va, _note in season._YEAR_IMM32}:
                 self.assertEqual(struct.unpack("<I", site.patched)[0], 2026)
                 self.assertEqual(struct.unpack("<I", site.retail)[0], 2004)
         self.assertEqual((by_label["regular_season_generator_year"].retail, by_label["regular_season_generator_year"].patched),
@@ -163,7 +164,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(receipt["preseason_weeks"], 4)
         self.assertEqual(season.read_year(patched), 2026)
         self.assertEqual(receipt["sections_repinned"], [0, 12, 13])
-        self.assertEqual(len(receipt["edits"]), 8 + 2 + 143 + 13 + 3)
+        self.assertEqual(len(receipt["edits"]), 17 + 2 + 143 + 13 + 3)
         self.assertFalse(receipt["runtime_verified"])
         for index, (_va, raw, size) in SECTIONS.items():
             header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
@@ -193,6 +194,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(receipt["playoff_teams"], 12)
         self.assertEqual(season.read_year(patched), 2027)
         self.assertEqual(season.group_status(patched, "year", year=2027), "applied")
+        self.assertEqual(season.group_status(patched, "created_player_dates", year=2027), "retail")
         self.assertEqual(season.group_status(patched, "year"), "foreign")   # not the 2026 preset
 
     def test_foreign_bytes_are_refused(self) -> None:

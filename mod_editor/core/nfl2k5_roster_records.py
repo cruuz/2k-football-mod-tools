@@ -114,6 +114,8 @@ OBJ_OFF = 0x40
 ROST_VERSIONS = {17: 0x40, 0: 0x20, 18: 0x40, 1: 0x20}
 PLAYER_SIZE = 0x54
 TEAM_SIZE = 0x1F4
+SPECIAL_TEAM_OFFSETS = {"h": 0x194, "kr1": 0x195, "kr2": 0x196,
+                        "k": 0x197, "ls": 0x198, "pr": 0x199}
 TEAM_SLOTS = 65
 COLLEGE_SIZE = 8
 POOLS = ("primary", "secondary")
@@ -1915,7 +1917,16 @@ class RosterDocument:
 
     def check_depth_locks(self) -> None:
         for team in self.teams:
-            _require(not self.depth_lock_conflicts(team.index),
+            conflicts = self.depth_lock_conflicts(team.index)
+            # Retail celebrity/alumni/Pro Bowl teams alias active club records.
+            # Club locks cannot be independent on those views. Keep diagnostics
+            # visible, but do not reject otherwise valid club assignments solely
+            # because several clubs' locked players also share an exhibition team.
+            if team.index >= 32:
+                conflicts = [c for c in conflicts if not all(
+                    any(t < 32 for t in self.by_offset[offset].teams)
+                    for offset in c["players"])]
+            _require(not conflicts,
                      f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
 
     def team_of(self, player: Player) -> int | None:
@@ -2567,9 +2578,9 @@ def detect_scheme_from_states(states: Mapping[str, Any]) -> dict[str, Any]:
     common = {"confidence": "high", "source": "disc patch states",
               "states": {"position_pools": pools, "edge_rename": xbe, "edge_rename_disc": disc,
                          "scheme_labels": labels}}
-    if pools == "applied":
+    if pools in ("applied", "needs_fix"):
         return {**common, "scheme": "one_pool",
-                "why": f"the disc's {SCHEME_PATCH_NAMES['one_pool']} patch reads applied "
+                "why": f"the disc's {SCHEME_PATCH_NAMES['one_pool']} patch reads {pools} "
                        f"(scheme_labels {labels})"}
     if "applied" in (xbe, disc):
         return {**common, "scheme": "edge",
@@ -2829,6 +2840,24 @@ def edits_document(document: RosterDocument, *, name: str = "", author: str = ""
                     "players": len(document.players), "edits": edits}
     if moves:
         document_out["moves"] = moves
+    specials = []
+    for team in document.teams:
+        roles = {}
+        for role, offset in SPECIAL_TEAM_OFFSETS.items():
+            slot = document.body[team.offset + offset]
+            if slot == document.original[team.offset + offset]:
+                continue
+            if slot == 255:
+                roles[role] = None
+            else:
+                _require(slot < len(team.slots), f"{team.display}: invalid {role} slot")
+                player = document.by_offset[team.slots[slot]]
+                roles[role] = {"pool": player.pool, "index": player.index,
+                               "first": player.first, "last": player.last}
+        if roles:
+            specials.append({"team_index": team.index, "team": team.abbreviation, "roles": roles})
+    if specials:
+        document_out["special_teams"] = specials
     return document_out
 
 
@@ -2844,14 +2873,109 @@ def edits_between(base_body: bytes, patched_body: bytes, *, name: str = "") -> d
 
 
 def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
+    from .nfl2k5_roster_snapshot import SCHEMA as snapshot_schema
     document = source if isinstance(source, Mapping) else json.loads(Path(source).read_text(encoding="utf-8"))
     _require(isinstance(document, Mapping), "a roster-edits file must be a JSON object")
-    _require(str(document.get("schema")) == EDITS_SCHEMA,
+    _require(str(document.get("schema")) in (EDITS_SCHEMA, snapshot_schema),
              f"unknown roster-edits schema {document.get('schema')!r}; expected {EDITS_SCHEMA}")
     edits = document.get("edits")
     _require(isinstance(edits, list), "the roster-edits document has no edits list")
     _require(isinstance(document.get("moves", []), list), "the roster-edits moves must be a list")
+    _require(isinstance(document.get("special_teams", []), list),
+             "the roster-edits special_teams must be a list")
     return dict(document)
+
+
+def apply_special_teams(roster: RosterDocument, entries: Sequence[Mapping[str, Any]]) -> int:
+    """Resolve explicit specialist identities after membership/name replay.
+
+    These six bytes are roster indices, never player depth ranks. P and the
+    on-field LS still use their positional depth lists. All entries validate
+    before mutation; unknown roles, stale names and absent members refuse.
+    This authors no locks: callers supply the existing player lock fields.
+    """
+    index = {(p.pool, p.index): p for p in roster.players}
+    writes: dict[int, int] = {}
+    seen = set()
+    for entry in entries:
+        _require(isinstance(entry, Mapping), "special team entry must be an object")
+        number = entry.get("team_index")
+        _require(type(number) is int and 0 <= number < len(roster.teams), "invalid special team index")
+        team = roster.teams[number]
+        _require(entry.get("team") == team.abbreviation, "special team abbreviation mismatch")
+        _require(number not in seen, "duplicate special team entry")
+        seen.add(number)
+        roles = entry.get("roles")
+        _require(isinstance(roles, Mapping) and bool(roles), "special team roles must be a nonempty object")
+        for role, identity in roles.items():
+            _require(role in SPECIAL_TEAM_OFFSETS, f"unknown special team role {role!r}")
+            slot = 255
+            if identity is not None:
+                _require(isinstance(identity, Mapping), "specialist identity must be an object or null")
+                _require(type(identity.get("index")) is int, "invalid specialist player index")
+                player = index.get((identity.get("pool"), identity["index"]))
+                _require(player is not None, "specialist player is absent")
+                _require(identity.get("first") == player.first and identity.get("last") == player.last,
+                         "specialist player name mismatch")
+                _require(player.offset in team.slots, "specialist is not an active member of this team")
+                slot = team.slots.index(player.offset)
+            writes[team.offset + SPECIAL_TEAM_OFFSETS[role]] = slot
+    for offset, slot in writes.items():
+        roster.body[offset] = slot
+    return len(writes)
+
+
+def apply_college_aliases(roster: RosterDocument, aliases, updates) -> None:
+    """Reclaim unused college labels without growing the native table or pool."""
+    labels = list(roster.colleges)
+    by = {(p.pool, p.index): p for p in roster.players}
+    changes = {}
+    for change in updates:
+        key = (change["pool"], change["index"])
+        player = by.get(key)
+        _require(player is not None and (player.first, player.last) == (change["first"], change["last"]),
+                 "college identity mismatch")
+        _require(key not in changes, "duplicate college update")
+        changes[key] = change["college"]
+    # A slot vacated by an explicit, identity-pinned update is not a surviving
+    # reference. All updates and aliases commit together in the private body.
+    used = {p.college_index for p in roster.players
+            if changes.get((p.pool, p.index), p.college) == p.college}
+    seen = set()
+    for alias in aliases:
+        i = alias["index"]
+        _require(type(i) is int and 0 <= i < len(labels) and i not in seen, "invalid college alias slot")
+        seen.add(i)
+        if labels[i] == alias["name"]:
+            continue
+        _require(labels[i] == alias["expected"] and i not in used, "college alias is stale or still referenced")
+        name = alias["name"]
+        _require(isinstance(name, str) and 0 < len(name) <= 64 and all(ord(c) >= 32 for c in name), "invalid college label")
+        labels[i] = name
+    pool = roster.college_pool
+    _require(pool is not None, "college string pool absent")
+    # UTF-16 suffix sharing keeps all labels within the original fixed span.
+    # Every table entry still points at a complete NUL-terminated string.
+    packed = bytearray()
+    offsets = {}
+    for name in sorted(set(labels), key=lambda s:(-len(s),s)):
+        parent = next((s for s in offsets if s.endswith(name)), None)
+        if parent is not None:
+            offsets[name] = offsets[parent] + len(parent.encode("utf-16-le")) - len(name.encode("utf-16-le"))
+        else:
+            offsets[name] = len(packed)
+            packed.extend(name.encode("utf-16-le") + b"\0\0")
+    _require(len(packed) <= pool.capacity_bytes, "college aliases exceed fixed string span")
+    roster.body[pool.start:pool.end] = packed + bytes(pool.capacity_bytes-len(packed))
+    for i, name in enumerate(labels):
+        roster.set_rel(roster.college_offsets[i], pool.start + offsets[name])
+    roster.colleges = labels
+    by = {(p.pool,p.index):p for p in roster.players}
+    for change in updates:
+        p = by.get((change["pool"], change["index"]))
+        _require(p is not None and (p.first,p.last) == (change["first"],change["last"]), "college identity mismatch")
+        _require(change["college"] in labels, "missing college label")
+        roster.set_college(p, labels.index(change["college"]))
 
 
 def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
@@ -2865,6 +2989,9 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     """
 
     doc = read_edits(source)
+    from . import nfl2k5_roster_snapshot as snapshot
+    if doc["schema"] == snapshot.SCHEMA:
+        return snapshot.apply_body(body, doc, scheme=scheme)
     roster = RosterDocument(body)
     target_scheme = normalise_scheme(scheme) if scheme else str(detect_scheme_from_data(roster)["scheme"])
     roster.set_scheme(target_scheme)
@@ -2918,11 +3045,200 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             fields_written += 1
             changed = True
         applied += 1 if changed else 0
+    if doc.get("college_aliases") or doc.get("college_updates"):
+        apply_college_aliases(roster, doc.get("college_aliases", []), doc.get("college_updates", []))
+    if "free_agent_pool" in doc:
+        # Explicit dated membership excludes historic/all-star aliases that also
+        # occur in retail's FA pointer list. Their historic records survive.
+        selected = []
+        for identity in doc["free_agent_pool"]:
+            player = index.get((identity["pool"], identity["index"]))
+            _require(player is not None and player.offset in roster.free_agents,
+                     "free-agent pool may only retain existing free-agent slots")
+            _require(not player.teams and player.group == "free_agent", "free-agent pool has another owner")
+            _require((player.first, player.last) == (identity["first"], identity["last"]), "free-agent identity mismatch")
+            _require(player.offset not in selected, "duplicate free-agent slot")
+            selected.append(player.offset)
+        roster.free_agents = selected
+    coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
+    uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
     roster.check_depth_locks()
     out = roster.to_body()
-    return out, {"edits": len(doc["edits"]), "players_changed": applied,
+    # Resolve against the final serialized membership, including reserve repacks.
+    special_count = 0
+    if doc.get("special_teams"):
+        final_roster = RosterDocument(out)
+        special_count = apply_special_teams(final_roster, doc["special_teams"])
+        out = final_roster.to_body()
+    history_receipt = None
+    if doc.get("franchise_history"):
+        from . import nfl2k5_franchise_history
+        out, history_receipt = nfl2k5_franchise_history.apply_body(out, doc["franchise_history"])
+    return out, {"franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
-                 "players_moved": moved, "log": log}
+                 "players_moved": moved, "coach_names_written": coaches,
+                 "team_uniform_years_written": uniform_years,
+                 "special_team_slots_written": special_count, "log": log}
+
+
+#: Team record: the year pair of uniform styles 1..14 (u16 first, u16 last), the pair Team Select's CURRENT UNIFORM
+#: labels a style with (0xE3530: style 0 "Current Uniform"; a pair with first != last and last < 1900 reads
+#: "%d Alternate %d", other unequal pairs "%d - %d Uniform", equal pairs "%d Uniform"); 0xE2A90 treats a zero
+#: pair as no style, so the table must stay a gapless prefix.
+TEAM_UNIFORM_YEARS = 0x15A
+TEAM_UNIFORM_STYLES = 14
+
+
+def apply_team_uniform_years(body: bytearray, teams: Sequence[TeamRecord], entries: Sequence[Mapping[str, Any]],
+                             log: list[str]) -> int:
+    """Team-record edits from a roster-edits document's ``teams`` list: {"team_index": n (the record ordinal),
+    "team": retail abbreviation (a cross-check; optional), "uniform_years": {"<style 1..14>": [first, last]}}.
+    Only a style that already exists (non-zero pair) is relabelled, and only to a non-zero pair, so the set of
+    selectable styles is unchanged. Returns the pairs written (job u7: the Rams' 2026 alternates read
+    "2026 Alternate 1..3")."""
+
+    written = 0
+    by_index = {team.index: team for team in teams}
+    for entry in entries:
+        index = entry.get("team_index")
+        team = by_index.get(int(index)) if isinstance(index, int) else None
+        if team is None:
+            log.append(f"teams: no team record {index!r}")
+            continue
+        expected = entry.get("team")
+        if expected and expected != team.abbreviation:
+            log.append(f"teams: record {team.index} is {team.abbreviation!r}, the edit names {expected!r}; skipped")
+            continue
+        for style_text, pair in dict(entry.get("uniform_years") or {}).items():
+            style = int(style_text)
+            if not 1 <= style <= TEAM_UNIFORM_STYLES or not (isinstance(pair, (list, tuple)) and len(pair) == 2):
+                log.append(f"teams {team.abbreviation}: style {style_text!r} or pair {pair!r} is not valid")
+                continue
+            first, last = (int(v) for v in pair)
+            at = team.offset + TEAM_UNIFORM_YEARS + 4 * (style - 1)
+            current = struct.unpack_from("<HH", body, at)
+            if current == (0, 0) or not (0 <= first <= 0xFFFF and 0 <= last <= 0xFFFF) or (first, last) == (0, 0):
+                log.append(f"teams {team.abbreviation}: style {style} is {current}; only an existing style is "
+                           f"relabelled, to a non-zero pair (got {pair!r})")
+                continue
+            struct.pack_into("<HH", body, at, first, last)
+            written += 1
+    return written
+
+
+#: Career numbers in a coach record (Finn's map, nfl2k5_franchise_save.COACH_FIELDS; the Coach Matchup screen shows
+#: wins-losses-ties and total seasons). All unsigned 16-bit.
+COACH_NUMBER_FIELDS = {"seasons_with_team": 0x1C, "total_seasons": 0x1E, "wins": 0x20, "losses": 0x22,
+                       "ties": 0x24, "winning_seasons": 0x30, "super_bowls": 0x32, "playoff_wins": 0x34,
+                       "playoff_losses": 0x36, "super_bowl_wins": 0x38, "super_bowl_losses": 0x3A}
+
+
+def _coach_tool():
+    tools = ROOT / "tools"
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
+    return importlib.import_module("nfl_coach_roster_name_workflow")
+
+
+def apply_coach_names(body: bytearray, teams: Sequence[TeamRecord], entries: Sequence[Mapping[str, Any]],
+                      log: list[str]) -> int:
+    """Head coaches from a roster-edits document's ``coaches`` list: {"team": abbreviation, "first": text,
+    "last": text, "bio": [line, line, line] (optional), "fields": {name: number} (optional: the career numbers
+    the Coach Matchup screen shows, see COACH_NUMBER_FIELDS)}. Returns the coaches written.
+
+    The 35 coach records point at 175 strings (first, last and three biography lines each) that sit back to back
+    in one region of the main ROST, each referenced by exactly one pointer and by nothing else (checked here with
+    the coach tool's census of every known ROST string pointer). The region is rewritten as one piece: every string
+    in record order, the new names and biographies in place of the old ones (a replaced coach's retail biography
+    describes the 2004 coach, so it is cleared unless the entry gives one), each pointer aimed at its string, and
+    the unused tail zeroed. The region never grows; if the new text does not fit, nothing is written and the log
+    says so. Coach strings are outside the player name pool, so no player edit can reuse them."""
+
+    if not entries:
+        return 0
+    cw = _coach_tool()
+    snapshot = bytes(body)
+    tables = cw.parse_roster_body(snapshot)
+    references = cw.known_string_pointer_references(snapshot, tables)
+    coach_of_team = {team: coach for coach, team_list in cw.coach_team_refs(snapshot, tables).items()
+                     for team in team_list}
+    table = tables["coaches"]
+    fields = (0x00, 0x04, 0x08, 0x0C, 0x10)
+    slots: list[tuple[int, int, str]] = []          # (pointer field, current target, text)
+    for index in range(table["count"]):
+        record = table["offset"] + index * cw.COACH_STRIDE
+        for field in fields:
+            target = cw.relative_target(snapshot, record + field, f"coach {index} +0x{field:x}")
+            if target is None:
+                log.append(f"coach {index} +0x{field:x} has no string; coach names left as they are")
+                return 0
+            slots.append((record + field, target, cw.utf16z(snapshot, target, f"coach {index} +0x{field:x}")))
+    ordered = sorted(slots, key=lambda slot: slot[1])
+    region_start = ordered[0][1]
+    cursor = region_start
+    for field_offset, target, text in ordered:
+        if target != cursor or references.get(target, 0) != 1:
+            log.append("the coach strings are not one back-to-back region of singly referenced strings; "
+                       "coach names left as they are")
+            return 0
+        cursor += (len(text) + 1) * 2
+    region_end = cursor
+    wanted: dict[int, dict[int, str]] = {}
+    for entry in entries:
+        key = str(entry.get("team", "") or "").strip().casefold()
+        team = next((t for t in teams if t.abbreviation.casefold() == key), None)
+        if team is None or team.index not in coach_of_team:
+            log.append(f"coach of {entry.get('team')!r}: no such team, or the team has no coach record")
+            continue
+        bio = [str(line) for line in list(entry.get("bio") or [])[:3]]
+        bio += [""] * (3 - len(bio))
+        texts = {0x08: bio[0], 0x0C: bio[1], 0x10: bio[2]}
+        for field, key in ((0x00, "first"), (0x04, "last")):
+            if entry.get(key):                     # a name left out keeps the retail one
+                texts[field] = str(entry[key])
+        if any("\0" in text for text in texts.values()):
+            log.append(f"coach of {team.abbreviation}: NUL in a name")
+            return 0
+        wanted[coach_of_team[team.index]] = texts
+    if not wanted:
+        return 0
+    layout = bytearray()
+    pointers: list[tuple[int, int]] = []
+    for position, (field_offset, _target, text) in enumerate(slots):
+        index, field = divmod(position, len(fields))
+        text = wanted.get(index, {}).get(fields[field], text)
+        pointers.append((field_offset, region_start + len(layout)))
+        layout += text.encode("utf-16-le") + b"\0\0"
+    if len(layout) > region_end - region_start:
+        log.append(f"the coach strings need {len(layout)} bytes and the region holds {region_end - region_start}; "
+                   "coach names left as they are")
+        return 0
+    numbers: list[tuple[int, int]] = []
+    for entry in entries:
+        key = str(entry.get("team", "") or "").strip().casefold()
+        team = next((t for t in teams if t.abbreviation.casefold() == key), None)
+        if team is None or team.index not in coach_of_team:
+            continue
+        record = table["offset"] + coach_of_team[team.index] * cw.COACH_STRIDE
+        for name, value in dict(entry.get("fields") or {}).items():
+            if name not in COACH_NUMBER_FIELDS or not isinstance(value, int) or not 0 <= value <= 0xFFFF:
+                log.append(f"coach of {team.abbreviation}: field {name}={value!r} is not a known 16-bit coach number; "
+                           "coach names left as they are")
+                return 0
+            numbers.append((record + COACH_NUMBER_FIELDS[name], value))
+    body[region_start:region_end] = bytes(layout) + bytes(region_end - region_start - len(layout))
+    for field_offset, target in pointers:
+        struct.pack_into("<i", body, field_offset, target - field_offset + 1)
+    for offset, value in numbers:
+        struct.pack_into("<H", body, offset, value)
+    # read back: every coach record resolves to the intended strings
+    check = bytes(body)
+    for position, (field_offset, _target, text) in enumerate(slots):
+        index, field = divmod(position, len(fields))
+        expect = wanted.get(index, {}).get(fields[field], text)
+        got = cw.utf16z(check, cw.relative_target(check, field_offset, "coach"), "coach")
+        _require(got == expect, f"coach {index} +0x{fields[field]:x} reads {got!r} after the rewrite")
+    return len(wanted)
 
 
 def _resolve_team(roster: RosterDocument, entry: Mapping[str, Any]) -> int | None:
@@ -3055,6 +3371,8 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         say("Applying the roster edits")
         body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], source, scheme=scheme)
         replacement = before[:RESOURCE_HEADER_SIZE] + body
+        from . import nfl2k5_college_refs
+        nfl2k5_college_refs.verify_table_edit(archive, before[RESOURCE_HEADER_SIZE:], body)
         if replacement == before:
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, **receipt}
         say("Writing the edited roster")

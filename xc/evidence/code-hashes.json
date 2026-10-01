@@ -1,0 +1,18 @@
+{
+  "classification": "PROVED OFFLINE",
+  "base": "9de33371",
+  "sha256": {
+    "mod_editor/core/mod_build.py": "a6c333ffd9dd660740ccb94c608782e9ae234bcc0aa566dfc818d451719220a5",
+    "mod_editor/core/xdvdfs_compact.py": "1183e9f8655e5bd50250f4b590a743440fd7e88ed4daaa6eb83924566cbaaebb",
+    "packaging/release-allowlist.txt": "6407aa6ed5938f7fb7aa412e158cc7cc8bd5250c16d9ac528cc92a8a7b29a335",
+    "tools/xdvdfs_compact.py": "e3e229bd9e440c2f77a63e4a852cac89dd29b2f698d60b66074c8d8980050959",
+    "tests/mod_editor/test_xdvdfs_compact.py": "7b850b91249f153cdb2e06ca1bbd661e21a60bc3155da734a3a22721bc6247dd",
+    "tests/mod_editor/test_mod_build.py": "c5f975bde2453a9c33e71f1eee19cfd253941a5ffa41985791eb45527f2bb3ec",
+    "tests/mod_editor/test_mod_build_beta62_integration.py": "f68d8b56523cf55616fe57b9b1a9a929b0e6c878679085fcf44f5fb4a582217f",
+    "tests/mod_editor/test_mod_build_performance.py": "b4798c14021f32e4cdb6c5b82cdc2e183657b0fcce6f2987a7b5e8ce94c61a10",
+    "xc/prove_disc.py": "5104677237445b75b9f3906955d8a1ef8ee4f95b2295c395b320a5f79ebadbfc",
+    "xc/prove_private.py": "b6a3d1789e8bd1f89c433e7cd703848f96355337860dab7ea4907c567a4315c9",
+    "xc/lab_main.sh": "2c54b3b4443f4886b867eabfe666c3ac8be282d191e71f557983414aa488b206",
+    "xc/XC_REPORT.md": "73b4fea8b685263526496d15a3b1695702c071b7ed433503e8cd97778fa47fde"
+  }
+}

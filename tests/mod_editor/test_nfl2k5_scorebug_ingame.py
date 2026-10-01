@@ -76,9 +76,13 @@ class RetailTests(unittest.TestCase):
         before=r.decode(self.inputs["score_bug"])[1]
         after=r.decode(self.replacements["score_bug"])[1]
         L=r.layout
+        # SB3 (ccdba38f) owns this existing header word as its live-timeout
+        # marker. Pin its exact value; no other header byte may change.
+        self.assertEqual(before[0x60:0x64], bytes(4))
+        self.assertEqual(after[0x60:0x64], b'SOT3')
         for i,(a,b) in enumerate(zip(before,after)):
             if a==b:continue
-            allowed=(L.S0<=i<L.S0+L.VCOUNT*6 or L.SHAPE+0x10<=i<L.SHAPE+0x2c
+            allowed=(0x60<=i<0x64 or L.S0<=i<L.S0+L.VCOUNT*6 or L.SHAPE+0x10<=i<L.SHAPE+0x2c
                      or (L.S1<=i<L.S1+L.VCOUNT*10 and
                          (4<=(i-L.S1)%10<10 or ((i-L.S1)%10<4 and
                           (0<=(i-L.S1)//10<L.VCOUNT))))
@@ -100,7 +104,9 @@ class RetailTests(unittest.TestCase):
         self.assertAlmostEqual(r.FRAME[2]-r.FRAME[0],1054/3)
         self.assertAlmostEqual(r.FRAME[3]-r.FRAME[1],112*448/1080)
         self.assertLess(424-r.FRAME[1],464)
-        for side, vertices in (('away',range(274,280)),('home',range(280,286))):
+        # The live SB3 timeout updater walks home then away, matching the
+        # native score objects; both quads still stay inside their own panels.
+        for side, vertices in (('home',range(274,280)),('away',range(280,286))):
             x0,y0,x1,y1=r.PANELS[side]
             self.assertEqual(len({tuple(m.pos[v]) for v in vertices}),4)
             for v in vertices:

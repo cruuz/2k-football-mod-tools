@@ -1,0 +1,42 @@
+[PASS] 1. Schema and types
+        NFL 2K28 DAL Modern v0.2.0 by SOFTDRINK / Astra (CC0-1.0); authored on DAL
+        23 formation(s), 139 play(s)
+        the supplied book matches base.book_fingerprint exactly
+[PASS] 2. Budget (50 formations / 270 plays / 3,500 nodes / 36 links / 15-node chains)
+        plays 269/270, formations 41/50, nodes 258/3500
+        replaces 23 formation(s) and 139 play(s); net growth 0 formation(s), 0 play(s)
+        Authored unique nodes only; complete retained-pool budget requires the compile stage
+[PASS] 3. The ported retail play validator on every play
+        139 of 139 play(s) ran the full validator
+[PASS] 4. Class-flag sanity (donor family kept, QB shape matches the class nibble)
+[PASS] 5. Formation legality (NFL alignment rules)
+        “01 Gun Trips 11 R”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “02 Singleback Ace 11 L”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “03 Gun Bunch 11 R”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “04 Ace Wing 11 L”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “05 Gun Doubles 11 R”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “06 Gun Y Trips 11 L”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “07 Ace Bunch 11 R”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “08 Gun Wing 11 L”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “09 UC Tight 11 R”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “10 Gun Empty 11 L”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “11 Gun Bunch 11 R”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “12 Singleback Ace 11 L”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “13 Gun Doubles 11 R”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “14 Gun Y Trips 11 L”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “15 Ace Wing 11 R”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “16 Gun Wing 11 L”: shotgun, 1 back(s), TE WR2 WR3 WR HB
+        “17 Ace Bunch 11 R”: under centre, 1 back(s), TE WR2 WR3 WR HB
+        “18 Gun Trips 12 L”: shotgun, 1 back(s), TE WR WR2 TE2 HB
+        “19 Gun Bunch 12 R”: shotgun, 1 back(s), TE WR WR2 TE2 HB
+        “20 UC Tight 12 L”: under centre, 1 back(s), TE WR WR2 TE2 HB
+        “21 Gun Doubles 12 R”: shotgun, 1 back(s), TE WR WR2 TE2 HB
+        “22 UC Pro Tight 21 L”: under centre, 2 back(s), TE WR WR2 FB HB
+        “23 Gun Pro Base 21 R”: shotgun, 2 back(s), TE WR WR2 FB HB
+[PASS] 6. Donor-header rule (a stock play of the same shape, never “the book's first play”)
+        every donor is a stock play of the same shape and class
+[PASS] 7. Dry compile through the real writer
+        compiled and reparsed: 41 formations, 269 plays, 1503 nodes, 22,880 bytes changed
+        play menus: every formation's play list ends (no play listed twice, groups 0-2 once each); 0 of the pack's menu links reuse a slot the formation already had
+
+PACK CHECK: GREEN

@@ -698,7 +698,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     p.add_argument("--schedule", default=str(ROOT / "data" / "nfl_2026_schedule.json"))
     p.add_argument("--xbe-copy", help="copy of default.xbe to receive the year / calendar / season-length patch")
     p.add_argument("--year", type=int, default=2026)
-    p.add_argument("--groups", default="year,calendar,season_length,playoffs_14,preseason",
+    p.add_argument("--groups", default="year,created_player_dates,calendar,season_length,playoffs_14,preseason",
                    help="XBE groups to apply (nfl2k5_season_length.GROUPS); playoffs_14 = the 2020+ 14-team bracket, "
                         "preseason = the template-driven 3-game preseason")
     p.add_argument("--no-preseason", action="store_true", help="do not write the preseason block after the template")

@@ -142,6 +142,85 @@ def long_path(path: str | os.PathLike[str]) -> str:
     return "\\\\?\\" + absolute
 
 
+def absolute_path(path: str | os.PathLike[str]) -> str:
+    """Absolute spelling without resolving handles, symlinks or 8.3 names.
+
+    Strip the extended file namespace before normalization so drive and UNC
+    paths compare equally with and without the prefix. Keep letter case for
+    paths displayed to users or persisted in editable source documents.
+    """
+    value = os.fspath(path)
+    pathmod = ntpath if IS_WINDOWS else os.path
+    if IS_WINDOWS:
+        value = value.replace("/", "\\")
+        if value[:8].lower() == "\\\\?\\unc\\":
+            value = "\\\\" + value[8:]
+        elif value.startswith("\\\\?\\") and ntpath.splitdrive(value[4:])[0]:
+            value = value[4:]
+    value = pathmod.abspath(pathmod.expanduser(value))
+    if IS_WINDOWS:
+        drive, tail = ntpath.splitdrive(value)
+        if drive.startswith("\\\\") and not tail:
+            value += "\\"  # Make a bare UNC share root equivalent to its trailing-slash spelling.
+    return value
+
+
+def io_path(path: str | os.PathLike[str]) -> Path:
+    """Preserve short path spelling; extend long Windows paths before I/O."""
+    if not IS_WINDOWS:
+        return Path(path).expanduser()
+    value = absolute_path(path)
+    return Path(long_path(value) if len(value) >= 240 else value)
+
+
+def path_key(path: str | os.PathLike[str]) -> str:
+    """Lexical comparison key, independent of GetFinalPathNameByHandleW."""
+    return (ntpath if IS_WINDOWS else os.path).normcase(absolute_path(path))
+
+
+def paths_alias(a: str | os.PathLike[str], b: str | os.PathLike[str]) -> bool:
+    """Compare existing file identities, falling back when stat is unavailable."""
+    try:
+        if os.path.samefile(io_path(a), io_path(b)):
+            return True
+    except OSError:
+        pass
+    return path_key(a) == path_key(b)
+
+
+def path_is_within(path: str | os.PathLike[str], root: str | os.PathLike[str]) -> bool:
+    """Lexical strict containment; callers must separately guard child links."""
+    child, parent = path_key(path), path_key(root)
+    try:
+        return child != parent and (ntpath if IS_WINDOWS else os.path).commonpath((child, parent)) == parent
+    except ValueError:  # Different drives or shares.
+        return False
+
+
+def portable_component(name: str) -> bool:
+    """Whether an archive component is safe in the Windows file namespace."""
+    reserved = {"con", "prn", "aux", "nul", "conin$", "conout$"}
+    reserved.update(f"{prefix}{digit}" for prefix in ("com", "lpt") for digit in "123456789¹²³")
+    return bool(name and name not in (".", "..") and name == name.rstrip(". ")
+                and not any(c in '<>:"/\\|?*' or ord(c) < 32 for c in name)
+                and name.split(".", 1)[0].rstrip(" ").casefold() not in reserved)
+
+
+def validate_output_path(path: str | os.PathLike[str]) -> None:
+    """Reject Windows names whose shell and extended-path meanings disagree."""
+    if IS_WINDOWS:
+        # GetFullPathNameW (used by abspath) can remove trailing dots/spaces.
+        # Inspect the requested components before any such normalization,
+        # including relative components that would disappear through '..'.
+        value = ntpath.expanduser(os.fspath(path)).replace("/", "\\")
+        parsed = PureWindowsPath(value)
+        parts = parsed.parts[1:] if parsed.anchor else parsed.parts
+        if value.startswith("\\\\.\\") or any(
+            p not in (".", "..") and not portable_component(p) for p in parts
+        ):
+            raise ValueError(f"Choose an output without Windows reserved names or trailing dots/spaces: {path}")
+
+
 # Names for the two ownership models :func:`describe_ownership` can use.  They
 # are public because the guarantee differs between them and every caller/test is
 # entitled to assert which one ran rather than assume.

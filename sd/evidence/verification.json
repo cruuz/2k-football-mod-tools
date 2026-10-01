@@ -1,0 +1,24 @@
+{
+  "classification": "PROVED OFFLINE",
+  "assertions_passed": true,
+  "disc_identity_unchanged": [
+    2049,
+    55193640,
+    8012931072,
+    1790612183765880960,
+    1790612754089576646
+  ],
+  "sha256": {
+    "cointoss.bin": "ee007962332145ae5fdd867dc067524641bb257f704de3cafe96972564656355",
+    "watch-end.bin": "8ca249d1f1ec8f357aae1a4771846e011691711fc255c5fda248fa3702755bee",
+    "gdb-capture.txt": "ad2dc361a7f95d72c29828e384a5b95ded99b55283d9fc73580d78696629e627",
+    "SOFTDRINK 2K28 candidate D 2026-09-28.xiso.iso": "449a3b90f0b4f7733bfd5589c132510265f4ee2f092e738777b811e4134de680",
+    "/media/noah/Storage/.b76-research/sd/astra-build/verify_sd.py": "f005b5322cc0b98ec9b1fe8fa50781d530fb134911bae099f6eecf891dc6ce34",
+    "/media/noah/Storage/.b76-research/sd/astra-build/explore.py": "9c850530dbb6f98a785418ba2429532f61f2154559ed6359ac4adafbc08668fe",
+    "/media/noah/Storage/.b76-research/sd/astra-build/replay.py": "aa487e0cdd42c582acb716c836f42ba78e8a719d7a12d11727dffb6ea81c07cf",
+    "/media/noah/Storage/.b76-research/sd/astra-build/patches.json": "c6771eab149f98e4670e158cff8f0a6c5ea4a61e39d5e8f784042ffa6c938b60",
+    "/media/noah/Storage/.b76-research/k1/harness/r4_ramscan.py": "e112f03d51276bb95a419c5cbc3f9366310686a8b9781da74898fa59b00d515e"
+  },
+  "xemu_launched": false,
+  "process_pools": 0
+}

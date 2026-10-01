@@ -1,0 +1,748 @@
+{
+  "classification": "PROVED OFFLINE",
+  "packs": [
+    {
+      "file": "softdrink_arz_modern.2k5book",
+      "sha256": "cf4bf1a935e0cc869c5f1c9317ba45aaf74916017cbbac0eecc01cfcc4ea994c",
+      "targets": [
+        "ARZ"
+      ],
+      "book": "NFL 2K28 ARZ Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_atl_modern.2k5book",
+      "sha256": "fe4afa7745dfbebe9cd20de1498f56cf8e70523e1784ebfa131667c538260eaa",
+      "targets": [
+        "ATL"
+      ],
+      "book": "NFL 2K28 ATL Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_bal_modern.2k5book",
+      "sha256": "e7cbc1d05d1f1cb7b70a18df16c7a5592fe3404852580a32f78dbb536600bf76",
+      "targets": [
+        "BAL"
+      ],
+      "book": "NFL 2K28 BAL Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_buf_modern.2k5book",
+      "sha256": "6cdf370384d11749a2ee8c2ab89f685baeb8a29071a0c596168362562fa977f7",
+      "targets": [
+        "BUF"
+      ],
+      "book": "NFL 2K28 BUF Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_car_modern.2k5book",
+      "sha256": "e27709f37877848b1f6b581a586637b74b40e16c05bc6e3054002aa66519a06d",
+      "targets": [
+        "CAR"
+      ],
+      "book": "NFL 2K28 CAR Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_chi_modern.2k5book",
+      "sha256": "17f3ca7a86ca3722a99a82eb0688093712f51de283cf79c10156e422ea43e698",
+      "targets": [
+        "CHI"
+      ],
+      "book": "NFL 2K28 CHI Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_cin_modern.2k5book",
+      "sha256": "2449f2ed0c76e4b7d879fb30e96373da1faa5dbde884e3cc4f52e0b316e8875c",
+      "targets": [
+        "CIN"
+      ],
+      "book": "NFL 2K28 CIN Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_cle_modern.2k5book",
+      "sha256": "6e22ef99b55c0d4af6ad7c1394192f5603f80793d8b9d31e3ab8e0ad2be0e6fb",
+      "targets": [
+        "CLE"
+      ],
+      "book": "NFL 2K28 CLE Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_dal_modern.2k5book",
+      "sha256": "72a4de58732717b826c38ca4d006e18cc772469b90c86e10e81372481a04714f",
+      "targets": [
+        "DAL"
+      ],
+      "book": "NFL 2K28 DAL Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_den_modern.2k5book",
+      "sha256": "b78f20e4850c94ada66302733b2acee0065fdea1fbb2e365d8b73ff436dbe779",
+      "targets": [
+        "DEN"
+      ],
+      "book": "NFL 2K28 DEN Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_det_modern.2k5book",
+      "sha256": "ba3320df477d147dab58824d678c9fa72d9f96eefa1db5892e359db6545b0789",
+      "targets": [
+        "DET"
+      ],
+      "book": "NFL 2K28 DET Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_gb_modern.2k5book",
+      "sha256": "b2a4dd123218680c3b62ae289daef64cea033a40006791ad17b1c7a7852d0b7d",
+      "targets": [
+        "GB"
+      ],
+      "book": "NFL 2K28 GB Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_hou_modern.2k5book",
+      "sha256": "9d949bd6dc1bab35afbcbb99e6e11ee259cbd3fe3c025418c6f8679f5cdc3df5",
+      "targets": [
+        "HOU"
+      ],
+      "book": "NFL 2K28 HOU Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_ind_modern.2k5book",
+      "sha256": "74513f662e1bbdf9a77b4d95b5193f65742678eea420cef698f408a1cc9921c2",
+      "targets": [
+        "IND"
+      ],
+      "book": "NFL 2K28 IND Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_jax_modern.2k5book",
+      "sha256": "4392172b3d56de4fc7995e764336ddc079a6ad299fb48104c9782f75739890c8",
+      "targets": [
+        "JAX"
+      ],
+      "book": "NFL 2K28 JAX Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_kc_modern.2k5book",
+      "sha256": "1c77db4331f37580598a714316cd1968eeb5307359418ee5ae5cc96a16cba3ed",
+      "targets": [
+        "KC"
+      ],
+      "book": "NFL 2K28 KC Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_mia_modern.2k5book",
+      "sha256": "f2304f83696fd3f20fbb2219cfb153cd06add8785fffec548b61d6537371f506",
+      "targets": [
+        "MIA"
+      ],
+      "book": "NFL 2K28 MIA Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_min_modern.2k5book",
+      "sha256": "99ddbf5d6d7849d27f0b25ddaae5ae026f374570f43469bd5b0540df83beb1e8",
+      "targets": [
+        "MIN"
+      ],
+      "book": "NFL 2K28 MIN Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_ne_modern.2k5book",
+      "sha256": "4f174b492e32b621bc52a6e5688c1a2099be1350eb8ad7b5ee7f6e73ce5b39d0",
+      "targets": [
+        "NE"
+      ],
+      "book": "NFL 2K28 NE Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_no_modern.2k5book",
+      "sha256": "a288ac32cc6049d2fc5f7a193e824f1574bf3318abff2abde911f68fe6c58108",
+      "targets": [
+        "NO"
+      ],
+      "book": "NFL 2K28 NO Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_giants_modern.2k5book",
+      "sha256": "be28a7cfd1c17c9a3862bd0bc1cc2bc6007ebae829a48568e9eb2cadf7294f13",
+      "targets": [
+        "NYG"
+      ],
+      "book": "NFL 2K28 Giants Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_nyj_modern.2k5book",
+      "sha256": "72c62404dcf243ed9bf03d2eacbdbd4087a1cc19fa30be389381370beeefc272",
+      "targets": [
+        "NYJ"
+      ],
+      "book": "NFL 2K28 NYJ Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_oak_modern.2k5book",
+      "sha256": "1f09d449640815ec6b54249564a473727c1af6b599edafd13ed47f7989f8f979",
+      "targets": [
+        "OAK"
+      ],
+      "book": "NFL 2K28 OAK Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_phi_modern.2k5book",
+      "sha256": "13b45613b5b6d7adff42b103a5ffa9bdd44910dff494d36fad21f63fff38daac",
+      "targets": [
+        "PHI"
+      ],
+      "book": "NFL 2K28 PHI Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_pit_modern.2k5book",
+      "sha256": "734f47be89d51e9ccd2cdaed84fd395e08df29b2e8d538c807da8d3ce5808fff",
+      "targets": [
+        "PIT"
+      ],
+      "book": "NFL 2K28 PIT Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_sd_modern.2k5book",
+      "sha256": "8f6bced697e92862011bf80a86a608da935c9d93caef93d9753d82d6ac7a3174",
+      "targets": [
+        "SD"
+      ],
+      "book": "NFL 2K28 SD Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_sea_modern.2k5book",
+      "sha256": "52118e0458b82f6c89bb7389b93ccc97f6c661d5a1834409da253acecb9b9c17",
+      "targets": [
+        "SEA"
+      ],
+      "book": "NFL 2K28 SEA Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_sf_modern.2k5book",
+      "sha256": "d0f630ee176833b1a0916cbc1b1ca0a765ffdc9db463ac7d74f31b2b479b18d9",
+      "targets": [
+        "SF"
+      ],
+      "book": "NFL 2K28 SF Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_stl_modern.2k5book",
+      "sha256": "4950c816868f8a12f4d6b71444e17af792978c8c0a1f0a63b066192f925bef93",
+      "targets": [
+        "STL"
+      ],
+      "book": "NFL 2K28 STL Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_tb_modern.2k5book",
+      "sha256": "e79536a370e85a36f13835d7b37817fad5020bb88329d3bc06d70f779665fd33",
+      "targets": [
+        "TB"
+      ],
+      "book": "NFL 2K28 TB Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_ten_modern.2k5book",
+      "sha256": "80e7fda262df5674c9b59fa125f930729a7869bac945f6fe75ed2772c8041592",
+      "targets": [
+        "TEN"
+      ],
+      "book": "NFL 2K28 TEN Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_was_modern.2k5book",
+      "sha256": "77c60e2c53cf63a90618e1b8f4aefea51f4ddf4f60dd3d314f20fba52bb4d78e",
+      "targets": [
+        "WAS"
+      ],
+      "book": "NFL 2K28 WAS Modern",
+      "schema": "nfl2k5_playbook_pack/v4"
+    },
+    {
+      "file": "softdrink_arz_defense.2k5book",
+      "sha256": "112b605d6754c5c2b73f3d7fea2599b72a023c9a88d4ccea93abf73104727d78",
+      "targets": [
+        "ARZ"
+      ],
+      "book": "NFL 2K28 ARZ Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_atl_defense.2k5book",
+      "sha256": "06b1c09f3f4ab82231bcb4b61eda337392affd103632c39f519f0b650822b5b9",
+      "targets": [
+        "ATL"
+      ],
+      "book": "NFL 2K28 ATL Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_bal_defense.2k5book",
+      "sha256": "eabfacfd22719a10e58e63f66ee1782016d493f78f2c320c4dbc427e49d5bcde",
+      "targets": [
+        "BAL"
+      ],
+      "book": "NFL 2K28 BAL Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_buf_defense.2k5book",
+      "sha256": "ca6831093a7edee09e6641b77874b8265c66c741f6cf205c3c9ce6a66b7288b3",
+      "targets": [
+        "BUF"
+      ],
+      "book": "NFL 2K28 BUF Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_car_defense.2k5book",
+      "sha256": "d7274fd848b8a13e707340d548980c900555c04143a356acafb8547fa374def2",
+      "targets": [
+        "CAR"
+      ],
+      "book": "NFL 2K28 CAR Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_chi_defense.2k5book",
+      "sha256": "db147568158d9cba6f6d5d9af0e3d3b0a01d9b58a1dd030a7d5f6cd225eb93fd",
+      "targets": [
+        "CHI"
+      ],
+      "book": "NFL 2K28 CHI Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_cin_defense.2k5book",
+      "sha256": "5ce97974118830cdd155da8588b0d31353f434c74fb435766be2babee4f3296f",
+      "targets": [
+        "CIN"
+      ],
+      "book": "NFL 2K28 CIN Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_cle_defense.2k5book",
+      "sha256": "e5f454ed73acc9d52664579f59a444657349055a9f808c189e3d04d345ccf36e",
+      "targets": [
+        "CLE"
+      ],
+      "book": "NFL 2K28 CLE Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_dal_defense.2k5book",
+      "sha256": "d6dc0fc90122028bb7e6053fab608742db9c84aca374e1d813a38cf81f07fb4e",
+      "targets": [
+        "DAL"
+      ],
+      "book": "NFL 2K28 DAL Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_den_defense.2k5book",
+      "sha256": "117b173cd7f00392531de7eba9c0decd5cf1e9580ec4caabeb6c084eb13c5013",
+      "targets": [
+        "DEN"
+      ],
+      "book": "NFL 2K28 DEN Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_det_defense.2k5book",
+      "sha256": "a8456a06d7fa5d37eafc8b8e87b2e0b39cbf5bdf0b999759497770fc8470585e",
+      "targets": [
+        "DET"
+      ],
+      "book": "NFL 2K28 DET Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_gb_defense.2k5book",
+      "sha256": "599def3a1ad7191f24805e0272181a0c177ed28f0f95b374728a4122db0d58f3",
+      "targets": [
+        "GB"
+      ],
+      "book": "NFL 2K28 GB Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_hou_defense.2k5book",
+      "sha256": "890e39efb7be7b14be4785b064851fbfa25a261da8be0000fbc71e74ba874396",
+      "targets": [
+        "HOU"
+      ],
+      "book": "NFL 2K28 HOU Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_ind_defense.2k5book",
+      "sha256": "f03659f023f28b1cda155f4274edd134d610ab77ffdb1d3c38d9c6c1db35527c",
+      "targets": [
+        "IND"
+      ],
+      "book": "NFL 2K28 IND Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_jax_defense.2k5book",
+      "sha256": "a9245ea1a3789d1c9510f7f23946880ca6bbf0e543220c4fab179201578f0033",
+      "targets": [
+        "JAX"
+      ],
+      "book": "NFL 2K28 JAX Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_kc_defense.2k5book",
+      "sha256": "770e52d0e16081462f6133e86409bb73276a7c935f2131aa41c6f2ed44a30b7a",
+      "targets": [
+        "KC"
+      ],
+      "book": "NFL 2K28 KC Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_mia_defense.2k5book",
+      "sha256": "970f85e3f7a017a0166aa68fa71840b32d0dc66aa27a0585de8696ec256e2b66",
+      "targets": [
+        "MIA"
+      ],
+      "book": "NFL 2K28 MIA Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_min_defense.2k5book",
+      "sha256": "212f47ba051f44db47637298baeaee83b19ed4ded173565add257b927f1b1532",
+      "targets": [
+        "MIN"
+      ],
+      "book": "NFL 2K28 MIN Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_ne_defense.2k5book",
+      "sha256": "d595b28331ebd60fb99996a69b1e37717cfce76d16f2fcd0624577729c4c867b",
+      "targets": [
+        "NE"
+      ],
+      "book": "NFL 2K28 NE Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_no_defense.2k5book",
+      "sha256": "64063a28c60dce45126b26bcd949bc18f2cc60c23d21e851c77b82c050db9ea0",
+      "targets": [
+        "NO"
+      ],
+      "book": "NFL 2K28 NO Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_nyg_defense.2k5book",
+      "sha256": "683dab639e0be570ad12dd31eed2bcdd50f2455a11d675702da469bbed2f0a7e",
+      "targets": [
+        "NYG"
+      ],
+      "book": "NFL 2K28 NYG Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_nyj_defense.2k5book",
+      "sha256": "86159d20cc858ea79cb602f2264ed2e66cfedf11d01e74ad9ab86644d37fcbc5",
+      "targets": [
+        "NYJ"
+      ],
+      "book": "NFL 2K28 NYJ Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_oak_defense.2k5book",
+      "sha256": "c1d9edd3625ef1af8a7414e073120ce6fef7d36fd7ad27bee162c5002048b587",
+      "targets": [
+        "OAK"
+      ],
+      "book": "NFL 2K28 OAK Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_phi_defense.2k5book",
+      "sha256": "cc3890bfd8a0d9bc30d8a57c974923454ff89b12d908abf28b1552db9f57798c",
+      "targets": [
+        "PHI"
+      ],
+      "book": "NFL 2K28 PHI Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_pit_defense.2k5book",
+      "sha256": "5f077572335a5f52bb5572e20310c419bc4488618620cdf483d22082ef5de288",
+      "targets": [
+        "PIT"
+      ],
+      "book": "NFL 2K28 PIT Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_sd_defense.2k5book",
+      "sha256": "b467abf38e0e3f2e180baa03b0e269ece31697ad34aaf76bf18dc8a4c7b98cb4",
+      "targets": [
+        "SD"
+      ],
+      "book": "NFL 2K28 SD Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_sea_defense.2k5book",
+      "sha256": "1342978e4b33f768f1bc54d3e8eb29445c6711001685bff9b487826eba81bcf5",
+      "targets": [
+        "SEA"
+      ],
+      "book": "NFL 2K28 SEA Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_sf_defense.2k5book",
+      "sha256": "45f3346b6250751af82d90ecefffb0172177e430774933db1760ff2633c3bf3e",
+      "targets": [
+        "SF"
+      ],
+      "book": "NFL 2K28 SF Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_stl_defense.2k5book",
+      "sha256": "d5357718e0fe4925a817485943e52ae16a3dac8c952dfaa4cf6c63409665f12d",
+      "targets": [
+        "STL"
+      ],
+      "book": "NFL 2K28 STL Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_tb_defense.2k5book",
+      "sha256": "5526d61299a1c17aa7774284283e655aa12a07131c487d0e632d53f7c3860bf5",
+      "targets": [
+        "TB"
+      ],
+      "book": "NFL 2K28 TB Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_ten_defense.2k5book",
+      "sha256": "3ab914b4e947093e0435e8f78c4519f0cbc098858bb4d0cc004f4d3af9b4a82a",
+      "targets": [
+        "TEN"
+      ],
+      "book": "NFL 2K28 TEN Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    },
+    {
+      "file": "softdrink_was_defense.2k5book",
+      "sha256": "f6c5c307080ee79065ee4a25f0e0b1558a45f0d7a6600473507a87db330bfbb4",
+      "targets": [
+        "WAS"
+      ],
+      "book": "NFL 2K28 WAS Defense",
+      "schema": "nfl2k5_playbook_pack/v2"
+    }
+  ],
+  "overwritten_filenames": {
+    "ARZ-pb.iff": [
+      "softdrink_arz_modern.2k5book",
+      "softdrink_arz_defense.2k5book"
+    ],
+    "ATL-pb.iff": [
+      "softdrink_atl_modern.2k5book",
+      "softdrink_atl_defense.2k5book"
+    ],
+    "BAL-pb.iff": [
+      "softdrink_bal_modern.2k5book",
+      "softdrink_bal_defense.2k5book"
+    ],
+    "BUF-pb.iff": [
+      "softdrink_buf_modern.2k5book",
+      "softdrink_buf_defense.2k5book"
+    ],
+    "CAR-pb.iff": [
+      "softdrink_car_modern.2k5book",
+      "softdrink_car_defense.2k5book"
+    ],
+    "CHI-pb.iff": [
+      "softdrink_chi_modern.2k5book",
+      "softdrink_chi_defense.2k5book"
+    ],
+    "CIN-pb.iff": [
+      "softdrink_cin_modern.2k5book",
+      "softdrink_cin_defense.2k5book"
+    ],
+    "CLE-pb.iff": [
+      "softdrink_cle_modern.2k5book",
+      "softdrink_cle_defense.2k5book"
+    ],
+    "DAL-pb.iff": [
+      "softdrink_dal_modern.2k5book",
+      "softdrink_dal_defense.2k5book"
+    ],
+    "DEN-pb.iff": [
+      "softdrink_den_modern.2k5book",
+      "softdrink_den_defense.2k5book"
+    ],
+    "DET-pb.iff": [
+      "softdrink_det_modern.2k5book",
+      "softdrink_det_defense.2k5book"
+    ],
+    "GB-pb.iff": [
+      "softdrink_gb_modern.2k5book",
+      "softdrink_gb_defense.2k5book"
+    ],
+    "HOU-pb.iff": [
+      "softdrink_hou_modern.2k5book",
+      "softdrink_hou_defense.2k5book"
+    ],
+    "IND-pb.iff": [
+      "softdrink_ind_modern.2k5book",
+      "softdrink_ind_defense.2k5book"
+    ],
+    "JAX-pb.iff": [
+      "softdrink_jax_modern.2k5book",
+      "softdrink_jax_defense.2k5book"
+    ],
+    "KC-pb.iff": [
+      "softdrink_kc_modern.2k5book",
+      "softdrink_kc_defense.2k5book"
+    ],
+    "MIA-pb.iff": [
+      "softdrink_mia_modern.2k5book",
+      "softdrink_mia_defense.2k5book"
+    ],
+    "MIN-pb.iff": [
+      "softdrink_min_modern.2k5book",
+      "softdrink_min_defense.2k5book"
+    ],
+    "NE-pb.iff": [
+      "softdrink_ne_modern.2k5book",
+      "softdrink_ne_defense.2k5book"
+    ],
+    "NO-pb.iff": [
+      "softdrink_no_modern.2k5book",
+      "softdrink_no_defense.2k5book"
+    ],
+    "NYG-pb.iff": [
+      "softdrink_giants_modern.2k5book",
+      "softdrink_nyg_defense.2k5book"
+    ],
+    "NYJ-pb.iff": [
+      "softdrink_nyj_modern.2k5book",
+      "softdrink_nyj_defense.2k5book"
+    ],
+    "OAK-pb.iff": [
+      "softdrink_oak_modern.2k5book",
+      "softdrink_oak_defense.2k5book"
+    ],
+    "PHI-pb.iff": [
+      "softdrink_phi_modern.2k5book",
+      "softdrink_phi_defense.2k5book"
+    ],
+    "PIT-pb.iff": [
+      "softdrink_pit_modern.2k5book",
+      "softdrink_pit_defense.2k5book"
+    ],
+    "SD-pb.iff": [
+      "softdrink_sd_modern.2k5book",
+      "softdrink_sd_defense.2k5book"
+    ],
+    "SEA-pb.iff": [
+      "softdrink_sea_modern.2k5book",
+      "softdrink_sea_defense.2k5book"
+    ],
+    "SF-pb.iff": [
+      "softdrink_sf_modern.2k5book",
+      "softdrink_sf_defense.2k5book"
+    ],
+    "STL-pb.iff": [
+      "softdrink_stl_modern.2k5book",
+      "softdrink_stl_defense.2k5book"
+    ],
+    "TB-pb.iff": [
+      "softdrink_tb_modern.2k5book",
+      "softdrink_tb_defense.2k5book"
+    ],
+    "TEN-pb.iff": [
+      "softdrink_ten_modern.2k5book",
+      "softdrink_ten_defense.2k5book"
+    ],
+    "WAS-pb.iff": [
+      "softdrink_was_modern.2k5book",
+      "softdrink_was_defense.2k5book"
+    ]
+  },
+  "native_requested_union": [
+    "ARZ-pb.iff",
+    "ATL-pb.iff",
+    "BAL-pb.iff",
+    "BUF-pb.iff",
+    "CAR-pb.iff",
+    "CHI-pb.iff",
+    "CIN-pb.iff",
+    "CLE-pb.iff",
+    "DAL-pb.iff",
+    "DEN-pb.iff",
+    "DET-pb.iff",
+    "GB-pb.iff",
+    "IND-pb.iff",
+    "JAX-pb.iff",
+    "KC-pb.iff",
+    "MIA-pb.iff",
+    "MIN-pb.iff",
+    "NE-pb.iff",
+    "NO-pb.iff",
+    "NYG-pb.iff",
+    "NYJ-pb.iff",
+    "OAK-pb.iff",
+    "PHI-pb.iff",
+    "PIT-pb.iff",
+    "SD-pb.iff",
+    "SEA-pb.iff",
+    "SF-pb.iff",
+    "STL-pb.iff",
+    "TB-pb.iff",
+    "TEN-pb.iff",
+    "WAS-pb.iff"
+  ],
+  "native_requested_union_count": 31,
+  "all_native_requests_hit_modern_targets": true,
+  "retail_alias_bytes_31": 2441808,
+  "retail_alias_bytes_32": 2520576
+}

@@ -1,0 +1,1385 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "CHI",
+ "name": "Chicago Bears",
+ "asset_code": "05",
+ "season": 2026,
+ "status": "Phase B job d6 (2026-09-23). Sort: KEPT its 2004 look (Nike details only: collar shield, swooshes; the road kit's navy pants). Colours sourced; kit albedo INFERRED (navy lifted like the Giants pilot; the uniform orange is the C mark's own #C83803, the palette keeps the NFL file's #E64100). Sleeve stripes vectorised from the retail textures; GSH set in a condensed bold. The road pants take their fabric shading from the retail navy pants (pants.base_from 05A4), since the road kit's pants are navy in 2026.",
+ "sources": {
+  "kit_rules": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_Chicago_Bears&action=raw (blue pants with the road jersey, white pants at home; Nike 2012: TV numbers to the shoulders, GSH enlarged)",
+  "uniform_diagram": "https://en.wikipedia.org/wiki/Special:FilePath/Chicago_Bears_Uniforms_((2026)).png (CC BY-SA)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (CHI: Navy #0B162A, Orange #E64100 (NFL file; teamcolorcodes #C83803), White; 2026 NFL Record and Fact Book p.160)",
+  "home_photos": "https://www.chicagobears.com/photos/gameday-gallery-vikings-vs-bears-2026-week-2 (navy jersey, white pants, navy socks with hoops; 2026-09-20)",
+  "road_photos": "https://www.chicagobears.com/photos/gameday-gallery-bears-at-panthers-2026-week-1 (white jersey, navy pants, white socks; 2026-09-13)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/CHI.svg (bear head, primary since 2023)",
+  "helmet_logo_vector": "https://en.wikipedia.org/wiki/Special:FilePath/Chicago_Bears_logo.svg (the wishbone C, still the helmet and midfield mark)",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "navy": "#0B162A",
+  "orange": "#E64100",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "navy": "#0D1A32",
+  "helmet_navy": "#0B162A",
+  "orange": "#C83803",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "nfl_navy": "#013369",
+  "nfl_red": "#D40A0A",
+  "nfc_blue": "#013369",
+  "field_navy": "#0B162A",
+  "banner_navy": "#0D1A32",
+  "r_helmet_navy": "#010C34",
+  "r_card_navy": "#111836",
+  "r_card_orange": "#DD4D0E",
+  "r_card_white": "#E1DEDA",
+  "r_atlas_navy": "#00163A",
+  "r_atlas_helmet": "#111A39"
+ },
+ "marks": {
+  "c_logo_full": "c_logo_full.png",
+  "bear_head": "bear_head_full.png",
+  "wordmark": "bears_wordmark_mask.png",
+  "gsh_fill": "gsh_fill.png",
+  "gsh_outline": "gsh_outline.png",
+  "c_layer_silhouette": "c_layer_silhouette.png",
+  "c_layer_navy": "c_layer_navy.png",
+  "c_layer_white": "c_layer_white.png",
+  "c_layer_orange": "c_layer_orange.png",
+  "nfl_layer_silhouette": "nfl_layer_silhouette.png",
+  "nfl_layer_navy": "nfl_layer_navy.png",
+  "nfl_layer_red": "nfl_layer_red.png",
+  "nfc_layer_silhouette": "nfc_layer_silhouette.png",
+  "nfc_layer_white": "nfc_layer_white.png",
+  "ez_N_fill": "ez_N_fill.png",
+  "ez_N_outline": "ez_N_outline.png",
+  "ez_S_fill": "ez_S_fill.png",
+  "ez_S_outline": "ez_S_outline.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "05H0",
+   "note": "2026 home: navy jersey, white rounded numbers outlined in orange, three orange sleeve stripes bordered in white, GSH on the left sleeve, white pants with a navy-orange-navy stripe, navy socks with orange and white hoops",
+   "torso": {
+    "base_colour": "navy",
+    "neck_donor": "05NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "navy",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        9.4,
+        38
+       ],
+       [
+        122.0,
+        38
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        14.02,
+        44
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        10.97,
+        39
+       ],
+       [
+        122.0,
+        39
+       ],
+       [
+        122.0,
+        43
+       ],
+       [
+        14.05,
+        43
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        15.56,
+        46
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        122.0,
+        51
+       ],
+       [
+        19.41,
+        51
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        17.13,
+        47
+       ],
+       [
+        122.0,
+        47
+       ],
+       [
+        122.0,
+        50
+       ],
+       [
+        19.44,
+        50
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        20.95,
+        53
+       ],
+       [
+        122.0,
+        53
+       ],
+       [
+        122.0,
+        59
+       ],
+       [
+        25.57,
+        59
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        22.52,
+        54
+       ],
+       [
+        122.0,
+        54
+       ],
+       [
+        122.0,
+        58
+       ],
+       [
+        25.6,
+        58
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        118.6,
+        102
+       ],
+       [
+        6.0,
+        102
+       ],
+       [
+        6.0,
+        108
+       ],
+       [
+        113.98,
+        108
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        117.03,
+        103
+       ],
+       [
+        6.0,
+        103
+       ],
+       [
+        6.0,
+        107
+       ],
+       [
+        113.95,
+        107
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        112.44,
+        110
+       ],
+       [
+        6.0,
+        110
+       ],
+       [
+        6.0,
+        115
+       ],
+       [
+        108.59,
+        115
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        110.87,
+        111
+       ],
+       [
+        6.0,
+        111
+       ],
+       [
+        6.0,
+        114
+       ],
+       [
+        108.56,
+        114
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        107.05,
+        117
+       ],
+       [
+        6.0,
+        117
+       ],
+       [
+        6.0,
+        123
+       ],
+       [
+        102.43,
+        123
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        105.48,
+        118
+       ],
+       [
+        6.0,
+        118
+       ],
+       [
+        6.0,
+        122
+       ],
+       [
+        102.4,
+        122
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "mark": "gsh_outline",
+      "colour": "orange",
+      "center": [
+       69.5,
+       112.5
+      ],
+      "width": 27.0
+     },
+     {
+      "mark": "gsh_fill",
+      "colour": "white",
+      "center": [
+       69.5,
+       112.5
+      ],
+      "width": 27.0
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "navy",
+      7
+     ],
+     [
+      "orange",
+      8
+     ],
+     [
+      "navy",
+      7
+     ]
+    ],
+    "swoosh_colour": "navy"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "05H0",
+    "fill": "white",
+    "outline": "orange",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "05H0",
+    "fill": "white",
+    "outline": "navy",
+    "outline_frac": 0.066
+   },
+   "helmet_digits": {
+    "glyph_donor": "05H0",
+    "fill": "navy"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "r_helmet_navy",
+    "stripe": "orange",
+    "recolour": [],
+    "decal": {
+     "mark": "c_logo_full",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_navy",
+      "to": "navy",
+      "region": "all",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "outer_index": 3653,
+   "splayer": {
+    "torso_donor_outer": 3653,
+    "torso_donor": "05H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_navy",
+      "to": "navy",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_navy",
+      "to": "navy",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_helmet",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "05A0",
+   "note": "2026 road: white jersey, navy rounded numbers outlined in orange, navy-orange-navy sleeve stripes, GSH on the left sleeve, navy pants with an orange-white-orange stripe, white socks with navy and orange hoops",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "05NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "navy"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        10.97,
+        39
+       ],
+       [
+        122.0,
+        39
+       ],
+       [
+        122.0,
+        43
+       ],
+       [
+        14.05,
+        43
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        17.13,
+        47
+       ],
+       [
+        122.0,
+        47
+       ],
+       [
+        122.0,
+        50
+       ],
+       [
+        19.44,
+        50
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        22.52,
+        54
+       ],
+       [
+        122.0,
+        54
+       ],
+       [
+        122.0,
+        58
+       ],
+       [
+        25.6,
+        58
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        117.03,
+        103
+       ],
+       [
+        6.0,
+        103
+       ],
+       [
+        6.0,
+        107
+       ],
+       [
+        113.95,
+        107
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        110.87,
+        111
+       ],
+       [
+        6.0,
+        111
+       ],
+       [
+        6.0,
+        114
+       ],
+       [
+        108.56,
+        114
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        105.48,
+        118
+       ],
+       [
+        6.0,
+        118
+       ],
+       [
+        6.0,
+        122
+       ],
+       [
+        102.4,
+        122
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "mark": "gsh_outline",
+      "colour": "orange",
+      "center": [
+       69.5,
+       112.5
+      ],
+      "width": 27.0
+     },
+     {
+      "mark": "gsh_fill",
+      "colour": "navy",
+      "center": [
+       69.5,
+       112.5
+      ],
+      "width": 27.0
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "navy",
+    "stripe": [
+     [
+      "orange",
+      7
+     ],
+     [
+      "white",
+      8
+     ],
+     [
+      "orange",
+      7
+     ]
+    ],
+    "swoosh_colour": "white",
+    "base_from": "05A4"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "05A0",
+    "fill": "navy",
+    "outline": "orange",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "05A0",
+    "fill": "navy",
+    "outline": "white",
+    "outline_frac": 0.066
+   },
+   "helmet_digits": {
+    "glyph_donor": "05A0",
+    "fill": "navy"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "r_helmet_navy",
+    "stripe": "orange",
+    "recolour": [],
+    "decal": {
+     "mark": "c_logo_full",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_navy",
+      "to": "navy",
+      "region": "all",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "outer_index": 3970,
+   "splayer": {
+    "torso_donor_outer": 3970,
+    "torso_donor": "05A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_navy",
+      "to": "navy",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_navy",
+      "to": "navy",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_helmet",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ]
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "4-3",
+  "head_coach": "Ben Johnson",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 53 active. ESPN depth chart slots (LDE/RDE, WLB/MLB/SLB) show a 4-3 base. Head coach from chicagobears.com/team/coaches/ben-johnson."
+ },
+ "part_intents": {
+  "home": {
+   "torso": "navy jersey body, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "navy with three orange stripes bordered in white near the cuff, GSH initials in white outlined in orange on one sleeve",
+   "pants": "white with a navy-orange-navy side stripe, navy maker mark",
+   "helmet": "dark navy shell, orange wishbone C outlined in white, no stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "white rounded numbers outlined in orange",
+   "digit_arm": "white numbers outlined in orange",
+   "digit_helmet": "plain navy numbers (retail's helmet numbers are dark too)",
+   "nameplate": "white letters",
+   "socks00": "navy socks with orange and white hoops",
+   "splayer": "far-away player atlas: white pants with navy and orange stripe, navy torso, navy helmet, navy socks, skin and glove patches",
+   "team-select_unif": "menu render: navy jersey with a white number outlined in orange, white pants, navy helmet with the orange C, dark shading",
+   "team-select_helm": "menu render: dark navy helmet with the orange C, navy facemask, a dark bar and yellow UI strip below",
+   "logo": "the bear head logo (orange and navy) on transparency",
+   "flipchip": "the bear head logo (orange and navy) on transparency, for the coin toss chip"
+  },
+  "away": {
+   "torso": "white jersey body, small NFL shield at the collar, navy maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with navy-orange-navy stripes near the cuff, GSH initials in navy outlined in orange on one sleeve",
+   "pants": "navy with an orange-white-orange side stripe, white maker mark",
+   "helmet": "dark navy shell, orange wishbone C outlined in white, no stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "navy rounded numbers outlined in orange",
+   "digit_arm": "navy numbers outlined in orange",
+   "digit_helmet": "plain navy numbers (retail's helmet numbers are dark too)",
+   "nameplate": "navy letters",
+   "socks00": "white socks with navy and orange hoops",
+   "splayer": "far-away player atlas: navy pants with orange and white stripe, white torso, navy helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a navy number outlined in orange, white pants (the card keeps the retail pants: the card pants region misses the leg), navy helmet with the orange C",
+   "team-select_helm": "menu render: dark navy helmet with the orange C, navy facemask, a dark bar and yellow UI strip below",
+   "logo": "the bear head logo (orange and navy) on transparency",
+   "flipchip": "the bear head logo (orange and navy) on transparency, for the coin toss chip"
+  },
+  "venue": {
+   "endzone": "grass end zone with orange team lettering outlined in white, the NFL shield and the NFC logo at the ends (transparent paint)",
+   "center_logo": "the orange wishbone C outlined in white",
+   "banner": "cloth fan banners in navy, orange and white",
+   "wall": "navy stadium wall bands with white and orange lettering and the C logo"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Caleb Williams": 2,
+   "Rome Odunze": 2,
+   "D'Andre Swift": 3,
+   "Colston Loveland": 0,
+   "Montez Sweat": 3,
+   "Jaylon Johnson": 4,
+   "Devin Bush": 4,
+   "Grady Jarrett": 4,
+   "Xavier Woods": 5,
+   "Dillon Thieneman": 0,
+   "Braxton Jones": 4,
+   "Joe Thuney": 0,
+   "Garrett Bradbury": 0,
+   "Cairo Santos": 1,
+   "Tory Taylor": 0,
+   "Tyson Bagent": 0,
+   "Luther Burden": 4,
+   "Kyle Monangai": 5,
+   "Cole Kmet": 0,
+   "James Lynch": 0,
+   "Tyrique Stevenson": 4,
+   "T.J. Edwards": 2,
+   "Kentavius Street": 5,
+   "Skyler Thomas": 4,
+   "Elijah Hicks": 3,
+   "Darnell Wright": 3,
+   "Jonah Jackson": 3,
+   "Logan Jones": 0,
+   "Case Keenum": 0,
+   "Kalif Raymond": 2,
+   "Roschon Johnson": 3,
+   "Sam Roush": 0,
+   "Dayo Odeyingbo": 4,
+   "Cam Lewis": 3,
+   "D'Marco Jackson": 4,
+   "Jordan van den Berg": 0,
+   "Ozzy Trapilo": 0,
+   "Jordan McFadden": 4,
+   "Scott Daly": 0,
+   "Zavion Thomas": 4,
+   "Austin Booker": 2,
+   "Josh Blackwell": 3,
+   "Keyshaun Elliott": 2,
+   "Neville Gallimore": 5,
+   "Theo Benedet": 0,
+   "Luke Newman": 0,
+   "Jahdae Walker": 4,
+   "Daniel Hardy": 2,
+   "Clark Phillips": 5,
+   "Jack Sanborn": 0,
+   "Jayden Loving": 2,
+   "Jamree Kromah": 4,
+   "Malik Muhammad": 3
+  },
+  "dreads": [
+   "Devin Bush",
+   "Luther Burden",
+   "Skyler Thomas",
+   "Zavion Thomas",
+   "Jahdae Walker"
+  ],
+  "hair_by_eye": {
+   "Colston Loveland": "#4E3624"
+  },
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED). Dreads by eye (long locs). Hair by eye for Colston Loveland."
+ },
+ "venue": {
+  "prefix": "s05",
+  "notes": "Soldier Field (s05). End zones (regular season): BEARS (north) and CHICAGO (south) in orange outlined in white on the grass, traced from the retail textures at 4x; the 2004 NFL shield and NFC logo at their ends are replaced by the current shield (2008) and NFC logo (2010) at the same places (a 2025 wild card aerial shows the same layout on playoff navy paint: INFERRED for the regular season). Midfield: the orange wishbone C in full colour by hand. Walls: bearwall01 rebuilt as flat navy bands with the 2026 text (the retail bands named 2004 players). Fan banners: 2026 content.",
+  "sources": [
+   "https://www.chicagobears.com/photos/gameday-gallery-packers-vs-bears-2025-wild-card-round (aerial: end zone layout, midfield C)",
+   "https://www.chicagobears.com/photos/gameday-gallery-vikings-vs-bears-2026-week-2 (navy field walls, orange C)",
+   "https://en.wikipedia.org/wiki/Special:FilePath/National_Football_League_logo.svg",
+   "https://en.wikipedia.org/wiki/Special:FilePath/National_Football_Conference_logo.svg"
+  ],
+  "endzone": {
+   "paint": "field_navy",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "ez_N_outline",
+     "colour": "white",
+     "center": [
+      380.0,
+      64.0
+     ],
+     "height": 90.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "ez_N_fill",
+     "colour": "orange",
+     "center": [
+      380.0,
+      64.0
+     ],
+     "height": 84.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_silhouette",
+     "colour": "white",
+     "center": [
+      61.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_navy",
+     "colour": "nfl_navy",
+     "center": [
+      61.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_red",
+     "colour": "nfl_red",
+     "center": [
+      61.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfc_layer_silhouette",
+     "colour": "nfc_blue",
+     "center": [
+      702.0,
+      64.0
+     ],
+     "height": 70.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfc_layer_white",
+     "colour": "white",
+     "center": [
+      702.0,
+      64.0
+     ],
+     "height": 70.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_navy",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "ez_S_outline",
+     "colour": "white",
+     "center": [
+      380.0,
+      66.0
+     ],
+     "height": 90.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "ez_S_fill",
+     "colour": "orange",
+     "center": [
+      380.0,
+      66.0
+     ],
+     "height": 84.5,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_silhouette",
+     "colour": "white",
+     "center": [
+      60.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_navy",
+     "colour": "nfl_navy",
+     "center": [
+      60.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfl_layer_red",
+     "colour": "nfl_red",
+     "center": [
+      60.0,
+      64.5
+     ],
+     "height": 98.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfc_layer_silhouette",
+     "colour": "nfc_blue",
+     "center": [
+      700.5,
+      64.0
+     ],
+     "height": 70.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    },
+    {
+     "mark": "nfc_layer_white",
+     "colour": "white",
+     "center": [
+      700.5,
+      64.0
+     ],
+     "height": 70.0,
+     "stretch": 1.0,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "c_layer_silhouette",
+   "outline": "navy",
+   "fill_mark": "c_layer_orange",
+   "fill": "orange",
+   "width_frac": 0.95
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "GO\nBEARS",
+        "colour": "orange",
+        "center": [
+         64,
+         31
+        ],
+        "height": 20
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BEAR\nDOWN!",
+        "colour": "banner_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "#18\nWILLIAMS",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "c_layer_silhouette",
+        "colour": "navy",
+        "center": [
+         192,
+         31
+        ],
+        "width": 64
+       },
+       {
+        "mark": "c_layer_white",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "width": 64
+       },
+       {
+        "mark": "c_layer_orange",
+        "colour": "orange",
+        "center": [
+         192,
+         31
+        ],
+        "width": 64
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "orange",
+      "items": [
+       {
+        "text": "DEFENSE!!",
+        "colour": "banner_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "#15 ODUNZE\n#98 SWEAT",
+        "colour": "white",
+        "center": [
+         192,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "wordmark",
+        "colour": "orange",
+        "center": [
+         64,
+         31
+        ],
+        "width": 104
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "WINDY CITY\nWARRIORS",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "bearwall01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       32
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "CHICAGO BEARS",
+        "colour": "white",
+        "center": [
+         150,
+         16
+        ],
+        "height": 13,
+        "max_width": 200
+       },
+       {
+        "mark": "c_layer_silhouette",
+        "colour": "navy",
+        "center": [
+         40,
+         16
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_white",
+        "colour": "white",
+        "center": [
+         40,
+         16
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_orange",
+        "colour": "orange",
+        "center": [
+         40,
+         16
+        ],
+        "width": 40
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       32,
+       256,
+       64
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "CHICAGOBEARS.COM",
+        "colour": "white",
+        "center": [
+         128,
+         48
+        ],
+        "height": 13,
+        "max_width": 236
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       256,
+       96
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "SOLDIER FIELD",
+        "colour": "white",
+        "center": [
+         150,
+         80
+        ],
+        "height": 13,
+        "max_width": 200
+       },
+       {
+        "mark": "c_layer_silhouette",
+        "colour": "navy",
+        "center": [
+         40,
+         80
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_white",
+        "colour": "white",
+        "center": [
+         40,
+         80
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_orange",
+        "colour": "orange",
+        "center": [
+         40,
+         80
+        ],
+        "width": 40
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       96,
+       256,
+       128
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "BEAR DOWN",
+        "colour": "white",
+        "center": [
+         150,
+         112
+        ],
+        "height": 13,
+        "max_width": 200
+       },
+       {
+        "mark": "c_layer_silhouette",
+        "colour": "navy",
+        "center": [
+         40,
+         112
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_white",
+        "colour": "white",
+        "center": [
+         40,
+         112
+        ],
+        "width": 40
+       },
+       {
+        "mark": "c_layer_orange",
+        "colour": "orange",
+        "center": [
+         40,
+         112
+        ],
+        "width": 40
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       128,
+       256,
+       160
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "mark": "wordmark",
+        "colour": "orange",
+        "center": [
+         128,
+         144
+        ],
+        "width": 150
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       160,
+       256,
+       192
+      ],
+      "bg": "banner_navy",
+      "items": [
+       {
+        "text": "SOLDIER FIELD",
+        "colour": "white",
+        "center": [
+         128,
+         176
+        ],
+        "height": 13,
+        "max_width": 236
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

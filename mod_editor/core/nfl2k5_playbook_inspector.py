@@ -555,8 +555,74 @@ def corpus_counts(books: Iterable[Nfl2k5Playbook]) -> dict[str, int]:
     }
 
 
+#: Selection groups 0-2 hold one play each in every retail formation; group 3 is the ordinary list.
+MENU_SINGLE_PLAY_GROUPS = (0, 1, 2)
+MENU_EMPTY_PLAY = 0x01FF
+
+
+def menu_link_problems(resource_or_body: bytes) -> list[str]:
+    """What in a book's formation play menus the game cannot survive or show; empty when the book is sound.
+
+    The play call lists a formation's plays with 0xE1320 (the play in link 0) and 0xE1360 (the play in the link
+    after the FIRST link that holds the current play), and its play-page builder 0xACCE0 repeats 0xE1360 with no
+    bound until no play comes back. A play linked twice in one formation therefore makes that list endless, and
+    the game hangs the moment the formation is picked (Noah's Practice hang of 2026-09-23: the modern_gun_core
+    pack had linked its plays a second time in all four gun formations). The walk also stops at the first empty
+    slot, so a play listed after an empty slot is never shown. Retail, all 1,533 populated menus of the 37 books:
+    no play twice in one menu, groups 0-2 at most once each, no gap, every play in range.
+
+    Accepts a whole PLAY resource (0x20 wrapper + body) or a bare body; reads only the fixed tables, so it also
+    works on a book that no longer parses."""
+
+    data = bytes(resource_or_body)
+    if len(data) == RESOURCE_HEADER_SIZE + BODY_SIZE and data[:4] == b"PLAY":
+        data = data[RESOURCE_HEADER_SIZE:]
+    if len(data) != BODY_SIZE:
+        return [f"not a PLAY body ({len(data):,} bytes)"]
+    formation_count = struct.unpack_from("<I", data, 0x34)[0]
+    play_count = struct.unpack_from("<I", data, 0x38)[0]
+    if not 0 < formation_count <= FORMATION_CAPACITY or not 0 < play_count <= PLAY_CAPACITY:
+        return [f"formation/play counts {formation_count}/{play_count} are outside the PLAY capacity"]
+    problems: list[str] = []
+    for index in range(formation_count):
+        words = struct.unpack_from(f"<{FORMATION_PLAY_LINKS}H", data,
+                                   FORMATION_AUX_BASE + index * FORMATION_AUX_SIZE)
+        try:
+            name = _name(data, FORMATION_BASE + index * FORMATION_SIZE, f"formation {index} name")
+        except ValidationError:
+            name = "?"
+        label = f"formation {index} ({name})"
+        seen: dict[int, int] = {}
+        groups: dict[int, int] = {}
+        ended = False
+        for slot, word in enumerate(words):
+            play = word & MENU_EMPTY_PLAY
+            if play == MENU_EMPTY_PLAY:
+                ended = True
+                continue
+            if ended:
+                problems.append(f"{label}: play {play} in menu slot {slot} follows an empty slot and is never shown")
+                continue
+            if play >= play_count:
+                problems.append(f"{label}: menu slot {slot} names play {play}, past the book's {play_count} plays")
+                continue
+            if play in seen:
+                problems.append(f"{label}: play {play} is listed twice (slots {seen[play]} and {slot}); the play "
+                                "call's list of this formation would never end and the game would hang")
+            else:
+                seen[play] = slot
+            group = (word >> 9) & 3
+            groups[group] = groups.get(group, 0) + 1
+        for group in MENU_SINGLE_PLAY_GROUPS:
+            if groups.get(group, 0) > 1:
+                problems.append(f"{label}: {groups[group]} plays in selection group {group}, which holds one play "
+                                "in every retail formation")
+    return problems
+
+
 __all__ = [
     "FormationPlayLink",
+    "MENU_SINGLE_PLAY_GROUPS",
     "Nfl2k5Playbook",
     "Nfl2k5PlaybookInspector",
     "PLAY_FAMILY_LABELS",
@@ -567,6 +633,7 @@ __all__ = [
     "PlaybookNode",
     "PlaybookPlay",
     "corpus_counts",
+    "menu_link_problems",
     "parse_playbook_resource",
 ]
 

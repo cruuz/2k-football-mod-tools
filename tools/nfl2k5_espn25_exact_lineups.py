@@ -177,8 +177,14 @@ def starter_cost(starter, slot):
     else:
         depth = min(values["depth_rank"], values["depth_side"]) if pos in PAIRED else values["depth_rank"]
     season_fit = pos in positions(starter["season_position"])
+    # A box-score "RB" maps to both backfield slots. When his season role also fits HB he is the featured back:
+    # the HB slot carries the featured-back ratings and the FB slot the lead blocker's, so he takes HB before FB.
+    # Without this, equal depth fell to the slot index, and 8 files put the featured back at fullback.
+    # The weight beats any slot-index difference (at most 52) and stays below a season-role misfit (100).
+    fullback_for_featured_back = (pos == "FB" and "HB" in positions(label, starter=True) and
+                                  "HB" in positions(starter["season_position"]))
     # Explicit side and source-role constraints come before deterministic ties.
-    return depth * 10000 + (0 if season_fit else 100) + slot.index
+    return depth * 10000 + (0 if season_fit else 100) + (60 if fullback_for_featured_back else 0) + slot.index
 
 
 def make_roster(raw, descriptor, moment, source, colleges, evidence):
@@ -228,6 +234,9 @@ def make_roster(raw, descriptor, moment, source, colleges, evidence):
     starter_ids = {c["identity"] for c in starter_rows}
     bench = [c for c in candidates if c["identity"] not in starter_ids]
     slots = [p for p in document.players if p.index not in selected]
+    # A role filler (not on the season page) places after every page member. Fillers used to carry rank 0, and
+    # the depth weighting below pulled them to the shallowest open slots, above real season players.
+    filler_rank = len(page["players"]) + 1
     costs = []
     for p in slots:
         row = []
@@ -241,9 +250,10 @@ def make_roster(raw, descriptor, moment, source, colleges, evidence):
             # Prefer page members, then same-season nflverse, then closest-year
             # same-franchise reserves. Within compatible roles, GS/G/AV rank wins.
             tier = 0 if c["pfr"] else 1 if c["season"] == season else 2
+            placement = c["rank"] if c["pfr"] else filler_rank
             depth = min(p.record.values['depth_rank'], p.record.values['depth_side']) if pos in PAIRED else p.record.values['depth_rank']
             row.append(tier * 10**11 + abs(c["season"] - season) * 10**8 +
-                       c["rank"] * (8 - depth) * 1000 + fit * 100 + p.index)
+                       placement * (8 - depth) * 1000 + fit * 100 + p.index)
         costs.append(row)
     selected.update((p.index, bench[j]) for p, j in zip(slots, gen.assignment(costs)))
     rows, provenance = [], []
@@ -357,9 +367,9 @@ def enrich_manifest(manifest, moments, evidence, output_folder):
         'pulled': evidence.pulled, 'boxscores': 25, 'season_rosters': 50,
         'aggregate_rows_excluded': evidence.omitted_totals,
         'player_rows': sum(len(p['players']) for p in evidence.rosters.values())}
-    manifest['rules'].update(starters='Reserve all 22 box-score starters first, using retail rank and side chains; extra TE/WR/DB starters take the next available depth in their role. Team names bind the box-score sides to SITU.',
+    manifest['rules'].update(starters='Reserve all 22 box-score starters first, using retail rank and side chains; extra TE/WR/DB starters take the next available depth in their role. A box-score RB whose season role fits HB takes the halfback slot before the fullback slot. Team names bind the box-score sides to SITU.',
         editorial_qbs='Superseded by box-score starters. Original editorial_qb_preference fields retained for compatibility.',
-        fillers='Bench: prefer season-roster members ordered by games started, games, AV, name within the fixed retail position mix; then same-season nflverse, then closest-season same-franchise role fillers. All exceptions recorded.',
+        fillers='Bench: prefer season-roster members ordered by games started, games, AV, name within the fixed retail position mix; then same-season nflverse, then closest-season same-franchise role fillers. Role fillers take the deepest compatible slots, below every season-roster member. All exceptions recorded.',
         numbers='Only the selected game-season PFR roster supplies numbers, exact name then normalized name. Blank or absent rows retain the retail number and are marked unknown. No other-season jersey inference.',
         names='PFR display names for season-page members; exact/normalized or documented franchise-scoped familiar/legal-name aliases link the nflverse base. Existing 15-character codec, no truncation.',
         college='Keep an encodable nflverse college; when that CSV cell would be blank, use PFR college. Encode only an exact unique main-table string; retain the source college fact even when it cannot be encoded.',

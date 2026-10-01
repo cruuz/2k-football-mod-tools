@@ -1,0 +1,1198 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "NE",
+ "name": "New England Patriots",
+ "asset_code": "16",
+ "season": 2026,
+ "sources_uw": {"sleeve_swoosh_2026": "patriots.com 2026 week 2 home gallery, k2/shoulders/refs/ne/jgoechafbpy9ox6yphau.jpg (Drake Maye, navy): the swoosh right above the Flying Elvis on the sleeve", "sleeve_logo_2026": "nike.com's 2026 Patriots Game jerseys (navy and white) and patriots.com 2026 week 2 (Maye): the logo on the side of the upper sleeve under the swoosh, a moderate patch, facing forward on both arms (mirrored on the left sleeve)"},
+ "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); albedo INFERRED from 2026 game photos; kit from the 2020 design with the silver pants (2024) at home and navy pants on the road (2026 week 1).",
+ "sort": "recoloured: the Flying Elvis, silver helmet and red facemask stay; the 2020 jersey (red-white-red shoulder stripes, PATRIOTS chest wordmark) and 2026 pants are drawn on the retail sets",
+ "sources": {
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=New_England_Patriots&action=raw (2020 design; silver pants 2024; white pants 2025)",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:New_England_Patriots_Uniforms_2025.png",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (NE: Nautical Blue #002244, Red #C60C30, New Century Silver #B0B7BC, White; 2026 Record and Fact Book p.116)",
+  "home_photos": "https://www.patriots.com/photos/game-photos-from-the-patriots-win-over-the-steelers-regular-season-game-2-presented-by-sony (2026 week 2)",
+  "road_photos": "https://www.patriots.com/photos/game-photos-from-the-patriots-vs-the-seahawks-regular-season-game-1-presented-by-sony (2026 week 1)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/File:New_England_Patriots_wordmark.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "navy": "#002244",
+  "red": "#C60C30",
+  "silver": "#B0B7BC",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "jersey_navy": "#0A2550",
+  "helmet_navy": "#002244",
+  "red": "#C8102E",
+  "white": "#FFFFFF",
+  "pants_silver": "#B4BAC0",
+  "helmet_silver": "#B0B7BC",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "retail_helmet_silver": "#A7AEB2",
+  "retail_card_navy": "#0A1E40",
+  "retail_atlas_navy": "#102040",
+  "field_navy": "#0B2A55",
+  "banner_red": "#C8102E",
+  "retail_atlas_grey1": "#B0B8C0",
+  "retail_atlas_grey2": "#8090A0",
+  "retail_atlas_navy2": "#102040",
+  "retail_atlas_red": "#A01830"
+ },
+ "marks": {
+  "logo_full": "ne_logo_full.png",
+  "wordmark": "patriots_wordmark.png",
+  "logo_white": "ne_logo_white.png",
+  "logo_navy": "ne_logo_navy.png",
+  "logo_red": "ne_logo_red.png",
+  "logo_silver": "ne_logo_silver.png",
+  "wm_outline": "patriots_wm_outline.png",
+  "wm_fill": "patriots_wm_fill.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "16H0",
+   "outer_index": 3741,
+   "note": "2026 home: navy jersey, white numbers outlined in red, red-white-red shoulder stripes, PATRIOTS chest wordmark, Flying Elvis on the sleeves, silver pants with a red-navy-red stripe, navy socks, silver helmet with the red facemask",
+   "torso": {
+    "base_colour": "jersey_navy",
+    "neck_donor": "18H6",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      161,
+      94
+     ],
+     "width": 20
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "polygon": [
+       [
+        113.82,
+        53.24
+       ],
+       [
+        46.1,
+        4.2
+       ],
+       [
+        51.38,
+        -3.09
+       ],
+       [
+        119.1,
+        45.95
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        119.1,
+        45.95
+       ],
+       [
+        51.38,
+        -3.09
+       ],
+       [
+        54.9,
+        -7.95
+       ],
+       [
+        122.62,
+        41.09
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        122.62,
+        41.09
+       ],
+       [
+        54.9,
+        -7.95
+       ],
+       [
+        60.18,
+        -15.24
+       ],
+       [
+        127.9,
+        33.8
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        194.1,
+        33.8
+       ],
+       [
+        261.82,
+        -15.24
+       ],
+       [
+        267.1,
+        -7.95
+       ],
+       [
+        199.38,
+        41.09
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        199.38,
+        41.09
+       ],
+       [
+        267.1,
+        -7.95
+       ],
+       [
+        270.62,
+        -3.09
+       ],
+       [
+        202.9,
+        45.95
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        202.9,
+        45.95
+       ],
+       [
+        270.62,
+        -3.09
+       ],
+       [
+        275.9,
+        4.2
+       ],
+       [
+        208.18,
+        53.24
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        358.48,
+        60.95
+       ],
+       [
+        293.53,
+        2.96
+       ],
+       [
+        299.53,
+        -3.76
+       ],
+       [
+        364.48,
+        54.23
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        364.48,
+        54.23
+       ],
+       [
+        299.53,
+        -3.76
+       ],
+       [
+        303.52,
+        -8.23
+       ],
+       [
+        368.47,
+        49.76
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        368.47,
+        49.76
+       ],
+       [
+        303.52,
+        -8.23
+       ],
+       [
+        309.52,
+        -14.95
+       ],
+       [
+        374.47,
+        43.04
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        407.53,
+        43.04
+       ],
+       [
+        472.48,
+        -14.95
+       ],
+       [
+        478.48,
+        -8.23
+       ],
+       [
+        413.53,
+        49.76
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        413.53,
+        49.76
+       ],
+       [
+        478.48,
+        -8.23
+       ],
+       [
+        482.47,
+        -3.76
+       ],
+       [
+        417.52,
+        54.23
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        417.52,
+        54.23
+       ],
+       [
+        482.47,
+        -3.76
+       ],
+       [
+        488.47,
+        2.96
+       ],
+       [
+        423.52,
+        60.95
+       ]
+      ],
+      "colour": "red"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_navy",
+    "decorations": [
+     {
+      "mark": "logo_full",
+      "center": [
+       61.5,
+       26.5
+      ],
+      "width": 46,
+      "mirror": false
+     },
+     {
+      "mark": "logo_full",
+      "center": [
+       65.5,
+       90.5
+      ],
+      "width": 46,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_silver",
+    "stripe": [
+     [
+      "red",
+      4
+     ],
+     [
+      "jersey_navy",
+      5
+     ],
+     [
+      "red",
+      4
+     ]
+    ],
+    "swoosh_colour": "jersey_navy"
+   },
+   "socks": {
+    "colour": "jersey_navy"
+   },
+   "digits": {
+    "glyph_donor": "16H0",
+    "fill": "white",
+    "outline": "red",
+    "outline_frac": 0.03
+   },
+   "helmet_digits": {
+    "glyph_donor": "16H0",
+    "fill": "helmet_silver"
+   },
+   "nameplate": {
+    "glyph_donor": "16H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_silver",
+    "shell_from": "retail_helmet_silver",
+    "recolour": []
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_navy",
+      "to": "jersey_navy",
+      "region": "jersey",
+      "tolerance": 0.22
+     }
+    ]
+   },
+   "splayer": {
+    "torso_donor_outer": 3741,
+    "torso_donor": "16H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_atlas_navy",
+      "to": "jersey_navy",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_atlas_grey1",
+      "to": "jersey_navy",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_atlas_grey2",
+      "to": "jersey_navy",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_atlas_red",
+      "to": "jersey_navy",
+      "region": "torso",
+      "tolerance": 0.35
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "16A0",
+   "outer_index": 4058,
+   "note": "2026 road: white jersey, navy numbers outlined white and red, red-navy-red shoulder stripes, navy PATRIOTS wordmark, Flying Elvis on the sleeves, navy pants with a red-white-red stripe, navy socks, the silver helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "18H6",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "jersey_navy",
+     "center": [
+      161,
+      94
+     ],
+     "width": 20
+    },
+    "sleeve_swooshes": {
+     "colour": "jersey_navy"
+    },
+    "decorations": [
+     {
+      "polygon": [
+       [
+        114.11,
+        52.83
+       ],
+       [
+        46.4,
+        3.8
+       ],
+       [
+        50.5,
+        -1.87
+       ],
+       [
+        118.22,
+        47.16
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        118.22,
+        47.16
+       ],
+       [
+        50.5,
+        -1.87
+       ],
+       [
+        55.78,
+        -9.16
+       ],
+       [
+        123.5,
+        39.87
+       ]
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "polygon": [
+       [
+        123.5,
+        39.87
+       ],
+       [
+        55.78,
+        -9.16
+       ],
+       [
+        59.89,
+        -14.83
+       ],
+       [
+        127.6,
+        34.2
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        194.4,
+        34.2
+       ],
+       [
+        262.11,
+        -14.83
+       ],
+       [
+        266.22,
+        -9.16
+       ],
+       [
+        198.5,
+        39.87
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        198.5,
+        39.87
+       ],
+       [
+        266.22,
+        -9.16
+       ],
+       [
+        271.5,
+        -1.87
+       ],
+       [
+        203.78,
+        47.16
+       ]
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "polygon": [
+       [
+        203.78,
+        47.16
+       ],
+       [
+        271.5,
+        -1.87
+       ],
+       [
+        275.6,
+        3.8
+       ],
+       [
+        207.89,
+        52.83
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        358.82,
+        60.57
+       ],
+       [
+        293.87,
+        2.58
+       ],
+       [
+        298.53,
+        -2.64
+       ],
+       [
+        363.48,
+        55.35
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        363.48,
+        55.35
+       ],
+       [
+        298.53,
+        -2.64
+       ],
+       [
+        304.52,
+        -9.35
+       ],
+       [
+        369.47,
+        48.64
+       ]
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "polygon": [
+       [
+        369.47,
+        48.64
+       ],
+       [
+        304.52,
+        -9.35
+       ],
+       [
+        309.18,
+        -14.57
+       ],
+       [
+        374.13,
+        43.42
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        407.87,
+        43.42
+       ],
+       [
+        472.82,
+        -14.57
+       ],
+       [
+        477.48,
+        -9.35
+       ],
+       [
+        412.53,
+        48.64
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        412.53,
+        48.64
+       ],
+       [
+        477.48,
+        -9.35
+       ],
+       [
+        483.47,
+        -2.64
+       ],
+       [
+        418.52,
+        55.35
+       ]
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "polygon": [
+       [
+        418.52,
+        55.35
+       ],
+       [
+        483.47,
+        -2.64
+       ],
+       [
+        488.13,
+        2.58
+       ],
+       [
+        423.18,
+        60.57
+       ]
+      ],
+      "colour": "red"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "decorations": [
+     {
+      "mark": "logo_full",
+      "center": [
+       61.5,
+       26.5
+      ],
+      "width": 46,
+      "mirror": false
+     },
+     {
+      "mark": "logo_full",
+      "center": [
+       65.5,
+       90.5
+      ],
+      "width": 46,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "jersey_navy",
+    "stripe": [
+     [
+      "red",
+      4
+     ],
+     [
+      "white",
+      5
+     ],
+     [
+      "red",
+      4
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "jersey_navy"
+   },
+   "digits": {
+    "glyph_donor": "16A0",
+    "fill": "jersey_navy",
+    "outline": "white",
+    "outline_frac": 0.016,
+    "outline2": "red",
+    "outline2_frac": 0.03
+   },
+   "helmet_digits": {
+    "glyph_donor": "16A0",
+    "fill": "helmet_silver"
+   },
+   "nameplate": {
+    "glyph_donor": "16A0",
+    "fill": "jersey_navy"
+   },
+   "helmet": {
+    "shell": "helmet_silver",
+    "shell_from": "retail_helmet_silver",
+    "recolour": []
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor_outer": 4058,
+    "torso_donor": "16A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_atlas_navy2",
+      "to": "white",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_red",
+      "to": "white",
+      "region": "torso",
+      "tolerance": 0.35
+     }
+    ]
+   }
+  }
+ },
+ "venue": {
+  "prefix": "s16",
+  "notes": "2026 home venue: Gillette Stadium (the retail model is Gillette too). End zones unpainted with the PATRIOTS wordmark in white outlined in navy (2026 week 2 frames show white letters on the turf; INFERRED which word each end carries, the retail texture is shared by both ends). The midfield Flying Elvis is re-rendered from the official mark (same design as 2004); the HOME OF THE NEW ENGLAND PATRIOTS ribbon and the Gillette Stadium sign are unchanged since 2004 and stay retail. Fan banners carry 2026 players.",
+  "sources": [
+   "https://www.patriots.com/photos/game-photos-from-the-patriots-win-over-the-steelers-regular-season-game-2-presented-by-sony (2026 week 2)"
+  ],
+  "endzone": {
+   "paint": "field_navy",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "wm_outline",
+     "colour": "helmet_navy",
+     "center": [
+      384,
+      64
+     ],
+     "height": 84,
+     "stretch": 1.12
+    },
+    {
+     "mark": "wm_fill",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 84,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO PATS!",
+        "colour": "red",
+        "center": [
+         40,
+         32
+        ],
+        "height": 14,
+        "max_width": 70
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         98,
+         32
+        ],
+        "width": 48
+       },
+       {
+        "mark": "logo_navy",
+        "colour": "helmet_navy",
+        "center": [
+         98,
+         32
+        ],
+        "width": 48
+       },
+       {
+        "mark": "logo_red",
+        "colour": "red",
+        "center": [
+         98,
+         32
+        ],
+        "width": 48
+       },
+       {
+        "mark": "logo_silver",
+        "colour": "helmet_silver",
+        "center": [
+         98,
+         32
+        ],
+        "width": 48
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "DO YOUR\nJOB",
+        "colour": "helmet_navy",
+        "center": [
+         64,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "helmet_navy",
+      "items": [
+       {
+        "text": "#10\nDRAKE MAYE",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "WE ARE ALL\nPATRIOTS",
+        "colour": "red",
+        "center": [
+         192,
+         31
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "#38 STEVENSON\nRUNS HARD",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 12
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         192,
+         96
+        ],
+        "width": 80
+       },
+       {
+        "mark": "logo_navy",
+        "colour": "helmet_navy",
+        "center": [
+         192,
+         96
+        ],
+        "width": 80
+       },
+       {
+        "mark": "logo_red",
+        "colour": "red",
+        "center": [
+         192,
+         96
+        ],
+        "width": 80
+       },
+       {
+        "mark": "logo_silver",
+        "colour": "helmet_silver",
+        "center": [
+         192,
+         96
+        ],
+        "width": 80
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#85\nHENRY",
+        "colour": "helmet_navy",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "FOXBOROUGH\nFAITHFUL",
+        "colour": "red",
+        "center": [
+         64,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "center_logo": {
+   "outline_mark": "logo_full",
+   "outline": "white",
+   "fill_mark": "logo_navy",
+   "fill": "helmet_navy",
+   "width_frac": 0.88
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Mike Vrabel",
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense_note": "nflverse depth_charts_2026 (ESPN) lists the NE base defense as 'Base 3-4 D' since 2026-09-09"
+ },
+ "part_intents": {
+  "home": {
+   "torso": "navy jersey body, red-white-red shoulder stripes, small white PATRIOTS wordmark under the collar, NFL shield, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "navy with the Flying Elvis logo",
+   "pants": "silver with a red-navy-red side stripe, navy maker mark",
+   "helmet": "silver shell with the Flying Elvis logo, red and white hardware and decals",
+   "digit_jersey": "white numbers outlined in red",
+   "digit_arm": "white numbers outlined in red",
+   "digit_helmet": "silver (no helmet numbers)",
+   "nameplate": "white letters",
+   "socks00": "solid navy",
+   "splayer": "far-away player atlas: silver pants with a stripe, navy torso, silver helmet, navy socks",
+   "team-select_unif": "menu render: navy jersey with a white number outlined in red, silver pants, silver helmet with the Flying Elvis, dark shading",
+   "team-select_helm": "menu render: silver helmet with the Flying Elvis, red facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, red-navy-red shoulder stripes, navy PATRIOTS wordmark, NFL shield, navy maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with the Flying Elvis logo",
+   "pants": "navy with a red-white-red side stripe, white maker mark",
+   "helmet": "silver shell with the Flying Elvis logo, red and white hardware and decals",
+   "digit_jersey": "navy numbers outlined white and red",
+   "digit_arm": "navy numbers outlined white and red",
+   "digit_helmet": "silver (no helmet numbers)",
+   "nameplate": "navy letters",
+   "socks00": "solid navy",
+   "splayer": "far-away player atlas: navy pants, white torso, silver helmet, navy socks",
+   "team-select_unif": "menu render: white jersey with a navy number, navy pants, silver helmet",
+   "team-select_helm": "menu render: silver helmet with the Flying Elvis, red facemask, dark bar and yellow UI strip"
+  },
+  "venue": {
+   "endzone": "unpainted turf end zone with the white PATRIOTS wordmark outlined in navy",
+   "center_logo": "Flying Elvis logo in navy, red, silver and white",
+   "banner": "cloth fan banners in navy, red and white with Patriots text and the Flying Elvis"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Alijah Vera-Tucker": 2,
+   "Andy Borregales": 1,
+   "Behren Morton": 0,
+   "Ben Brown": 0,
+   "Caleb Lomu": 0,
+   "Cameron Latu": 1,
+   "Carlton Davis": 3,
+   "Channing Canada": 2,
+   "Charles Woods": 2,
+   "Christian Barmore": 4,
+   "Christian Elliss": 1,
+   "Christian Gonzalez": 1,
+   "Corey Kiner": 3,
+   "Cory Durden": 2,
+   "Craig Woodson": 4,
+   "DaQuan Jones": 3,
+   "Dametrious Crownover": 4,
+   "Darius Muasau": 1,
+   "DeMario Douglas": 3,
+   "Dell Pettus": 4,
+   "Drake Maye": 0,
+   "Dre'Mont Jones": 3,
+   "Efton Chism": 0,
+   "Eli Raridon": 0,
+   "Elijah Ponder": 3,
+   "Erick Hunter": 4,
+   "Gabe Jacas": 3,
+   "Greg Van Roten": 0,
+   "Hunter Henry": 0,
+   "Jared Wilson": 4,
+   "Jaylen Reed": 3,
+   "Joshua Farmer": 4,
+   "Julian Ashby": 1,
+   "Karon Prunty": 4,
+   "Kevin Byard": 3,
+   "Kyle Williams": 3,
+   "Leonard Taylor": 4,
+   "Mack Hollins": 1,
+   "Marcus Jones": 3,
+   "Milton Williams": 5,
+   "Mitch Wishnowsky": 0,
+   "Morgan Moses": 4,
+   "Namdi Obiazor": 2,
+   "Quintayvious Hutchins": 4,
+   "Reggie Gilliam": 3,
+   "Rhamondre Stevenson": 4,
+   "Robert Spillane": 0,
+   "Romeo Doubs": 4,
+   "Tanner Arkin": 0,
+   "Tommy DeVito": 0,
+   "TreVeyon Henderson": 3,
+   "Walter Rouse": 3,
+   "Will Campbell": 0
+  },
+  "dreads": [
+   "Channing Canada",
+   "Corey Kiner",
+   "Dametrious Crownover",
+   "DeMario Douglas",
+   "Dell Pettus",
+   "Gabe Jacas",
+   "Jared Wilson",
+   "Jaylen Reed",
+   "Kyle Williams",
+   "Quintayvious Hutchins",
+   "Reggie Gilliam",
+   "Rhamondre Stevenson",
+   "Romeo Doubs"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) and dreadlocks, by eye from the official 2026 headshots (INFERRED)."
+ }
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import OrderedDict
+import logging
 from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
@@ -31,8 +32,8 @@ from nfl_outer import parse_archive, read_entry_range
 from nfl_txtr import (HEADER, decode_chunk, encode_rgba_png, parse_chunks,
                       parse_texture, rebuild_compressed_chunk_fixed_span,
                       swizzle_2d, unswizzle_2d)
-from nfl_tset_png_import import (MipLevel, decode_rgba_png, palette_bytes,
-                                 quantize_levels_to_vc_lz_bound,
+from nfl_tset_png_import import (MipLevel, QualityBudgetError, decode_rgba_png,
+                                 palette_bytes, quantize_levels_to_vc_lz_bound,
                                  rgba_from_indices)
 from nfl_live_numbers_nameplate_targets import (DEFAULT_REPORT, LiveArtTarget,
                                                   select_target)
@@ -42,6 +43,20 @@ SCHEMA = "nfl2k5_live_numbers_nameplate_png_import/v1"
 INDEX_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
 INDEX_SIZE = 193_710_080
 MAX_PNG_BYTES = 32 * 1024 * 1024
+
+LOG = logging.getLogger(__name__)
+
+# Nameplate atlas mips (beta 76 k2). Retail's own atlas mips keep each level's
+# coverage (the mean alpha of every level equals level 0's), so a letter seen
+# small or at a grazing angle fades to a light, even tint. The region-majority
+# reduction (beta 48, chosen so digits fit their spans; digits have since moved
+# to their own area chain) turns thin strokes into solid blocks at levels 2-5,
+# which reads in play as a dark, noisy patch on the upper back. Nameplates now
+# take the area chain first; the majority chain is kept only as a logged
+# fallback for a slot that cannot hold the area chain at the palette floor.
+MAJORITY_MIP_FILTER = "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region"
+NAMEPLATE_AREA_MIP_FILTER = "premultiplied_rgba_area_from_base"
+NAMEPLATE_AREA_PALETTE_FLOOR = 16
 
 
 class ImportError(ValueError):
@@ -190,12 +205,16 @@ def make_mips(
     level inside the artwork's own regions so the shared palette and the
     fixed VC-LZ span are spent on authored colours only; ``box`` is the
     historical channel average kept for byte-stability checks; ``nearest``
-    takes one texel per footprint.
+    takes one texel per footprint; ``area`` averages each level's exact
+    footprint of the base level with alpha weighting (premultiplied), so every
+    level keeps the base coverage and invisible RGB never bleeds in.
     """
-    require(downsample in ("majority", "box", "nearest"),
-            "make_mips downsample must be majority, box, or nearest")
+    require(downsample in ("majority", "box", "nearest", "area"),
+            "make_mips downsample must be majority, box, nearest, or area")
     require(len(rgba) == width * height * 4 and count > 0,
             "base image/mip count mismatch")
+    if downsample == "area":
+        return _area_mips(rgba, width, height, count)
     result = [MipLevel(0, width, height, rgba)]
     current = rgba
     current_width = width
@@ -237,6 +256,78 @@ def make_mips(
         current_height = next_height
         result.append(MipLevel(level, current_width, current_height, current))
     return result
+
+
+def _area_mips(rgba: bytes, width: int, height: int, count: int) -> list[MipLevel]:
+    """Every level is the alpha-weighted average of its exact base footprint.
+
+    Level ``n`` averages ``2**n`` x ``2**n`` base texels: alpha is the plain
+    mean (coverage is kept), RGB is weighted by alpha so a transparent texel's
+    colour never tints an edge. A fully transparent footprint stores 0,0,0,0.
+    """
+    require(width % (1 << (count - 1)) == 0 and height % (1 << (count - 1)) == 0,
+            "mip dimensions cannot be halved exactly")
+    base = bytearray(rgba)
+    for offset in range(0, len(base), 4):
+        if base[offset + 3] == 0:
+            base[offset:offset + 3] = b"\0\0\0"
+    result = [MipLevel(0, width, height, bytes(base))]
+    for level in range(1, count):
+        stride = 1 << level
+        level_width, level_height = width // stride, height // stride
+        area = stride * stride
+        out = bytearray(level_width * level_height * 4)
+        for y in range(level_height):
+            for x in range(level_width):
+                alpha = red = green = blue = 0
+                for dy in range(stride):
+                    start = ((y * stride + dy) * width + x * stride) * 4
+                    for i in range(start, start + stride * 4, 4):
+                        a = base[i + 3]
+                        alpha += a
+                        red += base[i] * a
+                        green += base[i + 1] * a
+                        blue += base[i + 2] * a
+                mean = (alpha + area // 2) // area
+                if mean:
+                    target = (y * level_width + x) * 4
+                    out[target:target + 4] = bytes((
+                        (red + alpha // 2) // alpha,
+                        (green + alpha // 2) // alpha,
+                        (blue + alpha // 2) // alpha,
+                        mean,
+                    ))
+        result.append(MipLevel(level, level_width, level_height, bytes(out)))
+    return result
+
+
+def fit_nameplate_levels(rgba: bytes, width: int, height: int, count: int,
+                         fit: Any, selector: str = "", stored_size: int = 0):
+    """Fit a nameplate atlas: the area chain first, the majority chain only
+    when the slot cannot hold the area chain at the palette floor.
+
+    ``fit(levels, minimum_palette_limit)`` encodes one chain into the slot and
+    raises :class:`QualityBudgetError` when it cannot. Returns ``(levels,
+    bounded, mip_filter, fallback)``; ``fallback`` is ``None`` for the area
+    chain, else a record of why the majority chain was used (also logged).
+    """
+    area = make_mips(rgba, width, height, count, downsample="area")
+    try:
+        return area, fit(area, NAMEPLATE_AREA_PALETTE_FLOOR), NAMEPLATE_AREA_MIP_FILTER, None
+    except QualityBudgetError as exc:
+        attempts = list(getattr(exc, "attempts", ()))
+        LOG.warning(
+            "NAMEPLATE_MIP_FALLBACK selector=%s stored_size=%s: the area mip chain cannot fit "
+            "at %d palette entries; using the region-majority chain",
+            selector, stored_size, NAMEPLATE_AREA_PALETTE_FLOOR)
+        majority = make_mips(rgba, width, height, count)
+        return majority, fit(majority, 2), MAJORITY_MIP_FILTER, {
+            "requested_filter": NAMEPLATE_AREA_MIP_FILTER,
+            "used_filter": MAJORITY_MIP_FILTER,
+            "reason": (f"area chain overflows the {stored_size}-byte slot at the "
+                       f"{NAMEPLATE_AREA_PALETTE_FLOOR}-entry palette floor"),
+            "area_attempts": attempts,
+        }
 
 
 def parse_palette(video: bytes, offset: int) -> list[tuple[int, int, int, int]]:
@@ -393,8 +484,10 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
 
     png, png_payload, rgba = read_png(png_path, (target.width, target.height))
     is_digit = target.family in {"jersey_digit", "helmet_digit", "arm_digit"}
+    is_nameplate = target.family == "nameplate_atlas"
     quality_options = {}
-    mip_filter = "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region"
+    mip_filter = MAJORITY_MIP_FILTER
+    mip_fallback = None
     if is_digit:
         from mod_editor.core.nfl2k5_digit_texture import (
             MIP_FILTER, PALETTE_POLICY, make_digit_mips, quantize_digit_levels,
@@ -449,6 +542,15 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
             lambda _levels, p, i: candidate_decoded(p, i),
             stream_tag=target.stream_tag, offset_bits=target.offset_bits,
             stored_size=target.stored_size)
+    elif is_nameplate:
+        def fit_chain(levels, floor):
+            return quantize_levels_to_vc_lz_bound(
+                levels, candidate_decoded, stream_tag=target.stream_tag,
+                offset_bits=target.offset_bits, max_encoded_size=target.stored_size,
+                minimum_palette_limit=floor)
+        input_mips, bounded, mip_filter, mip_fallback = fit_nameplate_levels(
+            rgba, target.width, target.height, target.mip_levels, fit_chain,
+            selector=target.selector, stored_size=target.stored_size)
     else:
         bounded = quantize_levels_to_vc_lz_bound(
             input_mips, candidate_decoded, stream_tag=target.stream_tag,
@@ -531,6 +633,7 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
         "mips": {"level_count": target.mip_levels,
                  "dimensions": [[level.width, level.height] for level in input_mips],
                  "filter": mip_filter,
+                 **({"fallback": mip_fallback} if mip_fallback is not None else {}),
                  "storage": target.mip_storage,
                  "index_bytes": [len(level) for level in index_levels],
                  "decoded_rgba_sha256": [digest(level.rgba) for level in decoded_levels],

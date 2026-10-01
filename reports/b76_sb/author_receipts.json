@@ -1,0 +1,77 @@
+{
+ "espn_plate_mark": {
+  "frames": 213,
+  "ink_box": [
+   910,
+   956,
+   1010,
+   980
+  ],
+  "background": 23.0,
+  "cell": [
+   0,
+   300,
+   33,
+   309
+  ]
+ },
+ "label_Down": {
+  "frames": 159,
+  "ink_box": [
+   950,
+   956,
+   1030,
+   978
+  ],
+  "tv_ink_height": 22,
+  "glyph_width": 104.348,
+  "scale": 0.3322,
+  "cell": [
+   60,
+   300,
+   94,
+   311
+  ]
+ },
+ "timeout_tab": {
+  "frames": 6,
+  "fill": [
+   21,
+   20,
+   23
+  ],
+  "cell": [
+   0,
+   320,
+   114,
+   337
+  ]
+ },
+ "flag": {
+  "yellow": [
+   205,
+   198,
+   0
+  ],
+  "frames": 39,
+  "before": [
+   255,
+   204,
+   0
+  ]
+ },
+ "dividers": [
+  "capsule column 22",
+  "play-clock cell column 0"
+ ],
+ "plate_rows": {
+  "plate": [
+   17,
+   15
+  ],
+  "flag": [
+   16,
+   15
+  ]
+ }
+}

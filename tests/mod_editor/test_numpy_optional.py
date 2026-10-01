@@ -58,7 +58,7 @@ from nfl2k5_throw_tuning_test import _build_synthetic_xbe
 from mod_editor.core.studio_inspection import inspect_source
 from mod_editor.core.nfl2k5_scorebug_sprite import probe_sizes
 assert importlib.util.find_spec('numpy') is None
-assert probe_sizes() == (34, 325216, 325632)
+assert probe_sizes() == (34, 327904, 327680)  # beta 76 s15: record, tab, chevron and pip-state glyph tables (+2,176 B, one HUD sector); sb: ESPN plate, Down and TIMEOUT tab glyphs, one field (+128 B); sbfix: the INCHES and OT tokens (+384 B, same HUD sectors)
 with tempfile.TemporaryDirectory() as folder:
     source = Path(folder)/'fixture.xbe'
     source.write_bytes(_build_synthetic_xbe())

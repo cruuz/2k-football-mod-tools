@@ -304,6 +304,8 @@ class RetailTests(unittest.TestCase):
         if e.xbe_status(e.read_xbe(RETAIL)) != "retail":
             raise unittest.SkipTest("private executable evidence is not the pinned retail reload routine")
         cls.manifest, cls.sheets = e.dataset()
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         cls.resources = e.read_resources(RETAIL)
         if e.status(cls.resources) != "retail":
             raise unittest.SkipTest("private retail evidence is not the pinned USA resource set")
@@ -479,11 +481,11 @@ class RetailTests(unittest.TestCase):
             fixture = self.fixture(Path(directory).resolve())
             before = fixture.path.read_bytes()
             compile_original, calls = e.compile_resource, []
-            def fail_late(*args):
+            def fail_late(*args, **kwargs):
                 calls.append(1)
                 if len(calls) == 35:
                     raise e.Espn25RostersError("last resource cannot fit")
-                return compile_original(*args)
+                return compile_original(*args, **kwargs)
             with patch.object(e, "compile_resource", side_effect=fail_late):
                 with self.assertRaisesRegex(e.Espn25RostersError, "last resource"):
                     e.apply_to_image(fixture.path)

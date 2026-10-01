@@ -1,0 +1,484 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "NYG",
+  "name": "New York Giants",
+  "asset_code": "18",
+  "season": 2026,
+  "status": "PILOT (job u1, 2026-09-23). Colours sourced; authored albedo values INFERRED from 2025-2026 game photos and tuned against lab frames.",
+  "sources": {
+    "kit_rules": "https://www.giants.com/news/giants-announce-2026-uniform-schedule-legacy-games-vintage-white",
+    "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_New_York_Giants&action=raw",
+    "uniform_diagram": "https://upload.wikimedia.org/wikipedia/commons/4/41/New_York_Giants_Uniforms_2022-Present.png",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (NYG, 2026 NFL Record and Fact Book p.202)",
+    "home_photos": "https://www.giants.com/photos/game-photos-giants-host-cowboys-in-week-1 (2026-09-13)",
+    "road_photos": "https://www.therams.com/photos/game-action-rams-vs-giants-week-2-sofi-stadium-2026 (2026-09-21)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/NYG.svg",
+    "wordmark_vector": "https://commons.wikimedia.org/wiki/File:New_York_Giants_wordmark.svg (public domain, 1976 wordmark)",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "blue": "#0B2265",
+    "red": "#A71930",
+    "white": "#FFFFFF",
+    "gray": "#A5ACAF"
+  },
+  "albedo": {
+    "jersey_blue": "#0E2878",
+    "helmet_blue": "#0B2265",
+    "red": "#B81A35",
+    "white": "#FFFFFF",
+    "gray": "#A5ACAF",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A",
+    "field_blue": "#1C3F9E",
+    "banner_red": "#B81A35"
+  },
+  "marks": {
+    "team_logo_fill": "ny_inner_mask.png",
+    "team_logo_outline": "ny_outer_mask.png",
+    "wordmark": "giants_wordmark.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "18H0",
+      "note": "2026 Standard Blue: blue jersey, plain white block numbers, white pants with blue-gray-red-gray-blue stripe, blue socks",
+      "torso": {
+        "base_colour": "jersey_blue",
+        "neck_donor": "18H6",
+        "collar_shield": true,
+        "chest_mark": {
+          "mark": "team_logo_fill",
+          "colour": "white",
+          "center": [
+            161,
+            92.5
+          ],
+          "width": 18
+        },
+        "sleeve_swooshes": {
+          "colour": "white"
+        }
+      },
+      "sleeve": {
+        "base_colour": "jersey_blue",
+        "stripes_from": null
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "jersey_blue",
+            4
+          ],
+          [
+            "gray",
+            3
+          ],
+          [
+            "red",
+            4
+          ],
+          [
+            "gray",
+            3
+          ],
+          [
+            "jersey_blue",
+            4
+          ]
+        ],
+        "swoosh_colour": "jersey_blue"
+      },
+      "socks": {
+        "colour": "jersey_blue"
+      },
+      "digits": {
+        "glyph_donor": "18H0",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "18H0",
+        "fill": "white"
+      },
+      "helmet": {
+        "shell": "helmet_blue",
+        "stripe": "red"
+      },
+      "outer_index": 3762,
+      "splayer": {
+        "torso_donor_outer": 3768,
+        "torso_donor": "18H6",
+        "sleeve_from_donor": false
+      }
+    },
+    "away": {
+      "selector": "18A0",
+      "note": "2026 Standard White: white jersey, plain red block numbers, red Northwestern sleeve stripes, white pants with red-white-red stripe, red socks",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "18A6",
+        "collar_shield": true,
+        "chest_mark": {
+          "mark": "team_logo_fill",
+          "colour": "red",
+          "center": [
+            161,
+            92.5
+          ],
+          "width": 18
+        },
+        "sleeve_swooshes": {
+          "colour": "jersey_blue"
+        }
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": "18A6",
+        "stripe_colour": "red"
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "red",
+            4
+          ],
+          [
+            "white",
+            3
+          ],
+          [
+            "red",
+            7
+          ],
+          [
+            "white",
+            3
+          ],
+          [
+            "red",
+            4
+          ]
+        ],
+        "swoosh_colour": "jersey_blue"
+      },
+      "socks": {
+        "colour": "red"
+      },
+      "digits": {
+        "glyph_donor": "18H0",
+        "fill": "red"
+      },
+      "nameplate": {
+        "glyph_donor": "18H0",
+        "fill": "red"
+      },
+      "helmet": {
+        "shell": "helmet_blue",
+        "stripe": "red"
+      },
+      "outer_index": 4079,
+      "splayer": {
+        "torso_donor_outer": 4085,
+        "torso_donor": "18A6",
+        "sleeve_from_donor": true
+      }
+    }
+  },
+  "venue": {
+    "prefix": "s18",
+    "notes": "Giants home games at MetLife (u2's writer composes these over each s18 variant's own turf). End zones: royal blue paint, white 1976 GIANTS wordmark with underline, white ny near each sideline (2023 photo; 2026 preseason photos show the royal blue paint and white letters). Midfield: the ny logo, blue with a white outline (the 2023 design; sources conflict on a 2024 helmet version, which giants.com ties to the Legacy Games): INFERRED.",
+    "sources": [
+      "https://commons.wikimedia.org/wiki/File:MetLife_stadium,_Giants.jpg",
+      "https://www.giants.com/photos/giants-take-the-field-at-metlife-stadium-x0103",
+      "https://news.sportslogos.net/2023/07/14/new-york-giants-add-logo-to-50-yard-line-at-metlife-stadium/football/"
+    ],
+    "endzone": {
+      "paint": "field_blue",
+      "paint_alpha": 0.92,
+      "marks": [
+        {
+          "mark": "wordmark",
+          "colour": "white",
+          "center": [
+            392,
+            64
+          ],
+          "height": 96,
+          "stretch": 1.12
+        },
+        {
+          "mark": "team_logo_fill",
+          "colour": "white",
+          "center": [
+            102,
+            64
+          ],
+          "height": 62,
+          "stretch": 1.12
+        },
+        {
+          "mark": "team_logo_fill",
+          "colour": "white",
+          "center": [
+            682,
+            64
+          ],
+          "height": 62,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "outline_mark": "team_logo_outline",
+      "outline": "white",
+      "fill_mark": "team_logo_fill",
+      "fill": "helmet_blue",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "field_blue",
+            "items": [
+              {
+                "mark": "wordmark",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "width": 98
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "GO BIG\nBLUE",
+                "colour": "helmet_blue",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 17
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "banner_red",
+            "items": [
+              {
+                "text": "DEFENSE !!\nDEFENSE !!",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "team_logo_fill",
+                "colour": "helmet_blue",
+                "center": [
+                  192,
+                  31
+                ],
+                "width": 66
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "ESPN\nin NEW YORK",
+                "colour": "helmet_blue",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#6 DART\n#1 NABERS",
+                "colour": "helmet_blue",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "3-4",
+    "note": "nflverse roster_2026 week 3: 53 active. Practice squad (18) and reserve (8) lists need a reserve writer (gap).",
+    "head_coach": "John Harbaugh",
+    "depth_since": "2026-09-09",
+    "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09 (the 2026-09-23 snapshot lists Winston first after week 2; the season lineup has Dart)"
+  },
+  "part_intents": {
+    "home": {
+      "torso": "dark royal blue jersey body, small white ny under the collar, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+      "sleeve": "plain dark royal blue",
+      "pants": "white with a thin blue-gray-red-gray-blue side stripe, blue maker mark",
+      "helmet": "metallic dark blue shell, white ny, red center stripe, white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain white numbers",
+      "digit_arm": "plain white numbers",
+      "digit_helmet": "plain white numbers",
+      "nameplate": "white letters",
+      "socks00": "solid dark royal blue",
+      "splayer": "far-away player atlas: white pants, blue torso, blue helmet, blue socks, skin and white glove patches",
+      "team-select_unif": "menu render: blue jersey with a white number, white pants with blue and red stripe, blue helmet, dark shading",
+      "team-select_helm": "menu render: dark blue helmet with white ny, grey facemask, a dark bar and yellow UI strip below"
+    },
+    "away": {
+      "torso": "white jersey body, small red ny under the collar, small NFL shield at the collar, blue maker marks on the shoulders; the light grey patch is the neck opening",
+      "sleeve": "white with red Northwestern stripes",
+      "pants": "white with a red-white-red-white-red side stripe, blue maker mark",
+      "helmet": "metallic dark blue shell, white ny, red center stripe, white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain red numbers",
+      "digit_arm": "plain red numbers",
+      "digit_helmet": "plain white numbers",
+      "nameplate": "red letters",
+      "socks00": "solid red",
+      "splayer": "far-away player atlas: white pants with red stripes, white torso, blue helmet, red socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with a red number, white pants with red stripe, blue helmet, grey and dark shading",
+      "team-select_helm": "menu render: dark blue helmet with white ny, grey facemask, a dark bar and yellow UI strip below"
+    },
+    "venue": {
+      "endzone": "royal blue painted end zone with white GIANTS wordmark and white ny logos",
+      "center_logo": "blue ny logo with a white outline",
+      "banner": "cloth fan banners: blue with white GIANTS, white with blue text, red with white text, white with blue ny"
+    }
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Deonte Banks": 4,
+      "Jevon Holland": 3,
+      "Colton Hood": 3,
+      "Greg Newsome": 3,
+      "Andru Phillips": 3,
+      "Ar'Darius Washington": 3,
+      "Jason Pinnock": 3,
+      "Tyler Nubin": 3,
+      "Elijah Campbell": 3,
+      "Nic Jones": 3,
+      "Nikko Reed": 3,
+      "Chauncey Golston": 4,
+      "Darius Alexander": 4,
+      "Shelby Harris": 4,
+      "Josh Tupou": 1,
+      "Bobby Jamison-Travis": 4,
+      "DJ Reader": 4,
+      "Basil Okoye": 5,
+      "Dominic Zvada": 0,
+      "Brian Burns": 3,
+      "Abdul Carter": 3,
+      "Kayvon Thibodeaux": 3,
+      "Micah McFadden": 0,
+      "Zaire Barnes": 3,
+      "Tremaine Edmunds": 3,
+      "Jack Kelly": 0,
+      "Arvell Reese": 3,
+      "Ben Mann": 0,
+      "Bryan Hudson": 0,
+      "John Michael Schmitz": 0,
+      "Aaron Stinnie": 2,
+      "Francis Mauigoa": 2,
+      "Marcus Mbow": 2,
+      "Jermaine Eluemunor": 4,
+      "J.C. Davis": 4,
+      "Jon Runyan": 0,
+      "Andrew Thomas": 4,
+      "Jordan Stout": 0,
+      "Jaxson Dart": 0,
+      "Jameis Winston": 3,
+      "Najee Harris": 3,
+      "Devin Singletary": 3,
+      "Tyrone Tracy": 3,
+      "Cam Skattebo": 0,
+      "Patrick Ricard": 0,
+      "Isaiah Likely": 3,
+      "Theo Johnson": 1,
+      "Chris Manhertz": 3,
+      "Thomas Fidone": 0,
+      "Malik Nabers": 4,
+      "Odell Beckham": 3,
+      "Darnell Mooney": 4,
+      "Malachi Fields": 3
+    },
+    "dreads": [
+      "Tremaine Edmunds",
+      "Arvell Reese",
+      "Najee Harris",
+      "Malik Nabers"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), assigned by eye from the official 2026 headshots (INFERRED); the automatic cheek estimate is kept in faces.json as skin_lab for reference. Dreads by eye from the headshots. Lab check 2026-09-23: Nabers wears twists (dreads flag); Dart's hair set by eye (the automatic sample read his shadowed curls as near black).",
+    "hair_by_eye": {
+      "Jaxson Dart": "#8A6848"
+    }
+  }
+}

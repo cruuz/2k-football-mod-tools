@@ -1,0 +1,506 @@
+{
+  "overrides": 100,
+  "missing": 0,
+  "fields": {
+    "name": {
+      "binding": "self.name_field.text().strip()",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "author": {
+      "binding": "self.author_field.text().strip()",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "notes": {
+      "binding": "(plan.notes + '\\nlegacy_accel_ramp_disabled_by_momentum_profile=true').strip()",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "scorebug_runtime": {
+      "binding": "Sprite scorebug (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "scorebug_watermark": {
+      "binding": "self.scorebug_watermark_combo.currentData()",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_color": {
+      "binding": "Modern colour and lighting (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_color_settings": {
+      "binding": "self.colour_lighting.settings()",
+      "value_kind": "dict",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_arrowhead": {
+      "binding": "Modern Arrowhead (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "weather_haze": {
+      "binding": "Existing dry-weather haze response (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "custom_intro": {
+      "binding": "Custom intro video",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "my_career": {
+      "binding": "MyCareer: draft and upgrades",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "my_career_setup": {
+      "binding": "self.my_career_setup_field.text().strip() or None if plan.my_career else None",
+      "value_kind": "NoneType",
+      "scope": "unused optional input"
+    },
+    "accelerated_clock": {
+      "binding": "Accelerated clock (Madden style)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "accelerated_clock_minimum_seconds": {
+      "binding": "int(self.accelerated_clock_minimum.currentData() or 20)",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "coin_defer": {
+      "binding": "Coin toss: CPU defer (modern, experimental; CPU winners only)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "decided_clock": {
+      "binding": "Run out the clock when the game is decided (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "decided_clock_margin": {
+      "binding": "int(self.decided_clock_margin.currentData())",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "decided_clock_seconds": {
+      "binding": "int(self.decided_clock_seconds.currentData())",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "defensive_try": {
+      "binding": "Defensive two-point returns (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "weekly_prep": {
+      "binding": "Fix safety drills (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "weekly_prep_cpu": {
+      "binding": "CPU teams prepare too",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "weekly_prep_remember": {
+      "binding": "Remember my weekly prep",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "practice_squad_screen": {
+      "binding": "Practice Squad screen (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "seven_on_seven": {
+      "binding": "7-on-7 practice (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "all_stadiums": {
+      "binding": "All 82 Create a Team stadiums (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "team_names_2026": {
+      "binding": "2026 team names and colours (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "elbow_options": {
+      "binding": "Edit Player offers every elbow pad",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "the1wam_lineman_rating": {
+      "binding": "the1wam lineman rating adjustment",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "accel_ramp": {
+      "binding": "Legacy acceleration ramp",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "momentum": {
+      "binding": "Player momentum (experimental)",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "momentum_contact": {
+      "binding": "Running start in contact (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "momentum_collisions": {
+      "binding": "Weight and speed in contact (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "momentum_collision_level": {
+      "binding": "int(self.momentum_collision_level.currentData() or 50) if plan.momentum_collisions else 0",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "coverage_slider": {
+      "binding": "Coverage slider response (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "scramble_tuning": {
+      "binding": "Slow-QB acceleration (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "cpu_scrambles": {
+      "binding": "str(self.cpu_scrambles_level.currentData())",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "cpu_money_downs": {
+      "binding": "CPU fourth downs and first downs (experimental)",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "zone_drop_cap": {
+      "binding": "Initial deep-zone corner drop (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "deep_zone_facing": {
+      "binding": "Deep-zone QB facing (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "deep_zone_bail": {
+      "binding": "Press corner bail (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "qb_spy": {
+      "binding": "QB spy for zone, man and rush (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "read_option_runtime": {
+      "binding": "Read option mesh controls (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "screen_hooks": {
+      "binding": "Screen pass timing hooks (second experiment)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "playbook_pair": {
+      "binding": "Separate offensive and defensive playbooks (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "chop_block_toggle": {
+      "binding": "Repair Chop Block toggle (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "abilities": {
+      "binding": "Player abilities rules v2 (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "abilities_off_week": {
+      "binding": "self.abilities_week.currentData() if self.abilities_check.isChecked() else None",
+      "value_kind": "NoneType",
+      "scope": "unused optional input"
+    },
+    "abilities_lock_right_stick": {
+      "binding": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "abilities_lock_special_moves": {
+      "binding": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "abilities_lock_speedster": {
+      "binding": "the rules v2 lock checkbox under the Player abilities option (abilities_lock_checks)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "playbook_packs": {
+      "binding": "tuple(self.playbook_packs)",
+      "value_kind": "list",
+      "scope": "Build control or paired sub-control"
+    },
+    "guardian_overlay": {
+      "binding": "Guardian caps (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "guardian_everyone_practice": {
+      "binding": "self.guardian_everyone_practice_check.isChecked()",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "guardian_players": {
+      "binding": "self._guardian_players if plan.guardian_overlay else None",
+      "value_kind": "NoneType",
+      "scope": "unused optional input"
+    },
+    "guardian_cap": {
+      "binding": "Guardian caps on helmet C (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "music_policy": {
+      "binding": "Use jukebox songs in menus",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "music_unlock": {
+      "binding": "Make every music collection available",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "music_userlist": {
+      "binding": "Use jukebox songs instead of user playlists",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "music_shuffle": {
+      "binding": "Shuffle songs in menus, Crib and games",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "music_shuffle_selection": {
+      "binding": "self.music_build_settings()['music_shuffle_selection'] if self.music_shuffle_check.isChecked() else None",
+      "value_kind": "NoneType",
+      "scope": "unused optional input"
+    },
+    "roster_edits": {
+      "binding": "Include exported \u2605 Rosters edits",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "player_tags": {
+      "binding": "list(self.star_players)",
+      "value_kind": "list",
+      "scope": "Build control or paired sub-control"
+    },
+    "crib_reclaim": {
+      "binding": "Crib movie cut (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "reserves_16": {
+      "binding": "16 reserves (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "created_teams_extra": {
+      "binding": "Two extra created teams (experimental)",
+      "value_kind": "int",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn_marks_2026": {
+      "binding": "ESPN presentation marks (2026)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn_wipes_boards_2026": {
+      "binding": "ESPN 2026 wipes and boards",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn25_rosters": {
+      "binding": "Historic moments: real rosters",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "historic_teams_quick_game": {
+      "binding": "Historic teams in Quick Game",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_metlife": {
+      "binding": "Modern MetLife Stadium (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_venues_2026": {
+      "binding": "2026 field and wall art in every home stadium (experimental)",
+      "value_kind": "str",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_metlife_model": {
+      "binding": "Modern MetLife model (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "kickoff_return_blocking": {
+      "binding": "Return blockers claim distinct men after the catch (test)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_sofi": {
+      "binding": "SoFi Stadium for the Rams and Chargers (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "number_kerning": {
+      "binding": "Jersey numbers: kern the 1 in pairs (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "kick_meter_2026": {
+      "binding": "Kick meter (2026 ESPN style)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_highmark": {
+      "binding": "Highmark Stadium for the Bills (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_surfaces": {
+      "binding": "Modern playing surfaces (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_helmets": {
+      "binding": "Modern helmets and facemasks",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "franchise_economy": {
+      "binding": "2026 franchise economy (experimental, real-dollar display)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_att": {
+      "binding": "AT&&T Stadium for the Cowboys (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_levis": {
+      "binding": "Levi's Stadium for the 49ers (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn25_more_moments": {
+      "binding": "25th Anniversary: 25 more moments",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn25_named_previews": {
+      "binding": "Anniversary: named previews and historic venues",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "historic_stock_books": {
+      "binding": "Stock playbooks for historic teams",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "espn25_era_rules": {
+      "binding": "Anniversary rules by season",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_allegiant": {
+      "binding": "Allegiant Stadium for the Raiders (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_mercedes_benz": {
+      "binding": "Mercedes-Benz Stadium for the Falcons (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_usbank": {
+      "binding": "U.S. Bank Stadium for the Vikings (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_lucas_oil": {
+      "binding": "Lucas Oil Stadium for the Colts (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_state_farm": {
+      "binding": "State Farm Stadium for the Cardinals (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_practice_field": {
+      "binding": "Modern practice facility (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_practice_field_team_logo": {
+      "binding": "Practice field: team logo at midfield (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_hard_rock": {
+      "binding": "Hard Rock Stadium for the Dolphins (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_gillette": {
+      "binding": "Gillette Stadium for the Patriots (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_lambeau": {
+      "binding": "Lambeau Field for the Packers (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_everbank": {
+      "binding": "EverBank Stadium for the Jaguars (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_everbank_construction": {
+      "binding": "EverBank: 2026 construction",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "historic_rosters_2026": {
+      "binding": "Historic season rosters (2026)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    },
+    "modern_board_kit": {
+      "binding": "Modern stadium boards (experimental)",
+      "value_kind": "bool",
+      "scope": "Build control or paired sub-control"
+    }
+  }
+}

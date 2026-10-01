@@ -295,8 +295,8 @@ def compiler_pins(build):
     static = scene.layout.refit(build.spans["score_bug"], scene.serialize(exact.mesh(build.retail_scene)))[0]
     runtime = scene.stage_binding_scene(build.spans["score_bug"], runtime=True)[0]
     texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
-    # The runtime collection carries the 2026 atlas; the static pin keeps the v3 atlas.
-    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas())[0]
+    # Legacy diagnostic packs keep their pinned atlas; SB3 live rows belong to the default static bar.
+    runtime_texture = scene.encode_atlas(build.spans["score_buga"], exact.atlas(live_timeouts=False))[0]
     hud = bytearray(build.view[art.HUD_START:art.HUD_START + art.HUD_SIZE])
     for name, data in (("score_bug", runtime), ("score_buga", runtime_texture)):
         off = art.RESOURCES[name]["pack_offset"] - art.HUD_START

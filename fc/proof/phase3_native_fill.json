@@ -1,0 +1,256 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "scope": "synthetic native CPU fill boundaries",
+  "xbe_sha256": "05341edb6293eb2964e36c2d7d979ab51a5b0a998ee1f79aee42bef53b166944",
+  "cases": [
+    {
+      "case": "season_53",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "physical_65",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "invalid_metadata",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "null_team",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "economy_54",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 81600,
+      "payroll_before": 71600,
+      "payroll_after": 71600,
+      "active_before": 54,
+      "active_after": 54,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "no_cap_room",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 70823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "zero_budget",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1
+      },
+      "minimum": 222,
+      "budget": 0,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "below_minimum",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1
+      },
+      "minimum": 222,
+      "budget": 221,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "exact_minimum_budget",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1
+      },
+      "minimum": 222,
+      "budget": 222,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "minimum_cap_boundary",
+      "result": 0,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 71055,
+      "payroll_before": 70823,
+      "payroll_after": 70823,
+      "active_before": 53,
+      "active_after": 53,
+      "rejection_arena_unchanged": true,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "minimum_cap_allowed",
+      "result": 1,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1,
+        "remove_fa": 1,
+        "contract": 1,
+        "append": 1,
+        "transaction": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 71056,
+      "payroll_before": 70823,
+      "payroll_after": 71046,
+      "active_before": 53,
+      "active_after": 54,
+      "rejection_arena_unchanged": false,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "minimum_budget_allowed",
+      "result": 1,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1,
+        "remove_fa": 1,
+        "contract": 1,
+        "append": 1,
+        "transaction": 1
+      },
+      "minimum": 222,
+      "budget": 223,
+      "cap": 80823,
+      "payroll_before": 70823,
+      "payroll_after": 71046,
+      "active_before": 53,
+      "active_after": 54,
+      "rejection_arena_unchanged": false,
+      "abi_preserved": true,
+      "leaves": []
+    },
+    {
+      "case": "season_52_with_reserve",
+      "result": 1,
+      "visits": {
+        "squad_guard": 1,
+        "economy_gate": 1,
+        "retail_body": 1,
+        "remove_fa": 1,
+        "contract": 1,
+        "append": 1,
+        "transaction": 1
+      },
+      "minimum": 222,
+      "budget": 65535,
+      "cap": 79169,
+      "payroll_before": 69169,
+      "payroll_after": 69392,
+      "active_before": 52,
+      "active_after": 53,
+      "rejection_arena_unchanged": false,
+      "abi_preserved": true,
+      "leaves": []
+    }
+  ],
+  "runtime_witnessed": false
+}

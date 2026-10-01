@@ -38,6 +38,8 @@ class FreezeTests(unittest.TestCase):
         cls.stream = PACK.open('rb')
         cls.addClassCleanup(cls.stream.close)
         cls.source = art.PackView.from_fd(cls.stream.fileno(), 0, PACK.stat().st_size)
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACK.parents[1])
         cls.fonts = read_fonts(PACK)
         cls.probes = {probe: art.compile_runtime_collection(cls.source, probe=probe)
                       for probe in ('hooks', 'neutral', 'full')}

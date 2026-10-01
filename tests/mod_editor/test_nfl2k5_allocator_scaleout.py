@@ -25,9 +25,11 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 12 * 1024, 4096),  # S5 occupies another 4 KiB RX after the preserved owner union
-         # no writable request: MyCareer M3's fixed state page takes the last RW page of the beta-63 union
-         ("synthetic_scaleout", "read_only", 1024, 16))
+# e2: the complete live union leaves 192 RX and 648 RO bytes. Fill the RX
+# reservation exactly and leave enough RO for a sealed synthetic constant.
+# Page-sized alignment remains covered independently by the capacity tests.
+LARGE = (("synthetic_scaleout", "code", 192, 16),
+         ("synthetic_scaleout", "read_only", 512, 16))
 
 
 class PlannerTests(unittest.TestCase):
@@ -37,12 +39,12 @@ class PlannerTests(unittest.TestCase):
         stable = lambda a: a['owner'] in space.LEGACY_OWNERS and not (a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
         self.assertEqual([a for a in report['allocations'] if stable(a)], [a for a in before if stable(a)])
         sprite = next(a for a in report['allocations'] if a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
-        self.assertEqual(sprite['size'], 4096)
+        self.assertEqual(sprite['size'], 5376)  # beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
         self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 1792])  # beta 69: J5 adds 140 RO bytes plus alignment; the synthetic RX still fills the code pages
+                         [0, 0, 64])  # the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -54,8 +56,13 @@ class PlannerTests(unittest.TestCase):
         for request in REQUESTS:
             self.assertIn(list(request), requests)
         report = space.plan(requests)
+        self.assertEqual({tuple(row) for row in requests}, set(space.dormant_union()))
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [11584, 0, 2824])  # beta 69: J5 adds 896 RX, 4 RW and 140 RO bytes; MyCareer remains 20,480 RX
+                         [192, 0, 584])  # b76-pf P1: the team-logo table, 64 RO
+        # e2 adds 3,584 RX, 16 RW and 2,176 RO bytes. The old fixture also
+        # reserved the nonexistent nfl2k5_guardian_cap_overlay (2,048 RX,
+        # 336 RW), in addition to the real nfl2k5_guardian_overlay owner.
+        # Match the live union exactly so a stale name cannot mask capacity.
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
@@ -124,6 +131,25 @@ class SyntheticTests(unittest.TestCase):
             pins.enter_context(patch.object(module, name, value))
         cls.grown, cls.receipt = space.apply(cls.retail, REQUESTS + LARGE)
 
+    def test_scaleout_keeps_the_boot_logo_inside_the_header_page(self):
+        """Static proof for the boot bugcheck fix on the scale-out v3 layout."""
+        self.assertEqual(space.status(self.grown), "applied")
+        headers = struct.unpack_from("<I", self.grown, 0x108)[0]
+        va, size = struct.unpack_from("<II", self.grown, 0x170)
+        self.assertEqual((va, size), space.HEADER_LOGO)
+        self.assertLessEqual(size, 0x1000)
+        self.assertLessEqual(va + size, 0x10000 + headers)
+        # the blank logo sits in the free run after the relocated debug strings, before the library copy
+        self.assertGreaterEqual(va - 0x10000, space.DEBUG_COPY + space.DEBUG_END - space.DEBUG_START)
+        self.assertLessEqual(va - 0x10000 + size, space.LIB_COPY)
+        self.assertEqual(space.logo.decode_pixels(self.grown[va - 0x10000:va - 0x10000 + size]), (1700, 0))
+        owned = next(a for a in space.layout(self.grown)["allocations"] if a["owner"] == space.LOGO_REQUEST[0])
+        self.assertEqual(owned["va"], space.CODE_VA)
+        self.assertEqual(self.grown[owned["raw"]:owned["raw"] + owned["size"]], space.logo.RETAIL_LOGO)
+        bad = bytearray(self.grown)
+        bad[va - 0x10000 + 1] ^= 1
+        self.assertEqual(space.status(bytes(bad)), "foreign")
+
     def test_legacy_directory_decodes_its_original_request_packing(self):
         # Such a request now selects v3 for a fresh build, but an existing v1
         # image must still decode and replay at its original VAs.
@@ -171,10 +197,10 @@ class SyntheticTests(unittest.TestCase):
     def test_sealed_code_ro_replay_and_changed_request_refusal(self):
         code = b'\x90' * LARGE[0][2]
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', code)
-        grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * 1024)
+        grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * LARGE[1][2])
         self.assertEqual(space.status(grown), 'applied')
         self.assertEqual(space.install_code(grown, 'synthetic_scaleout', code)[0], grown)
-        self.assertEqual(space.install_read_only(grown, 'synthetic_scaleout', b'R' * 1024)[0], grown)
+        self.assertEqual(space.install_read_only(grown, 'synthetic_scaleout', b'R' * LARGE[1][2])[0], grown)
         self.assertEqual(space.apply(grown, reversed(REQUESTS + LARGE))[0], grown)
         self.assertEqual(space.apply(grown)[0], grown)
         with self.assertRaisesRegex(ValueError, 'differ'):
@@ -183,7 +209,7 @@ class SyntheticTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'rebuild'):
             space.apply(legacy, LEGACY_REQUESTS, scaleout=True)
         with self.assertRaisesRegex(ValueError, 'foreign'):
-            space.install_read_only(grown, 'synthetic_scaleout', b'Z' * 1024)
+            space.install_read_only(grown, 'synthetic_scaleout', b'Z' * LARGE[1][2])
         with self.assertRaisesRegex(ValueError, 'exact'):
             space.install_code(grown, 'synthetic_scaleout', code[:-1])
 
@@ -262,12 +288,12 @@ class SyntheticTests(unittest.TestCase):
         # writable request of its own; the emulated write lands in the M3 state page instead (emulated memory only).
         target = next(a['va'] for a in layout['allocations'] if a['owner'] == space.MYCAREER_M3_STATE_OWNER and a['kind'] == 'data')
         owner = next(a for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'code')
-        # The complete union occupies page 3 before this page-aligned owner.
-        # Negative offsets used to leave INT3 at the assumed entry point.
-        owned_pages = [p for p in pages if owner['va'] <= p['va']
-                       and p['va'] + 4096 <= owner['va'] + owner['size']]
-        self.assertGreaterEqual(len(owned_pages), 2)
-        entries = [(owned_pages[0], 0x33333333), (owned_pages[-1], 0xAAAAAAAA)]
+        # Execute the first and last eleven bytes of the remaining RX reservation.
+        # Derive both addresses from the owner; neither assumes page alignment.
+        owned_pages = [p for p in pages if p['va'] <= owner['va'] < p['va'] + 4096
+                       or owner['va'] <= p['va'] < owner['va'] + owner['size']]
+        self.assertGreaterEqual(len(owned_pages), 1)
+        entries = [({'va': owner['va']}, 0x33333333), ({'va': owner['va'] + owner['size'] - 11}, 0xAAAAAAAA)]
         self.assertGreaterEqual(owned_pages[0]['va'], space.SCALE_RUNS[0][1])
         self.assertEqual(owned_pages[-1]['va'] - owned_pages[0]['va'], (len(owned_pages) - 1) * 4096)
         code = bytearray(b'\xcc' * owner['size'])

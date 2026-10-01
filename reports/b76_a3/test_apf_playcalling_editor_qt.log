@@ -1,0 +1,18 @@
+test_a_failing_contract_call_shows_a_message_instead_of_crashing (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_a_failing_contract_call_shows_a_message_instead_of_crashing) ... ok
+test_every_book_lever_stages_and_refreshes (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_every_book_lever_stages_and_refreshes) ... ok
+test_experiments_keep_p2_actions_and_every_control_has_explanation (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_experiments_keep_p2_actions_and_every_control_has_explanation) ... ok
+test_master_off_main_path_all_roles_and_one_click_52 (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_master_off_main_path_all_roles_and_one_click_52) ... ok
+test_queue_own_book_table_then_confirm_and_undo (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_queue_own_book_table_then_confirm_and_undo) ... ok
+test_rating_wording_matches_the_measured_direction (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_rating_wording_matches_the_measured_direction) ... ok
+test_shell_rejects_nested_blocking_tasks_without_locking_page (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_shell_rejects_nested_blocking_tasks_without_locking_page) ... ok
+test_stale_worker_result_cannot_replace_new_selection (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_stale_worker_result_cannot_replace_new_selection) ... ok
+test_team_change_keeps_book_and_preview_run_share (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_team_change_keeps_book_and_preview_run_share) ... ok
+test_team_first_donors_shared_book_and_distributions (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_team_first_donors_shared_book_and_distributions) ... ok
+test_user_books_drive_preview_and_edit_target_on_both_sides (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_user_books_drive_preview_and_edit_target_on_both_sides) ... ok
+test_warning_and_refusal_show_coverage_and_retired_names (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_warning_and_refusal_show_coverage_and_retired_names) ... ok
+test_worker_replay (tests.mod_editor.test_apf_playcalling_editor_qt.QtTests.test_worker_replay) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 5.061s
+
+OK

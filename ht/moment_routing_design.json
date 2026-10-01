@@ -1,0 +1,981 @@
+{
+  "label": "DESIGN",
+  "implemented": false,
+  "season_aliases": [
+    {
+      "descriptor": 0,
+      "retail": "h-25-1981-49ers-3.iff",
+      "season_resource": "HTS-h-25-1981-49ers-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 1,
+      "retail": "h-25-1989-49ers-3.iff",
+      "season_resource": "HTS-h-25-1989-49ers-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 3,
+      "retail": "h-25-2003-49ers-0.iff",
+      "season_resource": "HTS-h-25-2003-49ers-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 7,
+      "retail": "h-06-1988-bengals-1.iff",
+      "season_resource": "HTS-h-06-1988-bengals-1.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 9,
+      "retail": "h-03-1990-bills-2.iff",
+      "season_resource": "HTS-h-03-1990-bills-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 11,
+      "retail": "h-08-1986-broncos-1.iff",
+      "season_resource": "HTS-h-08-1986-broncos-1.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 12,
+      "retail": "h-08-1998-broncos-0.iff",
+      "season_resource": "HTS-h-08-1998-broncos-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 14,
+      "retail": "h-30-1986-browns-1.iff",
+      "season_resource": "HTS-h-30-1986-browns-1.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 15,
+      "retail": "h-27-1979-buccaneers-3.iff",
+      "season_resource": "HTS-h-27-1979-buccaneers-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 18,
+      "retail": "h-00-1975-cardinals-3.iff",
+      "season_resource": "HTS-h-00-1975-cardinals-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 20,
+      "retail": "h-24-1980-chargers-4.iff",
+      "season_resource": "HTS-h-24-1980-chargers-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 22,
+      "retail": "h-13-1969-chiefs-4.iff",
+      "season_resource": "HTS-h-13-1969-chiefs-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 23,
+      "retail": "h-13-1993-chiefs-2.iff",
+      "season_resource": "HTS-h-13-1993-chiefs-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 24,
+      "retail": "h-11-1970-colts-5.iff",
+      "season_resource": "HTS-h-11-1970-colts-5.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 25,
+      "retail": "h-07-1971-cowboys-4.iff",
+      "season_resource": "HTS-h-07-1971-cowboys-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 26,
+      "retail": "h-07-1977-cowboys-3.iff",
+      "season_resource": "HTS-h-07-1977-cowboys-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 28,
+      "retail": "h-14-1972-dolphins-4.iff",
+      "season_resource": "HTS-h-14-1972-dolphins-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 29,
+      "retail": "h-14-1984-dolphins-3.iff",
+      "season_resource": "HTS-h-14-1984-dolphins-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 32,
+      "retail": "h-21-2004-eagles-0.iff",
+      "season_resource": "HTS-h-21-2004-eagles-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 37,
+      "retail": "h-18-1990-giants-2.iff",
+      "season_resource": "HTS-h-18-1990-giants-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 38,
+      "retail": "h-18-2003-giants-0.iff",
+      "season_resource": "HTS-h-18-2003-giants-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 40,
+      "retail": "h-19-1968-jets-4.iff",
+      "season_resource": "HTS-h-19-1968-jets-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 45,
+      "retail": "h-28-1979-oilers-2.iff",
+      "season_resource": "HTS-h-28-1979-oilers-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 46,
+      "retail": "h-10-1966-packers-3.iff",
+      "season_resource": "HTS-h-10-1966-packers-3.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 47,
+      "retail": "h-10-1996-packers-2.iff",
+      "season_resource": "HTS-h-10-1996-packers-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 48,
+      "retail": "h-10-2004-packers-0.iff",
+      "season_resource": "HTS-h-10-2004-packers-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 52,
+      "retail": "h-16-2001-patriots-0.iff",
+      "season_resource": "HTS-h-16-2001-patriots-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 54,
+      "retail": "h-20-1967-raiders-1.iff",
+      "season_resource": "HTS-h-20-1967-raiders-1.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 55,
+      "retail": "h-20-1976-raiders-0.iff",
+      "season_resource": "HTS-h-20-1976-raiders-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 56,
+      "retail": "h-20-1983-raiders-0.iff",
+      "season_resource": "HTS-h-20-1983-raiders-0.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 58,
+      "retail": "h-23-1999-rams-2.iff",
+      "season_resource": "HTS-h-23-1999-rams-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 60,
+      "retail": "h-29-1982-redskins-2.iff",
+      "season_resource": "HTS-h-29-1982-redskins-2.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 63,
+      "retail": "h-17-1991-saints-4.iff",
+      "season_resource": "HTS-h-17-1991-saints-4.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 67,
+      "retail": "h-22-1975-steelers-1.iff",
+      "season_resource": "HTS-h-22-1975-steelers-1.iff",
+      "preserve_moment_resource": true
+    },
+    {
+      "descriptor": 71,
+      "retail": "h-28-1999-titans-0.iff",
+      "season_resource": "HTS-h-28-1999-titans-0.iff",
+      "preserve_moment_resource": true
+    }
+  ],
+  "conflicts": [
+    {
+      "moment": 3,
+      "side": "away",
+      "game_date": "1972-12-23",
+      "filename": "h-20-1967-raiders-1.iff",
+      "chosen_moment": 1,
+      "source": "https://www.pro-football-reference.com/boxscores/197212230pit.htm",
+      "private_filename": "HTG-03-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 1,
+        "shared_roster_season": 1968,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 4,
+      "side": "away",
+      "game_date": "1974-12-21",
+      "filename": "h-14-1972-dolphins-4.iff",
+      "chosen_moment": 2,
+      "source": "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+      "private_filename": "HTG-04-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 2,
+        "shared_roster_season": 1971,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 5,
+      "side": "away",
+      "game_date": "1979-12-16",
+      "filename": "h-29-1982-redskins-2.iff",
+      "chosen_moment": 9,
+      "source": "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+      "private_filename": "HTG-05-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 9,
+        "shared_roster_season": 1983,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 6,
+      "side": "home",
+      "game_date": "1980-12-07",
+      "filename": "h-25-1981-49ers-3.iff",
+      "chosen_moment": 8,
+      "source": "https://www.pro-football-reference.com/boxscores/198012070sfo.htm",
+      "private_filename": "HTG-06-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 8,
+        "shared_roster_season": 1981,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 8,
+      "side": "away",
+      "game_date": "1982-01-10",
+      "filename": "h-07-1977-cowboys-3.iff",
+      "chosen_moment": 5,
+      "source": "https://www.pro-football-reference.com/boxscores/198201100sfo.htm",
+      "private_filename": "HTG-08-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 5,
+        "shared_roster_season": 1979,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 11,
+      "side": "away",
+      "game_date": "1987-09-20",
+      "filename": "h-25-1989-49ers-3.iff",
+      "chosen_moment": 13,
+      "source": "https://www.pro-football-reference.com/boxscores/198709200cin.htm",
+      "private_filename": "HTG-11-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 13,
+        "shared_roster_season": 1988,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 11,
+      "side": "home",
+      "game_date": "1987-09-20",
+      "filename": "h-06-1988-bengals-1.iff",
+      "chosen_moment": 13,
+      "source": "https://www.pro-football-reference.com/boxscores/198709200cin.htm",
+      "private_filename": "HTG-11-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 13,
+        "shared_roster_season": 1988,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 15,
+      "side": "home",
+      "game_date": "1992-01-04",
+      "filename": "h-08-1986-broncos-1.iff",
+      "chosen_moment": 10,
+      "source": "https://www.pro-football-reference.com/boxscores/199201040den.htm",
+      "private_filename": "HTG-15-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 10,
+        "shared_roster_season": 1986,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 16,
+      "side": "home",
+      "game_date": "1992-10-04",
+      "filename": "h-08-1986-broncos-1.iff",
+      "chosen_moment": 10,
+      "source": "https://www.pro-football-reference.com/boxscores/199210040den.htm",
+      "private_filename": "HTG-16-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 10,
+        "shared_roster_season": 1986,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 17,
+      "side": "away",
+      "game_date": "1993-01-03",
+      "filename": "h-28-1979-oilers-2.iff",
+      "chosen_moment": 15,
+      "source": "https://www.pro-football-reference.com/boxscores/199301030buf.htm",
+      "private_filename": "HTG-17-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 15,
+        "shared_roster_season": 1991,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 17,
+      "side": "home",
+      "game_date": "1993-01-03",
+      "filename": "h-03-1990-bills-2.iff",
+      "chosen_moment": 14,
+      "source": "https://www.pro-football-reference.com/boxscores/199301030buf.htm",
+      "private_filename": "HTG-17-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 14,
+        "shared_roster_season": 1990,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 18,
+      "side": "away",
+      "game_date": "1994-10-17",
+      "filename": "h-08-1986-broncos-1.iff",
+      "chosen_moment": 10,
+      "source": "https://www.pro-football-reference.com/boxscores/199410170den.htm",
+      "private_filename": "HTG-18-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 10,
+        "shared_roster_season": 1986,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 18,
+      "side": "home",
+      "game_date": "1994-10-17",
+      "filename": "h-13-1993-chiefs-2.iff",
+      "chosen_moment": 16,
+      "source": "https://www.pro-football-reference.com/boxscores/199410170den.htm",
+      "private_filename": "HTG-18-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 16,
+        "shared_roster_season": 1992,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 19,
+      "side": "home",
+      "game_date": "1997-09-21",
+      "filename": "h-03-1990-bills-2.iff",
+      "chosen_moment": 14,
+      "source": "https://www.pro-football-reference.com/boxscores/199709210buf.htm",
+      "private_filename": "HTG-19-home.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 14,
+        "shared_roster_season": 1990,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    },
+    {
+      "moment": 22,
+      "side": "away",
+      "game_date": "2002-02-03",
+      "filename": "h-23-1999-rams-2.iff",
+      "chosen_moment": 21,
+      "source": "https://www.pro-football-reference.com/boxscores/200202030nwe.htm",
+      "private_filename": "HTG-22-away.iff",
+      "label": "DESIGN",
+      "action": "Private game-side ROST; route by moment index and side; keep art code, historic equipment class and E2R stock-book label independent.",
+      "phase2_compromise": {
+        "label": "PROVED OFFLINE",
+        "canonical_resource_unchanged": true,
+        "shared_owner_moment": 21,
+        "shared_roster_season": 1999,
+        "source": "data/nfl2k5_espn25_moment_rosters/manifest.json",
+        "source_sha256": "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84",
+        "limitation": "Shared roster represents the selected m2 owner, not this losing moment side."
+      }
+    }
+  ],
+  "rule": "H1 local selection uses HTS aliases for the 35 shared files; the other 40 canonical files may be authored for their descriptor season. Moment loader selects HTG only for the conflicting side. Do not reassign a moment to a season roster or overwrite the chosen shared roster. Do not add these rows to the more-moments MAX_TEAMS=50 table.",
+  "phase2": {
+    "label": "DESIGN",
+    "season_aliases": 75,
+    "archive_entry_cost": 76,
+    "policy": "All 75 local season selections use HTS aliases. Canonical m2 resources keep their owner and the 15 moment-to-moment compromises remain listed in conflicts. No HTG game-side writer is installed.",
+    "capacity": "75 aliases plus one filler use 912 directory bytes. E2 4451-entry layout projects to 4527 entries with the same 55296 first-payload boundary.",
+    "season_aliases_implemented": true,
+    "moment_aliases_implemented": false,
+    "routes": [
+      {
+        "descriptor": 0,
+        "retail": "h-25-1981-49ers-3.iff",
+        "season_resource": "HTS-h-25-1981-49ers-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 1,
+        "retail": "h-25-1989-49ers-3.iff",
+        "season_resource": "HTS-h-25-1989-49ers-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 2,
+        "retail": "h-25-1994-49ers-2.iff",
+        "season_resource": "HTS-h-25-1994-49ers-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 3,
+        "retail": "h-25-2003-49ers-0.iff",
+        "season_resource": "HTS-h-25-2003-49ers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 4,
+        "retail": "h-05-1963-bears-2.iff",
+        "season_resource": "HTS-h-05-1963-bears-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 5,
+        "retail": "h-05-1985-bears-1.iff",
+        "season_resource": "HTS-h-05-1985-bears-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 6,
+        "retail": "h-06-1981-bengals-1.iff",
+        "season_resource": "HTS-h-06-1981-bengals-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 7,
+        "retail": "h-06-1988-bengals-1.iff",
+        "season_resource": "HTS-h-06-1988-bengals-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 8,
+        "retail": "h-03-1964-bills-7.iff",
+        "season_resource": "HTS-h-03-1964-bills-7.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 9,
+        "retail": "h-03-1990-bills-2.iff",
+        "season_resource": "HTS-h-03-1990-bills-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 10,
+        "retail": "h-08-1977-broncos-2.iff",
+        "season_resource": "HTS-h-08-1977-broncos-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 11,
+        "retail": "h-08-1986-broncos-1.iff",
+        "season_resource": "HTS-h-08-1986-broncos-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 12,
+        "retail": "h-08-1998-broncos-0.iff",
+        "season_resource": "HTS-h-08-1998-broncos-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 13,
+        "retail": "h-30-1964-browns-2.iff",
+        "season_resource": "HTS-h-30-1964-browns-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 14,
+        "retail": "h-30-1986-browns-1.iff",
+        "season_resource": "HTS-h-30-1986-browns-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 15,
+        "retail": "h-27-1979-buccaneers-3.iff",
+        "season_resource": "HTS-h-27-1979-buccaneers-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 16,
+        "retail": "h-27-1999-buccaneers-0.iff",
+        "season_resource": "HTS-h-27-1999-buccaneers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 17,
+        "retail": "h-27-2002-buccaneers-0.iff",
+        "season_resource": "HTS-h-27-2002-buccaneers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 18,
+        "retail": "h-00-1975-cardinals-3.iff",
+        "season_resource": "HTS-h-00-1975-cardinals-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 19,
+        "retail": "h-24-1963-chargers-8.iff",
+        "season_resource": "HTS-h-24-1963-chargers-8.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 20,
+        "retail": "h-24-1980-chargers-4.iff",
+        "season_resource": "HTS-h-24-1980-chargers-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 21,
+        "retail": "h-24-1994-chargers-0.iff",
+        "season_resource": "HTS-h-24-1994-chargers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 22,
+        "retail": "h-13-1969-chiefs-4.iff",
+        "season_resource": "HTS-h-13-1969-chiefs-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 23,
+        "retail": "h-13-1993-chiefs-2.iff",
+        "season_resource": "HTS-h-13-1993-chiefs-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 24,
+        "retail": "h-11-1970-colts-5.iff",
+        "season_resource": "HTS-h-11-1970-colts-5.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 25,
+        "retail": "h-07-1971-cowboys-4.iff",
+        "season_resource": "HTS-h-07-1971-cowboys-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 26,
+        "retail": "h-07-1977-cowboys-3.iff",
+        "season_resource": "HTS-h-07-1977-cowboys-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 27,
+        "retail": "h-07-1992-cowboys-2.iff",
+        "season_resource": "HTS-h-07-1992-cowboys-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 28,
+        "retail": "h-14-1972-dolphins-4.iff",
+        "season_resource": "HTS-h-14-1972-dolphins-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 29,
+        "retail": "h-14-1984-dolphins-3.iff",
+        "season_resource": "HTS-h-14-1984-dolphins-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 30,
+        "retail": "h-21-1960-eagles-8.iff",
+        "season_resource": "HTS-h-21-1960-eagles-8.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 31,
+        "retail": "h-21-1980-eagles-5.iff",
+        "season_resource": "HTS-h-21-1980-eagles-5.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 32,
+        "retail": "h-21-2004-eagles-0.iff",
+        "season_resource": "HTS-h-21-2004-eagles-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 33,
+        "retail": "h-01-1980-falcons-6.iff",
+        "season_resource": "HTS-h-01-1980-falcons-6.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 34,
+        "retail": "h-01-1998-falcons-1.iff",
+        "season_resource": "HTS-h-01-1998-falcons-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 35,
+        "retail": "h-18-1956-giants-6.iff",
+        "season_resource": "HTS-h-18-1956-giants-6.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 36,
+        "retail": "h-18-1986-giants-2.iff",
+        "season_resource": "HTS-h-18-1986-giants-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 37,
+        "retail": "h-18-1990-giants-2.iff",
+        "season_resource": "HTS-h-18-1990-giants-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 38,
+        "retail": "h-18-2003-giants-0.iff",
+        "season_resource": "HTS-h-18-2003-giants-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 39,
+        "retail": "h-12-1999-jaguars-1.iff",
+        "season_resource": "HTS-h-12-1999-jaguars-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 40,
+        "retail": "h-19-1968-jets-4.iff",
+        "season_resource": "HTS-h-19-1968-jets-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 41,
+        "retail": "h-19-1998-jets-0.iff",
+        "season_resource": "HTS-h-19-1998-jets-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 42,
+        "retail": "h-09-1953-lions-6.iff",
+        "season_resource": "HTS-h-09-1953-lions-6.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 43,
+        "retail": "h-09-1991-lions-3.iff",
+        "season_resource": "HTS-h-09-1991-lions-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 44,
+        "retail": "h-28-1961-oilers-5.iff",
+        "season_resource": "HTS-h-28-1961-oilers-5.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 45,
+        "retail": "h-28-1979-oilers-2.iff",
+        "season_resource": "HTS-h-28-1979-oilers-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 46,
+        "retail": "h-10-1966-packers-3.iff",
+        "season_resource": "HTS-h-10-1966-packers-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 47,
+        "retail": "h-10-1996-packers-2.iff",
+        "season_resource": "HTS-h-10-1996-packers-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 48,
+        "retail": "h-10-2004-packers-0.iff",
+        "season_resource": "HTS-h-10-2004-packers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 49,
+        "retail": "h-04-1996-panthers-1.iff",
+        "season_resource": "HTS-h-04-1996-panthers-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 50,
+        "retail": "h-04-2003-panthers-0.iff",
+        "season_resource": "HTS-h-04-2003-panthers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 51,
+        "retail": "h-16-1985-patriots-5.iff",
+        "season_resource": "HTS-h-16-1985-patriots-5.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 52,
+        "retail": "h-16-2001-patriots-0.iff",
+        "season_resource": "HTS-h-16-2001-patriots-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 53,
+        "retail": "h-16-2003-patriots-0.iff",
+        "season_resource": "HTS-h-16-2003-patriots-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 54,
+        "retail": "h-20-1967-raiders-1.iff",
+        "season_resource": "HTS-h-20-1967-raiders-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 55,
+        "retail": "h-20-1976-raiders-0.iff",
+        "season_resource": "HTS-h-20-1976-raiders-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 56,
+        "retail": "h-20-1983-raiders-0.iff",
+        "season_resource": "HTS-h-20-1983-raiders-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 57,
+        "retail": "h-23-1979-rams-4.iff",
+        "season_resource": "HTS-h-23-1979-rams-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 58,
+        "retail": "h-23-1999-rams-2.iff",
+        "season_resource": "HTS-h-23-1999-rams-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 59,
+        "retail": "h-02-2000-ravens-0.iff",
+        "season_resource": "HTS-h-02-2000-ravens-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 60,
+        "retail": "h-29-1982-redskins-2.iff",
+        "season_resource": "HTS-h-29-1982-redskins-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 61,
+        "retail": "h-29-1987-redskins-2.iff",
+        "season_resource": "HTS-h-29-1987-redskins-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 62,
+        "retail": "h-29-1991-redskins-2.iff",
+        "season_resource": "HTS-h-29-1991-redskins-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 63,
+        "retail": "h-17-1991-saints-4.iff",
+        "season_resource": "HTS-h-17-1991-saints-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 64,
+        "retail": "h-17-2000-saints-2.iff",
+        "season_resource": "HTS-h-17-2000-saints-2.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 65,
+        "retail": "h-26-1984-seahawks-1.iff",
+        "season_resource": "HTS-h-26-1984-seahawks-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 66,
+        "retail": "h-26-1999-seahawks-1.iff",
+        "season_resource": "HTS-h-26-1999-seahawks-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 67,
+        "retail": "h-22-1975-steelers-1.iff",
+        "season_resource": "HTS-h-22-1975-steelers-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 68,
+        "retail": "h-22-1978-steelers-1.iff",
+        "season_resource": "HTS-h-22-1978-steelers-1.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 69,
+        "retail": "h-22-1995-steelers-0.iff",
+        "season_resource": "HTS-h-22-1995-steelers-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 70,
+        "retail": "h-13-1962-texans-5.iff",
+        "season_resource": "HTS-h-13-1962-texans-5.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 71,
+        "retail": "h-28-1999-titans-0.iff",
+        "season_resource": "HTS-h-28-1999-titans-0.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 72,
+        "retail": "h-15-1969-vikings-4.iff",
+        "season_resource": "HTS-h-15-1969-vikings-4.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 73,
+        "retail": "h-15-1973-vikings-3.iff",
+        "season_resource": "HTS-h-15-1973-vikings-3.iff",
+        "preserve_moment_resource": true
+      },
+      {
+        "descriptor": 74,
+        "retail": "h-15-1998-vikings-0.iff",
+        "season_resource": "HTS-h-15-1998-vikings-0.iff",
+        "preserve_moment_resource": true
+      }
+    ]
+  },
+  "phase1_scope": "The original combined HTS/HTG proposal above is retained as design history. Phase 2 installation status and actual routes are below."
+}

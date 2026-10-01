@@ -1,0 +1,1037 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "CLE",
+  "name": "Cleveland Browns",
+  "asset_code": "30",
+  "season": 2026,
+  "status": "Phase B job d2, 2026-09-23. SORT: redesigned (the 2015 number and letter font kept by the 2020 classic set; brighter orange; brown not red-brown; plain front with 1946 at the back collar; white facemask since 2024, already the retail white tint). Stripe layouts are the 2004 sequences recoloured (the same five-stripe sleeves, O-B-O pants stripe and striped socks).",
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "4-3",
+    "note": "nflverse roster_2026 week 3: 53 active. Base defense from the nflverse 2026 depth charts (pos_grp 'Base 4-3 D' in every snapshot since 2026-09-09).",
+    "head_coach": "Todd Monken",
+    "depth_since": "2026-09-09",
+    "head_coach_source": "https://www.clevelandbrowns.com/team/coaches-roster/todd-monken (Head Coach; 're-joined the Browns as head coach on Jan. 28, 2026'); confirmed 2026-09-23, matches nflverse games.csv (used only for the career record)"
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Austin Barber": 0,
+      "Derek Barnett": 3,
+      "Mekhi Blackmon": 4,
+      "Corey Bojorquez": 1,
+      "Isaiah Bond": 3,
+      "Denzel Boston": 2,
+      "Parker Brailsford": 1,
+      "Michael Burton": 0,
+      "Tyson Campbell": 3,
+      "Maliek Collins": 5,
+      "KC Concepcion": 2,
+      "Malachi Corley": 4,
+      "Grant Delpit": 3,
+      "Spencer Fano": 1,
+      "Mason Graham": 0,
+      "Taylen Green": 3,
+      "Myles Harden": 4,
+      "Tytus Howard": 4,
+      "Adin Huntington": 4,
+      "Noah Igbinoghene": 4,
+      "Justin Jefferson": 5,
+      "Elgton Jenkins": 3,
+      "Teven Jenkins": 1,
+      "Jerry Jeudy": 4,
+      "Zion Johnson": 4,
+      "Dawand Jones": 4,
+      "Ronnie Hickman": 3,
+      "Toriano Pride": 5,
+      "Michael Hall": 4,
+      "Harold Fannin": 3,
+      "Quinshon Judkins": 3,
+      "Easton Mascarenas": 1,
+      "Isaiah McGuire": 3,
+      "Jaleel McLaughlin": 3,
+      "Donovan McMillon": 2,
+      "Emmanuel McNeil-Warren": 3,
+      "Winston Reid": 4,
+      "Carsen Ryan": 0,
+      "Raheim Sanders": 4,
+      "Shedeur Sanders": 3,
+      "Carson Schwesinger": 0,
+      "Rex Sunahara": 1,
+      "Andre Szmyt": 0,
+      "Daniel Thomas": 4,
+      "Jared Verse": 4,
+      "Tylan Wallace": 3,
+      "Denzel Ward": 4,
+      "Deshaun Watson": 3,
+      "Blake Whiteheart": 0,
+      "Sam Williams": 4,
+      "Quincy Williams": 4,
+      "Luke Wypler": 0,
+      "Zak Zinter": 0
+    },
+    "dreads": [
+      "Mekhi Blackmon",
+      "Isaiah Bond",
+      "Grant Delpit",
+      "Taylen Green",
+      "Myles Harden",
+      "Tytus Howard",
+      "Justin Jefferson",
+      "Teven Jenkins",
+      "Ronnie Hickman",
+      "Quinshon Judkins",
+      "Isaiah McGuire",
+      "Jaleel McLaughlin",
+      "Emmanuel McNeil-Warren",
+      "Quincy Williams"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots on u1's Giants scale (INFERRED); the automatic cheek estimate stays in faces.json as skin_lab. Dreads and twists by eye."
+  },
+  "sources": {
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Cleveland_Browns_Uniforms_2025.png (CC BY-SA 4.0)",
+    "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_Cleveland_Browns&action=raw",
+    "games_2026": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CLE&year=2026 (week 1 at JAX: white over white; week 2 at TB: brown over white)",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (CLE, 2026 NFL Record and Fact Book p.62)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/CLE.svg",
+    "number_font": "NFL Browns 2015.ttf (fan recreation of the 2015 Browns lettering, https://www.wfonts.com/font/nfl-browns-2015); matches the 2025 diagram's numerals",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "brown": "#311D00",
+    "orange": "#FF3C00",
+    "white": "#FFFFFF"
+  },
+  "albedo": {
+    "jersey_brown": "#3A2208",
+    "brown": "#311D00",
+    "orange": "#FF3C00",
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "retail_helmet_orange": "#D83000",
+    "retail_helmet_brown": "#280804",
+    "retail_card_brown": "#400008",
+    "retail_card_orange": "#F04000",
+    "retail_atlas_brown": "#481018",
+    "retail_atlas_orange": "#D03000",
+    "retail_atlas_away_brown": "#581818",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A"
+  },
+  "marks": {
+    "team_logo_full": "club_logo.png",
+    "cle_1946": "cle_1946_fill.png",
+    "cle_h_sleeve": "cle_h_sleeve.png",
+    "cle_a_sleeve": "cle_a_sleeve.png",
+    "cle_h_sh1": "cle_h_sh1.png",
+    "cle_h_sh2": "cle_h_sh2.png",
+    "cle_h_ap1": "cle_h_ap1.png",
+    "cle_h_ap2": "cle_h_ap2.png",
+    "cle_a_sh1": "cle_a_sh1.png",
+    "cle_a_sh2": "cle_a_sh2.png",
+    "cle_a_ap1": "cle_a_ap1.png",
+    "cle_a_ap2": "cle_a_ap2.png",
+    "ez_browns_fill": "ez_BROWNS_fill.png",
+    "ez_browns_outline": "ez_BROWNS_outline.png",
+    "helmet_orange": "helmet_orange.png",
+    "helmet_white": "helmet_white.png",
+    "helmet_brown": "helmet_brown.png",
+    "helmetm_orange": "helmetm_orange.png",
+    "helmetm_white": "helmetm_white.png",
+    "helmetm_brown": "helmetm_brown.png",
+    "bar": "bar.png",
+    "txt_dawg_pound": "txt_DAWG_POUND_fill.png",
+    "txt_cleveland": "txt_CLEVELAND_fill.png",
+    "txtv_beware": "txtv_BEWARE.png",
+    "txtv_of_the": "txtv_OF_THE.png",
+    "txtv_dawgs": "txtv_DAWGS.png",
+    "txt_browns": "ez_BROWNS_fill.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "30H0",
+      "note": "2026 home (standard): brown jersey, plain white 2015-font numbers, white-orange-white-orange-white sleeve stripes, 1946 at the back collar; white pants with an orange-brown-orange stripe; brown socks with white and orange stripes; orange helmet with a brown-white-brown stripe, white facemask, no logo",
+      "torso": {
+        "base_colour": "jersey_brown",
+        "neck_donor": "30N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "orange"
+        },
+        "decorations": [
+          {
+            "mark": "cle_h_sh1",
+            "center": [
+              68.0,
+              63.0
+            ],
+            "width": 26.0
+          },
+          {
+            "mark": "cle_h_sh2",
+            "center": [
+              257.0,
+              63.0
+            ],
+            "width": 26.0
+          },
+          {
+            "mark": "cle_h_ap1",
+            "center": [
+              296.5,
+              93.5
+            ],
+            "width": 15.0
+          },
+          {
+            "mark": "cle_h_ap2",
+            "center": [
+              482.5,
+              93.5
+            ],
+            "width": 15.0
+          },
+          {
+            "mark": "cle_1946",
+            "colour": "orange",
+            "at": "back_collar",
+            "width": 26.0
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "jersey_brown",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "cle_h_sleeve",
+            "center": [
+              64.0,
+              56.0
+            ],
+            "width": 128.0
+          }
+        ],
+        "art_shift_rows": 9
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "orange",
+            8
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "brown",
+            9
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "orange",
+            8
+          ]
+        ],
+        "swoosh_colour": "brown"
+      },
+      "socks": {
+        "colour": "jersey_brown"
+      },
+      "digits": {
+        "glyph_donor": "30H0",
+        "fill": "white",
+        "font": "/media/noah/Storage/.b76-research/u1/teams/CLE/marks/NFL_Browns_2015.ttf"
+      },
+      "helmet_digits": {
+        "glyph_donor": "30H0",
+        "fill": "black"
+      },
+      "nameplate": {
+        "glyph_donor": "30H0",
+        "fill": "white",
+        "font": "/media/noah/Storage/.b76-research/u1/teams/CLE/marks/NFL_Browns_2015.ttf"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_orange",
+        "shell": "orange",
+        "recolour": [
+          {
+            "from": "retail_helmet_brown",
+            "to": "brown"
+          }
+        ]
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_brown",
+            "to": "jersey_brown",
+            "region": "jersey",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "outer_index": 3869,
+      "splayer": {
+        "torso_donor_outer": 3869,
+        "torso_donor": "30H0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_brown",
+            "to": "jersey_brown",
+            "region": "torso",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_brown",
+            "to": "jersey_brown",
+            "region": "sleeve",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          }
+        ],
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ]
+      }
+    },
+    "away": {
+      "selector": "30A0",
+      "note": "2026 away (standard): white jersey, plain brown 2015-font numbers, brown-orange-brown-orange-brown sleeve stripes, 1946 at the back collar; white pants with an orange-brown-orange stripe; white socks with brown and orange stripes; the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "30N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "orange"
+        },
+        "decorations": [
+          {
+            "mark": "cle_a_sh1",
+            "center": [
+              68.0,
+              63.0
+            ],
+            "width": 26.0
+          },
+          {
+            "mark": "cle_a_sh2",
+            "center": [
+              257.0,
+              63.0
+            ],
+            "width": 26.0
+          },
+          {
+            "mark": "cle_a_ap1",
+            "center": [
+              296.5,
+              93.5
+            ],
+            "width": 15.0
+          },
+          {
+            "mark": "cle_a_ap2",
+            "center": [
+              482.5,
+              93.5
+            ],
+            "width": 15.0
+          },
+          {
+            "mark": "cle_1946",
+            "colour": "orange",
+            "at": "back_collar",
+            "width": 26.0
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "cle_a_sleeve",
+            "center": [
+              64.0,
+              56.0
+            ],
+            "width": 128.0
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "orange",
+            8
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "brown",
+            9
+          ],
+          [
+            "white",
+            2
+          ],
+          [
+            "orange",
+            8
+          ]
+        ],
+        "swoosh_colour": "brown"
+      },
+      "socks": {
+        "colour": "white"
+      },
+      "digits": {
+        "glyph_donor": "30A0",
+        "fill": "brown",
+        "font": "/media/noah/Storage/.b76-research/u1/teams/CLE/marks/NFL_Browns_2015.ttf"
+      },
+      "helmet_digits": {
+        "glyph_donor": "30A0",
+        "fill": "black"
+      },
+      "nameplate": {
+        "glyph_donor": "30A0",
+        "fill": "brown",
+        "font": "/media/noah/Storage/.b76-research/u1/teams/CLE/marks/NFL_Browns_2015.ttf"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_orange",
+        "shell": "orange",
+        "recolour": [
+          {
+            "from": "retail_helmet_brown",
+            "to": "brown"
+          }
+        ]
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_brown",
+            "to": "brown",
+            "region": "jersey",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "outer_index": 4186,
+      "splayer": {
+        "torso_donor_outer": 4186,
+        "torso_donor": "30A0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_away_brown",
+            "to": "brown",
+            "region": "sleeve",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          }
+        ],
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ]
+      }
+    }
+  },
+  "part_intents": {
+    "home": {
+      "torso": "dark brown jersey body, NFL shield at the collar, orange maker swooshes at the shoulders, white and orange stripe pieces at the shoulders and armpits, a small orange 1946 at the back collar; the light grey patch is the neck opening",
+      "sleeve": "dark brown sleeve with white, orange, white, orange, white stripes",
+      "pants": "white pants with an orange-brown-orange side stripe, brown maker mark",
+      "helmet": "bright orange shell with a brown-white-brown centre stripe, no logo, white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain white numbers",
+      "digit_arm": "plain white numbers",
+      "digit_helmet": "black numbers (retail; the Browns wear none)",
+      "nameplate": "white letters",
+      "socks00": "brown socks with white and orange stripes (post-processed from the retail layout)",
+      "splayer": "far-away player atlas: white pants with orange and brown stripe, brown torso, orange helmet, socks, skin and glove patches",
+      "team-select_unif": "menu render: dark brown jersey with white numbers, white pants with orange and brown stripe, orange helmet",
+      "team-select_helm": "menu render: orange helmet with a brown and white stripe, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: an orange helmet with a brown-white-brown stripe and a white facemask, white outline",
+      "chiclet": "a small glossy chip in the team's dark brown",
+      "flipchip": "a zoomed helmet stripe: brown, white, brown with orange edges"
+    },
+    "away": {
+      "torso": "white jersey body, NFL shield at the collar, orange maker swooshes at the shoulders, brown and orange stripe pieces at the shoulders and armpits, a small orange 1946 at the back collar; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with brown, orange, brown, orange, brown stripes",
+      "pants": "white pants with an orange-brown-orange side stripe, brown maker mark",
+      "helmet": "bright orange shell with a brown-white-brown centre stripe, no logo, white and grey hardware, flag and shield decals",
+      "digit_jersey": "plain dark brown numbers",
+      "digit_arm": "plain dark brown numbers",
+      "digit_helmet": "black numbers (retail; the Browns wear none)",
+      "nameplate": "dark brown letters",
+      "socks00": "white socks with brown and orange stripes (post-processed from the retail layout)",
+      "splayer": "far-away player atlas: white pants with orange and brown stripe, white torso, orange helmet, socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with brown numbers, white pants with orange and brown stripe, orange helmet",
+      "team-select_helm": "menu render: orange helmet with a brown and white stripe, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: an orange helmet with a brown-white-brown stripe and a white facemask, white outline",
+      "chiclet": "a small glossy chip in the team's dark brown",
+      "flipchip": "a zoomed helmet stripe: brown, white, brown with orange edges"
+    },
+    "venue": {
+      "endzone": "brown painted end zone with a white BROWNS wordmark outlined in orange between two orange helmets",
+      "center_logo": "orange Browns helmet with a brown-white-brown stripe and a white facemask",
+      "banner": "cloth fan banners and wall pads in brown, orange and white; a cut-out wall atlas with the orange helmet and white and orange lettering"
+    }
+  },
+  "venue": {
+    "prefix": "s30",
+    "notes": "Browns home games at Huntington Bank Field (the retail Cleveland Stadium record s30; one end-zone texture set serves both ends). End zones: the white BROWNS wordmark outlined in orange, flanked by the primary helmet logo (both helmets face the wordmark), on brown paint (the paint colour is INFERRED: sources describe only the wordmark and logos). Midfield: the helmet logo with the white facemask (the 2025 return, kept in 2026). Walls: the 2004 cut-out atlas keeps its layout: the 2026 helmet, BROWNS and BEWARE OF THE DAWGS in the Browns letter face, and DAWG POUND and CLEVELAND in place of the retired 2004 dog face and B-football marks; wall pads restyled to the 2026 brown and orange. Fan banner texts are 2026 players and common fan phrases (INFERRED fan content). No 2026 home game yet (first home game week 3); the 2026 preseason week 2 home gallery shows plain brown wall pads.",
+    "sources": [
+      "https://news.sportslogos.net/2024/08/07/cleveland-browns-once-again-soliciting-fan-input-for-field-design/football/ (white Browns wordmark outlined in orange in both end zones, primary logo flanking it)",
+      "https://sports.yahoo.com/article/browns-announce-midfield-logo-change-154157611.html (2025: helmet logo with a white facebar back at midfield)",
+      "https://www.clevelandbrowns.com/photos/in-game-highlights-from-2026-browns-vs-bills-preseason-week-2 (2026-08-22, walls)",
+      "https://commons.wikimedia.org/wiki/File:Cleveland_Browns_wordmark.svg (public domain; the letter face the end-zone BROWNS follows)"
+    ],
+    "endzone": {
+      "paint": "jersey_brown",
+      "paint_alpha": 0.92,
+      "marks": [
+        {
+          "mark": "helmet_white",
+          "colour": "white",
+          "center": [
+            100,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        },
+        {
+          "mark": "helmet_brown",
+          "colour": "brown",
+          "center": [
+            100,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        },
+        {
+          "mark": "helmet_orange",
+          "colour": "orange",
+          "center": [
+            100,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        },
+        {
+          "mark": "ez_browns_outline",
+          "colour": "orange",
+          "center": [
+            384,
+            64
+          ],
+          "height": 78,
+          "stretch": 1.12
+        },
+        {
+          "mark": "ez_browns_fill",
+          "colour": "white",
+          "center": [
+            384,
+            64
+          ],
+          "height": 78,
+          "stretch": 1.12
+        },
+        {
+          "mark": "helmetm_white",
+          "colour": "white",
+          "center": [
+            668,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        },
+        {
+          "mark": "helmetm_brown",
+          "colour": "brown",
+          "center": [
+            668,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        },
+        {
+          "mark": "helmetm_orange",
+          "colour": "orange",
+          "center": [
+            668,
+            64
+          ],
+          "height": 74,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "outline_mark": "helmet_white",
+      "outline": "white",
+      "fill_mark": "helmet_orange",
+      "fill": "orange",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "DAWG\nPOUND",
+                "colour": "brown",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#21 WARD",
+                "colour": "brown",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 18
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "jersey_brown",
+            "items": [
+              {
+                "text": "#10 JUDKINS",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "#3 JEUDY",
+                "colour": "brown",
+                "center": [
+                  192,
+                  31
+                ],
+                "height": 17
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#44 FANNIN",
+                "colour": "brown",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "jersey_brown",
+            "items": [
+              {
+                "text": "GO\nBROWNS !",
+                "colour": "orange",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "GO BROWNS !",
+                "colour": "brown",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "HERE WE GO\nBROWNIES",
+                "colour": "brown",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "brownswall03": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              53
+            ],
+            "bg": "jersey_brown",
+            "items": []
+          },
+          {
+            "slot": [
+              0,
+              53,
+              128,
+              71
+            ],
+            "bg": "white",
+            "items": []
+          },
+          {
+            "slot": [
+              0,
+              71,
+              128,
+              124
+            ],
+            "bg": "orange",
+            "items": []
+          },
+          {
+            "slot": [
+              0,
+              124,
+              128,
+              128
+            ],
+            "bg": "brown",
+            "items": []
+          }
+        ]
+      },
+      "brownswall02": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "jersey_brown",
+            "items": []
+          }
+        ]
+      },
+      "brownswall01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "orange",
+            "items": []
+          }
+        ]
+      },
+      "brownswall04": {
+        "alpha": "items",
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              130,
+              100
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "mark": "helmet_white",
+                "colour": "white",
+                "center": [
+                  63,
+                  48
+                ],
+                "width": 120
+              },
+              {
+                "mark": "helmet_brown",
+                "colour": "brown",
+                "center": [
+                  63,
+                  48
+                ],
+                "width": 120
+              },
+              {
+                "mark": "helmet_orange",
+                "colour": "orange",
+                "center": [
+                  63,
+                  48
+                ],
+                "width": 120
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              40
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "mark": "txt_dawg_pound",
+                "colour": "orange",
+                "center": [
+                  191,
+                  21
+                ],
+                "width": 112
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              100,
+              128,
+              190
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "mark": "txt_cleveland",
+                "colour": "orange",
+                "center": [
+                  62,
+                  145
+                ],
+                "width": 116
+              }
+            ]
+          },
+          {
+            "slot": [
+              144,
+              38,
+              256,
+              190
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "txtv_beware",
+                "colour": "white",
+                "center": [
+                  164,
+                  113
+                ],
+                "width": 26
+              },
+              {
+                "mark": "txtv_of_the",
+                "colour": "white",
+                "center": [
+                  196,
+                  113
+                ],
+                "width": 26
+              },
+              {
+                "mark": "txtv_dawgs",
+                "colour": "white",
+                "center": [
+                  229,
+                  113
+                ],
+                "width": 26
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              190,
+              256,
+              256
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "txt_browns",
+                "colour": "white",
+                "center": [
+                  128,
+                  224
+                ],
+                "width": 246
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "notes_d2": {
+    "neck_donor": "30N0 is a synthetic clean neck mask (the retail 30H0 neck grey connected to the top edge only): art.py reads every near-grey pixel as neck, and the retail torsos carry grey mesh dots (about 1,900 on the away) and a grey NFL shield under the V"
+  },
+  "sources_uw": {
+    "sleeve_swoosh_2026": "k2/shoulders/cle6_front.jpg (clevelandbrowns.com 2026 week 2, #6 white): the small swoosh above the sleeve stripes"
+  }
+}

@@ -166,6 +166,12 @@ class ExecutableIntegration(unittest.TestCase):
 
 @unittest.skipUnless(RETAIL.is_file(), 'paired resources require the pinned USA extraction')
 class PairedBuildIntegration(unittest.TestCase):
+    def setUp(self):
+        # Owner-pair fixtures contain only their tested resources, no PLAY.
+        gate = patch.object(build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0})
+        gate.start()
+        self.addCleanup(gate.stop)
+
     def test_guardian_resource_growth_then_final_screen_hooks(self):
         from tests.mod_editor.test_nfl2k5_guardian_resources import ResourceTests, g
         ResourceTests.setUpClass()

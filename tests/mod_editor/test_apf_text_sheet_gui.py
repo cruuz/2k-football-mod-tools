@@ -10,7 +10,6 @@ from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5 import sip  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.apf_studio.gui import InspectorBrowser  # noqa: E402
@@ -70,9 +69,11 @@ class ApfTextSheetGuiTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     @staticmethod
     def _model() -> PagedModel:

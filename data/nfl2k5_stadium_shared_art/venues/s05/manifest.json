@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "file": "texscore02_fence.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "texscore02_fence_4x.png",
+      "master_sha256": "731680ba3bb54430047b5108178be85d881621a654a20a2ea739316a2345de42",
+      "material": "texscore02_fence",
+      "rects": [
+        [
+          84,
+          13,
+          127,
+          24
+        ],
+        [
+          84,
+          73,
+          123,
+          87
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "f916c6c8fb2fb41af3a6b80d0a1cc69f10a8ee7d4d935012eb7229410d232f44",
+      "size": [
+        128,
+        128
+      ],
+      "source_rgba_sha256": "650e3b1543997d4313d3665de84f07f0401d4da7fbb2cc285d96ec64d4ceef5c"
+    }
+  ],
+  "schema": "metlife_team_art/v1",
+  "team": "s05",
+  "venue_prefix": "s05"
+}

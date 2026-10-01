@@ -421,6 +421,8 @@ class RetailExecutionTests(unittest.TestCase):
         packs = RETAIL.parent / "vc_53450030"
         if not packs.is_dir():
             self.skipTest(f"private extracted PLAY packs required at {packs}; no books are distributed")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(packs)
         with ka.recode.OuterImage(packs) as archive:
             books = ka._load(archive)
         names = {book.name for book, _refs in books}

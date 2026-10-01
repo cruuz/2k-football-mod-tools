@@ -1,0 +1,17 @@
+# DESIGN: runtime selects current GIANTS home / COWBOYS away.
+# DESIGN: main navigates coin toss, kickoff and formation menus with tap/hold/release.
+# DESIGN: append case N at the specified page; macro checks all visible play labels.
+# DESIGN: X / A / B are left / middle / right on the inspected retail play page.
+# DESIGN: append snap N at the observed pre-snap lineup, then result N NOTES after review.
+shot 00-ready
+# DESIGN: case 1 | Gun Trips R | page 1 | X | 01 Inside Zone
+# DESIGN: case 2 | Gun Trips L | page 1 | X | 02 Outside Zone
+# DESIGN: case 3 | Gun Bunch R | page 2 | B | 03 Mesh
+# DESIGN: case 4 | Gun Trips L | page 2 | X | 02 Y Cross
+# DESIGN: case 5 | Gun Empty R | page 2 | A | 05 TE Seam
+# DESIGN: case 6 | Ace Wing R | page 1 | B | 09 TE Seam
+# DESIGN: case 7 | Pistol Ace R | page 2 | B | 11 TE Drag
+# DESIGN: case 8 | Gun Y Trips R | page 2 | A | 15 RB Slip
+# DESIGN: case 9 | Gun Bunch R | page 1 | A | 03 End Around
+# DESIGN: case 10 | Singleback Ace R | page 2 | A | 07 PA Boot
+# DESIGN: after ten reviewed snaps append finish; quit records incomplete instead.

@@ -1,0 +1,1192 @@
+[09:35:47] stack /home/noah/2k-worktrees/b76-x2 at a7ebef06e6e4; preset softdrink_experimental; 77 overrides; skipped []
+[09:35:47] validate_plan: OK (no blockers)
+[09:35:47] availability: every requested option is available
+[09:46:35] preflight OK in 648 s; skipped []
+[09:46:51]   Checking the stadium bundles for Colour & lighting
+[09:46:51]   Checking the Giants Stadium and Jets Stadium packages
+[09:46:51]   Checking the 2026 venue art and the home stadium packages
+[09:46:52]   Checking the MetLife model's packages
+[09:46:52]   Checking the Rams and Chargers stadium packages
+[09:46:52]   Checking the ESPN presentation marks
+[09:46:52]   Checking the ESPN wipes and boards
+[09:51:07]   Copying and patching default.xbe
+[09:51:11]   Preparing default.xbe patches
+[09:51:22]   Copying disc image 8388608/6300499968
+[09:51:33]   Writing default.xbe changes
+[09:51:34]   Renaming Def End players and trivia text in the copy
+[09:51:43]   Verifying the patched copy
+[09:51:45]   Installing complete offensive playbooks
+[09:51:46]   Installing “NFL 2K28 ARZ Modern” into ARZ
+[09:52:00]   Installing “NFL 2K28 ATL Modern” into ATL
+[09:52:13]   Installing “NFL 2K28 BAL Modern” into BAL
+[09:52:27]   Installing “NFL 2K28 BUF Modern” into BUF
+[09:52:41]   Installing “NFL 2K28 CAR Modern” into CAR
+[09:52:56]   Installing “NFL 2K28 CHI Modern” into CHI
+[09:53:11]   Installing “NFL 2K28 CIN Modern” into CIN
+[09:53:26]   Installing “NFL 2K28 CLE Modern” into CLE
+[09:53:40]   Installing “NFL 2K28 DAL Modern” into DAL
+[09:53:54]   Installing “NFL 2K28 DEN Modern” into DEN
+[09:54:08]   Installing “NFL 2K28 DET Modern” into DET
+[09:54:21]   Installing “NFL 2K28 GB Modern” into GB
+[09:54:36]   Installing “NFL 2K28 HOU Modern” into HOU
+[09:54:51]   Installing “NFL 2K28 IND Modern” into IND
+[09:55:06]   Installing “NFL 2K28 JAX Modern” into JAX
+[09:55:22]   Installing “NFL 2K28 KC Modern” into KC
+[09:55:36]   Installing “NFL 2K28 MIA Modern” into MIA
+[09:55:50]   Installing “NFL 2K28 MIN Modern” into MIN
+[09:56:04]   Installing “NFL 2K28 NE Modern” into NE
+[09:56:17]   Installing “NFL 2K28 NO Modern” into NO
+[09:56:40]   Installing “NFL 2K28 Giants Modern” into NYG
+[09:57:11]   Installing “NFL 2K28 NYJ Modern” into NYJ
+[09:57:31]   Installing “NFL 2K28 OAK Modern” into OAK
+[09:57:52]   Installing “NFL 2K28 PHI Modern” into PHI
+[09:58:13]   Installing “NFL 2K28 PIT Modern” into PIT
+[09:58:33]   Installing “NFL 2K28 SD Modern” into SD
+[09:58:53]   Installing “NFL 2K28 SEA Modern” into SEA
+[09:59:15]   Installing “NFL 2K28 SF Modern” into SF
+[09:59:28]   Installing “NFL 2K28 STL Modern” into STL
+[09:59:51]   Installing “NFL 2K28 TB Modern” into TB
+[10:00:06]   Installing “NFL 2K28 TEN Modern” into TEN
+[10:00:19]   Installing “NFL 2K28 WAS Modern” into WAS
+[10:00:40]   Installing experimental native defense playbook packs
+[10:00:40]   Installing “NFL 2K28 ARZ Defense” into ARZ
+[10:01:11]   Installing “NFL 2K28 ATL Defense” into ATL
+[10:01:32]   Installing “NFL 2K28 BAL Defense” into BAL
+[10:01:57]   Installing “NFL 2K28 BUF Defense” into BUF
+[10:02:13]   Installing “NFL 2K28 CAR Defense” into CAR
+[10:02:27]   Installing “NFL 2K28 CHI Defense” into CHI
+[10:02:38]   Installing “NFL 2K28 CIN Defense” into CIN
+[10:02:55]   Installing “NFL 2K28 CLE Defense” into CLE
+[10:03:11]   Installing “NFL 2K28 DAL Defense” into DAL
+[10:03:26]   Installing “NFL 2K28 DEN Defense” into DEN
+[10:03:41]   Installing “NFL 2K28 DET Defense” into DET
+[10:03:57]   Installing “NFL 2K28 GB Defense” into GB
+[10:04:11]   Installing “NFL 2K28 HOU Defense” into HOU
+[10:04:24]   Installing “NFL 2K28 IND Defense” into IND
+[10:04:45]   Installing “NFL 2K28 JAX Defense” into JAX
+[10:04:56]   Installing “NFL 2K28 KC Defense” into KC
+[10:05:08]   Installing “NFL 2K28 MIA Defense” into MIA
+[10:05:23]   Installing “NFL 2K28 MIN Defense” into MIN
+[10:06:16]   Installing “NFL 2K28 NE Defense” into NE
+[10:06:57]   Installing “NFL 2K28 NO Defense” into NO
+[10:07:19]   Installing “NFL 2K28 NYG Defense” into NYG
+[10:07:40]   Installing “NFL 2K28 NYJ Defense” into NYJ
+[10:07:58]   Installing “NFL 2K28 OAK Defense” into OAK
+[10:08:30]   Installing “NFL 2K28 PHI Defense” into PHI
+[10:09:04]   Installing “NFL 2K28 PIT Defense” into PIT
+[10:09:27]   Installing “NFL 2K28 SD Defense” into SD
+[10:10:23]   Installing “NFL 2K28 SEA Defense” into SEA
+[10:11:23]   Installing “NFL 2K28 SF Defense” into SF
+[10:11:33]   Installing “NFL 2K28 STL Defense” into STL
+[10:12:15]   Installing “NFL 2K28 TB Defense” into TB
+[10:14:02]   Installing “NFL 2K28 TEN Defense” into TEN
+[10:14:30]   Installing “NFL 2K28 WAS Defense” into WAS
+[10:14:42]   Merging the EDGE / LB / interior pools in the executable
+[10:14:43]   Recoding the 37 playbooks' defensive categories
+[10:14:43]   recoded ARZ: 9 categories
+[10:14:43]   recoded ATL: 9 categories
+[10:14:43]   recoded BAL: 10 categories
+[10:14:43]   recoded BUF: 11 categories
+[10:14:43]   recoded CAR: 9 categories
+[10:14:43]   recoded CHI: 9 categories
+[10:14:43]   recoded CIN: 9 categories
+[10:14:43]   recoded CLE: 9 categories
+[10:14:43]   recoded DAL: 10 categories
+[10:14:43]   recoded DEN: 9 categories
+[10:14:43]   recoded DET: 9 categories
+[10:14:43]   recoded Editor: 8 categories
+[10:14:43]   recoded GB: 9 categories
+[10:14:43]   recoded GEN: 10 categories
+[10:14:43]   recoded HOU: 10 categories
+[10:14:43]   recoded IND: 10 categories
+[10:14:43]   recoded JAX: 9 categories
+[10:14:43]   recoded KC: 10 categories
+[10:14:43]   recoded MIA: 9 categories
+[10:14:43]   recoded MIN: 11 categories
+[10:14:43]   recoded NE: 10 categories
+[10:14:43]   recoded NO: 10 categories
+[10:14:43]   recoded NYG: 10 categories
+[10:14:43]   recoded NYJ: 11 categories
+[10:14:43]   recoded OAK: 10 categories
+[10:14:43]   recoded PHI: 10 categories
+[10:14:43]   recoded PIT: 10 categories
+[10:14:43]   recoded PRACTICE: 3 categories
+[10:14:43]   recoded reference: 11 categories
+[10:14:43]   recoded SD: 10 categories
+[10:14:43]   recoded SEA: 10 categories
+[10:14:43]   recoded SF: 10 categories
+[10:14:43]   recoded STL: 10 categories
+[10:14:43]   recoded TB: 10 categories
+[10:14:43]   recoded TEN: 11 categories
+[10:14:43]   recoded WAS: 10 categories
+[10:14:43]   recoded WCO: 11 categories
+[10:14:44]   Reclassifying rosters into the merged pools
+[10:14:44]   outer 5 (roster): 483 players rewritten
+[10:14:44]   outer 113 (historic): 15 players rewritten
+[10:14:44]   outer 114 (historic): 17 players rewritten
+[10:14:44]   outer 115 (historic): 13 players rewritten
+[10:14:44]   outer 116 (historic): 13 players rewritten
+[10:14:44]   outer 117 (historic): 17 players rewritten
+[10:14:44]   outer 118 (historic): 11 players rewritten
+[10:14:44]   outer 119 (historic): 14 players rewritten
+[10:14:44]   outer 120 (historic): 14 players rewritten
+[10:14:44]   outer 121 (historic): 16 players rewritten
+[10:14:44]   outer 122 (historic): 13 players rewritten
+[10:14:44]   outer 123 (historic): 13 players rewritten
+[10:14:44]   outer 124 (historic): 14 players rewritten
+[10:14:44]   outer 125 (historic): 12 players rewritten
+[10:14:44]   outer 126 (historic): 12 players rewritten
+[10:14:44]   outer 127 (historic): 17 players rewritten
+[10:14:44]   outer 128 (historic): 15 players rewritten
+[10:14:44]   outer 129 (historic): 13 players rewritten
+[10:14:44]   outer 130 (historic): 15 players rewritten
+[10:14:44]   outer 131 (historic): 11 players rewritten
+[10:14:44]   outer 132 (historic): 13 players rewritten
+[10:14:44]   outer 133 (historic): 11 players rewritten
+[10:14:44]   outer 134 (historic): 14 players rewritten
+[10:14:44]   outer 135 (historic): 15 players rewritten
+[10:14:44]   outer 136 (historic): 15 players rewritten
+[10:14:44]   outer 137 (historic): 17 players rewritten
+[10:14:44]   outer 138 (historic): 13 players rewritten
+[10:14:44]   outer 139 (historic): 12 players rewritten
+[10:14:44]   outer 140 (historic): 11 players rewritten
+[10:14:44]   outer 141 (historic): 12 players rewritten
+[10:14:44]   outer 142 (historic): 15 players rewritten
+[10:14:44]   outer 143 (historic): 16 players rewritten
+[10:14:44]   outer 144 (historic): 13 players rewritten
+[10:14:44]   outer 145 (historic): 14 players rewritten
+[10:14:44]   outer 146 (historic): 14 players rewritten
+[10:14:44]   outer 147 (historic): 16 players rewritten
+[10:14:44]   outer 148 (historic): 15 players rewritten
+[10:14:44]   outer 149 (historic): 11 players rewritten
+[10:14:44]   outer 150 (historic): 14 players rewritten
+[10:14:44]   outer 151 (historic): 13 players rewritten
+[10:14:44]   outer 152 (historic): 14 players rewritten
+[10:14:44]   outer 153 (historic): 12 players rewritten
+[10:14:44]   outer 154 (historic): 14 players rewritten
+[10:14:44]   outer 155 (historic): 15 players rewritten
+[10:14:44]   outer 156 (historic): 16 players rewritten
+[10:14:44]   outer 157 (historic): 13 players rewritten
+[10:14:44]   outer 158 (historic): 11 players rewritten
+[10:14:44]   outer 159 (historic): 11 players rewritten
+[10:14:44]   outer 160 (historic): 15 players rewritten
+[10:14:44]   outer 161 (historic): 12 players rewritten
+[10:14:44]   outer 162 (historic): 15 players rewritten
+[10:14:44]   outer 163 (historic): 10 players rewritten
+[10:14:44]   outer 164 (historic): 13 players rewritten
+[10:14:44]   outer 165 (historic): 12 players rewritten
+[10:14:44]   outer 166 (historic): 12 players rewritten
+[10:14:44]   outer 167 (historic): 15 players rewritten
+[10:14:44]   outer 168 (historic): 15 players rewritten
+[10:14:44]   outer 169 (historic): 13 players rewritten
+[10:14:44]   outer 170 (historic): 14 players rewritten
+[10:14:44]   outer 171 (historic): 15 players rewritten
+[10:14:44]   outer 172 (historic): 17 players rewritten
+[10:14:44]   outer 173 (historic): 15 players rewritten
+[10:14:44]   outer 174 (historic): 16 players rewritten
+[10:14:44]   outer 175 (historic): 12 players rewritten
+[10:14:44]   outer 176 (historic): 12 players rewritten
+[10:14:44]   outer 177 (historic): 15 players rewritten
+[10:14:44]   outer 178 (historic): 15 players rewritten
+[10:14:44]   outer 179 (historic): 10 players rewritten
+[10:14:44]   outer 180 (historic): 12 players rewritten
+[10:14:44]   outer 181 (historic): 14 players rewritten
+[10:14:44]   outer 182 (historic): 16 players rewritten
+[10:14:44]   outer 183 (historic): 15 players rewritten
+[10:14:44]   outer 184 (historic): 15 players rewritten
+[10:14:44]   outer 185 (historic): 14 players rewritten
+[10:14:44]   outer 186 (historic): 16 players rewritten
+[10:14:44]   outer 187 (historic): 12 players rewritten
+[10:14:44]   Adding the 13 SPECIAL depth-chart rows
+[10:14:46]   Lining up the dynamic kickoff (coverage on the 40, setup zone 35-30)
+[10:14:48]   ARZ: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   ATL: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   BAL: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   BUF: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   CAR: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   CHI: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   CIN: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   CLE: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   DAL: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   DEN: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   DET: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   Editor: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   GB: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   GEN: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   HOU: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   IND: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   JAX: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   KC: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   MIA: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   MIN: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   NE: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   NO: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   NYG: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   NYJ: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   OAK: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   PHI: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   PIT: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   reference: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   SD: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   SEA: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   SF: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   STL: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   TB: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   TEN: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   WAS: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:48]   WCO: kickoff coverage to the receiving 40, return setup zone 35-30
+[10:14:49]   Giving the kickoff return blockers close assignments
+[10:14:55]   ARZ: local kickoff return blocking
+[10:14:55]   ATL: local kickoff return blocking
+[10:14:55]   BAL: local kickoff return blocking
+[10:14:55]   BUF: local kickoff return blocking
+[10:14:55]   CAR: local kickoff return blocking
+[10:14:55]   CHI: local kickoff return blocking
+[10:14:55]   CIN: local kickoff return blocking
+[10:14:55]   CLE: local kickoff return blocking
+[10:14:55]   DAL: local kickoff return blocking
+[10:14:55]   DEN: local kickoff return blocking
+[10:14:55]   DET: local kickoff return blocking
+[10:14:55]   Editor: local kickoff return blocking
+[10:14:55]   GB: local kickoff return blocking
+[10:14:55]   GEN: local kickoff return blocking
+[10:14:55]   HOU: local kickoff return blocking
+[10:14:55]   IND: local kickoff return blocking
+[10:14:55]   JAX: local kickoff return blocking
+[10:14:55]   KC: local kickoff return blocking
+[10:14:55]   MIA: local kickoff return blocking
+[10:14:55]   MIN: local kickoff return blocking
+[10:14:55]   NE: local kickoff return blocking
+[10:14:55]   NO: local kickoff return blocking
+[10:14:55]   NYG: local kickoff return blocking
+[10:14:55]   NYJ: local kickoff return blocking
+[10:14:55]   OAK: local kickoff return blocking
+[10:14:55]   PHI: local kickoff return blocking
+[10:14:55]   PIT: local kickoff return blocking
+[10:14:55]   reference: local kickoff return blocking
+[10:14:55]   SD: local kickoff return blocking
+[10:14:55]   SEA: local kickoff return blocking
+[10:14:55]   SF: local kickoff return blocking
+[10:14:55]   STL: local kickoff return blocking
+[10:14:55]   TB: local kickoff return blocking
+[10:14:55]   TEN: local kickoff return blocking
+[10:14:55]   WAS: local kickoff return blocking
+[10:14:55]   WCO: local kickoff return blocking
+[10:14:55]   Writing the 7-on-7 sets into the practice playbook
+[10:14:55]   Building the 7-on-7 practice book
+[10:14:55]   Writing PRACTICE-pb.iff
+[10:14:55]   Assigning X / Z / SLOT receivers and nickel / dime corners in the playbooks
+[10:14:58]   Checked depth roles: ARZ (9 bytes)
+[10:14:59]   Checked depth roles: ATL (11 bytes)
+[10:14:59]   Checked depth roles: BAL (8 bytes)
+[10:15:00]   Checked depth roles: BUF (10 bytes)
+[10:15:01]   Checked depth roles: CAR (11 bytes)
+[10:15:01]   Checked depth roles: CHI (10 bytes)
+[10:15:02]   Checked depth roles: CIN (11 bytes)
+[10:15:03]   Checked depth roles: CLE (11 bytes)
+[10:15:04]   Checked depth roles: DAL (10 bytes)
+[10:15:05]   Checked depth roles: DEN (10 bytes)
+[10:15:06]   Checked depth roles: DET (11 bytes)
+[10:15:06]   Checked depth roles: Editor (9 bytes)
+[10:15:07]   Checked depth roles: GB (11 bytes)
+[10:15:07]   Checked depth roles: GEN (19 bytes)
+[10:15:08]   Checked depth roles: HOU (11 bytes)
+[10:15:08]   Checked depth roles: IND (10 bytes)
+[10:15:09]   Checked depth roles: JAX (11 bytes)
+[10:15:11]   Checked depth roles: KC (12 bytes)
+[10:15:12]   Checked depth roles: MIA (13 bytes)
+[10:15:14]   Checked depth roles: MIN (9 bytes)
+[10:15:14]   Checked depth roles: NE (10 bytes)
+[10:15:15]   Checked depth roles: NO (9 bytes)
+[10:15:15]   Checked depth roles: NYG (10 bytes)
+[10:15:16]   Checked depth roles: NYJ (9 bytes)
+[10:15:16]   Checked depth roles: OAK (9 bytes)
+[10:15:17]   Checked depth roles: PHI (9 bytes)
+[10:15:17]   Checked depth roles: PIT (11 bytes)
+[10:15:17]   Checked depth roles: PRACTICE (18 bytes)
+[10:15:18]   Checked depth roles: reference (20 bytes)
+[10:15:19]   Checked depth roles: SD (10 bytes)
+[10:15:20]   Checked depth roles: SEA (9 bytes)
+[10:15:20]   Checked depth roles: SF (10 bytes)
+[10:15:21]   Checked depth roles: STL (9 bytes)
+[10:15:22]   Checked depth roles: TB (10 bytes)
+[10:15:25]   Checked depth roles: TEN (12 bytes)
+[10:15:26]   Checked depth roles: WAS (11 bytes)
+[10:15:26]   Checked depth roles: WCO (19 bytes)
+[10:15:26]   Screen pass timing (experimental)
+[10:15:28]   Checked screen timing: ARZ (0 bytes)
+[10:15:28]   Checked screen timing: ATL (0 bytes)
+[10:15:29]   Checked screen timing: BAL (0 bytes)
+[10:15:29]   Checked screen timing: BUF (0 bytes)
+[10:15:30]   Checked screen timing: CAR (0 bytes)
+[10:15:30]   Checked screen timing: CHI (0 bytes)
+[10:15:31]   Checked screen timing: CIN (0 bytes)
+[10:15:31]   Checked screen timing: CLE (0 bytes)
+[10:15:31]   Checked screen timing: DAL (0 bytes)
+[10:15:32]   Checked screen timing: DEN (0 bytes)
+[10:15:32]   Checked screen timing: DET (0 bytes)
+[10:15:32]   Checked screen timing: Editor (0 bytes)
+[10:15:33]   Checked screen timing: GB (0 bytes)
+[10:15:33]   Checked screen timing: GEN (90 bytes)
+[10:15:34]   Checked screen timing: HOU (0 bytes)
+[10:15:34]   Checked screen timing: IND (0 bytes)
+[10:15:34]   Checked screen timing: JAX (0 bytes)
+[10:15:35]   Checked screen timing: KC (0 bytes)
+[10:15:35]   Checked screen timing: MIA (0 bytes)
+[10:15:35]   Checked screen timing: MIN (0 bytes)
+[10:15:36]   Checked screen timing: NE (0 bytes)
+[10:15:36]   Checked screen timing: NO (0 bytes)
+[10:15:37]   Checked screen timing: NYG (0 bytes)
+[10:15:37]   Checked screen timing: NYJ (0 bytes)
+[10:15:38]   Checked screen timing: OAK (0 bytes)
+[10:15:38]   Checked screen timing: PHI (0 bytes)
+[10:15:39]   Checked screen timing: PIT (0 bytes)
+[10:15:39]   Checked screen timing: PRACTICE (0 bytes)
+[10:15:39]   Checked screen timing: reference (179 bytes)
+[10:15:40]   Checked screen timing: SD (0 bytes)
+[10:15:40]   Checked screen timing: SEA (0 bytes)
+[10:15:41]   Checked screen timing: SF (0 bytes)
+[10:15:41]   Checked screen timing: STL (0 bytes)
+[10:15:42]   Checked screen timing: TB (0 bytes)
+[10:15:42]   Checked screen timing: TEN (0 bytes)
+[10:15:43]   Checked screen timing: WAS (0 bytes)
+[10:15:43]   Checked screen timing: WCO (90 bytes)
+[10:15:43]   Checking every playbook's play menus
+[10:15:43]   Checking native play scoring: book 307 0/37
+[10:15:53]   Checking native play scoring: book 308 1/37
+[10:16:00]   Checking native play scoring: book 309 2/37
+[10:16:14]   Checking native play scoring: book 310 3/37
+[10:16:28]   Checking native play scoring: book 311 4/37
+[10:16:43]   Checking native play scoring: book 312 5/37
+[10:16:57]   Checking native play scoring: book 313 6/37
+[10:17:12]   Checking native play scoring: book 314 7/37
+[10:17:20]   Checking native play scoring: book 315 8/37
+[10:17:29]   Checking native play scoring: book 316 9/37
+[10:17:38]   Checking native play scoring: book 317 10/37
+[10:17:47]   Checking native play scoring: book 318 11/37
+[10:17:48]   Checking native play scoring: book 319 12/37
+[10:17:57]   Checking native play scoring: book 320 13/37
+[10:18:10]   Checking native play scoring: book 321 14/37
+[10:18:19]   Checking native play scoring: book 322 15/37
+[10:18:28]   Checking native play scoring: book 323 16/37
+[10:18:37]   Checking native play scoring: book 324 17/37
+[10:18:46]   Checking native play scoring: book 325 18/37
+[10:18:56]   Checking native play scoring: book 326 19/37
+[10:19:06]   Checking native play scoring: book 327 20/37
+[10:19:16]   Checking native play scoring: book 328 21/37
+[10:19:26]   Checking native play scoring: book 329 22/37
+[10:19:35]   Checking native play scoring: book 330 23/37
+[10:19:44]   Checking native play scoring: book 331 24/37
+[10:19:54]   Checking native play scoring: book 332 25/37
+[10:20:03]   Checking native play scoring: book 333 26/37
+[10:20:11]   Checking native play scoring: book 334 27/37
+[10:20:14]   Checking native play scoring: book 335 28/37
+[10:20:25]   Checking native play scoring: book 336 29/37
+[10:20:32]   Checking native play scoring: book 337 30/37
+[10:20:40]   Checking native play scoring: book 338 31/37
+[10:20:49]   Checking native play scoring: book 339 32/37
+[10:20:58]   Checking native play scoring: book 340 33/37
+[10:21:07]   Checking native play scoring: book 341 34/37
+[10:21:13]   Checking native play scoring: book 342 35/37
+[10:21:19]   Checking native play scoring: book 343 36/37
+[10:21:30]   Setting the franchise to 2026 (year, calendar, 18-week season)
+[10:21:31]   Showing the seven-seed playoff picture and previews
+[10:21:31]   Writing the real 2026 schedule into the franchise template
+[10:21:43]   Writing the real team history into the roster template
+[10:21:44]   Matching the team history to the roster
+[10:21:44]   Writing the roster's history pool
+[10:21:44]   Writing the modern prospect names into the roster's name pool
+[10:21:44]   Rewriting the generated-player name pool
+[10:21:44]   Writing the roster resource
+[10:21:44]   Tagging the star players in the roster
+[10:21:44]   Matching the star tags to the roster
+[10:21:44]   Writing the star tags into the roster
+[10:21:44]   Applying the roster edits
+[10:21:45]   Writing the edited roster
+[10:21:45]   Writing the 2026 team names
+[10:21:45]   Team lookups for the 2026 names
+[10:21:48]   Paired 1 authored plays with the final KC book
+[10:21:49]   Installing team logos and scorebug effects (unwitnessed)
+[10:22:10]   Adding experimental extra patch space
+[10:24:03]   Applying existing dry-weather haze response
+[10:24:11]   Modern colour and lighting: light rigs
+[10:24:14]   Verifying the composed disc
+[10:26:21]   Writing modern 2K mode names
+[10:26:43]   copy 0/6712985600
+[10:26:57]   archive 0/4323
+[10:28:19]   copy 0/7164725248
+[10:28:52]   archive 0/4323
+[10:29:05]   verify 1/4323
+[10:29:34]   Scanning every disc roster for outside linebackers
+[10:31:06]   Applying historic moment rosters
+[10:31:18]   Adding 25 more Anniversary moments
+[10:31:23]   Keeping the historic teams' retail uniforms and logos
+[10:31:36]   Modern colour and lighting: stadium bundles
+[10:32:01]   Modern colour: refitting 390 distinct field scenes, bump maps and divot layers 0/390
+[10:32:06]   Modern colour: 1 of 390 field scenes refit 1/390
+[10:32:06]   Modern colour: 2 of 390 field scenes refit 2/390
+[10:32:06]   Modern colour: 3 of 390 field scenes refit 3/390
+[10:32:06]   Modern colour: 4 of 390 field scenes refit 4/390
+[10:32:06]   Modern colour: 5 of 390 field scenes refit 5/390
+[10:32:06]   Modern colour: 6 of 390 field scenes refit 6/390
+[10:32:18]   Modern colour: 7 of 390 field scenes refit 7/390
+[10:32:18]   Modern colour: 8 of 390 field scenes refit 8/390
+[10:32:18]   Modern colour: 9 of 390 field scenes refit 9/390
+[10:32:18]   Modern colour: 10 of 390 field scenes refit 10/390
+[10:32:18]   Modern colour: 11 of 390 field scenes refit 11/390
+[10:32:18]   Modern colour: 12 of 390 field scenes refit 12/390
+[10:32:18]   Modern colour: 13 of 390 field scenes refit 13/390
+[10:32:18]   Modern colour: 14 of 390 field scenes refit 14/390
+[10:32:18]   Modern colour: 15 of 390 field scenes refit 15/390
+[10:32:18]   Modern colour: 16 of 390 field scenes refit 16/390
+[10:32:18]   Modern colour: 17 of 390 field scenes refit 17/390
+[10:32:18]   Modern colour: 18 of 390 field scenes refit 18/390
+[10:32:18]   Modern colour: 19 of 390 field scenes refit 19/390
+[10:32:18]   Modern colour: 20 of 390 field scenes refit 20/390
+[10:32:18]   Modern colour: 21 of 390 field scenes refit 21/390
+[10:32:18]   Modern colour: 22 of 390 field scenes refit 22/390
+[10:32:18]   Modern colour: 23 of 390 field scenes refit 23/390
+[10:32:18]   Modern colour: 24 of 390 field scenes refit 24/390
+[10:32:18]   Modern colour: 25 of 390 field scenes refit 25/390
+[10:32:18]   Modern colour: 26 of 390 field scenes refit 26/390
+[10:32:18]   Modern colour: 27 of 390 field scenes refit 27/390
+[10:32:18]   Modern colour: 28 of 390 field scenes refit 28/390
+[10:32:18]   Modern colour: 29 of 390 field scenes refit 29/390
+[10:32:18]   Modern colour: 30 of 390 field scenes refit 30/390
+[10:32:18]   Modern colour: 31 of 390 field scenes refit 31/390
+[10:32:19]   Modern colour: 32 of 390 field scenes refit 32/390
+[10:32:19]   Modern colour: 33 of 390 field scenes refit 33/390
+[10:32:34]   Modern colour: 34 of 390 field scenes refit 34/390
+[10:32:34]   Modern colour: 35 of 390 field scenes refit 35/390
+[10:32:34]   Modern colour: 36 of 390 field scenes refit 36/390
+[10:32:34]   Modern colour: 37 of 390 field scenes refit 37/390
+[10:32:34]   Modern colour: 38 of 390 field scenes refit 38/390
+[10:32:34]   Modern colour: 39 of 390 field scenes refit 39/390
+[10:32:34]   Modern colour: 40 of 390 field scenes refit 40/390
+[10:32:34]   Modern colour: 41 of 390 field scenes refit 41/390
+[10:32:34]   Modern colour: 42 of 390 field scenes refit 42/390
+[10:32:34]   Modern colour: 43 of 390 field scenes refit 43/390
+[10:32:34]   Modern colour: 44 of 390 field scenes refit 44/390
+[10:32:34]   Modern colour: 45 of 390 field scenes refit 45/390
+[10:32:34]   Modern colour: 46 of 390 field scenes refit 46/390
+[10:32:34]   Modern colour: 47 of 390 field scenes refit 47/390
+[10:32:34]   Modern colour: 48 of 390 field scenes refit 48/390
+[10:32:34]   Modern colour: 49 of 390 field scenes refit 49/390
+[10:32:34]   Modern colour: 50 of 390 field scenes refit 50/390
+[10:32:34]   Modern colour: 51 of 390 field scenes refit 51/390
+[10:32:34]   Modern colour: 52 of 390 field scenes refit 52/390
+[10:32:34]   Modern colour: 53 of 390 field scenes refit 53/390
+[10:32:34]   Modern colour: 54 of 390 field scenes refit 54/390
+[10:32:34]   Modern colour: 55 of 390 field scenes refit 55/390
+[10:32:34]   Modern colour: 56 of 390 field scenes refit 56/390
+[10:32:34]   Modern colour: 57 of 390 field scenes refit 57/390
+[10:32:34]   Modern colour: 58 of 390 field scenes refit 58/390
+[10:32:34]   Modern colour: 59 of 390 field scenes refit 59/390
+[10:32:34]   Modern colour: 60 of 390 field scenes refit 60/390
+[10:32:34]   Modern colour: 61 of 390 field scenes refit 61/390
+[10:32:34]   Modern colour: 62 of 390 field scenes refit 62/390
+[10:32:34]   Modern colour: 63 of 390 field scenes refit 63/390
+[10:32:34]   Modern colour: 64 of 390 field scenes refit 64/390
+[10:32:34]   Modern colour: 65 of 390 field scenes refit 65/390
+[10:32:34]   Modern colour: 66 of 390 field scenes refit 66/390
+[10:32:34]   Modern colour: 67 of 390 field scenes refit 67/390
+[10:32:34]   Modern colour: 68 of 390 field scenes refit 68/390
+[10:32:34]   Modern colour: 69 of 390 field scenes refit 69/390
+[10:32:35]   Modern colour: 70 of 390 field scenes refit 70/390
+[10:32:36]   Modern colour: 71 of 390 field scenes refit 71/390
+[10:32:36]   Modern colour: 72 of 390 field scenes refit 72/390
+[10:32:36]   Modern colour: 73 of 390 field scenes refit 73/390
+[10:32:37]   Modern colour: 74 of 390 field scenes refit 74/390
+[10:32:37]   Modern colour: 75 of 390 field scenes refit 75/390
+[10:32:37]   Modern colour: 76 of 390 field scenes refit 76/390
+[10:32:37]   Modern colour: 77 of 390 field scenes refit 77/390
+[10:32:37]   Modern colour: 78 of 390 field scenes refit 78/390
+[10:32:39]   Modern colour: 79 of 390 field scenes refit 79/390
+[10:32:39]   Modern colour: 80 of 390 field scenes refit 80/390
+[10:32:39]   Modern colour: 81 of 390 field scenes refit 81/390
+[10:33:02]   Modern colour: 82 of 390 field scenes refit 82/390
+[10:33:02]   Modern colour: 83 of 390 field scenes refit 83/390
+[10:33:02]   Modern colour: 84 of 390 field scenes refit 84/390
+[10:33:02]   Modern colour: 85 of 390 field scenes refit 85/390
+[10:33:02]   Modern colour: 86 of 390 field scenes refit 86/390
+[10:33:02]   Modern colour: 87 of 390 field scenes refit 87/390
+[10:33:02]   Modern colour: 88 of 390 field scenes refit 88/390
+[10:33:02]   Modern colour: 89 of 390 field scenes refit 89/390
+[10:33:02]   Modern colour: 90 of 390 field scenes refit 90/390
+[10:33:02]   Modern colour: 91 of 390 field scenes refit 91/390
+[10:33:02]   Modern colour: 92 of 390 field scenes refit 92/390
+[10:33:02]   Modern colour: 93 of 390 field scenes refit 93/390
+[10:33:02]   Modern colour: 94 of 390 field scenes refit 94/390
+[10:33:02]   Modern colour: 95 of 390 field scenes refit 95/390
+[10:33:02]   Modern colour: 96 of 390 field scenes refit 96/390
+[10:33:02]   Modern colour: 97 of 390 field scenes refit 97/390
+[10:33:02]   Modern colour: 98 of 390 field scenes refit 98/390
+[10:33:02]   Modern colour: 99 of 390 field scenes refit 99/390
+[10:33:02]   Modern colour: 100 of 390 field scenes refit 100/390
+[10:33:02]   Modern colour: 101 of 390 field scenes refit 101/390
+[10:33:02]   Modern colour: 102 of 390 field scenes refit 102/390
+[10:33:02]   Modern colour: 103 of 390 field scenes refit 103/390
+[10:33:02]   Modern colour: 104 of 390 field scenes refit 104/390
+[10:33:18]   Modern colour: 105 of 390 field scenes refit 105/390
+[10:33:22]   Modern colour: 106 of 390 field scenes refit 106/390
+[10:33:22]   Modern colour: 107 of 390 field scenes refit 107/390
+[10:33:22]   Modern colour: 108 of 390 field scenes refit 108/390
+[10:33:22]   Modern colour: 109 of 390 field scenes refit 109/390
+[10:33:22]   Modern colour: 110 of 390 field scenes refit 110/390
+[10:33:22]   Modern colour: 111 of 390 field scenes refit 111/390
+[10:33:22]   Modern colour: 112 of 390 field scenes refit 112/390
+[10:33:22]   Modern colour: 113 of 390 field scenes refit 113/390
+[10:33:22]   Modern colour: 114 of 390 field scenes refit 114/390
+[10:33:22]   Modern colour: 115 of 390 field scenes refit 115/390
+[10:33:22]   Modern colour: 116 of 390 field scenes refit 116/390
+[10:33:22]   Modern colour: 117 of 390 field scenes refit 117/390
+[10:33:22]   Modern colour: 118 of 390 field scenes refit 118/390
+[10:33:22]   Modern colour: 119 of 390 field scenes refit 119/390
+[10:33:22]   Modern colour: 120 of 390 field scenes refit 120/390
+[10:33:22]   Modern colour: 121 of 390 field scenes refit 121/390
+[10:33:22]   Modern colour: 122 of 390 field scenes refit 122/390
+[10:33:22]   Modern colour: 123 of 390 field scenes refit 123/390
+[10:33:22]   Modern colour: 124 of 390 field scenes refit 124/390
+[10:33:22]   Modern colour: 125 of 390 field scenes refit 125/390
+[10:33:22]   Modern colour: 126 of 390 field scenes refit 126/390
+[10:33:22]   Modern colour: 127 of 390 field scenes refit 127/390
+[10:33:22]   Modern colour: 128 of 390 field scenes refit 128/390
+[10:33:22]   Modern colour: 129 of 390 field scenes refit 129/390
+[10:33:22]   Modern colour: 130 of 390 field scenes refit 130/390
+[10:33:22]   Modern colour: 131 of 390 field scenes refit 131/390
+[10:33:22]   Modern colour: 132 of 390 field scenes refit 132/390
+[10:33:22]   Modern colour: 133 of 390 field scenes refit 133/390
+[10:33:22]   Modern colour: 134 of 390 field scenes refit 134/390
+[10:33:22]   Modern colour: 135 of 390 field scenes refit 135/390
+[10:33:22]   Modern colour: 136 of 390 field scenes refit 136/390
+[10:33:22]   Modern colour: 137 of 390 field scenes refit 137/390
+[10:33:22]   Modern colour: 138 of 390 field scenes refit 138/390
+[10:33:22]   Modern colour: 139 of 390 field scenes refit 139/390
+[10:33:22]   Modern colour: 140 of 390 field scenes refit 140/390
+[10:33:22]   Modern colour: 141 of 390 field scenes refit 141/390
+[10:33:22]   Modern colour: 142 of 390 field scenes refit 142/390
+[10:33:22]   Modern colour: 143 of 390 field scenes refit 143/390
+[10:33:22]   Modern colour: 144 of 390 field scenes refit 144/390
+[10:33:22]   Modern colour: 145 of 390 field scenes refit 145/390
+[10:33:22]   Modern colour: 146 of 390 field scenes refit 146/390
+[10:33:22]   Modern colour: 147 of 390 field scenes refit 147/390
+[10:33:22]   Modern colour: 148 of 390 field scenes refit 148/390
+[10:33:22]   Modern colour: 149 of 390 field scenes refit 149/390
+[10:33:22]   Modern colour: 150 of 390 field scenes refit 150/390
+[10:33:22]   Modern colour: 151 of 390 field scenes refit 151/390
+[10:33:22]   Modern colour: 152 of 390 field scenes refit 152/390
+[10:33:22]   Modern colour: 153 of 390 field scenes refit 153/390
+[10:33:22]   Modern colour: 154 of 390 field scenes refit 154/390
+[10:33:22]   Modern colour: 155 of 390 field scenes refit 155/390
+[10:33:22]   Modern colour: 156 of 390 field scenes refit 156/390
+[10:33:22]   Modern colour: 157 of 390 field scenes refit 157/390
+[10:33:22]   Modern colour: 158 of 390 field scenes refit 158/390
+[10:33:22]   Modern colour: 159 of 390 field scenes refit 159/390
+[10:33:22]   Modern colour: 160 of 390 field scenes refit 160/390
+[10:33:22]   Modern colour: 161 of 390 field scenes refit 161/390
+[10:33:22]   Modern colour: 162 of 390 field scenes refit 162/390
+[10:33:22]   Modern colour: 163 of 390 field scenes refit 163/390
+[10:33:22]   Modern colour: 164 of 390 field scenes refit 164/390
+[10:33:22]   Modern colour: 165 of 390 field scenes refit 165/390
+[10:33:22]   Modern colour: 166 of 390 field scenes refit 166/390
+[10:33:22]   Modern colour: 167 of 390 field scenes refit 167/390
+[10:33:22]   Modern colour: 168 of 390 field scenes refit 168/390
+[10:33:22]   Modern colour: 169 of 390 field scenes refit 169/390
+[10:33:22]   Modern colour: 170 of 390 field scenes refit 170/390
+[10:33:22]   Modern colour: 171 of 390 field scenes refit 171/390
+[10:33:22]   Modern colour: 172 of 390 field scenes refit 172/390
+[10:33:22]   Modern colour: 173 of 390 field scenes refit 173/390
+[10:33:22]   Modern colour: 174 of 390 field scenes refit 174/390
+[10:33:22]   Modern colour: 175 of 390 field scenes refit 175/390
+[10:33:22]   Modern colour: 176 of 390 field scenes refit 176/390
+[10:33:22]   Modern colour: 177 of 390 field scenes refit 177/390
+[10:33:22]   Modern colour: 178 of 390 field scenes refit 178/390
+[10:33:22]   Modern colour: 179 of 390 field scenes refit 179/390
+[10:33:22]   Modern colour: 180 of 390 field scenes refit 180/390
+[10:33:22]   Modern colour: 181 of 390 field scenes refit 181/390
+[10:33:22]   Modern colour: 182 of 390 field scenes refit 182/390
+[10:33:22]   Modern colour: 183 of 390 field scenes refit 183/390
+[10:33:22]   Modern colour: 184 of 390 field scenes refit 184/390
+[10:33:22]   Modern colour: 185 of 390 field scenes refit 185/390
+[10:33:22]   Modern colour: 186 of 390 field scenes refit 186/390
+[10:33:22]   Modern colour: 187 of 390 field scenes refit 187/390
+[10:33:23]   Modern colour: 188 of 390 field scenes refit 188/390
+[10:33:23]   Modern colour: 189 of 390 field scenes refit 189/390
+[10:33:23]   Modern colour: 190 of 390 field scenes refit 190/390
+[10:33:23]   Modern colour: 191 of 390 field scenes refit 191/390
+[10:33:23]   Modern colour: 192 of 390 field scenes refit 192/390
+[10:33:23]   Modern colour: 193 of 390 field scenes refit 193/390
+[10:33:23]   Modern colour: 194 of 390 field scenes refit 194/390
+[10:33:24]   Modern colour: 195 of 390 field scenes refit 195/390
+[10:33:24]   Modern colour: 196 of 390 field scenes refit 196/390
+[10:33:25]   Modern colour: 197 of 390 field scenes refit 197/390
+[10:33:25]   Modern colour: 198 of 390 field scenes refit 198/390
+[10:33:25]   Modern colour: 199 of 390 field scenes refit 199/390
+[10:33:25]   Modern colour: 200 of 390 field scenes refit 200/390
+[10:33:25]   Modern colour: 201 of 390 field scenes refit 201/390
+[10:33:26]   Modern colour: 202 of 390 field scenes refit 202/390
+[10:33:26]   Modern colour: 203 of 390 field scenes refit 203/390
+[10:33:26]   Modern colour: 204 of 390 field scenes refit 204/390
+[10:33:26]   Modern colour: 205 of 390 field scenes refit 205/390
+[10:33:26]   Modern colour: 206 of 390 field scenes refit 206/390
+[10:33:26]   Modern colour: 207 of 390 field scenes refit 207/390
+[10:33:26]   Modern colour: 208 of 390 field scenes refit 208/390
+[10:34:02]   Modern colour: 209 of 390 field scenes refit 209/390
+[10:34:02]   Modern colour: 210 of 390 field scenes refit 210/390
+[10:34:02]   Modern colour: 211 of 390 field scenes refit 211/390
+[10:34:02]   Modern colour: 212 of 390 field scenes refit 212/390
+[10:34:02]   Modern colour: 213 of 390 field scenes refit 213/390
+[10:34:02]   Modern colour: 214 of 390 field scenes refit 214/390
+[10:34:02]   Modern colour: 215 of 390 field scenes refit 215/390
+[10:34:02]   Modern colour: 216 of 390 field scenes refit 216/390
+[10:34:02]   Modern colour: 217 of 390 field scenes refit 217/390
+[10:34:02]   Modern colour: 218 of 390 field scenes refit 218/390
+[10:34:02]   Modern colour: 219 of 390 field scenes refit 219/390
+[10:34:02]   Modern colour: 220 of 390 field scenes refit 220/390
+[10:34:02]   Modern colour: 221 of 390 field scenes refit 221/390
+[10:34:02]   Modern colour: 222 of 390 field scenes refit 222/390
+[10:34:02]   Modern colour: 223 of 390 field scenes refit 223/390
+[10:34:02]   Modern colour: 224 of 390 field scenes refit 224/390
+[10:34:02]   Modern colour: 225 of 390 field scenes refit 225/390
+[10:34:02]   Modern colour: 226 of 390 field scenes refit 226/390
+[10:34:02]   Modern colour: 227 of 390 field scenes refit 227/390
+[10:34:02]   Modern colour: 228 of 390 field scenes refit 228/390
+[10:34:02]   Modern colour: 229 of 390 field scenes refit 229/390
+[10:34:02]   Modern colour: 230 of 390 field scenes refit 230/390
+[10:34:02]   Modern colour: 231 of 390 field scenes refit 231/390
+[10:34:02]   Modern colour: 232 of 390 field scenes refit 232/390
+[10:34:02]   Modern colour: 233 of 390 field scenes refit 233/390
+[10:34:02]   Modern colour: 234 of 390 field scenes refit 234/390
+[10:34:02]   Modern colour: 235 of 390 field scenes refit 235/390
+[10:34:02]   Modern colour: 236 of 390 field scenes refit 236/390
+[10:34:02]   Modern colour: 237 of 390 field scenes refit 237/390
+[10:34:02]   Modern colour: 238 of 390 field scenes refit 238/390
+[10:34:02]   Modern colour: 239 of 390 field scenes refit 239/390
+[10:34:02]   Modern colour: 240 of 390 field scenes refit 240/390
+[10:34:02]   Modern colour: 241 of 390 field scenes refit 241/390
+[10:34:02]   Modern colour: 242 of 390 field scenes refit 242/390
+[10:34:02]   Modern colour: 243 of 390 field scenes refit 243/390
+[10:34:02]   Modern colour: 244 of 390 field scenes refit 244/390
+[10:34:58]   Modern colour: 245 of 390 field scenes refit 245/390
+[10:34:58]   Modern colour: 246 of 390 field scenes refit 246/390
+[10:34:58]   Modern colour: 247 of 390 field scenes refit 247/390
+[10:34:58]   Modern colour: 248 of 390 field scenes refit 248/390
+[10:34:58]   Modern colour: 249 of 390 field scenes refit 249/390
+[10:34:58]   Modern colour: 250 of 390 field scenes refit 250/390
+[10:34:58]   Modern colour: 251 of 390 field scenes refit 251/390
+[10:34:58]   Modern colour: 252 of 390 field scenes refit 252/390
+[10:35:03]   Modern colour: 253 of 390 field scenes refit 253/390
+[10:35:03]   Modern colour: 254 of 390 field scenes refit 254/390
+[10:35:03]   Modern colour: 255 of 390 field scenes refit 255/390
+[10:35:03]   Modern colour: 256 of 390 field scenes refit 256/390
+[10:35:03]   Modern colour: 257 of 390 field scenes refit 257/390
+[10:35:03]   Modern colour: 258 of 390 field scenes refit 258/390
+[10:35:03]   Modern colour: 259 of 390 field scenes refit 259/390
+[10:35:03]   Modern colour: 260 of 390 field scenes refit 260/390
+[10:35:03]   Modern colour: 261 of 390 field scenes refit 261/390
+[10:35:03]   Modern colour: 262 of 390 field scenes refit 262/390
+[10:35:03]   Modern colour: 263 of 390 field scenes refit 263/390
+[10:35:03]   Modern colour: 264 of 390 field scenes refit 264/390
+[10:35:03]   Modern colour: 265 of 390 field scenes refit 265/390
+[10:35:03]   Modern colour: 266 of 390 field scenes refit 266/390
+[10:35:03]   Modern colour: 267 of 390 field scenes refit 267/390
+[10:35:03]   Modern colour: 268 of 390 field scenes refit 268/390
+[10:35:03]   Modern colour: 269 of 390 field scenes refit 269/390
+[10:35:03]   Modern colour: 270 of 390 field scenes refit 270/390
+[10:35:03]   Modern colour: 271 of 390 field scenes refit 271/390
+[10:35:03]   Modern colour: 272 of 390 field scenes refit 272/390
+[10:35:03]   Modern colour: 273 of 390 field scenes refit 273/390
+[10:35:03]   Modern colour: 274 of 390 field scenes refit 274/390
+[10:35:03]   Modern colour: 275 of 390 field scenes refit 275/390
+[10:35:03]   Modern colour: 276 of 390 field scenes refit 276/390
+[10:35:03]   Modern colour: 277 of 390 field scenes refit 277/390
+[10:35:03]   Modern colour: 278 of 390 field scenes refit 278/390
+[10:35:03]   Modern colour: 279 of 390 field scenes refit 279/390
+[10:35:03]   Modern colour: 280 of 390 field scenes refit 280/390
+[10:35:03]   Modern colour: 281 of 390 field scenes refit 281/390
+[10:35:03]   Modern colour: 282 of 390 field scenes refit 282/390
+[10:35:03]   Modern colour: 283 of 390 field scenes refit 283/390
+[10:35:03]   Modern colour: 284 of 390 field scenes refit 284/390
+[10:35:03]   Modern colour: 285 of 390 field scenes refit 285/390
+[10:35:03]   Modern colour: 286 of 390 field scenes refit 286/390
+[10:35:03]   Modern colour: 287 of 390 field scenes refit 287/390
+[10:35:03]   Modern colour: 288 of 390 field scenes refit 288/390
+[10:35:03]   Modern colour: 289 of 390 field scenes refit 289/390
+[10:35:03]   Modern colour: 290 of 390 field scenes refit 290/390
+[10:35:03]   Modern colour: 291 of 390 field scenes refit 291/390
+[10:35:03]   Modern colour: 292 of 390 field scenes refit 292/390
+[10:35:03]   Modern colour: 293 of 390 field scenes refit 293/390
+[10:35:03]   Modern colour: 294 of 390 field scenes refit 294/390
+[10:35:03]   Modern colour: 295 of 390 field scenes refit 295/390
+[10:35:03]   Modern colour: 296 of 390 field scenes refit 296/390
+[10:35:03]   Modern colour: 297 of 390 field scenes refit 297/390
+[10:35:03]   Modern colour: 298 of 390 field scenes refit 298/390
+[10:35:03]   Modern colour: 299 of 390 field scenes refit 299/390
+[10:35:03]   Modern colour: 300 of 390 field scenes refit 300/390
+[10:35:03]   Modern colour: 301 of 390 field scenes refit 301/390
+[10:35:03]   Modern colour: 302 of 390 field scenes refit 302/390
+[10:35:03]   Modern colour: 303 of 390 field scenes refit 303/390
+[10:35:34]   Modern colour: 304 of 390 field scenes refit 304/390
+[10:35:34]   Modern colour: 305 of 390 field scenes refit 305/390
+[10:35:34]   Modern colour: 306 of 390 field scenes refit 306/390
+[10:35:34]   Modern colour: 307 of 390 field scenes refit 307/390
+[10:35:34]   Modern colour: 308 of 390 field scenes refit 308/390
+[10:35:34]   Modern colour: 309 of 390 field scenes refit 309/390
+[10:35:34]   Modern colour: 310 of 390 field scenes refit 310/390
+[10:35:34]   Modern colour: 311 of 390 field scenes refit 311/390
+[10:35:34]   Modern colour: 312 of 390 field scenes refit 312/390
+[10:35:34]   Modern colour: 313 of 390 field scenes refit 313/390
+[10:35:34]   Modern colour: 314 of 390 field scenes refit 314/390
+[10:35:34]   Modern colour: 315 of 390 field scenes refit 315/390
+[10:35:34]   Modern colour: 316 of 390 field scenes refit 316/390
+[10:35:34]   Modern colour: 317 of 390 field scenes refit 317/390
+[10:35:34]   Modern colour: 318 of 390 field scenes refit 318/390
+[10:35:34]   Modern colour: 319 of 390 field scenes refit 319/390
+[10:35:34]   Modern colour: 320 of 390 field scenes refit 320/390
+[10:35:34]   Modern colour: 321 of 390 field scenes refit 321/390
+[10:35:34]   Modern colour: 322 of 390 field scenes refit 322/390
+[10:35:34]   Modern colour: 323 of 390 field scenes refit 323/390
+[10:35:34]   Modern colour: 324 of 390 field scenes refit 324/390
+[10:35:34]   Modern colour: 325 of 390 field scenes refit 325/390
+[10:35:34]   Modern colour: 326 of 390 field scenes refit 326/390
+[10:35:34]   Modern colour: 327 of 390 field scenes refit 327/390
+[10:35:34]   Modern colour: 328 of 390 field scenes refit 328/390
+[10:35:34]   Modern colour: 329 of 390 field scenes refit 329/390
+[10:35:34]   Modern colour: 330 of 390 field scenes refit 330/390
+[10:35:34]   Modern colour: 331 of 390 field scenes refit 331/390
+[10:35:34]   Modern colour: 332 of 390 field scenes refit 332/390
+[10:35:34]   Modern colour: 333 of 390 field scenes refit 333/390
+[10:35:34]   Modern colour: 334 of 390 field scenes refit 334/390
+[10:35:34]   Modern colour: 335 of 390 field scenes refit 335/390
+[10:35:34]   Modern colour: 336 of 390 field scenes refit 336/390
+[10:35:34]   Modern colour: 337 of 390 field scenes refit 337/390
+[10:35:34]   Modern colour: 338 of 390 field scenes refit 338/390
+[10:35:34]   Modern colour: 339 of 390 field scenes refit 339/390
+[10:35:34]   Modern colour: 340 of 390 field scenes refit 340/390
+[10:35:34]   Modern colour: 341 of 390 field scenes refit 341/390
+[10:35:34]   Modern colour: 342 of 390 field scenes refit 342/390
+[10:35:34]   Modern colour: 343 of 390 field scenes refit 343/390
+[10:35:34]   Modern colour: 344 of 390 field scenes refit 344/390
+[10:35:34]   Modern colour: 345 of 390 field scenes refit 345/390
+[10:35:34]   Modern colour: 346 of 390 field scenes refit 346/390
+[10:35:34]   Modern colour: 347 of 390 field scenes refit 347/390
+[10:35:34]   Modern colour: 348 of 390 field scenes refit 348/390
+[10:35:34]   Modern colour: 349 of 390 field scenes refit 349/390
+[10:35:48]   Modern colour: 350 of 390 field scenes refit 350/390
+[10:35:48]   Modern colour: 351 of 390 field scenes refit 351/390
+[10:35:48]   Modern colour: 352 of 390 field scenes refit 352/390
+[10:35:48]   Modern colour: 353 of 390 field scenes refit 353/390
+[10:35:48]   Modern colour: 354 of 390 field scenes refit 354/390
+[10:35:48]   Modern colour: 355 of 390 field scenes refit 355/390
+[10:35:48]   Modern colour: 356 of 390 field scenes refit 356/390
+[10:35:48]   Modern colour: 357 of 390 field scenes refit 357/390
+[10:35:48]   Modern colour: 358 of 390 field scenes refit 358/390
+[10:35:48]   Modern colour: 359 of 390 field scenes refit 359/390
+[10:35:48]   Modern colour: 360 of 390 field scenes refit 360/390
+[10:35:48]   Modern colour: 361 of 390 field scenes refit 361/390
+[10:35:48]   Modern colour: 362 of 390 field scenes refit 362/390
+[10:35:48]   Modern colour: 363 of 390 field scenes refit 363/390
+[10:35:48]   Modern colour: 364 of 390 field scenes refit 364/390
+[10:35:48]   Modern colour: 365 of 390 field scenes refit 365/390
+[10:35:48]   Modern colour: 366 of 390 field scenes refit 366/390
+[10:35:48]   Modern colour: 367 of 390 field scenes refit 367/390
+[10:35:48]   Modern colour: 368 of 390 field scenes refit 368/390
+[10:35:48]   Modern colour: 369 of 390 field scenes refit 369/390
+[10:35:48]   Modern colour: 370 of 390 field scenes refit 370/390
+[10:35:48]   Modern colour: 371 of 390 field scenes refit 371/390
+[10:35:48]   Modern colour: 372 of 390 field scenes refit 372/390
+[10:35:48]   Modern colour: 373 of 390 field scenes refit 373/390
+[10:35:48]   Modern colour: 374 of 390 field scenes refit 374/390
+[10:35:48]   Modern colour: 375 of 390 field scenes refit 375/390
+[10:35:48]   Modern colour: 376 of 390 field scenes refit 376/390
+[10:35:48]   Modern colour: 377 of 390 field scenes refit 377/390
+[10:35:48]   Modern colour: 378 of 390 field scenes refit 378/390
+[10:35:48]   Modern colour: 379 of 390 field scenes refit 379/390
+[10:35:48]   Modern colour: 380 of 390 field scenes refit 380/390
+[10:35:48]   Modern colour: 381 of 390 field scenes refit 381/390
+[10:35:48]   Modern colour: 382 of 390 field scenes refit 382/390
+[10:35:48]   Modern colour: 383 of 390 field scenes refit 383/390
+[10:35:48]   Modern colour: 384 of 390 field scenes refit 384/390
+[10:35:48]   Modern colour: 385 of 390 field scenes refit 385/390
+[10:35:48]   Modern colour: 386 of 390 field scenes refit 386/390
+[10:35:48]   Modern colour: 387 of 390 field scenes refit 387/390
+[10:35:48]   Modern colour: 388 of 390 field scenes refit 388/390
+[10:35:48]   Modern colour: 389 of 390 field scenes refit 389/390
+[10:35:48]   Modern colour: 390 of 390 field scenes refit 390/390
+[10:35:48]   Colour & lighting: writing stadium bundles (1 of 477) 1/477
+[10:35:50]   Colour & lighting: writing stadium bundles (41 of 477) 41/477
+[10:35:52]   Colour & lighting: writing stadium bundles (81 of 477) 81/477
+[10:35:54]   Colour & lighting: writing stadium bundles (121 of 477) 121/477
+[10:35:56]   Colour & lighting: writing stadium bundles (161 of 477) 161/477
+[10:35:57]   Colour & lighting: writing stadium bundles (201 of 477) 201/477
+[10:35:59]   Colour & lighting: writing stadium bundles (241 of 477) 241/477
+[10:36:01]   Colour & lighting: writing stadium bundles (281 of 477) 281/477
+[10:36:03]   Colour & lighting: writing stadium bundles (321 of 477) 321/477
+[10:36:04]   Colour & lighting: writing stadium bundles (361 of 477) 361/477
+[10:36:06]   Colour & lighting: writing stadium bundles (401 of 477) 401/477
+[10:36:07]   Colour & lighting: writing stadium bundles (441 of 477) 441/477
+[10:36:09]   Modern MetLife Stadium: Giants and Jets packages
+[10:36:48]   Modern MetLife and colour: s19as.iff (1 of 18) 1/18
+[10:36:49]   Modern MetLife and colour: s19ds.iff (2 of 18) 2/18
+[10:36:49]   Modern MetLife and colour: s19ar.iff (3 of 18) 3/18
+[10:36:49]   Modern MetLife and colour: s19nd.iff (4 of 18) 4/18
+[10:36:49]   Modern MetLife and colour: s19dr.iff (5 of 18) 5/18
+[10:36:50]   Modern MetLife and colour: s19dd.iff (6 of 18) 6/18
+[10:36:50]   Modern MetLife and colour: s19ad.iff (7 of 18) 7/18
+[10:37:23]   Modern MetLife and colour: s19ns.iff (8 of 18) 8/18
+[10:37:24]   Modern MetLife and colour: s19nr.iff (9 of 18) 9/18
+[10:38:14]   Modern MetLife and colour: s18nr.iff (10 of 18) 10/18
+[10:38:21]   Modern MetLife and colour: s18dr.iff (11 of 18) 11/18
+[10:38:22]   Modern MetLife and colour: s18nd.iff (12 of 18) 12/18
+[10:38:23]   Modern MetLife and colour: s18ad.iff (13 of 18) 13/18
+[10:38:26]   Modern MetLife and colour: s18dd.iff (14 of 18) 14/18
+[10:38:37]   Modern MetLife and colour: s18ar.iff (15 of 18) 15/18
+[10:39:37]   Modern MetLife and colour: s18ds.iff (16 of 18) 16/18
+[10:39:39]   Modern MetLife and colour: s18as.iff (17 of 18) 17/18
+[10:39:47]   Modern MetLife and colour: s18ns.iff (18 of 18) 18/18
+[10:39:51]   2026 venue art: home stadium packages
+[10:39:53]   2026 venue art: s00 (ARZ) 0/28
+[10:39:58]   2026 venue art: s01 (ATL) 1/28
+[10:40:04]   2026 venue art: s02 (BAL) 2/28
+[10:40:11]   2026 venue art: s03 (BUF) 3/28
+[10:40:19]   2026 venue art: s00ns.iff (1 of 252) 1/252
+[10:40:20]   2026 venue art: s00ds.iff (2 of 252) 2/252
+[10:40:21]   2026 venue art: s00dd.iff (3 of 252) 3/252
+[10:40:21]   2026 venue art: s00ar.iff (4 of 252) 4/252
+[10:40:22]   2026 venue art: s00nr.iff (5 of 252) 5/252
+[10:40:22]   2026 venue art: s04 (CAR) 4/28
+[10:40:30]   2026 venue art: s00as.iff (6 of 252) 6/252
+[10:40:30]   2026 venue art: s00nd.iff (7 of 252) 7/252
+[10:40:30]   2026 venue art: s00ad.iff (8 of 252) 8/252
+[10:40:30]   2026 venue art: s00dr.iff (9 of 252) 9/252
+[10:40:30]   2026 venue art: s01dd.iff (10 of 252) 10/252
+[10:40:31]   2026 venue art: s01dr.iff (11 of 252) 11/252
+[10:40:31]   2026 venue art: s01nd.iff (12 of 252) 12/252
+[10:40:32]   2026 venue art: s01ds.iff (13 of 252) 13/252
+[10:40:32]   2026 venue art: s01ar.iff (14 of 252) 14/252
+[10:40:32]   2026 venue art: s05 (CHI) 5/28
+[10:40:41]   2026 venue art: s01ad.iff (15 of 252) 15/252
+[10:40:41]   2026 venue art: s01as.iff (16 of 252) 16/252
+[10:40:44]   2026 venue art: s01nr.iff (17 of 252) 17/252
+[10:40:46]   2026 venue art: s01ns.iff (18 of 252) 18/252
+[10:40:47]   2026 venue art: s02ds.iff (19 of 252) 19/252
+[10:40:48]   2026 venue art: s02ad.iff (20 of 252) 20/252
+[10:40:48]   2026 venue art: s02dd.iff (21 of 252) 21/252
+[10:40:49]   2026 venue art: s02as.iff (22 of 252) 22/252
+[10:40:49]   2026 venue art: s02dr.iff (23 of 252) 23/252
+[10:40:49]   2026 venue art: s06 (CIN) 6/28
+[10:40:57]   2026 venue art: s03ad.iff (24 of 252) 24/252
+[10:40:57]   2026 venue art: s02nd.iff (25 of 252) 25/252
+[10:40:57]   2026 venue art: s02ar.iff (26 of 252) 26/252
+[10:40:57]   2026 venue art: s02nr.iff (27 of 252) 27/252
+[10:40:57]   2026 venue art: s03dd.iff (28 of 252) 28/252
+[10:40:59]   2026 venue art: s03dr.iff (29 of 252) 29/252
+[10:40:59]   2026 venue art: s02ns.iff (30 of 252) 30/252
+[10:41:00]   2026 venue art: s03ds.iff (31 of 252) 31/252
+[10:41:01]   2026 venue art: s03ar.iff (32 of 252) 32/252
+[10:41:01]   2026 venue art: s07 (DAL) 7/28
+[10:41:08]   2026 venue art: s03as.iff (33 of 252) 33/252
+[10:41:12]   2026 venue art: s03nd.iff (34 of 252) 34/252
+[10:41:14]   2026 venue art: s03nr.iff (35 of 252) 35/252
+[10:41:15]   2026 venue art: s03ns.iff (36 of 252) 36/252
+[10:41:19]   2026 venue art: s04ad.iff (37 of 252) 37/252
+[10:41:21]   2026 venue art: s04ds.iff (38 of 252) 38/252
+[10:41:22]   2026 venue art: s04dd.iff (39 of 252) 39/252
+[10:41:24]   2026 venue art: s04dr.iff (40 of 252) 40/252
+[10:41:28]   2026 venue art: s04ar.iff (41 of 252) 41/252
+[10:41:28]   2026 venue art: s08 (DEN) 8/28
+[10:41:35]   2026 venue art: s04nd.iff (42 of 252) 42/252
+[10:41:35]   2026 venue art: s05ds.iff (43 of 252) 43/252
+[10:41:35]   2026 venue art: s04ns.iff (44 of 252) 44/252
+[10:41:35]   2026 venue art: s05ad.iff (45 of 252) 45/252
+[10:41:35]   2026 venue art: s05dd.iff (46 of 252) 46/252
+[10:41:35]   2026 venue art: s04as.iff (47 of 252) 47/252
+[10:41:35]   2026 venue art: s05dr.iff (48 of 252) 48/252
+[10:41:35]   2026 venue art: s04nr.iff (49 of 252) 49/252
+[10:41:39]   2026 venue art: s05ar.iff (50 of 252) 50/252
+[10:41:39]   2026 venue art: s09 (DET) 9/28
+[10:41:47]   2026 venue art: s05as.iff (51 of 252) 51/252
+[10:41:47]   2026 venue art: s05nd.iff (52 of 252) 52/252
+[10:41:47]   2026 venue art: s06dd.iff (53 of 252) 53/252
+[10:41:47]   2026 venue art: s05nr.iff (54 of 252) 54/252
+[10:41:49]   2026 venue art: s06nd.iff (55 of 252) 55/252
+[10:41:49]   2026 venue art: s06dr.iff (56 of 252) 56/252
+[10:41:51]   2026 venue art: s06ad.iff (57 of 252) 57/252
+[10:41:51]   2026 venue art: s05ns.iff (58 of 252) 58/252
+[10:41:52]   2026 venue art: s07dd.iff (59 of 252) 59/252
+[10:41:52]   2026 venue art: s10 (GB) 10/28
+[10:42:03]   2026 venue art: s07dr.iff (60 of 252) 60/252
+[10:42:03]   2026 venue art: s07ds.iff (61 of 252) 61/252
+[10:42:03]   2026 venue art: s06ds.iff (62 of 252) 62/252
+[10:42:03]   2026 venue art: s06nr.iff (63 of 252) 63/252
+[10:42:03]   2026 venue art: s06as.iff (64 of 252) 64/252
+[10:42:03]   2026 venue art: s06ns.iff (65 of 252) 65/252
+[10:42:03]   2026 venue art: s06ar.iff (66 of 252) 66/252
+[10:42:05]   2026 venue art: s07ad.iff (67 of 252) 67/252
+[10:42:05]   2026 venue art: s07ar.iff (68 of 252) 68/252
+[10:42:05]   2026 venue art: s11 (IND) 11/28
+[10:42:14]   2026 venue art: s07nd.iff (69 of 252) 69/252
+[10:42:14]   2026 venue art: s07ns.iff (70 of 252) 70/252
+[10:42:14]   2026 venue art: s07nr.iff (71 of 252) 71/252
+[10:42:14]   2026 venue art: s07as.iff (72 of 252) 72/252
+[10:42:14]   2026 venue art: s08ds.iff (73 of 252) 73/252
+[10:42:15]   2026 venue art: s08dd.iff (74 of 252) 74/252
+[10:42:16]   2026 venue art: s08dr.iff (75 of 252) 75/252
+[10:42:17]   2026 venue art: s08as.iff (76 of 252) 76/252
+[10:42:19]   2026 venue art: s08ad.iff (77 of 252) 77/252
+[10:42:19]   2026 venue art: s12 (JAX) 12/28
+[10:42:30]   2026 venue art: s08ns.iff (78 of 252) 78/252
+[10:42:30]   2026 venue art: s09dd.iff (79 of 252) 79/252
+[10:42:30]   2026 venue art: s08ar.iff (80 of 252) 80/252
+[10:42:30]   2026 venue art: s08nr.iff (81 of 252) 81/252
+[10:42:30]   2026 venue art: s08nd.iff (82 of 252) 82/252
+[10:42:31]   2026 venue art: s09ds.iff (83 of 252) 83/252
+[10:42:35]   2026 venue art: s09ar.iff (84 of 252) 84/252
+[10:42:35]   2026 venue art: s09dr.iff (85 of 252) 85/252
+[10:42:36]   2026 venue art: s09ad.iff (86 of 252) 86/252
+[10:42:36]   2026 venue art: s13 (KC) 13/28
+[10:43:53]   2026 venue art: s11ds.iff (87 of 252) 87/252
+[10:43:53]   2026 venue art: s10ar.iff (88 of 252) 88/252
+[10:43:54]   2026 venue art: s12dd.iff (89 of 252) 89/252
+[10:43:54]   2026 venue art: s10ad.iff (90 of 252) 90/252
+[10:43:54]   2026 venue art: s11ns.iff (91 of 252) 91/252
+[10:43:54]   2026 venue art: s12ad.iff (92 of 252) 92/252
+[10:43:54]   2026 venue art: s09nd.iff (93 of 252) 93/252
+[10:43:54]   2026 venue art: s11nd.iff (94 of 252) 94/252
+[10:43:54]   2026 venue art: s10nr.iff (95 of 252) 95/252
+[10:43:54]   2026 venue art: s10dd.iff (96 of 252) 96/252
+[10:43:54]   2026 venue art: s10dr.iff (97 of 252) 97/252
+[10:43:54]   2026 venue art: s10ds.iff (98 of 252) 98/252
+[10:43:54]   2026 venue art: s11as.iff (99 of 252) 99/252
+[10:43:54]   2026 venue art: s09nr.iff (100 of 252) 100/252
+[10:43:54]   2026 venue art: s11nr.iff (101 of 252) 101/252
+[10:43:54]   2026 venue art: s11dr.iff (102 of 252) 102/252
+[10:43:54]   2026 venue art: s10nd.iff (103 of 252) 103/252
+[10:43:54]   2026 venue art: s12ds.iff (104 of 252) 104/252
+[10:43:54]   2026 venue art: s10ns.iff (105 of 252) 105/252
+[10:43:54]   2026 venue art: s11ad.iff (106 of 252) 106/252
+[10:43:54]   2026 venue art: s12dr.iff (107 of 252) 107/252
+[10:43:54]   2026 venue art: s11ar.iff (108 of 252) 108/252
+[10:43:54]   2026 venue art: s09as.iff (109 of 252) 109/252
+[10:43:54]   2026 venue art: s09ns.iff (110 of 252) 110/252
+[10:43:54]   2026 venue art: s11dd.iff (111 of 252) 111/252
+[10:43:54]   2026 venue art: s14 (MIA) 14/28
+[10:44:15]   2026 venue art: s15 (MIN) 15/28
+[10:44:38]   2026 venue art: s10as.iff (112 of 252) 112/252
+[10:44:38]   2026 venue art: s12ar.iff (113 of 252) 113/252
+[10:44:38]   2026 venue art: s13ds.iff (114 of 252) 114/252
+[10:44:38]   2026 venue art: s12as.iff (115 of 252) 115/252
+[10:44:39]   2026 venue art: s13dr.iff (116 of 252) 116/252
+[10:44:39]   2026 venue art: s13nd.iff (117 of 252) 117/252
+[10:44:39]   2026 venue art: s13ar.iff (118 of 252) 118/252
+[10:44:39]   2026 venue art: s12ns.iff (119 of 252) 119/252
+[10:44:39]   2026 venue art: s13dd.iff (120 of 252) 120/252
+[10:44:39]   2026 venue art: s13nr.iff (121 of 252) 121/252
+[10:44:39]   2026 venue art: s13as.iff (122 of 252) 122/252
+[10:44:39]   2026 venue art: s12nr.iff (123 of 252) 123/252
+[10:44:39]   2026 venue art: s13ns.iff (124 of 252) 124/252
+[10:44:39]   2026 venue art: s13ad.iff (125 of 252) 125/252
+[10:44:40]   2026 venue art: s12nd.iff (126 of 252) 126/252
+[10:44:40]   2026 venue art: s16 (NE) 16/28
+[10:45:07]   2026 venue art: s17 (NO) 17/28
+[10:45:24]   2026 venue art: s14ad.iff (127 of 252) 127/252
+[10:45:24]   2026 venue art: s14ar.iff (128 of 252) 128/252
+[10:45:24]   2026 venue art: s14dr.iff (129 of 252) 129/252
+[10:45:24]   2026 venue art: s14nd.iff (130 of 252) 130/252
+[10:45:24]   2026 venue art: s14nr.iff (131 of 252) 131/252
+[10:45:24]   2026 venue art: s14dd.iff (132 of 252) 132/252
+[10:45:24]   2026 venue art: s14ds.iff (133 of 252) 133/252
+[10:45:24]   2026 venue art: s14as.iff (134 of 252) 134/252
+[10:45:25]   2026 venue art: s14ns.iff (135 of 252) 135/252
+[10:45:25]   2026 venue art: s20 (OAK) 18/28
+[10:45:39]   2026 venue art: s15ad.iff (136 of 252) 136/252
+[10:45:39]   2026 venue art: s15dd.iff (137 of 252) 137/252
+[10:45:40]   2026 venue art: s15as.iff (138 of 252) 138/252
+[10:45:41]   2026 venue art: s15nd.iff (139 of 252) 139/252
+[10:45:42]   2026 venue art: s15ds.iff (140 of 252) 140/252
+[10:45:42]   2026 venue art: s21 (PHI) 19/28
+[10:45:54]   2026 venue art: s16nd.iff (141 of 252) 141/252
+[10:45:54]   2026 venue art: s16dd.iff (142 of 252) 142/252
+[10:45:54]   2026 venue art: s15ar.iff (143 of 252) 143/252
+[10:45:54]   2026 venue art: s16ad.iff (144 of 252) 144/252
+[10:45:54]   2026 venue art: s15nr.iff (145 of 252) 145/252
+[10:45:54]   2026 venue art: s15ns.iff (146 of 252) 146/252
+[10:45:54]   2026 venue art: s15dr.iff (147 of 252) 147/252
+[10:46:05]   2026 venue art: s17dd.iff (148 of 252) 148/252
+[10:46:08]   2026 venue art: s17dr.iff (149 of 252) 149/252
+[10:46:08]   2026 venue art: s22 (PIT) 20/28
+[10:46:55]   2026 venue art: s20nr.iff (150 of 252) 150/252
+[10:46:55]   2026 venue art: s17ad.iff (151 of 252) 151/252
+[10:46:55]   2026 venue art: s17ds.iff (152 of 252) 152/252
+[10:46:55]   2026 venue art: s17nr.iff (153 of 252) 153/252
+[10:46:55]   2026 venue art: s17ar.iff (154 of 252) 154/252
+[10:46:55]   2026 venue art: s17as.iff (155 of 252) 155/252
+[10:46:55]   2026 venue art: s20as.iff (156 of 252) 156/252
+[10:46:55]   2026 venue art: s20ds.iff (157 of 252) 157/252
+[10:46:55]   2026 venue art: s20ar.iff (158 of 252) 158/252
+[10:46:55]   2026 venue art: s20ns.iff (159 of 252) 159/252
+[10:46:55]   2026 venue art: s16nr.iff (160 of 252) 160/252
+[10:46:55]   2026 venue art: s16ns.iff (161 of 252) 161/252
+[10:46:55]   2026 venue art: s16ar.iff (162 of 252) 162/252
+[10:46:55]   2026 venue art: s17ns.iff (163 of 252) 163/252
+[10:46:55]   2026 venue art: s20ad.iff (164 of 252) 164/252
+[10:46:55]   2026 venue art: s16as.iff (165 of 252) 165/252
+[10:46:55]   2026 venue art: s16dr.iff (166 of 252) 166/252
+[10:46:55]   2026 venue art: s20nd.iff (167 of 252) 167/252
+[10:46:55]   2026 venue art: s20dd.iff (168 of 252) 168/252
+[10:46:55]   2026 venue art: s16ds.iff (169 of 252) 169/252
+[10:46:55]   2026 venue art: s17nd.iff (170 of 252) 170/252
+[10:46:55]   2026 venue art: s20dr.iff (171 of 252) 171/252
+[10:46:55]   2026 venue art: s25 (SF) 21/28
+[10:47:07]   2026 venue art: s26 (SEA) 22/28
+[10:47:19]   2026 venue art: s21dr.iff (172 of 252) 172/252
+[10:47:19]   2026 venue art: s21ad.iff (173 of 252) 173/252
+[10:47:19]   2026 venue art: s21ds.iff (174 of 252) 174/252
+[10:47:19]   2026 venue art: s21nd.iff (175 of 252) 175/252
+[10:47:19]   2026 venue art: s21ar.iff (176 of 252) 176/252
+[10:47:19]   2026 venue art: s21as.iff (177 of 252) 177/252
+[10:47:19]   2026 venue art: s21dd.iff (178 of 252) 178/252
+[10:47:19]   2026 venue art: s27 (TB) 23/28
+[10:47:32]   2026 venue art: s21ns.iff (179 of 252) 179/252
+[10:47:32]   2026 venue art: s21nr.iff (180 of 252) 180/252
+[10:47:36]   2026 venue art: s25ds.iff (181 of 252) 181/252
+[10:47:38]   2026 venue art: s25dd.iff (182 of 252) 182/252
+[10:47:39]   2026 venue art: s25dr.iff (183 of 252) 183/252
+[10:47:40]   2026 venue art: s25ad.iff (184 of 252) 184/252
+[10:47:47]   2026 venue art: s25as.iff (185 of 252) 185/252
+[10:47:47]   2026 venue art: s28 (TEN) 24/28
+[10:48:10]   2026 venue art: s22ad.iff (186 of 252) 186/252
+[10:48:10]   2026 venue art: s22as.iff (187 of 252) 187/252
+[10:48:10]   2026 venue art: s22dd.iff (188 of 252) 188/252
+[10:48:10]   2026 venue art: s22dr.iff (189 of 252) 189/252
+[10:48:10]   2026 venue art: s25ar.iff (190 of 252) 190/252
+[10:48:10]   2026 venue art: s25nd.iff (191 of 252) 191/252
+[10:48:10]   2026 venue art: s22nd.iff (192 of 252) 192/252
+[10:48:10]   2026 venue art: s22ar.iff (193 of 252) 193/252
+[10:48:10]   2026 venue art: s22nr.iff (194 of 252) 194/252
+[10:48:10]   2026 venue art: s29 (WAS) 25/28
+[10:48:54]   2026 venue art: s25ns.iff (195 of 252) 195/252
+[10:48:54]   2026 venue art: s26dd.iff (196 of 252) 196/252
+[10:48:54]   2026 venue art: s22ds.iff (197 of 252) 197/252
+[10:48:54]   2026 venue art: s26dr.iff (198 of 252) 198/252
+[10:48:54]   2026 venue art: s26ds.iff (199 of 252) 199/252
+[10:48:54]   2026 venue art: s26as.iff (200 of 252) 200/252
+[10:48:54]   2026 venue art: s25nr.iff (201 of 252) 201/252
+[10:48:55]   2026 venue art: s26ad.iff (202 of 252) 202/252
+[10:48:55]   2026 venue art: s22ns.iff (203 of 252) 203/252
+[10:48:55]   2026 venue art: s30 (CLE) 26/28
+[10:49:31]   2026 venue art: s26nd.iff (204 of 252) 204/252
+[10:49:31]   2026 venue art: s26ar.iff (205 of 252) 205/252
+[10:49:31]   2026 venue art: s27dr.iff (206 of 252) 206/252
+[10:49:31]   2026 venue art: s27dd.iff (207 of 252) 207/252
+[10:49:32]   2026 venue art: s26ns.iff (208 of 252) 208/252
+[10:49:32]   2026 venue art: s26nr.iff (209 of 252) 209/252
+[10:49:35]   2026 venue art: s27ds.iff (210 of 252) 210/252
+[10:49:37]   2026 venue art: s28dr.iff (211 of 252) 211/252
+[10:49:41]   2026 venue art: s27ar.iff (212 of 252) 212/252
+[10:49:41]   2026 venue art: s37 (HOU) 27/28
+[10:50:21]   2026 venue art: s28ad.iff (213 of 252) 213/252
+[10:50:21]   2026 venue art: s28dd.iff (214 of 252) 214/252
+[10:50:21]   2026 venue art: s27nd.iff (215 of 252) 215/252
+[10:50:21]   2026 venue art: s28nd.iff (216 of 252) 216/252
+[10:50:21]   2026 venue art: s28ds.iff (217 of 252) 217/252
+[10:50:21]   2026 venue art: s28as.iff (218 of 252) 218/252
+[10:50:21]   2026 venue art: s27ns.iff (219 of 252) 219/252
+[10:50:21]   2026 venue art: s27ad.iff (220 of 252) 220/252
+[10:50:21]   2026 venue art: s28ar.iff (221 of 252) 221/252
+[10:50:21]   2026 venue art: s27as.iff (222 of 252) 222/252
+[10:50:33]   2026 venue art: s27nr.iff (223 of 252) 223/252
+[10:50:35]   2026 venue art: s28nr.iff (224 of 252) 224/252
+[10:50:40]   2026 venue art: s29ad.iff (225 of 252) 225/252
+[10:50:50]   2026 venue art: s29dd.iff (226 of 252) 226/252
+[10:50:54]   2026 venue art: s29ar.iff (227 of 252) 227/252
+[10:50:55]   2026 venue art: s29ds.iff (228 of 252) 228/252
+[10:50:57]   2026 venue art: s29dr.iff (229 of 252) 229/252
+[10:51:00]   2026 venue art: s28ns.iff (230 of 252) 230/252
+[10:51:08]   2026 venue art: s29nd.iff (231 of 252) 231/252
+[10:51:08]   2026 venue art: s29as.iff (232 of 252) 232/252
+[10:51:13]   2026 venue art: s30dd.iff (233 of 252) 233/252
+[10:51:14]   2026 venue art: s30dr.iff (234 of 252) 234/252
+[10:51:20]   2026 venue art: s30ds.iff (235 of 252) 235/252
+[10:51:27]   2026 venue art: s29nr.iff (236 of 252) 236/252
+[10:51:31]   2026 venue art: s30ad.iff (237 of 252) 237/252
+[10:51:31]   2026 venue art: s29ns.iff (238 of 252) 238/252
+[10:51:35]   2026 venue art: s30nd.iff (239 of 252) 239/252
+[10:51:41]   2026 venue art: s30ns.iff (240 of 252) 240/252
+[10:51:41]   2026 venue art: s30as.iff (241 of 252) 241/252
+[10:51:44]   2026 venue art: s30nr.iff (242 of 252) 242/252
+[10:51:44]   2026 venue art: s37dr.iff (243 of 252) 243/252
+[10:51:45]   2026 venue art: s30ar.iff (244 of 252) 244/252
+[10:51:47]   2026 venue art: s37ds.iff (245 of 252) 245/252
+[10:52:00]   2026 venue art: s37dd.iff (246 of 252) 246/252
+[10:52:04]   2026 venue art: s37ar.iff (247 of 252) 247/252
+[10:52:05]   2026 venue art: s37ad.iff (248 of 252) 248/252
+[10:52:09]   2026 venue art: s37nd.iff (249 of 252) 249/252
+[10:52:10]   2026 venue art: s37as.iff (250 of 252) 250/252
+[10:52:12]   2026 venue art: s37ns.iff (251 of 252) 251/252
+[10:52:16]   2026 venue art: s37nr.iff (252 of 252) 252/252
+[10:52:30]   2026 venue art: done 1/1
+[10:52:31]   Modern MetLife model: Giants and Jets packages
+[10:54:26]   MetLife model: s19dr.iff (1 of 18) 1/18
+[10:54:53]   MetLife model: s19ds.iff (2 of 18) 2/18
+[10:54:53]   MetLife model: s19as.iff (3 of 18) 3/18
+[10:55:05]   MetLife model: s19dd.iff (4 of 18) 4/18
+[10:55:10]   MetLife model: s19ad.iff (5 of 18) 5/18
+[10:55:21]   MetLife model: s19ar.iff (6 of 18) 6/18
+[10:55:22]   MetLife model: s19nd.iff (7 of 18) 7/18
+[10:56:23]   MetLife model: s19nr.iff (8 of 18) 8/18
+[10:56:42]   MetLife model: s19ns.iff (9 of 18) 9/18
+[10:59:32]   MetLife model: s18dr.iff (10 of 18) 10/18
+[10:59:38]   MetLife model: s18nr.iff (11 of 18) 11/18
+[10:59:53]   MetLife model: s18ad.iff (12 of 18) 12/18
+[10:59:57]   MetLife model: s18dd.iff (13 of 18) 13/18
+[10:59:58]   MetLife model: s18ar.iff (14 of 18) 14/18
+[11:00:06]   MetLife model: s18nd.iff (15 of 18) 15/18
+[11:00:56]   MetLife model: s18ns.iff (16 of 18) 16/18
+[11:01:00]   MetLife model: s18as.iff (17 of 18) 17/18
+[11:01:15]   MetLife model: s18ds.iff (18 of 18) 18/18
+[11:02:05]   MetLife model: done 1/1
+[11:02:06]   SoFi Stadium: Rams and Chargers packages
+[11:02:58]   SoFi Stadium: s23nd.iff (1 of 18) 1/18
+[11:03:00]   SoFi Stadium: s24nd.iff (2 of 18) 2/18
+[11:03:01]   SoFi Stadium: s24dd.iff (3 of 18) 3/18
+[11:03:02]   SoFi Stadium: s23ad.iff (4 of 18) 4/18
+[11:03:02]   SoFi Stadium: s23ns.iff (5 of 18) 5/18
+[11:03:03]   SoFi Stadium: s23ds.iff (6 of 18) 6/18
+[11:03:03]   SoFi Stadium: s24dr.iff (7 of 18) 7/18
+[11:03:03]   SoFi Stadium: s23dd.iff (8 of 18) 8/18
+[11:03:05]   SoFi Stadium: s24ad.iff (9 of 18) 9/18
+[11:03:07]   SoFi Stadium: s24ds.iff (10 of 18) 10/18
+[11:03:09]   SoFi Stadium: s24ar.iff (11 of 18) 11/18
+[11:03:10]   SoFi Stadium: s23dr.iff (12 of 18) 12/18
+[11:03:10]   SoFi Stadium: s24as.iff (13 of 18) 13/18
+[11:03:10]   SoFi Stadium: s23nr.iff (14 of 18) 14/18
+[11:03:11]   SoFi Stadium: s23ar.iff (15 of 18) 15/18
+[11:03:14]   SoFi Stadium: s23as.iff (16 of 18) 16/18
+[11:03:27]   SoFi Stadium: s24nr.iff (17 of 18) 17/18
+[11:03:32]   SoFi Stadium: s24ns.iff (18 of 18) 18/18
+[11:03:38]   SoFi Stadium: done 1/1
+[11:03:38]   ESPN presentation marks (2026)
+[11:03:40]   ESPN presentation marks: nfl_chiclet (1 of 4) 0/4
+[11:03:40]   ESPN presentation marks: shield_espn (2 of 4) 1/4
+[11:03:40]   ESPN presentation marks: espnLogo1 (3 of 4) 2/4
+[11:03:40]   ESPN presentation marks: z_ESPN_bug (4 of 4) 3/4
+[11:03:40]   ESPN presentation marks: done 4/4
+[11:03:41]   ESPN 2026 wipes and boards
+[11:03:41]   ESPN 2026 wipes and boards: replay_wipe (1 of 6) 0/6
+[11:03:41]   ESPN 2026 wipes and boards: fullscreen_WipeElectricity (2 of 6) 1/6
+[11:03:42]   ESPN 2026 wipes and boards: fullscreen_WipeRedFlashy (3 of 6) 2/6
+[11:03:42]   ESPN 2026 wipes and boards: scoreboard (4 of 6) 3/6
+[11:03:42]   ESPN 2026 wipes and boards: helmetbumper (5 of 6) 4/6
+[11:03:43]   ESPN 2026 wipes and boards: playercard (6 of 6) 5/6
+[11:03:43]   ESPN 2026 wipes and boards: done 6/6
+[11:03:43]   Writing the custom intro video
+[11:04:05]   copy 0/7517149184
+[11:04:19]   archive 0/4418
+[11:04:31]   verify 1/4418
+[11:04:51]   Hashing the verified disc
+[11:04:56]   The copy differs from your source. Review the Build summary for its selected contents and any edits kept original.
+[11:04:56]   Publishing the verified disc
+[11:04:59] applied 93, expected foreign 2, not applied 0, not inspected 8, skipped pending 0
+[11:04:59] sprite HUD appended bytes 327520
+[11:04:59] ULTIMATE_BUILD_OK target=/media/noah/Storage/.b76-research/pb/astra-build/phase5.44bDdZ/final.xiso.iso bytes=7475951616 seconds=4702

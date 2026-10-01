@@ -1,0 +1,176 @@
+{
+ "fit": {
+  "condense": 0.9661,
+  "field_width": 260.0,
+  "natural_word": 143.152,
+  "widest_plate": 259.0,
+  "widest_prefix": 120.704
+ },
+ "label_Inch": {
+  "cell": [
+   100,
+   300,
+   129,
+   312
+  ],
+  "glyph_size": [
+   88.837,
+   30
+  ],
+  "ink_px": [
+   70.5,
+   23.0
+  ],
+  "sha256": "aa0f265346356c0bc0c57ec472057a8ac7ff2c5eb06bd1d0ff59ce1cc00f0d5a",
+  "texels": [
+   29,
+   12
+  ]
+ },
+ "label_es": {
+  "cell": [
+   136,
+   300,
+   150,
+   312
+  ],
+  "glyph_size": [
+   44.419,
+   30
+  ],
+  "ink_px": [
+   35.25,
+   23.0
+  ],
+  "sha256": "e4de76948f312f35134fab56cd777f50bdb7bfcfeb56affc93c0c183e75f8776",
+  "texels": [
+   14,
+   12
+  ]
+ },
+ "quarter_OT": {
+  "cell": [
+   155,
+   300,
+   167,
+   309
+  ],
+  "glyph_size": [
+   37.278,
+   22
+  ],
+  "ink_px": [
+   30.5,
+   18.0
+  ],
+  "sha256": "e2166d5ca7fcd40aa0e0f3bb34b469e8afc84315ac201744b99c7bbb35d71ec7",
+  "texels": [
+   12,
+   9
+  ]
+ },
+ "tokens": {
+  "label": {
+   "Inch": {
+    "advance": 93.877,
+    "cell": "label_Inch",
+    "raise": 0,
+    "size": [
+     88.837,
+     30
+    ]
+   },
+   "es": {
+    "advance": 46.419,
+    "cell": "label_es",
+    "raise": 0,
+    "size": [
+     44.419,
+     30
+    ]
+   }
+  },
+  "quarter": {
+   "OT": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT1": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT2": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT3": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT4": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT5": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT6": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT7": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT8": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   },
+   "OT9": {
+    "advance": 39.278,
+    "cell": "quarter_OT",
+    "size": [
+     37.278,
+     22
+    ]
+   }
+  }
+ }
+}

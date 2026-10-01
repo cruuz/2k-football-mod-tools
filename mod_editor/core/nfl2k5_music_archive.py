@@ -278,7 +278,40 @@ def rewrite_containers(disc, replacements):
     return result
 
 
-def layout(disc, sizes):
+def pack_sizes(current, end, *, spill=False, reference=None):
+    """New sizes of packs 0..F for an archive whose last outer now ends at virtual ``end``.
+
+    The writer's rule: packs 0..E keep their sizes and pack F takes the whole
+    change.  ``spill`` (b76-f2) carries a shrink larger than pack F: F keeps one
+    sector and the packs before it give up the rest, E first, each keeping at
+    least one sector, so the Crib movie cut composes with the custom intro or
+    the intro trim (on retail F is 451,733,504 bytes and the cut alone takes
+    417,122,304 of them).  ``reference`` (a restore passes the pack sizes of the
+    disc it returns to) first grows a pack that a spill left smaller than that
+    back to it.  Sizes stay whole sectors and the 16 header block counts
+    describe the result: the game resolves packs through those counts (every
+    pack-0 growth moves the virtual start of packs 1..F).
+    """
+    head = list(current[:-1])
+    if reference is not None:
+        require(len(reference) == len(current), "reference pack count differs")
+        head = [max(size, ref) for size, ref in zip(head, reference[:-1])]
+    final = end - sum(head)
+    if spill and final < 2048:
+        deficit = 2048 - final
+        for index in reversed(range(len(head))):
+            take = min(deficit, head[index] - 2048)
+            head[index] -= take
+            deficit -= take
+            if not deficit:
+                break
+        require(not deficit, "the archive shrink exceeds every pack")
+        final = 2048
+    require(0 < final < 2**31, "pack F must be positive and below 2 GiB")
+    return head + [final]
+
+
+def layout(disc, sizes, *, spill=False, reference=None):
     at = align_up(HEADER_SIZE + ENTRY_SIZE * len(disc.archive_entries))
     entries, moved = [], []
     for old in disc.archive_entries:
@@ -291,11 +324,9 @@ def layout(disc, sizes):
         end = at + size
         at = align_up(end)
     require(end == at, "final outer must end on a pack boundary")
-    final_size = end - disc.packs[-1].virtual_start
-    require(0 < final_size < 2**31, "pack F must be positive and below 2 GiB")
-    packs, image_size = [], disc.image_size
-    for pack in disc.packs:
-        size = final_size if pack.name == 'F' else pack.size
+    new_sizes = pack_sizes([pack.size for pack in disc.packs], end, spill=spill, reference=reference)
+    packs, image_size, virtual = [], disc.image_size, 0
+    for pack, size in zip(disc.packs, new_sizes):
         node, sector, _ = disc.nodes[pack.name]
         if size > pack.size:
             offset = align_up(image_size)
@@ -304,9 +335,15 @@ def layout(disc, sizes):
         else:
             offset = disc.pack_extents[pack.name].byte_offset
         require(sector <= 0xFFFFFFFF and size <= 0xFFFFFFFF, "XDVDFS u32 limit")
-        packs.append(dict(name=pack.name, virtual_start=pack.virtual_start, size=size,
+        # Virtual starts follow the new sizes; they move only when a pack before F changes size.
+        packs.append(dict(name=pack.name, virtual_start=virtual, size=size,
                           delta=size-pack.size, offset=offset, sector=sector, node=node))
-    return dict(entries=entries, moved_outers=moved, packs=packs, virtual_size=end, image_size=image_size)
+        virtual += size
+    result = dict(entries=entries, moved_outers=moved, packs=packs, virtual_size=end, image_size=image_size)
+    resized = [p["name"] for p in packs[:-1] if p["delta"]]
+    if resized:
+        result["resized_packs"] = resized
+    return result
 
 
 def write_all(fd, payload, offset):

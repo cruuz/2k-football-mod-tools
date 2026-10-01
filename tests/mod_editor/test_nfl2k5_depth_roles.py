@@ -331,6 +331,8 @@ class OfflineDepthRolesTests(unittest.TestCase):
 class RetailDepthRolesTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         with d._outer_image().OuterImage(RETAIL) as archive:
             cls.raws = {str(e.index): raw for e, raw in d._archive_resources(archive)}
         cls.results = {k: d.normalise(raw) for k, raw in cls.raws.items()}

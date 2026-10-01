@@ -134,17 +134,45 @@ def _lab(color):
     return 116*y - 16, 500*(x-y), 200*(y-z)
 
 
+# A per-colour audit can approach one JSON object per pixel. Three 256x256
+# textures already exceed the parent's 32 MiB receipt limit. Keep exact global
+# measurements and counts, with a deterministic, explicitly labelled sample.
+MAX_MERGED_COLOUR_EXAMPLES = 64
+
+
+def compact_quality(value):
+    """Also compact legacy measurements restored from a compiler cache."""
+    merges = value.get('merged_colours', [])
+    if len(merges) <= MAX_MERGED_COLOUR_EXAMPLES:
+        return value
+    return dict(value, merged_colours=merges[:MAX_MERGED_COLOUR_EXAMPLES],
+                merged_colour_count=len(merges),
+                merged_pixel_count=sum(row['pixels'] for row in merges),
+                merged_colours_omitted=len(merges) - MAX_MERGED_COLOUR_EXAMPLES)
+
+
 def quality(requested, actual):
     if requested == actual:
         return dict(maximum_channel_error=0, mean_delta_e76=0.0, maximum_delta_e76=0.0, merged_colours=[])
     pairs = Counter((tuple(requested[i:i+4]), tuple(actual[i:i+4])) for i in range(0, len(requested), 4))
-    merges = [{"from_rgba": list(a), "to_rgba": list(b), "pixels": n} for (a, b), n in sorted(pairs.items()) if a != b]
+    merges = []
+    merge_count = merge_pixels = 0
+    for (a, b), n in sorted(pairs.items()):
+        if a != b:
+            merge_count += 1
+            merge_pixels += n
+            if len(merges) < MAX_MERGED_COLOUR_EXAMPLES:
+                merges.append({'from_rgba': list(a), 'to_rgba': list(b), 'pixels': n})
     total = len(requested) // 4
     deltas = [(sqrt(sum((x-y)**2 for x, y in zip(_lab(a), _lab(b)))), n) for (a, b), n in pairs.items()]
-    return {"maximum_channel_error": max((max(abs(x-y) for x,y in zip(a,b)) for a,b in pairs), default=0),
+    result = {"maximum_channel_error": max((max(abs(x-y) for x,y in zip(a,b)) for a,b in pairs), default=0),
             "mean_delta_e76": sum(d*n for d,n in deltas) / total if total else 0.0,
             "maximum_delta_e76": max((d for d,n in deltas), default=0.0),
             "merged_colours": merges}
+    if merge_count > len(merges):
+        result.update(merged_colour_count=merge_count, merged_pixel_count=merge_pixels,
+                      merged_colours_omitted=merge_count - len(merges))
+    return result
 
 
 def merge_message(quality):
@@ -153,5 +181,7 @@ def merge_message(quality):
         return ""
     def colour(values):
         return "#" + "".join(f"{value:02X}" for value in values)
+    note = (f" Showing {len(merges)} of {quality['merged_colour_count']} colour changes."
+            if quality.get('merged_colours_omitted') else '')
     return (" Colours merged " + quality["merge_reason"] + ": "
-            + "; ".join(f'{colour(row["from_rgba"])} -> {colour(row["to_rgba"])} ({row["pixels"]} pixels)' for row in merges) + ".")
+            + "; ".join(f'{colour(row["from_rgba"])} -> {colour(row["to_rgba"])} ({row["pixels"]} pixels)' for row in merges) + "." + note)

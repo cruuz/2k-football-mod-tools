@@ -63,7 +63,9 @@ class ProjectRecoveryTests(unittest.TestCase):
         self.assertIn(self.normal.asset_id, str(caught.exception))
         self.assertNotIn(self.mud.asset_id, str(caught.exception))
         saved = self.h.root / 'retained.2k5mod'
-        session.save_shareable_project(saved)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with self.f.context():
+            session.save_shareable_project(saved)
         again = self.h.session('again')
         with self.f.context():
             again.load_shareable_project(saved)
@@ -133,7 +135,9 @@ class ProjectRecoveryTests(unittest.TestCase):
         self.assertIn('bytes encoded', result.message)
         self.assertEqual(result.changed_asset_ids, (self.normal.asset_id,))
         self.assertEqual(session.current_path(self.h.assets[self.mud.asset_id]).read_bytes(), self.originals[self.mud.asset_id])
-        session.save_shareable_project(self.project, replace=True)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with self.f.context():
+            session.save_shareable_project(self.project, replace=True)
         again = self.reopen('refitted')
         self.assertNotIn('needs refit', project_fit_labels(again)[self.normal.asset_id])
         session.undo()

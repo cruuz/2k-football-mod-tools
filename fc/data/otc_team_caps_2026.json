@@ -1,0 +1,202 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "source": "https://overthecap.com/salary-cap-space",
+  "observed_date": "2026-09-25",
+  "season": 2026,
+  "base_cap": 301200000,
+  "scope": "Browser-observed published aggregate; not synchronized with the frozen 53-player roster. Team cap includes carryover and adjustments. No player accounting was backsolved from these totals.",
+  "rows": [
+    {
+      "team": "49ers",
+      "cap_space": 44563162,
+      "active_cap_spending": 254976248,
+      "dead_money": 41023689
+    },
+    {
+      "team": "Lions",
+      "cap_space": 37220387,
+      "active_cap_spending": 252128405,
+      "dead_money": 33067779
+    },
+    {
+      "team": "Falcons",
+      "cap_space": 33058049,
+      "active_cap_spending": 224759355,
+      "dead_money": 47029244
+    },
+    {
+      "team": "Titans",
+      "cap_space": 31647648,
+      "active_cap_spending": 275934717,
+      "dead_money": 35356018
+    },
+    {
+      "team": "Chargers",
+      "cap_space": 29678664,
+      "active_cap_spending": 266994489,
+      "dead_money": 8460277
+    },
+    {
+      "team": "Commanders",
+      "cap_space": 26023283,
+      "active_cap_spending": 275916545,
+      "dead_money": 26228538
+    },
+    {
+      "team": "Colts",
+      "cap_space": 21908829,
+      "active_cap_spending": 261446364,
+      "dead_money": 19708829
+    },
+    {
+      "team": "Cowboys",
+      "cap_space": 21384212,
+      "active_cap_spending": 264556923,
+      "dead_money": 45411952
+    },
+    {
+      "team": "Buccaneers",
+      "cap_space": 16240780,
+      "active_cap_spending": 284260244,
+      "dead_money": 16194483
+    },
+    {
+      "team": "Seahawks",
+      "cap_space": 14121620,
+      "active_cap_spending": 297412241,
+      "dead_money": 2879912
+    },
+    {
+      "team": "Browns",
+      "cap_space": 14063225,
+      "active_cap_spending": 205156617,
+      "dead_money": 119227505
+    },
+    {
+      "team": "Cardinals",
+      "cap_space": 13994127,
+      "active_cap_spending": 231901072,
+      "dead_money": 81614125
+    },
+    {
+      "team": "Jets",
+      "cap_space": 13406072,
+      "active_cap_spending": 194359845,
+      "dead_money": 115272511
+    },
+    {
+      "team": "Steelers",
+      "cap_space": 13303448,
+      "active_cap_spending": 288955190,
+      "dead_money": 18832921
+    },
+    {
+      "team": "Eagles",
+      "cap_space": 12873830,
+      "active_cap_spending": 227892133,
+      "dead_money": 75330672
+    },
+    {
+      "team": "Giants",
+      "cap_space": 12051908,
+      "active_cap_spending": 246100035,
+      "dead_money": 42043391
+    },
+    {
+      "team": "Packers",
+      "cap_space": 11250694,
+      "active_cap_spending": 254995874,
+      "dead_money": 48012896
+    },
+    {
+      "team": "Bengals",
+      "cap_space": 11020419,
+      "active_cap_spending": 294655374,
+      "dead_money": 11688726
+    },
+    {
+      "team": "Raiders",
+      "cap_space": 8286224,
+      "active_cap_spending": 248170744,
+      "dead_money": 57975117
+    },
+    {
+      "team": "Dolphins",
+      "cap_space": 7945143,
+      "active_cap_spending": 117520489,
+      "dead_money": 182648246
+    },
+    {
+      "team": "Vikings",
+      "cap_space": 7657856,
+      "active_cap_spending": 257355076,
+      "dead_money": 49371797
+    },
+    {
+      "team": "Patriots",
+      "cap_space": 7546814,
+      "active_cap_spending": 301149554,
+      "dead_money": 43592727
+    },
+    {
+      "team": "Bears",
+      "cap_space": 7542886,
+      "active_cap_spending": 278198920,
+      "dead_money": 23634728
+    },
+    {
+      "team": "Saints",
+      "cap_space": 7003694,
+      "active_cap_spending": 193633263,
+      "dead_money": 116368509
+    },
+    {
+      "team": "Broncos",
+      "cap_space": 6767004,
+      "active_cap_spending": 290326171,
+      "dead_money": 6424353
+    },
+    {
+      "team": "Texans",
+      "cap_space": 6681442,
+      "active_cap_spending": 231710816,
+      "dead_money": 71669810
+    },
+    {
+      "team": "Bills",
+      "cap_space": 5913274,
+      "active_cap_spending": 247957935,
+      "dead_money": 47200392
+    },
+    {
+      "team": "Panthers",
+      "cap_space": 5874678,
+      "active_cap_spending": 281414449,
+      "dead_money": 24694587
+    },
+    {
+      "team": "Jaguars",
+      "cap_space": 5258739,
+      "active_cap_spending": 244178967,
+      "dead_money": 60710762
+    },
+    {
+      "team": "Ravens",
+      "cap_space": 4426050,
+      "active_cap_spending": 290786802,
+      "dead_money": 18851123
+    },
+    {
+      "team": "Chiefs",
+      "cap_space": 3197703,
+      "active_cap_spending": 282922928,
+      "dead_money": 15449452
+    },
+    {
+      "team": "Rams",
+      "cap_space": 2734195,
+      "active_cap_spending": 298583377,
+      "dead_money": 12290258
+    }
+  ]
+}

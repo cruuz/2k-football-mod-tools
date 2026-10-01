@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 
 _TESTS = Path(__file__).resolve().parent
@@ -22,7 +23,9 @@ import conftest  # noqa: E402
 
 class GameDataDetectionTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.root = Path(tempfile.mkdtemp(prefix="conftest-skip-"))
+        temporary = tempfile.TemporaryDirectory(prefix="conftest-skip-")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
         self.absent = self.root / "reports" / "assets"
         self.present = self.root / "extracted"
         self.present.mkdir(parents=True)
@@ -135,6 +138,114 @@ class GameDataDetectionTests(unittest.TestCase):
         self.assertIsNotNone(conftest._missing_game_data(error))
         disc.write_bytes(b"a dump that is present")
         self.assertIsNone(conftest._missing_game_data(error))
+
+    def report_for(self, error, failure_exception=AssertionError):
+        report = SimpleNamespace(outcome="failed", longrepr="original failure")
+        item = SimpleNamespace(
+            fspath="test_example.py", location=("test_example.py", 7, "test_example"),
+            _testcase=SimpleNamespace(failureException=failure_exception),
+        )
+        call = SimpleNamespace(excinfo=SimpleNamespace(value=error))
+        hook = conftest.pytest_runtest_makereport(item, call)
+        next(hook)
+        with self.assertRaises(StopIteration):
+            hook.send(SimpleNamespace(get_result=lambda: report))
+        return report
+
+    def test_assertion_naming_research_remains_a_failure(self):
+        conftest.GITIGNORED_TREES += (self.root / "research",)
+        report = self.report_for(AssertionError("missing docs/research/apf_audio.md"))
+        self.assertEqual(report.outcome, "failed")
+        self.assertEqual(report.longrepr, "original failure")
+
+    def test_missing_file_report_becomes_a_skip(self):
+        report = self.report_for(FileNotFoundError(2, "absent", str(self.absent / "x.json")))
+        self.assertEqual(report.outcome, "skipped")
+        self.assertIn("game data not present: reports/assets/x.json", report.longrepr[2])
+
+    def test_wrapped_missing_file_report_becomes_a_skip(self):
+        error = RuntimeError("tool could not read input")
+        error.__cause__ = FileNotFoundError(2, "absent", str(self.absent / "x.json"))
+        self.assertEqual(self.report_for(error).outcome, "skipped")
+
+    def test_present_tree_report_remains_a_failure(self):
+        for error in (
+            FileNotFoundError(2, "absent", str(self.present / "x.json")),
+            FileNotFoundError(2, "absent", bytes(self.present / "x.json")),
+            FileNotFoundError(2, "absent", str(self.present / "output.iso")),
+            FileNotFoundError(2, "absent", str(self.present / "output.qcow2")),
+            ValueError(f"source report is missing: {self.present}/x.json"),
+        ):
+            with self.subTest(error=error):
+                self.assertEqual(self.report_for(error).outcome, "failed")
+
+    def test_assertion_with_missing_file_cause_or_context_remains_a_failure(self):
+        for link in ("__cause__", "__context__"):
+            error = AssertionError("the operation should have succeeded")
+            setattr(error, link, FileNotFoundError(2, "absent", str(self.absent / "x.json")))
+            with self.subTest(link=link):
+                self.assertEqual(self.report_for(error).outcome, "failed")
+
+    def test_assertion_inside_tool_error_chain_remains_a_failure(self):
+        class FalseVerdict(AssertionError):
+            def __bool__(self):
+                return False
+
+        for verdict in (AssertionError, FalseVerdict):
+            with self.subTest(verdict=verdict.__name__):
+                error = ValueError(f"missing input: {self.absent}/x.json")
+                error.__cause__ = verdict("wrong output")
+                self.assertEqual(self.report_for(error).outcome, "failed")
+
+    def test_custom_unittest_failure_exception_remains_a_failure(self):
+        class Verdict(ValueError):
+            pass
+
+        error = Verdict(f"missing input: {self.absent}/x.json")
+        error.__cause__ = FileNotFoundError(2, "absent", str(self.absent / "x.json"))
+        self.assertEqual(self.report_for(error, Verdict).outcome, "failed")
+
+    def test_pytest_fail_remains_a_failure(self):
+        if not hasattr(conftest.pytest, "fail"):
+            self.skipTest("pytest is not installed")
+        error = conftest.pytest.fail.Exception(f"missing input: {self.absent}/x.json")
+        error.__cause__ = FileNotFoundError(2, "absent", str(self.absent / "x.json"))
+        self.assertEqual(self.report_for(error).outcome, "failed")
+
+    def test_tool_path_mention_without_absence_is_a_failure(self):
+        for message in (f"invalid format in {self.absent}/x.json",
+                        f"missing checksum in {self.absent}/x.json"):
+            with self.subTest(message=message):
+                self.assertEqual(self.report_for(ValueError(message)).outcome, "failed")
+
+    def test_tool_explicit_absence_becomes_a_skip(self):
+        for message in (
+            "source report is missing or symlinked: reports/assets/x.json",
+            "missing local file reports/assets/x.json",
+            "reports/assets/x.json does not exist",
+            "required input is missing: reports/assets/x.json",
+        ):
+            with self.subTest(message=message):
+                self.assertEqual(self.report_for(ValueError(message)).outcome, "skipped")
+
+    def test_nested_present_tree_is_not_confused_with_absent_root_tree(self):
+        nested = self.root / "docs" / "research"
+        nested.mkdir(parents=True)
+        conftest.GITIGNORED_TREES += (self.root / "research", nested)
+        error = ValueError("missing local file docs/research/x.md")
+        self.assertEqual(self.report_for(error).outcome, "failed")
+
+    def test_oserror_family_and_second_filename(self):
+        for filename in (str(self.absent / "x.json"), bytes(self.absent / "x.json")):
+            with self.subTest(filename=filename):
+                error = OSError(5, "cannot read")
+                error.filename2 = filename
+                self.assertEqual(self.report_for(error).outcome, "skipped")
+
+    def test_cyclic_cause_chain_terminates(self):
+        error = ValueError("invalid input")
+        error.__cause__ = error
+        self.assertEqual(self.report_for(error).outcome, "failed")
 
 
 if __name__ == "__main__":

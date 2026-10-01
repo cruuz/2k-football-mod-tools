@@ -47,10 +47,13 @@ class RimContractTests(unittest.TestCase):
             root = Path(tmp).resolve()
             source = ROOT/'docs/scorebug_ingame/rim/visibility_and_color.s'
             for cmd in (['as','--32',str(source),'-o',str(root/'a.o')],
-                        ['ld','-m','elf_i386','-Ttext=0xfca87',str(root/'a.o'),'-o',str(root/'a.elf')],
+                        ['ld','-m','elf_i386','-Ttext=0xfca87','--section-start=.quarter=0xfc090','--section-start=.scores=0xfc050',str(root/'a.o'),'-o',str(root/'a.elf')],
                         ['objcopy','-O','binary','-j','.text',str(root/'a.elf'),str(root/'a.bin')]):
                 subprocess.run(cmd, check=True, capture_output=True)
             self.assertEqual((root/'a.bin').read_bytes(), rim.VISIBILITY_CODE)
+            for section, expected in (('.quarter', rim.QUARTER_CODE), ('.scores', rim.SCORES_CODE)):
+                subprocess.run(['objcopy','-O','binary','-j',section,str(root/'a.elf'),str(root/'b.bin')], check=True)
+                self.assertEqual((root/'b.bin').read_bytes(), expected)
             self.assertEqual(len(rim.VISIBILITY_CODE), len(rim.RETAIL_VISIBILITY))
             self.assertEqual(len(rim.VISIBILITY_CODE), 581)
 

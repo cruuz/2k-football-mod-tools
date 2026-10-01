@@ -1,0 +1,60 @@
+{
+  "classification": "PROVED OFFLINE",
+  "sources": [
+    {
+      "file": "/media/noah/Storage/.b76-research/sb/phi_chi_2026-09-28/KScULet1ves_Philadelphia Eagles vs. Chicago Bears Game Highlights \uff5c 2026 NFL Season Week 3.mp4",
+      "size": 499241403,
+      "sha256": "e180cb3220db8c7d386b2933d05677604b5d94194d48bd234f89c7a5653a8ac5",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "avg_frame_rate": "0/0"
+          },
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "avg_frame_rate": "30000/1001"
+          }
+        ],
+        "format": {
+          "duration": "898.333605"
+        },
+        "path": "/media/noah/Storage/.b76-research/sb/phi_chi_2026-09-28/KScULet1ves_Philadelphia Eagles vs. Chicago Bears Game Highlights \uff5c 2026 NFL Season Week 3.mp4"
+      }
+    },
+    {
+      "file": "/media/noah/Storage/.b76-research/sb/phi_chi_2026-09-28/kv2x-eQA-L0_Kalif Raymond goes 41 yards for the Bears' touchdown \ud83d\udc3b \uff5c NFL on ESPN.mp4",
+      "size": 27686219,
+      "sha256": "6be5a0a350052410aa363b301fb3ba9189fcc27419b3ed5d64490f314f1dc811",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "avg_frame_rate": "0/0"
+          },
+          {
+            "codec_name": "h264",
+            "width": 1280,
+            "height": 720,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "avg_frame_rate": "340650000/5683177"
+          }
+        ],
+        "format": {
+          "duration": "63.204717"
+        },
+        "path": "/media/noah/Storage/.b76-research/sb/phi_chi_2026-09-28/kv2x-eQA-L0_Kalif Raymond goes 41 yards for the Bears' touchdown \ud83d\udc3b \uff5c NFL on ESPN.mp4"
+      }
+    }
+  ],
+  "sampling": "ffmpeg fps=1: output bin time, representative source frame can differ by up to half a second; PNG crop decoded from the supplied lossy MP4, not a lossless broadcast master"
+}

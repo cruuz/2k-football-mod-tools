@@ -233,7 +233,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         from mod_editor.core import mod_build as build
         events = []
         packs = SimpleNamespace(
-            DEFENSE_SCHEMA="v2",
+            DEFENSE_SCHEMA="v2", OFFENSE_SCHEMA="v3",
             load_pack=lambda p: SimpleNamespace(schema="v2" if p.name == "defense.2k5book" else "v1", plays=()),
             apply_packs_to_image=lambda target, paths, **kw: events.append(tuple(p.name for p in paths)) or {},
         )
@@ -257,7 +257,10 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                  patch.object(build, "_tools_module", side_effect=tool_modules.get), \
                  patch.object(build, "_xbe_bytes", return_value=b"base"), \
                  patch.object(build, "_write_xbe_bytes"), \
-                 patch.object(build, "inspect", return_value={}):
+                 patch.object(build, "inspect", return_value={}), \
+                 patch.object(build, "_check_playbook_scoring", return_value={"synthetic": True}), \
+                 patch("mod_editor.core.xdvdfs_compact.finish_private", return_value={"output_bytes": 4}), \
+                 patch("mod_editor.core.nfl2k5_disc_extents.validate_image", return_value={"synthetic": True}):
                 receipt = build._build(plan)
         self.assertEqual(events, [("defense.2k5book",), "recode", ("offense.2k5book",), "roles"])
         self.assertEqual([s["step"] for s in receipt["steps"]],

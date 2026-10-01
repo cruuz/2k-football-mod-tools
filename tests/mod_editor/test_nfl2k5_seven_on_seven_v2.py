@@ -159,6 +159,8 @@ class BookRegressionTests(unittest.TestCase):
         packs = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/vc_53450030"
         if not (packs / "0").is_file():
             raise unittest.SkipTest("private extracted USA archive index is absent")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(packs)
         with recode.OuterImage(packs) as archive:
             cls.entry = archive.entries[book.PRACTICE_OUTER_INDEX]
             cls.retail = archive.read_entry(book.PRACTICE_OUTER_INDEX)

@@ -1,0 +1,1674 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "MIA",
+ "name": "Miami Dolphins",
+ "asset_code": "14",
+ "season": 2026,
+ "sources_uw": {"sleeve_swoosh_2026": "miamidolphins.com 2026 game day (Falcons at Dolphins) photo xbfjl1wgugfb53tbajgk (#90, #34 aqua) and nike.com's Dolphins Game jersey (Aqua, 67NMMDGH): an ORANGE swoosh above the sleeve's dolphin", "sleeve_logo_2026": "nike.com's 2026 Dolphins Game jersey (Aqua) and miamidolphins.com 2026 game day photo xbfjl1wgugfb53tbajgk: the dolphin under an orange swoosh, facing forward on both arms"},
+ "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); albedo INFERRED from 2026 photos; kit from the 2013 design (Wikipedia diagram 2025, 2026 week 1 and preseason galleries).",
+ "sort": "redesigned: 2013 logo, wordmarks and number style; built on the retail sets with the logo redrawn from the club mark and the 1970s-90s block digits (14H1/14A4) as the closest retail glyphs",
+ "sources": {
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Miami_Dolphins_Uniforms_2025.png (Wikipedia 2026 season infobox)",
+  "alternates_2026": "https://dolphinstalk.com/2026/07/dolphins-announce-when-theyll-wear-throwback-and-dark-waters-rivalries-uniforms-in-2026/",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (MIA: Aqua #008E97, Orange #FC4C02, White, Marine Blue #005778; 2026 Record and Fact Book p.110)",
+  "home_photos": "https://www.miamidolphins.com/photos/2026-game-day-photos-atlanta-falcons-at-miami-dolphins (2026 preseason at Hard Rock Stadium)",
+  "road_photos": "https://www.miamidolphins.com/photos/2026-game-day-photos-miami-dolphins-at-las-vegas-raiders (2026 week 1)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/MIA.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/File:Miami_Dolphins_wordmark.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "aqua": "#008E97",
+  "orange": "#FC4C02",
+  "white": "#FFFFFF",
+  "marine": "#005778"
+ },
+ "albedo": {
+  "jersey_aqua": "#00929B",
+  "orange": "#F4581F",
+  "white": "#FFFFFF",
+  "helmet_white": "#F3F4F7",
+  "marine": "#005778",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "retail_helmet_white": "#F1F2F6",
+  "retail_stripe_navy": "#002757",
+  "retail_stripe_aqua": "#017076",
+  "retail_stripe_orange": "#D83515",
+  "retail_atlas_teal": "#006262",
+  "field_aqua": "#008A93",
+  "wall_aqua": "#008A93",
+  "afc_red": "#C01020"
+ },
+ "marks": {
+  "logo_full": "mia_logo_full.png",
+  "logo_white": "mia_logo_white.png",
+  "logo_aqua": "mia_logo_aqua.png",
+  "logo_orange": "mia_logo_orange.png",
+  "logo_marine": "mia_logo_marine.png",
+  "dolphins_fill": "dolphins_fill.png",
+  "dolphins_shadow": "dolphins_shadow.png",
+  "miami": "miami_wordmark.png",
+  "dolphins_outline_big": "dolphins_outline_big.png",
+  "dolphins_fill_big": "dolphins_fill_big.png",
+  "nfl_white": "nfl_white.png",
+  "nfl_navy": "nfl_navy.png",
+  "nfl_red": "nfl_red.png",
+  "afc_disk": "afc_disk.png",
+  "afc_red": "afc_red.png",
+  "afc_white": "afc_white.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "14H0",
+   "outer_index": 3723,
+   "note": "2026 home: aqua jersey, white numbers outlined in orange, Dolphins chest wordmark, MIAMI at the back collar, the logo on the sleeves, white pants with an aqua and orange stripe, aqua socks, white helmet with the 2013 logo",
+   "torso": {
+    "base_colour": "jersey_aqua",
+    "neck_donor": "18H6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "orange"
+    },
+    "decorations": [
+     {
+      "mark": "dolphins_shadow",
+      "colour": "orange",
+      "center": [
+       161,
+       93.5
+      ],
+      "width": 24
+     },
+     {
+      "mark": "dolphins_fill",
+      "colour": "white",
+      "center": [
+       161,
+       93.5
+      ],
+      "width": 24
+     },
+     {
+      "mark": "miami",
+      "colour": "orange",
+      "center": [
+       391,
+       51
+      ],
+      "width": 24
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_aqua",
+    "decorations": [
+     {
+      "mark": "logo_full",
+      "center": [
+       61.5,
+       28.5
+      ],
+      "width": 42,
+      "mirror": true
+     },
+     {
+      "mark": "logo_full",
+      "center": [
+       65.5,
+       92.5
+      ],
+      "width": 42,
+      "mirror": false
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "jersey_aqua",
+      5
+     ],
+     [
+      "orange",
+      3
+     ]
+    ],
+    "swoosh_colour": "jersey_aqua"
+   },
+   "socks": {
+    "colour": "jersey_aqua"
+   },
+   "digits": {
+    "glyph_donor": "14H1",
+    "fill": "white",
+    "outline": "orange",
+    "outline_frac": 0.035
+   },
+   "helmet_digits": {
+    "glyph_donor": "14H1",
+    "fill": "helmet_white"
+   },
+   "nameplate": {
+    "glyph_donor": "14H1",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "recolour": [
+     {
+      "from": "retail_stripe_navy",
+      "to": "jersey_aqua",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_stripe_aqua",
+      "to": "jersey_aqua",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_stripe_orange",
+      "to": "orange",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "logo_full",
+     "boxes": {
+      "upper": [
+       40,
+       36,
+       106,
+       112
+      ],
+      "lower": [
+       40,
+       142,
+       106,
+       218
+      ]
+     },
+     "scale": 1.25
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "logo_full",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3723,
+    "torso_donor": "14H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_atlas_teal",
+      "to": "jersey_aqua",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_teal",
+      "to": "jersey_aqua",
+      "region": "sleeve",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "logo_full",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      111,
+      113.5
+     ],
+     "size": [
+      18,
+      14
+     ]
+    }
+   }
+  },
+  "away": {
+   "selector": "14A0",
+   "outer_index": 4040,
+   "note": "2026 road: white jersey, aqua numbers outlined in orange, aqua Dolphins wordmark, MIAMI at the back collar, the logo on the sleeves, aqua pants with an orange and white stripe, aqua socks, the white helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "18H6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "jersey_aqua"
+    },
+    "decorations": [
+     {
+      "mark": "dolphins_shadow",
+      "colour": "orange",
+      "center": [
+       161,
+       93.5
+      ],
+      "width": 24
+     },
+     {
+      "mark": "dolphins_fill",
+      "colour": "jersey_aqua",
+      "center": [
+       161,
+       93.5
+      ],
+      "width": 24
+     },
+     {
+      "mark": "miami",
+      "colour": "orange",
+      "center": [
+       391,
+       51
+      ],
+      "width": 24
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "decorations": [
+     {
+      "mark": "logo_full",
+      "center": [
+       61.5,
+       28.5
+      ],
+      "width": 42,
+      "mirror": true
+     },
+     {
+      "mark": "logo_full",
+      "center": [
+       65.5,
+       92.5
+      ],
+      "width": 42,
+      "mirror": false
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "jersey_aqua",
+    "stripe": [
+     [
+      "orange",
+      3
+     ],
+     [
+      "white",
+      2
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "jersey_aqua"
+   },
+   "digits": {
+    "glyph_donor": "14A4",
+    "fill": "jersey_aqua",
+    "outline": "orange",
+    "outline_frac": 0.035
+   },
+   "helmet_digits": {
+    "glyph_donor": "14A4",
+    "fill": "helmet_white"
+   },
+   "nameplate": {
+    "glyph_donor": "14A4",
+    "fill": "jersey_aqua"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "recolour": [
+     {
+      "from": "retail_stripe_navy",
+      "to": "jersey_aqua",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_stripe_aqua",
+      "to": "jersey_aqua",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_stripe_orange",
+      "to": "orange",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "logo_full",
+     "boxes": {
+      "upper": [
+       40,
+       36,
+       106,
+       112
+      ],
+      "lower": [
+       40,
+       142,
+       106,
+       218
+      ]
+     },
+     "scale": 1.25
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "logo_full",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 4040,
+    "torso_donor": "14A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_atlas_teal",
+      "to": "jersey_aqua",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "logo_full",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      111,
+      113.5
+     ],
+     "size": [
+      18,
+      14
+     ]
+    }
+   }
+  }
+ },
+ "venue": {
+  "prefix": "s14",
+  "notes": "2026 home venue: Hard Rock Stadium (the retail model is Pro Player Stadium, the same site). End zones (2025-26 Hard Rock photos): aqua paint, the white Dolphins wordmark outlined in orange, the full-colour logo beside it; the same at both ends (s14 has separate south textures, given the same art). s14 has no midfield texture, so the center_logo item has nowhere to go until u4's native fix. Walls: aqua pads with the 2013 logo, the Dolphins wordmark and the current NFL shield and AFC logo; boards: only the team cells (Dolphins wordmark, GO DOLPHINS ribbon, the old slogan panel) are replaced, sponsors stay.",
+  "sources": [
+   "https://www.miamidolphins.com/photos/2025-game-day-photos-tampa-bay-buccaneers-at-miami-dolphins (end zone aerial and field level, 2025)",
+   "https://www.miamidolphins.com/photos/2026-game-day-photos-atlanta-falcons-at-miami-dolphins (2026 preseason)"
+  ],
+  "endzone": {
+   "paint": "field_aqua",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_aqua",
+     "colour": "jersey_aqua",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_marine",
+     "colour": "marine",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "dolphins_outline_big",
+     "colour": "orange",
+     "center": [
+      450,
+      64
+     ],
+     "height": 78,
+     "stretch": 1.12
+    },
+    {
+     "mark": "dolphins_fill_big",
+     "colour": "white",
+     "center": [
+      450,
+      64
+     ],
+     "height": 78,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_aqua",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_orange",
+     "colour": "orange",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_aqua",
+     "colour": "jersey_aqua",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_marine",
+     "colour": "marine",
+     "center": [
+      140,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12
+    },
+    {
+     "mark": "dolphins_outline_big",
+     "colour": "orange",
+     "center": [
+      450,
+      64
+     ],
+     "height": 78,
+     "stretch": 1.12
+    },
+    {
+     "mark": "dolphins_fill_big",
+     "colour": "white",
+     "center": [
+      450,
+      64
+     ],
+     "height": 78,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "logo_white",
+   "outline": "white",
+   "fill_mark": "logo_aqua",
+   "fill": "jersey_aqua",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "wall04": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       64
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         28,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         28,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         28,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         28,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "dolphins_fill",
+        "colour": "white",
+        "center": [
+         128,
+         32
+        ],
+        "width": 130
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       256,
+       128
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         128,
+         96
+        ],
+        "width": 58
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         128,
+         96
+        ],
+        "width": 58
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         128,
+         96
+        ],
+        "width": 58
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         128,
+         96
+        ],
+        "width": 58
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       }
+      ]
+     }
+    ]
+   },
+   "wall05": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       64
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "afc_disk",
+        "colour": "white",
+        "center": [
+         128,
+         32
+        ],
+        "width": 50
+       },
+       {
+        "mark": "afc_red",
+        "colour": "afc_red",
+        "center": [
+         128,
+         32
+        ],
+        "width": 36.0
+       },
+       {
+        "mark": "afc_white",
+        "colour": "white",
+        "center": [
+         128,
+         32
+        ],
+        "width": 36.0
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         228,
+         32
+        ],
+        "width": 44
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       256,
+       128
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "nfl_white",
+        "colour": "white",
+        "center": [
+         128,
+         96
+        ],
+        "width": 42
+       },
+       {
+        "mark": "nfl_navy",
+        "colour": "shield_navy",
+        "center": [
+         128,
+         96
+        ],
+        "width": 42
+       },
+       {
+        "mark": "nfl_red",
+        "colour": "shield_red",
+        "center": [
+         128,
+         96
+        ],
+        "width": 42
+       }
+      ]
+     }
+    ]
+   },
+   "wall07": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       64
+      ],
+      "bg": "wall_aqua",
+      "items": []
+     },
+     {
+      "slot": [
+       0,
+       64,
+       256,
+       128
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "text": "FINS UP!",
+        "colour": "white",
+        "center": [
+         128,
+         96
+        ],
+        "height": 22
+       }
+      ]
+     }
+    ]
+   },
+   "wall08": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       64
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "nfl_white",
+        "colour": "white",
+        "center": [
+         128,
+         32
+        ],
+        "width": 42
+       },
+       {
+        "mark": "nfl_navy",
+        "colour": "shield_navy",
+        "center": [
+         128,
+         32
+        ],
+        "width": 42
+       },
+       {
+        "mark": "nfl_red",
+        "colour": "shield_red",
+        "center": [
+         128,
+         32
+        ],
+        "width": 42
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       256,
+       128
+      ],
+      "bg": "wall_aqua",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         28,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         228,
+         96
+        ],
+        "width": 44
+       }
+      ]
+     }
+    ]
+   },
+   "sign01": {
+    "banners": [
+     {
+      "slot": [
+       2,
+       61,
+       126,
+       78
+      ],
+      "bg": "marine",
+      "items": [
+       {
+        "text": "GO DOLPHINS",
+        "colour": "white",
+        "center": [
+         64.0,
+         69.5
+        ],
+        "height": 8,
+        "max_width": 110
+       }
+      ]
+     }
+    ]
+   },
+   "sign02": {
+    "banners": [
+     {
+      "slot": [
+       1,
+       19,
+       60,
+       37
+      ],
+      "bg": "jersey_aqua",
+      "items": [
+       {
+        "mark": "dolphins_fill",
+        "colour": "white",
+        "center": [
+         30.5,
+         28.0
+        ],
+        "width": 48
+       }
+      ]
+     }
+    ]
+   },
+   "scoreboard02": {
+    "banners": [
+     {
+      "slot": [
+       26,
+       60,
+       96,
+       80
+      ],
+      "bg": "jersey_aqua",
+      "items": [
+       {
+        "mark": "dolphins_fill",
+        "colour": "white",
+        "center": [
+         61.0,
+         70.0
+        ],
+        "width": 60
+       }
+      ]
+     }
+    ]
+   },
+   "sign03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       20
+      ],
+      "bg": "jersey_aqua",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         12,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         12,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         12,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         12,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "dolphins_fill",
+        "colour": "white",
+        "center": [
+         64,
+         10
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         116,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         116,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         116,
+         10
+        ],
+        "width": 16
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         116,
+         10
+        ],
+        "width": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       63,
+       74,
+       78
+      ],
+      "bg": "marine",
+      "items": [
+       {
+        "text": "FINS UP!",
+        "colour": "white",
+        "center": [
+         37.0,
+         70.5
+        ],
+        "height": 9,
+        "max_width": 66
+       }
+      ]
+     },
+     {
+      "slot": [
+       72,
+       36,
+       124,
+       124
+      ],
+      "bg": "jersey_aqua",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         98.0,
+         68.5
+        ],
+        "width": 46
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         98.0,
+         68.5
+        ],
+        "width": 46
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         98.0,
+         68.5
+        ],
+        "width": 46
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         98.0,
+         68.5
+        ],
+        "width": 46
+       },
+       {
+        "text": "FINS\nUP!",
+        "colour": "white",
+        "center": [
+         98.0,
+         106.5
+        ],
+        "height": 9
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         30,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         30,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         30,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         30,
+         32
+        ],
+        "width": 44
+       },
+       {
+        "text": "GO\nFINS!",
+        "colour": "orange",
+        "center": [
+         88,
+         32
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "FINS\nUP!",
+        "colour": "jersey_aqua",
+        "center": [
+         64,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "jersey_aqua",
+      "items": [
+       {
+        "text": "#28\nACHANE",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "dolphins_shadow",
+        "colour": "orange",
+        "center": [
+         192,
+         31
+        ],
+        "width": 96
+       },
+       {
+        "mark": "dolphins_fill",
+        "colour": "jersey_aqua",
+        "center": [
+         192,
+         31
+        ],
+        "width": 96
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_white",
+        "colour": "white",
+        "center": [
+         30,
+         96
+        ],
+        "width": 40
+       },
+       {
+        "mark": "logo_orange",
+        "colour": "orange",
+        "center": [
+         30,
+         96
+        ],
+        "width": 40
+       },
+       {
+        "mark": "logo_aqua",
+        "colour": "jersey_aqua",
+        "center": [
+         30,
+         96
+        ],
+        "width": 40
+       },
+       {
+        "mark": "logo_marine",
+        "colour": "marine",
+        "center": [
+         30,
+         96
+        ],
+        "width": 40
+       },
+       {
+        "text": "#6\nWASHINGTON",
+        "colour": "jersey_aqua",
+        "center": [
+         84,
+         96
+        ],
+        "height": 10,
+        "max_width": 80
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "orange",
+      "items": [
+       {
+        "text": "#92 SIELER\nSACK TIME",
+        "colour": "white",
+        "center": [
+         192,
+         96
+        ],
+        "height": 13
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#2 WILLIS\nLET IT FLY",
+        "colour": "jersey_aqua",
+        "center": [
+         64,
+         31
+        ],
+        "height": 13
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "MIAMI\nFOREVER",
+        "colour": "orange",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "4-3",
+  "head_coach": "Jeff Hafley",
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense_note": "nflverse depth_charts_2026 (ESPN) lists the MIA base defense as 'Base 4-3 D' since 2026-09-09"
+ },
+ "part_intents": {
+  "home": {
+   "torso": "aqua jersey body, white Dolphins wordmark with an orange shadow, orange MIAMI at the back collar, NFL shield, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "aqua with the dolphin and sunburst logo",
+   "pants": "white with an aqua and orange side stripe, aqua maker mark",
+   "helmet": "white shell, aqua and orange centre stripe, the 2013 dolphin and sunburst logo, hardware and decals",
+   "digit_jersey": "white numbers outlined in orange",
+   "digit_arm": "white numbers outlined in orange",
+   "digit_helmet": "white (no helmet numbers)",
+   "nameplate": "white letters",
+   "socks00": "solid aqua",
+   "splayer": "far-away player atlas: white pants with a stripe, aqua torso, white helmet, aqua socks",
+   "team-select_unif": "menu render: aqua jersey with a white number, white pants, white helmet with the dolphin logo, dark shading",
+   "team-select_helm": "menu render: white helmet with the dolphin and sunburst logo, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, aqua Dolphins wordmark with an orange shadow, orange MIAMI at the back collar, NFL shield, aqua maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with the dolphin and sunburst logo",
+   "pants": "aqua with an orange and white side stripe, white maker mark",
+   "helmet": "white shell, aqua and orange centre stripe, the 2013 dolphin and sunburst logo, hardware and decals",
+   "digit_jersey": "aqua numbers outlined in orange",
+   "digit_arm": "aqua numbers outlined in orange",
+   "digit_helmet": "white (no helmet numbers)",
+   "nameplate": "aqua letters",
+   "socks00": "solid aqua",
+   "splayer": "far-away player atlas: aqua pants, white torso, white helmet, aqua socks",
+   "team-select_unif": "menu render: white jersey with an aqua number, aqua pants, white helmet",
+   "team-select_helm": "menu render: white helmet with the dolphin logo, dark bar and yellow UI strip"
+  },
+  "venue": {
+   "endzone": "aqua painted end zone with the white Dolphins wordmark outlined in orange and the dolphin logo",
+   "center_logo": "dolphin and sunburst logo",
+   "banner": "aqua wall pads and cloth fan banners in aqua, orange and white with Dolphins text and logos"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Aaron Brewer": 4,
+   "Andrew Meyer": 0,
+   "Austin Jackson": 3,
+   "Bradley Pinion": 0,
+   "Brady Cook": 0,
+   "Caedan Wallace": 4,
+   "Caleb Douglas": 3,
+   "Chop Robinson": 2,
+   "Chris Bell": 4,
+   "Chris Johnson": 2,
+   "Chukwuebuka Godrick": 5,
+   "DJ Campbell": 3,
+   "DJ Herman": 0,
+   "Dante Trader": 2,
+   "De'Von Achane": 4,
+   "Gerald Jones": 4,
+   "Greg Dulcich": 0,
+   "Jackson Woodard": 0,
+   "Jacob Rodriguez": 0,
+   "Jalen Tolbert": 2,
+   "Jarrett Kingston": 0,
+   "Jason Marshall": 4,
+   "Jaylen Wright": 3,
+   "Jaylin Simpson": 3,
+   "Jonah Savaiinaea": 1,
+   "Jordan Phillips": 3,
+   "Jordyn Brooks": 3,
+   "Joshua Uche": 4,
+   "Julius Brents": 2,
+   "Julius Wood": 3,
+   "Justin Joly": 2,
+   "Kadyn Proctor": 1,
+   "Keith Cooper": 4,
+   "Kevin Coleman": 3,
+   "Kyle McCord": 0,
+   "Malik Herring": 5,
+   "Malik Washington": 3,
+   "Malik Willis": 3,
+   "Marcellas Dial": 3,
+   "Ollie Gordon": 3,
+   "Patrick Paul": 4,
+   "Reese Taylor": 2,
+   "Riley Patterson": 0,
+   "Robert Beal": 4,
+   "Ryan Miller": 0,
+   "Seydou Traore": 2,
+   "Tucker Addington": 0,
+   "Will Kacmarek": 0,
+   "Willie Gay": 4,
+   "Zach Sieler": 0,
+   "Zayne Anderson": 0,
+   "Zeek Biggers": 4,
+   "Michael Taaffe": 0
+  },
+  "dreads": [
+   "Aaron Brewer",
+   "Caedan Wallace",
+   "Caleb Douglas",
+   "Jalen Tolbert",
+   "Jaylen Wright",
+   "Jonah Savaiinaea",
+   "Jordan Phillips",
+   "Julius Wood",
+   "Keith Cooper",
+   "Kevin Coleman",
+   "Malik Willis",
+   "Marcellas Dial",
+   "Ollie Gordon",
+   "Patrick Paul",
+   "Reese Taylor"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) and dreadlocks, by eye from the official 2026 headshots (INFERRED). Michael Taaffe has no nflverse headshot; his official roster photo (miamidolphins.com og:image, white backdrop keyed) stands in."
+ }
+}

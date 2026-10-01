@@ -1,0 +1,435 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "install": {
+    "status": "applied",
+    "packs": [
+      {
+        "pack": "/home/noah/2k-worktrees/b76-u4/data/playbooks/softdrink_giants_modern.2k5book",
+        "name": "NFL 2K28 Giants Modern",
+        "author": "SOFTDRINK / Astra",
+        "version": "0.1.0",
+        "license": "CC0-1.0",
+        "authored_on": "NYG",
+        "book_fingerprint": "8851c3093c51496b440b3cc3f833983b2c2014a6ede57e14fd0c1299e435f6ae",
+        "formations": 26,
+        "plays": 148,
+        "books": [
+          {
+            "team": "NYG",
+            "outer_index": 329,
+            "retargeted": false,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 269,
+            "nodes": 1438,
+            "changed_bytes": 24389
+          }
+        ]
+      },
+      {
+        "pack": "/home/noah/2k-worktrees/b76-u4/data/playbooks/softdrink_modern_defense.2k5book",
+        "name": "SOFTDRINK modern defense",
+        "author": "SOFTDRINK",
+        "version": "1.0.0",
+        "license": "CC0-1.0",
+        "authored_on": "ATL",
+        "book_fingerprint": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+        "formations": 0,
+        "plays": 10,
+        "books": [
+          {
+            "team": "ARZ",
+            "outer_index": 307,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 270,
+            "nodes": 2875,
+            "changed_bytes": 1484
+          },
+          {
+            "team": "ATL",
+            "outer_index": 308,
+            "retargeted": false,
+            "retargeted_entries": 0,
+            "formations": 39,
+            "plays": 254,
+            "nodes": 2658,
+            "changed_bytes": 1492
+          },
+          {
+            "team": "BAL",
+            "outer_index": 309,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 42,
+            "plays": 263,
+            "nodes": 2716,
+            "changed_bytes": 1454
+          },
+          {
+            "team": "BUF",
+            "outer_index": 310,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 46,
+            "plays": 270,
+            "nodes": 2930,
+            "changed_bytes": 1519
+          },
+          {
+            "team": "CAR",
+            "outer_index": 311,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 45,
+            "plays": 269,
+            "nodes": 2879,
+            "changed_bytes": 1463
+          },
+          {
+            "team": "CHI",
+            "outer_index": 312,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 266,
+            "nodes": 2959,
+            "changed_bytes": 1489
+          },
+          {
+            "team": "CIN",
+            "outer_index": 313,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 44,
+            "plays": 270,
+            "nodes": 2914,
+            "changed_bytes": 1503
+          },
+          {
+            "team": "CLE",
+            "outer_index": 314,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 44,
+            "plays": 269,
+            "nodes": 2905,
+            "changed_bytes": 1461
+          },
+          {
+            "team": "DAL",
+            "outer_index": 315,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 269,
+            "nodes": 2894,
+            "changed_bytes": 1526
+          },
+          {
+            "team": "DEN",
+            "outer_index": 316,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 263,
+            "nodes": 2869,
+            "changed_bytes": 1520
+          },
+          {
+            "team": "DET",
+            "outer_index": 317,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 255,
+            "nodes": 2724,
+            "changed_bytes": 1525
+          },
+          {
+            "team": "GB",
+            "outer_index": 319,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 48,
+            "plays": 264,
+            "nodes": 2798,
+            "changed_bytes": 1493
+          },
+          {
+            "team": "HOU",
+            "outer_index": 321,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 40,
+            "plays": 270,
+            "nodes": 2945,
+            "changed_bytes": 1472
+          },
+          {
+            "team": "IND",
+            "outer_index": 322,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 45,
+            "plays": 265,
+            "nodes": 2866,
+            "changed_bytes": 1508
+          },
+          {
+            "team": "JAX",
+            "outer_index": 323,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 270,
+            "nodes": 2827,
+            "changed_bytes": 1475
+          },
+          {
+            "team": "KC",
+            "outer_index": 324,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 42,
+            "plays": 261,
+            "nodes": 2938,
+            "changed_bytes": 1492
+          },
+          {
+            "team": "MIA",
+            "outer_index": 325,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 259,
+            "nodes": 2942,
+            "changed_bytes": 1501
+          },
+          {
+            "team": "MIN",
+            "outer_index": 326,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 46,
+            "plays": 266,
+            "nodes": 2692,
+            "changed_bytes": 1493
+          },
+          {
+            "team": "NE",
+            "outer_index": 327,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 42,
+            "plays": 250,
+            "nodes": 2835,
+            "changed_bytes": 1491
+          },
+          {
+            "team": "NO",
+            "outer_index": 328,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 264,
+            "nodes": 2950,
+            "changed_bytes": 1492
+          },
+          {
+            "team": "NYG",
+            "outer_index": 329,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 269,
+            "nodes": 1658,
+            "changed_bytes": 1471
+          },
+          {
+            "team": "NYJ",
+            "outer_index": 330,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 270,
+            "nodes": 2842,
+            "changed_bytes": 1510
+          },
+          {
+            "team": "OAK",
+            "outer_index": 331,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 270,
+            "nodes": 2837,
+            "changed_bytes": 1508
+          },
+          {
+            "team": "PHI",
+            "outer_index": 332,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 267,
+            "nodes": 2773,
+            "changed_bytes": 1501
+          },
+          {
+            "team": "PIT",
+            "outer_index": 333,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 263,
+            "nodes": 2926,
+            "changed_bytes": 1453
+          },
+          {
+            "team": "SD",
+            "outer_index": 336,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 270,
+            "nodes": 2936,
+            "changed_bytes": 1446
+          },
+          {
+            "team": "SEA",
+            "outer_index": 337,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 269,
+            "nodes": 2852,
+            "changed_bytes": 1507
+          },
+          {
+            "team": "SF",
+            "outer_index": 338,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 39,
+            "plays": 249,
+            "nodes": 2623,
+            "changed_bytes": 1495
+          },
+          {
+            "team": "STL",
+            "outer_index": 339,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 45,
+            "plays": 269,
+            "nodes": 2925,
+            "changed_bytes": 1501
+          },
+          {
+            "team": "TB",
+            "outer_index": 340,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 49,
+            "plays": 253,
+            "nodes": 2615,
+            "changed_bytes": 1518
+          },
+          {
+            "team": "TEN",
+            "outer_index": 341,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 39,
+            "plays": 264,
+            "nodes": 2836,
+            "changed_bytes": 1510
+          },
+          {
+            "team": "WAS",
+            "outer_index": 342,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 42,
+            "plays": 260,
+            "nodes": 2865,
+            "changed_bytes": 1501
+          },
+          {
+            "team": "GEN",
+            "outer_index": 320,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 41,
+            "plays": 218,
+            "nodes": 2371,
+            "changed_bytes": 1495
+          },
+          {
+            "team": "reference",
+            "outer_index": 335,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 49,
+            "plays": 263,
+            "nodes": 2605,
+            "changed_bytes": 1496
+          }
+        ]
+      },
+      {
+        "pack": "/home/noah/2k-worktrees/b76-u4/data/playbooks/softdrink_match_coverage.2k5book",
+        "name": "SOFTDRINK match coverage experiments",
+        "author": "SOFTDRINK",
+        "version": "1.0.0",
+        "license": "CC0-1.0",
+        "authored_on": "BAL",
+        "book_fingerprint": "673fd6cbd0b943806f2f106cba39caeac081935ed4f683eadcc94b9788225fd3",
+        "formations": 0,
+        "plays": 5,
+        "books": [
+          {
+            "team": "BAL",
+            "outer_index": 309,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 42,
+            "plays": 263,
+            "nodes": 2838,
+            "changed_bytes": 883
+          }
+        ]
+      },
+      {
+        "pack": "/home/noah/2k-worktrees/b76-u4/data/playbooks/modern_gun_core.2k5book",
+        "name": "Modern Gun Core",
+        "author": "2K5 Mod Studio community",
+        "version": "1.0.0",
+        "license": "CC0-1.0",
+        "authored_on": "ATL",
+        "book_fingerprint": "193872cdf47282370edc1836eac224c76cfe4d80b446d1355c48f5dbdfa96769",
+        "formations": 4,
+        "plays": 11,
+        "books": [
+          {
+            "team": "ATL",
+            "outer_index": 308,
+            "retargeted": true,
+            "retargeted_entries": 0,
+            "formations": 39,
+            "plays": 254,
+            "nodes": 2966,
+            "changed_bytes": 2434
+          }
+        ]
+      }
+    ]
+  },
+  "build_menu_gate": {
+    "books": 37,
+    "problems": 0
+  }
+}

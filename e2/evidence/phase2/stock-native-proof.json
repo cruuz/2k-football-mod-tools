@@ -1,0 +1,3226 @@
+{
+  "classification": "PROVED OFFLINE",
+  "source": "/media/noah/Storage/.b76-research/e2/astra-build/candidate_B_e2.xiso.iso",
+  "archive_io_and_allocator_free": "explicit harness boundaries",
+  "runtime_witnessed": false,
+  "moments": [
+    {
+      "row": 1,
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 2,
+      "loads": [
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 0
+        },
+        {
+          "name": "E2R-NYJ-pb.iff",
+          "name_id": 3133423968,
+          "sha256": "c81f2c0ac1cc8c08e785cca064b9f8c8fb40689edaadaee3a7f7348aa2bbb319",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 3,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-MIA-pb.iff",
+          "name_id": 1628797711,
+          "sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 4,
+      "loads": [
+        {
+          "name": "E2R-PIT-pb.iff",
+          "name_id": 2885432591,
+          "sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+          "side": 0
+        },
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 5,
+      "loads": [
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 0
+        },
+        {
+          "name": "E2R-MIA-pb.iff",
+          "name_id": 1628797711,
+          "sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 6,
+      "loads": [
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 0
+        },
+        {
+          "name": "E2R-WAS-pb.iff",
+          "name_id": 2685453797,
+          "sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 7,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 8,
+      "loads": [
+        {
+          "name": "E2R-MIA-pb.iff",
+          "name_id": 1628797711,
+          "sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+          "side": 0
+        },
+        {
+          "name": "E2R-SD-pb.iff",
+          "name_id": 2613532775,
+          "sha256": "a579a90bd862a6179790bbc8941628853066dd4e3bcdf9b87bf6c74232079b46",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 9,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 10,
+      "loads": [
+        {
+          "name": "E2R-WAS-pb.iff",
+          "name_id": 2685453797,
+          "sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+          "side": 0
+        },
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 11,
+      "loads": [
+        {
+          "name": "E2R-CLE-pb.iff",
+          "name_id": 1210457352,
+          "sha256": "1948b55bfb2b603fed366e7afb04a8f0f97edab7c872a6bd35fb99a4734cbc24",
+          "side": 0
+        },
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 12,
+      "loads": [
+        {
+          "name": "E2R-CIN-pb.iff",
+          "name_id": 4127676242,
+          "sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+          "side": 0
+        },
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 13,
+      "loads": [
+        {
+          "name": "E2R-ARZ-pb.iff",
+          "name_id": 3719003313,
+          "sha256": "b8864e41eff0b59aa4c357e8ee02592be552d950466a95b54c7ed454ff9e3acf",
+          "side": 0
+        },
+        {
+          "name": "E2R-TB-pb.iff",
+          "name_id": 695745511,
+          "sha256": "b137410f10b9da3834d55cd2ce340afd498e9bf0e1902a9a1982bb5eefd70cbc",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 14,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-CIN-pb.iff",
+          "name_id": 4127676242,
+          "sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 15,
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 16,
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 17,
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 18,
+      "loads": [
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 0
+        },
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 19,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 20,
+      "loads": [
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 0
+        },
+        {
+          "name": "E2R-IND-pb.iff",
+          "name_id": 3029288740,
+          "sha256": "94d23f6c76bf613502e64fe0ff2976d3f99b83884cc3b9f1408b50cbf09accec",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 21,
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 22,
+      "loads": [
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 0
+        },
+        {
+          "name": "E2R-STL-pb.iff",
+          "name_id": 1281968871,
+          "sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 23,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-STL-pb.iff",
+          "name_id": 1281968871,
+          "sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 24,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 25,
+      "loads": [
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 0
+        },
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 26,
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "E2R-ATL-pb.iff",
+          "name_id": 1717671758,
+          "sha256": "825cbe247dabab0b201a20c3edb36262a50426c3f180c3a774c6804d1a547189",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 27,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 28,
+      "loads": [
+        {
+          "name": "E2R-ARZ-pb.iff",
+          "name_id": 3719003313,
+          "sha256": "b8864e41eff0b59aa4c357e8ee02592be552d950466a95b54c7ed454ff9e3acf",
+          "side": 0
+        },
+        {
+          "name": "E2R-PIT-pb.iff",
+          "name_id": 2885432591,
+          "sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 29,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 30,
+      "loads": [
+        {
+          "name": "E2R-ATL-pb.iff",
+          "name_id": 1717671758,
+          "sha256": "825cbe247dabab0b201a20c3edb36262a50426c3f180c3a774c6804d1a547189",
+          "side": 0
+        },
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 31,
+      "loads": [
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 0
+        },
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 32,
+      "loads": [
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 0
+        },
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 33,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 34,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-CAR-pb.iff",
+          "name_id": 2689799176,
+          "sha256": "19efe026cf5dcd92ab4000180b55bf81d8c92f03ea3fc4fcf87775bb0732bd2b",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 35,
+      "loads": [
+        {
+          "name": "E2R-IND-pb.iff",
+          "name_id": 3029288740,
+          "sha256": "94d23f6c76bf613502e64fe0ff2976d3f99b83884cc3b9f1408b50cbf09accec",
+          "side": 0
+        },
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 36,
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 37,
+      "loads": [
+        {
+          "name": "E2R-SEA-pb.iff",
+          "name_id": 2228412999,
+          "sha256": "2682d48180b30598b99481aee1b64e7a43bb2937b87a3970fdac1987eff38354",
+          "side": 0
+        },
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 38,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 39,
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "E2R-BAL-pb.iff",
+          "name_id": 59893627,
+          "sha256": "c95623285da2f634de3d83a8b275bdc22fbf35d9ff675ab017bbe4e950ef9e0a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 40,
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "E2R-BAL-pb.iff",
+          "name_id": 59893627,
+          "sha256": "c95623285da2f634de3d83a8b275bdc22fbf35d9ff675ab017bbe4e950ef9e0a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 41,
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 42,
+      "loads": [
+        {
+          "name": "E2R-SEA-pb.iff",
+          "name_id": 2228412999,
+          "sha256": "2682d48180b30598b99481aee1b64e7a43bb2937b87a3970fdac1987eff38354",
+          "side": 0
+        },
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 43,
+      "loads": [
+        {
+          "name": "E2R-DET-pb.iff",
+          "name_id": 422448249,
+          "sha256": "6ee8c492f6139ca54e971056707c2e28d175fa51c5f4392301bf0b4f14a05647",
+          "side": 0
+        },
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 44,
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 45,
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 46,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 47,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 48,
+      "loads": [
+        {
+          "name": "E2R-CIN-pb.iff",
+          "name_id": 4127676242,
+          "sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+          "side": 0
+        },
+        {
+          "name": "E2R-STL-pb.iff",
+          "name_id": 1281968871,
+          "sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 49,
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "E2R-IND-pb.iff",
+          "name_id": 3029288740,
+          "sha256": "94d23f6c76bf613502e64fe0ff2976d3f99b83884cc3b9f1408b50cbf09accec",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 50,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 1,
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 50,
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "row": 15,
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 1
+        }
+      ],
+      "released": 2
+    }
+  ],
+  "historic": [
+    {
+      "descriptor": 0,
+      "imported": [
+        "h-25-1981-49ers-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 1,
+      "imported": [
+        "h-25-1989-49ers-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 2,
+      "imported": [
+        "h-25-1994-49ers-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 3,
+      "imported": [
+        "h-25-2003-49ers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SF-pb.iff",
+          "name_id": 476544260,
+          "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 4,
+      "imported": [
+        "h-05-1963-bears-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CHI-pb.iff",
+          "name_id": 3836484038,
+          "sha256": "9cfd81751f23f2c608a789becc8909f31662d3813f65865b11a2d781ed7fb11b",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 5,
+      "imported": [
+        "h-05-1985-bears-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CHI-pb.iff",
+          "name_id": 3836484038,
+          "sha256": "9cfd81751f23f2c608a789becc8909f31662d3813f65865b11a2d781ed7fb11b",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 6,
+      "imported": [
+        "h-06-1981-bengals-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CIN-pb.iff",
+          "name_id": 4127676242,
+          "sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 7,
+      "imported": [
+        "h-06-1988-bengals-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CIN-pb.iff",
+          "name_id": 4127676242,
+          "sha256": "10dae46a9b521e77507fa97150cd6fcaeb3476aba60126307cceb0144d474bfe",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 8,
+      "imported": [
+        "h-03-1964-bills-7.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 25,
+      "released": 2
+    },
+    {
+      "descriptor": 9,
+      "imported": [
+        "h-03-1990-bills-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-BUF-pb.iff",
+          "name_id": 3525957193,
+          "sha256": "d48d44cbf6095fc1ad31973d70ff9d9ee8528bf9d85bbf862d4c582785fe3578",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 25,
+      "released": 2
+    },
+    {
+      "descriptor": 10,
+      "imported": [
+        "h-08-1977-broncos-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 11,
+      "imported": [
+        "h-08-1986-broncos-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 12,
+      "imported": [
+        "h-08-1998-broncos-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DEN-pb.iff",
+          "name_id": 196774091,
+          "sha256": "0ec74e58c61b60ce940f34c5127d234971c5dd3e2ebb9fad8ea7ea0593726fa6",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 13,
+      "imported": [
+        "h-30-1964-browns-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CLE-pb.iff",
+          "name_id": 1210457352,
+          "sha256": "1948b55bfb2b603fed366e7afb04a8f0f97edab7c872a6bd35fb99a4734cbc24",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 14,
+      "imported": [
+        "h-30-1986-browns-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CLE-pb.iff",
+          "name_id": 1210457352,
+          "sha256": "1948b55bfb2b603fed366e7afb04a8f0f97edab7c872a6bd35fb99a4734cbc24",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 15,
+      "imported": [
+        "h-27-1979-buccaneers-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TB-pb.iff",
+          "name_id": 695745511,
+          "sha256": "b137410f10b9da3834d55cd2ce340afd498e9bf0e1902a9a1982bb5eefd70cbc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 16,
+      "imported": [
+        "h-27-1999-buccaneers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TB-pb.iff",
+          "name_id": 695745511,
+          "sha256": "b137410f10b9da3834d55cd2ce340afd498e9bf0e1902a9a1982bb5eefd70cbc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 17,
+      "imported": [
+        "h-27-2002-buccaneers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TB-pb.iff",
+          "name_id": 695745511,
+          "sha256": "b137410f10b9da3834d55cd2ce340afd498e9bf0e1902a9a1982bb5eefd70cbc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 18,
+      "imported": [
+        "h-00-1975-cardinals-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-ARZ-pb.iff",
+          "name_id": 3719003313,
+          "sha256": "b8864e41eff0b59aa4c357e8ee02592be552d950466a95b54c7ed454ff9e3acf",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 19,
+      "imported": [
+        "h-24-1963-chargers-8.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SD-pb.iff",
+          "name_id": 2613532775,
+          "sha256": "a579a90bd862a6179790bbc8941628853066dd4e3bcdf9b87bf6c74232079b46",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 20,
+      "imported": [
+        "h-24-1980-chargers-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SD-pb.iff",
+          "name_id": 2613532775,
+          "sha256": "a579a90bd862a6179790bbc8941628853066dd4e3bcdf9b87bf6c74232079b46",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 21,
+      "imported": [
+        "h-24-1994-chargers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SD-pb.iff",
+          "name_id": 2613532775,
+          "sha256": "a579a90bd862a6179790bbc8941628853066dd4e3bcdf9b87bf6c74232079b46",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 22,
+      "imported": [
+        "h-13-1969-chiefs-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 23,
+      "imported": [
+        "h-13-1993-chiefs-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 24,
+      "imported": [
+        "h-11-1970-colts-5.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-IND-pb.iff",
+          "name_id": 3029288740,
+          "sha256": "94d23f6c76bf613502e64fe0ff2976d3f99b83884cc3b9f1408b50cbf09accec",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 25,
+      "imported": [
+        "h-07-1971-cowboys-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 26,
+      "imported": [
+        "h-07-1977-cowboys-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 27,
+      "imported": [
+        "h-07-1992-cowboys-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DAL-pb.iff",
+          "name_id": 2276620974,
+          "sha256": "3ddc2169b551c92b2183433260177284dbd4ba6460bd57f0c7d9c163bb751e86",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 28,
+      "imported": [
+        "h-14-1972-dolphins-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-MIA-pb.iff",
+          "name_id": 1628797711,
+          "sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 29,
+      "imported": [
+        "h-14-1984-dolphins-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-MIA-pb.iff",
+          "name_id": 1628797711,
+          "sha256": "2a35a0f42fa3bb42d22ee1f545a2183a36bbd4fe3e47610c53377722586a8215",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 30,
+      "imported": [
+        "h-21-1960-eagles-8.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 31,
+      "imported": [
+        "h-21-1980-eagles-5.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 32,
+      "imported": [
+        "h-21-2004-eagles-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PHI-pb.iff",
+          "name_id": 2881748777,
+          "sha256": "076c4e170d7b08c2a6734dfa65069af6aaea9d547ab1779c0aaf26695098f00e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 33,
+      "imported": [
+        "h-01-1980-falcons-6.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-ATL-pb.iff",
+          "name_id": 1717671758,
+          "sha256": "825cbe247dabab0b201a20c3edb36262a50426c3f180c3a774c6804d1a547189",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 34,
+      "imported": [
+        "h-01-1998-falcons-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-ATL-pb.iff",
+          "name_id": 1717671758,
+          "sha256": "825cbe247dabab0b201a20c3edb36262a50426c3f180c3a774c6804d1a547189",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 35,
+      "imported": [
+        "h-18-1956-giants-6.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 36,
+      "imported": [
+        "h-18-1986-giants-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 37,
+      "imported": [
+        "h-18-1990-giants-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 38,
+      "imported": [
+        "h-18-2003-giants-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYG-pb.iff",
+          "name_id": 3012428601,
+          "sha256": "955c24d403b14f96a27f027244c428398f2828160bf36d5d06b780e0f4abdb5e",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 39,
+      "imported": [
+        "h-12-1999-jaguars-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-JAX-pb.iff",
+          "name_id": 2891727824,
+          "sha256": "abca42d2a59ff5dba5ed5048aaf738ca7cdd2c64c81cd0b470f983d7741a8790",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 40,
+      "imported": [
+        "h-19-1968-jets-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYJ-pb.iff",
+          "name_id": 3133423968,
+          "sha256": "c81f2c0ac1cc8c08e785cca064b9f8c8fb40689edaadaee3a7f7348aa2bbb319",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 41,
+      "imported": [
+        "h-19-1998-jets-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NYJ-pb.iff",
+          "name_id": 3133423968,
+          "sha256": "c81f2c0ac1cc8c08e785cca064b9f8c8fb40689edaadaee3a7f7348aa2bbb319",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 42,
+      "imported": [
+        "h-09-1953-lions-6.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DET-pb.iff",
+          "name_id": 422448249,
+          "sha256": "6ee8c492f6139ca54e971056707c2e28d175fa51c5f4392301bf0b4f14a05647",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 43,
+      "imported": [
+        "h-09-1991-lions-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-DET-pb.iff",
+          "name_id": 422448249,
+          "sha256": "6ee8c492f6139ca54e971056707c2e28d175fa51c5f4392301bf0b4f14a05647",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 44,
+      "imported": [
+        "h-28-1961-oilers-5.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 45,
+      "imported": [
+        "h-28-1979-oilers-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 46,
+      "imported": [
+        "h-10-1966-packers-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 47,
+      "imported": [
+        "h-10-1996-packers-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 48,
+      "imported": [
+        "h-10-2004-packers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-GB-pb.iff",
+          "name_id": 3982342813,
+          "sha256": "37ae4adffb98f16975430a1c0eb083715ea858b232d2b61b20a117a6c791495a",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 49,
+      "imported": [
+        "h-04-1996-panthers-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CAR-pb.iff",
+          "name_id": 2689799176,
+          "sha256": "19efe026cf5dcd92ab4000180b55bf81d8c92f03ea3fc4fcf87775bb0732bd2b",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 50,
+      "imported": [
+        "h-04-2003-panthers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-CAR-pb.iff",
+          "name_id": 2689799176,
+          "sha256": "19efe026cf5dcd92ab4000180b55bf81d8c92f03ea3fc4fcf87775bb0732bd2b",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 51,
+      "imported": [
+        "h-16-1985-patriots-5.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 52,
+      "imported": [
+        "h-16-2001-patriots-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 53,
+      "imported": [
+        "h-16-2003-patriots-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NE-pb.iff",
+          "name_id": 3903281669,
+          "sha256": "0fe69f3936d54aa2166fb2c36cdaae97d9b77a67d4b0a0ddcc64ec2e0f45bd53",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 54,
+      "imported": [
+        "h-20-1967-raiders-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 55,
+      "imported": [
+        "h-20-1976-raiders-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 56,
+      "imported": [
+        "h-20-1983-raiders-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-OAK-pb.iff",
+          "name_id": 1211701667,
+          "sha256": "0fe693231a53e70d6d2fff07d0e66f79acdfaf2f7f4046ebc43f1aa41042ce58",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 57,
+      "imported": [
+        "h-23-1979-rams-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-STL-pb.iff",
+          "name_id": 1281968871,
+          "sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 58,
+      "imported": [
+        "h-23-1999-rams-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-STL-pb.iff",
+          "name_id": 1281968871,
+          "sha256": "b0f941e99651694a0a02db11e6763d698599a9d0687b1b44fb3d61a1f752dc05",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 59,
+      "imported": [
+        "h-02-2000-ravens-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-BAL-pb.iff",
+          "name_id": 59893627,
+          "sha256": "c95623285da2f634de3d83a8b275bdc22fbf35d9ff675ab017bbe4e950ef9e0a",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 60,
+      "imported": [
+        "h-29-1982-redskins-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-WAS-pb.iff",
+          "name_id": 2685453797,
+          "sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 61,
+      "imported": [
+        "h-29-1987-redskins-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-WAS-pb.iff",
+          "name_id": 2685453797,
+          "sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 62,
+      "imported": [
+        "h-29-1991-redskins-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-WAS-pb.iff",
+          "name_id": 2685453797,
+          "sha256": "652d021fac718c900d352d6cbddd374ac2637b03b921eceaca65f25c64b80e0f",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 63,
+      "imported": [
+        "h-17-1991-saints-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 64,
+      "imported": [
+        "h-17-2000-saints-2.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-NO-pb.iff",
+          "name_id": 471130153,
+          "sha256": "860a02c96e9161976fa3de79351c69d42ba169695fbb1d196d50b0c7879166d8",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 21,
+      "released": 2
+    },
+    {
+      "descriptor": 65,
+      "imported": [
+        "h-26-1984-seahawks-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SEA-pb.iff",
+          "name_id": 2228412999,
+          "sha256": "2682d48180b30598b99481aee1b64e7a43bb2937b87a3970fdac1987eff38354",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 66,
+      "imported": [
+        "h-26-1999-seahawks-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-SEA-pb.iff",
+          "name_id": 2228412999,
+          "sha256": "2682d48180b30598b99481aee1b64e7a43bb2937b87a3970fdac1987eff38354",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 22,
+      "released": 2
+    },
+    {
+      "descriptor": 67,
+      "imported": [
+        "h-22-1975-steelers-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PIT-pb.iff",
+          "name_id": 2885432591,
+          "sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 68,
+      "imported": [
+        "h-22-1978-steelers-1.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PIT-pb.iff",
+          "name_id": 2885432591,
+          "sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 69,
+      "imported": [
+        "h-22-1995-steelers-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-PIT-pb.iff",
+          "name_id": 2885432591,
+          "sha256": "e90f3e96b73f0a2a016e5eabd58d6a782239d066807c6cae0ba2829489c3e790",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 70,
+      "imported": [
+        "h-13-1962-texans-5.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-KC-pb.iff",
+          "name_id": 1607225862,
+          "sha256": "cc1eaabbae4e1254aef1632ebf58801bd49109f62ef291072c8119913a6b3455",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 23,
+      "released": 2
+    },
+    {
+      "descriptor": 71,
+      "imported": [
+        "h-28-1999-titans-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-TEN-pb.iff",
+          "name_id": 3950781422,
+          "sha256": "ebfb8b3ce776a07e54a20992d7816c4dd5432c6cc45aa09e6e6b8aaf45c429cc",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 24,
+      "released": 2
+    },
+    {
+      "descriptor": 72,
+      "imported": [
+        "h-15-1969-vikings-4.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 26,
+      "released": 2
+    },
+    {
+      "descriptor": 73,
+      "imported": [
+        "h-15-1973-vikings-3.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 26,
+      "released": 2
+    },
+    {
+      "descriptor": 74,
+      "imported": [
+        "h-15-1998-vikings-0.iff"
+      ],
+      "loads": [
+        {
+          "name": "E2R-MIN-pb.iff",
+          "name_id": 4026473525,
+          "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "categories_with_11_distinct_players": 26,
+      "released": 2
+    }
+  ],
+  "current": [
+    {
+      "franchise": 0,
+      "loads": [
+        {
+          "name": "SF-pb.iff",
+          "name_id": 1677844729,
+          "sha256": "78040a3a2fdd342c70317fa99d6e37e294b6f71f67c5fa9978100575cacdae0b",
+          "side": 0
+        },
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 1,
+      "loads": [
+        {
+          "name": "CHI-pb.iff",
+          "name_id": 3405779369,
+          "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+          "side": 0
+        },
+        {
+          "name": "CIN-pb.iff",
+          "name_id": 3651886909,
+          "sha256": "dc9f28ca3947b926e9c22722d1438d096dd722d6fe1bed90d82e6645fc3593e9",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 2,
+      "loads": [
+        {
+          "name": "CIN-pb.iff",
+          "name_id": 3651886909,
+          "sha256": "dc9f28ca3947b926e9c22722d1438d096dd722d6fe1bed90d82e6645fc3593e9",
+          "side": 0
+        },
+        {
+          "name": "BUF-pb.iff",
+          "name_id": 4253408806,
+          "sha256": "12c3e6db800a6ad28a83a28a24f10142cda16bb436f2b749cee487ad0b1c5c38",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 3,
+      "loads": [
+        {
+          "name": "BUF-pb.iff",
+          "name_id": 4253408806,
+          "sha256": "12c3e6db800a6ad28a83a28a24f10142cda16bb436f2b749cee487ad0b1c5c38",
+          "side": 0
+        },
+        {
+          "name": "DEN-pb.iff",
+          "name_id": 605454500,
+          "sha256": "fddbc3df7789d7d3b816a9ab700801bedeccd555299af904cdfac93d629e0f2b",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 4,
+      "loads": [
+        {
+          "name": "DEN-pb.iff",
+          "name_id": 605454500,
+          "sha256": "fddbc3df7789d7d3b816a9ab700801bedeccd555299af904cdfac93d629e0f2b",
+          "side": 0
+        },
+        {
+          "name": "CLE-pb.iff",
+          "name_id": 1737102695,
+          "sha256": "ac5f3b6e877bf5811e457482b13f9ea79cf9d1dfca4bccefc34b66c9b735f444",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 5,
+      "loads": [
+        {
+          "name": "CLE-pb.iff",
+          "name_id": 1737102695,
+          "sha256": "ac5f3b6e877bf5811e457482b13f9ea79cf9d1dfca4bccefc34b66c9b735f444",
+          "side": 0
+        },
+        {
+          "name": "TB-pb.iff",
+          "name_id": 1360963098,
+          "sha256": "09dd866aecf1447a7eb4dd005f64e7327c82baf6944156fcebadd7a8d19ccb23",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 6,
+      "loads": [
+        {
+          "name": "TB-pb.iff",
+          "name_id": 1360963098,
+          "sha256": "09dd866aecf1447a7eb4dd005f64e7327c82baf6944156fcebadd7a8d19ccb23",
+          "side": 0
+        },
+        {
+          "name": "ARZ-pb.iff",
+          "name_id": 4060574942,
+          "sha256": "a61acb6bbaa696a7ceb50310aba92cc3cb29135ea4982ee145af4a6a243c9dbb",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 7,
+      "loads": [
+        {
+          "name": "ARZ-pb.iff",
+          "name_id": 4060574942,
+          "sha256": "a61acb6bbaa696a7ceb50310aba92cc3cb29135ea4982ee145af4a6a243c9dbb",
+          "side": 0
+        },
+        {
+          "name": "SD-pb.iff",
+          "name_id": 3819029914,
+          "sha256": "f251b55b51d0153540300a50853f6b1879d94a6a3409fce382d9c02f18130525",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 8,
+      "loads": [
+        {
+          "name": "SD-pb.iff",
+          "name_id": 3819029914,
+          "sha256": "f251b55b51d0153540300a50853f6b1879d94a6a3409fce382d9c02f18130525",
+          "side": 0
+        },
+        {
+          "name": "KC-pb.iff",
+          "name_id": 665505787,
+          "sha256": "1055b45f6ba0827f8683d5cf05996de5cbf800b757990cd26ef748036d387640",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 9,
+      "loads": [
+        {
+          "name": "KC-pb.iff",
+          "name_id": 665505787,
+          "sha256": "1055b45f6ba0827f8683d5cf05996de5cbf800b757990cd26ef748036d387640",
+          "side": 0
+        },
+        {
+          "name": "IND-pb.iff",
+          "name_id": 2602782539,
+          "sha256": "981dcf5c97c547373b47f55195c56ac295b8a5e781a972296eb991d6a7148c19",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 10,
+      "loads": [
+        {
+          "name": "IND-pb.iff",
+          "name_id": 2602782539,
+          "sha256": "981dcf5c97c547373b47f55195c56ac295b8a5e781a972296eb991d6a7148c19",
+          "side": 0
+        },
+        {
+          "name": "DAL-pb.iff",
+          "name_id": 2820567745,
+          "sha256": "141ad070d0ce5cb801dc138050e91dea4f688265fa87b8c22d4fca38150b9f1d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 11,
+      "loads": [
+        {
+          "name": "DAL-pb.iff",
+          "name_id": 2820567745,
+          "sha256": "141ad070d0ce5cb801dc138050e91dea4f688265fa87b8c22d4fca38150b9f1d",
+          "side": 0
+        },
+        {
+          "name": "MIA-pb.iff",
+          "name_id": 1320776544,
+          "sha256": "82a4f091c414e84e5f2f5206326ba4e40f3f249e75050b7c61c522c7d8a4775e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 12,
+      "loads": [
+        {
+          "name": "MIA-pb.iff",
+          "name_id": 1320776544,
+          "sha256": "82a4f091c414e84e5f2f5206326ba4e40f3f249e75050b7c61c522c7d8a4775e",
+          "side": 0
+        },
+        {
+          "name": "PHI-pb.iff",
+          "name_id": 2221930310,
+          "sha256": "a599c0276acde8e69456830c4a6a3ecb7119d09f09b12e96bf77cfa639cdac82",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 13,
+      "loads": [
+        {
+          "name": "PHI-pb.iff",
+          "name_id": 2221930310,
+          "sha256": "a599c0276acde8e69456830c4a6a3ecb7119d09f09b12e96bf77cfa639cdac82",
+          "side": 0
+        },
+        {
+          "name": "ATL-pb.iff",
+          "name_id": 1238212385,
+          "sha256": "514ae0abb4a43383f2c260072a784846264ea6178df39bfacd178365466531f3",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 14,
+      "loads": [
+        {
+          "name": "ATL-pb.iff",
+          "name_id": 1238212385,
+          "sha256": "514ae0abb4a43383f2c260072a784846264ea6178df39bfacd178365466531f3",
+          "side": 0
+        },
+        {
+          "name": "NYG-pb.iff",
+          "name_id": 2619476822,
+          "sha256": "5be302dec27e402aa85046f622c3aa0a8e4b24975c403ee3615754874d12b373",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 15,
+      "loads": [
+        {
+          "name": "NYG-pb.iff",
+          "name_id": 2619476822,
+          "sha256": "5be302dec27e402aa85046f622c3aa0a8e4b24975c403ee3615754874d12b373",
+          "side": 0
+        },
+        {
+          "name": "JAX-pb.iff",
+          "name_id": 2213563327,
+          "sha256": "c30ad51897e573c66af4bbafc4d25a4894ff4d15b564f885e42e9a66888c6f66",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 16,
+      "loads": [
+        {
+          "name": "JAX-pb.iff",
+          "name_id": 2213563327,
+          "sha256": "c30ad51897e573c66af4bbafc4d25a4894ff4d15b564f885e42e9a66888c6f66",
+          "side": 0
+        },
+        {
+          "name": "NYJ-pb.iff",
+          "name_id": 2506639631,
+          "sha256": "2c7540d045a2293d8fb186527d06f0619931ca5858086fe35fba877122c12097",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 17,
+      "loads": [
+        {
+          "name": "NYJ-pb.iff",
+          "name_id": 2506639631,
+          "sha256": "2c7540d045a2293d8fb186527d06f0619931ca5858086fe35fba877122c12097",
+          "side": 0
+        },
+        {
+          "name": "DET-pb.iff",
+          "name_id": 914490390,
+          "sha256": "fd6c69122c3b4609afd105de8bc831e8b0a8004221847acef63e84a0a8a09e0d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 18,
+      "loads": [
+        {
+          "name": "DET-pb.iff",
+          "name_id": 914490390,
+          "sha256": "fd6c69122c3b4609afd105de8bc831e8b0a8004221847acef63e84a0a8a09e0d",
+          "side": 0
+        },
+        {
+          "name": "GB-pb.iff",
+          "name_id": 2503681888,
+          "sha256": "ab3c19083e5f6190071899307ef40a961200c7cebe95b911ad13d16e83ab892e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 19,
+      "loads": [
+        {
+          "name": "GB-pb.iff",
+          "name_id": 2503681888,
+          "sha256": "ab3c19083e5f6190071899307ef40a961200c7cebe95b911ad13d16e83ab892e",
+          "side": 0
+        },
+        {
+          "name": "CAR-pb.iff",
+          "name_id": 2415860839,
+          "sha256": "0cb7cf85c65bb50188ebae019fea35f2688488db97c4eff410a8c623cd3726f0",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 20,
+      "loads": [
+        {
+          "name": "CAR-pb.iff",
+          "name_id": 2415860839,
+          "sha256": "0cb7cf85c65bb50188ebae019fea35f2688488db97c4eff410a8c623cd3726f0",
+          "side": 0
+        },
+        {
+          "name": "NE-pb.iff",
+          "name_id": 2428618744,
+          "sha256": "380b9c644722ab7a7f805478c4279b4a4d330eda5003f68bffc583055ae5152d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 21,
+      "loads": [
+        {
+          "name": "NE-pb.iff",
+          "name_id": 2428618744,
+          "sha256": "380b9c644722ab7a7f805478c4279b4a4d330eda5003f68bffc583055ae5152d",
+          "side": 0
+        },
+        {
+          "name": "OAK-pb.iff",
+          "name_id": 1737822668,
+          "sha256": "2157ee551fc047555d6727b99f48ea0f1de8faa0fe168b1751128ee532097985",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 22,
+      "loads": [
+        {
+          "name": "OAK-pb.iff",
+          "name_id": 1737822668,
+          "sha256": "2157ee551fc047555d6727b99f48ea0f1de8faa0fe168b1751128ee532097985",
+          "side": 0
+        },
+        {
+          "name": "STL-pb.iff",
+          "name_id": 1673872008,
+          "sha256": "8df7534d0aeb5b8b7de3c5b828df2e9973bc81d474e0ce6c31d6323a198169e2",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 23,
+      "loads": [
+        {
+          "name": "STL-pb.iff",
+          "name_id": 1673872008,
+          "sha256": "8df7534d0aeb5b8b7de3c5b828df2e9973bc81d474e0ce6c31d6323a198169e2",
+          "side": 0
+        },
+        {
+          "name": "BAL-pb.iff",
+          "name_id": 742256404,
+          "sha256": "e70882bdb46fd29e1685670181e39cbd4f9d064a23e82838f67237d76444f3a6",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 24,
+      "loads": [
+        {
+          "name": "BAL-pb.iff",
+          "name_id": 742256404,
+          "sha256": "e70882bdb46fd29e1685670181e39cbd4f9d064a23e82838f67237d76444f3a6",
+          "side": 0
+        },
+        {
+          "name": "WAS-pb.iff",
+          "name_id": 2411515274,
+          "sha256": "04c601e328ec92fe8d94d28a44a63bfb594fae3759d32e4f64bbd9c1efda906d",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 25,
+      "loads": [
+        {
+          "name": "WAS-pb.iff",
+          "name_id": 2411515274,
+          "sha256": "04c601e328ec92fe8d94d28a44a63bfb594fae3759d32e4f64bbd9c1efda906d",
+          "side": 0
+        },
+        {
+          "name": "NO-pb.iff",
+          "name_id": 1685224916,
+          "sha256": "180753ed061be405453aa0da206b4d1b6a884dd9ba1ae8e722694f507d6b1d79",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 26,
+      "loads": [
+        {
+          "name": "NO-pb.iff",
+          "name_id": 1685224916,
+          "sha256": "180753ed061be405453aa0da206b4d1b6a884dd9ba1ae8e722694f507d6b1d79",
+          "side": 0
+        },
+        {
+          "name": "SEA-pb.iff",
+          "name_id": 2877221416,
+          "sha256": "edfee4a8cfe836cee50203446a7719f0e947bbf1c113494ae06a98e8d85c375e",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 27,
+      "loads": [
+        {
+          "name": "SEA-pb.iff",
+          "name_id": 2877221416,
+          "sha256": "edfee4a8cfe836cee50203446a7719f0e947bbf1c113494ae06a98e8d85c375e",
+          "side": 0
+        },
+        {
+          "name": "PIT-pb.iff",
+          "name_id": 2219851104,
+          "sha256": "f70f22754ebc90cf9a2be88105cceb1bb7367d788b293cbdae219d7a25002ea8",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 28,
+      "loads": [
+        {
+          "name": "PIT-pb.iff",
+          "name_id": 2219851104,
+          "sha256": "f70f22754ebc90cf9a2be88105cceb1bb7367d788b293cbdae219d7a25002ea8",
+          "side": 0
+        },
+        {
+          "name": "HOU-pb.iff",
+          "name_id": 1499033059,
+          "sha256": "ce01473383d51753ce9634b330d2c38c05d9b1a9e301e91435fffb0487505db1",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 29,
+      "loads": [
+        {
+          "name": "HOU-pb.iff",
+          "name_id": 1499033059,
+          "sha256": "ce01473383d51753ce9634b330d2c38c05d9b1a9e301e91435fffb0487505db1",
+          "side": 0
+        },
+        {
+          "name": "TEN-pb.iff",
+          "name_id": 3301976961,
+          "sha256": "03907f2de7e1194e686facac209fefded5be7696767bf68c3b954e825ba98841",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 30,
+      "loads": [
+        {
+          "name": "TEN-pb.iff",
+          "name_id": 3301976961,
+          "sha256": "03907f2de7e1194e686facac209fefded5be7696767bf68c3b954e825ba98841",
+          "side": 0
+        },
+        {
+          "name": "MIN-pb.iff",
+          "name_id": 3226670170,
+          "sha256": "414aaf85dd324834ca8be8f3e679710983970d28d64fd0753c33e7f0ed66459a",
+          "side": 1
+        }
+      ],
+      "released": 2
+    },
+    {
+      "franchise": 31,
+      "loads": [
+        {
+          "name": "MIN-pb.iff",
+          "name_id": 3226670170,
+          "sha256": "414aaf85dd324834ca8be8f3e679710983970d28d64fd0753c33e7f0ed66459a",
+          "side": 0
+        },
+        {
+          "name": "SF-pb.iff",
+          "name_id": 1677844729,
+          "sha256": "78040a3a2fdd342c70317fa99d6e37e294b6f71f67c5fa9978100575cacdae0b",
+          "side": 1
+        }
+      ],
+      "released": 2
+    }
+  ],
+  "reversed_mixed": {
+    "loads": [
+      {
+        "name": "SF-pb.iff",
+        "name_id": 1677844729,
+        "sha256": "78040a3a2fdd342c70317fa99d6e37e294b6f71f67c5fa9978100575cacdae0b",
+        "side": 0
+      },
+      {
+        "name": "E2R-SF-pb.iff",
+        "name_id": 476544260,
+        "sha256": "78f043c720c611bbc5489ec4caa9bbfd88ca6743441225dbd28dab5fe183f78d",
+        "side": 1
+      }
+    ],
+    "released": 2
+  },
+  "historic_reentry": {
+    "loads": [
+      {
+        "name": "E2R-MIN-pb.iff",
+        "name_id": 4026473525,
+        "sha256": "0946d2402e1e2def7aabe9100a5f26f37fa1562b5ba71443e32a030cb6643da3",
+        "side": 0
+      },
+      {
+        "name": "CHI-pb.iff",
+        "name_id": 3405779369,
+        "sha256": "ae36c9417a0cb5ce7a6b9bde5671f0e9d77720a5abea57216cd8d942d295d8ae",
+        "side": 1
+      }
+    ],
+    "released": 2
+  }
+}

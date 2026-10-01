@@ -1,0 +1,236 @@
+{
+ "schema": "nfl2k5_mercedes_benz_model_art/v1",
+ "art": {
+  "mb_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "98a613ed11ce6b6e096daecf1e69ecda19cbb2d9abfb0f96bc39d1d5a5934457"
+  },
+  "mb_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "a7ccb734ff2d9101fd7c7a30eb6ec5943382ca600d375d6fca9b82a2456bf02c"
+  },
+  "mb_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "114444b11041baebe2992a5affd2fd44870f45254a82b91cbb38613ed0dffb96"
+  },
+  "mb_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "mb_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "5d5e091aa2cd8f513876934aa2b834204c5085c8964e00c6a5ee380aec300c6c"
+  },
+  "LIGHT_mb_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "778cd0e8dbacf88c1519a9d2d8d9ae359f659a60ebec4fe8328dbf307c37de9f"
+  },
+  "LIGHT_mb_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_mb_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "mb_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "mb_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "mb_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "mb_roof_under": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "de004fb75637cbf2fa6e1a5e7f3bf4aface57c5e0f8682f5f284e58f91c9c725"
+  },
+  "mb_ring": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5e80dfaed80072299170ed9a3f8f51a0477c097356a4ea93a932a5fad47280d1"
+  },
+  "mb_roof_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d1b36ae4cd2257407f7f6e368e36e2978e0772adef23829fd005d6fa435cf8ce"
+  },
+  "mb_pinwheel": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "43aa0b077a429a5e3596dcf08deab11a8c08e0e4ce5d7d2d94b6aaaababd0f81"
+  },
+  "LIGHT_mb_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_mb_halo": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "4e77ad99026b96e168b48d4b0ab7b223cd9de914fb9c7b9a51b3fd3130494ad4"
+  },
+  "LIGHT_mb_window": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "853f8f67f8b1f845cc38c16e97a5f655e5cc3a142c40f810003e8b71c809f1f6"
+  },
+  "mb_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "5d77466de01bf0759de19938ce66489dd0ab19747091e0241213af1e532edb3a"
+  },
+  "mb_glass_out": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "86d2efc4fa17235c30a20e2e21b49af1851fd2050a4d1213c4bf94a7eb5d6ca5"
+  },
+  "mb_star": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "cf73bbf80ef7d5c7e2f106a6cbd06bd7c2a5c386ae1f36de547fe080e9d5e68f"
+  },
+  "mb_sign": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "5d0731a2a7c814ceee24d818648b17d607227cd0928db94b6425f972aa0d716b"
+  },
+  "mb_name": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "ae6cd72367cb4e8d579fc369951df918305127c5abbe644a2a08b9f3f63a0642"
+  },
+  "LIGHT_mb_column": {
+   "size": [
+    32,
+    128
+   ],
+   "sha256": "019addad81a38f40b3082db96f0d7ddca63384abfba8b573119b9f0ba83565c0"
+  },
+  "mb_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "LIGHT_mb_skyline": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "736fe4512a1a3d2a044de69a0893c33846010151c49c3a4c5da5bb371c1fedac"
+  },
+  "mb_sky_d": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "64c72c1fa478690d6e87d994c6af4835828d22fff206a68cd1869a5e8c4d7478"
+  },
+  "mb_sky_a": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "54d2fd5931e114f284b3d4115f96834aa3cdb85a8e2f5f989ab11fe760109664"
+  },
+  "mb_sky_n": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "4771a68ec9924d25080381900ac80eafb4dcaf494ee9e635f619d62b02d64023"
+  },
+  "mb_sky_o": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9fe99fa88ae48ac327b37dcc35eb953451fbd46ba809faf15bb96ef6689cdb15"
+  },
+  "mb_glass_base": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9cb59c1556b8f802083d0131403d2bc697e8edcf3322fb58f945b4efaa9667d2"
+  },
+  "field/mb_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "95d9d05061c06f6f66f50c6fce2bea7f2fda6e176b9dc4ffc7d612c6d93eb289"
+  },
+  "field/mb_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "335b3c1837615bedb72f2a99c465b4c660b8c9b4f325e7400f5a73778985f676"
+  }
+ }
+}

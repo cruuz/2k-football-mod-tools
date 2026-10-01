@@ -31,6 +31,8 @@ class NativeTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):
   from nfl2k5_scorebug_exact import Build
+  from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+  require_nfl_retail_packs(PACK.parents[1])
   cls.build=Build(PACK,PACK.parents[1]/'default.xbe');cls.addClassCleanup(cls.build.close)
  def capture(self,private=True,**state):
   b=self.build;span=scene.stage_binding_scene(b.spans['score_bug'],runtime=True)[0]

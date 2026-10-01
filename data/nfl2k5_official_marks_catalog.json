@@ -1,0 +1,226 @@
+{
+  "schema": "nfl2k5_official_marks_catalog/v1",
+  "assets": {
+    "data/nfl2k5_espn_marks/espnLogo1.png": {
+      "name": "espnLogo1.png",
+      "sha256": "42573f5a4fe96698d5470ffc3984b85127847f485c10214681e7419d7428cb2c",
+      "feature": "espn_marks_2026"
+    },
+    "data/nfl2k5_espn_marks/nfl_chiclet.png": {
+      "name": "nfl_chiclet.png",
+      "sha256": "06062f839ceffaccc1b17a35c7a7105c541a72576431be89829bf859122af14f",
+      "feature": "espn_marks_2026"
+    },
+    "data/nfl2k5_espn_marks/shield_espn.png": {
+      "name": "shield_espn.png",
+      "sha256": "b89b5f4df374bc23b78f9b284ff4d12cf412e2a89820fe2afa8c3589204fde54",
+      "feature": "espn_marks_2026"
+    },
+    "data/nfl2k5_espn_marks/z_ESPN_bug.png": {
+      "name": "z_ESPN_bug.png",
+      "sha256": "8aaa2cbc8d9c54fa52de56b1890770f896407ae4c6cab13b64957787b0971c62",
+      "feature": "espn_marks_2026"
+    },
+    "data/nfl2k5_espn_wipes_boards/playercard_znfl_shield.png": {
+      "name": "playercard_znfl_shield.png",
+      "sha256": "4a648238b2dce79330f90cb35763eb88a9a455a8432b4b1b5a6a12d41cc89eb6",
+      "feature": "espn_wipes_boards_2026"
+    },
+    "data/nfl2k5_espn_wipes_boards/redflashy_logo1.png": {
+      "name": "data/nfl2k5_espn_wipes_boards/redflashy_logo1.png",
+      "sha256": "614848219efb1c6a690dfa09a75363bff2a93f964cf40245f27c59b8ac793387",
+      "feature": "espn_wipes_boards_2026"
+    },
+    "data/nfl2k5_espn_wipes_boards/replay_wipe_logo_glow.png": {
+      "name": "data/nfl2k5_espn_wipes_boards/replay_wipe_logo_glow.png",
+      "sha256": "83057112c49b33af53241d75911549e69b7c422bff7bf079a0a49a1ac90dcaee",
+      "feature": "espn_wipes_boards_2026"
+    },
+    "data/nfl2k5_espn_wipes_boards/scoreboard_sign01.png": {
+      "name": "data/nfl2k5_espn_wipes_boards/scoreboard_sign01.png",
+      "sha256": "61e7d9f95da2b0f6000e5a72f54353e029d9c6242aa159045759f6ae354c9e26",
+      "feature": "espn_wipes_boards_2026"
+    },
+    "data/nfl2k5_espn_wipes_boards/scoreboard_sign02.png": {
+      "name": "data/nfl2k5_espn_wipes_boards/scoreboard_sign02.png",
+      "sha256": "686e47834680f10eaf6c3931f32bd7913c7d1519f2162efedf66db2a23c591d5",
+      "feature": "espn_wipes_boards_2026"
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_ribbon.png": {
+      "name": "data/nfl2k5_highmark_model/art/LIGHT_hm_ribbon.png",
+      "sha256": "9cff854d46e48065486ddee13d971de55eabc2467b6adcafd3dcba27ee4e1435",
+      "feature": "modern_highmark"
+    },
+    "data/nfl2k5_highmark_model/art/hm_letters.png": {
+      "name": "data/nfl2k5_highmark_model/art/hm_letters.png",
+      "sha256": "97288daa30d3e477de4e41e58da4aeee12e4be4df6481499afe454b9e0718159",
+      "feature": "modern_highmark"
+    },
+    "data/nfl2k5_highmark_model/art/hm_letters_out.png": {
+      "name": "data/nfl2k5_highmark_model/art/hm_letters_out.png",
+      "sha256": "46c99a41b7f0fb039f76efbfc470b75e52a7bc5ea1464474d1170b9145d67bb8",
+      "feature": "modern_highmark"
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_logo.png": {
+      "name": "data/nfl2k5_lucas_oil_model/art/los_logo.png",
+      "sha256": "07f786919a48ba023ac76851c12c19fdb1a4fae4915d5a49da1aa8578718b448",
+      "feature": "modern_lucas_oil"
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_star.png": {
+      "name": "data/nfl2k5_mercedes_benz_model/art/mb_star.png",
+      "sha256": "cf73bbf80ef7d5c7e2f106a6cbd06bd7c2a5c386ae1f36de547fe080e9d5e68f",
+      "feature": "modern_mercedes_benz"
+    },
+    "data/nfl2k5_metlife_model/art/ml_logo.png": {
+      "name": "data/nfl2k5_metlife_model/art/ml_logo.png",
+      "sha256": "e5fd5df5bdc0f4a69fdbf6840089f964968fc61248babd9c74bf00f9818ed5a1",
+      "feature": "modern_metlife_model"
+    },
+    "data/nfl2k5_metlife_model/art/ml_signs_s18.png": {
+      "name": "data/nfl2k5_metlife_model/art/ml_signs_s18.png",
+      "sha256": "419aba06af9afa595e673dddebfcb5ac69cd80e7c8b8e012a2801f760eac1cd9",
+      "feature": "modern_metlife_model"
+    },
+    "data/nfl2k5_metlife_model/art/ml_signs_s19.png": {
+      "name": "data/nfl2k5_metlife_model/art/ml_signs_s19.png",
+      "sha256": "5a7271380ea35cf833fda34bf76b9eda726c77dd1eed2441cb6b338454b92a12",
+      "feature": "modern_metlife_model"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/ad_bb01.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/ad_bb01.png",
+      "sha256": "514dd5d86d784104255538d706cb2717942334d209daff481900f307dfd55b18",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/ad_bb02.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/ad_bb02.png",
+      "sha256": "79d74918046cc36408f9b029b14448ba3144890b2fb86a0b105771a6a806fd0d",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner01.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/banner01.png",
+      "sha256": "4efcf9be8a8cbace1f77ffbc663af4e306a81e5610df9d02d80dc1152f523073",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner02.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/banner02.png",
+      "sha256": "32bfd4b5b6d23cb7c03c198241ef301459391e6e132d437624df9cb2fba0af7b",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner04.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/banner04.png",
+      "sha256": "a6a6312ec7174c280f01dd502f70b2b052ab15ea77e88c02b8ae4351dfa7ae7c",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner_corp.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s18/stadium/banner_corp.png",
+      "sha256": "3e6be93d2be2206ec45d64c08392e25d3ecead0c31e6f1fad5c5c7750ddc2a3d",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/ad_bb01.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/ad_bb01.png",
+      "sha256": "0e353be9dc2bd3c98a2c42f07f1eb7edadcf33adb0a4e92e742ac0fa871056f8",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/ad_bb02.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/ad_bb02.png",
+      "sha256": "0709a992f0e5606cac5f276d2cc97d7924f72e314c57c45d7c08047b9377de38",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner01.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/banner01.png",
+      "sha256": "bd10bd3fabf85c2527615dd7190325f71b6356dd169d9615cc6c097caa1470ad",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner02.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/banner02.png",
+      "sha256": "71ba4a43b385c1837c05c7c8c5d9ac49328fbfb0de4e8ed8611d35cba63baa1a",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner04.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/banner04.png",
+      "sha256": "3639b6497d7ec067ef643e84fc26bc881c7dfe8b9b0cf3eaa3de5e8ae9d4bf04",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner_corp.png": {
+      "name": "data/nfl2k5_modern_metlife/art/s19/stadium/banner_corp.png",
+      "sha256": "1e9d57a9c08febd5584ebcccb5775a55e8900c05b1f641737cef94df13c03f35",
+      "feature": "modern_metlife"
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s40.png": {
+      "name": "data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s40.png",
+      "sha256": "93f87e6151d98d02971d8ca20dcabc85134a50ca23e948aafc96ea8e8586adad",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s40.png": {
+      "name": "data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s40.png",
+      "sha256": "3698dae6024e7246df88a78c6f6b152004eb011fb768b24f3674126f0834cd51",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_sofi_model/art/field/s23_endzone_R.png": {
+      "name": "data/nfl2k5_sofi_model/art/field/s23_endzone_R.png",
+      "sha256": "6e53f3475bdf7a25ac7c3f2b14b3e07e16b2a46c8ce0b220bf4ee377c382d2ec",
+      "feature": "modern_sofi",
+      "public_base": "data/nfl2k5_sofi_model/art/field/s23_endzone_R_club.png",
+      "private_rects": [
+        [
+          112,
+          0,
+          200,
+          64
+        ]
+      ],
+      "public_sha256": "03d932e553ec5048cb94f97066484b94aa2a9d01c61b6e9a77c2a7c2f0c02619",
+      "rgba_sha256": "a9ee9a995a7218ecf83e94f00b6de60fe8199169b80f94fcfc2c06e544132b7e"
+    },
+    "data/nfl2k5_sofi_model/art/field/s40_midfield.png": {
+      "name": "data/nfl2k5_sofi_model/art/field/s40_midfield.png",
+      "sha256": "5154e530a6aebec11eeba19acc0f565e79426ff20acea2a689abab4af50ad82c",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_sofi_model/art/field/s40_shield.png": {
+      "name": "data/nfl2k5_sofi_model/art/field/s40_shield.png",
+      "sha256": "eabb1af494579bb567b4e16272f85787b9fb5828d4c1e173b68d07805f4aae81",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_sofi_model/art/sf_letters.png": {
+      "name": "data/nfl2k5_sofi_model/art/sf_letters.png",
+      "sha256": "504ef990bb2cda51a1be61142e1d8e4676f47c2aa5faa6081c6c5fd51ebc3b49",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_sofi_model/art/sf_letters_screen.png": {
+      "name": "data/nfl2k5_sofi_model/art/sf_letters_screen.png",
+      "sha256": "9d7c49eb03ea736a253d9db6e179a99c69b5ae3828ae2e8c42d18f0008debac5",
+      "feature": "modern_sofi"
+    },
+    "data/nfl2k5_state_farm_model/art/sf_logo.png": {
+      "name": "data/nfl2k5_state_farm_model/art/sf_logo.png",
+      "sha256": "976d4866c58b9ed85379aba7b8fb9f24dccea6abacde5e5c743be184a55a01b0",
+      "feature": "modern_state_farm"
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_blue_sign.png": {
+      "name": "data/nfl2k5_usbank_model/art/LIGHT_usb_blue_sign.png",
+      "sha256": "576bacd3e6f0a9de6d946e9a89eb4d2956581bcb9d178fb6ada4606cd6b48bd5",
+      "feature": "modern_usbank"
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_panels.png": {
+      "name": "data/nfl2k5_usbank_model/art/LIGHT_usb_panels.png",
+      "sha256": "afc03e438bc2ac412d1c19bd8dde48dbb0523a424130c31d7a48fa3ca9c702ab",
+      "feature": "modern_usbank"
+    },
+    "data/nfl2k5_usbank_model/art/usb_header.png": {
+      "name": "data/nfl2k5_usbank_model/art/usb_header.png",
+      "sha256": "a327cbaf02914ac8758660a3225fea1a99a444c32def7516b105cba92c117153",
+      "feature": "modern_usbank"
+    },
+    "data/nfl2k5_usbank_model/art/usb_letters.png": {
+      "name": "data/nfl2k5_usbank_model/art/usb_letters.png",
+      "sha256": "7c2f0a7a3a1ac05481d2d3866aae9d1cbe4f4d71c44833ed0da2d255b1a2ad19",
+      "feature": "modern_usbank"
+    },
+    "data/nfl2k5_usbank_model/art/usb_prow_letters.png": {
+      "name": "data/nfl2k5_usbank_model/art/usb_prow_letters.png",
+      "sha256": "acd8d44e0a289cae559d138236daddc6fbd9d4aa5899d994cd1dffa8ae91ced5",
+      "feature": "modern_usbank"
+    }
+  }
+}

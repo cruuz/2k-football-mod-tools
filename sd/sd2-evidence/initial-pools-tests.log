@@ -1,0 +1,19 @@
+======================================================================
+FAIL: test_evidence_metadata_matches_every_declared_write (tests.mod_editor.test_nfl2k5_position_choices.NativeChoicesTests.test_evidence_metadata_matches_every_declared_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-u5/tests/mod_editor/test_nfl2k5_position_choices.py", line 182, in test_evidence_metadata_matches_every_declared_write
+    self.assertEqual((row['name'], int(row['va'], 0), row['size']), (site.label, site.va, site.size))
+AssertionError: Tuples differ: ('enum_to_kind_olb', 5308976, 4) != ('lineup_iterator', 951312, 896)
+
+First differing element 0:
+'enum_to_kind_olb'
+'lineup_iterator'
+
+- ('enum_to_kind_olb', 5308976, 4)
++ ('lineup_iterator', 951312, 896)
+
+----------------------------------------------------------------------
+Ran 50 tests in 70.115s
+
+FAILED (failures=1)

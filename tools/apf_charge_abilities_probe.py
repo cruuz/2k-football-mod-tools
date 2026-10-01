@@ -59,10 +59,10 @@ def branch_target(image, pc):
 
 
 class ChargeMachine(Machine):
-    def __init__(self, image, *, patched=False):
+    def __init__(self, image, *, patched=False, revision=patch.CURRENT_REVISION):
         super().__init__(image, b"")
         self.profile = patch.PROFILES[int(self.updated)]
-        self.document = patch.PatchDocument(self.profile, patched)
+        self.document = patch.PatchDocument(self.profile, patched, revision)
         patch.verify_image(image, self.document)
         self.image = patch.apply_image(image, self.document)
         self.cpu.mem_write(patch.IMAGE_BASE, self.image)
@@ -88,6 +88,7 @@ class ChargeMachine(Machine):
         return patch.address(base, self.profile)
 
     def configure_player(self, tier, abilities=(), *, qb=False, passing=True):
+        self.put(0x350000, 0x18000000)
         record = bytearray(0x150)
         record[18] = tier
         for name, offset, bit in patch.CHARGED_ABILITIES:
@@ -122,3 +123,97 @@ class ChargeMachine(Machine):
         delta = 0xE88 if self.updated else 0
         self.call(0x848D6C14 + delta, stop=0x848D6C38 + delta, bound=2_000)
         return self.site(patch.ROUTINE) in self.visited
+
+    def consume_move(self, move):
+        """Execute consume, retail jump-table dispatch and the move gate.
+
+        These four explicit move IDs avoid the direction-selection callee;
+        both directions enter the real shared spin/juke gate. Stop before
+        animation setup, with the actual consumed state still in memory.
+        """
+        moves = {"spin_left": 0x1D, "spin_right": 0x1E,
+                 "juke_left": 0x21, "juke_right": 0x22}
+        self.put(STATE, moves[move])
+        for reg, value in ((30, PLAYER), (31, STATE), (28, 0), (29, 0)):
+            self.setreg(reg, value)
+        delta = 0xE88 if self.updated else 0
+        self.call(0x848E7EF4 + delta, PLAYER, stop=0x848E7FB8 + delta, bound=300)
+        return (self.get(STATE + 0x1A8) >> 22) & 7
+
+    def move_bonus(self, category):
+        """Run the complete scalar bonus helper, including its stop query."""
+        self.put(0x350000, category << 24)
+        self.call(self.site(0x848C4B40), PLAYER, bound=300)
+        return self.fpr(1)
+
+    def feedback(self, tier, *, discharge=False, previous_packet=None, blend=1.):
+        """Execute retail feedback decisions, stopping before any GPU work.
+
+        Native packet packing and direct/interpolated scalar decoding are
+        included. Actual pixels and render/update timing need a Xenia witness.
+        Medal values use the retail packed tier / 2, never a patched value.
+        """
+        va = lambda a: patch.feedback_address(a, self.profile)
+        if discharge:
+            self.call(self.site(0x848C4D70), PLAYER, bound=2_000)
+        self.setreg(10, STATE)
+        self.setfpr(0, struct.unpack(">f", self.cpu.mem_read(STATE + 0x100, 4))[0])
+        self.setfpr(28, 0.)
+        self.setfpr(31, .5)
+        self.setfpr(18, 1.)
+        self.call(va(0x84AA6044), stop=va(0x84AA6070), bound=100)
+        channel, timer = self.fpr(30), self.fpr(29)
+        # Execute scalar packet writes and the medal bits. Vector/position
+        # inputs are zero; they cannot affect the charge or timer bit fields.
+        packet = 0x380000
+        self.put(packet, 0)
+        self.put(packet + 4, 0)
+        self.setreg(29, PLAYER)
+        self.setreg(31, packet)
+        self.setfpr(26, 127.)
+        self.call(va(0x84AA60E8), stop=va(0x84AA60EC), bound=10)
+        self.setfpr(27, 511.)
+        self.setreg(10, 0)
+        self.setreg(9, self.reg(1) + 0x50)
+        self.call(va(0x84AA6100), stop=va(0x84AA6194), bound=100)
+        packet_word = self.get(packet)
+        # Direct render caller: decode with its actual retail scaling factors.
+        self.setreg(10, self.get(packet + 4))
+        for reg, base in ((26, 0x820FE194), (27, 0x820FE18C), (29, 0x820FE190),
+                          (30, 0x820FE174), (31, 0x820FE170)):
+            data_address = base + (0x20 if self.updated else 0)
+            self.setfpr(reg, struct.unpack(">f", self.cpu.mem_read(data_address, 4))[0])
+        self.call(va(0x84AA6FCC), stop=va(0x84AA7044), bound=100)
+        if previous_packet is not None:
+            self.put(packet + 0x20, previous_packet)
+            self.setreg(31, packet + 0x20)
+            self.setreg(11, packet - 4)
+            self.setfpr(28, blend)
+            for reg, base in ((25, 0x820FE184), (24, 0x820FE188)):
+                data_address = base + (0x20 if self.updated else 0)
+                self.setfpr(reg, struct.unpack(">f", self.cpu.mem_read(data_address, 4))[0])
+            self.call(va(0x84AA6F44), stop=va(0x84AA7044), bound=100)
+        decoded_charge, decoded_timer = self.fpr(3), self.fpr(4)
+        self.setreg(23, tier // 2)
+        self.setfpr(31, decoded_charge)
+        self.call(va(0x84AA66AC), stop=va(0x84AA66F4), bound=100)
+        displayed = self.fpr(29)
+
+        def choose(start, destinations):
+            for destination in destinations:
+                self.boundaries[va(destination)] = lambda m: m.ret(0)
+            try:
+                self.call(va(start), bound=100)
+                return next(a for a in destinations if va(a) in self.visited)
+            finally:
+                for destination in destinations:
+                    del self.boundaries[va(destination)]
+
+        outer = choose(0x84AA6934, (0x84AA6944, 0x84AA69F4)) == 0x84AA6944
+        second_discharge = choose(0x84AA673C, (0x84AA67A4, 0x84AA67B4)) == 0x84AA67A4
+        return {"charge_channel": channel, "timer_channel": timer,
+                "packet_word": packet_word, "decoded_charge": decoded_charge,
+                "decoded_timer": decoded_timer,
+                "displayed_charge": displayed * 2, "outer_ring": outer,
+                "second_level_discharge": second_discharge,
+                "medal": self.reg(23), "consumed_state": (self.get(STATE + 0x1A8) >> 22) & 7}
