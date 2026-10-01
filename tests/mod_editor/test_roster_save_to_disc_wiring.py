@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 from pathlib import Path
 import re
 import sys
@@ -116,6 +117,84 @@ class WiringTests(unittest.TestCase):
         build.set_roster_edits(str(self.output))
         self.assertEqual(build.plan().roster_edits, str(self.output))
 
+    def test_replacement_roster_from_signed_file_reaches_build_writer(self):
+        from tests.mod_editor.test_nfl2k5_roster_records import league_sample, synthetic_body
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        rows = []
+        for index, row in enumerate(league_sample()):
+            row = list(row)
+            row[:2] = [f"N{index:x}", f"New{index:x}"]
+            rows.append(tuple(row))
+        source = signed(synthetic_body(rows))
+        for player in source.players:
+            player.record.set('pbp_id', 0)
+            player.record.set('speed', 99)
+        source.swap(source.players[0], source.players[44])
+        path = save_files(self.root / 'replacement', source)
+        # Real save framing and HMAC, freshly opened, with no editor-session diffs.
+        source = importer.load_save(path)
+        self.assertFalse(rr.edits_document(source)['edits'])
+        self.panel.load_document(source, kind='save', source=path)
+        build = BuildPanel()
+        self.addCleanup(build.deleteLater)
+        self.addCleanup(build._hires_budget_timer.stop)
+        self.panel.roster_edits_changed.connect(build.set_roster_edits)
+        with patch.object(self.module.QFileDialog, 'getSaveFileName', return_value=(str(self.output), '')), \
+             patch.object(self.module, 'QMessageBox', Mock()):
+            self.panel.save_roster_to_disc_button.click()
+        plan = build.plan()
+        self.assertEqual(plan.roster_edits, str(self.output))
+        # Only the bounded fixture's ROST writer runs, never a disc build.
+        receipt = rr.apply(self.disc, plan.roster_edits)
+        target = rr.load_image(self.disc)
+        self.assertGreater(receipt['players_changed'], 0)
+        for before, after in zip(source.players, target.players):
+            self.assertEqual((after.first, after.last), (before.first, before.last))
+            self.assertEqual(after.record.get('speed'), 99)
+            self.assertEqual(after.teams, before.teams)
+
+    def test_private_signed_save_replaces_all_2547_players_through_button(self):
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        fixture_root = Path(os.environ.get('NFL2K5_SAVE_FIXTURES',
+                            '/home/noah/Desktop/2K5-8 Editors/save_fixtures'))
+        path = fixture_root / 'f0/UDATA/53450030/0B8506889D40/SAVEGAME.DAT'
+        retail = ROOT / 'extracted/ESPN NFL 2K5 (USA)'
+        if not path.is_file() or not (retail / 'vc_53450030/0').is_file():
+            self.skipTest(f'Private save/retail fixture missing: {path}, {retail}')
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8')
+        original = rr.load_image(retail).to_body()
+        # Only a sub-megabyte generated archive containing the real roster is written.
+        self.disc = image_fixture(self.root, original).path
+        self.panel._facade.source_path = self.disc
+        source = importer.load_save(path)
+        self.assertEqual(len(source.players), 2547)
+        self.assertFalse(rr.edits_document(source)['edits'])
+        self.panel.load_document(source, kind='save', source=path)
+        build = BuildPanel()
+        self.addCleanup(build.deleteLater)
+        self.addCleanup(build._hires_budget_timer.stop)
+        self.panel.roster_edits_changed.connect(build.set_roster_edits)
+        with patch.object(self.module.QFileDialog, 'getSaveFileName', return_value=(str(self.output), '')), \
+             patch.object(self.module, 'QMessageBox', Mock()) as box:
+            self.panel.save_roster_to_disc_button.click()
+        box.warning.assert_not_called()
+        self.assertEqual(build.plan().roster_edits, str(self.output))
+        receipt = rr.apply(self.disc, build.plan().roster_edits)
+        self.assertEqual(receipt['log'], [])
+        target = rr.load_image(self.disc)
+        for src, dst in zip(source.players, target.players):
+            self.assertEqual((src.first, src.last, src.college), (dst.first, dst.last, dst.college))
+            for field in importer.CARRIED_FIELDS:
+                self.assertEqual(src.record.get(field), dst.record.get(field), (src.index, field))
+        for src, dst in zip(source.teams, target.teams):
+            self.assertEqual([source.by_offset[o].index for o in src.slots],
+                             [target.by_offset[o].index for o in dst.slots])
+        first = target.to_body()
+        rr.apply(self.disc, build.plan().roster_edits)
+        self.assertEqual(rr.load_image(self.disc).to_body(), first)
+        self.assertEqual(rr.load_image(retail).to_body(), original)
+
     def test_tools_action_picks_file_and_result_dialog_contains_counts_and_skips(self):
         self.load('disc')
         box = Mock()
@@ -125,7 +204,7 @@ class WiringTests(unittest.TestCase):
             self.panel.save_roster_to_disc_action.trigger()
         choose.assert_called_once()
         box.setText.assert_called_once()
-        self.assertIn('Matched:', box.setText.call_args.args[0])
+        self.assertIn('Roster prepared:', box.setText.call_args.args[0])
         self.assertIn('"skipped":', box.setDetailedText.call_args.args[0])
         self.assertIn('"teams":', box.setDetailedText.call_args.args[0])
         self.assertEqual(self.panel._source_kind, 'disc')

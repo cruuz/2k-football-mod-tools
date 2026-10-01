@@ -61,9 +61,19 @@ def f32(value):
     return struct.unpack('<f', struct.pack('<f', value))[0]
 
 
-def native_overall(record):
-    """USA unboosted integer overall; not the roster grid's estimated overall."""
+def native_overall(record, *, lineman=False):
+    """USA unboosted integer overall; not the roster grid's estimated overall.
+
+    ``lineman=True`` is the same overall on an executable carrying the1wam's
+    lineman rating (nfl2k5_lineman_rating): while a C/G/T overall is computed,
+    326 lb and up reads as 294 lb and 325 lb and below as 317 lb.
+    """
     raw = record.encode()
+    if lineman:
+        from . import nfl2k5_lineman_rating as rule
+        raw = bytearray(raw)
+        raw[rule.WEIGHT_FIELD] = rule.substituted_weight_raw(raw[rule.POSITION_FIELD], raw[rule.WEIGHT_FIELD])
+        raw = bytes(raw)
     def skill(offset):
         return f32(min(raw[offset], 100) * f32(.01))
     def group(index):
@@ -87,6 +97,13 @@ def native_overall(record):
     total = f32(total / sum(row[0] for row in rows))
     total = f32((total - f32(mean)) * f32(.7) / f32(spread) + f32(.3))
     return math.floor(f32(max(0.0, min(1.0, total)) * 100) + .5)
+
+
+def prepared_overall(state, *, lineman=False):
+    """Native overall of the 84-byte recipe record sealed in a prepared MyCareer state."""
+    from . import nfl2k5_my_career as career
+    recipe = career.validate_state(state)[career.RECIPE_OFFSET:career.RECIPE_OFFSET + 84]
+    return native_overall(roster.PlayerRecord.decode(recipe), lineman=lineman)
 
 
 def tier_id(tier):

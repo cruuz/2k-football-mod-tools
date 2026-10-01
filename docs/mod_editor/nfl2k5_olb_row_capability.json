@@ -3,7 +3,7 @@
   "game": "nfl2k5_xbox",
   "surface": "players_rosters",
   "title": "Merged positions with one Linebackers group",
-  "summary": "EXPERIMENTAL / UNWITNESSED. Complete disc roster scans select compact or retained Outside Linebackers selectors. Build applies the guarded XBE policy after all roster writers.",
+  "summary": "EXPERIMENTAL / UNWITNESSED. Complete disc roster scans select compact or retained Outside Linebackers selectors. Build applies the guarded XBE policy after all roster writers. Every pools build also carries the finite CPU lineup iterator; complete earlier discs report needs_fix.",
   "classification": "offline-writer-proved",
   "backend": {
     "module": "tools/nfl2k5_roster_reclassify.py",
@@ -19,9 +19,10 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Native bounded selectors and player queries proved offline. Game rendering, saved franchise routes and future seasons remain unwitnessed.",
+    "scope": "Native bounded selectors and player queries proved offline. Game rendering, saved franchise routes and future seasons remain unwitnessed. SD2 proves alias exhaustion and fatigue replay offline; the forced-fatigue in-game A/B remains unwitnessed.",
     "evidence": [
-      "ASTRA_OLB_ROW_REPORT.md"
+      "ASTRA_OLB_ROW_REPORT.md",
+      "sd/SD2_REPORT.md"
     ]
   },
   "source_container": {
@@ -55,7 +56,9 @@
     "ASTRA_OLB_ROW_REPORT.md",
     "docs/mod_editor/nfl2k5_olb_row_evidence.json",
     "mod_editor/core/nfl2k5_position_pools.py",
-    "tests/mod_editor/test_nfl2k5_olb_row.py"
+    "tests/mod_editor/test_nfl2k5_olb_row.py",
+    "sd/SD2_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_lineup_iterator.py"
   ],
   "portme": [
     "Wire the protected Build final scan and compatibility option; regenerate the protected reservation manifest.",

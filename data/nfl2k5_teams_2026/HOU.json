@@ -1,0 +1,1004 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "HOU",
+  "name": "Houston Texans",
+  "asset_code": "37",
+  "season": 2026,
+  "sources_uw": {"sleeve_logo_2026": "nike.com's 2026 Texans Game jerseys (navy): the bull under the swoosh facing forward on both arms (mirrored on the right sleeve)"},
+  "status": "Phase B job d3 (2026-09-24). Sort: redesigned (April 2024 set). Colours sourced; albedo INFERRED from 2026 week 1 and 2 photos (navy median (26,32,40), red (183,36,35)) with u1's lab calibration. Numbers use the retail 1955-56 Colts chamfered block glyphs with a Battle Red outline as the nearest donor to the 2024 angular font (INFERRED; a traced 2024 font is an open item).",
+  "sources": {
+    "uniform_release": "https://www.houstontexans.com/news/houston-texans-reveal-four-new-fan-inspired-uniforms",
+    "uniform_history": "https://en.wikipedia.org/w/index.php?title=Houston_Texans&action=raw",
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Houston_Texans_Uniforms_(2026).png (CC BY 4.0, TheGoodGeneral 1, 2026-08-25)",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (HOU: NFL logo file; Deep Steel Blue #021018, Battle Red #EB0028)",
+    "home_photos": "https://www.houstontexans.com/photos/gameday-action-texans-vs-bengals-week-2 (2026-09-20, Deep Steel Blue)",
+    "white_photos": "https://www.houstontexans.com/photos/gameday-action-texans-vs-bills-week-1 (2026-09-13, white jersey and white pants at home)",
+    "field_photos": "https://www.houstontexans.com/photos/behind-the-scenes-kickoff-field-painting",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg",
+    "wordmark_vector": "https://en.wikipedia.org/wiki/File:Houston_Texans_wordmark_logo_2024.svg",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "deep_steel_blue": "#021018",
+    "battle_red": "#EB0028",
+    "liberty_white": "#FFFFFF",
+    "h_town_blue": "#0080C6"
+  },
+  "albedo": {
+    "jersey_navy": "#1C2433",
+    "battle_red": "#D8102E",
+    "white": "#FFFFFF",
+    "black": "#101010",
+    "retail_navy": "#081838",
+    "retail_red": "#B80818",
+    "retail_red_helmet": "#C80828",
+    "retail_card_navy1": "#080828",
+    "retail_card_navy2": "#081838",
+    "retail_card_red": "#B80808",
+    "retail_atlas_navy": "#080838",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A",
+    "retail_atlas_navy2": "#081858",
+    "retail_card_red2": "#980818"
+  },
+  "marks": {
+    "bull": "bull_full.png",
+    "bull_white": "bull_white.png",
+    "bull_navy": "bull_navy.png",
+    "bull_red": "bull_red.png",
+    "word_texans": "word_texans.png",
+    "word_houston": "word_houston.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "37H0",
+      "note": "2026 home (week 2 vs Cincinnati): Deep Steel Blue jersey, red TEXANS wordmark on the chest, white angular numbers outlined in Battle Red, red and white collar trim, the bull on the sleeve caps, white swooshes, white pants with a navy and red side stripe, navy socks, Deep Steel Blue helmet with the bull",
+      "torso": {
+        "base_colour": "jersey_navy",
+        "neck_donor": "37H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "battle_red",
+            "width": 2
+          },
+          {
+            "colour": "white",
+            "width": 1
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "white"
+        },
+        "decorations": [
+          {
+            "mark": "word_texans",
+            "colour": "battle_red",
+            "center": [
+              163,
+              94
+            ],
+            "width": 42
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "jersey_navy",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "bull",
+            "at": "sleeve_1_upper",
+            "width": 16,
+            "mirror": true
+          },
+          {
+            "mark": "bull",
+            "at": "sleeve_2_upper",
+            "width": 16,
+            "mirror": false
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "jersey_navy",
+            9
+          ],
+          [
+            "battle_red",
+            4
+          ]
+        ],
+        "swoosh_colour": "jersey_navy"
+      },
+      "socks": {
+        "colour": "jersey_navy"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "white",
+        "outline": "battle_red",
+        "outline_frac": 0.025
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "37H0",
+        "fill": "battle_red"
+      },
+      "helmet": {
+        "shell_from": "retail_navy",
+        "shell": "jersey_navy",
+        "recolour": [
+          {
+            "from": "retail_red_helmet",
+            "to": "battle_red",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_navy1",
+            "to": "jersey_navy",
+            "region": "all",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_navy2",
+            "to": "jersey_navy",
+            "region": "all",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_red",
+            "to": "battle_red",
+            "region": "all",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_card_red",
+            "to": "jersey_navy",
+            "box": [
+              185,
+              12,
+              242,
+              126
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_red",
+            "to": "jersey_navy",
+            "box": [
+              30,
+              25,
+              75,
+              52
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          }
+        ]
+      },
+      "outer_index": 3879,
+      "splayer": {
+        "torso_donor_outer": 3879,
+        "torso_donor": "37H0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_navy",
+            "to": "jersey_navy",
+            "region": "torso",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "jersey_navy",
+            "region": "sleeve",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_red",
+            "to": "battle_red",
+            "region": "all",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_navy",
+            "to": "jersey_navy",
+            "region": "helmet",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_atlas_navy2",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          }
+        ]
+      }
+    },
+    "away": {
+      "selector": "37A0",
+      "note": "2026 white (week 1 vs Buffalo, worn at home): white jersey, red HOUSTON wordmark, navy numbers outlined in Battle Red, navy shoulder caps with a red stripe, navy swooshes, white pants with the navy and red side stripe, white socks, the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "37H0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "jersey_navy",
+            "width": 2
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "jersey_navy"
+        },
+        "decorations": [
+          {
+            "mark": "word_houston",
+            "colour": "battle_red",
+            "center": [
+              163,
+              94
+            ],
+            "width": 46
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "rect": [
+              10,
+              15,
+              122,
+              33
+            ],
+            "colour": "jersey_navy"
+          },
+          {
+            "rect": [
+              10,
+              33,
+              122,
+              36
+            ],
+            "colour": "battle_red"
+          },
+          {
+            "rect": [
+              10,
+              79,
+              122,
+              97
+            ],
+            "colour": "jersey_navy"
+          },
+          {
+            "rect": [
+              10,
+              97,
+              122,
+              100
+            ],
+            "colour": "battle_red"
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "jersey_navy",
+            9
+          ],
+          [
+            "battle_red",
+            4
+          ]
+        ],
+        "swoosh_colour": "jersey_navy"
+      },
+      "socks": {
+        "colour": "white"
+      },
+      "digits": {
+        "glyph_donor": "11H6",
+        "fill": "jersey_navy",
+        "outline": "battle_red",
+        "outline_frac": 0.025
+      },
+      "helmet_digits": {
+        "glyph_donor": "11H6",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "37A0",
+        "fill": "jersey_navy"
+      },
+      "helmet": {
+        "shell_from": "retail_navy",
+        "shell": "jersey_navy",
+        "recolour": [
+          {
+            "from": "retail_red_helmet",
+            "to": "battle_red",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_navy1",
+            "to": "jersey_navy",
+            "region": "all",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_navy2",
+            "to": "jersey_navy",
+            "region": "all",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_card_red",
+            "to": "battle_red",
+            "region": "all",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_card_red",
+            "to": "white",
+            "box": [
+              185,
+              12,
+              242,
+              126
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_red",
+            "to": "white",
+            "box": [
+              30,
+              25,
+              75,
+              52
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_red2",
+            "to": "jersey_navy",
+            "region": "jersey",
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_red",
+            "to": "jersey_navy",
+            "region": "jersey",
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_card_red2",
+            "to": "jersey_navy",
+            "box": [
+              30,
+              118,
+              175,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          },
+          {
+            "from": "retail_card_red",
+            "to": "jersey_navy",
+            "box": [
+              30,
+              118,
+              175,
+              150
+            ],
+            "cards": [
+              "unif_256"
+            ],
+            "tolerance": 0.25
+          }
+        ]
+      },
+      "outer_index": 4196,
+      "splayer": {
+        "torso_donor_outer": 4196,
+        "torso_donor": "37A0",
+        "sleeve_from_donor": false,
+        "recolour": [
+          {
+            "from": "retail_atlas_navy",
+            "to": "jersey_navy",
+            "region": "torso",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "white",
+            "region": "sleeve",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_red",
+            "to": "battle_red",
+            "region": "all",
+            "tolerance": 0.2
+          },
+          {
+            "from": "retail_navy",
+            "to": "jersey_navy",
+            "region": "helmet",
+            "tolerance": 0.22
+          },
+          {
+            "from": "retail_atlas_navy",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          },
+          {
+            "from": "retail_atlas_navy2",
+            "to": "white",
+            "region": "pants",
+            "tolerance": 0.3
+          }
+        ],
+        "clear": [
+          [
+            60,
+            14,
+            100,
+            50
+          ]
+        ]
+      }
+    }
+  },
+  "venue": {
+    "prefix": "s37",
+    "notes": "Reliant Stadium (the Texans' own 2026 pages use this name again, so the retail stadium_name cut-out stays). 2026 kickoff field (houstontexans.com field-painting gallery): black end zones with white TEXANS at one end and HOUSTON at the other, the bull (white with a black keyline and star) at the left of each word and the H-Town blackletter H at the right; a white bull with a black keyline at midfield. s37 has ONE end-zone texture set for both ends, so both ends read TEXANS (a writer limit). The H-Town H is not drawn: no official vector (open item).",
+    "sources": [
+      "https://www.houstontexans.com/photos/behind-the-scenes-kickoff-field-painting",
+      "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg",
+      "https://en.wikipedia.org/wiki/File:Houston_Texans_wordmark_logo_2024.svg",
+      "https://www.houstontexans.com/gameday/2026/week-1-texans-vs-bills/"
+    ],
+    "endzone": {
+      "paint": "black",
+      "paint_alpha": 0.92,
+      "marks": [
+        {
+          "mark": "word_texans",
+          "colour": "white",
+          "center": [
+            420,
+            64
+          ],
+          "height": 50,
+          "stretch": 1.12
+        },
+        {
+          "mark": "bull_navy",
+          "colour": "white",
+          "center": [
+            104,
+            64
+          ],
+          "height": 84,
+          "stretch": 1.12
+        },
+        {
+          "mark": "bull_red",
+          "colour": "white",
+          "center": [
+            104,
+            64
+          ],
+          "height": 84,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "layers": [
+        {
+          "mark": "bull_white",
+          "colour": "black"
+        },
+        {
+          "mark": "bull_navy",
+          "colour": "white"
+        },
+        {
+          "mark": "bull_red",
+          "colour": "white"
+        }
+      ],
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "text": "H-TOWN\nMADE",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "mark": "bull_white",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 60
+              },
+              {
+                "mark": "bull_navy",
+                "colour": "jersey_navy",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 60
+              },
+              {
+                "mark": "bull_red",
+                "colour": "battle_red",
+                "center": [
+                  64,
+                  96
+                ],
+                "width": 60
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "battle_red",
+            "items": [
+              {
+                "text": "#7\nSTROUD",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "WE LOVE\nOUR NICO",
+                "colour": "jersey_navy",
+                "center": [
+                  192,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "text": "#31 WILL\nANDERSON",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "ESPN\nin H-TOWN",
+                "colour": "battle_red",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "TAKE 'EM OUT\nTEXANS!",
+                "colour": "battle_red",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 14
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "mark": "word_houston",
+                "colour": "battle_red",
+                "center": [
+                  64,
+                  84
+                ],
+                "width": 80
+              },
+              {
+                "mark": "word_texans",
+                "colour": "white",
+                "center": [
+                  64,
+                  104
+                ],
+                "width": 110
+              }
+            ]
+          }
+        ]
+      },
+      "texanswall01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              256,
+              128
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "mark": "word_houston",
+                "colour": "battle_red",
+                "center": [
+                  128,
+                  44
+                ],
+                "width": 110
+              },
+              {
+                "mark": "word_texans",
+                "colour": "white",
+                "center": [
+                  128,
+                  74
+                ],
+                "width": 210
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              128,
+              256,
+              256
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "mark": "bull_white",
+                "colour": "white",
+                "center": [
+                  128,
+                  192
+                ],
+                "width": 140
+              },
+              {
+                "mark": "bull_navy",
+                "colour": "jersey_navy",
+                "center": [
+                  128,
+                  192
+                ],
+                "width": 140
+              },
+              {
+                "mark": "bull_red",
+                "colour": "battle_red",
+                "center": [
+                  128,
+                  192
+                ],
+                "width": 140
+              }
+            ]
+          }
+        ]
+      },
+      "tunnelcover01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              96,
+              128
+            ],
+            "bg": "jersey_navy",
+            "items": [
+              {
+                "mark": "bull_white",
+                "colour": "white",
+                "center": [
+                  48,
+                  52
+                ],
+                "width": 70
+              },
+              {
+                "mark": "bull_navy",
+                "colour": "jersey_navy",
+                "center": [
+                  48,
+                  52
+                ],
+                "width": 70
+              },
+              {
+                "mark": "bull_red",
+                "colour": "battle_red",
+                "center": [
+                  48,
+                  52
+                ],
+                "width": 70
+              },
+              {
+                "mark": "word_texans",
+                "colour": "white",
+                "center": [
+                  48,
+                  104
+                ],
+                "width": 80
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "4-3",
+    "note": "nflverse roster_2026 week 3 active list; 2026 depth charts list a 4-3 front (LDE, LDT, RDT, RDE, WLB, MLB, SLB).",
+    "head_coach": "DeMeco Ryans",
+    "depth_since": "2026-09-09"
+  },
+  "part_intents": {
+    "home": {
+      "torso": "very dark navy (Deep Steel Blue) jersey body with a small red TEXANS wordmark on the chest, red and white collar trim, small NFL shield at the collar, white maker swooshes; the light grey patch is the neck opening",
+      "sleeve": "very dark navy sleeve with the red, navy and white bull logo",
+      "pants": "white pants with a navy and red side stripe, navy maker mark",
+      "helmet": "very dark navy shell with the red, navy and white bull logo, grey and white hardware, flag and shield decals",
+      "digit_jersey": "white numbers outlined in red",
+      "digit_arm": "white numbers outlined in red",
+      "digit_helmet": "white numbers",
+      "nameplate": "red letters",
+      "socks00": "solid very dark navy",
+      "splayer": "far-away player atlas: white pants with navy and red stripes, very dark navy torso, dark navy helmet, navy socks, skin and glove patches",
+      "team-select_unif": "menu render: very dark navy jersey with a white number outlined in red, white pants, dark navy helmet with the bull, dark shading",
+      "team-select_helm": "menu render: very dark navy helmet with the red and white bull, a dark bar and yellow UI strip below"
+    },
+    "away": {
+      "torso": "white jersey body with a small red HOUSTON wordmark on the chest, navy collar trim, small NFL shield at the collar, navy maker swooshes; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with a navy cap and a thin red stripe",
+      "pants": "white pants with a navy and red side stripe, navy maker mark",
+      "helmet": "very dark navy shell with the red, navy and white bull logo, grey and white hardware, flag and shield decals",
+      "digit_jersey": "navy numbers outlined in red",
+      "digit_arm": "navy numbers outlined in red",
+      "digit_helmet": "white numbers",
+      "nameplate": "navy letters",
+      "socks00": "solid white",
+      "splayer": "far-away player atlas: white pants with navy and red stripes, white torso, dark navy helmet, white socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with a navy number outlined in red, white pants, dark navy helmet with the bull, grey and dark shading",
+      "team-select_helm": "menu render: very dark navy helmet with the red and white bull, a dark bar and yellow UI strip below"
+    },
+    "venue": {
+      "endzone": "black painted end zone with a white TEXANS wordmark and a white bull at the left",
+      "center_logo": "white bull with a black keyline and black star at midfield",
+      "banner": "cloth fan banners in Texans navy, red and white with white, red or navy text and the bull",
+      "texanswall01": "navy wall panel with red HOUSTON, white TEXANS and the red, navy and white bull",
+      "tunnelcover01": "navy tunnel banner with the bull and white TEXANS"
+    }
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Aiden Fisher": 0,
+      "Aireontae Ersery": 5,
+      "Austin Brinkman": 0,
+      "Azeez Al-Shaair": 4,
+      "Blake Fisher": 4,
+      "Brevin Jordan": 3,
+      "British Brooks": 4,
+      "C.J. Stroud": 2,
+      "Cade Stover": 0,
+      "Calen Bullock": 4,
+      "Collin Wright": 3,
+      "Dalton Schultz": 0,
+      "Danielle Hunter": 4,
+      "David Montgomery": 4,
+      "Davis Mills": 0,
+      "Derek Stingley": 3,
+      "Dominique Robinson": 4,
+      "Ed Ingram": 5,
+      "Evan Brown": 0,
+      "Febechi Nwaiwu": 4,
+      "Foster Moreau": 0,
+      "Jacob Hummel": 0,
+      "Jaden Crumedy": 4,
+      "Jadeveon Clowney": 4,
+      "Jake Andrews": 0,
+      "Jake Hansen": 0,
+      "Jalen Pitre": 3,
+      "Jamal Hill": 5,
+      "Jared Wayne": 2,
+      "Jaylin Noel": 2,
+      "Jaylin Smith": 4,
+      "Ka'imi Fairbairn": 1,
+      "Kai Kroeger": 0,
+      "Kamari Lassiter": 5,
+      "Kamari Ramsey": 4,
+      "Kayshon Boutte": 4,
+      "Keylan Rutledge": 0,
+      "Logan Hall": 0,
+      "Mario Edwards": 4,
+      "Marlin Klein": 0,
+      "Nathan Thomas": 4,
+      "Nico Collins": 4,
+      "Reed Blankenship": 0,
+      "Sabastian Harsh": 2,
+      "Sheldon Rankins": 4,
+      "Tommy Togiai": 2,
+      "Tremon Smith": 5,
+      "Trent Brown": 5,
+      "Wade Woodaz": 0,
+      "Will Anderson": 4,
+      "Woody Marks": 5,
+      "Wyatt Teller": 0,
+      "Xavier Hutchinson": 2
+    },
+    "dreads": [
+      "Brevin Jordan",
+      "C.J. Stroud",
+      "Calen Bullock",
+      "Derek Stingley",
+      "Jadeveon Clowney",
+      "Jaylin Smith",
+      "Kamari Lassiter",
+      "Tremon Smith"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads flag by eye for locs, braids and twists."
+  }
+}

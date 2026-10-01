@@ -37,6 +37,66 @@ def real_save(test, i=0):
     return path, data
 
 
+# Identity numbers (+0x118) the retail disc uses: the main roster's 52 teams and the 75 historic files (read from the
+# private retail extraction by CreatedIdentityTests.test_retail_disc_identities_match_the_pins below).
+RETAIL_MAIN_IDS = frozenset((*range(0, 32), 33, 34, 35, 37, *range(40, 46), *range(90, 100)))
+RETAIL_HISTORIC_IDS = frozenset(range(100, 171))
+RESEARCH_E2_ID = 175      # e2's lab team "Monsters" (research only); new historic teams take 171 and up
+
+
+class CreatedIdentityTests(unittest.TestCase):
+    """No created team shares an identity number with a historic team (or any other retail team)."""
+
+    def test_extra_created_teams_take_numbers_no_retail_team_uses(self):
+        self.assertEqual(arena.CREATED_IDS, (250, 251))
+        for ident in arena.CREATED_IDS:
+            self.assertNotIn(ident, RETAIL_HISTORIC_IDS)
+            self.assertNotIn(ident, RETAIL_MAIN_IDS)
+            self.assertNotEqual(ident, RESEARCH_E2_ID)
+            self.assertLess(ident, 256)       # five retail readers of +0x118 take the low byte only
+        self.assertEqual(len(set(arena.CREATED_IDS)), 2)
+
+    def test_the_runtime_created_predicate_names_the_same_numbers(self):
+        source = (ROOT / 'tools/roster_arena/lifecycle.h').read_text()
+        self.assertIn('#define CREATED_ID_3 %d' % arena.CREATED_IDS[0], source)
+        self.assertIn('#define CREATED_ID_4 %d' % arena.CREATED_IDS[1], source)
+        self.assertNotIn('id==100', source.replace(' ', ''))
+        self.assertNotIn('id==101', source.replace(' ', ''))
+
+    def test_retail_disc_identities_match_the_pins(self):
+        folder = XBE.parent
+        if not (folder / 'vc_53450030/0').is_file():
+            self.skipTest('private retail roster archive is absent')
+        from mod_editor.core import nfl2k5_espn25_rosters as rosters
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(folder)
+        with rr._outer_image()(folder) as archive:
+            main = archive.read_entry(5)
+            context = rosters.describe_context(main, archive.read_entry(22), archive.entries)
+            historic = [archive.read_entry(d['outer']) for d in context['descriptors']]
+        self.assertEqual(len(historic), 75)
+
+        def rel(body, field):
+            value = struct.unpack_from('<i', body, field)[0]
+            return field + value - 1
+
+        def identities(resource, count=None):
+            body = resource[32:]
+            table = rel(body, 0x40 + 0x1C)
+            total = struct.unpack_from('<I', body, 0x40 + 0x18)[0] if count is None else count
+            return [struct.unpack_from('<H', body, table + 500 * i + 0x118)[0] for i in range(total)]
+        historic_ids = {ident for resource in historic for ident in identities(resource, 1)}
+        self.assertEqual(historic_ids, RETAIL_HISTORIC_IDS)
+        self.assertEqual(set(identities(main)), RETAIL_MAIN_IDS)
+        # The migration writes exactly those numbers into the two new records, and nothing else shares them.
+        grown, receipt = arena.migrate(main, reserves_16=False, created_teams_extra=2)
+        self.assertEqual(receipt['created_ids'], list(arena.CREATED_IDS))
+        teams = identities(grown)
+        self.assertEqual(teams[52:], list(arena.CREATED_IDS))
+        self.assertEqual(len(teams), len(set(teams)))
+        self.assertFalse(set(teams) & historic_ids)
+
+
 class StorageTests(unittest.TestCase):
     def test_both_preserved_signed_saves_and_two_created_records(self):
         for i in (0, 1):
@@ -52,7 +112,7 @@ class StorageTests(unittest.TestCase):
             self.assertEqual([(t.index, t.asset_id, t.abbreviation) for t in doc.teams[:52]],
                              [(t.index, t.asset_id, t.abbreviation) for t in old.teams])
             self.assertEqual([(t.index, t.asset_id, t.abbreviation) for t in doc.teams[52:]],
-                             [(52, 100, 'USER3'), (53, 101, 'USER4')])
+                             [(52, 250, 'USER3'), (53, 251, 'USER4')])
             self.assertEqual(save.header, fs.FranchiseSave(source).header)
             self.assertEqual(out[save.arena_end:], source[fs.ARENA_END:])
             self.assertEqual(out[save.arena_end - 366:save.arena_end], source[fs.ARENA_END - 366:fs.ARENA_END])
@@ -165,20 +225,25 @@ class NativeTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_team_history as history
         if not (XBE.parent / 'vc_53450030/0').is_file():
             raise unittest.SkipTest('native arena proofs require the preserved ROST pack')
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
         with history._outer_image()(XBE.parent) as archive:
             entry = history._entry(archive)
             raw = archive.read(entry.virtual_offset, entry.size)
         cls.body = arena.migrate(raw, created_teams_extra=2)[0][0x20:]
 
     def setUp(self):
+        self._boot(self.patched)
+
+    def _boot(self, patched):
         import unicorn as uni
         self.uc = uni.Uc(uni.UC_ARCH_X86, uni.UC_MODE_32)
         self.uc.mem_map(0x10000, 0x1510000 - 0x10000)
-        for section in ps._sections(self.patched):
-            self.uc.mem_write(section.virtual_address, self.patched[section.raw_offset:section.raw_offset + section.raw_size])
+        for section in ps._sections(patched):
+            self.uc.mem_write(section.virtual_address, patched[section.raw_offset:section.raw_offset + section.raw_size])
         self.uc.mem_protect(0x11000, 0x410000, uni.UC_PROT_READ | uni.UC_PROT_EXEC)
-        for page in space.layout(self.patched)['regions']:
-            flags = XbeImage(self.patched).section(page['va']).flags
+        for page in space.layout(patched)['regions']:
+            flags = XbeImage(patched).section(page['va']).flags
             self.uc.mem_protect(page['va'], page['size'], uni.UC_PROT_READ |
                                 (uni.UC_PROT_EXEC if flags & 4 else 0) | (uni.UC_PROT_WRITE if flags & 1 else 0))
         for address, size in ((self.BASE, 0x200000), (self.OUT, 0x200000), (0x03000000, 0x10000), (self.STOP, 0x1000)):
@@ -301,33 +366,41 @@ class NativeTests(unittest.TestCase):
         self.call(pr.STAGE_VA, ecx=self.team, edx=self.team)
         self.assertEqual(self.byte(pr.TEAM_COPIES[0] + 0x11C), 53)
 
-    def test_eligible_seventeenth_and_full_export_import_compaction(self):
+    def _eligible(self):
         b = bytearray(self.uc.mem_read(self.root + arena.BLOCK_OFFSET, 352))
         struct.pack_into('<I', b, 24, 3)  # teams zero and one explicitly eligible
         struct.pack_into('<I', b, 20, 0)
         struct.pack_into('<I', b, 20, zlib.crc32(b))
         self.uc.mem_write(self.root + arena.BLOCK_OFFSET, bytes(b))
+
+    def _export_seventeen(self):
+        """Team zero with 17 reserves (explicitly eligible), exported by the native single-team wrapper C0FA0."""
+        self._eligible()
         players = self.fill(17)
         self.assertEqual(self.byte(self.team + ps.COUNT), 17)
         self.assertEqual(self.call('ps_demote', ecx=self.team, edx=self.word(self.team)), 0)
         before = bytes(self.uc.mem_read(self.root, arena.ARENA_SIZE))
         # C0FA0 is the native single-team wrapper: it converts colleges to IDs
         # and serializes the returned arena after the patched exporter runs.
+        self.uc.mem_write(self.OUT, b'\xa5' * arena.ARENA_SIZE)
         self.call(0xC0FA0, ecx=self.OUT, edx=self.team, budget=12000000)
         self.assertEqual(self.word(self.OUT), 70)
         self.assertEqual(bytes(self.uc.mem_read(self.root, arena.ARENA_SIZE)), before)
-        exported = bytes(self.uc.mem_read(self.OUT, arena.ARENA_SIZE))
-        # Empty another NFL team with its own eligibility row. The import
-        # allocates different primary identities and must remap all five extras.
+        last = ((players[-1] - self.pool) // 84, bytes(self.uc.mem_read(players[-1] + 0x36, 20)))
+        return last, bytes(self.uc.mem_read(self.OUT, arena.ARENA_SIZE))
+
+    def _import_seventeen(self, exported, last, block_at):
+        """Import an exported 53 + 17 team into another NFL team with its own eligibility row."""
+        # The import allocates different primary identities and must remap all five extras.
         destination = self.team + 500
         self.uc.mem_write(destination, bytes(260))
         self.uc.mem_write(destination + 0x11C, b'\0')
-        corrupt = bytearray(exported); corrupt[arena.BLOCK_OFFSET+20] ^= 1
+        corrupt = bytearray(exported); corrupt[block_at+20] ^= 1
         self.uc.mem_write(self.OUT, bytes(corrupt))
         before_import = bytes(self.uc.mem_read(self.root, arena.ARENA_SIZE))
         self.assertEqual(self.call(0xC1030, ecx=self.OUT, edx=destination), 0)
         self.assertEqual(bytes(self.uc.mem_read(self.root, arena.ARENA_SIZE)), before_import)
-        self.assertEqual(bytes(self.uc.mem_read(self.OUT, arena.ARENA_SIZE)), bytes(corrupt))
+        self.assertEqual(bytes(self.uc.mem_read(self.OUT, len(exported))), bytes(corrupt))
         self.uc.mem_write(self.OUT, exported)
         # Retail's free-bit allocator must never select a contradictory owned
         # record even if enough other genuinely free slots remain.
@@ -341,13 +414,76 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.call(0xC1030, ecx=self.OUT, edx=destination, budget=20000000), 1)
         self.assertEqual(self.byte(destination + 0x11C), 53)
         self.assertEqual(self.byte(destination + ps.COUNT), 17)
-        self.assertEqual(bytes(self.uc.mem_read(self.OUT, arena.ARENA_SIZE)), exported)
+        self.assertEqual(bytes(self.uc.mem_read(self.OUT, len(exported))), exported)
         self.assertEqual(self.call(self.symbols['integrity']), 1)
-        old_index = (players[-1] - self.pool) // 84
         new_index = struct.unpack('<H', self.uc.mem_read(self.root + arena.BLOCK_OFFSET + 32 + 10 + 8, 2))[0]
-        self.assertNotEqual(new_index, old_index)
-        self.assertEqual(bytes(self.uc.mem_read(self.pool + new_index*84 + 0x36, 20)),
-                         bytes(self.uc.mem_read(players[-1] + 0x36, 20)))
+        self.assertNotEqual(new_index, last[0])
+        self.assertEqual(bytes(self.uc.mem_read(self.pool + new_index*84 + 0x36, 20)), last[1])
+
+    def test_eligible_seventeenth_and_full_export_import_compaction(self):
+        # b76-k1: the export is compact. Its overflow block follows the 0x70-byte header, it is exactly as large as
+        # the size the game asks for first (C0B50, the sizer the in-game block carves by), and not a byte more.
+        stadium = self.word(self.team + 0x114)
+        last, exported = self._export_seventeen()
+        size = self.call(0xC0B50, ecx=self.team, edx=0, args=(stadium,))
+        # The team-save path (16E153) allocates C0450's fixed 0x2C68 bytes for this export and calls C0FA0; the
+        # earlier full-arena export zero-filled 0x92000 bytes into that buffer.
+        self.assertLessEqual(size, self.call(0xC0450))
+        block = exported[0x70:0x70 + 352]
+        self.assertEqual(struct.unpack_from('<4I', block), (0x52354b32, 0x00325653, 0x00200002, 0x00020005))
+        self.assertEqual(struct.unpack_from('<I', block, 20)[0],
+                         zlib.crc32(block[:20] + bytes(4) + block[24:]))
+        self.assertEqual(exported[size:], b'\xa5' * (arena.ARENA_SIZE - size))
+        self.assertNotEqual(exported[size - 4:size], b'\xa5' * 4)
+        self._import_seventeen(exported[:size], last, 0x70)
+
+    def test_full_arena_exports_from_the_earlier_runtime_still_import(self):
+        # Team exports written by the runtime before b76-k1 are full-arena (0x92000) with the block at +0x91C00.
+        # Build that executable, export the same 53 + 17 team with it, then import the export here.
+        from unittest import mock
+        from tests import nfl2k5_roster_arena_legacy_runtime as legacy
+        with mock.patch.object(growth, 'assembly', legacy), \
+                mock.patch.object(growth, 'OPTION_OFFSET', (len(legacy.CODE) + 3) & ~3):
+            old, _ = growth.apply(self.retail, created_teams_extra=2)
+        self.assertEqual(growth.allocation(old)['va'], self.site['va'])
+        current = self.uc
+        self._boot(old)
+        last, exported = self._export_seventeen()
+        self.assertEqual(struct.unpack_from('<I', exported, arena.BLOCK_OFFSET)[0], 0x52354b32)
+        self.assertNotEqual(struct.unpack_from('<I', exported, 0x70)[0], 0x52354b32)
+        self.uc = current
+        self._eligible()
+        self._import_seventeen(exported, last, arena.BLOCK_OFFSET)
+
+    def _stale_all_star(self):
+        """vb1 on Noah's MyNFL2: after a season the AFC and NFC all-star teams (category 1) keep stale players past
+        their active count, which reserve_count() reads as a corrupt team."""
+        allstar = self.teams + 500*49
+        self.assertEqual(self.word(allstar + 0x128), 1)
+        active = self.byte(allstar + 0x11C)
+        self.put(allstar + 4*active, self.word(allstar))            # a stale player past the active count
+        return allstar
+
+    def test_stale_all_star_slots_do_not_block_demotions_or_imports(self):
+        # owner() and available_count() skip display teams as listed() does, so a demotion (owner) and a team import
+        # (available_count) still work with such a team in the roster.
+        allstar = self._stale_all_star()
+        self.assertEqual(self.call(self.symbols['arena_count'], ecx=allstar), 0xFFFFFFFF)
+        stadium = self.word(self.team + 0x114)
+        last, exported = self._export_seventeen()
+        size = self.call(0xC0B50, ecx=self.team, edx=0, args=(stadium,))
+        self._import_seventeen(exported[:size], last, 0x70)
+
+    def test_the_earlier_runtime_refused_every_demotion_with_a_stale_all_star_team(self):
+        from unittest import mock
+        from tests import nfl2k5_roster_arena_legacy_runtime as legacy
+        with mock.patch.object(growth, 'assembly', legacy), \
+                mock.patch.object(growth, 'OPTION_OFFSET', (len(legacy.CODE) + 3) & ~3):
+            old, _ = growth.apply(self.retail, created_teams_extra=2)
+        self._boot(old)
+        self._stale_all_star()
+        p = self.word(self.team + 4*(self.byte(self.team + 0x11C)-1))
+        self.assertEqual(self.call('ps_demote', ecx=self.team, edx=p), 0)
 
     def test_native_save_writer_keeps_overflow_and_bumps_version(self):
         self.fill()
@@ -398,6 +534,238 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.word(self.root+0x18), 54)
         self.assertEqual(self.call(self.symbols['integrity']), 1)
         self.uc.hook_del(hook)
+
+
+@unittest.skipUnless(XBE.is_file() and importlib.util.find_spec('unicorn'),
+                     'boot-path proofs require the pinned retail XBE and Unicorn')
+class BootPathTests(unittest.TestCase):
+    """The disc main roster as the game loads it at boot (the SEGA logo), not through C2040/C2180.
+
+    C1F00 registers the ROST handler, sets the arena capacity and allocates the arena. The resource
+    stream reads each 32-byte header and 438D0 hands a ROST to C1EA0, which admits the declared
+    body size (header +4) and asks for the body; the read completion C1E80 -> 43E10 -> 43D20
+    relocates the object's name and data fields and calls C1E30, which copies the arena and runs
+    C0500. Only the heap allocator 48700, the DVD read ECD90, the stream continuation 43A20 and free
+    48870 are stubbed; every other instruction is the executable's own. C7530 (called at 74AA1) and
+    77D20 (74AA6) are the first boot calls after the ROSTER group whose code reads the roster root; a
+    static sweep four calls deep finds no reader in the ten boot calls from 74A6F before them.
+    """
+    HEAP, HEAP_SIZE, STACK, STOP = 0x04000000, 0x00800000, 0x03008000, 0x03100000
+    REQUEST, HEADER, GROUP = 0x03010000, 0x03010100, 0x03010200
+    BEFORE_BETA76 = bytes.fromhex('81ff602009007233')   # compare rewritten, retail `jb` kept
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = XBE.read_bytes()
+        if hashlib.sha256(cls.retail).hexdigest() != ps.RETAIL_SHA256:
+            raise AssertionError('retail XBE hash mismatch')
+        from mod_editor.core import nfl2k5_team_history as history
+        if not (XBE.parent / 'vc_53450030/0').is_file():
+            raise unittest.SkipTest('boot-path proofs require the preserved ROST pack')
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
+        with history._outer_image()(XBE.parent) as archive:
+            entry = history._entry(archive)
+            cls.rost = archive.read(entry.virtual_offset, entry.size)
+            historic = archive.entries[113]
+            cls.historic = archive.read(historic.virtual_offset, historic.size)
+        if cls.historic[:4] != b'ROST' or cls.historic[0x40:0x50].decode('utf-16le') != 'historic':
+            raise AssertionError('outer 113 is not a historic ROST')
+        cls.variants = {}
+        for flags in ((True, 0), (False, 2), (True, 2)):
+            xbe = growth.apply(cls.retail, reserves_16=flags[0], created_teams_extra=flags[1])[0]
+            rost = arena.migrate(cls.rost, reserves_16=flags[0], created_teams_extra=flags[1])[0]
+            cls.variants[flags] = (xbe, rost)
+
+    def machine(self, xbe):
+        import unicorn as uni
+        image = XbeImage(xbe)
+        self.uc = uc = uni.Uc(uni.UC_ARCH_X86, uni.UC_MODE_32)
+        uc.mem_map(0x10000, ((image.base + image.image_size + 0xFFFF) & ~0xFFFF) - 0x10000)
+        for section in image.sections:
+            size = min(section.size, section.raw_size)
+            uc.mem_write(section.start, xbe[section.raw:section.raw + size])
+        for address, size in ((0x03000000, 0x20000), (self.STOP, 0x1000), (self.HEAP, self.HEAP_SIZE)):
+            uc.mem_map(address, size)
+        self.cursor, self.reads, self.frees, self.continued = self.HEAP, [], [], 0
+        self.put(0xB12034, 0xB04E24)      # 437D0: the resource heap
+        self.put(0xB09578, self.GROUP)    # the loading group keeps what its handlers accept
+        for address, stub in ((0x48700, self._alloc), (0xECD90, self._read),
+                              (0x43A20, self._continue), (0x48870, self._free)):
+            uc.hook_add(uni.UC_HOOK_CODE, lambda _uc, _a, _s, fn: fn(), begin=address, end=address, user_data=stub)
+
+    def word(self, a):
+        return struct.unpack('<I', self.uc.mem_read(a, 4))[0]
+
+    def put(self, a, v):
+        self.uc.mem_write(a, struct.pack('<I', v))
+
+    def _return(self, value, pop=0):
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EIP, UC_X86_REG_ESP
+        esp = self.uc.reg_read(UC_X86_REG_ESP)
+        self.uc.reg_write(UC_X86_REG_EIP, self.word(esp))
+        self.uc.reg_write(UC_X86_REG_ESP, esp + 4 + pop)
+        self.uc.reg_write(UC_X86_REG_EAX, value)
+
+    def _alloc(self):
+        from unicorn.x86_const import UC_X86_REG_EDX
+        size = self.uc.reg_read(UC_X86_REG_EDX)
+        at = (self.cursor + 15) & ~15
+        self.assertLessEqual(at + size, self.HEAP + self.HEAP_SIZE)
+        self.cursor = at + size
+        self.uc.mem_write(at, b'\xab' * size)   # heap garbage, never zeroes
+        self._return(at)
+
+    def _read(self):
+        from unicorn.x86_const import UC_X86_REG_EDX, UC_X86_REG_ESP
+        size, callback, context = struct.unpack('<3I', self.uc.mem_read(self.uc.reg_read(UC_X86_REG_ESP) + 4, 12))
+        buffer = self.uc.reg_read(UC_X86_REG_EDX)
+        self.uc.mem_write(buffer, self.resource[32:32 + size])
+        self.reads.append((buffer, size, callback, context))
+        self._return(1, 12)
+
+    def _continue(self):
+        self.continued += 1
+        self._return(0)
+
+    def _free(self):
+        from unicorn.x86_const import UC_X86_REG_ECX
+        self.frees.append(self.uc.reg_read(UC_X86_REG_ECX))
+        self._return(0)
+
+    def call(self, address, *, ecx=0, edx=0, args=(), budget=20000000):
+        import unicorn as uni
+        from unicorn.x86_const import (UC_X86_REG_EAX, UC_X86_REG_EBP, UC_X86_REG_EBX, UC_X86_REG_ECX,
+                                       UC_X86_REG_EDI, UC_X86_REG_EDX, UC_X86_REG_EIP, UC_X86_REG_ESI,
+                                       UC_X86_REG_ESP)
+        self.uc.mem_write(self.STACK, struct.pack('<' + 'I' * (1 + len(args)), self.STOP, *args))
+        saved = ((UC_X86_REG_EBX, 0x11111111), (UC_X86_REG_ESI, 0x22222222), (UC_X86_REG_EDI, 0x33333333),
+                 (UC_X86_REG_EBP, 0x44444444))
+        for register, value in ((UC_X86_REG_ESP, self.STACK), (UC_X86_REG_ECX, ecx), (UC_X86_REG_EDX, edx),
+                                (UC_X86_REG_EAX, 0), *saved):
+            self.uc.reg_write(register, value)
+        try:
+            self.uc.emu_start(address, self.STOP, count=budget)
+        except uni.UcError as exc:
+            raise AssertionError(f'{address:#x} fault at {self.uc.reg_read(UC_X86_REG_EIP):#x}: {exc}') from exc
+        self.assertEqual(self.uc.reg_read(UC_X86_REG_EIP), self.STOP, f'{address:#x}: exhausted {budget}')
+        for register, value in saved:
+            self.assertEqual(self.uc.reg_read(register), value, f'{address:#x}: clobbered a saved register')
+        self.assertEqual(self.uc.reg_read(UC_X86_REG_ESP), self.STACK + 4 + 4 * len(args))
+        return self.uc.reg_read(UC_X86_REG_EAX)
+
+    def boot(self, resource, *, init=True):
+        """One ROST through the boot resource path; returns (admitted, stream position after)."""
+        if init:
+            self.call(0xC1F00)
+        self.resource, reads = resource, len(self.reads)
+        self.uc.mem_write(self.HEADER, resource[:32])
+        self.uc.mem_write(self.REQUEST, struct.pack('<9I', 0x1000, 0, 0, 0, 0, 0, 0x20, self.HEADER, 0))
+        self.call(0x438D0, edx=self.REQUEST, args=(0,))
+        if len(self.reads) == reads:
+            return False, self.word(self.REQUEST)
+        buffer, size, callback, context = self.reads[-1]
+        self.assertEqual((size, callback), (struct.unpack_from('<I', resource, 4)[0], 0xC1E80))
+        self.call(callback, ecx=self.REQUEST, edx=buffer, args=(size, context))
+        self.assertEqual(self.word(self.GROUP + 0xC), buffer)   # accepted and kept, as retail
+        self.assertNotIn(buffer, self.frees)
+        return True, self.word(self.REQUEST)
+
+    def test_retail_pair_loads_through_the_boot_path(self):
+        self.machine(self.retail)
+        self.assertEqual(self.boot(self.rost), (True, 0x1000))
+        root = self.word(0xB72918)
+        self.assertEqual((root, self.word(0xB72808), self.word(0xB7280C)), (self.word(0xB72804), 0x91000, 0x90F20))
+        self.assertEqual(self.word(root + 0x18), 52)
+        self.call(0xC0730, ecx=root)
+        self.assertEqual(bytes(self.uc.mem_read(root, 0x90F20)), self.rost[0x60:])
+
+    def test_each_half_and_both_boot_load_and_reach_the_first_roster_readers(self):
+        for (reserves_16, extra), (xbe, rost) in self.variants.items():
+            with self.subTest(reserves_16=reserves_16, created_teams_extra=extra):
+                self.assertEqual(len(rost), 0x92060)
+                self.assertEqual(struct.unpack_from('<I', rost, 4)[0], arena.ARENA_SIZE + 0x40)   # object + arena
+                self.machine(xbe)
+                self.assertEqual(self.boot(rost), (True, 0x1000))
+                root = self.word(0xB72918)
+                self.assertEqual((root, self.word(0xB72808), self.word(0xB7280C)),
+                                 (self.word(0xB72804), arena.ARENA_SIZE, arena.ARENA_SIZE))
+                self.assertEqual(self.word(root + 0x18), 52 + extra)
+                symbols = {k: growth.allocation(xbe)['va'] + v for k, v in growth.assembly.LABELS.items()}
+                self.assertEqual(self.call(symbols['integrity']), 1)
+                flags = self.word(root + arena.BLOCK_OFFSET + 28)
+                self.assertEqual(flags, (0x100 if reserves_16 else 0) | extra)
+                # Byte-exact: unrelocating the loaded arena gives the disc arena back.
+                self.call(0xC0730, ecx=root)
+                self.assertEqual(bytes(self.uc.mem_read(root, arena.ARENA_SIZE)), rost[0x60:])
+                self.call(0xC0500, ecx=root)
+                # 74AA1 C7530 (133B80 walks 34 teams through C4C50; C01F0 walks every team) and
+                # 74AA6 77D20 are the first boot readers of the roster root.
+                self.call(0xC7530)
+                self.call(0x77D20)
+                self.assertEqual((self.word(0xB72918), self.word(root + 0x18)), (root, 52 + extra))
+                self.assertEqual(self.call(symbols['integrity']), 1)
+
+    def test_historic_rosters_keep_the_retail_admission_and_never_touch_the_arena(self):
+        xbe, rost = self.variants[(True, 2)]
+        self.machine(xbe)
+        self.assertEqual(self.boot(rost)[0], True)
+        root = self.word(0xB72918)
+        before = bytes(self.uc.mem_read(root, arena.ARENA_SIZE))
+        # C1E30 skips an object named "historic" (30C40 against E68730); the group keeps it for
+        # the ESPN 25th Anniversary lookup 2D1842 (group "historic", type ROST).
+        self.assertEqual(self.boot(self.historic, init=False)[0], True)
+        self.assertEqual(self.word(0xB72918), root)
+        self.assertEqual(bytes(self.uc.mem_read(root, arena.ARENA_SIZE)), before)
+
+    def test_larger_body_is_refused_and_the_beta62_edit_refused_the_grown_roster(self):
+        xbe, rost = self.variants[(True, 2)]
+        larger = bytearray(rost)
+        struct.pack_into('<I', larger, 4, growth.RESOURCE_BODY_LIMIT + 1)
+        self.machine(xbe)
+        self.assertEqual(self.boot(bytes(larger)), (False, 0x1000 + growth.RESOURCE_BODY_LIMIT + 1))
+        self.assertEqual((self.word(0xB72918), self.continued), (0, 1))   # skipped; the stream moves on
+        # The edit as shipped from beta 62 to beta 75.1: `cmp edi, 0x92060` over the retail `jb`.
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        old = bytearray(xbe)
+        at = growth.rdata.offset_of(xbe, 0xC1EB3)
+        old[at:at + 8] = self.BEFORE_BETA76
+        for section in _sections(old):
+            old[section.header_offset + 36:section.header_offset + 56] = section_digest(old, section)
+        self.assertEqual(growth.status(bytes(old)), 'foreign')
+        self.machine(bytes(old))
+        self.assertEqual(self.boot(rost), (False, 0x1000 + growth.RESOURCE_BODY_LIMIT))
+        self.assertEqual((self.word(0xB72918), self.continued), (0, 1))   # the root stays 0 (zeroed at C1F1E)
+        with self.assertRaisesRegex(AssertionError, 'fault at 0xc4c6a'):
+            self.call(0xC7530)   # C4C50 reads [root + 0x18] with root 0: the SEGA-logo freeze
+
+    @unittest.skipUnless(os.environ.get('NFL2K5_ARENA_DISC'),
+                         'set NFL2K5_ARENA_DISC to a disc image built with 16 reserves or extra created teams')
+    def test_built_disc_boot_path(self):
+        """The same replay on a built disc: its own default.xbe (every other owner in it) and its outer 5."""
+        from mod_editor.core import nfl2k5_music_archive as archive
+        from mod_editor.core import nfl2k5_roster_arena_image as image
+        disc = Path(os.environ['NFL2K5_ARENA_DISC'])
+        self.assertEqual(image.image_status(disc), 'applied')
+        with archive.Disc(disc, descriptors=()) as source:
+            entry = source.archive_entries[image.ROST_INDEX]
+            rost = source.read_entry_range(entry, 0, entry.size)
+            executable = source.entries['default.xbe']
+            xbe = source.read(executable.size, executable.byte_offset)
+        extra = growth.read_settings(xbe)['created_teams_extra']
+        self.machine(xbe)
+        self.assertEqual(self.boot(rost), (True, 0x1000))
+        root = self.word(0xB72918)
+        self.assertEqual((root, self.word(0xB7280C), self.word(root + 0x18)),
+                         (self.word(0xB72804), arena.ARENA_SIZE, 52 + extra))
+        symbols = {k: growth.allocation(xbe)['va'] + v for k, v in growth.assembly.LABELS.items()}
+        self.assertEqual(self.call(symbols['integrity']), 1)
+        self.call(0xC0730, ecx=root)
+        self.assertEqual(bytes(self.uc.mem_read(root, arena.ARENA_SIZE)), rost[0x60:])
+        self.call(0xC0500, ecx=root)
+        self.call(0xC7530)
+        self.call(0x77D20)
+        self.assertEqual(self.call(symbols['integrity']), 1)
 
 
 from tests import nfl2k5_practice_squad_screen_fixture as screen_fixture

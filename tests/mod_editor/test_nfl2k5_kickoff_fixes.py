@@ -191,6 +191,8 @@ class ReturnDataTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.books = []
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL.parent / 'vc_53450030')
         with alignment.recode.OuterImage(RETAIL.parent / 'vc_53450030') as archive:
             for book, _ in alignment._load(archive):
                 cls.books.append((book.name, archive.read_entry(book.entry_index)))

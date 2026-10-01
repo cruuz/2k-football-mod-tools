@@ -1,0 +1,518 @@
+{
+  "classification": "DESIGN",
+  "base": "6bd9b3d66d239a267f8d4f66e083b8a6eb320671",
+  "teams": {
+    "PHI": {
+      "before": {
+        "wing": "#15A1B2",
+        "plate": "#26636B",
+        "rim": "#26636B",
+        "logo_fit": {
+          "fill_x": 0.92,
+          "height": 1.0,
+          "zoom": 0.976,
+          "shift_x": 0.0,
+          "shift_y": 0.0
+        }
+      },
+      "after": {
+        "wing": "#1FB0C4",
+        "plate": "#26636B",
+        "rim": "#26636B",
+        "logo_fit": {
+          "fill_x": 1.02,
+          "height": 1.0,
+          "zoom": 0.976,
+          "shift_x": -0.015625,
+          "shift_y": 0.0
+        }
+      },
+      "unconstrained_wing": "#22B6CA",
+      "constraint_distance": 0.04615593253710923,
+      "constraint_bound": 0.0485
+    },
+    "CHI": {
+      "before": {
+        "wing": "#568CEE",
+        "plate": "#545C6A",
+        "rim": "#545C6A",
+        "logo_fit": {
+          "fill_x": 0.92,
+          "height": 1.0,
+          "zoom": 0.976,
+          "shift_x": 0.0,
+          "shift_y": 0.0
+        }
+      },
+      "after": {
+        "wing": "#FB6930",
+        "plate": "#AC3100",
+        "rim": "#AC3100",
+        "logo_fit": {
+          "fill_x": 1.14,
+          "height": 1.0,
+          "zoom": 0.976,
+          "shift_x": 0.046875,
+          "shift_y": 0.0
+        }
+      },
+      "unconstrained_wing": "#FF6D33",
+      "constraint_distance": 0.045951219645117905,
+      "constraint_bound": 0.0485
+    }
+  },
+  "down": {
+    "before": [
+      30,
+      950
+    ],
+    "after": [
+      24,
+      955
+    ]
+  },
+  "official_mark_pixels_changed": false,
+  "filtered_cells": [
+    {
+      "cell": "label_0",
+      "before": [
+        8,
+        12
+      ],
+      "after": [
+        6,
+        9
+      ]
+    },
+    {
+      "cell": "label_1",
+      "before": [
+        5,
+        12
+      ],
+      "after": [
+        4,
+        9
+      ]
+    },
+    {
+      "cell": "label_2",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        5,
+        9
+      ]
+    },
+    {
+      "cell": "label_3",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        5,
+        9
+      ]
+    },
+    {
+      "cell": "label_4",
+      "before": [
+        8,
+        12
+      ],
+      "after": [
+        6,
+        9
+      ]
+    },
+    {
+      "cell": "label_5",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        5,
+        9
+      ]
+    },
+    {
+      "cell": "label_6",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        6,
+        9
+      ]
+    },
+    {
+      "cell": "label_7",
+      "before": [
+        6,
+        12
+      ],
+      "after": [
+        5,
+        9
+      ]
+    },
+    {
+      "cell": "label_8",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        5,
+        9
+      ]
+    },
+    {
+      "cell": "label_9",
+      "before": [
+        7,
+        12
+      ],
+      "after": [
+        6,
+        9
+      ]
+    },
+    {
+      "cell": "label_st",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_nd",
+      "before": [
+        14,
+        12
+      ],
+      "after": [
+        11,
+        9
+      ]
+    },
+    {
+      "cell": "label_rd",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_th",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_&",
+      "before": [
+        9,
+        12
+      ],
+      "after": [
+        7,
+        9
+      ]
+    },
+    {
+      "cell": "label_Goal",
+      "before": [
+        36,
+        12
+      ],
+      "after": [
+        28,
+        9
+      ]
+    },
+    {
+      "cell": "label_GOAL",
+      "before": [
+        36,
+        12
+      ],
+      "after": [
+        28,
+        9
+      ]
+    },
+    {
+      "cell": "label_and",
+      "before": [
+        22,
+        12
+      ],
+      "after": [
+        18,
+        9
+      ]
+    },
+    {
+      "cell": "label_OT",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_ST",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_ND",
+      "before": [
+        14,
+        12
+      ],
+      "after": [
+        11,
+        9
+      ]
+    },
+    {
+      "cell": "label_RD",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_TH",
+      "before": [
+        11,
+        12
+      ],
+      "after": [
+        9,
+        9
+      ]
+    },
+    {
+      "cell": "label_Down",
+      "before": [
+        34,
+        11
+      ],
+      "after": [
+        27,
+        9
+      ]
+    }
+  ],
+  "label_coverage_exponent": 0.8,
+  "strings": {
+    "fit": {
+      "field_width": 325.0,
+      "widest_prefix": 120.704,
+      "natural_word": 143.152,
+      "condense": 1.0,
+      "widest_plate": 263.856
+    },
+    "label_Inch": {
+      "ink_px": [
+        70.5,
+        23.0
+      ],
+      "glyph_size": [
+        91.957,
+        30
+      ],
+      "texels": [
+        24,
+        9
+      ],
+      "cell": [
+        100,
+        300,
+        124,
+        309
+      ],
+      "sha256": "7e6eaee6e9bd6e7e6e924d038d44a1e7e4c5878256f056d23b4fb4c1713c3db1"
+    },
+    "label_es": {
+      "ink_px": [
+        35.25,
+        23.0
+      ],
+      "glyph_size": [
+        45.978,
+        30
+      ],
+      "texels": [
+        12,
+        9
+      ],
+      "cell": [
+        136,
+        300,
+        148,
+        309
+      ],
+      "sha256": "6399dc49e6ea1af1e98ff8dcb00e30e3023c90fd13955be54ba1dec6c40cb9e5"
+    },
+    "quarter_OT": {
+      "ink_px": [
+        30.5,
+        18.0
+      ],
+      "glyph_size": [
+        37.278,
+        22
+      ],
+      "texels": [
+        12,
+        9
+      ],
+      "cell": [
+        155,
+        300,
+        167,
+        309
+      ],
+      "sha256": "e2166d5ca7fcd40aa0e0f3bb34b469e8afc84315ac201744b99c7bbb35d71ec7"
+    },
+    "tokens": {
+      "label": {
+        "Inch": {
+          "cell": "label_Inch",
+          "size": [
+            91.957,
+            30
+          ],
+          "advance": 97.174,
+          "raise": 0
+        },
+        "es": {
+          "cell": "label_es",
+          "size": [
+            45.978,
+            30
+          ],
+          "advance": 47.978,
+          "raise": 0
+        }
+      },
+      "quarter": {
+        "OT": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT1": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT2": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT3": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT4": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT5": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT6": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT7": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT8": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT9": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        }
+      }
+    }
+  }
+}

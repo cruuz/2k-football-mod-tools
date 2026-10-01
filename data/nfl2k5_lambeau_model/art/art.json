@@ -1,0 +1,159 @@
+{
+ "schema": "nfl2k5_lambeau_model_art/v1",
+ "art": {
+  "gb_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "3cfa8c77699bc6deacaf886de590d4144785e4bc71d4cd8f1a4253b64e935404"
+  },
+  "gb_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "7f7d41b8c6bd50070e4d065c183a49648b8b5f36b84c185bd5fa87f97be96ba3"
+  },
+  "gb_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "c2b37a156f9cb4e24a04474c7fbe8bbfe4d0750708fc3948ada6b8d76974e9f7"
+  },
+  "gb_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "gb_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "f1dd2681294337ca719643bd7a29b297c13add07675c2f2290c317967efbc955"
+  },
+  "LIGHT_gb_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "1a4316bacf61ca9b8001750a9d2edb0fbdf2122ee60fe18142f4424dcb79663b"
+  },
+  "LIGHT_gb_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_gb_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "gb_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "gb_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "gb_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "gb_steel": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "455285152d6193b45314bf18a17dfdefa64b3d444b41ec403e50030fa5141230"
+  },
+  "LIGHT_gb_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_gb_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "fde8163f65f161a271a43b7f4bf37c80bf2c03d0776eaf4564ab49c99fe191ee"
+  },
+  "gb_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "8b58a0a82e2fa6b8e09b7e8df35beb56bf6f6f0332c99dd3a190be1eec2de55f"
+  },
+  "gb_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "523f3a086e5bb243f14e4f4f1d370887edc590afb50f42f2ca5d57e8bd9c6810"
+  },
+  "gb_brick": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d216b5dfba41ac481c7ae8aef8bc4a0cdf241706891e190d9a8de8672604d1be"
+  },
+  "gb_board_back": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "1a7cc87294cf1449c6cf7e09e9b8da5dc168fca7b9e0498e960ba4e5b49f0895"
+  },
+  "gb_roof": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "cc2502d90b7db7d8f6715e4a77c433933e58e0a8628b5ff49bab9ebb476f56e0"
+  },
+  "gb_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "field/gb_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58"
+  },
+  "field/gb_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391"
+  }
+ }
+}

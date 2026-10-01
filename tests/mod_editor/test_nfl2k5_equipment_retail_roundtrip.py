@@ -28,6 +28,8 @@ INDEX = Path(os.environ.get("NFL2K5_RETAIL_INDEX",
 class RetailRoundTripTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(INDEX.parents[1])
         cls.by_id, cls.groups = writer.load_targets()
         cls.archive = parse_archive(INDEX)
         cls.package = read_entry_bytes(cls.archive, cls.archive.entries[3850])

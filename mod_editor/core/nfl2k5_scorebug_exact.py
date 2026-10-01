@@ -42,7 +42,9 @@ STRIP = scene_box(SOURCE_REGIONS["clock_strip"])
 # static fallback cannot use the smaller diagnostic FONTs. Keep the frame,
 # expand its lower row, and reserve real padding on both sides of each word.
 STATIC_STRIP = (-56., STRIP[1], 56., STRIP[3])
-STATIC_PILL = (-52., PILL[1], 52., PILL[3])
+# N6 (09-22): match the lower info row; the shared 64-texel cells and
+# centred native text need no atlas growth or font scaling.
+STATIC_PILL = (STATIC_STRIP[0], PILL[1], STATIC_STRIP[2], PILL[3])
 STATIC_CELLS = {"quarter": (264., 301.), "game_clock": (301., 347.),
                 "play_clock": (347., 376.)}
 EVENT_ROW = STATIC_PILL
@@ -74,10 +76,12 @@ for _event in ("drop_yellow", "drop_red", "drop_hangtime"):
 # Events replace the down text in its existing pill; the three clock cells
 # keep their geometry and depth. The diagnostic runtime keeps its v2 scene.
 for _event in ("drop_ball_on", "drop_yellow", "drop_red", "drop_hangtime"):
-    ANCHORS[_event] = (0, 2.289, -8)
+    # FONT4's centred event quads extend one pixel right of their anchor.
+    # Balance that bearing so even "Ball on WAS 49" stays in the info row.
+    ANCHORS[_event] = (-1, 2.289, -8)
 
 
-def atlas(*, revision=3, red_bias=None):
+def atlas(*, revision=3, red_bias=None, live_timeouts=True):
     from PIL import Image, ImageDraw
     if red_bias is None:
         red_bias = RED_BIAS
@@ -145,17 +149,25 @@ def atlas(*, revision=3, red_bias=None):
     d.line((27, 1, 44, 1), fill=(166, 166, 166, 255))
     d.line((27, 22, 44, 22), fill=(166, 166, 166, 255))
     d.line((27, 23, 44, 23), fill=(23, 23, 23, 255))
-    # Neutral backing and decorative timeout marks never inherit team tint.
+    # Neutral backing and timeout marks never inherit team tint.
     d.rectangle((48, 0, 63, 23), fill=FRAME_COLOR)
     d.line((48, 0, 63, 0), fill=(74, 75, 73, 255))
     d.line((48, 23, 63, 23), fill=(74, 75, 73, 255))
     d.rectangle((12, 61, 37, 63), fill=(0, 0, 0, 0))
     for x in (12, 22, 32):
         d.rectangle((x, 61, x+5, 63), fill=(248, 250, 243, 255))
+    # Four live states in the unused interior of the old frame tile. The
+    # static rims use x=24..47. Keep the legacy bottom cell for old scenes.
+    if live_timeouts:
+        for count in range(4):
+            y = 4 + count * 4
+            d.rectangle((0, y, 23, y+2), fill=(0, 0, 0, 0))
+            for pip, x in enumerate((0, 9, 18)):
+                d.rectangle((x, y, x+5, y+2), fill=(248, 250, 243, 255) if pip < count else (66, 66, 65, 255))
     return im
 
 
-def mesh(retail, *, runtime=False, revision=2):
+def mesh(retail, *, runtime=False, revision=2, live_timeouts=True):
     from . import nfl2k5_scorebug_ingame as r
     if runtime:
         return mesh_mnf(retail)
@@ -166,6 +178,10 @@ def mesh(retail, *, runtime=False, revision=2):
         m.uv_edit[v] = (-1 + 1.5 / 32, -1 + 62.5 / 32)
         struct.pack_into("<I", m.buf, r.layout.S1 + v * 10, 0xffffffff)
         struct.pack_into("<h", m.buf, r.layout.S1 + v * 10 + 8, 0)
+
+    if live_timeouts:
+        from .nfl2k5_scorebar_v3 import TIMEOUT_MAGIC
+        struct.pack_into("<I", m.buf, 0x60, TIMEOUT_MAGIC)
 
     strips = [indices for _, indices in r.layout.strips(retail)]
 
@@ -243,7 +259,7 @@ def mesh(retail, *, runtime=False, revision=2):
             struct.pack_into("<I", m.buf, material+0x18, 0xff252625)
     if not runtime:
         # The unused second corner mark has four disjoint triangles. Two
-        # make each side's neutral decorative marks. The clock's unused final
+        # make each side's live timeout marks. The clock's unused final
         # quad holds the neutral backing. No material,
         # vertex, command, string, or decoded-size allocation is added.
         def mark_quad(vertices, box, tile, z):
@@ -255,11 +271,14 @@ def mesh(retail, *, runtime=False, revision=2):
                 m.uv_edit[vertex] = ((u0 + (u1-u0)*x)/32-1,
                                      (v1 + (v0-v1)*y)/32-1)
         quad(range(60, 64), FRAME, (48.5, 0, 63.5, 24), z=1)
-        for vertices, source, shift in ((range(274, 280), (716,1032,796,1039), -24),
-                                         (range(280, 286), (1120,1032,1199,1039), 25.5)):
+        # Timeout updater walks home then away, matching MNF's score objects.
+        marks = (((1120,1032,1199,1039), 25.5), ((716,1032,796,1039), -24))
+        if not live_timeouts:
+            marks = marks[::-1]  # Exact pre-SB3 negative control.
+        for first, (source, shift) in zip((274, 280), marks):
             box = list(scene_box(source))
             box[0] += shift; box[2] += shift
-            mark_quad(vertices, box, (12,61,38,64), -2)
+            mark_quad(range(first, first+6), box, (0,16,24,19) if live_timeouts else (12,61,38,64), -2)
         for material in (0x540, 0x640):
             struct.pack_into("<I", m.buf, material+0x18, 0xffd1d2d3)
     if runtime:
@@ -301,30 +320,19 @@ def xbe_specs(specs):
     result.append((0xa95b94, struct.pack("<I", 1), struct.pack("<I", 3), "center ball label in its own row"))
     # These literals are used only by FBEB0, the native ball/field-goal label.
     # Keep formatting and branches; replace the line break within its own row.
+    # N6: even the wider info-row plate cannot hold "117 Yard Attempt" in
+    # native FONT4 (132 HUD pixels). Keep the distance and abbreviate the label.
     for va, text in ((0xe6c484, "Ball at\nMidfield"), (0xe6c4a8, "Ball on\n%s %d"),
                      (0xe6c4c4, "%d Yard\nAttempt")):
         old = (text + "\0").encode("utf-16le")
-        result.append((va, old, (text.replace("\n", " ") + "\0").encode("utf-16le"), "single-line ball label"))
+        label = "%d yd FG" if va == 0xe6c4c4 else text.replace("\n", " ")
+        new = (label + "\0").encode("utf-16le").ljust(len(old), b"\0")
+        result.append((va, old, new, "single-line ball label"))
     # FBE30 is the scorebug-only play-clock formatter. Reuse the existing
     # UTF-16 format suffix "%02d" by skipping its leading colon, no new string
     # allocation and no change to rounding, urgency or the callback's ABI.
     # V3 owns the complete FBE30 formatter span, including this operand.
-    # Compact the four existing quarter cases into a common copy/capitalize
-    # tail, entirely inside their original instruction span. Only this
-    # callback's caller-owned buffer changes; shared 1st/2nd strings and the
-    # native overtime branch remain retail. PUSH ECX at FC090 saves the buffer.
-    old = bytes.fromhex("bae4c3e600e8004af3ff59c3baecc3e600e8f449f3ff59c3"
-                        "baf4c3e600e8e849f3ff59c3bafcc3e600e8dc49f3ff59c3")
-    new = bytearray()
-    for i, literal in enumerate((0xe6c3e4, 0xe6c3ec, 0xe6c3f4, 0xe6c3fc)):
-        new += b"\xba" + struct.pack("<I", literal) + b"\xeb" + bytes((21 - i * 7,))
-    new += b"\xe8" + struct.pack("<i", 0x30ab0 - (0xfc0a6 + len(new) + 5))
-    new += b"\x59"  # restore the caller's buffer as the uppercase argument
-    new += b"\xe9" + struct.pack("<i", 0x30f20 - (0xfc0a6 + len(new) + 5))
-    result.append((0xfc0a6, old, bytes(new).ljust(len(old), b"\x90"), "quarter capitals in existing cases"))
-    for i in range(1, 4):
-        result.append((0xfc0f0 + i * 4, struct.pack("<I", 0xfc0a6 + i * 12),
-                       struct.pack("<I", 0xfc0a6 + i * 7), "quarter case table"))
+    # The complete score/quarter spans are now owned by scorebar_v3 (SB3).
     return result
 
 

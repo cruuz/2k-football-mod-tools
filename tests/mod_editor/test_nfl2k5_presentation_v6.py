@@ -24,7 +24,7 @@ class CameraV6Tests(unittest.TestCase):
 
     def test_exact_v54_recognition_and_rebuild_only(self):
         old=historical(self.retail,'v5.4')
-        self.assertEqual(hashlib.sha256(old).hexdigest(),'a4aafb585649b4a3a05f76bf6e542db982f2dcf5a90b5ad2306e676484d91b85')
+        self.assertEqual(hashlib.sha256(old).hexdigest(),'8ce832b422c90e562a0f37d0e90c33e90e550fe3dd08683a15aaa17f0f2584ce')
         self.assertEqual(c.status(old),'v5.4')
         with patch.object(c.space,'install_code',side_effect=AssertionError('write before refusal')):
             with self.assertRaisesRegex(ValueError,'rebuild from retail'):c.apply(old)

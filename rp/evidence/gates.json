@@ -1,0 +1,148 @@
+[
+  {
+    "name": "stage-apf2k8",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "max_rss_kib": 13824
+  },
+  {
+    "name": "release-apf2k8",
+    "exit_code": 0,
+    "seconds": 0.41,
+    "max_rss_kib": 24528
+  },
+  {
+    "name": "runtime-apf2k8",
+    "exit_code": 0,
+    "seconds": 11.73,
+    "max_rss_kib": 167904
+  },
+  {
+    "name": "test_stage_release",
+    "exit_code": 0,
+    "seconds": 0.16,
+    "tests": 10,
+    "max_rss_kib": 17152
+  },
+  {
+    "name": "test_runtime_dependencies",
+    "exit_code": 0,
+    "seconds": 0.11,
+    "tests": 6,
+    "max_rss_kib": 20992
+  },
+  {
+    "name": "test_update_check",
+    "exit_code": 0,
+    "seconds": 0.21,
+    "tests": 22,
+    "max_rss_kib": 54528
+  },
+  {
+    "name": "test_self_update",
+    "exit_code": 0,
+    "seconds": 3.32,
+    "tests": 41,
+    "max_rss_kib": 166708
+  },
+  {
+    "name": "test_beta45_honesty_freeze",
+    "exit_code": 0,
+    "seconds": 4.32,
+    "tests": 9,
+    "max_rss_kib": 140772
+  },
+  {
+    "name": "test_apf_public_docs_registry_current",
+    "exit_code": 0,
+    "seconds": 0.16,
+    "tests": 5,
+    "max_rss_kib": 25052
+  },
+  {
+    "name": "build-data-allowlist",
+    "exit_code": 0,
+    "seconds": 8.23,
+    "max_rss_kib": 163312
+  },
+  {
+    "name": "registry-structure",
+    "exit_code": 0,
+    "seconds": 0.06,
+    "max_rss_kib": 20184
+  },
+  {
+    "name": "test_build_panel_qt",
+    "exit_code": 0,
+    "seconds": 5.17,
+    "tests": 16,
+    "max_rss_kib": 266772
+  },
+  {
+    "name": "test_ux_build_plan_coverage_qt",
+    "exit_code": 0,
+    "seconds": 3.32,
+    "tests": 7,
+    "max_rss_kib": 193844
+  },
+  {
+    "name": "test_b76_release_build_controls",
+    "exit_code": 0,
+    "seconds": 2.52,
+    "tests": 6,
+    "max_rss_kib": 173964
+  },
+  {
+    "name": "test_b76_release_texts",
+    "exit_code": 0,
+    "seconds": 0.97,
+    "tests": 2,
+    "max_rss_kib": 116296
+  },
+  {
+    "name": "test_build_data_allowlist",
+    "exit_code": 0,
+    "seconds": 0.06,
+    "tests": 4,
+    "max_rss_kib": 16640
+  },
+  {
+    "name": "board-kit-data",
+    "exit_code": 0,
+    "seconds": 0.21,
+    "tests": 7,
+    "max_rss_kib": 48320
+  },
+  {
+    "name": "stage-2k5",
+    "exit_code": 0,
+    "seconds": 0.56,
+    "max_rss_kib": 15360
+  },
+  {
+    "name": "release-2k5",
+    "exit_code": 0,
+    "seconds": 9.93,
+    "max_rss_kib": 294528
+  },
+  {
+    "name": "runtime-2k5",
+    "exit_code": 0,
+    "seconds": 13.39,
+    "max_rss_kib": 543012
+  },
+  {
+    "name": "test_b76_ed2_build_recursion",
+    "exit_code": 0,
+    "seconds": 1.82,
+    "tests": 3,
+    "max_rss_kib": 153344
+  },
+  {
+    "name": "test_phase1_packaging",
+    "exit_code": 0,
+    "seconds": 2.62,
+    "tests": 23,
+    "max_rss_kib": 261024
+  }
+]

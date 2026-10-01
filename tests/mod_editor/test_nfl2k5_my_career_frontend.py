@@ -23,6 +23,8 @@ from tests.mod_editor.test_nfl2k5_roster_records import RETAIL_EXTRACTION
 def retail_roster():
     from tools.nfl2k5_roster_reclassify import OuterImage, load_resources
     try:
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with OuterImage(RETAIL_EXTRACTION) as archive:
             if archive.entries[5].size > 1024**2:
                 raise unittest.SkipTest("retail roster resource exceeds 1 MiB")

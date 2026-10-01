@@ -76,6 +76,36 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.uniforms.colour_choice',       # beta 70
             'nfl2k5.presentation.modern_color_lighting',  # beta 70
             'nfl2k5.stadiums_fields.modern_arrowhead',  # beta 71
+            'nfl2k5.stadiums_fields.modern_metlife',  # beta 76 (u2)
+            'nfl2k5.stadiums_fields.modern_metlife_model',  # beta 76 (u5)
+            'nfl2k5.stadiums_fields.modern_sofi',  # beta 76 (u6)
+            'nfl2k5.stadiums_fields.modern_highmark',  # beta 76 (st)
+            'nfl2k5.stadiums_fields.modern_att',  # beta 76 (st2)
+            'nfl2k5.stadiums_fields.modern_levis',  # beta 76 (st2)
+            'nfl2k5.stadiums_fields.modern_allegiant',  # beta 76 (st2)
+            'nfl2k5.stadiums_fields.modern_mercedes_benz',  # beta 76 (st2)
+            'nfl2k5.stadiums_fields.modern_usbank',  # beta 76 (st3)
+            'nfl2k5.stadiums_fields.modern_lucas_oil',  # beta 76 (st3)
+            'nfl2k5.stadiums_fields.modern_state_farm',  # beta 76 (st3)
+            'nfl2k5.stadiums_fields.modern_hard_rock',  # beta 76 (st2, st4)
+            'nfl2k5.stadiums_fields.modern_gillette',  # beta 76 (st2, st4)
+            'nfl2k5.stadiums_fields.modern_lambeau',  # beta 76 (st2, st4)
+            'nfl2k5.stadiums_fields.modern_everbank',  # beta 76 (st2, st4)
+            'nfl2k5.stadiums_fields.modern_board_kit',  # beta 76 (st3, st5)
+            'nfl2k5.stadiums_fields.modern_practice_field',  # beta 76 (pf)
+            'nfl2k5.stadiums_fields.modern_surfaces',  # beta 76 (tf)
+            'nfl2k5.uniforms.modern_helmets',  # beta 76 (hm)
+            'nfl2k5.stadiums_fields.modern_venues_2026',  # beta 76 (u4)
+            'nfl2k5.rosters.historic_season_audit',  # beta 76 (ig)
+            'nfl2k5.franchise.economy_2026',  # beta 76 (ig)
+            'nfl2k5.boot.custom_intro',             # beta 76
+            'nfl2k5.scorebug_presentation.espn_marks_2026',  # beta 76
+            'nfl2k5.scorebug_presentation.espn_wipes_boards_2026',  # beta 76 (p2)
+            'nfl2k5.scorebug_presentation.kick_meter_2026',  # beta 76 (km)
+            'nfl2k5.menus.historic_teams_quick_game',  # beta 76 (h1)
+            'nfl2k5.espn25.more_moments',           # beta 76 (m1)
+            'nfl2k5.gameplay.k128_memory',          # beta 76 (k1)
+            'nfl2k5.gameplay.kickoff_return_blocking',  # beta 76 (vb3)
             'nfl2k5.rosters.save_to_disc',
             'nfl2k5.rosters.espn25_real_rosters',
             'nfl2k5_xbox.position_pool_filters',
@@ -113,6 +143,7 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.scorebug_presentation.template',
             'nfl2k5.scorebug_presentation.studio',
             'nfl2k5.menus.modern_naming',
+            'nfl2k5.menus.historic_teams_quick_game',
             'nfl2k5.mode.my_career',
             'nfl2k5.mode.my_career_inline',
             'nfl2k5.gameplay.coverage_trail',
@@ -167,7 +198,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 102)  # beta 70: + jersey colour choice, modern colour and lighting
+        self.assertEqual(len(first_ids), 132)  # beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art (u4), the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), the practice facility (pf), Hard Rock, Gillette, Lambeau and EverBank (st4), the modern stadium boards (st5)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -201,16 +232,16 @@ class ProductCatalogTests(unittest.TestCase):
     def test_category_and_global_counts_match_the_registry(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            ProductCategory.UNIFORMS_EQUIPMENT: (7, 6, 0, 0, 0, 1, 0),  # beta 70: + jersey colour choice
-            ProductCategory.ROSTERS_PLAYERS: (14, 14, 0, 0, 0, 0, 0),
+            ProductCategory.UNIFORMS_EQUIPMENT: (8, 7, 0, 0, 0, 1, 0),  # beta 70: + jersey colour choice
+            ProductCategory.ROSTERS_PLAYERS: (16, 15, 1, 0, 0, 0, 0),  # beta 76 m1: + 25 more Anniversary moments
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
-            ProductCategory.STADIUMS: (14, 10, 1, 0, 0, 3, 0),
-            ProductCategory.SCOREBUG_PRESENTATION: (7, 4, 0, 0, 0, 3, 0),
-            ProductCategory.MENUS_UI: (8, 3, 2, 0, 0, 3, 0),
+            ProductCategory.STADIUMS: (33, 29, 1, 0, 0, 3, 0),  # beta 76: + Modern MetLife, 2026 venue art, the MetLife model, SoFi Stadium, Highmark Stadium, Modern playing surfaces, AT&T Stadium, Levi's Stadium, Allegiant Stadium, Mercedes-Benz Stadium, U.S. Bank Stadium, Lucas Oil Stadium, State Farm Stadium, the practice facility, Hard Rock Stadium, Gillette Stadium, Lambeau Field, EverBank Stadium, the modern stadium boards
+            ProductCategory.SCOREBUG_PRESENTATION: (10, 7, 0, 0, 0, 3, 0),  # beta 76: + ESPN presentation marks, wipes and boards, kick meter
+            ProductCategory.MENUS_UI: (10, 5, 2, 0, 0, 3, 0),  # beta 76: + custom intro video, historic teams in Quick Game
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (35, 27, 5, 0, 0, 0, 3),  # beta 66: + Broadcast camera v6, helmet finish
+            ProductCategory.SLIDERS_GAMEPLAY: (38, 30, 5, 0, 0, 0, 3),  # beta 66: + Broadcast camera v6, helmet finish; beta 76: + 128 MB memory, kickoff return blocking
             ProductCategory.PLAYBOOKS_PLAYS: (5, 5, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -239,7 +270,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (102, 80, 8, 1, 0, 10, 3),  # beta 70: + jersey colour choice, modern colour and lighting
+            (132, 109, 9, 1, 0, 10, 3),  # beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art, the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), beta 76: pf: + the practice facility, Hard Rock, Gillette, Lambeau and EverBank (st4), st5: + the modern stadium boards
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -292,7 +323,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 102)
+        self.assertEqual(len(seen), 132)  # beta 76 (km: + kick meter), pf: + the practice facility), st4: + Hard Rock, Gillette, Lambeau and EverBank, st5: + the modern stadium boards
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

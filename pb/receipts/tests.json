@@ -1,0 +1,55 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "final_disposition": "All current selected tests have passing results across the two recorded runs. The one initial failure was fixed and rerun.",
+  "existing_regressions_passed": 91,
+  "complete_offense_final_passed": 12,
+  "total_current_tests_with_pass_results": 103,
+  "distinct_subtests_passed": 5997,
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/mod_editor/test_nfl2k5_complete_offense.py",
+        "tests/mod_editor/test_nfl2k5_playbook_pack.py",
+        "tests/mod_editor/test_nfl2k5_formation_play_writer.py",
+        "tests/mod_editor/test_nfl2k5_play_menu_walk.py",
+        "tests/mod_editor/test_mod_build.py",
+        "tests/mod_editor/test_mod_build_beta62_integration.py",
+        "tests/mod_editor/test_mod_build_beta62_integration3.py"
+      ],
+      "exit_code": 1,
+      "passed": 100,
+      "failed": 1,
+      "subtests_passed": 5997,
+      "seconds": 742.18,
+      "log": "regression-initial.txt",
+      "failure": "Test used a JSON-normalized float as a tuple index. Cast the handoff slot to int in the assertion; no gameplay recipe change was needed."
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/mod_editor/test_nfl2k5_complete_offense.py"
+      ],
+      "exit_code": 0,
+      "passed": 12,
+      "failed": 0,
+      "subtests_passed": 4,
+      "seconds": 14.68,
+      "log": "complete-offense-final.txt",
+      "note": "Includes the corrected assertion and two newly added Build pipeline/overlap tests."
+    }
+  ],
+  "source_hashes": {
+    "mod_editor/core/nfl2k5_complete_offense.py": "e42e7fb0636845f4863d8b16d742c4df950c069b35bb5a0d5bda47838e98526f",
+    "mod_editor/core/nfl2k5_playbook_pack.py": "065e439bc24e9eddd0771f936fe8883082cb8fe55c606f6c8b9b2630639ab5f5",
+    "mod_editor/core/mod_build.py": "b06d36099a6020e76e1a41882200acf2b22a25324c2ce37e306406ab7c8cbbb5",
+    "tests/mod_editor/test_nfl2k5_complete_offense.py": "e9e8d0307c9e47d4004ba0fa04ed0b39821c967af0e84892df51e5354a9e84de"
+  }
+}

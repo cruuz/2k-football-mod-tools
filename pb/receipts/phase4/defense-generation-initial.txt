@@ -1,0 +1,210 @@
+BAL 62 2773
+ATL 62 2801
+BUF 57 2768
+ARZ 64 2832
+CAR 61 2795
+CLE 59 2689
+CHI 62 2843
+CIN 59 2775
+DAL 75 3171
+DEN 57 2669
+GB 64 2863
+DET 62 2802
+HOU 61 2832
+IND 60 2758
+JAX 62 2823
+MIN 70 2962
+MIA 70 3121
+NE 59 2773
+NO 62 2778
+OAK 57 2774
+NYG 64 2870
+NYJ 74 3150
+PHI 64 2878
+PIT 70 3124
+concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/concurrent/futures/process.py", line 263, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/process.py", line 212, in _process_chunk
+    return [fn(*args) for args in chunk]
+            ^^^^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/build.py", line 232, in build_team
+    if not check.ok:raise ValueError(t+' '+check.text())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: KC [PASS] 1. Schema and types
+        NFL 2K28 KC Defense v0.3.0 by SOFTDRINK / Astra (CC0-1.0); authored on KC
+        2 formation(s), 56 play(s)
+        the supplied book matches base.book_fingerprint exactly
+[PASS] 2. Budget (50 formations / 270 plays / 3,500 nodes / 36 links / 15-node chains)
+        plays 261/270, formations 42/50, nodes 2673/3500
+        replaces 2 formation(s) and 56 play(s); net growth 0 formation(s), 0 play(s)
+[PASS] 3. The ported retail play validator on every play
+        56 of 56 play(s) ran the full validator
+[PASS] 4. Class-flag sanity (donor family kept, QB shape matches the class nibble)
+        play “d0” is family 1 (not offence); the QB rule does not apply
+        play “d1” is family 1 (not offence); the QB rule does not apply
+        play “d2” is family 1 (not offence); the QB rule does not apply
+        play “d3” is family 1 (not offence); the QB rule does not apply
+        play “d4” is family 1 (not offence); the QB rule does not apply
+        play “d5” is family 1 (not offence); the QB rule does not apply
+        play “d6” is family 1 (not offence); the QB rule does not apply
+        play “d7” is family 1 (not offence); the QB rule does not apply
+        play “d8” is family 1 (not offence); the QB rule does not apply
+        play “d9” is family 1 (not offence); the QB rule does not apply
+        play “d10” is family 1 (not offence); the QB rule does not apply
+        play “d11” is family 1 (not offence); the QB rule does not apply
+        play “d12” is family 1 (not offence); the QB rule does not apply
+        play “d13” is family 1 (not offence); the QB rule does not apply
+        play “d14” is family 1 (not offence); the QB rule does not apply
+        play “d15” is family 1 (not offence); the QB rule does not apply
+        play “d16” is family 1 (not offence); the QB rule does not apply
+        play “d17” is family 1 (not offence); the QB rule does not apply
+        play “d18” is family 1 (not offence); the QB rule does not apply
+        play “d19” is family 1 (not offence); the QB rule does not apply
+        play “d20” is family 1 (not offence); the QB rule does not apply
+        play “d21” is family 1 (not offence); the QB rule does not apply
+        play “d22” is family 1 (not offence); the QB rule does not apply
+        play “d23” is family 1 (not offence); the QB rule does not apply
+        play “d24” is family 1 (not offence); the QB rule does not apply
+        play “d25” is family 1 (not offence); the QB rule does not apply
+        play “d26” is family 1 (not offence); the QB rule does not apply
+        play “d27” is family 1 (not offence); the QB rule does not apply
+        play “d28” is family 1 (not offence); the QB rule does not apply
+        play “d29” is family 1 (not offence); the QB rule does not apply
+        play “d30” is family 1 (not offence); the QB rule does not apply
+        play “d31” is family 1 (not offence); the QB rule does not apply
+        play “d32” is family 1 (not offence); the QB rule does not apply
+        play “d33” is family 1 (not offence); the QB rule does not apply
+        play “d34” is family 1 (not offence); the QB rule does not apply
+        play “d186” is family 1 (not offence); the QB rule does not apply
+        play “d187” is family 1 (not offence); the QB rule does not apply
+        play “d188” is family 1 (not offence); the QB rule does not apply
+        play “d189” is family 1 (not offence); the QB rule does not apply
+        play “d190” is family 1 (not offence); the QB rule does not apply
+        play “d191” is family 1 (not offence); the QB rule does not apply
+        play “d192” is family 1 (not offence); the QB rule does not apply
+        play “d193” is family 1 (not offence); the QB rule does not apply
+        play “d194” is family 1 (not offence); the QB rule does not apply
+        play “d195” is family 1 (not offence); the QB rule does not apply
+        play “d196” is family 1 (not offence); the QB rule does not apply
+        play “d197” is family 1 (not offence); the QB rule does not apply
+        play “d198” is family 1 (not offence); the QB rule does not apply
+        play “d199” is family 1 (not offence); the QB rule does not apply
+        play “d200” is family 1 (not offence); the QB rule does not apply
+        play “d206” is family 1 (not offence); the QB rule does not apply
+        play “d207” is family 1 (not offence); the QB rule does not apply
+        play “d208” is family 1 (not offence); the QB rule does not apply
+        play “d209” is family 1 (not offence); the QB rule does not apply
+        play “d210” is family 1 (not offence); the QB rule does not apply
+        play “d211” is family 1 (not offence); the QB rule does not apply
+[PASS] 5. Formation legality (NFL alignment rules)
+        “4-3 Wide”: under centre, 0 back(s), OLB FS SS CB2 CB
+        “Nickel Mug”: under centre, 0 back(s), CB3 FS SS CB2 CB
+[PASS] 6. Donor-header rule (a stock play of the same shape, never “the book's first play”)
+        every donor is a stock play of the same shape and class
+[FAIL] 7. Dry compile through the real writer
+    !!  Spy must preserve a legal shallow-zone donor's descriptor, start and other operands
+
+PACK CHECK: FAILED
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/build.py", line 258, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/noah/2k-worktrees/b76-x2/pb/defense/build.py", line 256, in main
+    with ProcessPoolExecutor(max_workers=args.workers) as pool:manifest=list(pool.map(build_team,jobs))
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/process.py", line 642, in _chain_from_iterable_of_lists
+    for element in iterable:
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+ValueError: KC [PASS] 1. Schema and types
+        NFL 2K28 KC Defense v0.3.0 by SOFTDRINK / Astra (CC0-1.0); authored on KC
+        2 formation(s), 56 play(s)
+        the supplied book matches base.book_fingerprint exactly
+[PASS] 2. Budget (50 formations / 270 plays / 3,500 nodes / 36 links / 15-node chains)
+        plays 261/270, formations 42/50, nodes 2673/3500
+        replaces 2 formation(s) and 56 play(s); net growth 0 formation(s), 0 play(s)
+[PASS] 3. The ported retail play validator on every play
+        56 of 56 play(s) ran the full validator
+[PASS] 4. Class-flag sanity (donor family kept, QB shape matches the class nibble)
+        play “d0” is family 1 (not offence); the QB rule does not apply
+        play “d1” is family 1 (not offence); the QB rule does not apply
+        play “d2” is family 1 (not offence); the QB rule does not apply
+        play “d3” is family 1 (not offence); the QB rule does not apply
+        play “d4” is family 1 (not offence); the QB rule does not apply
+        play “d5” is family 1 (not offence); the QB rule does not apply
+        play “d6” is family 1 (not offence); the QB rule does not apply
+        play “d7” is family 1 (not offence); the QB rule does not apply
+        play “d8” is family 1 (not offence); the QB rule does not apply
+        play “d9” is family 1 (not offence); the QB rule does not apply
+        play “d10” is family 1 (not offence); the QB rule does not apply
+        play “d11” is family 1 (not offence); the QB rule does not apply
+        play “d12” is family 1 (not offence); the QB rule does not apply
+        play “d13” is family 1 (not offence); the QB rule does not apply
+        play “d14” is family 1 (not offence); the QB rule does not apply
+        play “d15” is family 1 (not offence); the QB rule does not apply
+        play “d16” is family 1 (not offence); the QB rule does not apply
+        play “d17” is family 1 (not offence); the QB rule does not apply
+        play “d18” is family 1 (not offence); the QB rule does not apply
+        play “d19” is family 1 (not offence); the QB rule does not apply
+        play “d20” is family 1 (not offence); the QB rule does not apply
+        play “d21” is family 1 (not offence); the QB rule does not apply
+        play “d22” is family 1 (not offence); the QB rule does not apply
+        play “d23” is family 1 (not offence); the QB rule does not apply
+        play “d24” is family 1 (not offence); the QB rule does not apply
+        play “d25” is family 1 (not offence); the QB rule does not apply
+        play “d26” is family 1 (not offence); the QB rule does not apply
+        play “d27” is family 1 (not offence); the QB rule does not apply
+        play “d28” is family 1 (not offence); the QB rule does not apply
+        play “d29” is family 1 (not offence); the QB rule does not apply
+        play “d30” is family 1 (not offence); the QB rule does not apply
+        play “d31” is family 1 (not offence); the QB rule does not apply
+        play “d32” is family 1 (not offence); the QB rule does not apply
+        play “d33” is family 1 (not offence); the QB rule does not apply
+        play “d34” is family 1 (not offence); the QB rule does not apply
+        play “d186” is family 1 (not offence); the QB rule does not apply
+        play “d187” is family 1 (not offence); the QB rule does not apply
+        play “d188” is family 1 (not offence); the QB rule does not apply
+        play “d189” is family 1 (not offence); the QB rule does not apply
+        play “d190” is family 1 (not offence); the QB rule does not apply
+        play “d191” is family 1 (not offence); the QB rule does not apply
+        play “d192” is family 1 (not offence); the QB rule does not apply
+        play “d193” is family 1 (not offence); the QB rule does not apply
+        play “d194” is family 1 (not offence); the QB rule does not apply
+        play “d195” is family 1 (not offence); the QB rule does not apply
+        play “d196” is family 1 (not offence); the QB rule does not apply
+        play “d197” is family 1 (not offence); the QB rule does not apply
+        play “d198” is family 1 (not offence); the QB rule does not apply
+        play “d199” is family 1 (not offence); the QB rule does not apply
+        play “d200” is family 1 (not offence); the QB rule does not apply
+        play “d206” is family 1 (not offence); the QB rule does not apply
+        play “d207” is family 1 (not offence); the QB rule does not apply
+        play “d208” is family 1 (not offence); the QB rule does not apply
+        play “d209” is family 1 (not offence); the QB rule does not apply
+        play “d210” is family 1 (not offence); the QB rule does not apply
+        play “d211” is family 1 (not offence); the QB rule does not apply
+[PASS] 5. Formation legality (NFL alignment rules)
+        “4-3 Wide”: under centre, 0 back(s), OLB FS SS CB2 CB
+        “Nickel Mug”: under centre, 0 back(s), CB3 FS SS CB2 CB
+[PASS] 6. Donor-header rule (a stock play of the same shape, never “the book's first play”)
+        every donor is a stock play of the same shape and class
+[FAIL] 7. Dry compile through the real writer
+    !!  Spy must preserve a legal shallow-zone donor's descriptor, start and other operands
+
+PACK CHECK: FAILED

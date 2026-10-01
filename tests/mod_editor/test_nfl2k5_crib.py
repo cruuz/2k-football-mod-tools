@@ -225,6 +225,13 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
                          "crib_standalone_texture")
 
     def test_compact_release_catalog_exactly_matches_audited_reports(self) -> None:
+        reports = CribReportPaths()
+        missing = [str(path) for path in (
+            reports.texture_inventory, reports.photo_ownership,
+            reports.embedded_textures, reports.scenes,
+        ) if not path.is_file()]
+        if missing:
+            self.skipTest("private Crib audit reports absent: " + ", ".join(missing))
         compact = Nfl2k5CribCatalog.from_compact_catalog(COMPACT_CATALOG_PATH)
         audited = Nfl2k5CribCatalog.from_reports()
         self.assertEqual(compact.assets, audited.assets)

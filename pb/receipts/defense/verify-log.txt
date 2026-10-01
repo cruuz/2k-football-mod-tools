@@ -1,0 +1,96 @@
+Installing “NFL 2K28 ARZ Modern” into ARZ
+Installing “NFL 2K28 ATL Modern” into ATL
+Installing “NFL 2K28 BAL Modern” into BAL
+Installing “NFL 2K28 BUF Modern” into BUF
+Installing “NFL 2K28 CAR Modern” into CAR
+Installing “NFL 2K28 CHI Modern” into CHI
+Installing “NFL 2K28 CIN Modern” into CIN
+Installing “NFL 2K28 CLE Modern” into CLE
+Installing “NFL 2K28 DAL Modern” into DAL
+Installing “NFL 2K28 DEN Modern” into DEN
+Installing “NFL 2K28 DET Modern” into DET
+Installing “NFL 2K28 GB Modern” into GB
+Installing “NFL 2K28 HOU Modern” into HOU
+Installing “NFL 2K28 IND Modern” into IND
+Installing “NFL 2K28 JAX Modern” into JAX
+Installing “NFL 2K28 KC Modern” into KC
+Installing “NFL 2K28 MIA Modern” into MIA
+Installing “NFL 2K28 MIN Modern” into MIN
+Installing “NFL 2K28 NE Modern” into NE
+Installing “NFL 2K28 NO Modern” into NO
+Installing “NFL 2K28 Giants Modern” into NYG
+Installing “NFL 2K28 NYJ Modern” into NYJ
+Installing “NFL 2K28 OAK Modern” into OAK
+Installing “NFL 2K28 PHI Modern” into PHI
+Installing “NFL 2K28 PIT Modern” into PIT
+Installing “NFL 2K28 SD Modern” into SD
+Installing “NFL 2K28 SEA Modern” into SEA
+Installing “NFL 2K28 SF Modern” into SF
+Installing “NFL 2K28 STL Modern” into STL
+Installing “NFL 2K28 TB Modern” into TB
+Installing “NFL 2K28 TEN Modern” into TEN
+Installing “NFL 2K28 WAS Modern” into WAS
+Installing “NFL 2K28 ARZ Defense” into ARZ
+Installing “NFL 2K28 ATL Defense” into ATL
+Installing “NFL 2K28 BAL Defense” into BAL
+Installing “NFL 2K28 BUF Defense” into BUF
+Installing “NFL 2K28 CAR Defense” into CAR
+Installing “NFL 2K28 CHI Defense” into CHI
+Installing “NFL 2K28 CIN Defense” into CIN
+Installing “NFL 2K28 CLE Defense” into CLE
+Installing “NFL 2K28 DAL Defense” into DAL
+Installing “NFL 2K28 DEN Defense” into DEN
+Installing “NFL 2K28 DET Defense” into DET
+Installing “NFL 2K28 GB Defense” into GB
+Installing “NFL 2K28 HOU Defense” into HOU
+Installing “NFL 2K28 IND Defense” into IND
+Installing “NFL 2K28 JAX Defense” into JAX
+Installing “NFL 2K28 KC Defense” into KC
+Installing “NFL 2K28 MIA Defense” into MIA
+Installing “NFL 2K28 MIN Defense” into MIN
+Installing “NFL 2K28 NE Defense” into NE
+Installing “NFL 2K28 NO Defense” into NO
+Installing “NFL 2K28 NYG Defense” into NYG
+Installing “NFL 2K28 NYJ Defense” into NYJ
+Installing “NFL 2K28 OAK Defense” into OAK
+Installing “NFL 2K28 PHI Defense” into PHI
+Installing “NFL 2K28 PIT Defense” into PIT
+Installing “NFL 2K28 SD Defense” into SD
+Installing “NFL 2K28 SEA Defense” into SEA
+Installing “NFL 2K28 SF Defense” into SF
+Installing “NFL 2K28 STL Defense” into STL
+Installing “NFL 2K28 TB Defense” into TB
+Installing “NFL 2K28 TEN Defense” into TEN
+Installing “NFL 2K28 WAS Defense” into WAS
+ARZ 2832 9882 702 PASS
+ATL 2801 9538 702 PASS
+BAL 2773 9562 628 PASS
+BUF 2768 9614 690 PASS
+CAR 2795 9756 772 PASS
+CHI 2843 9572 780 PASS
+CIN 2775 9560 774 PASS
+CLE 2689 9610 636 PASS
+DAL 3171 10212 756 PASS
+DEN 2669 9116 713 PASS
+DET 2802 9504 726 PASS
+GB 2863 10154 726 PASS
+HOU 2832 9756 516 PASS
+IND 2758 9710 774 PASS
+JAX 2823 9812 708 PASS
+KC 2673 9018 732 PASS
+MIA 3121 10144 820 PASS
+MIN 2962 10270 698 PASS
+NE 2773 9148 724 PASS
+NO 2778 9594 702 PASS
+NYG 2870 9560 820 PASS
+NYJ 3150 9994 756 PASS
+OAK 2774 9778 777 PASS
+PHI 2878 9940 820 PASS
+PIT 3124 9802 552 PASS
+SD 3185 10446 588 PASS
+SEA 2833 9918 772 PASS
+SF 2828 9466 702 PASS
+STL 2820 10050 742 PASS
+TB 2763 9684 708 PASS
+TEN 2705 9002 666 PASS
+WAS 2859 9320 700 PASS

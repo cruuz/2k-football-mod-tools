@@ -57,6 +57,9 @@ def plan_from(previews: tuple[exporter.PreviewLevel, ...]) -> exporter.ExportPla
 class JerseyFamilyExportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (verifier.CATALOG,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF jersey layout report missing: " + ", ".join(missing))
         cls.previews = synthetic_previews()
         cls.plan = plan_from(cls.previews)
 

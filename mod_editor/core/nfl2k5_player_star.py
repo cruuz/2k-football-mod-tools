@@ -1,4 +1,4 @@
-"""Filled white stars at tagged players' feet (USA Xbox executable).
+"""A white outline star at tagged players' feet (USA Xbox executable).
 
 Beta 58 changed only FUN_00075d40. That is insufficient: FUN_000f9030
 encodes ordinary CPU bodies as controller 8; FUN_000f9320 passes (user == 8)
@@ -6,8 +6,17 @@ in eax; FUN_000f8880 skips the controller model when eax is nonzero. Its
 normal controller model is a circular ring, regardless of the resource name.
 
 The fixed pass wraps the frame call at 0x64F21, keeps the retail circles and
-their predicate unchanged, then draws a separate opaque white five-point
-fill over a larger near-black star for every tagged active entity. It reads
+their predicate unchanged, then draws the star's passes for every tagged active
+entity. Beta 76 (job km2, Noah: "a white outline of a star but a more modern
+looking star design"): a hollow white outline star with slim points (tips 86.4
+cm, notches 29.376, inner/outer 0.34), an even 8 cm stroke with mitred tips,
+over a thin dark under-edge (2.5 cm outside and inside the stroke). Each pass is
+the existing strip of (outer, inner) pairs on the star's ten rays, generated
+with fsincos; a pass gives the outer and inner radius at the tips and notches,
+which is exactly the mitred offset contour. A pass with a zero diffuse alpha is
+skipped: the outline-only variant drops the under-edge that way. Badge C (job
+r1: gold star, white rim) and every earlier revision are recognised legacy that
+apply() upgrades. It reads
 entity+0x3C -> record+0x53 bit 0 directly, independently of controller assignment
 and the nine-entry replay/controller queue. The 22-entity bound is the physical
 array capacity.
@@ -88,45 +97,75 @@ LEGACY_BOLD_OUTLINE_PINS = {
     0x31E650: 'a4c2876d6f9e8245c99ad61750f81765498ca33e1dbce279e68051defb0ad6f6',
 }
 
+# Exact beta-65..76 filled white star with the near-black edge (filled_contrast_v3), all span padding
+# included: upgradeable legacy since job r1's gold badge. Never regenerated with the runtime.
+LEGACY_FILLED_PINS = {
+    0x372D40: '9928529a3ec0b62472b0ea0990e1b6c2f66c3c98684e0dbc4cfdcf1d6623a493',
+    0x3DDD50: '37d433059204343a117c07200d2b5a5fbdd952c089bd2282d334915be9c8fa30',
+    0x38B0D0: 'b561ed25a4e6559ac950c490b2e3512ffbb90a3f486ff97a3db5630b3de30712',
+    0x2C9110: '59d64fae0f69755fcd3eeb8e382cd698e955dacc5e39bc130b89160e3ed32791',
+    0x31E650: '048139c681671049ccf4802cdef45fe1eac19a2e22225214c59c96e053116130',
+}
+
+# Exact job r1 badge C (gold_badge_v4: gold star, white rim, beta 76 cfa188ab7), all span padding included:
+# upgradeable legacy since the km2 outline star. Never regenerated with the runtime.
+LEGACY_BADGE_C_PINS = {
+    0x372D40: '4c07f605f09d141eb9c5197390a3d14dce9fa10612e6bb3681edbcff7b58ed9c',
+    0x3DDD50: '37d433059204343a117c07200d2b5a5fbdd952c089bd2282d334915be9c8fa30',
+    0x38B0D0: 'b561ed25a4e6559ac950c490b2e3512ffbb90a3f486ff97a3db5630b3de30712',
+    0x2C9110: '59d64fae0f69755fcd3eeb8e382cd698e955dacc5e39bc130b89160e3ed32791',
+    0x31E650: 'b0ce7c90dd47aa82ab3ffcdfdd47f29ec65774782e0b4ecb752ec614c11fe718',
+}
+
+# The star variants (b76 km2): 'under_edge' (the default: the white outline over its thin dark under-edge) is the
+# generated table; 'outline' is the same table with the under-edge pass's diffuse alpha at zero, so the pass loop
+# skips it. DEFAULT_STAR is what the build installs.
+STARS = ('under_edge', 'outline')
+DEFAULT_STAR = 'under_edge'
+
 # BEGIN GENERATED RUNTIME
 SYMBOLS = {
-    'frame_done': 0x372DB3,
-    'frame_loop': 0x372D74,
-    'frame_next': 0x372DAD,
-    'frame_return': 0x372DB5,
+    'frame_done': 0x372DA2,
+    'frame_loop': 0x372D75,
+    'frame_next': 0x372D9C,
+    'frame_return': 0x372DA5,
     'frame_visible': 0x372D69,
+    'pass_loop': 0x31E650,
+    'pass_next': 0x31E65B,
     'star_draw': 0x3DDD50,
+    'star_emit': 0x2C9150,
     'star_frame': 0x372D40,
-    'star_inset': 0x31E650,
-    'star_points': 0x31E654,
+    'star_passes': 0x31E66F,
+    'star_passes_end': 0x31E69F,
     'star_position': 0x38B0D0,
-    'star_vertex': 0x2C9110,
-    'vertex_outer': 0x2C9135,
-    'vertex_same_point': 0x2C9160,
+    'star_ray': 0x2C9110,
+    'star_step': 0x31E66B,
+    'star_vertex': 0x2C9130,
 }
 
 # (VA, capacity, original generated code or immutable geometry)
 CAVES = (
     (0x372D40, 118, bytes.fromhex(
-        "e8db65d8ff833d1828ba00007467833d1c28ba0000745ee864faceff85c07409e8cbabd0ff85c0744c56578b356802e6"
-        "006a165f85f6743b837e4800752f8b463c85c07428f64053017422837e0400741cb80000903fba101010ffe8b0af0600"
-        "b80000803f83caffe8a3af06008b76304f75c15f5ec3"
+        "e8db65d8ff833d1828ba00007457833d1c28ba0000744ee864faceff85c07409e8cbabd0ff85c0743c5657538b356802"
+        "e6006a165f85f67429837e4800751d8b463c85c07416f64053017410837e0400740abb6fe63100e9b4b8faff8b76304f"
+        "75d35b5f5ec3"
     )),
     (0x3DDD50, 83, bytes.fromhex(
-        "5589e553565783e4f081eca00000008b5e048b35ac28ba008d7c2420b920000000f3a58944241889542438c744245000"
-        "00000081a42480000000fffffff0f7d8050000308089442404e932d3faff"
+        "5589e553565783e4f081eca00000008b56048b35ac28ba008d7c24206a2059f3a58b431089442438836424500080a424"
+        "83000000f08b431489442404e93fd3faff"
     )),
     (0x38B0D0, 83, bytes.fromhex(
-        "d98330010000d88330020000d80d84414e00d95c2410d98338010000d88338020000d80d84414e00d95c24148d442420"
-        "6a00506a0631c9ba01000000e88f21caffbb54e63100bf16000000e9f0dff3ff"
+        "d98230010000d88230020000d80d84414e00d95c2410d98238010000d88238020000d80d84414e00d95c24148d442420"
+        "6a00506a0631c9ba01000000e88f21caff31ffe9f8dff3ff"
     )),
     (0x2C9110, 106, bytes.fromhex(
-        "d903d84c2418d94304d84c2418f7c7010000007410d80d50e63100d9c9d80d50e63100d9c9d8442414d95c2408d84424"
-        "10d91c2489e1e82539d6fff7c701000000740d83c30883ff037505bb54e631004f75ade89838d6ff8d65f45f5e5b5dc3"
+        "897c2418db442418d80d6be63100d9fbd95c2418d95c241c89f883e0018d0483e81b00000083c008e8130000004783ff"
+        "0a76cde8b838d6ff8d65f45f5e5b5dc350d900d9c0d84c2424d8442418d95c2408d84c2420d86c241cd95c24108d4c24"
+        "08e8fa38d6ff58c3"
     )),
     (0x31E650, 84, bytes.fromhex(
-        "00000000000000000000d8c2fed0ef411a0a25c29f6dcd42cf7e05c2fa0342426a287c4159ec7d4267bfae4200000000"
-        "00004c4259ec7dc267bfae42fa0342c26a287c419f6dcdc2cf7e05c2fed0efc11a0a25c2"
+        "807b13007405e8f5f60b0083c31881fb9fe6310072eae9314705007cd9203f229dbf42214c024266903b424d167f4110"
+        "0e0ec80000a040cdccac420c02eb41113161425d219941ffffffff0000b040"
     )),
 )
 # END GENERATED RUNTIME
@@ -172,29 +211,52 @@ def _read(payload: bytes, va: int, size: int) -> bytes:
     return result
 
 
-def sites() -> list[tuple[str, int, bytes]]:
+def _star_code(va: int, code: bytes, star: str) -> bytes:
+    """One span's generated bytes for a star variant ('outline' zeroes the under-edge pass's alpha byte)."""
+    _require(star in STARS, f'unknown star variant {star!r}')
+    alpha = SYMBOLS['star_passes'] + 19          # pass 0 (the under-edge), diffuse +16, alpha is its top byte
+    if star == 'outline' and va <= alpha < va + len(code):
+        at = alpha - va
+        return code[:at] + b'\x00' + code[at + 1:]
+    return code
+
+
+def sites(star: str = DEFAULT_STAR) -> list[tuple[str, int, bytes]]:
     """Complete declared replacement spans, including unchanged cave padding."""
     return [('controller_gate', GATE_VA, RETAIL_GATE),
             ('star_frame_call', DRAW_CALL_VA, PATCHED_DRAW_CALL),
-            *((f'star_runtime_{va:x}', va, code + b'\x90' * (size-len(code)))
+            *((f'star_runtime_{va:x}', va, _star_code(va, code, star) + b'\x90' * (size-len(code)))
               for va, size, code in CAVES)]
+
+
+def installed_star(payload: bytes) -> str | None:
+    """'under_edge' or 'outline' when every declared site holds that variant exactly, else None."""
+    try:
+        for star in STARS:
+            if all(_read(payload, va, len(code)) == code for _, va, code in sites(star)):
+                return star
+    except (PlayerStarError, ValueError, struct.error, IndexError):
+        pass
+    return None
 
 
 def _legacy_outline_revision(payload: bytes) -> str | None:
     hashes = {va: hashlib.sha256(_read(payload, va, size)).hexdigest()
               for va, size, _ in CAVES}
     for revision, pins in (('thin_v1', LEGACY_OUTLINE_PINS),
-                           ('bold_contrast_v2', LEGACY_BOLD_OUTLINE_PINS)):
+                           ('bold_contrast_v2', LEGACY_BOLD_OUTLINE_PINS),
+                           ('filled_contrast_v3', LEGACY_FILLED_PINS),
+                           ('gold_badge_v4', LEGACY_BADGE_C_PINS)):
         if hashes == pins:
             return revision
     return None
 
 
 def status(payload: bytes) -> str:
-    """retail / legacy (beta-58..64 gate or outlines) / applied (filled) / foreign.
+    """retail / legacy (beta-58..64 gate or outlines, beta-65 white star, beta-76 badge C) / applied (outline star) / foreign.
 
     Mixed or modified sites are foreign. 'applied' always means the complete
-    filled renderer. The existing star-only legacy arm in the build dispatcher
+    outline-star renderer, in either variant. The existing star-only legacy arm in the build dispatcher
     upgrades all recognized earlier revisions through apply().
     """
     try:
@@ -214,7 +276,7 @@ def status(payload: bytes) -> str:
             return 'foreign'
         gate = _read(payload, GATE_VA, GATE_SIZE)
         call = _read(payload, DRAW_CALL_VA, 5)
-        if gate == RETAIL_GATE and all(_read(payload, va, len(code)) == code for _, va, code in sites()):
+        if gate == RETAIL_GATE and installed_star(payload):
             return 'applied'
         if gate == RETAIL_GATE and call == PATCHED_DRAW_CALL and _legacy_outline_revision(payload):
             return 'legacy'
@@ -234,27 +296,33 @@ def status(payload: bytes) -> str:
 def read_settings(payload: bytes) -> dict[str, object]:
     state = status(payload)
     outline = _legacy_outline_revision(payload) if state == 'legacy' else None
-    return {'status': state, 'renderer': ('white_star_filled' if state == 'applied' else
-                                         'white_star_outline' if outline else 'none'),
-            'renderer_revision': ('filled_contrast_v3' if state == 'applied' else
+    star = installed_star(payload) if state == 'applied' else None
+    return {'status': state, 'renderer': ({'under_edge': 'white_outline_star_under_edge',
+                                           'outline': 'white_outline_star'}[star] if star else
+                                          'gold_star_white_rim' if outline == 'gold_badge_v4' else
+                                          'white_star_filled' if outline == 'filled_contrast_v3' else
+                                          'white_star_outline' if outline else 'none'),
+            'renderer_revision': ('outline_star_v5' if state == 'applied' else
                                   outline or ('gate_only' if state == 'legacy' else 'none')),
+            'star': star,
             'tag': 'roster record +0x53 bit 0' if state in ('applied', 'legacy') else 'none',
             'star_list_limit': ENTITY_LIMIT if state == 'applied' or outline else 0,
             'retail_controller_capacity': RETAIL_STAR_LIST_LIMIT,
             'needs_upgrade': state == 'legacy'}
 
 
-def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+def apply(payload: bytes, star: str = DEFAULT_STAR) -> tuple[bytes, Mapping[str, object]]:
+    _require(star in STARS, f'unknown star variant {star!r}')
     state = status(payload)
-    if state == 'applied':
+    if state == 'applied' and installed_star(payload) == star:
         return payload, {'already_applied': True, 'edits': [], 'changed_bytes': 0, **read_settings(payload)}
-    _require(state in ('retail', 'legacy'), f'player-star sites are {state}; refusing')
+    _require(state in ('retail', 'legacy', 'applied'), f'player-star sites are {state}; refusing')
     previous_renderer = read_settings(payload)['renderer_revision']
     buf = bytearray(payload)
     sections = _sections(payload)
     touched: set[int] = set()
     edits = []
-    for label, va, after in sites():
+    for label, va, after in sites(star):
         off = _offset(payload, va)
         before = payload[off:off+len(after)]
         if before == after:
@@ -269,7 +337,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             d = section.header_offset + 36
             buf[d:d+20] = section_digest(bytes(buf), section)
     patched = bytes(buf)
-    _require(status(patched) == 'applied', 'post-apply verification failed')
+    _require(status(patched) == 'applied' and installed_star(patched) == star, 'post-apply verification failed')
     return patched, {'edits': edits, 'changed_bytes': sum(a != b for a, b in zip(payload, patched)),
                      'sections_repinned': sorted(touched), 'upgraded_from': state,
                      'upgraded_renderer': previous_renderer,

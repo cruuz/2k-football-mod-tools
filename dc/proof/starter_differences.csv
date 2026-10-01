@@ -1,0 +1,184 @@
+evidence,team,group,role,source_rank,source_name,roster_name,status,native_position,native_chain
+PROVED OFFLINE,SF,Base 4-3 D,LDT,1,Osa Odighizuwa,Gracen Halton,different,15,0
+PROVED OFFLINE,SF,Base 4-3 D,RDT,1,Gracen Halton,Osa Odighizuwa,different,15,1
+PROVED OFFLINE,SF,Base 4-3 D,WLB,1,Dre Greenlaw,Fred Warner,different,11,1
+PROVED OFFLINE,SF,Base 4-3 D,MLB,1,Fred Warner,Dre Greenlaw,different,11,0
+PROVED OFFLINE,SF,Base 4-3 D,SLB,1,Jaden Dugger,Luke Gifford,different,11,3
+PROVED OFFLINE,SF,Base 4-3 D,SS,1,Marques Sigle,Malik Mustapha,different,6,0
+PROVED OFFLINE,SF,Base 4-3 D,NB,1,Upton Stout,Deommodore Lenoir,different,4,2
+DESIGN,SF,3WR 1TE,WR,3,Jacob Cowing,Deebo Samuel,different,3,2
+PROVED OFFLINE,CHI,Base 4-3 D,WLB,1,Devin Bush,T.J. Edwards,different,11,1
+PROVED OFFLINE,CHI,Base 4-3 D,MLB,1,T.J. Edwards,Devin Bush,different,11,0
+PROVED OFFLINE,CHI,Base 4-3 D,NB,1,Cam Lewis,Tyrique Stevenson,different,4,2
+DESIGN,CHI,3WR 1TE,WR,3,Kalif Raymond,Luther Burden,different,3,2
+PROVED OFFLINE,CIN,Base 4-3 D,NB,1,Jalen Davis,DJ Turner,different,4,2
+DESIGN,CIN,3WR 1TE,WR,3,Colbie Young,Tee Higgins,different,3,2
+PROVED OFFLINE,BUF,Base 3-4 D,WLB,1,Greg Rousseau,Bradley Chubb,different,16,1
+PROVED OFFLINE,BUF,Base 3-4 D,SLB,1,Bradley Chubb,Greg Rousseau,different,16,0
+PROVED OFFLINE,BUF,Base 3-4 D,NB,1,Dee Alford,Maxwell Hairston,different,4,2
+DESIGN,BUF,3WR 1TE,WR,3,Keon Coleman,Khalil Shakir,different,3,2
+PROVED OFFLINE,DEN,Base 3-4 D,LDE,1,Zach Allen,Malcolm Roach,different,15,1
+PROVED OFFLINE,DEN,Base 3-4 D,RDE,1,Eyioma Uwazurike,Zach Allen,different,15,3
+PROVED OFFLINE,DEN,Base 3-4 D,WLB,1,Jonah Elliss,Nik Bonitto,different,16,1
+PROVED OFFLINE,DEN,Base 3-4 D,SLB,1,Nik Bonitto,Jonah Elliss,different,16,0
+PROVED OFFLINE,DEN,Base 3-4 D,NB,1,Ja'Quan McMillian,Riley Moss,different,4,2
+PROVED OFFLINE,DEN,3WR 1TE,FB,1,Adam Prentice,,missing_from_roster,8,0
+DESIGN,DEN,3WR 1TE,WR,3,Marvin Mims Jr.,Courtland Sutton,different,3,2
+PROVED OFFLINE,CLE,Base 4-3 D,LDT,1,Mason Graham,Maliek Collins,different,15,0
+PROVED OFFLINE,CLE,Base 4-3 D,RDT,1,Maliek Collins,Mason Graham,different,15,1
+PROVED OFFLINE,CLE,Base 4-3 D,NB,1,Myles Harden,Tyson Campbell,different,4,2
+DESIGN,CLE,3WR 1TE,WR,1,Denzel Boston,Jerry Jeudy,different,3,0
+DESIGN,CLE,3WR 1TE,WR,3,Jerry Jeudy,KC Concepcion,different,3,2
+PROVED OFFLINE,TB,Base 3-4 D,WLB,1,Rueben Bain Jr.,Yaya Diaby,different,16,1
+PROVED OFFLINE,TB,Base 3-4 D,SLB,1,Yaya Diaby,Rueben Bain,different,16,0
+PROVED OFFLINE,TB,Base 3-4 D,NB,1,Jacob Parrish,Benjamin Morrison,different,4,2
+DESIGN,TB,3WR 1TE,WR,3,Jalen McMillan,Chris Godwin,different,3,2
+PROVED OFFLINE,ARI,Base 4-3 D,LDE,1,Josh Sweat,Jack Gibbens,different,16,0
+PROVED OFFLINE,ARI,Base 4-3 D,LDT,1,Roy Lopez,Dante Stills,different,15,0
+PROVED OFFLINE,ARI,Base 4-3 D,RDT,1,Walter Nolen III,Roy Lopez,different,15,1
+PROVED OFFLINE,ARI,Base 4-3 D,RDE,1,Dante Stills,Josh Sweat,different,16,1
+PROVED OFFLINE,ARI,Base 4-3 D,WLB,1,Jack Gibbens,Cody Simon,different,11,1
+PROVED OFFLINE,ARI,Base 4-3 D,SLB,1,Zaven Collins,,different,11,3
+PROVED OFFLINE,ARI,Base 4-3 D,NB,1,Max Melton,Denzel Burke,different,4,2
+DESIGN,ARI,3WR 1TE,WR,3,Kendrick Bourne,Marvin Harrison,different,3,2
+PROVED OFFLINE,LAC,Base 3-4 D,NT,1,Jamaree Caldwell,Dalvin Tomlinson,different,15,0
+PROVED OFFLINE,LAC,Base 3-4 D,RDE,1,Justin Eboigbe,Jamaree Caldwell,different,15,3
+PROVED OFFLINE,LAC,Base 3-4 D,WLB,1,Tuli Tuipulotu,Khalil Mack,different,16,1
+PROVED OFFLINE,LAC,Base 3-4 D,SLB,1,Khalil Mack,Tuli Tuipulotu,different,16,0
+PROVED OFFLINE,LAC,Base 3-4 D,NB,1,Tarheeb Still,Donte Jackson,different,4,2
+PROVED OFFLINE,LAC,3WR 1TE,LG,1,Trevor Penning,Cole Strange,different,13,0
+PROVED OFFLINE,LAC,3WR 1TE,RG,1,Cole Strange,Kayode Awosika,different,13,1
+DESIGN,LAC,3WR 1TE,WR,3,Tre' Harris,Quentin Johnston,different,3,2
+PROVED OFFLINE,KC,Base 4-3 D,WLB,1,Drue Tranquill,Nick Bolton,different,11,1
+PROVED OFFLINE,KC,Base 4-3 D,MLB,1,Nick Bolton,Drue Tranquill,different,11,0
+PROVED OFFLINE,KC,Base 4-3 D,LCB,1,Nohl Williams,L'Jarius Sneed,different,4,0
+PROVED OFFLINE,KC,Base 4-3 D,NB,1,L'Jarius Sneed,Mansoor Delane,different,4,2
+DESIGN,KC,3WR 1TE,WR,3,Tyquan Thornton,Xavier Worthy,different,3,2
+PROVED OFFLINE,IND,Base 4-3 D,LDT,1,Grover Stewart,DeForest Buckner,different,15,0
+PROVED OFFLINE,IND,Base 4-3 D,RDT,1,DeForest Buckner,Grover Stewart,different,15,1
+PROVED OFFLINE,IND,Base 4-3 D,NB,1,Justin Walley,Charvarius Ward,different,4,2
+DESIGN,IND,3WR 1TE,WR,1,Josh Downs,Alec Pierce,different,3,0
+DESIGN,IND,3WR 1TE,WR,2,Keenan Allen,Josh Downs,different,3,1
+DESIGN,IND,3WR 1TE,WR,3,Darius Slayton,Josh Downs,different,3,2
+PROVED OFFLINE,DAL,Base 3-4 D,WLB,1,Rashan Gary,Donovan Ezeiruaku,different,16,1
+PROVED OFFLINE,DAL,Base 3-4 D,SLB,1,Donovan Ezeiruaku,Rashan Gary,different,16,0
+PROVED OFFLINE,DAL,Base 3-4 D,NB,1,Caleb Downs,DaRon Bland,different,4,2
+DESIGN,DAL,3WR 1TE,WR,3,Ryan Flournoy,George Pickens,different,3,2
+PROVED OFFLINE,MIA,Base 4-3 D,LDT,1,Jordan Phillips,Zach Sieler,different,15,0
+PROVED OFFLINE,MIA,Base 4-3 D,RDT,1,Zach Sieler,Keith Cooper,different,15,1
+PROVED OFFLINE,MIA,Base 4-3 D,NB,1,Chris Johnson,Julius Brents,different,4,2
+DESIGN,MIA,3WR 1TE,WR,3,Chris Bell,Caleb Douglas,different,3,2
+PROVED OFFLINE,PHI,Base 3-4 D,LDE,1,Jalen Carter,Moro Ojomo,different,15,1
+PROVED OFFLINE,PHI,Base 3-4 D,NT,1,,Jalen Carter,missing_from_roster,15,0
+PROVED OFFLINE,PHI,Base 3-4 D,RDE,1,Moro Ojomo,Byron Young,different,15,3
+PROVED OFFLINE,PHI,Base 3-4 D,WLB,1,Nolan Smith Jr.,Jonathan Greenard,different,16,1
+PROVED OFFLINE,PHI,Base 3-4 D,SLB,1,Jonathan Greenard,Nolan Smith,different,16,0
+PROVED OFFLINE,PHI,Base 3-4 D,NB,1,Cooper DeJean,Quinyon Mitchell,different,4,2
+DESIGN,PHI,3WR 1TE,WR,3,Makai Lemon,Dontayvion Wicks,different,3,2
+PROVED OFFLINE,ATL,Base 3-4 D,LDE,1,LaCale London,Brandon Dorlus,different,15,1
+PROVED OFFLINE,ATL,Base 3-4 D,RDE,1,Brandon Dorlus,LaCale London,different,15,3
+PROVED OFFLINE,ATL,Base 3-4 D,WLB,1,Za'Darius Smith,Samson Ebukam,different,16,1
+PROVED OFFLINE,ATL,Base 3-4 D,LILB,1,Kendal Daniels,Divine Deablo,different,11,0
+PROVED OFFLINE,ATL,Base 3-4 D,RILB,1,Divine Deablo,Kendal Daniels,different,11,1
+PROVED OFFLINE,ATL,Base 3-4 D,SLB,1,Samson Ebukam,Za'Darius Smith,different,16,0
+PROVED OFFLINE,ATL,Base 3-4 D,LCB,1,C.J. Henderson,Mike Hughes,different,4,0
+PROVED OFFLINE,ATL,Base 3-4 D,RCB,1,Mike Hughes,Billy Bowman,different,4,1
+DESIGN,ATL,3WR 1TE,WR,3,Olamide Zaccheaus,Jahan Dotson,different,3,2
+PROVED OFFLINE,NYG,Base 3-4 D,WLB,1,Brian Burns,Abdul Carter,different,16,1
+PROVED OFFLINE,NYG,Base 3-4 D,SLB,1,Abdul Carter,Brian Burns,different,16,0
+PROVED OFFLINE,NYG,Base 3-4 D,NB,1,Dru Phillips,Greg Newsome,different,4,2
+PROVED OFFLINE,NYG,3WR 1TE,QB,1,Jameis Winston,Jaxson Dart,different,0,0
+DESIGN,NYG,3WR 1TE,WR,3,Darnell Mooney,Malachi Fields,different,3,2
+PROVED OFFLINE,JAX,Base 4-3 D,WLB,1,Foyesade Oluokun,Ventrell Miller,different,11,1
+PROVED OFFLINE,JAX,Base 4-3 D,MLB,1,Ventrell Miller,Foye Oluokun,different,11,0
+PROVED OFFLINE,JAX,Base 4-3 D,LCB,1,Travis Hunter,Montaric Brown,different,4,0
+PROVED OFFLINE,JAX,Base 4-3 D,RCB,1,Montaric Brown,Jourdan Lewis,different,4,1
+DESIGN,JAX,3WR 1TE,WR,1,Parker Washington,Travis Hunter,different,3,0
+DESIGN,JAX,3WR 1TE,WR,3,Jakobi Meyers,Brian Thomas,different,3,2
+PROVED OFFLINE,NYJ,Base 4-3 D,WLB,1,Demario Davis,Jamien Sherwood,different,11,1
+PROVED OFFLINE,NYJ,Base 4-3 D,MLB,1,Jamien Sherwood,Demario Davis,different,11,0
+PROVED OFFLINE,NYJ,Base 4-3 D,LCB,1,Azareye'h Thomas,Nahshon Wright,different,4,0
+PROVED OFFLINE,NYJ,Base 4-3 D,NB,1,Jarvis Brownlee Jr.,Brandon Stephens,different,4,2
+PROVED OFFLINE,NYJ,3WR 1TE,TE,1,Kenyon Sadiq,Mason Taylor,different,9,0
+DESIGN,NYJ,3WR 1TE,WR,3,Isaiah Williams,Adonai Mitchell,different,3,2
+PROVED OFFLINE,DET,Base 4-3 D,WLB,1,Derrick Barnes,Jack Campbell,different,11,1
+PROVED OFFLINE,DET,Base 4-3 D,MLB,1,Jack Campbell,Derrick Barnes,different,11,0
+PROVED OFFLINE,DET,Base 4-3 D,SS,1,Christian Izien,Thomas Harper,different,6,0
+PROVED OFFLINE,DET,Base 4-3 D,RCB,1,Ennis Rakestraw Jr.,Keith Abney,different,4,1
+PROVED OFFLINE,DET,Base 4-3 D,NB,1,Roger McCreary,Keith Abney,different,4,2
+PROVED OFFLINE,DET,3WR 1TE,LG,1,Christian Mahogany,Tate Ratledge,different,13,0
+PROVED OFFLINE,DET,3WR 1TE,RG,1,Tate Ratledge,Christian Mahogany,different,13,1
+PROVED OFFLINE,DET,3WR 1TE,RT,1,Blake Miller,Larry Borom,different,14,1
+DESIGN,DET,3WR 1TE,WR,3,Isaac TeSlaa,Jameson Williams,different,3,2
+PROVED OFFLINE,GB,Base 3-4 D,WLB,1,Lukas Van Ness,Barryn Sorrell,different,16,1
+PROVED OFFLINE,GB,Base 3-4 D,SLB,1,Barryn Sorrell,Lukas Van Ness,different,16,0
+PROVED OFFLINE,GB,Base 3-4 D,NB,1,Javon Bullard,Brandon Cisse,different,4,2
+PROVED OFFLINE,GB,3WR 1TE,LG,1,Jager Burton,Aaron Banks,different,13,0
+PROVED OFFLINE,GB,3WR 1TE,RT,1,Anthony Belton,Zach Bako-Bewele,different,14,1
+PROVED OFFLINE,GB,3WR 1TE,RB,1,Kaleb Johnson,MarShawn Lloyd,different,7,0
+DESIGN,GB,3WR 1TE,WR,3,Matthew Golden,Jayden Reed,different,3,2
+PROVED OFFLINE,CAR,Base 3-4 D,WLB,1,Patrick Jones II,Jaelan Phillips,different,16,1
+PROVED OFFLINE,CAR,Base 3-4 D,SLB,1,Jaelan Phillips,Patrick Jones,different,16,0
+PROVED OFFLINE,CAR,Base 3-4 D,RCB,1,Will Lee III,Jaycee Horn,different,4,1
+DESIGN,CAR,3WR 1TE,WR,3,Xavier Legette,Jalen Coker,different,3,2
+PROVED OFFLINE,NE,Base 3-4 D,WLB,1,Elijah Ponder,Dre'Mont Jones,different,16,1
+PROVED OFFLINE,NE,Base 3-4 D,SLB,1,Dre'Mont Jones,Elijah Ponder,different,16,0
+PROVED OFFLINE,NE,Base 3-4 D,NB,1,Marcus Jones,Christian Gonzalez,different,4,2
+DESIGN,NE,3WR 1TE,WR,3,Mack Hollins,DeMario Douglas,different,3,2
+PROVED OFFLINE,LV,Base 3-4 D,WLB,1,Maxx Crosby,Kwity Paye,different,16,1
+PROVED OFFLINE,LV,Base 3-4 D,SLB,1,Kwity Paye,Maxx Crosby,different,16,0
+PROVED OFFLINE,LV,Base 3-4 D,NB,1,Taron Johnson,Darien Porter,different,4,2
+DESIGN,LV,3WR 1TE,WR,3,Jack Bech,Jalen Nailor,different,3,2
+PROVED OFFLINE,LA,Base 3-4 D,WLB,1,Byron Young,Desjuan Johnson,different,16,1
+PROVED OFFLINE,LA,Base 3-4 D,SLB,1,Desjuan Johnson,Byron Young,different,16,0
+PROVED OFFLINE,LA,Base 3-4 D,NB,1,Quentin Lake,Trent McDuffie,different,4,2
+DESIGN,LA,3WR 1TE,WR,3,Jordan Whittington,Davante Adams,different,3,2
+PROVED OFFLINE,BAL,Base 3-4 D,WLB,1,Tavius Robinson,Trey Hendrickson,different,16,1
+PROVED OFFLINE,BAL,Base 3-4 D,SLB,1,Trey Hendrickson,Tavius Robinson,different,16,0
+PROVED OFFLINE,BAL,Base 3-4 D,NB,1,Kyle Hamilton,Marlon Humphrey,different,4,2
+DESIGN,BAL,3WR 1TE,WR,3,Devontez Walker,Rashod Bateman,different,3,2
+PROVED OFFLINE,WAS,Base 3-4 D,WLB,1,Odafe Oweh,Dorance Armstrong,different,16,1
+PROVED OFFLINE,WAS,Base 3-4 D,SLB,1,Dorance Armstrong,Odafe Oweh,different,16,0
+PROVED OFFLINE,WAS,Base 3-4 D,RCB,1,Fabian Moreau,Mike Sainristil,different,4,1
+PROVED OFFLINE,WAS,Base 3-4 D,NB,1,Amik Robertson,Mike Sainristil,different,4,2
+PROVED OFFLINE,WAS,3WR 1TE,C,1,Lucas Patrick,Nick Allegretti,different,12,0
+PROVED OFFLINE,WAS,3WR 1TE,RG,1,Nick Allegretti,Sam Cosmi,different,13,1
+DESIGN,WAS,3WR 1TE,WR,3,Antonio Williams,Stefon Diggs,different,3,2
+PROVED OFFLINE,NO,Base 3-4 D,LDE,1,Cameron Jordan,Vernon Broughton,different,15,1
+PROVED OFFLINE,NO,Base 3-4 D,NT,1,Nathan Shepherd,Colby Wooden,different,15,0
+PROVED OFFLINE,NO,Base 3-4 D,RDE,1,Vernon Broughton,Davon Godchaux,different,15,3
+PROVED OFFLINE,NO,Base 3-4 D,WLB,1,Carl Granderson,Cameron Jordan,different,16,1
+PROVED OFFLINE,NO,Base 3-4 D,SLB,1,Chase Young,Carl Granderson,different,16,0
+PROVED OFFLINE,NO,Base 3-4 D,NB,1,Jonas Sanker,Quincy Riley,different,4,2
+PROVED OFFLINE,NO,3WR 1TE,LT,1,Asim Richards,Taliese Fuaga,different,14,0
+PROVED OFFLINE,NO,3WR 1TE,RT,1,Taliese Fuaga,Kelvin Banks,different,14,1
+DESIGN,NO,3WR 1TE,WR,3,Bryce Lance,Devaughn Vele,different,3,2
+PROVED OFFLINE,SEA,Base 3-4 D,WLB,1,DeMarcus Lawrence,Uchenna Nwosu,different,16,1
+PROVED OFFLINE,SEA,Base 3-4 D,SLB,1,Uchenna Nwosu,DeMarcus Lawrence,different,16,0
+PROVED OFFLINE,SEA,Base 3-4 D,NB,1,Nick Emmanwori,Josh Jobe,different,4,2
+PROVED OFFLINE,SEA,3WR 1TE,RG,1,Christian Haynes,Anthony Bradford,different,13,1
+DESIGN,SEA,3WR 1TE,WR,3,Cooper Kupp,Rashid Shaheed,different,3,2
+PROVED OFFLINE,PIT,Base 3-4 D,WLB,1,T.J. Watt,Alex Highsmith,different,16,1
+PROVED OFFLINE,PIT,Base 3-4 D,SLB,1,Alex Highsmith,T.J. Watt,different,16,0
+PROVED OFFLINE,PIT,Base 3-4 D,NB,1,Jalen Ramsey,Jamel Dean,different,4,2
+PROVED OFFLINE,PIT,3WR 1TE,RG,1,Brock Hoffman,Spencer Anderson,different,13,1
+PROVED OFFLINE,PIT,3WR 1TE,RT,1,Max Iheanachor,Dylan Cook,different,14,1
+PROVED OFFLINE,PIT,3WR 1TE,TE,1,Pat Freiermuth,Darnell Washington,different,9,0
+DESIGN,PIT,3WR 1TE,WR,3,Roman Wilson,Michael Pittman,different,3,2
+PROVED OFFLINE,HOU,Base 4-3 D,LDT,1,Tommy Togiai,Sheldon Rankins,different,15,0
+PROVED OFFLINE,HOU,Base 4-3 D,RDT,1,Sheldon Rankins,Tommy Togiai,different,15,1
+PROVED OFFLINE,HOU,Base 4-3 D,WLB,1,Aiden Fisher,Jacob Hummel,different,11,1
+PROVED OFFLINE,HOU,Base 4-3 D,SLB,1,Jake Hansen,Aiden Fisher,different,11,3
+PROVED OFFLINE,HOU,Base 4-3 D,NB,1,Jalen Pitre,Kamari Lassiter,different,4,2
+PROVED OFFLINE,HOU,3WR 1TE,RG,1,Wyatt Teller,Ed Ingram,different,13,1
+DESIGN,HOU,3WR 1TE,WR,3,Kayshon Boutte,Xavier Hutchinson,different,3,2
+PROVED OFFLINE,TEN,Base 4-3 D,WLB,1,Cedric Gray,James Williams,different,11,1
+PROVED OFFLINE,TEN,Base 4-3 D,MLB,1,Anthony Hill Jr.,Cedric Gray,different,11,0
+PROVED OFFLINE,TEN,Base 4-3 D,SLB,1,James Williams Sr.,Cody Barton,different,11,3
+PROVED OFFLINE,TEN,Base 4-3 D,NB,1,Marcus Harris,Alontae Taylor,different,4,2
+DESIGN,TEN,3WR 1TE,WR,3,Calvin Ridley,Wan'Dale Robinson,different,3,2
+PROVED OFFLINE,MIN,Base 3-4 D,WLB,1,Andrew Van Ginkel,Dallas Turner,different,16,1
+PROVED OFFLINE,MIN,Base 3-4 D,SLB,1,Dallas Turner,Andrew Van Ginkel,different,16,0
+PROVED OFFLINE,MIN,Base 3-4 D,LCB,1,Isaiah Rodgers,Charles Demmings,different,4,0
+PROVED OFFLINE,MIN,Base 3-4 D,NB,1,Byron Murphy Jr.,James Pierre,different,4,2
+DESIGN,MIN,3WR 1TE,WR,3,Jauan Jennings,Jordan Addison,different,3,2

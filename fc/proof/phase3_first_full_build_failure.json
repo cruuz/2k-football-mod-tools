@@ -1,0 +1,15 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "scope": "first FULL candidate-B attempt with economy enabled",
+  "log": "/media/noah/Storage/.b76-research/fc/astra-build/phase3/build_first_failure.log",
+  "log_sha256": "b63285d3d2e9cd4de7c0271235d31eefd0eed0ecfccc219764b5bbf09b87fa3f",
+  "all_project_entries_prepared": 5886,
+  "cpu_fill_shared_entry_patched_and_verified": true,
+  "result": "failed",
+  "refusal": "Franchise Edit Player (experimental) is foreign",
+  "root_cause": "rookie table at 0x52157c overwrote seven live Player Contracts predicate words before the retired pick values",
+  "fix": "move table to 0x521598, use 224 bytes ending at 0x521678; retain Contracts guard unchanged",
+  "followup_offline_refusal": "MyCareer native initializer context includes economy initial-cap instruction",
+  "followup_fix": "normalize that exact instruction only after full economy validation",
+  "disposable_disc_removed_by_failed_build_cleanup": true
+}

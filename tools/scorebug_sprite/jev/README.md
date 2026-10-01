@@ -45,6 +45,17 @@ That command samples every tenth frame, retains each response, resumes from
 its answer journal, clusters accepted representatives, and checks the shared
 budget before every request. No service key is stored in the repository.
 
+Frames extracted as PNG, or at another stride, and a second source in the same
+job (b76-s12 replayed a highlights reel and an off-air recording) use:
+
+```text
+python tools/scorebug_sprite/jev/replay.py --frames FRAMES --report reports/b76_s12 --subdir full_miner_obs --output reports/b76_s12/broadcast_states_obs.json --pattern 'frame_*.png' --stride 1
+```
+
+When the TypeSafe SDK is not installed, `session.py` sends the same typed
+request to the System One HTTP endpoint with `TYPESAFE_API_KEY` from the
+environment; the per-request cap check and the journal are unchanged.
+
 Screenshot comparison saves a `jev_request`. Submit it through MCP, then use
 `--jev-response RESPONSE.json`, or run `--jev-live` with the SDK outside the
 sandbox. Suggested keys are inspection targets. They are never automatic edits.

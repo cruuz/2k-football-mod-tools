@@ -1,0 +1,22 @@
+{
+  "classification": "PROVED OFFLINE",
+  "legacy_payload_matches_stack_head": true,
+  "patches": [
+    {
+      "profile": "base",
+      "module_hash": "5447E5428AA2D52A",
+      "path": "reports/b76_apf/patches/54540807-charge-abilities-base.patch.toml",
+      "sha256": "ecbd712eb417141510d5556e76dc5055333a419e2396124fa3fd091929f56390",
+      "word_count": 32,
+      "revision": 2
+    },
+    {
+      "profile": "tu_1_1",
+      "module_hash": "CEA825F7C2012F5A",
+      "path": "reports/b76_apf/patches/54540807-charge-abilities-tu_1_1.patch.toml",
+      "sha256": "0041810f240e156ef950838ea47d67a1b3921561506afa622dfb65cbd4932556",
+      "word_count": 32,
+      "revision": 2
+    }
+  ]
+}

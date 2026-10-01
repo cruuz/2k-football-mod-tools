@@ -1,0 +1,9 @@
+{
+  "classification": "PROVED OFFLINE",
+  "action": "removed completed private source cache after project builder returned",
+  "path": "/media/noah/Storage/.b76-research/e2/astra-build/source-cache",
+  "bytes": 6291427935,
+  "at_utc": "2026-09-27T22:02:24.285934+00:00",
+  "storage_free_bytes": 28348452864,
+  "nvme_free_bytes": 109996617728
+}

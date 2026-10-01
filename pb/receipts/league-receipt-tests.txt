@@ -1,0 +1,2 @@
+.                                        [100%]
+1 passed, 10 deselected, 32 subtests passed in 1.49s

@@ -1,0 +1,4112 @@
+{
+  "label": "PROVED OFFLINE",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "boundaries": "LiveCPU with Team Select boundaries and hooks only at the named addresses (fast native runs).",
+  "resident_teams": [
+    {
+      "name": "49ers",
+      "identity": 25,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Bears",
+      "identity": 5,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Bengals",
+      "identity": 6,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Bills",
+      "identity": 3,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Broncos",
+      "identity": 8,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Browns",
+      "identity": 30,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Buccaneers",
+      "identity": 27,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Cardinals",
+      "identity": 0,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Chargers",
+      "identity": 24,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Chiefs",
+      "identity": 13,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Colts",
+      "identity": 11,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Cowboys",
+      "identity": 7,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Dolphins",
+      "identity": 14,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Eagles",
+      "identity": 21,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Falcons",
+      "identity": 1,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Giants",
+      "identity": 18,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Jaguars",
+      "identity": 12,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Jets",
+      "identity": 19,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Lions",
+      "identity": 9,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Packers",
+      "identity": 10,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Panthers",
+      "identity": 4,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Patriots",
+      "identity": 16,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Raiders",
+      "identity": 20,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Rams",
+      "identity": 23,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Ravens",
+      "identity": 2,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Redskins",
+      "identity": 29,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Saints",
+      "identity": 17,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Seahawks",
+      "identity": 26,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Steelers",
+      "identity": 22,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Texans",
+      "identity": 37,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Titans",
+      "identity": 28,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "Vikings",
+      "identity": 15,
+      "category": 0,
+      "count": 53
+    },
+    {
+      "name": "****************",
+      "identity": 90,
+      "category": 2,
+      "count": 0
+    },
+    {
+      "name": "****************",
+      "identity": 91,
+      "category": 2,
+      "count": 0
+    },
+    {
+      "name": "Swamis",
+      "identity": 33,
+      "category": 5,
+      "count": 52
+    },
+    {
+      "name": "Risky Picks",
+      "identity": 92,
+      "category": 5,
+      "count": 54
+    },
+    {
+      "name": "Wingadoros",
+      "identity": 93,
+      "category": 5,
+      "count": 54
+    },
+    {
+      "name": "Hammerheads",
+      "identity": 94,
+      "category": 5,
+      "count": 53
+    },
+    {
+      "name": "Cheesesteaks",
+      "identity": 95,
+      "category": 5,
+      "count": 53
+    },
+    {
+      "name": "Locos",
+      "identity": 96,
+      "category": 5,
+      "count": 50
+    },
+    {
+      "name": "Electra Shock",
+      "identity": 97,
+      "category": 5,
+      "count": 50
+    },
+    {
+      "name": "Funkmasters",
+      "identity": 98,
+      "category": 5,
+      "count": 53
+    },
+    {
+      "name": "DreamTeam",
+      "identity": 99,
+      "category": 5,
+      "count": 49
+    },
+    {
+      "name": "FW Alumni",
+      "identity": 40,
+      "category": 1,
+      "count": 54
+    },
+    {
+      "name": "GP Alumni",
+      "identity": 41,
+      "category": 1,
+      "count": 53
+    },
+    {
+      "name": "MW Alumni",
+      "identity": 42,
+      "category": 1,
+      "count": 54
+    },
+    {
+      "name": "NE Alumni",
+      "identity": 43,
+      "category": 1,
+      "count": 54
+    },
+    {
+      "name": "SE Alumni",
+      "identity": 44,
+      "category": 1,
+      "count": 54
+    },
+    {
+      "name": "SW Alumni",
+      "identity": 45,
+      "category": 1,
+      "count": 54
+    },
+    {
+      "name": "AFC",
+      "identity": 34,
+      "category": 1,
+      "count": 43
+    },
+    {
+      "name": "NFC",
+      "identity": 35,
+      "category": 1,
+      "count": 52
+    },
+    {
+      "name": "NFL",
+      "identity": 31,
+      "category": 1,
+      "count": 52
+    }
+  ],
+  "historic_teams": [
+    {
+      "index": 0,
+      "year": 1981,
+      "kit": 3,
+      "code": "25",
+      "selector": "49ers",
+      "filename": "h-25-1981-49ers-3.iff",
+      "id": 2378959446,
+      "outer": 171,
+      "name": "49ers '81",
+      "identity": 155,
+      "category": 4,
+      "size": 7456
+    },
+    {
+      "index": 1,
+      "year": 1989,
+      "kit": 3,
+      "code": "25",
+      "selector": "49ers",
+      "filename": "h-25-1989-49ers-3.iff",
+      "id": 3638896618,
+      "outer": 172,
+      "name": "49ers '89",
+      "identity": 156,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 2,
+      "year": 1994,
+      "kit": 2,
+      "code": "25",
+      "selector": "49ers",
+      "filename": "h-25-1994-49ers-2.iff",
+      "id": 2922556476,
+      "outer": 173,
+      "name": "49ers '94",
+      "identity": 157,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 3,
+      "year": 2003,
+      "kit": 0,
+      "code": "25",
+      "selector": "49ers",
+      "filename": "h-25-2003-49ers-0.iff",
+      "id": 3004688228,
+      "outer": 174,
+      "name": "49ers '03",
+      "identity": 157,
+      "category": 4,
+      "size": 7264
+    },
+    {
+      "index": 4,
+      "year": 1963,
+      "kit": 2,
+      "code": "05",
+      "selector": "bears",
+      "filename": "h-05-1963-bears-2.iff",
+      "id": 834412852,
+      "outer": 121,
+      "name": "Bears '63",
+      "identity": 107,
+      "category": 4,
+      "size": 7296
+    },
+    {
+      "index": 5,
+      "year": 1985,
+      "kit": 1,
+      "code": "05",
+      "selector": "bears",
+      "filename": "h-05-1985-bears-1.iff",
+      "id": 3980828960,
+      "outer": 122,
+      "name": "Bears '85",
+      "identity": 108,
+      "category": 4,
+      "size": 7264
+    },
+    {
+      "index": 6,
+      "year": 1981,
+      "kit": 1,
+      "code": "06",
+      "selector": "bengals",
+      "filename": "h-06-1981-bengals-1.iff",
+      "id": 1146421197,
+      "outer": 123,
+      "name": "Bengals '81",
+      "identity": 109,
+      "category": 4,
+      "size": 7712
+    },
+    {
+      "index": 7,
+      "year": 1988,
+      "kit": 1,
+      "code": "06",
+      "selector": "bengals",
+      "filename": "h-06-1988-bengals-1.iff",
+      "id": 1078067908,
+      "outer": 124,
+      "name": "Bengals '88",
+      "identity": 110,
+      "category": 4,
+      "size": 7712
+    },
+    {
+      "index": 8,
+      "year": 1964,
+      "kit": 7,
+      "code": "03",
+      "selector": "bills",
+      "filename": "h-03-1964-bills-7.iff",
+      "id": 548297887,
+      "outer": 117,
+      "name": "Bills '64",
+      "identity": 104,
+      "category": 4,
+      "size": 7328
+    },
+    {
+      "index": 9,
+      "year": 1990,
+      "kit": 2,
+      "code": "03",
+      "selector": "bills",
+      "filename": "h-03-1990-bills-2.iff",
+      "id": 3853851326,
+      "outer": 118,
+      "name": "Bills '90",
+      "identity": 105,
+      "category": 4,
+      "size": 7296
+    },
+    {
+      "index": 10,
+      "year": 1977,
+      "kit": 2,
+      "code": "08",
+      "selector": "broncos",
+      "filename": "h-08-1977-broncos-2.iff",
+      "id": 3746682591,
+      "outer": 128,
+      "name": "Broncos '77",
+      "identity": 116,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 11,
+      "year": 1986,
+      "kit": 1,
+      "code": "08",
+      "selector": "broncos",
+      "filename": "h-08-1986-broncos-1.iff",
+      "id": 1401399317,
+      "outer": 129,
+      "name": "Broncos '86",
+      "identity": 117,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 12,
+      "year": 1998,
+      "kit": 0,
+      "code": "08",
+      "selector": "broncos",
+      "filename": "h-08-1998-broncos-0.iff",
+      "id": 4239102640,
+      "outer": 130,
+      "name": "Broncos '98",
+      "identity": 118,
+      "category": 4,
+      "size": 7456
+    },
+    {
+      "index": 13,
+      "year": 1964,
+      "kit": 2,
+      "code": "30",
+      "selector": "browns",
+      "filename": "h-30-1964-browns-2.iff",
+      "id": 2145888004,
+      "outer": 186,
+      "name": "Browns '64",
+      "identity": 111,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 14,
+      "year": 1986,
+      "kit": 1,
+      "code": "30",
+      "selector": "browns",
+      "filename": "h-30-1986-browns-1.iff",
+      "id": 646951436,
+      "outer": 187,
+      "name": "Browns '86",
+      "identity": 112,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 15,
+      "year": 1979,
+      "kit": 3,
+      "code": "27",
+      "selector": "buccaneers",
+      "filename": "h-27-1979-buccaneers-3.iff",
+      "id": 2678594666,
+      "outer": 177,
+      "name": "Buccaneers '79",
+      "identity": 160,
+      "category": 4,
+      "size": 8032
+    },
+    {
+      "index": 16,
+      "year": 1999,
+      "kit": 0,
+      "code": "27",
+      "selector": "buccaneers",
+      "filename": "h-27-1999-buccaneers-0.iff",
+      "id": 1479433521,
+      "outer": 178,
+      "name": "Buccaneers '99",
+      "identity": 161,
+      "category": 4,
+      "size": 7648
+    },
+    {
+      "index": 17,
+      "year": 2002,
+      "kit": 0,
+      "code": "27",
+      "selector": "buccaneers",
+      "filename": "h-27-2002-buccaneers-0.iff",
+      "id": 2609580126,
+      "outer": 179,
+      "name": "Buccaneers '02",
+      "identity": 168,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 18,
+      "year": 1975,
+      "kit": 3,
+      "code": "00",
+      "selector": "cardinals",
+      "filename": "h-00-1975-cardinals-3.iff",
+      "id": 2678311155,
+      "outer": 113,
+      "name": "Cardinals '75",
+      "identity": 100,
+      "category": 4,
+      "size": 7712
+    },
+    {
+      "index": 19,
+      "year": 1963,
+      "kit": 8,
+      "code": "24",
+      "selector": "chargers",
+      "filename": "h-24-1963-chargers-8.iff",
+      "id": 105713094,
+      "outer": 168,
+      "name": "Chargers '63",
+      "identity": 150,
+      "category": 4,
+      "size": 7840
+    },
+    {
+      "index": 20,
+      "year": 1980,
+      "kit": 4,
+      "code": "24",
+      "selector": "chargers",
+      "filename": "h-24-1980-chargers-4.iff",
+      "id": 4043345074,
+      "outer": 169,
+      "name": "Chargers '80",
+      "identity": 151,
+      "category": 4,
+      "size": 7840
+    },
+    {
+      "index": 21,
+      "year": 1994,
+      "kit": 0,
+      "code": "24",
+      "selector": "chargers",
+      "filename": "h-24-1994-chargers-0.iff",
+      "id": 2917361620,
+      "outer": 170,
+      "name": "Chargers '94",
+      "identity": 152,
+      "category": 4,
+      "size": 7776
+    },
+    {
+      "index": 22,
+      "year": 1969,
+      "kit": 4,
+      "code": "13",
+      "selector": "chiefs",
+      "filename": "h-13-1969-chiefs-4.iff",
+      "id": 3550667149,
+      "outer": 139,
+      "name": "Chiefs '69",
+      "identity": 126,
+      "category": 4,
+      "size": 7488
+    },
+    {
+      "index": 23,
+      "year": 1993,
+      "kit": 2,
+      "code": "13",
+      "selector": "chiefs",
+      "filename": "h-13-1993-chiefs-2.iff",
+      "id": 1563178017,
+      "outer": 140,
+      "name": "Chiefs '93",
+      "identity": 127,
+      "category": 4,
+      "size": 7488
+    },
+    {
+      "index": 24,
+      "year": 1970,
+      "kit": 5,
+      "code": "11",
+      "selector": "colts",
+      "filename": "h-11-1970-colts-5.iff",
+      "id": 1969089836,
+      "outer": 136,
+      "name": "Colts '70",
+      "identity": 123,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 25,
+      "year": 1971,
+      "kit": 4,
+      "code": "07",
+      "selector": "cowboys",
+      "filename": "h-07-1971-cowboys-4.iff",
+      "id": 332857270,
+      "outer": 125,
+      "name": "Cowboys '71",
+      "identity": 113,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 26,
+      "year": 1977,
+      "kit": 3,
+      "code": "07",
+      "selector": "cowboys",
+      "filename": "h-07-1977-cowboys-3.iff",
+      "id": 2018029311,
+      "outer": 126,
+      "name": "Cowboys '77",
+      "identity": 114,
+      "category": 4,
+      "size": 7648
+    },
+    {
+      "index": 27,
+      "year": 1992,
+      "kit": 2,
+      "code": "07",
+      "selector": "cowboys",
+      "filename": "h-07-1992-cowboys-2.iff",
+      "id": 4029843842,
+      "outer": 127,
+      "name": "Cowboys '92",
+      "identity": 115,
+      "category": 4,
+      "size": 7584
+    },
+    {
+      "index": 28,
+      "year": 1972,
+      "kit": 4,
+      "code": "14",
+      "selector": "dolphins",
+      "filename": "h-14-1972-dolphins-4.iff",
+      "id": 1585877820,
+      "outer": 141,
+      "name": "Dolphins '72",
+      "identity": 128,
+      "category": 4,
+      "size": 7744
+    },
+    {
+      "index": 29,
+      "year": 1984,
+      "kit": 3,
+      "code": "14",
+      "selector": "dolphins",
+      "filename": "h-14-1984-dolphins-3.iff",
+      "id": 4126779145,
+      "outer": 142,
+      "name": "Dolphins '84",
+      "identity": 129,
+      "category": 4,
+      "size": 7776
+    },
+    {
+      "index": 30,
+      "year": 1960,
+      "kit": 8,
+      "code": "21",
+      "selector": "eagles",
+      "filename": "h-21-1960-eagles-8.iff",
+      "id": 4181569043,
+      "outer": 160,
+      "name": "Eagles '60",
+      "identity": 145,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 31,
+      "year": 1980,
+      "kit": 5,
+      "code": "21",
+      "selector": "eagles",
+      "filename": "h-21-1980-eagles-5.iff",
+      "id": 3187110290,
+      "outer": 161,
+      "name": "Eagles '80",
+      "identity": 146,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 32,
+      "year": 2004,
+      "kit": 0,
+      "code": "21",
+      "selector": "eagles",
+      "filename": "h-21-2004-eagles-0.iff",
+      "id": 439849479,
+      "outer": 162,
+      "name": "Eagles '04",
+      "identity": 146,
+      "category": 4,
+      "size": 7296
+    },
+    {
+      "index": 33,
+      "year": 1980,
+      "kit": 6,
+      "code": "01",
+      "selector": "falcons",
+      "filename": "h-01-1980-falcons-6.iff",
+      "id": 3715623257,
+      "outer": 114,
+      "name": "Falcons '80",
+      "identity": 101,
+      "category": 4,
+      "size": 7520
+    },
+    {
+      "index": 34,
+      "year": 1998,
+      "kit": 1,
+      "code": "01",
+      "selector": "falcons",
+      "filename": "h-01-1998-falcons-1.iff",
+      "id": 4127713675,
+      "outer": 115,
+      "name": "Falcons '98",
+      "identity": 102,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 35,
+      "year": 1956,
+      "kit": 6,
+      "code": "18",
+      "selector": "giants",
+      "filename": "h-18-1956-giants-6.iff",
+      "id": 528265564,
+      "outer": 151,
+      "name": "Giants '56",
+      "identity": 137,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 36,
+      "year": 1986,
+      "kit": 2,
+      "code": "18",
+      "selector": "giants",
+      "filename": "h-18-1986-giants-2.iff",
+      "id": 3808583695,
+      "outer": 152,
+      "name": "Giants '86",
+      "identity": 138,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 37,
+      "year": 1990,
+      "kit": 2,
+      "code": "18",
+      "selector": "giants",
+      "filename": "h-18-1990-giants-2.iff",
+      "id": 3672018249,
+      "outer": 153,
+      "name": "Giants '90",
+      "identity": 139,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 38,
+      "year": 2003,
+      "kit": 0,
+      "code": "18",
+      "selector": "giants",
+      "filename": "h-18-2003-giants-0.iff",
+      "id": 2813027838,
+      "outer": 154,
+      "name": "Giants '03",
+      "identity": 139,
+      "category": 4,
+      "size": 7200
+    },
+    {
+      "index": 39,
+      "year": 1999,
+      "kit": 1,
+      "code": "12",
+      "selector": "jaguars",
+      "filename": "h-12-1999-jaguars-1.iff",
+      "id": 2192164840,
+      "outer": 137,
+      "name": "Jaguars '99",
+      "identity": 124,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 40,
+      "year": 1968,
+      "kit": 4,
+      "code": "19",
+      "selector": "jets",
+      "filename": "h-19-1968-jets-4.iff",
+      "id": 1498979441,
+      "outer": 155,
+      "name": "Jets '68",
+      "identity": 140,
+      "category": 4,
+      "size": 7328
+    },
+    {
+      "index": 41,
+      "year": 1998,
+      "kit": 0,
+      "code": "19",
+      "selector": "jets",
+      "filename": "h-19-1998-jets-0.iff",
+      "id": 3713624721,
+      "outer": 156,
+      "name": "Jets '98",
+      "identity": 141,
+      "category": 4,
+      "size": 7264
+    },
+    {
+      "index": 42,
+      "year": 1953,
+      "kit": 6,
+      "code": "09",
+      "selector": "lions",
+      "filename": "h-09-1953-lions-6.iff",
+      "id": 852873572,
+      "outer": 131,
+      "name": "Lions '53",
+      "identity": 119,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 43,
+      "year": 1991,
+      "kit": 3,
+      "code": "09",
+      "selector": "lions",
+      "filename": "h-09-1991-lions-3.iff",
+      "id": 3402517971,
+      "outer": 132,
+      "name": "Lions '91",
+      "identity": 120,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 44,
+      "year": 1961,
+      "kit": 5,
+      "code": "28",
+      "selector": "oilers",
+      "filename": "h-28-1961-oilers-5.iff",
+      "id": 1413827589,
+      "outer": 180,
+      "name": "Oilers '61",
+      "identity": 162,
+      "category": 4,
+      "size": 7552
+    },
+    {
+      "index": 45,
+      "year": 1979,
+      "kit": 2,
+      "code": "28",
+      "selector": "oilers",
+      "filename": "h-28-1979-oilers-2.iff",
+      "id": 2270583964,
+      "outer": 181,
+      "name": "Oilers '79",
+      "identity": 163,
+      "category": 4,
+      "size": 7584
+    },
+    {
+      "index": 46,
+      "year": 1966,
+      "kit": 3,
+      "code": "10",
+      "selector": "packers",
+      "filename": "h-10-1966-packers-3.iff",
+      "id": 2440510733,
+      "outer": 133,
+      "name": "Packers '66",
+      "identity": 121,
+      "category": 4,
+      "size": 7680
+    },
+    {
+      "index": 47,
+      "year": 1996,
+      "kit": 2,
+      "code": "10",
+      "selector": "packers",
+      "filename": "h-10-1996-packers-2.iff",
+      "id": 624193778,
+      "outer": 134,
+      "name": "Packers '96",
+      "identity": 122,
+      "category": 4,
+      "size": 7584
+    },
+    {
+      "index": 48,
+      "year": 2004,
+      "kit": 0,
+      "code": "10",
+      "selector": "packers",
+      "filename": "h-10-2004-packers-0.iff",
+      "id": 4107268632,
+      "outer": 135,
+      "name": "Packers '04",
+      "identity": 122,
+      "category": 4,
+      "size": 7328
+    },
+    {
+      "index": 49,
+      "year": 1996,
+      "kit": 1,
+      "code": "04",
+      "selector": "panthers",
+      "filename": "h-04-1996-panthers-1.iff",
+      "id": 1752829327,
+      "outer": 119,
+      "name": "Panthers '96",
+      "identity": 106,
+      "category": 4,
+      "size": 7648
+    },
+    {
+      "index": 50,
+      "year": 2003,
+      "kit": 0,
+      "code": "04",
+      "selector": "panthers",
+      "filename": "h-04-2003-panthers-0.iff",
+      "id": 1949418026,
+      "outer": 120,
+      "name": "Panthers '03",
+      "identity": 169,
+      "category": 4,
+      "size": 7232
+    },
+    {
+      "index": 51,
+      "year": 1985,
+      "kit": 5,
+      "code": "16",
+      "selector": "patriots",
+      "filename": "h-16-1985-patriots-5.iff",
+      "id": 502890914,
+      "outer": 146,
+      "name": "Patriots '85",
+      "identity": 133,
+      "category": 4,
+      "size": 7744
+    },
+    {
+      "index": 52,
+      "year": 2001,
+      "kit": 0,
+      "code": "16",
+      "selector": "patriots",
+      "filename": "h-16-2001-patriots-0.iff",
+      "id": 3707878113,
+      "outer": 147,
+      "name": "Patriots '01",
+      "identity": 134,
+      "category": 4,
+      "size": 7392
+    },
+    {
+      "index": 53,
+      "year": 2003,
+      "kit": 0,
+      "code": "16",
+      "selector": "patriots",
+      "filename": "h-16-2003-patriots-0.iff",
+      "id": 3854874612,
+      "outer": 148,
+      "name": "Patriots '03",
+      "identity": 170,
+      "category": 4,
+      "size": 7232
+    },
+    {
+      "index": 54,
+      "year": 1967,
+      "kit": 1,
+      "code": "20",
+      "selector": "raiders",
+      "filename": "h-20-1967-raiders-1.iff",
+      "id": 1864323461,
+      "outer": 157,
+      "name": "Raiders '67",
+      "identity": 142,
+      "category": 4,
+      "size": 7520
+    },
+    {
+      "index": 55,
+      "year": 1976,
+      "kit": 0,
+      "code": "20",
+      "selector": "raiders",
+      "filename": "h-20-1976-raiders-0.iff",
+      "id": 1298652185,
+      "outer": 158,
+      "name": "Raiders '76",
+      "identity": 143,
+      "category": 4,
+      "size": 7552
+    },
+    {
+      "index": 56,
+      "year": 1983,
+      "kit": 0,
+      "code": "20",
+      "selector": "raiders",
+      "filename": "h-20-1983-raiders-0.iff",
+      "id": 3674576368,
+      "outer": 159,
+      "name": "Raiders '83",
+      "identity": 144,
+      "category": 4,
+      "size": 7520
+    },
+    {
+      "index": 57,
+      "year": 1979,
+      "kit": 4,
+      "code": "23",
+      "selector": "rams",
+      "filename": "h-23-1979-rams-4.iff",
+      "id": 2685309811,
+      "outer": 166,
+      "name": "Rams '79",
+      "identity": 158,
+      "category": 4,
+      "size": 7360
+    },
+    {
+      "index": 58,
+      "year": 1999,
+      "kit": 2,
+      "code": "23",
+      "selector": "rams",
+      "filename": "h-23-1999-rams-2.iff",
+      "id": 3353809721,
+      "outer": 167,
+      "name": "Rams '99",
+      "identity": 159,
+      "category": 4,
+      "size": 7328
+    },
+    {
+      "index": 59,
+      "year": 2000,
+      "kit": 0,
+      "code": "02",
+      "selector": "ravens",
+      "filename": "h-02-2000-ravens-0.iff",
+      "id": 3187322786,
+      "outer": 116,
+      "name": "Ravens '00",
+      "identity": 103,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 60,
+      "year": 1982,
+      "kit": 2,
+      "code": "29",
+      "selector": "redskins",
+      "filename": "h-29-1982-redskins-2.iff",
+      "id": 1988583413,
+      "outer": 183,
+      "name": "Redskins '82",
+      "identity": 165,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 61,
+      "year": 1987,
+      "kit": 2,
+      "code": "29",
+      "selector": "redskins",
+      "filename": "h-29-1987-redskins-2.iff",
+      "id": 4141301877,
+      "outer": 184,
+      "name": "Redskins '87",
+      "identity": 166,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 62,
+      "year": 1991,
+      "kit": 2,
+      "code": "29",
+      "selector": "redskins",
+      "filename": "h-29-1991-redskins-2.iff",
+      "id": 2602174076,
+      "outer": 185,
+      "name": "Redskins '91",
+      "identity": 167,
+      "category": 4,
+      "size": 7616
+    },
+    {
+      "index": 63,
+      "year": 1991,
+      "kit": 4,
+      "code": "17",
+      "selector": "saints",
+      "filename": "h-17-1991-saints-4.iff",
+      "id": 1169757817,
+      "outer": 149,
+      "name": "Saints '91",
+      "identity": 135,
+      "category": 4,
+      "size": 7552
+    },
+    {
+      "index": 64,
+      "year": 2000,
+      "kit": 2,
+      "code": "17",
+      "selector": "saints",
+      "filename": "h-17-2000-saints-2.iff",
+      "id": 843883662,
+      "outer": 150,
+      "name": "Saints '00",
+      "identity": 136,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 65,
+      "year": 1984,
+      "kit": 1,
+      "code": "26",
+      "selector": "seahawks",
+      "filename": "h-26-1984-seahawks-1.iff",
+      "id": 3602031019,
+      "outer": 175,
+      "name": "Seahawks '84",
+      "identity": 153,
+      "category": 4,
+      "size": 7744
+    },
+    {
+      "index": 66,
+      "year": 1999,
+      "kit": 1,
+      "code": "26",
+      "selector": "seahawks",
+      "filename": "h-26-1999-seahawks-1.iff",
+      "id": 2440354633,
+      "outer": 176,
+      "name": "Seahawks '99",
+      "identity": 154,
+      "category": 4,
+      "size": 7520
+    },
+    {
+      "index": 67,
+      "year": 1975,
+      "kit": 1,
+      "code": "22",
+      "selector": "steelers",
+      "filename": "h-22-1975-steelers-1.iff",
+      "id": 3188209167,
+      "outer": 163,
+      "name": "Steelers '75",
+      "identity": 147,
+      "category": 4,
+      "size": 7744
+    },
+    {
+      "index": 68,
+      "year": 1978,
+      "kit": 1,
+      "code": "22",
+      "selector": "steelers",
+      "filename": "h-22-1978-steelers-1.iff",
+      "id": 3712753115,
+      "outer": 164,
+      "name": "Steelers '78",
+      "identity": 148,
+      "category": 4,
+      "size": 7712
+    },
+    {
+      "index": 69,
+      "year": 1995,
+      "kit": 0,
+      "code": "22",
+      "selector": "steelers",
+      "filename": "h-22-1995-steelers-0.iff",
+      "id": 1973695604,
+      "outer": 165,
+      "name": "Steelers '95",
+      "identity": 149,
+      "category": 4,
+      "size": 7680
+    },
+    {
+      "index": 70,
+      "year": 1962,
+      "kit": 5,
+      "code": "13",
+      "selector": "texans",
+      "filename": "h-13-1962-texans-5.iff",
+      "id": 1924277468,
+      "outer": 138,
+      "name": "Texans '62",
+      "identity": 125,
+      "category": 4,
+      "size": 7456
+    },
+    {
+      "index": 71,
+      "year": 1999,
+      "kit": 0,
+      "code": "28",
+      "selector": "titans",
+      "filename": "h-28-1999-titans-0.iff",
+      "id": 4032787964,
+      "outer": 182,
+      "name": "Titans '99",
+      "identity": 164,
+      "category": 4,
+      "size": 7424
+    },
+    {
+      "index": 72,
+      "year": 1969,
+      "kit": 4,
+      "code": "15",
+      "selector": "vikings",
+      "filename": "h-15-1969-vikings-4.iff",
+      "id": 2127389104,
+      "outer": 143,
+      "name": "Vikings '69",
+      "identity": 130,
+      "category": 4,
+      "size": 7648
+    },
+    {
+      "index": 73,
+      "year": 1973,
+      "kit": 3,
+      "code": "15",
+      "selector": "vikings",
+      "filename": "h-15-1973-vikings-3.iff",
+      "id": 763144050,
+      "outer": 144,
+      "name": "Vikings '73",
+      "identity": 131,
+      "category": 4,
+      "size": 7648
+    },
+    {
+      "index": 74,
+      "year": 1998,
+      "kit": 0,
+      "code": "15",
+      "selector": "vikings",
+      "filename": "h-15-1998-vikings-0.iff",
+      "id": 281478147,
+      "outer": 145,
+      "name": "Vikings '98",
+      "identity": 132,
+      "category": 4,
+      "size": 7488
+    }
+  ],
+  "flows": {
+    "1": {
+      "loaded": [
+        "49ers '81",
+        "49ers '89",
+        "49ers '94",
+        "49ers '03",
+        "Bears '63",
+        "Bears '85",
+        "Bengals '81",
+        "Bengals '88",
+        "Bills '64",
+        "Bills '90",
+        "Broncos '77",
+        "Broncos '86",
+        "Broncos '98",
+        "Browns '64",
+        "Browns '86",
+        "Buccaneers '79",
+        "Buccaneers '99",
+        "Buccaneers '02",
+        "Cardinals '75",
+        "Chargers '63",
+        "Chargers '80",
+        "Chargers '94",
+        "Chiefs '69",
+        "Chiefs '93",
+        "Colts '70",
+        "Cowboys '71",
+        "Cowboys '77",
+        "Cowboys '92",
+        "Dolphins '72",
+        "Dolphins '84",
+        "Eagles '60",
+        "Eagles '80",
+        "Eagles '04",
+        "Falcons '80",
+        "Falcons '98",
+        "Giants '56",
+        "Giants '86",
+        "Giants '90",
+        "Giants '03",
+        "Jaguars '99",
+        "Jets '68",
+        "Jets '98",
+        "Lions '53",
+        "Lions '91",
+        "Oilers '61",
+        "Oilers '79",
+        "Packers '66",
+        "Packers '96",
+        "Packers '04",
+        "Panthers '96",
+        "Panthers '03",
+        "Patriots '85",
+        "Patriots '01",
+        "Patriots '03",
+        "Raiders '67",
+        "Raiders '76",
+        "Raiders '83",
+        "Rams '79",
+        "Rams '99",
+        "Ravens '00",
+        "Redskins '82",
+        "Redskins '87",
+        "Redskins '91",
+        "Saints '91",
+        "Saints '00",
+        "Seahawks '84",
+        "Seahawks '99",
+        "Steelers '75",
+        "Steelers '78",
+        "Steelers '95",
+        "Texans '62",
+        "Titans '99",
+        "Vikings '69",
+        "Vikings '73",
+        "Vikings '98"
+      ],
+      "pool_used": 53
+    },
+    "3": {
+      "loaded": [
+        "49ers '81",
+        "49ers '89",
+        "49ers '94",
+        "49ers '03",
+        "Bears '63",
+        "Bears '85",
+        "Bengals '81",
+        "Bengals '88",
+        "Bills '64",
+        "Bills '90",
+        "Broncos '77",
+        "Broncos '86",
+        "Broncos '98",
+        "Browns '64",
+        "Browns '86",
+        "Buccaneers '79",
+        "Buccaneers '99",
+        "Buccaneers '02",
+        "Cardinals '75",
+        "Chargers '63",
+        "Chargers '80",
+        "Chargers '94",
+        "Chiefs '69",
+        "Chiefs '93",
+        "Colts '70",
+        "Cowboys '71",
+        "Cowboys '77",
+        "Cowboys '92",
+        "Dolphins '72",
+        "Dolphins '84",
+        "Eagles '60",
+        "Eagles '80",
+        "Eagles '04",
+        "Falcons '80",
+        "Falcons '98",
+        "Giants '56",
+        "Giants '86",
+        "Giants '90",
+        "Giants '03",
+        "Jaguars '99",
+        "Jets '68",
+        "Jets '98",
+        "Lions '53",
+        "Lions '91",
+        "Oilers '61",
+        "Oilers '79",
+        "Packers '66",
+        "Packers '96",
+        "Packers '04",
+        "Panthers '96",
+        "Panthers '03",
+        "Patriots '85",
+        "Patriots '01",
+        "Patriots '03",
+        "Raiders '67",
+        "Raiders '76",
+        "Raiders '83",
+        "Rams '79",
+        "Rams '99",
+        "Ravens '00",
+        "Redskins '82",
+        "Redskins '87",
+        "Redskins '91",
+        "Saints '91",
+        "Saints '00",
+        "Seahawks '84",
+        "Seahawks '99",
+        "Steelers '75",
+        "Steelers '78",
+        "Steelers '95",
+        "Texans '62",
+        "Titans '99",
+        "Vikings '69",
+        "Vikings '73",
+        "Vikings '98"
+      ],
+      "pool_used": 53
+    },
+    "7": {
+      "loaded": [
+        "49ers '81",
+        "49ers '89",
+        "49ers '94",
+        "49ers '03",
+        "Bears '63",
+        "Bears '85",
+        "Bengals '81",
+        "Bengals '88",
+        "Bills '64",
+        "Bills '90",
+        "Broncos '77",
+        "Broncos '86",
+        "Broncos '98",
+        "Browns '64",
+        "Browns '86",
+        "Buccaneers '79",
+        "Buccaneers '99",
+        "Buccaneers '02",
+        "Cardinals '75",
+        "Chargers '63",
+        "Chargers '80",
+        "Chargers '94",
+        "Chiefs '69",
+        "Chiefs '93",
+        "Colts '70",
+        "Cowboys '71",
+        "Cowboys '77",
+        "Cowboys '92",
+        "Dolphins '72",
+        "Dolphins '84",
+        "Eagles '60",
+        "Eagles '80",
+        "Eagles '04",
+        "Falcons '80",
+        "Falcons '98",
+        "Giants '56",
+        "Giants '86",
+        "Giants '90",
+        "Giants '03",
+        "Jaguars '99",
+        "Jets '68",
+        "Jets '98",
+        "Lions '53",
+        "Lions '91",
+        "Oilers '61",
+        "Oilers '79",
+        "Packers '66",
+        "Packers '96",
+        "Packers '04",
+        "Panthers '96",
+        "Panthers '03",
+        "Patriots '85",
+        "Patriots '01",
+        "Patriots '03",
+        "Raiders '67",
+        "Raiders '76",
+        "Raiders '83",
+        "Rams '79",
+        "Rams '99",
+        "Ravens '00",
+        "Redskins '82",
+        "Redskins '87",
+        "Redskins '91",
+        "Saints '91",
+        "Saints '00",
+        "Seahawks '84",
+        "Seahawks '99",
+        "Steelers '75",
+        "Steelers '78",
+        "Steelers '95",
+        "Texans '62",
+        "Titans '99",
+        "Vikings '69",
+        "Vikings '73",
+        "Vikings '98"
+      ],
+      "pool_used": 53
+    }
+  },
+  "ratings": [
+    {
+      "name": "49ers '81",
+      "values": [
+        95.8908,
+        101.0,
+        99.6303
+      ],
+      "display": [
+        95,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "49ers '89",
+      "values": [
+        98.4768,
+        101.0,
+        100.4923
+      ],
+      "display": [
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "49ers '94",
+      "values": [
+        100.0,
+        98.3655,
+        99.8602
+      ],
+      "display": [
+        100,
+        98,
+        99
+      ]
+    },
+    {
+      "name": "49ers '03",
+      "values": [
+        84.5434,
+        60.1413,
+        77.5296
+      ],
+      "display": [
+        84,
+        60,
+        77
+      ]
+    },
+    {
+      "name": "Bears '63",
+      "values": [
+        89.6695,
+        91.9254,
+        92.263
+      ],
+      "display": [
+        89,
+        91,
+        92
+      ]
+    },
+    {
+      "name": "Bears '85",
+      "values": [
+        99.5838,
+        101.0,
+        100.8613
+      ],
+      "display": [
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Bengals '81",
+      "values": [
+        93.5783,
+        97.9191,
+        97.0622
+      ],
+      "display": [
+        93,
+        97,
+        97
+      ]
+    },
+    {
+      "name": "Bengals '88",
+      "values": [
+        98.6006,
+        101.0,
+        100.5335
+      ],
+      "display": [
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Bills '64",
+      "values": [
+        86.2166,
+        90.8752,
+        90.4994
+      ],
+      "display": [
+        86,
+        90,
+        90
+      ]
+    },
+    {
+      "name": "Bills '90",
+      "values": [
+        100.0,
+        101.0,
+        101.0
+      ],
+      "display": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Broncos '77",
+      "values": [
+        97.9038,
+        98.6745,
+        98.9447
+      ],
+      "display": [
+        97,
+        98,
+        98
+      ]
+    },
+    {
+      "name": "Broncos '86",
+      "values": [
+        94.1094,
+        101.0,
+        99.0365
+      ],
+      "display": [
+        94,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Broncos '98",
+      "values": [
+        100.0,
+        89.4758,
+        96.6276
+      ],
+      "display": [
+        100,
+        89,
+        96
+      ]
+    },
+    {
+      "name": "Browns '64",
+      "values": [
+        94.8647,
+        96.8728,
+        96.8807
+      ],
+      "display": [
+        94,
+        96,
+        96
+      ]
+    },
+    {
+      "name": "Browns '86",
+      "values": [
+        82.0993,
+        101.0,
+        95.0331
+      ],
+      "display": [
+        82,
+        100,
+        95
+      ]
+    },
+    {
+      "name": "Buccaneers '79",
+      "values": [
+        81.3694,
+        101.0,
+        94.7898
+      ],
+      "display": [
+        81,
+        100,
+        94
+      ]
+    },
+    {
+      "name": "Buccaneers '99",
+      "values": [
+        80.098,
+        101.0,
+        94.366
+      ],
+      "display": [
+        80,
+        100,
+        94
+      ]
+    },
+    {
+      "name": "Buccaneers '02",
+      "values": [
+        77.6693,
+        97.1778,
+        91.3268
+      ],
+      "display": [
+        77,
+        97,
+        91
+      ]
+    },
+    {
+      "name": "Cardinals '75",
+      "values": [
+        94.4261,
+        88.8516,
+        93.3603
+      ],
+      "display": [
+        94,
+        88,
+        93
+      ]
+    },
+    {
+      "name": "Chargers '63",
+      "values": [
+        92.6602,
+        88.6696,
+        92.3309
+      ],
+      "display": [
+        92,
+        88,
+        92
+      ]
+    },
+    {
+      "name": "Chargers '80",
+      "values": [
+        96.6845,
+        100.1527,
+        99.4006
+      ],
+      "display": [
+        96,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Chargers '94",
+      "values": [
+        93.8217,
+        101.0,
+        98.9406
+      ],
+      "display": [
+        93,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Chiefs '69",
+      "values": [
+        91.8653,
+        101.0,
+        98.2884
+      ],
+      "display": [
+        91,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Chiefs '93",
+      "values": [
+        92.1779,
+        101.0,
+        98.3926
+      ],
+      "display": [
+        92,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Colts '70",
+      "values": [
+        89.1591,
+        98.669,
+        96.0266
+      ],
+      "display": [
+        89,
+        98,
+        96
+      ]
+    },
+    {
+      "name": "Cowboys '71",
+      "values": [
+        93.9279,
+        101.0,
+        98.976
+      ],
+      "display": [
+        93,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Cowboys '77",
+      "values": [
+        91.3469,
+        101.0,
+        98.1156
+      ],
+      "display": [
+        91,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Cowboys '92",
+      "values": [
+        100.0,
+        96.0408,
+        99.0148
+      ],
+      "display": [
+        100,
+        96,
+        99
+      ]
+    },
+    {
+      "name": "Dolphins '72",
+      "values": [
+        100.0,
+        101.0,
+        101.0
+      ],
+      "display": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Dolphins '84",
+      "values": [
+        100.0,
+        97.7629,
+        99.6411
+      ],
+      "display": [
+        100,
+        97,
+        99
+      ]
+    },
+    {
+      "name": "Eagles '60",
+      "values": [
+        80.2216,
+        95.6212,
+        91.2696
+      ],
+      "display": [
+        80,
+        95,
+        91
+      ]
+    },
+    {
+      "name": "Eagles '80",
+      "values": [
+        90.7512,
+        101.0,
+        97.9171
+      ],
+      "display": [
+        90,
+        100,
+        97
+      ]
+    },
+    {
+      "name": "Eagles '04",
+      "values": [
+        80.584,
+        77.7853,
+        81.786
+      ],
+      "display": [
+        80,
+        77,
+        81
+      ]
+    },
+    {
+      "name": "Falcons '80",
+      "values": [
+        99.3133,
+        101.0,
+        100.7711
+      ],
+      "display": [
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Falcons '98",
+      "values": [
+        86.1793,
+        94.305,
+        92.4877
+      ],
+      "display": [
+        86,
+        94,
+        92
+      ]
+    },
+    {
+      "name": "Giants '56",
+      "values": [
+        72.0429,
+        86.7965,
+        83.3956
+      ],
+      "display": [
+        72,
+        86,
+        83
+      ]
+    },
+    {
+      "name": "Giants '86",
+      "values": [
+        92.9807,
+        101.0,
+        98.6602
+      ],
+      "display": [
+        92,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Giants '90",
+      "values": [
+        91.0847,
+        101.0,
+        98.0282
+      ],
+      "display": [
+        91,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Giants '03",
+      "values": [
+        59.4447,
+        59.5927,
+        63.3273
+      ],
+      "display": [
+        59,
+        59,
+        63
+      ]
+    },
+    {
+      "name": "Jaguars '99",
+      "values": [
+        94.3321,
+        101.0,
+        99.1107
+      ],
+      "display": [
+        94,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Jets '68",
+      "values": [
+        90.9751,
+        90.3362,
+        92.0178
+      ],
+      "display": [
+        90,
+        90,
+        92
+      ]
+    },
+    {
+      "name": "Jets '98",
+      "values": [
+        93.5059,
+        92.5133,
+        94.1899
+      ],
+      "display": [
+        93,
+        92,
+        94
+      ]
+    },
+    {
+      "name": "Lions '53",
+      "values": [
+        85.1189,
+        97.0691,
+        93.7466
+      ],
+      "display": [
+        85,
+        97,
+        93
+      ]
+    },
+    {
+      "name": "Lions '91",
+      "values": [
+        97.4161,
+        96.5007,
+        97.7727
+      ],
+      "display": [
+        97,
+        96,
+        97
+      ]
+    },
+    {
+      "name": "Oilers '61",
+      "values": [
+        87.8546,
+        91.8934,
+        91.6394
+      ],
+      "display": [
+        87,
+        91,
+        91
+      ]
+    },
+    {
+      "name": "Oilers '79",
+      "values": [
+        96.1375,
+        101.0,
+        99.7125
+      ],
+      "display": [
+        96,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Packers '66",
+      "values": [
+        95.2773,
+        95.904,
+        96.4531
+      ],
+      "display": [
+        95,
+        95,
+        96
+      ]
+    },
+    {
+      "name": "Packers '96",
+      "values": [
+        94.6325,
+        101.0,
+        99.2108
+      ],
+      "display": [
+        94,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Packers '04",
+      "values": [
+        89.9842,
+        66.7077,
+        82.8851
+      ],
+      "display": [
+        89,
+        66,
+        82
+      ]
+    },
+    {
+      "name": "Panthers '96",
+      "values": [
+        92.2003,
+        100.4713,
+        98.0917
+      ],
+      "display": [
+        92,
+        100,
+        98
+      ]
+    },
+    {
+      "name": "Panthers '03",
+      "values": [
+        87.0529,
+        86.0081,
+        88.3046
+      ],
+      "display": [
+        87,
+        86,
+        88
+      ]
+    },
+    {
+      "name": "Patriots '85",
+      "values": [
+        94.6461,
+        101.0,
+        99.2154
+      ],
+      "display": [
+        94,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Patriots '01",
+      "values": [
+        83.2302,
+        92.1544,
+        90.2502
+      ],
+      "display": [
+        83,
+        92,
+        90
+      ]
+    },
+    {
+      "name": "Patriots '03",
+      "values": [
+        84.3832,
+        85.6494,
+        86.8399
+      ],
+      "display": [
+        84,
+        85,
+        86
+      ]
+    },
+    {
+      "name": "Raiders '67",
+      "values": [
+        99.0826,
+        100.8951,
+        100.633
+      ],
+      "display": [
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Raiders '76",
+      "values": [
+        97.835,
+        101.0,
+        100.2783
+      ],
+      "display": [
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Raiders '83",
+      "values": [
+        100.0,
+        101.0,
+        101.0
+      ],
+      "display": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Rams '79",
+      "values": [
+        88.9027,
+        101.0,
+        97.3009
+      ],
+      "display": [
+        88,
+        100,
+        97
+      ]
+    },
+    {
+      "name": "Rams '99",
+      "values": [
+        100.0,
+        93.6612,
+        98.1495
+      ],
+      "display": [
+        100,
+        93,
+        98
+      ]
+    },
+    {
+      "name": "Ravens '00",
+      "values": [
+        88.1999,
+        101.0,
+        97.0666
+      ],
+      "display": [
+        88,
+        100,
+        97
+      ]
+    },
+    {
+      "name": "Redskins '82",
+      "values": [
+        100.0,
+        99.2068,
+        100.1661
+      ],
+      "display": [
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "name": "Redskins '87",
+      "values": [
+        89.4477,
+        101.0,
+        97.4826
+      ],
+      "display": [
+        89,
+        100,
+        97
+      ]
+    },
+    {
+      "name": "Redskins '91",
+      "values": [
+        100.0,
+        98.8896,
+        100.0507
+      ],
+      "display": [
+        100,
+        98,
+        100
+      ]
+    },
+    {
+      "name": "Saints '91",
+      "values": [
+        86.7287,
+        101.0,
+        96.5762
+      ],
+      "display": [
+        86,
+        100,
+        96
+      ]
+    },
+    {
+      "name": "Saints '00",
+      "values": [
+        92.3663,
+        93.7745,
+        94.2405
+      ],
+      "display": [
+        92,
+        93,
+        94
+      ]
+    },
+    {
+      "name": "Seahawks '84",
+      "values": [
+        87.7607,
+        101.0,
+        96.9202
+      ],
+      "display": [
+        87,
+        100,
+        96
+      ]
+    },
+    {
+      "name": "Seahawks '99",
+      "values": [
+        91.9872,
+        98.9067,
+        97.1079
+      ],
+      "display": [
+        91,
+        98,
+        97
+      ]
+    },
+    {
+      "name": "Steelers '75",
+      "values": [
+        100.0,
+        101.0,
+        101.0
+      ],
+      "display": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Steelers '78",
+      "values": [
+        100.0,
+        101.0,
+        101.0
+      ],
+      "display": [
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "name": "Steelers '95",
+      "values": [
+        96.7522,
+        101.0,
+        99.9174
+      ],
+      "display": [
+        96,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Texans '62",
+      "values": [
+        89.2061,
+        92.1909,
+        92.2634
+      ],
+      "display": [
+        89,
+        92,
+        92
+      ]
+    },
+    {
+      "name": "Titans '99",
+      "values": [
+        98.1031,
+        100.0475,
+        99.8121
+      ],
+      "display": [
+        98,
+        100,
+        99
+      ]
+    },
+    {
+      "name": "Vikings '69",
+      "values": [
+        92.0409,
+        84.5259,
+        90.4863
+      ],
+      "display": [
+        92,
+        84,
+        90
+      ]
+    },
+    {
+      "name": "Vikings '73",
+      "values": [
+        96.6165,
+        94.9911,
+        96.7876
+      ],
+      "display": [
+        96,
+        94,
+        96
+      ]
+    },
+    {
+      "name": "Vikings '98",
+      "values": [
+        99.4369,
+        89.5895,
+        96.3618
+      ],
+      "display": [
+        99,
+        89,
+        96
+      ]
+    }
+  ],
+  "equipment": [
+    {
+      "name": "49ers '81",
+      "outer": 171,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 4,
+        "5": 14,
+        "4": 6,
+        "1": 6,
+        "7": 9,
+        "9": 4,
+        "6": 5,
+        "3": 1,
+        "0": 2,
+        "2": 2
+      },
+      "sha256": "4bd17bbd7f1194ddb4934d715f4bddfc7fc989b30fdda0b7e64abd751074bd1e"
+    },
+    {
+      "name": "49ers '89",
+      "outer": 172,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 5,
+        "2": 6,
+        "6": 9,
+        "4": 3,
+        "5": 14,
+        "9": 3,
+        "1": 7,
+        "10": 2,
+        "8": 3,
+        "3": 1
+      },
+      "sha256": "6ad96631e2a708621223021b810a7572242c80f8da369cbde7691a80e950d8d1"
+    },
+    {
+      "name": "49ers '94",
+      "outer": 173,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 1,
+        "4": 5,
+        "2": 3,
+        "6": 7,
+        "5": 16,
+        "7": 8,
+        "3": 4,
+        "1": 7,
+        "9": 1,
+        "8": 1
+      },
+      "sha256": "e451bf770729a1ce1abb6b8d24bdae9b86c0bbb10a4fa834e6f6b9797be4be7e"
+    },
+    {
+      "name": "49ers '03",
+      "outer": 174,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 3,
+        "5": 10,
+        "7": 7,
+        "1": 10,
+        "4": 3,
+        "9": 5,
+        "6": 8,
+        "8": 2,
+        "0": 1,
+        "2": 4
+      },
+      "sha256": "2f76dd4eedb52eb28c831406f2fc6c64af093e78df01dcb8afa06ad0d3a153e1"
+    },
+    {
+      "name": "Bears '63",
+      "outer": 121,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 12,
+        "3": 15,
+        "0": 26
+      },
+      "sha256": "ada14e7f861184900cded51998c0cda2cd50ed61a104e9c742a5b5364de7fc5b"
+    },
+    {
+      "name": "Bears '85",
+      "outer": 122,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 12,
+        "9": 1,
+        "1": 12,
+        "7": 13,
+        "5": 6,
+        "4": 1,
+        "6": 2,
+        "2": 3,
+        "0": 1,
+        "8": 2
+      },
+      "sha256": "9880d14eb9abdb32aed42b4f783196d7aa0bb776c291380946f5a94482f84f72"
+    },
+    {
+      "name": "Bengals '81",
+      "outer": 123,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 11,
+        "5": 11,
+        "6": 6,
+        "1": 12,
+        "4": 4,
+        "3": 2,
+        "2": 4,
+        "9": 1,
+        "0": 1,
+        "8": 1
+      },
+      "sha256": "317bddff1c893e24e12143a906d703475bba6fa777521b86ce9f2f3186a513cb"
+    },
+    {
+      "name": "Bengals '88",
+      "outer": 124,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "5": 9,
+        "6": 9,
+        "1": 7,
+        "4": 3,
+        "2": 7,
+        "3": 1,
+        "9": 1,
+        "0": 2,
+        "8": 2
+      },
+      "sha256": "460c876c21ec9459f0c1a0c60a1e47474cb8e89f2a59d816b9b89c3a0dcc5d56"
+    },
+    {
+      "name": "Bills '64",
+      "outer": 117,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 20,
+        "0": 27,
+        "10": 6
+      },
+      "sha256": "543f4d5ca85afda5f0f0eb9a1b4f2325ef5c921b2831b7a3b2de168f74f267ec"
+    },
+    {
+      "name": "Bills '90",
+      "outer": 118,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 10,
+        "3": 3,
+        "2": 5,
+        "6": 9,
+        "4": 4,
+        "1": 9,
+        "7": 7,
+        "10": 3,
+        "0": 1,
+        "9": 2
+      },
+      "sha256": "bbf313185834aa4276b510d7e79243c018213486f5cee932782c97fc9384cd65"
+    },
+    {
+      "name": "Broncos '77",
+      "outer": 128,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 15,
+        "3": 2,
+        "1": 13,
+        "6": 3,
+        "5": 10,
+        "4": 2,
+        "2": 3,
+        "8": 1,
+        "0": 4
+      },
+      "sha256": "4fcff1cc8315a4a3a2f7a27fd7b2aee9ed5505446232f319490d830a1db960a5"
+    },
+    {
+      "name": "Broncos '86",
+      "outer": 129,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 13,
+        "1": 15,
+        "6": 5,
+        "4": 1,
+        "5": 10,
+        "3": 1,
+        "2": 3,
+        "0": 3,
+        "9": 1,
+        "8": 1
+      },
+      "sha256": "410f91536702a0bcd89f4e6285121bfd1bea52a7b75dcf43d3415a3f5cb425f3"
+    },
+    {
+      "name": "Broncos '98",
+      "outer": 130,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 14,
+        "2": 10,
+        "1": 9,
+        "6": 8,
+        "9": 4,
+        "5": 7,
+        "4": 1
+      },
+      "sha256": "40dc0c4bb2622c5b662089cc3a82572ee725a54d309e9767b1952013de3dacbf"
+    },
+    {
+      "name": "Browns '64",
+      "outer": 186,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 11,
+        "3": 16,
+        "0": 25,
+        "1": 1
+      },
+      "sha256": "aa907bc09c69ae1ff7a6918a2228dac535c01b7a18e52622376ed5be04811249"
+    },
+    {
+      "name": "Browns '86",
+      "outer": 187,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 11,
+        "5": 11,
+        "6": 6,
+        "1": 10,
+        "4": 4,
+        "3": 2,
+        "2": 6,
+        "9": 1,
+        "0": 2
+      },
+      "sha256": "ff8a3941b2f4888a26b3e0bb1790cf1505b87567cfed156bd12f72521a7c8021"
+    },
+    {
+      "name": "Buccaneers '79",
+      "outer": 177,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 2,
+        "7": 8,
+        "4": 4,
+        "1": 8,
+        "5": 10,
+        "10": 1,
+        "6": 11,
+        "9": 3,
+        "2": 5,
+        "8": 1
+      },
+      "sha256": "22f8187c598f0e45f36b5adb77225ab450fe0f3595cdf2d3cb4ad6b04e7721f0"
+    },
+    {
+      "name": "Buccaneers '99",
+      "outer": 178,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 11,
+        "3": 1,
+        "9": 4,
+        "4": 5,
+        "5": 12,
+        "6": 9,
+        "2": 6,
+        "1": 4,
+        "11": 1
+      },
+      "sha256": "688c4ab5202444fa7f4ce6512408051adb0b9ae9fa43148fe7d75232ad538a03"
+    },
+    {
+      "name": "Buccaneers '02",
+      "outer": 179,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 3,
+        "7": 5,
+        "4": 5,
+        "1": 7,
+        "6": 12,
+        "9": 7,
+        "5": 6,
+        "11": 2,
+        "0": 1,
+        "8": 1,
+        "2": 4
+      },
+      "sha256": "45234f16d845ae04b79187a93ff62bca01a5a5785529dda2125e26f4bb70749b"
+    },
+    {
+      "name": "Cardinals '75",
+      "outer": 113,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 9,
+        "7": 9,
+        "1": 8,
+        "4": 2,
+        "3": 4,
+        "9": 3,
+        "10": 2,
+        "6": 5,
+        "2": 3,
+        "0": 8
+      },
+      "sha256": "15dbcf3f3b550206b0acf14b48792e586ea82391495196f49ab69f2b7409b0c2"
+    },
+    {
+      "name": "Chargers '63",
+      "outer": 168,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 16,
+        "0": 30,
+        "10": 7
+      },
+      "sha256": "455b153973900a2d3852a9d24238c0963c6ad30be0abf40989fc470b4086656e"
+    },
+    {
+      "name": "Chargers '80",
+      "outer": 169,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 8,
+        "5": 13,
+        "1": 9,
+        "4": 6,
+        "9": 3,
+        "10": 2,
+        "6": 6,
+        "3": 1,
+        "0": 2,
+        "2": 3
+      },
+      "sha256": "c2a2aaa8da753104f8753584f3c6e81cef56fc638f74ce33483cbc22c7c077e3"
+    },
+    {
+      "name": "Chargers '94",
+      "outer": 170,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "5": 11,
+        "2": 4,
+        "4": 2,
+        "1": 11,
+        "9": 6,
+        "6": 7,
+        "0": 1,
+        "8": 1
+      },
+      "sha256": "ce6860d1ebdfd22e1e5ccc270485b0fc86109e418b392cfe29f34f7036e1ddac"
+    },
+    {
+      "name": "Chiefs '69",
+      "outer": 139,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 15,
+        "0": 30,
+        "10": 7,
+        "7": 1
+      },
+      "sha256": "3dc5b03bf0e271f8b99e2470a877b6970ed25c7de8c2b30e5839b066db3e8781"
+    },
+    {
+      "name": "Chiefs '93",
+      "outer": 140,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 10,
+        "1": 8,
+        "2": 7,
+        "10": 2,
+        "8": 2,
+        "9": 5,
+        "7": 6,
+        "6": 9,
+        "3": 1,
+        "4": 1,
+        "0": 2
+      },
+      "sha256": "27defba0589667d3ad576d2f38967a7d253261c8782c917f05d08c333af70c20"
+    },
+    {
+      "name": "Colts '70",
+      "outer": 136,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "9": 4,
+        "0": 10,
+        "6": 9,
+        "1": 5,
+        "5": 9,
+        "10": 2,
+        "4": 2,
+        "8": 1,
+        "11": 1
+      },
+      "sha256": "d09aab0588561856fa987f78fae56a2aba07b7c5472c8634446477189a7717bc"
+    },
+    {
+      "name": "Cowboys '71",
+      "outer": 125,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 11,
+        "7": 10,
+        "1": 6,
+        "4": 1,
+        "3": 4,
+        "9": 2,
+        "6": 6,
+        "2": 6,
+        "0": 5,
+        "8": 1,
+        "11": 1
+      },
+      "sha256": "7c793be359e0987a8a4f75ad8158871caea5aaa9ee87c1b9b63ae036a533913b"
+    },
+    {
+      "name": "Cowboys '77",
+      "outer": 126,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 13,
+        "1": 8,
+        "6": 6,
+        "5": 8,
+        "3": 1,
+        "2": 5,
+        "0": 10,
+        "8": 2
+      },
+      "sha256": "a180f7bb2d883d535405e0fbf910d8ca37b9b9d40138dc6e0ca977f7b71e6780"
+    },
+    {
+      "name": "Cowboys '92",
+      "outer": 127,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "5": 11,
+        "2": 7,
+        "6": 10,
+        "1": 7,
+        "9": 4,
+        "4": 3,
+        "8": 1
+      },
+      "sha256": "fa1b78d28db73038bf516450c2ea88c033c657d6da88c54cb495a4a5185017b9"
+    },
+    {
+      "name": "Dolphins '72",
+      "outer": 141,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 4,
+        "3": 22,
+        "0": 15,
+        "1": 9,
+        "11": 1,
+        "8": 2
+      },
+      "sha256": "3168fc0217438edff663899b600b2385999fe3cb314ee7b565270eb5bd1c634e"
+    },
+    {
+      "name": "Dolphins '84",
+      "outer": 142,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 2,
+        "4": 4,
+        "1": 5,
+        "2": 5,
+        "6": 4,
+        "5": 14,
+        "9": 9,
+        "7": 4,
+        "0": 3,
+        "8": 2,
+        "11": 1
+      },
+      "sha256": "6014b67e676a535d8dc5e6c961db9d0505eb0a612bf05b059da6367d2dd5b67c"
+    },
+    {
+      "name": "Eagles '60",
+      "outer": 160,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 19,
+        "10": 9,
+        "0": 25
+      },
+      "sha256": "84b28654cf8e3d0eb418f459c7b80fc6285664584a2f61f3c86d871234be9ccc"
+    },
+    {
+      "name": "Eagles '80",
+      "outer": 161,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 13,
+        "5": 9,
+        "1": 12,
+        "6": 8,
+        "4": 5,
+        "3": 1,
+        "0": 2,
+        "2": 1,
+        "8": 2
+      },
+      "sha256": "28aa350a998172fc6f681af19057fc0cba2bb8d18d1f7efa7321e1387797040b"
+    },
+    {
+      "name": "Eagles '04",
+      "outer": 162,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 2,
+        "7": 7,
+        "1": 11,
+        "6": 5,
+        "4": 5,
+        "9": 6,
+        "5": 9,
+        "11": 1,
+        "2": 5,
+        "8": 2
+      },
+      "sha256": "0fbb1c3269cb857f2a07b8fb5dfb7c0589086c5e30dea95097a9a38757e61b71"
+    },
+    {
+      "name": "Falcons '80",
+      "outer": 114,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 4,
+        "6": 8,
+        "1": 8,
+        "4": 2,
+        "5": 10,
+        "7": 11,
+        "9": 3,
+        "3": 1,
+        "2": 3,
+        "0": 3
+      },
+      "sha256": "d5a45973098d5512e4c8ffc8d962acdcbc385433916f87750239be5e77a343cd"
+    },
+    {
+      "name": "Falcons '98",
+      "outer": 115,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "1": 10,
+        "6": 9,
+        "4": 4,
+        "5": 9,
+        "9": 2,
+        "3": 3,
+        "11": 1,
+        "8": 1,
+        "2": 2
+      },
+      "sha256": "79f5d9020161f78d687006a89a98ff58e70a4886f5be6ec33a2bccb10d9cfe04"
+    },
+    {
+      "name": "Giants '56",
+      "outer": 151,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 18,
+        "10": 10,
+        "0": 25
+      },
+      "sha256": "7026683e554ea157fd4555a7dc0de202627657647304f5a4b58d76124221839f"
+    },
+    {
+      "name": "Giants '86",
+      "outer": 152,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 1,
+        "5": 8,
+        "2": 8,
+        "4": 4,
+        "1": 13,
+        "9": 9,
+        "7": 5,
+        "0": 1,
+        "11": 1,
+        "8": 2,
+        "6": 1
+      },
+      "sha256": "3f90b655ebef55b989a930dff63de517a444ddfc13c77b7126bc7c2fa68d5533"
+    },
+    {
+      "name": "Giants '90",
+      "outer": 153,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "6": 8,
+        "2": 6,
+        "1": 8,
+        "5": 10,
+        "9": 4,
+        "4": 3,
+        "0": 1,
+        "8": 1
+      },
+      "sha256": "1cd3bb66bf85087ece8b7c6780dc55b00e180623adb9063aa5daeb0605073121"
+    },
+    {
+      "name": "Giants '03",
+      "outer": 154,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 5,
+        "5": 15,
+        "4": 4,
+        "6": 13,
+        "9": 2,
+        "0": 2,
+        "11": 1,
+        "1": 7,
+        "2": 3,
+        "3": 1
+      },
+      "sha256": "116cc0626ced1df5315ccdf2579d6d7a90c6af73ce33540cec0dc36c92ed86b6"
+    },
+    {
+      "name": "Jaguars '99",
+      "outer": 137,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "4": 5,
+        "6": 8,
+        "5": 13,
+        "9": 4,
+        "1": 5,
+        "0": 1,
+        "2": 6,
+        "8": 1
+      },
+      "sha256": "131d582b1c18ad667a000878a12b650243dd93b6b88bce5e586687c8717ef770"
+    },
+    {
+      "name": "Jets '68",
+      "outer": 155,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 13,
+        "10": 15,
+        "0": 24,
+        "8": 1
+      },
+      "sha256": "58b4d7f857605a2acc1c25e1243be7e70bab78ad124ad12433321bf6aba13016"
+    },
+    {
+      "name": "Jets '98",
+      "outer": 156,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 16,
+        "7": 10,
+        "4": 3,
+        "1": 11,
+        "2": 3,
+        "9": 1,
+        "6": 6,
+        "3": 2,
+        "0": 1
+      },
+      "sha256": "9118bf8318210b30ac25d92b864aac241ceff84d40ca08243fdda7eb7d6df66f"
+    },
+    {
+      "name": "Lions '53",
+      "outer": 131,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 19,
+        "0": 29,
+        "10": 5
+      },
+      "sha256": "9ce08f551397b44246204cfe9d8af51eb93f7e70f59b95b85ebe59dabb963d49"
+    },
+    {
+      "name": "Lions '91",
+      "outer": 132,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 13,
+        "2": 11,
+        "4": 5,
+        "1": 6,
+        "6": 5,
+        "5": 7,
+        "9": 3,
+        "3": 2,
+        "0": 1
+      },
+      "sha256": "07d6f3220cdccb191ce80ddb574751acabbc77f8e1dcd800f580c2575c7ab215"
+    },
+    {
+      "name": "Oilers '61",
+      "outer": 180,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 16,
+        "0": 29,
+        "10": 8
+      },
+      "sha256": "c4eb9b2ff8f263b66c55dfd38e4c58edbe904087a2845363460470c9652d4746"
+    },
+    {
+      "name": "Oilers '79",
+      "outer": 181,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 2,
+        "4": 7,
+        "1": 2,
+        "5": 10,
+        "6": 9,
+        "7": 8,
+        "9": 3,
+        "10": 1,
+        "0": 7,
+        "8": 1,
+        "2": 2,
+        "11": 1
+      },
+      "sha256": "8b2d3d5faa7e1612c120edbe1a03aa4b1fd48fa31ddd8896ed300234ca66efd3"
+    },
+    {
+      "name": "Packers '66",
+      "outer": 133,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 16,
+        "0": 30,
+        "10": 7
+      },
+      "sha256": "4f1510ff40a7988f2f45eb2616213b505ea2c1bf489975a71574b92c4075ce9a"
+    },
+    {
+      "name": "Packers '96",
+      "outer": 134,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "5": 11,
+        "9": 4,
+        "1": 7,
+        "2": 8,
+        "4": 4,
+        "7": 10,
+        "8": 2,
+        "6": 6,
+        "0": 1
+      },
+      "sha256": "58a6f01319ba1b24a79fa12a58509bab68b79d9256debfb22c5352d6e1cfae68"
+    },
+    {
+      "name": "Packers '04",
+      "outer": 135,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 8,
+        "7": 8,
+        "4": 3,
+        "6": 8,
+        "1": 7,
+        "5": 9,
+        "11": 3,
+        "2": 5,
+        "8": 2
+      },
+      "sha256": "790bb21019e7540b8a1609241cc5716a7a1def7fd3b86d6c5fe3955b6e1b3cd3"
+    },
+    {
+      "name": "Panthers '96",
+      "outer": 119,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "9": 2,
+        "2": 4,
+        "4": 4,
+        "5": 10,
+        "10": 2,
+        "6": 11,
+        "1": 8,
+        "3": 1,
+        "8": 1
+      },
+      "sha256": "cc8632db94c6bafd3db718fd38bd50355f9ef815b3f9bb9009d6981a60a9edbf"
+    },
+    {
+      "name": "Panthers '03",
+      "outer": 120,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 14,
+        "7": 7,
+        "6": 10,
+        "4": 2,
+        "1": 9,
+        "5": 7,
+        "2": 4
+      },
+      "sha256": "d14f0cf91f65a2334b7253cb0f43ae5d8875b13edc603a2b0ecb55319f9dc788"
+    },
+    {
+      "name": "Patriots '85",
+      "outer": 146,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 1,
+        "7": 10,
+        "2": 5,
+        "4": 4,
+        "1": 11,
+        "5": 10,
+        "9": 3,
+        "10": 2,
+        "6": 7
+      },
+      "sha256": "d396cbed544433de68ea712bcf9c94a73f7d3d4ce3fe9458fa681faa3be42b86"
+    },
+    {
+      "name": "Patriots '01",
+      "outer": 147,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 5,
+        "7": 8,
+        "4": 3,
+        "2": 4,
+        "1": 10,
+        "6": 7,
+        "5": 15,
+        "8": 1
+      },
+      "sha256": "c0703a395b9e556bacb2ae3503ce0cedb0849915547163ae136ab45a9f0667d4"
+    },
+    {
+      "name": "Patriots '03",
+      "outer": 148,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 6,
+        "4": 5,
+        "1": 9,
+        "5": 16,
+        "7": 5,
+        "6": 7,
+        "11": 1,
+        "2": 2,
+        "8": 2
+      },
+      "sha256": "bd29ff5a13fd7e6ab34ef20f1df4479c4859355a99b25722440c8303c2b4b4ca"
+    },
+    {
+      "name": "Raiders '67",
+      "outer": 157,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "11": 1,
+        "0": 29,
+        "10": 9,
+        "3": 14
+      },
+      "sha256": "53ca7573f94f0f9a1208e26f183d1c103f73a3a7d327fb9831c10c1863ce5596"
+    },
+    {
+      "name": "Raiders '76",
+      "outer": 158,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 7,
+        "5": 9,
+        "1": 10,
+        "2": 4,
+        "9": 3,
+        "4": 2,
+        "7": 5,
+        "6": 3,
+        "0": 7,
+        "3": 1,
+        "8": 2
+      },
+      "sha256": "fc04b2f7c33e847d8a3af27d58bf8fcd5e917c4fc632f36a5cfc672aab94c111"
+    },
+    {
+      "name": "Raiders '83",
+      "outer": 159,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 6,
+        "5": 9,
+        "2": 7,
+        "4": 4,
+        "1": 7,
+        "9": 5,
+        "7": 8,
+        "6": 2,
+        "0": 3,
+        "11": 1,
+        "8": 1
+      },
+      "sha256": "9bfe89852deeac6e2c614e8ae246a1b92a43e78eab543e7446eb1389a024f85a"
+    },
+    {
+      "name": "Rams '79",
+      "outer": 166,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 3,
+        "7": 9,
+        "9": 4,
+        "2": 6,
+        "4": 3,
+        "1": 5,
+        "5": 8,
+        "6": 8,
+        "0": 6,
+        "11": 1
+      },
+      "sha256": "6d3007e73ec9177d8c9045cb6af9ac7ab3ea6b25d660ea8bd6a75ef32ef3c351"
+    },
+    {
+      "name": "Rams '99",
+      "outer": 167,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 10,
+        "6": 12,
+        "1": 6,
+        "4": 3,
+        "5": 12,
+        "3": 1,
+        "9": 2,
+        "2": 5,
+        "8": 2
+      },
+      "sha256": "342b9f08f63aacf8830cb9eb44a27ed73ac2e6ff0faee92dbb0e6222e712f477"
+    },
+    {
+      "name": "Ravens '00",
+      "outer": 116,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 9,
+        "6": 12,
+        "1": 4,
+        "3": 4,
+        "5": 13,
+        "9": 2,
+        "2": 7,
+        "4": 2
+      },
+      "sha256": "cdefe7f8d03d7c731f2a2de455c7d595632b534ac0040881d685e54643758db2"
+    },
+    {
+      "name": "Redskins '82",
+      "outer": 183,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 9,
+        "4": 2,
+        "1": 7,
+        "5": 14,
+        "7": 9,
+        "9": 3,
+        "3": 1,
+        "6": 4,
+        "0": 2,
+        "8": 1,
+        "2": 1
+      },
+      "sha256": "1f92b104860c01879fc88015ba4fd42072c6d9bac21b2b278c8a3acbbce332ea"
+    },
+    {
+      "name": "Redskins '87",
+      "outer": 184,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 15,
+        "4": 4,
+        "6": 9,
+        "5": 8,
+        "3": 2,
+        "9": 1,
+        "1": 11,
+        "2": 3
+      },
+      "sha256": "24b2c340175f22f0f85618fbd356a34ea800db13daea65a2d0dd25a6799dcc64"
+    },
+    {
+      "name": "Redskins '91",
+      "outer": 185,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 1,
+        "7": 11,
+        "1": 10,
+        "4": 5,
+        "5": 14,
+        "9": 2,
+        "6": 5,
+        "2": 4,
+        "8": 1
+      },
+      "sha256": "37e131a95b5caafcb80174a81ecd8ca47075afaabe8476dbe0c5a8db2042fde5"
+    },
+    {
+      "name": "Saints '91",
+      "outer": 149,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 2,
+        "9": 3,
+        "4": 6,
+        "1": 6,
+        "5": 10,
+        "7": 7,
+        "6": 13,
+        "11": 1,
+        "2": 4,
+        "8": 1
+      },
+      "sha256": "075b839bbfecd8732815d71dd16eccaafbcbe98f7e4e0040dfee21c2ae19f238"
+    },
+    {
+      "name": "Saints '00",
+      "outer": 150,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 3,
+        "1": 8,
+        "6": 9,
+        "2": 8,
+        "4": 1,
+        "5": 12,
+        "7": 11,
+        "3": 1
+      },
+      "sha256": "7a80382d21809f1e860f64743fcfc22e637c54920ce5e2f2ac89e90ea7d3a0df"
+    },
+    {
+      "name": "Seahawks '84",
+      "outer": 175,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 14,
+        "5": 9,
+        "6": 8,
+        "4": 4,
+        "1": 7,
+        "9": 3,
+        "3": 1,
+        "10": 2,
+        "0": 1,
+        "2": 3,
+        "8": 1
+      },
+      "sha256": "570427722889c439fc0caa4959676d5904596108c96412d2256602031805fbe8"
+    },
+    {
+      "name": "Seahawks '99",
+      "outer": 176,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "9": 4,
+        "6": 11,
+        "1": 9,
+        "5": 7,
+        "4": 5,
+        "11": 1,
+        "2": 2,
+        "8": 2
+      },
+      "sha256": "b7cb5c7ef58aea408276022f98e6e074d7c96757e49c9456ab7b0b95d0d90eae"
+    },
+    {
+      "name": "Steelers '75",
+      "outer": 163,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "5": 11,
+        "1": 9,
+        "6": 6,
+        "3": 1,
+        "10": 1,
+        "4": 1,
+        "2": 5,
+        "0": 4,
+        "8": 2,
+        "11": 1
+      },
+      "sha256": "d1b3a7e308fd3bc1c2c5f75d8ef13f42611c443645b6a58801e824d721308cad"
+    },
+    {
+      "name": "Steelers '78",
+      "outer": 164,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "7": 12,
+        "5": 12,
+        "1": 8,
+        "6": 7,
+        "9": 1,
+        "10": 1,
+        "4": 1,
+        "2": 3,
+        "0": 6,
+        "8": 2
+      },
+      "sha256": "1fae808ad4a3ed500e0b7f3385004eab62d6c103f0dc6bfced37552143154c45"
+    },
+    {
+      "name": "Steelers '95",
+      "outer": 165,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 3,
+        "4": 7,
+        "6": 12,
+        "1": 6,
+        "5": 7,
+        "7": 9,
+        "9": 4,
+        "0": 1,
+        "2": 4
+      },
+      "sha256": "bce9b733f4c10602a572d41371361efe7259f1e05ca6fafb99209ab2a096cded"
+    },
+    {
+      "name": "Texans '62",
+      "outer": 138,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 13,
+        "0": 29,
+        "10": 10,
+        "7": 1
+      },
+      "sha256": "016652d0fd0931a89d80acad41d96ebe7dade7dfad509f211a5efbc74926432e"
+    },
+    {
+      "name": "Titans '99",
+      "outer": 182,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "9": 4,
+        "7": 11,
+        "2": 5,
+        "1": 10,
+        "11": 1,
+        "5": 11,
+        "3": 1,
+        "6": 7,
+        "4": 2,
+        "8": 1
+      },
+      "sha256": "98973b43c8df84e549553846c715b52f426e273ab280867ff1348aaf081ca3f1"
+    },
+    {
+      "name": "Vikings '69",
+      "outer": 143,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 12,
+        "0": 25,
+        "3": 16
+      },
+      "sha256": "bba8543ca6f1f509452dd537570e9cbb8c610f9aa794a792a7d7ffea7e493331"
+    },
+    {
+      "name": "Vikings '73",
+      "outer": 144,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "10": 3,
+        "4": 2,
+        "1": 8,
+        "6": 3,
+        "5": 7,
+        "7": 13,
+        "9": 3,
+        "3": 1,
+        "2": 3,
+        "0": 8,
+        "8": 2
+      },
+      "sha256": "c02d722862628964b5e820bf7f598911e448670ec1aba426542fdb8cb6941f4b"
+    },
+    {
+      "name": "Vikings '98",
+      "outer": 145,
+      "players": 53,
+      "helmets": {
+        "0": 53
+      },
+      "masks": {
+        "3": 6,
+        "4": 5,
+        "1": 10,
+        "9": 3,
+        "5": 10,
+        "7": 8,
+        "6": 5,
+        "2": 4,
+        "0": 1,
+        "8": 1
+      },
+      "sha256": "a5aaec3c673128bcf8592b3e6a40fdfaf63c470a61911f7ed64335e2108a4fe7"
+    }
+  ],
+  "equipment_summary": {
+    "players": 3975,
+    "all_standard": true,
+    "all_masks_retail_0_to_11": true,
+    "original_equipment_fields_remapped": 60,
+    "moment_roster_orders_equal": 35
+  },
+  "catalog": {
+    "retail_entries": 4323,
+    "retail_free_directory_slots": 101,
+    "more_moments_teams": 48,
+    "more_moments_max": 50,
+    "more_moment_ids": [
+      176,
+      177,
+      178,
+      179,
+      180,
+      181,
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192,
+      193,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199,
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      209,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219,
+      220,
+      221,
+      222,
+      223
+    ],
+    "all_time_descriptor_count": 0
+  }
+}

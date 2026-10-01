@@ -26,6 +26,15 @@ EMPTY = 0xFFFF
 NFL_TEAMS = 32
 OVERFLOW_SLOTS = 5
 RESERVES_ENABLED = 0x100
+# Identity numbers (+0x118) of the two extra created teams (USER3, USER4). Retail's main roster uses numbers up to 45
+# and 90..99, the 75 historic files 100..170 (71 distinct); new historic teams take numbers from 171 up
+# (research e2, whose research team used 175). 250 and 251 are clear of all of them and fit in a byte: five retail
+# readers of +0x118 take its low byte only. 100 and 101 (beta 76 f5) were the 1975 Cardinals' and the 1980
+# Falcons' numbers. tools/roster_arena/lifecycle.h (arena_created) names the same two numbers.
+CREATED_IDS = (250, 251)
+# Disc main ROST (outer 5) framing: 0x20-byte wrapper and 0x40-byte object before the arena.
+LEGACY_DISC_RESOURCE_SIZE = 0x90F80   # retail, version 17, 0x90F20 arena
+GROWN_DISC_RESOURCE_SIZE = 0x92060    # version 18, ARENA_SIZE arena
 TEAM_POINTERS = tuple(range(0, 260, 4)) + (
     0x104, 0x108, 0x10C, 0x110, 0x114, 0x138, 0x13C,
     0x140, 0x144, 0x148, 0x14C)
@@ -140,9 +149,10 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
             eligible_team_mask: int = 0) -> tuple[bytes, dict]:
     """Copy-only v0/v17 migration. Eligibility is an explicit per-team decision.
 
-    Created IDs 100/101 are distinct from retail special teams 92..99. New
-    records inherit the two existing created slots' assets/playbooks, with
-    separate labels. This does not add teams to the 32-team franchise league.
+    Created IDs CREATED_IDS (250/251) are distinct from the retail special
+    teams 92..99 and from every historic identity (100..170). New records
+    inherit the two existing created slots' assets/playbooks, with separate
+    labels. This does not add teams to the 32-team franchise league.
     """
     from .nfl2k5_save_rost import decode
     from . import nfl2k5_practice_squad as ps
@@ -170,7 +180,7 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
         require(teams.count == 52 and labels.count == 36 and labels.offset is not None,
                 'extra-team proof requires the retail 52-team / 36-label layout')
         by_id = {team.asset_id: team for team in document.teams}
-        require(len(by_id) == teams.count and 100 not in by_id and 101 not in by_id,
+        require(len(by_id) == teams.count and not any(i in by_id for i in CREATED_IDS),
                 'duplicate or occupied created-team IDs')
         require(90 in by_id and 91 in by_id, 'missing created-team templates')
         templates = [by_id[90], by_id[91]]
@@ -213,7 +223,7 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
             out[dest:dest + 260] = bytes(260)
             out[dest + ps.ACTIVE_COUNT] = 0
             out[dest + ps.VERSION_OFFSET] = out[dest + ps.COUNT] = out[dest + ps.MARKER_OFFSET] = 0
-            struct.pack_into('<H', out, dest + 0x118, 100 + j)
+            struct.pack_into('<H', out, dest + 0x118, CREATED_IDS[j])
             name(dest + 0x104, f'Created {j + 3}')
             name(dest + 0x108, f'USER{j + 3}')
             label = moved(labels.offset) + (labels.count + j) * 8
@@ -249,10 +259,79 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
     return result, {'already_applied': False, 'experimental': True, 'runtime_witnessed': False,
                     'arena_size': ARENA_SIZE, 'overflow_offset': BLOCK_OFFSET,
                     'reserves_16': reserves_16, 'eligible_team_mask': eligible_team_mask,
-                    'created_teams_extra': created_teams_extra, 'created_ids': [100, 101] if created_teams_extra else [],
+                    'created_teams_extra': created_teams_extra, 'created_ids': list(CREATED_IDS) if created_teams_extra else [],
                     'pointer_fields_rebased': len(fields), 'file_growth': len(result) - len(payload),
                     'before_sha256': hashlib.sha256(payload).hexdigest(),
                     'after_sha256': hashlib.sha256(result).hexdigest()}
+
+
+def legacy_disc_resource(payload: bytes) -> bytes:
+    """Read-only inverse of migrate() for a grown disc main ROST (version 18).
+
+    The retail-geometry inspectors (2026 team names, team history, prospect names, star tags) read a
+    grown disc roster through this view; their writers still refuse it. The two inserted created-team
+    records and label rows are removed, every relocation field is rebased back, the overflow block is
+    dropped, the NFL reserve marks take their retail value 0 (migrate() overwrites them) and the
+    version-17 framing is restored. The view is returned only when migrate() of it reproduces the input
+    byte for byte, so it is exactly the roster the build migrated.
+    """
+    from .nfl2k5_save_rost import decode
+    from . import nfl2k5_practice_squad as ps
+    payload = bytes(payload)
+    require(len(payload) == GROWN_DISC_RESOURCE_SIZE, 'not a grown disc roster resource')
+    document = decode(payload)
+    layout, block = document.layout, document.overflow
+    require(layout.version == DISC_VERSION and block is not None and layout.wrapper == 0
+            and layout.end - layout.root == ARENA_SIZE and layout.end == len(payload), 'not a grown disc roster')
+    root, teams, labels = layout.root, document.tables['teams'], document.tables['team_labels']
+    inserted = ()
+    if block.extra_teams:
+        require(teams.count == 54 and labels.count == 38 and labels.offset is not None,
+                'foreign grown created-team layout')
+        inserted = ((teams.offset + 52 * 500, 1000), (labels.offset + 36 * 8, 16))
+
+    def inside(offset):
+        return any(start <= offset < start + size for start, size in inserted)
+
+    def unmoved(offset):
+        return offset - sum(size for start, size in inserted if offset >= start + size)
+    body = bytearray(payload[root:root + ARENA_SIZE])
+    for start, size in sorted(inserted, reverse=True):
+        del body[start - root:start - root + size]
+    out = bytearray(payload[:root]) + body[:LEGACY_DISC_RESOURCE_SIZE - root]
+    for field in pointer_fields(document):
+        if inside(field):
+            continue
+        target = document.rel(field)
+        require(target is None or not inside(target), 'a retail relocation field points into a created record')
+        struct.pack_into('<i', out, unmoved(field), 0 if target is None else unmoved(target) - unmoved(field) + 1)
+    if block.extra_teams:
+        struct.pack_into('<I', out, root + 0x18, teams.count - 2)
+        struct.pack_into('<I', out, root + 0x48, labels.count - 2)
+    for i in range(NFL_TEAMS):
+        at = unmoved(teams.offset) + i * 500
+        out[at + ps.VERSION_OFFSET] = out[at + ps.MARKER_OFFSET] = 0
+    struct.pack_into('<I', out, layout.preamble + 16, 17)
+    struct.pack_into('<II', out, layout.wrapper + 4, LEGACY_DISC_RESOURCE_SIZE - layout.preamble,
+                     LEGACY_DISC_RESOURCE_SIZE - layout.preamble)
+    result = bytes(out)
+    require(migrate(result, reserves_16=block.reserves_enabled, created_teams_extra=block.extra_teams,
+                    eligible_team_mask=block.eligible_mask)[0] == payload,
+            'the grown roster is not a migration of a retail-geometry roster')
+    return result
+
+
+def grown_outer(archive, index: int) -> bool:
+    """True when outer ``index`` of an OuterImage-style archive has the grown disc roster size."""
+    entries = archive.entries
+    return len(entries) > index and entries[index].size == GROWN_DISC_RESOURCE_SIZE
+
+
+def inspection_resource(archive, index: int) -> bytes:
+    """A grown outer main roster as the retail-geometry inspectors read it: legacy_disc_resource()."""
+    require(grown_outer(archive, index), 'not a grown disc roster entry')
+    entry = archive.entries[index]
+    return legacy_disc_resource(archive.read(entry.virtual_offset, entry.size))
 
 
 def repack(payload: bytearray, document, team_index: int, active, reserves, *, mark=True) -> None:

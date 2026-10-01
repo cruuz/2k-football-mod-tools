@@ -50,6 +50,11 @@ class ContractTests(unittest.TestCase):
 class ResourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        # Integration fixtures call this method directly, bypassing the
+        # unittest class decorator. Check all three inputs at that boundary.
+        missing = [str(path) for path in (PACK, XBE, DONOR) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("private guardian resources absent: " + ", ".join(missing))
         with PACK.open("rb") as f:f.seek(g.RETAIL_START);cls.before=f.read(g.RETAIL_SIZE)
         with DONOR.open("rb") as f:
             t=g.cap.TARGETS[2];f.seek(t.pack_offset);cls.template=f.read(t.size)

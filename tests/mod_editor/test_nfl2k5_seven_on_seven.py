@@ -330,6 +330,8 @@ class BookTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         sys.path.insert(0, str(ROOT / "tools"))
         recode = importlib.import_module("nfl2k5_playbook_position_recode")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_PACKS)
         with recode.OuterImage(RETAIL_PACKS) as archive:
             cls.retail = archive.read_entry(book.PRACTICE_OUTER_INDEX)
         cls.built, cls.report = book.build_replacement(cls.retail)

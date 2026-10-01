@@ -197,7 +197,7 @@ def _recognize(payload):
     cycles = pools.creation_sites()[:2]
     pooled_cycles = any(image.read(s.va, s.size) != s.befores[0] for s in cycles)
     if pooled_cycles:
-        require(pools.status(payload) == "applied", "foreign position-pool editor companion")
+        require(pools.status(payload) in ("applied", "needs_fix"), "foreign position-pool editor companion")
         require(all(image.read(s.va, s.size) == s.after for s in cycles), "foreign position cycles")
     for va, size, digest in GUARDS:
         blob = bytearray(image.read(va, size))

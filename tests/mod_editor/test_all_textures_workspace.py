@@ -344,6 +344,7 @@ class ComposedBuildTests(unittest.TestCase):
 
 
 class WorkspaceMountTests(unittest.TestCase):
+    """Use the product registry mode: development evidence is not shipped."""
     def test_the_category_mounts_the_real_browser(self) -> None:
         source = _STUDIO.read_text(encoding="utf-8")
         self.assertIn("ProductCategory.TEXTURES: frozenset({", source)
@@ -353,14 +354,14 @@ class WorkspaceMountTests(unittest.TestCase):
         self.assertIn("_build_visual_page(section, visual_kinds)", window)
 
     def test_the_capability_is_exposed_and_enabled(self) -> None:
-        catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+        catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False))
         binding = catalog.binding("nfl2k5.textures.all_p8")
         gui = binding.capability.raw["gui"]
         self.assertTrue(gui["expose"])
         self.assertTrue(gui["default_enabled"])
 
     def test_the_category_holds_the_capability(self) -> None:
-        catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+        catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False))
         section = catalog.section(ProductCategory.TEXTURES)
         self.assertIn(
             "nfl2k5.textures.all_p8",

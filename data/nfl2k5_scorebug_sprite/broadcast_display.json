@@ -1,0 +1,78 @@
+{
+ "schema": "scorebug-broadcast-display/v1",
+ "scope": "Scorebug-only display layer: the on-air shade of each NFL team's sourced wing colour. team_colors_official_2026.json is unchanged; team_accents.json records, per team, the class, whether the shade was measured or fitted, its official parent and the sourced accent it replaces.",
+ "roles": [
+  "wing",
+  "wash"
+ ],
+ "transfer": {
+  "saturation": 0.8615,
+  "value": 1.0,
+  "lightness_cap": 0.6502,
+  "neutral_chroma": 0.02,
+  "measured_bound": 0.0485,
+  "form": "HSV hue kept, value 1, saturation times the factor; a chromatic result lighter than lightness_cap (OKLab L) is scaled down in linear light to the cap; measured shades must lie within measured_bound (OKLab distance) of their parent's fitted shade",
+  "fitted_on": [
+   "DEN",
+   "HOU",
+   "KC",
+   "LAR",
+   "LV",
+   "NYG"
+  ],
+  "leave_one_out_de2000": {
+   "mean": 2.9,
+   "max": 4.94,
+   "rgb_max": 18
+  },
+  "report": "reports/b76_s14/display_fit.json"
+ },
+ "measured": {
+  "DEN": {
+   "wing": "#458AF5",
+   "parent": "#0A2343",
+   "evidence": "2026 Broncos at Chiefs Monday Night Football (ESPN), full game broadcast, 2798 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "HOU": {
+   "wing": "#FF1554",
+   "parent": "#EB0028",
+   "evidence": "2026 preseason Raiders at Texans (ESPN) broadcast, 578 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "KC": {
+   "wing": "#FF2866",
+   "parent": "#E31837",
+   "evidence": "2026 Broncos at Chiefs Monday Night Football (ESPN), full game broadcast, 2798 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "LAR": {
+   "wing": "#317BFF",
+   "parent": "#003594",
+   "evidence": "2026 Giants at Rams Monday Night Football (ESPN) broadcast, 1897 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "LV": {
+   "wing": "#FFFFFF",
+   "parent": "#C8C7C7",
+   "evidence": "2026 preseason Raiders at Texans (ESPN) broadcast, 578 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "NYG": {
+   "wing": "#3567FF",
+   "parent": "#0B2265",
+   "evidence": "2026 Giants at Rams Monday Night Football (ESPN) broadcast, 1897 frames; reports/b76_s14/broadcast_colours.json"
+  },
+  "PHI": {
+   "wing": "#1FB0C4",
+   "parent": "#004851",
+   "evidence": "2026 PHI at CHI supplied NFL highlights KScULet1ves; reports/b76_sb2/fit.json and author_receipt.json; constrained to the existing transfer bound",
+   "unconstrained_wing": "#22B6CA",
+   "method": "bounded native inverse fit",
+   "frames": 293
+  },
+  "CHI": {
+   "wing": "#FB6930",
+   "parent": "#E64100",
+   "evidence": "2026 PHI at CHI supplied NFL highlights KScULet1ves; reports/b76_sb2/fit.json and author_receipt.json; constrained to the existing transfer bound",
+   "unconstrained_wing": "#FF6D33",
+   "method": "bounded native inverse fit",
+   "frames": 407
+  }
+ }
+}

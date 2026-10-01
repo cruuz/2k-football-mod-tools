@@ -1,0 +1,101 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base": "c1a8a769580afefcb8d7bb6c6e5391f83faa9f8e",
+  "modified": [
+    {
+      "path": "mod_editor/capabilities/registry.v1.json",
+      "before": "db66a57ccd326d94253d2d8cdfa180c5d817f48d57e2b6cd0c3a114a90bee44d",
+      "after": "43cca835816ef707f776fbba4fd16ab67f37703898b308327aaec5b357743d58"
+    },
+    {
+      "path": "mod_editor/core/mod_build.py",
+      "before": "d2f86b4b6a869cd1ac639f433552ac319526daaaf6346b53ab180821aa931ffc",
+      "after": "ba1c8777ef8f5a302643dee4e372e97fb241669a4e2db330c43b9aac6e5a37f3"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_allegiant_model.py",
+      "before": "c4e5a8d210ce23f70423a0fb260b8cacd1e1ef40f272ddc223ce4092e8b7bd53",
+      "after": "8184a9440a01715d65049072121a240008114b5ef7d7739206d13cf5328349e0"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_att_model.py",
+      "before": "e02e115ecec7947608002810f08ec418c48a7dd3db93c8cd4d21cd396195d6f5",
+      "after": "07d4960fafeb4e20456d7fe028c5bbec42f0f454f7c27a3c9064f7595c73b1be"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_everbank_model.py",
+      "before": "624e0e18f58453f7d53d690c8969a9ac244de3d0e99907564b20cd31abc0e1e8",
+      "after": "ce038f1620c02364eeacfdc0683783b679529ebdad3a460152a03c1889344cfd"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_hard_rock_model.py",
+      "before": "a5e5eddc42ff4027f0257214e4ed42d9076daf5796ece62641a07d4847a77fce",
+      "after": "3610d2acebfebe3c6d60362430e6e27b6ea5dbcf365e203b631d544e36b72ca3"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_highmark_model.py",
+      "before": "6e5b4e7d589ee9ff78cab32134483a01490e2fa0cca0385b977fd27c0e4eaa93",
+      "after": "a3c998e354211437347852ec49d8f4cfaa3dcb2898d9f032e4fe2c4d6740f130"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_lambeau_model.py",
+      "before": "12d20320ac338139739c1de10025e32b980965708c60f808e7964c6c5ec55619",
+      "after": "80c432de74b48237508911cb158c78df384c337259385192096d5e8db9d70114"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_levis_model.py",
+      "before": "d426ac305d33662cb232fa08517f8fcfce03c90ef0cb6f2d8a755b493555129d",
+      "after": "404e9465ba58ba045220d5660e1b49774c3258dcd955cca5411578814ed50edb"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_lucas_oil_model.py",
+      "before": "38251d4a281778c81b9385246b27408474192fd728bb407776a32405d8e119dd",
+      "after": "62773ecfc7365510dbfb4960916be60fa01e1e666f9625da2c080217a9fac2b3"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_mercedes_benz_model.py",
+      "before": "26f043708f28c81b633f967ac42ba4ccb135dd78c53b9000854819d375cb5725",
+      "after": "dd93914aa137efb1b4ccbd9a55eeb33eab8fed16db69534a38b782b1b5c426b0"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_modern_venues_2026.py",
+      "before": "27211f71a24cc08c024132897249983fef32be48f2f579694428c2ca91048603",
+      "after": "068cdab0d69657077db8dbec34143d75a6c954f92bba898ed97f8e6c33efbb88"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_sofi_model.py",
+      "before": "863d818a643fce662151b1895bcc32bf18742ac4d264eea4bbd2b9cae3d0ba46",
+      "after": "1cc2d26f2edcb3ed0bc4a1271a30fce630be1634189eee9ce75d14cfa53e5471"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_state_farm_model.py",
+      "before": "69c9e8dcd0d9c18cbb8ab75762fe5bd9de41b80ea8d0e1b822f235c24ea5f615",
+      "after": "0c55b5935c2592f9a8b8e80bbec739a320a8a351d6f7dec92c9041da03b8ad1c"
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_usbank_model.py",
+      "before": "fb651fb9c64f26b7786bcee197b70bda100f0a7612fbd4e2c6dcc2a6080ce769",
+      "after": "c3d919292774221055c94f9b70eb230fcd059ddc1b8329e70211d1f824979fe9"
+    },
+    {
+      "path": "packaging/check_2k5_mod_studio_release.py",
+      "before": "abf646b8a5b95bd3b43bc59b46a6d1be31783c277e33a37ee4e8730f18e6715c",
+      "after": "2243b500d45b5d7f0b0c49903364533321c448883e186b7712210a9c6c97e559"
+    },
+    {
+      "path": "packaging/nfl2k5_scorebug_template_pngs.json",
+      "before": "27ce8e36da6efa93070e883de22625f9b8707eb2469e5f7beb0444aff9e41de5",
+      "after": "dfa63ed918cac8b3338008ade138afd5bf170f079376625708f9bc76d542b236"
+    },
+    {
+      "path": "packaging/release-allowlist.txt",
+      "before": "7f8af430cae91a4af9482a1596a3a6b7065f94d599f9cf7e66fea824a1d84aaf",
+      "after": "1ffcec42ce3d68867f65f5c969272dec1ca57612b49f19ccc0d89e2d46b20a58"
+    },
+    {
+      "path": "tests/mod_editor/test_nfl2k5_modern_venues_2026.py",
+      "before": "b793c515749dfa95ae1b6677b374a3a7ecf1ac145d1fdfd24d42b44ec1cfea8c",
+      "after": "9138ebad4799b167de0099b8fad0dd7201f9f929678dc5bfb28870db23829d41"
+    }
+  ]
+}

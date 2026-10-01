@@ -20,7 +20,7 @@ NATIVE=RETAIL and importlib.util.find_spec('unicorn') is not None
 
 class ContractTests(unittest.TestCase):
  def test_layout_capacity_full_alpha_and_source_boxes(self):
-  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),47)
+  c=sprite.compile_folder();self.assertEqual(c.atlas.size,(256,512));self.assertEqual(len(c.quads),50)  # b76 s15: records, tabs, arrow; pips and quarter one quad; sb: the TIMEOUT tab
   self.assertLess(sprite.probe_sizes()[1],400*1024)
   scores=c.spec['glyph_sets']['score']['glyphs']
   for digit in '0123456789':self.assertEqual(scores[digit]['size'][1],53)
@@ -151,8 +151,9 @@ class DisplayModelTests(unittest.TestCase):
   self.assertEqual(narrow.atlas.tobytes(),wide.atlas.tobytes())
  def test_flag_cell_is_yellow_with_a_dark_label_and_brand_cell_is_full_coverage(self):
   spec,image=sprite.load_layout()
-  flag=image.crop(spec['cells']['flag']['box']);r,g,b,a=flag.resize((1,1)).getpixel((0,0))
-  self.assertGreater(r,200);self.assertGreater(g,150);self.assertLess(b,40)
+  flag=image.crop(spec['cells']['flag']['box']);r,g,b,a=flag.getpixel((3,flag.height//2))
+  # b76 sb: the plate yellow measured on air in every Giants-Rams FLAG frame (205,198,0); the letters stay dark.
+  self.assertTrue(abs(r-205)<=6 and abs(g-198)<=6 and b<20 and a==255,(r,g,b,a))
   self.assertLess(flag.convert('L').crop((round(flag.width*95/246),round(flag.height*6/36),round(flag.width*150/246),round(flag.height*30/36))).getextrema()[0],60)  # dark label ink inside the plate
   self.assertEqual(next(e for e in spec['events'] if e['name']=='FLAG')['cell'],'flag')
   mark=image.crop(spec['cells']['espn_mnf']['box']);self.assertEqual(mark.size,(71,12))
@@ -160,14 +161,17 @@ class DisplayModelTests(unittest.TestCase):
   self.assertEqual(mark.convert('RGB').getextrema(),((255,255),)*3)
  def test_live_clock_is_white_with_dark_ink_and_team_plate_is_separate(self):
   spec,image=sprite.load_layout();rows={r['name']:r for r in spec['static']}
+  # b76 sb: the play-clock cell takes ESPN red at 5 seconds and under from the owner; it is white otherwise.
+  self.assertEqual((rows['capsule']['tint'],rows['red']['tint']),('none','play clock cell'))
   for name in ('capsule','red'):
-   self.assertEqual(rows[name]['tint'],'none')
    cell=image.crop(spec['cells'][rows[name]['cell']]['box'])
    self.assertGreater(min(cell.getpixel((cell.width//2,cell.height//2))[:3]),235)
   self.assertEqual(rows['plate']['tint'],'possessing team')
   for f in spec['fields']:
    if f['name'] in ('quarter','clock','play_clock'):self.assertEqual(f['colour'],'#171717')
-   if f['name']=='down':self.assertGreaterEqual(f['size']*448/1080,12)
+   if f['name']=='down':
+    # sb2: measured 23 px TV ink, a 24 px field, approximately ten native HUD rows.
+    self.assertAlmostEqual(f['size']*448/1080,24*448/1080,places=5)
  def test_flag_literal_is_blanked_at_equal_length(self):
   rows={va:(old,new) for va,old,new,_ in owner.override_edits()}
   old,new=rows[0xE6C464];self.assertEqual(old,'FLAG\0'.encode('utf-16le'));self.assertEqual(new,bytes(10))
@@ -188,7 +192,7 @@ class NativeTests(unittest.TestCase):
     box=[min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)]
     want=list(sprite.contracted(sprite.hud_box(q['box'],wide),wide))
     self.assertLess(max(abs(a-b) for a,b in zip(box,want)),.02,q['name'])
-   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':1,'down':5,'home_timeouts':3,'away_timeouts':3}
+   expected={'away_score':1,'home_score':1,'clock':4,'play_clock':1,'quarter':1,'down':5,'home_timeouts':1,'away_timeouts':1}
    for role,count in expected.items():
     rows=[q for q in self.preview.modes[wide]['compiled'].quads if q['name'].startswith(role+':')]
     visible=sum(bool(struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+q['vertex']*10)[0]) for q in rows)
@@ -219,12 +223,14 @@ class NativeTests(unittest.TestCase):
    m.float(m.game_clock+16,clock);m.float(m.clock+16,play);m.put(m.play+4,down);m.put(0xe602c4,period)
    m.run(update,(0x3c888889,),limit=500000)
    actual=bytes(m.uc.mem_read(c['body'],len(self.preview.scene)))
-   for role,count in (('home_score',len(str(score))),('away_score',len(str(away_score))),('home_timeouts',timeouts),('away_timeouts',3-timeouts),('play_clock',len(str(play)))):
+   # b76 s15: every timeout state is one pre-composited quad (used pips grey), so each side always draws one.
+   for role,count in (('home_score',len(str(score))),('away_score',len(str(away_score))),('home_timeouts',1),('away_timeouts',1),('play_clock',len(str(play)))):
     self.assertEqual(sum(bool(struct.unpack_from('<I',actual,scene.layout.S1+q['vertex']*10)[0]) for q in rows if q['name'].startswith(role+':')),count,(role,score,timeouts,play))
   for event in ('FLAG','FUMBLE','hang time','ball on'):
    g,c=self.capture(event=event)
-   # The FLAG plate carries its own dark label; its retail white text is blanked.
-   self.assertEqual(any(row['vertices'] for row in g['draws']),event!='FLAG',event)
+   # The FLAG plate carries its own dark label; its retail white text is blanked. b76 sb: ESPN draws no hang-time,
+   # ball-on or FUMBLE plate (its black wordmark plate shows instead), so their retail text is blanked too.
+   self.assertFalse(any(row['vertices'] for row in g['draws']),event)
  def test_clock_crosses_the_retail_ten_minute_formatter_boundary(self):
   g,c=self.capture();m=c['machine'];code,data=owner.sites(self.patched)
   update=owner.code_for(code['va'],data['va'])[1]['update']
@@ -288,7 +294,7 @@ class NativeTests(unittest.TestCase):
   self.assertEqual(result['fonts'],0);self.assertEqual(result['textures'],34)
   self.assertLess(receipt['appended_bytes'],400*1024)
   self.assertEqual(m.get(obj+0x1c),11)
-  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),47)
+  self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),50)
  def test_collection_round_trip_and_foreign_byte_refusal(self):
   with PACK.open('rb') as stream:
    original=art.PackView.from_fd(stream.fileno(),0,PACK.stat().st_size)

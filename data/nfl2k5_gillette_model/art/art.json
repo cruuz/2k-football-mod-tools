@@ -1,0 +1,152 @@
+{
+ "schema": "nfl2k5_gillette_model_art/v1",
+ "art": {
+  "ne_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "bd6a0b2e435d49cae47d38c1695f9f1312f53bb648cbea1f77323d8a8bc46316"
+  },
+  "ne_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "fa105e2940217454ee7062f7553b9206b191b997169f5699b6c820174eb18b6b"
+  },
+  "ne_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "6f4c214607fc25ae8efa611507a1d51ba808b3634d34951a21815cf371099c5a"
+  },
+  "ne_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "ne_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "4648d09b5314767a4b8e995599e593b9dc50e04c04b9706716a89541a73cc05f"
+  },
+  "LIGHT_ne_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "9be75d37a7030d7b9b200db1875b45717fc0a424bfce76b19a022b37c4aa22aa"
+  },
+  "LIGHT_ne_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_ne_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "ne_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "ne_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "ne_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "ne_steel": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "24e99d235a12bda39580771194c771aed48f212bc9ef591bd6de1be21cf40c45"
+  },
+  "LIGHT_ne_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_ne_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "5658544fb20dd1e79098f8e4cbd82d64a6903a8b17036c3883f31e74c549d1d6"
+  },
+  "ne_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "50b860a1cd5aca6024ae2e4310cb35dfe87db5e407bd4bba94a40f2bb0013403"
+  },
+  "ne_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "df13df947b359ee977fd34456b3561525cb94441536fa662c56cb8625f1b0859"
+  },
+  "ne_tower": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "e030d19ec36717190b2c74f15e9f710633e033f36a91453c4d383b7dc9c4ba27"
+  },
+  "LIGHT_ne_lantern": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "ed920678b586480a951c36106ea8f62d6290d3ebabcbfe7c58b4463ecd6261a6"
+  },
+  "ne_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "field/ne_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58"
+  },
+  "field/ne_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391"
+  }
+ }
+}

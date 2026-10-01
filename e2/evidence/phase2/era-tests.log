@@ -1,0 +1,17 @@
+test_absolute_ot_minutes_and_later_period_keep_possessions (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_absolute_ot_minutes_and_later_period_keep_possessions) ... ok
+test_all_owners_and_reversible_hooks (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_all_owners_and_reversible_hooks) ... ok
+test_completed_free_kick_fair_catch_spot_both_directions (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_completed_free_kick_fair_catch_spot_both_directions) ... ok
+test_cpu_try_choice_uses_era_and_afl_exception (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_cpu_try_choice_uses_era_and_afl_exception) ... ok
+test_every_moment_kickoff_touchback_pat_and_sign (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_every_moment_kickoff_touchback_pat_and_sign) ... ok
+test_every_overtime_format_first_scores_and_second_possession (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_every_overtime_format_first_scores_and_second_possession) ... ok
+test_every_try_value_including_afl_and_reentry (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_every_try_value_including_afl_and_reentry) ... ok
+test_incidental_facemask_settings_and_current_restore (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_incidental_facemask_settings_and_current_restore) ... ok
+test_invalid_row_and_current_mode_keep_underlying_rules (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_invalid_row_and_current_mode_keep_underlying_rules) ... ok
+test_no_overtime_and_postseason_period_continuation (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_no_overtime_and_postseason_period_continuation) ... ok
+test_old_coin_toss_clears_modern_defer_state (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_old_coin_toss_clears_modern_defer_state) ... ok
+test_old_pat_paths_and_defensive_try_dead_ball (tests.mod_editor.test_nfl2k5_era_rules.NativeRules.test_old_pat_paths_and_defensive_try_dead_ball) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 15.487s
+
+OK

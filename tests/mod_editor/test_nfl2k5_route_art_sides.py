@@ -333,6 +333,8 @@ class RetailPlaybookTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_playbook_inspector as insp
         from nfl2k5_playbook_position_recode import BOOK_ENTRIES, OuterImage
         cls.books = {}
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(EXTRACT)
         with OuterImage(EXTRACT) as archive:
             for name in sorted({case[0] for case in cls.CASES}):
                 raw = archive.read_entry(BOOK_ENTRIES[name])

@@ -1,0 +1,4182 @@
+{
+  "schema": "e2.candidates.v1",
+  "classification": "DESIGN",
+  "implemented_rows": 0,
+  "rank_basis": "Missing Super Bowls first, then additional Super Bowl phases using existing rosters, playoffs, regular season, and archival stretch.",
+  "pbp_inputs_sha256": {
+    "play_by_play_1999.csv.gz": "0875bf329eb09496ae948d0261eed6a4e5be2e11844b2656e1625242846d083d",
+    "play_by_play_2008.csv.gz": "d889f7f473304763ed00cb4e8f26cb110122ea5b712f49b4e94d3e5c19dab483",
+    "play_by_play_2010.csv.gz": "6d4f519b4821f06ffe2285faadad8cee718f464eeb9a310a8276753da10bee2e",
+    "play_by_play_2011.csv.gz": "ffa0bfb803f0c30a4b765af5e621b0f601d695efdba7d6d396fb067d6a0c89b2",
+    "play_by_play_2012.csv.gz": "ff1cda2e26610ef8720324e442d1e5ebc24918e08fd1d2933590b7b91a7068cd",
+    "play_by_play_2014.csv.gz": "4ab286d2873a7eab28e11120f1fe1bd1f0a6bbb6be452f86a76092bd49b2ee4a",
+    "play_by_play_2015.csv.gz": "837811471df06c43d55faede7a363274484da11e71f49d8e0801baede3a5965d",
+    "play_by_play_2017.csv.gz": "74032964ca6bdfc5bbe186253231a533d2d82aa531fac02b9382da01b3a8b34e",
+    "play_by_play_2019.csv.gz": "b764668137052be23745953cbc33fa17e537a70c81e9b73785a19a15e7288216",
+    "play_by_play_2021.csv.gz": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739",
+    "play_by_play_2022.csv.gz": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4",
+    "play_by_play_2023.csv.gz": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "LVII",
+      "category": "Super Bowl",
+      "target": "Patrick Mahomes scrambles into scoring range",
+      "record": {
+        "id": "e2_candidate_1",
+        "title": "MAHOMES ON ONE ANKLE",
+        "date": "February 12, 2023",
+        "history": null,
+        "goal": "Patrick Mahomes scrambles into scoring range.",
+        "stadium": "State Farm Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "KC_2022",
+        "home": "PHI_2022",
+        "user_side": "away",
+        "possession": "away",
+        "score_now": {
+          "away": 35,
+          "home": 35
+        },
+        "final_score": {
+          "away": 38,
+          "home": 35
+        },
+        "quarter": 4,
+        "clock": "02:55",
+        "down": 1,
+        "distance": 10,
+        "ball_on": "PHI 43",
+        "timeouts": {
+          "away": 2,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVII",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2022_22_KC_PHI",
+        "play_id": "3834",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2022_post",
+        "classification": "INFERRED",
+        "season": 2022,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "both_possessions",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "KC_2022",
+          "PHI_2022"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 2,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XLV",
+      "category": "Super Bowl",
+      "target": "Aaron Rodgers converts third-and-10 to Greg Jennings",
+      "record": {
+        "id": "e2_candidate_2",
+        "title": "RODGERS TO JENNINGS",
+        "date": "February 6, 2011",
+        "history": null,
+        "goal": "Aaron Rodgers converts third-and-10 to Greg Jennings.",
+        "stadium": "Cowboys Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PIT_2010",
+        "home": "GB_2010",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 28,
+          "away": 25
+        },
+        "final_score": {
+          "away": 25,
+          "home": 31
+        },
+        "quarter": 4,
+        "clock": "05:59",
+        "down": 3,
+        "distance": 10,
+        "ball_on": "GB 25",
+        "timeouts": {
+          "away": 1,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLV",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2010_21_PIT_GB",
+        "play_id": "3542",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2010_post",
+        "classification": "INFERRED",
+        "season": 2010,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "PIT_2010",
+          "GB_2010"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 3,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "50",
+      "category": "Super Bowl",
+      "target": "Von Miller strips Cam Newton late in the fourth quarter",
+      "record": {
+        "id": "e2_candidate_3",
+        "title": "VON MILLER STRIP SACK",
+        "date": "February 7, 2016",
+        "history": null,
+        "goal": "Von Miller strips Cam Newton late in the fourth quarter.",
+        "stadium": "Levi's Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "CAR_2015",
+        "home": "DEN_2015",
+        "user_side": "home",
+        "possession": "away",
+        "score_now": {
+          "away": 10,
+          "home": 16
+        },
+        "final_score": {
+          "away": 10,
+          "home": 24
+        },
+        "quarter": 4,
+        "clock": "04:16",
+        "down": 3,
+        "distance": 9,
+        "ball_on": "CAR 25",
+        "timeouts": {
+          "away": 3,
+          "home": 3
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_50",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2015.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2015_21_CAR_DEN",
+        "play_id": "4015",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2015_post",
+        "classification": "INFERRED",
+        "season": 2015,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "CAR_2015",
+          "DEN_2015"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 4,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XVII",
+      "category": "Super Bowl",
+      "target": "John Riggins breaks a fourth-and-one run for the lead",
+      "record": {
+        "id": "e2_candidate_4",
+        "title": "RIGGINS FOURTH AND ONE",
+        "date": "January 30, 1983",
+        "history": null,
+        "goal": "John Riggins breaks a fourth-and-one run for the lead.",
+        "stadium": "Rose Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "MIA_1982",
+        "home": "WAS_1982",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 17,
+          "home": 27
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XVII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1982_post",
+        "classification": "INFERRED",
+        "season": 1982,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "MIA_1982",
+          "WAS_1982"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 5,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XVIII",
+      "category": "Super Bowl",
+      "target": "Marcus Allen reverses field on his 74-yard touchdown",
+      "record": {
+        "id": "e2_candidate_5",
+        "title": "MARCUS ALLEN REVERSES",
+        "date": "January 22, 1984",
+        "history": null,
+        "goal": "Marcus Allen reverses field on his 74-yard touchdown.",
+        "stadium": "Tampa Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "WAS_1983",
+        "home": "LA_1983",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 9,
+          "home": 38
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XVIII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1983_post",
+        "classification": "INFERRED",
+        "season": 1983,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "WAS_1983",
+          "LA_1983"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 6,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XXXI",
+      "category": "Super Bowl",
+      "target": "Desmond Howard returns the kickoff for a touchdown",
+      "record": {
+        "id": "e2_candidate_6",
+        "title": "DESMOND HOWARD RETURNS",
+        "date": "January 26, 1997",
+        "history": null,
+        "goal": "Desmond Howard returns the kickoff for a touchdown.",
+        "stadium": "Louisiana Superdome",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "NE_1996",
+        "home": "GB_1996",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 21,
+          "home": 35
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXI"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1996_post",
+        "classification": "INFERRED",
+        "season": 1996,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "NE_1996",
+          "GB_1996"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 7,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XIV",
+      "category": "Super Bowl",
+      "target": "Terry Bradshaw finds John Stallworth for the fourth-quarter lead",
+      "record": {
+        "id": "e2_candidate_7",
+        "title": "STALLWORTH GOES DEEP",
+        "date": "January 20, 1980",
+        "history": null,
+        "goal": "Terry Bradshaw finds John Stallworth for the fourth-quarter lead.",
+        "stadium": "Rose Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "LA_1979",
+        "home": "PIT_1979",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 19,
+          "home": 31
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XIV"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1979_post",
+        "classification": "INFERRED",
+        "season": 1979,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "LA_1979",
+          "PIT_1979"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 8,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XIII",
+      "category": "Super Bowl",
+      "target": "Terry Bradshaw and Lynn Swann build the fourth-quarter lead",
+      "record": {
+        "id": "e2_candidate_8",
+        "title": "BRADSHAW'S FOUR SCORES",
+        "date": "January 21, 1979",
+        "history": null,
+        "goal": "Terry Bradshaw and Lynn Swann build the fourth-quarter lead.",
+        "stadium": "Miami Orange Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PIT_1978",
+        "home": "DAL_1978",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 35,
+          "home": 31
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XIII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1978_post",
+        "classification": "INFERRED",
+        "season": 1978,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "PIT_1978",
+          "DAL_1978"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 9,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "X",
+      "category": "Super Bowl",
+      "target": "Terry Bradshaw finds Lynn Swann deep",
+      "record": {
+        "id": "e2_candidate_9",
+        "title": "SWANN'S LEAP",
+        "date": "January 18, 1976",
+        "history": null,
+        "goal": "Terry Bradshaw finds Lynn Swann deep.",
+        "stadium": "Miami Orange Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "DAL_1975",
+        "home": "PIT_1975",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 17,
+          "home": 21
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_X"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1975_post",
+        "classification": "INFERRED",
+        "season": 1975,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "pre-1978 contact rules",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "DAL_1975",
+          "PIT_1975"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 10,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "III",
+      "category": "Super Bowl",
+      "target": "Joe Namath and Matt Snell build the Jets' upset",
+      "record": {
+        "id": "e2_candidate_10",
+        "title": "NAMATH'S GUARANTEE",
+        "date": "January 12, 1969",
+        "history": null,
+        "goal": "Joe Namath and Matt Snell build the Jets' upset.",
+        "stadium": "Miami Orange Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "NYJ_1968",
+        "home": "BAL_1968",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 16,
+          "home": 7
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_III"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1968_post",
+        "classification": "INFERRED",
+        "season": 1968,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 40,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "goal line",
+        "hash_width_feet": 40,
+        "pass_contact": "pre-1978 contact rules",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "NYJ_1968",
+          "BAL_1968"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 11,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "I",
+      "category": "Super Bowl",
+      "target": "Bart Starr finds Max McGee for the first Super Bowl touchdown",
+      "record": {
+        "id": "e2_candidate_11",
+        "title": "STARR FINDS MCGEE",
+        "date": "January 15, 1967",
+        "history": null,
+        "goal": "Bart Starr finds Max McGee for the first Super Bowl touchdown.",
+        "stadium": "Los Angeles Memorial Coliseum",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "KC_1966",
+        "home": "GB_1966",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 10,
+          "home": 35
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_I"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1966_post",
+        "classification": "INFERRED",
+        "season": 1966,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 40,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "goal line",
+        "hash_width_feet": 40,
+        "pass_contact": "pre-1978 contact rules",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "KC_1966",
+          "GB_1966"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 12,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XLVIII",
+      "category": "Super Bowl",
+      "target": "Percy Harvin returns the second-half kickoff",
+      "record": {
+        "id": "e2_candidate_12",
+        "title": "HARVIN'S SECOND HALF",
+        "date": "February 2, 2014",
+        "history": null,
+        "goal": "Percy Harvin returns the second-half kickoff.",
+        "stadium": "MetLife Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "SEA_2013",
+        "home": "DEN_2013",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "away": 22,
+          "home": 0
+        },
+        "final_score": {
+          "away": 43,
+          "home": 8
+        },
+        "quarter": 3,
+        "clock": "15:00",
+        "down": 0,
+        "distance": 10,
+        "ball_on": "DEN 35",
+        "timeouts": {
+          "away": 3,
+          "home": 3
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVIII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2013_post",
+        "classification": "INFERRED",
+        "season": 2013,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "SEA_2013",
+          "DEN_2013"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 13,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XLI",
+      "category": "Super Bowl",
+      "target": "Devin Hester returns the opening kickoff",
+      "record": {
+        "id": "e2_candidate_13",
+        "title": "HESTER OPENS THE SHOW",
+        "date": "February 4, 2007",
+        "history": null,
+        "goal": "Devin Hester returns the opening kickoff.",
+        "stadium": "Dolphin Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "IND_2006",
+        "home": "CHI_2006",
+        "user_side": "home",
+        "possession": "away",
+        "score_now": {
+          "away": 0,
+          "home": 0
+        },
+        "final_score": {
+          "away": 29,
+          "home": 17
+        },
+        "quarter": 1,
+        "clock": "15:00",
+        "down": 0,
+        "distance": 10,
+        "ball_on": "IND 30",
+        "timeouts": {
+          "away": 3,
+          "home": 3
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLI"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2006_post",
+        "classification": "INFERRED",
+        "season": 2006,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero",
+        "Player-side win objective differs from the historical losing team; event objective hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "IND_2006",
+          "CHI_2006"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 14,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XXXVII",
+      "category": "Super Bowl",
+      "target": "Derrick Brooks returns Rich Gannon's pass for a touchdown",
+      "record": {
+        "id": "e2_candidate_14",
+        "title": "BROOKS CLOSES THE DOOR",
+        "date": "January 26, 2003",
+        "history": null,
+        "goal": "Derrick Brooks returns Rich Gannon's pass for a touchdown.",
+        "stadium": "Qualcomm Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "OAK_2002",
+        "home": "TB_2002",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 21,
+          "home": 48
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2002_post",
+        "classification": "INFERRED",
+        "season": 2002,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "OAK_2002",
+          "TB_2002"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 15,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XXII",
+      "category": "Super Bowl",
+      "target": "Doug Williams throws four second-quarter touchdowns",
+      "record": {
+        "id": "e2_candidate_15",
+        "title": "DOUG WILLIAMS' QUARTER",
+        "date": "January 31, 1988",
+        "history": null,
+        "goal": "Doug Williams throws four second-quarter touchdowns.",
+        "stadium": "Jack Murphy Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "WAS_1987",
+        "home": "DEN_1987",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 42,
+          "home": 10
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXII"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1987_post",
+        "classification": "INFERRED",
+        "season": 1987,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "WAS_1987",
+          "DEN_1987"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 16,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XXI",
+      "category": "Super Bowl",
+      "target": "Phil Simms leads the Giants' second-half surge",
+      "record": {
+        "id": "e2_candidate_16",
+        "title": "SIMMS STARTS THE SURGE",
+        "date": "January 25, 1987",
+        "history": null,
+        "goal": "Phil Simms leads the Giants' second-half surge.",
+        "stadium": "Rose Bowl",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "DEN_1986",
+        "home": "NYG_1986",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 20,
+          "home": 39
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXI"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1986_post",
+        "classification": "INFERRED",
+        "season": 1986,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "DEN_1986",
+          "NYG_1986"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 17,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XXXIV",
+      "category": "Super Bowl",
+      "target": "Kurt Warner finds Isaac Bruce for 73 yards and the lead",
+      "record": {
+        "id": "e2_candidate_17",
+        "title": "WARNER TO BRUCE",
+        "date": "January 30, 2000",
+        "history": null,
+        "goal": "Kurt Warner finds Isaac Bruce for 73 yards and the lead.",
+        "stadium": "Georgia Dome",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "STL_1999",
+        "home": "TEN_1999",
+        "user_side": "away",
+        "possession": "away",
+        "score_now": {
+          "away": 16,
+          "home": 16
+        },
+        "final_score": {
+          "away": 23,
+          "home": 16
+        },
+        "quarter": 4,
+        "clock": "2:12",
+        "down": 1,
+        "distance": 10,
+        "ball_on": "STL 27",
+        "timeouts": {
+          "away": 3,
+          "home": 1
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "1999_21_STL_TEN",
+        "play_id": "3712",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_1999_post",
+        "classification": "INFERRED",
+        "season": 1999,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 1,
+        "new_team_seasons": [
+          "STL_1999"
+        ],
+        "roster_rows": 53,
+        "new_outer_entries_min": 1,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 18,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XLIII",
+      "category": "Super Bowl",
+      "target": "Kurt Warner finds Larry Fitzgerald for the late lead",
+      "record": {
+        "id": "e2_candidate_18",
+        "title": "FITZGERALD GOES 64",
+        "date": "February 1, 2009",
+        "history": null,
+        "goal": "Kurt Warner finds Larry Fitzgerald for the late lead.",
+        "stadium": "Raymond James Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PIT_2008",
+        "home": "ARI_2008",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 16,
+          "away": 20
+        },
+        "final_score": {
+          "away": 27,
+          "home": 23
+        },
+        "quarter": 4,
+        "clock": "02:47",
+        "down": 2,
+        "distance": 10,
+        "ball_on": "ARI 36",
+        "timeouts": {
+          "away": 2,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2008_21_PIT_ARI",
+        "play_id": "3607",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2008_post",
+        "classification": "INFERRED",
+        "season": 2008,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Player-side win objective differs from the historical losing team; event objective hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 19,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "XLVII",
+      "category": "Super Bowl",
+      "target": "Jacoby Jones returns the second-half kickoff",
+      "record": {
+        "id": "e2_candidate_19",
+        "title": "JACOBY JONES GOES 108",
+        "date": "February 3, 2013",
+        "history": null,
+        "goal": "Jacoby Jones returns the second-half kickoff.",
+        "stadium": "Mercedes-Benz Superdome",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "BAL_2012",
+        "home": "SF_2012",
+        "user_side": "away",
+        "possession": "home",
+        "score_now": {
+          "away": 21,
+          "home": 6
+        },
+        "final_score": {
+          "away": 34,
+          "home": 31
+        },
+        "quarter": 3,
+        "clock": "15:00",
+        "down": 0,
+        "distance": 10,
+        "ball_on": "SF 35",
+        "timeouts": {
+          "away": 3,
+          "home": 3
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2012_21_BAL_SF",
+        "play_id": "2120",
+        "quarter": 3,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2012_post",
+        "classification": "INFERRED",
+        "season": 2012,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 20,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "LII",
+      "category": "Super Bowl",
+      "target": "Brandon Graham strips Tom Brady and Derek Barnett recovers",
+      "record": {
+        "id": "e2_candidate_20",
+        "title": "BRANDON GRAHAM STRIPS",
+        "date": "February 4, 2018",
+        "history": null,
+        "goal": "Brandon Graham strips Tom Brady and Derek Barnett recovers.",
+        "stadium": "U.S. Bank Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PHI_2017",
+        "home": "NE_2017",
+        "user_side": "away",
+        "possession": "home",
+        "score_now": {
+          "home": 33,
+          "away": 38
+        },
+        "final_score": {
+          "away": 41,
+          "home": 33
+        },
+        "quarter": 4,
+        "clock": "02:16",
+        "down": 2,
+        "distance": 2,
+        "ball_on": "NE 33",
+        "timeouts": {
+          "away": 2,
+          "home": 1
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2017_21_PHI_NE",
+        "play_id": "4039",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2017_post",
+        "classification": "INFERRED",
+        "season": 2017,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 21,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": "LVIII",
+      "category": "Super Bowl",
+      "target": "Patrick Mahomes finds Mecole Hardman to end overtime",
+      "record": {
+        "id": "e2_candidate_21",
+        "title": "HARDMAN WINS IN VEGAS",
+        "date": "February 11, 2024",
+        "history": null,
+        "goal": "Patrick Mahomes finds Mecole Hardman to end overtime.",
+        "stadium": "Allegiant Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "SF_2023",
+        "home": "KC_2023",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 19,
+          "away": 22
+        },
+        "final_score": {
+          "away": 22,
+          "home": 25
+        },
+        "quarter": 5,
+        "clock": "00:06",
+        "down": 1,
+        "distance": 3,
+        "ball_on": "SF 3",
+        "timeouts": {
+          "away": 1,
+          "home": 1
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2023.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2023_22_SF_KC",
+        "play_id": "4860",
+        "quarter": 5,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2023_post",
+        "classification": "INFERRED",
+        "season": 2023,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "both_possessions",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": true,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Current schema only accepts quarters 1..4; overtime initial possession/state hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 22,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Tim Tebow finds Demaryius Thomas on the first overtime play",
+      "record": {
+        "id": "e2_candidate_22",
+        "title": "TEBOW TO THOMAS",
+        "date": "January 8, 2012",
+        "history": null,
+        "goal": "Tim Tebow finds Demaryius Thomas on the first overtime play.",
+        "stadium": "Sports Authority Field at Mile High",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PIT_2011",
+        "home": "DEN_2011",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 23,
+          "away": 23
+        },
+        "final_score": {
+          "away": 23,
+          "home": 29
+        },
+        "quarter": 5,
+        "clock": "15:00",
+        "down": 1,
+        "distance": 10,
+        "ball_on": "DEN 20",
+        "timeouts": {
+          "away": 2,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2011-12_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2011_18_PIT_DEN",
+        "play_id": "4058",
+        "quarter": 5,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2011_post",
+        "classification": "INFERRED",
+        "season": 2011,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Current schema only accepts quarters 1..4; overtime initial possession/state hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "PIT_2011",
+          "DEN_2011"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 23,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Russell Wilson finds Jermaine Kearse to win the NFC title",
+      "record": {
+        "id": "e2_candidate_23",
+        "title": "SEATTLE'S OVERTIME FINISH",
+        "date": "January 18, 2015",
+        "history": null,
+        "goal": "Russell Wilson finds Jermaine Kearse to win the NFC title.",
+        "stadium": "CenturyLink Field",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "GB_2014",
+        "home": "SEA_2014",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 22,
+          "away": 22
+        },
+        "final_score": {
+          "away": 22,
+          "home": 28
+        },
+        "quarter": 5,
+        "clock": "11:49",
+        "down": 1,
+        "distance": 10,
+        "ball_on": "GB 35",
+        "timeouts": {
+          "away": 2,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014_NFC_Championship_Game",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2014_20_GB_SEA",
+        "play_id": "4377",
+        "quarter": 5,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2014_post",
+        "classification": "INFERRED",
+        "season": 2014,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Current schema only accepts quarters 1..4; overtime initial possession/state hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 24,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "B.J. Raji intercepts Caleb Hanie for a touchdown",
+      "record": {
+        "id": "e2_candidate_24",
+        "title": "B.J. RAJI PICK SIX",
+        "date": "January 23, 2011",
+        "history": null,
+        "goal": "B.J. Raji intercepts Caleb Hanie for a touchdown.",
+        "stadium": "Soldier Field",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "GB_2010",
+        "home": "CHI_2010",
+        "user_side": "away",
+        "possession": "home",
+        "score_now": {
+          "home": 7,
+          "away": 14
+        },
+        "final_score": {
+          "away": 21,
+          "home": 14
+        },
+        "quarter": 4,
+        "clock": "06:12",
+        "down": 3,
+        "distance": 5,
+        "ball_on": "CHI 15",
+        "timeouts": {
+          "away": 3,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2010-11_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2010_20_GB_CHI",
+        "play_id": "3834",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2010_post",
+        "classification": "INFERRED",
+        "season": 2010,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "GB_2010",
+          "CHI_2010"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 25,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Aaron Rodgers finds Jeff Janis on the last regulation play; Arizona later wins",
+      "record": {
+        "id": "e2_candidate_25",
+        "title": "RODGERS TO JANIS",
+        "date": "January 16, 2016",
+        "history": null,
+        "goal": "Aaron Rodgers finds Jeff Janis on the last regulation play; Arizona later wins.",
+        "stadium": "University of Phoenix Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "GB_2015",
+        "home": "ARI_2015",
+        "user_side": "away",
+        "possession": "away",
+        "score_now": {
+          "away": 13,
+          "home": 20
+        },
+        "final_score": {
+          "away": 20,
+          "home": 26
+        },
+        "quarter": 4,
+        "clock": "00:05",
+        "down": 2,
+        "distance": 15,
+        "ball_on": "ARI 41",
+        "timeouts": {
+          "away": 0,
+          "home": 0
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2015-16_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2015.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2015_19_GB_ARI",
+        "play_id": "4354",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2015_post",
+        "classification": "INFERRED",
+        "season": 2015,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Win-only completion cannot award the real tying catch when Green Bay later loses; event objective hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 1,
+        "new_team_seasons": [
+          "ARI_2015"
+        ],
+        "roster_rows": 53,
+        "new_outer_entries_min": 1,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 26,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Trevor Lawrence rallies Jacksonville; Riley Patterson finishes",
+      "record": {
+        "id": "e2_candidate_26",
+        "title": "LAWRENCE FROM 27 DOWN",
+        "date": "January 14, 2023",
+        "history": null,
+        "goal": "Trevor Lawrence rallies Jacksonville; Riley Patterson finishes.",
+        "stadium": "TIAA Bank Field",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "LAC_2022",
+        "home": "JAX_2022",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 28,
+          "away": 30
+        },
+        "final_score": {
+          "away": 30,
+          "home": 31
+        },
+        "quarter": 4,
+        "clock": "00:03",
+        "down": 2,
+        "distance": 12,
+        "ball_on": "LAC 18",
+        "timeouts": {
+          "away": 0,
+          "home": 1
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022-23_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2022_19_LAC_JAX",
+        "play_id": "4315",
+        "quarter": 4,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2022_post",
+        "classification": "INFERRED",
+        "season": 2022,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "both_possessions",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "LAC_2022",
+          "JAX_2022"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 27,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Patrick Mahomes and Travis Kelce erase Houston's lead",
+      "record": {
+        "id": "e2_candidate_27",
+        "title": "MAHOMES FROM 24 DOWN",
+        "date": "January 12, 2020",
+        "history": null,
+        "goal": "Patrick Mahomes and Travis Kelce erase Houston's lead.",
+        "stadium": "Arrowhead Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "HOU_2019",
+        "home": "KC_2019",
+        "user_side": "home",
+        "possession": "home",
+        "score_now": {
+          "home": 7,
+          "away": 24
+        },
+        "final_score": {
+          "away": 31,
+          "home": 51
+        },
+        "quarter": 2,
+        "clock": "08:11",
+        "down": 2,
+        "distance": 5,
+        "ball_on": "HOU 5",
+        "timeouts": {
+          "away": 1,
+          "home": 2
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2019-20_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2019.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2019_19_HOU_KC",
+        "play_id": "1578",
+        "quarter": 2,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2019_post",
+        "classification": "INFERRED",
+        "season": 2019,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 1,
+        "new_team_seasons": [
+          "HOU_2019"
+        ],
+        "roster_rows": 53,
+        "new_outer_entries_min": 1,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 28,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Evan McPherson ends Cincinnati's comeback in overtime",
+      "record": {
+        "id": "e2_candidate_28",
+        "title": "BURROW'S ARROWHEAD RALLY",
+        "date": "January 30, 2022",
+        "history": null,
+        "goal": "Evan McPherson ends Cincinnati's comeback in overtime.",
+        "stadium": "GEHA Field at Arrowhead Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "CIN_2021",
+        "home": "KC_2021",
+        "user_side": "away",
+        "possession": "away",
+        "score_now": {
+          "away": 24,
+          "home": 24
+        },
+        "final_score": {
+          "away": 27,
+          "home": 24
+        },
+        "quarter": 5,
+        "clock": "09:26",
+        "down": 3,
+        "distance": 11,
+        "ball_on": "KC 13",
+        "timeouts": {
+          "away": 2,
+          "home": 1
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2021-22_NFL_playoffs",
+        "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz"
+      ],
+      "pbp_evidence": {
+        "classification": "PROVED OFFLINE",
+        "game_id": "2021_21_CIN_KC",
+        "play_id": "4216",
+        "quarter": 5,
+        "note": "Values read from cached nflverse. Pre-play scores use posteam_score/defteam_score. No full gamebook or video equivalence claim."
+      },
+      "rules": {
+        "id": "NFL_2021_post",
+        "classification": "INFERRED",
+        "season": 2021,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Current schema only accepts quarters 1..4; overtime initial possession/state hook required"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 0,
+        "new_team_seasons": [],
+        "roster_rows": 0,
+        "new_outer_entries_min": 0,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 29,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Brock Purdy finds Brandon Aiyuk after the ball hits Kindle Vildor",
+      "record": {
+        "id": "e2_candidate_29",
+        "title": "AIYUK'S REBOUND",
+        "date": "January 28, 2024",
+        "history": null,
+        "goal": "Brock Purdy finds Brandon Aiyuk after the ball hits Kindle Vildor.",
+        "stadium": "Levi's Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "DET_2023",
+        "home": "SF_2023",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 31,
+          "home": 34
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2023-24_NFL_playoffs"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2023_post",
+        "classification": "INFERRED",
+        "season": 2023,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "both_possessions",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": true,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 1,
+        "new_team_seasons": [
+          "DET_2023"
+        ],
+        "roster_rows": 53,
+        "new_outer_entries_min": 1,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 30,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Roger Staubach finds Drew Pearson for the late winning touchdown",
+      "record": {
+        "id": "e2_candidate_30",
+        "title": "STAUBACH'S HAIL MARY",
+        "date": "December 28, 1975",
+        "history": null,
+        "goal": "Roger Staubach finds Drew Pearson for the late winning touchdown.",
+        "stadium": "Metropolitan Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "DAL_1975",
+        "home": "MIN_1975",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 17,
+          "home": 14
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hail_Mary_pass"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1975_post",
+        "classification": "INFERRED",
+        "season": 1975,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "pre-1978 contact rules",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "DAL_1975",
+          "MIN_1975"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 31,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Jeremiah Castille strips Earnest Byner near the goal line",
+      "record": {
+        "id": "e2_candidate_31",
+        "title": "THE FUMBLE",
+        "date": "January 17, 1988",
+        "history": null,
+        "goal": "Jeremiah Castille strips Earnest Byner near the goal line.",
+        "stadium": "Mile High Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "CLE_1987",
+        "home": "DEN_1987",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 33,
+          "home": 38
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Fumble"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1987_post",
+        "classification": "INFERRED",
+        "season": 1987,
+        "postseason": true,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "CLE_1987",
+          "DEN_1987"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 32,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "playoff",
+      "target": "Ben Roethlisberger tackles Nick Harper after Jerome Bettis fumbles",
+      "record": {
+        "id": "e2_candidate_32",
+        "title": "ROETHLISBERGER'S TACKLE",
+        "date": "January 15, 2006",
+        "history": null,
+        "goal": "Ben Roethlisberger tackles Nick Harper after Jerome Bettis fumbles.",
+        "stadium": "RCA Dome",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "PIT_2005",
+        "home": "IND_2005",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 21,
+          "home": 18
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2005-06_NFL_playoffs"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2005_post",
+        "classification": "INFERRED",
+        "season": 2005,
+        "postseason": true,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": true,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "PIT_2005",
+          "IND_2005"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 33,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "regular season",
+      "target": "Ken Stabler, Pete Banaszak and Dave Casper advance the loose ball",
+      "record": {
+        "id": "e2_candidate_33",
+        "title": "THE HOLY ROLLER",
+        "date": "September 10, 1978",
+        "history": null,
+        "goal": "Ken Stabler, Pete Banaszak and Dave Casper advance the loose ball.",
+        "stadium": "San Diego Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "OAK_1978",
+        "home": "SD_1978",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 21,
+          "home": 20
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Holy_Roller_(American_football)"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1978_regular",
+        "classification": "INFERRED",
+        "season": 1978,
+        "postseason": false,
+        "two_point_try": false,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": null,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": false,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero",
+        "Pre-1979 offensive fumble-advance semantics require rule hook"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "OAK_1978",
+          "SD_1978"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 34,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "regular season",
+      "target": "Ryan Tannehill, Kenny Stills, DeVante Parker and Kenyan Drake win on laterals",
+      "record": {
+        "id": "e2_candidate_34",
+        "title": "MIAMI'S LATERAL MIRACLE",
+        "date": "December 9, 2018",
+        "history": null,
+        "goal": "Ryan Tannehill, Kenny Stills, DeVante Parker and Kenyan Drake win on laterals.",
+        "stadium": "Hard Rock Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "NE_2018",
+        "home": "MIA_2018",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 33,
+          "home": 34
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Miami"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2018_regular",
+        "classification": "INFERRED",
+        "season": 2018,
+        "postseason": false,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 25,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 15,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": true,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 10,
+        "postseason_continues": false,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "NE_2018",
+          "MIA_2018"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 35,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "regular season",
+      "target": "Dan Marino fakes a spike and finds Mark Ingram",
+      "record": {
+        "id": "e2_candidate_35",
+        "title": "MARINO'S FAKE SPIKE",
+        "date": "November 27, 1994",
+        "history": null,
+        "goal": "Dan Marino fakes a spike and finds Mark Ingram.",
+        "stadium": "Giants Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "MIA_1994",
+        "home": "NYJ_1994",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 28,
+          "home": 24
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Clock_Play"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_1994_regular",
+        "classification": "INFERRED",
+        "season": 1994,
+        "postseason": false,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": false,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "MIA_1994",
+          "NYJ_1994"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 36,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "regular season",
+      "target": "Vinny Testaverde rallies New York; Jumbo Elliott catches a touchdown",
+      "record": {
+        "id": "e2_candidate_36",
+        "title": "MONDAY NIGHT MIRACLE",
+        "date": "October 23, 2000",
+        "history": null,
+        "goal": "Vinny Testaverde rallies New York; Jumbo Elliott catches a touchdown.",
+        "stadium": "Giants Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "MIA_2000",
+        "home": "NYJ_2000",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 37,
+          "home": 40
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Monday_Night_Miracle_(American_football)"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2000_regular",
+        "classification": "INFERRED",
+        "season": 2000,
+        "postseason": false,
+        "two_point_try": true,
+        "kickoff_yard": 30,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "sudden_death",
+        "overtime_minutes": 15,
+        "postseason_continues": false,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": false,
+        "incidental_facemask_5_yards": true,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "MIA_2000",
+          "NYJ_2000"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 37,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "regular season",
+      "target": "Calvin Johnson sets up Matthew Stafford's fake-spike sneak",
+      "record": {
+        "id": "e2_candidate_37",
+        "title": "MEGATRON'S 329",
+        "date": "October 27, 2013",
+        "history": null,
+        "goal": "Calvin Johnson sets up Matthew Stafford's fake-spike sneak.",
+        "stadium": "Ford Field",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "DAL_2013",
+        "home": "DET_2013",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 30,
+          "home": 31
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2013_Detroit_Lions_season"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "id": "NFL_2013_regular",
+        "classification": "INFERRED",
+        "season": 2013,
+        "postseason": false,
+        "two_point_try": true,
+        "kickoff_yard": 35,
+        "free_kick_touchback_yard": 20,
+        "scrimmage_touchback_yard": 20,
+        "pat_kick_snap_yard": 2,
+        "two_point_snap_yard": 2,
+        "defensive_try_return": false,
+        "overtime": "modified_sudden_death_first_TD_ends",
+        "overtime_minutes": 15,
+        "postseason_continues": false,
+        "kickoff_fair_catch_to_25": false,
+        "dynamic_kickoff": false,
+        "coin_toss_defer": true,
+        "incidental_facemask_5_yards": false,
+        "goalposts": "end line",
+        "hash_width_feet": 18.5,
+        "pass_contact": "five-yard restriction",
+        "sources": [
+          "https://www.profootballhof.com/news/2-point-conversion-turns-30-years-old",
+          "https://www.profootballhof.com/football-history/football-history/1960-1979/1962",
+          "https://www.profootballhof.com/football-history/football-history/1980-1999/1994",
+          "https://www.profootballhof.com/news/nfl-s-first-experiment-with-ot",
+          "https://operations.nfl.com/media/hfjn4oid/2024-record-fact-book-incl-supplemental.pdf",
+          "https://edge-operations.nfl.com/media/2224/2016-nfl-rulebook.pdf",
+          "https://operations.nfl.com/media/1807/2015_nfl_rule_book_final.pdf",
+          "https://operations.nfl.com/media/rwnj5upg/2023-rulebook_final.pdf",
+          "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
+        ]
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "DAL_2013",
+          "DET_2013"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 38,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "stretch",
+      "target": "Guy Chamberlin's Bulldogs edge Chicago in their title season",
+      "record": {
+        "id": "e2_candidate_38",
+        "title": "CANTON'S 1922 BULLDOGS",
+        "date": "October 29, 1922",
+        "history": null,
+        "goal": "Guy Chamberlin's Bulldogs edge Chicago in their title season.",
+        "stadium": "Lakeside Park, Canton",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "CHI_1922",
+        "home": "CAN_1922",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": 0,
+          "home": 0
+        },
+        "final_score": {
+          "away": 6,
+          "home": 7
+        },
+        "quarter": 1,
+        "clock": "15:00",
+        "down": 0,
+        "distance": 10,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/1922_Canton_Bulldogs_season",
+        "https://www.pro-football-reference.com/teams/cbd/1922.htm"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "classification": "DESIGN",
+        "season": 1922,
+        "id": "LEATHER_HELMET_RESEARCH",
+        "note": "Do not apply the modern-era rule generator before 1960. Field size, passing, substitution, try, scoring and period conventions need separate research."
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero",
+        "Non-53-player historical squads need an explicit filler/two-way-role policy; leather helmets and period tactics absent"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "CHI_1922",
+          "CAN_1922"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 39,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "stretch",
+      "target": "Bronko Nagurski finds Red Grange on the indoor field",
+      "record": {
+        "id": "e2_candidate_39",
+        "title": "THE INDOOR PLAYOFF",
+        "date": "December 18, 1932",
+        "history": null,
+        "goal": "Bronko Nagurski finds Red Grange on the indoor field.",
+        "stadium": "Chicago Stadium",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "POR_1932",
+        "home": "CHI_1932",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": 0,
+          "home": 0
+        },
+        "final_score": {
+          "away": 0,
+          "home": 9
+        },
+        "quarter": 1,
+        "clock": "15:00",
+        "down": 0,
+        "distance": 10,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/1932_NFL_Playoff_Game",
+        "https://www.profootballhof.com/football-history/the-first-playoff-game"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "classification": "DESIGN",
+        "season": 1932,
+        "id": "LEATHER_HELMET_RESEARCH",
+        "note": "Do not apply the modern-era rule generator before 1960. Field size, passing, substitution, try, scoring and period conventions need separate research."
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero",
+        "Non-53-player historical squads need an explicit filler/two-way-role policy; leather helmets and period tactics absent",
+        "80-yard indoor field and special boundary/passing rules cannot be a normal stadium reskin"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "POR_1932",
+          "CHI_1932"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    },
+    {
+      "rank": 40,
+      "classification": "DESIGN",
+      "historical_claims": "INFERRED from cited game account",
+      "super_bowl": null,
+      "category": "stretch",
+      "target": "Ken Strong leads New York's fourth-quarter rally",
+      "record": {
+        "id": "e2_candidate_40",
+        "title": "THE SNEAKERS GAME",
+        "date": "December 9, 1934",
+        "history": null,
+        "goal": "Ken Strong leads New York's fourth-quarter rally.",
+        "stadium": "Polo Grounds",
+        "stadium_index": null,
+        "stadium_note": "DESIGN: allocate/reuse an era-correct resource binding, not a display-only rename.",
+        "away": "CHI_1934",
+        "home": "NYG_1934",
+        "user_side": "home",
+        "possession": null,
+        "score_now": {
+          "away": null,
+          "home": null
+        },
+        "final_score": {
+          "away": 13,
+          "home": 30
+        },
+        "quarter": null,
+        "clock": null,
+        "down": null,
+        "distance": null,
+        "ball_on": null,
+        "timeouts": {
+          "away": null,
+          "home": null
+        },
+        "weather": null,
+        "time_of_day": null,
+        "temperature": null,
+        "kits": {
+          "away": null,
+          "home": null
+        }
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/1934_NFL_Championship_Game",
+        "https://www.profootballhof.com/players/ken-strong",
+        "https://www.weather.gov/lmk/sneakers_game"
+      ],
+      "pbp_evidence": null,
+      "rules": {
+        "classification": "DESIGN",
+        "season": 1934,
+        "id": "LEATHER_HELMET_RESEARCH",
+        "note": "Do not apply the modern-era rule generator before 1960. Field size, passing, substitution, try, scoring and period conventions need separate research."
+      },
+      "implementation_ready": false,
+      "blockers": [
+        "50-row engine cap; new count and selector tables required",
+        "Finish history text (320..445 characters) and final title/goal budget",
+        "Confirm uniforms, weather and physical field from gamebook/photos",
+        "Confirm start clock, down, ball, possession, score and timeouts; null means unknown, not zero",
+        "Non-53-player historical squads need an explicit filler/two-way-role policy; leather helmets and period tactics absent"
+      ],
+      "capacity": {
+        "situ_rows": 1,
+        "record_bytes": 108,
+        "utf16_string_bytes": "2 * sum(len(text)+1) for six strings (title/history/goal/date/away selector/home selector); plus 16-byte alignment",
+        "added_team_files": 2,
+        "new_team_seasons": [
+          "CHI_1934",
+          "NYG_1934"
+        ],
+        "roster_rows": 106,
+        "new_outer_entries_min": 2,
+        "note": "Conservative cost against already authored m2 team-seasons; identical candidates in this backlog may share additional files. Art and retail-book aliases cost extra."
+      }
+    }
+  ]
+}

@@ -1,0 +1,571 @@
+{
+  "checked": "2026-09-25",
+  "note": "Each 2026 home venue's playing surface and the look it gets. Surfaces follow reality (sources per row); the ROST turf word is never written.",
+  "schema": "nfl2k5_modern_surfaces_venues/v1",
+  "venues": [
+    {
+      "look": "grass_bermuda",
+      "note": "retail model: Arizona Stadium (s00 keeps its retail building)",
+      "prefix": "s00",
+      "product": "Bermuda grass on a roll-out tray (retractable roof)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "ESPN (Jordan Raanan, 2026-06-12), World Cup grass in NFL stadiums (temporary grass at the synthetic venues): https://www.espn.com/nfl/story/_/id/49030490/fifa-world-cup-grass-nfl-stadiums-debate-field-surface"
+      ],
+      "surface": "grass",
+      "team": "ARI",
+      "venue": "State Farm Stadium"
+    },
+    {
+      "look": "synthetic_fieldturf",
+      "note": "retail model: Georgia Dome",
+      "prefix": "s01",
+      "product": "FieldTurf CORE (2024), reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "FieldTurf, 'Mercedes-Benz Stadium Extends Trust in FieldTurf CORE with New Surface': https://fieldturf.com/en/articles/detail/mercedes-benz-stadium-2022/",
+        "AJC (2026-05), temporary World Cup grass: https://www.ajc.com/sports/2026/05/wishing-mercedes-benz-stadiums-beautiful-world-cup-field-were-permanent/"
+      ],
+      "surface": "synthetic",
+      "team": "ATL",
+      "venue": "Mercedes-Benz Stadium"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "retail turf word 0 (turf): no divots or wear in game; the look only",
+      "prefix": "s02",
+      "product": "Bermuda and ryegrass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "BAL",
+      "venue": "M&T Bank Stadium"
+    },
+    {
+      "look": "grass_bluegrass",
+      "note": "the Highmark Stadium option builds this field when it is on; retail turf word 0",
+      "prefix": "s03",
+      "product": "Kentucky bluegrass, heated",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Wikipedia, Highmark Stadium: https://en.wikipedia.org/wiki/Highmark_Stadium"
+      ],
+      "surface": "grass",
+      "team": "BUF",
+      "venue": "Highmark Stadium (opened 2026)"
+    },
+    {
+      "look": "synthetic_fieldturf",
+      "note": "retail turf word 1 (grass): divots hidden, wear colour worn-turf",
+      "prefix": "s04",
+      "product": "FieldTurf Vertex CORE with CoolPlay infill (2021)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "FieldTurf, 'FieldTurf Coming to Bank of America Stadium for Carolina Panthers & Charlotte FC': https://fieldturf.com/en/articles/detail/carolina-panthers-charlotte-fc-2021/"
+      ],
+      "surface": "synthetic",
+      "team": "CAR",
+      "venue": "Bank of America Stadium"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s05",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "CHI",
+      "venue": "Soldier Field"
+    },
+    {
+      "broadcast": {
+        "light": "day",
+        "rgb": [
+          90,
+          108,
+          68
+        ],
+        "source": "2026 Week 1 highlights (TB@CIN, Paycor Stadium, day), frames 283-317 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "retail field is a material colour: the colour quad borrows the outside-grass texture",
+      "prefix": "s06",
+      "product": "FieldTurf CORE (2024)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "Bengals, 'New FieldTurf To Be Installed at Paycor Stadium for 2024 Season': https://www.bengals.com/news/paycor-stadium-field-turf-update-2024-season"
+      ],
+      "surface": "synthetic",
+      "team": "CIN",
+      "venue": "Paycor Stadium"
+    },
+    {
+      "look": "synthetic_helix",
+      "note": "retail model: Texas Stadium",
+      "prefix": "s07",
+      "product": "Hellas Matrix Helix (SoftTop), reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Hellas Construction PR, 'Hellas Heads Back To SoFi Stadium, NFL Matrix Helix Turf Installs Gaining Ground': https://www.prweb.com/releases/hellas-heads-back-to-sofi-stadium-nfl-matrix-helix-r-turf-installs-gaining-ground-872489553.html",
+        "Yahoo Sports, NFL stadiums swapped turf for grass ahead of the 2026 World Cup (Cowboys back to turf): https://sports.yahoo.com/nfl/article/nfl-stadiums-swapped-turf-for-grass-ahead-of-2026-world-cup-george-kittle-thumping-for-permanent-change-clearly-we-know-its-possible-225011642.html"
+      ],
+      "surface": "synthetic",
+      "team": "DAL",
+      "venue": "AT&T Stadium"
+    },
+    {
+      "look": "grass_bluegrass",
+      "note": "",
+      "prefix": "s08",
+      "product": "Kentucky bluegrass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "DEN",
+      "venue": "Empower Field at Mile High"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          63,
+          85,
+          58
+        ],
+        "source": "2026 Week 1 highlights (NO@DET, Ford Field, dome), frames 254-282 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "retail field is a material colour: the colour quad borrows the outside-grass texture",
+      "prefix": "s09",
+      "product": "FieldTurf CORE (2023)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "FieldTurf, 'Detroit Lions Replace Ford Field & Allen Park with FieldTurf CORE': https://fieldturf.com/en/articles/detail/detroit-lions-ford-field-2023/"
+      ],
+      "surface": "synthetic",
+      "team": "DET",
+      "venue": "Ford Field"
+    },
+    {
+      "look": "grass_bluegrass",
+      "note": "",
+      "prefix": "s10",
+      "product": "hybrid grass (natural grass reinforced with synthetic fibres)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "GB",
+      "venue": "Lambeau Field"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          102,
+          125,
+          78
+        ],
+        "source": "2026 Week 1 highlights (BAL@IND, Lucas Oil Stadium, dome), frames 177-218 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_helix",
+      "note": "retail model: RCA Dome",
+      "prefix": "s11",
+      "product": "Hellas Matrix Turf (2024)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Hellas Construction PR, 'Hellas Heads Back To SoFi Stadium, NFL Matrix Helix Turf Installs Gaining Ground': https://www.prweb.com/releases/hellas-heads-back-to-sofi-stadium-nfl-matrix-helix-r-turf-installs-gaining-ground-872489553.html",
+        "Wikipedia, Lucas Oil Stadium (surface history: FieldTurf 2008-2018, Shaw Sports Momentum Pro 2018-2024, Hellas Matrix Turf 2024-): https://en.wikipedia.org/wiki/Lucas_Oil_Stadium"
+      ],
+      "surface": "synthetic",
+      "team": "IND",
+      "venue": "Lucas Oil Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "day",
+        "rgb": [
+          106,
+          128,
+          75
+        ],
+        "source": "2026 Week 1 highlights (CLE@JAX, EverBank Stadium, day), frames 137-176 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s12",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "JAX",
+      "venue": "EverBank Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "night",
+        "rgb": [
+          106,
+          120,
+          53
+        ],
+        "source": "DEN@KC (MNF 2026 wk1 full game), Arrowhead Stadium, night; median turf with Modern colour's mask over 223 frames (tf, 2026-09-25)"
+      },
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s13",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "KC",
+      "venue": "Arrowhead Stadium"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s14",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "ESPN (Jordan Raanan, 2026-06-12), World Cup grass in NFL stadiums (temporary grass at the synthetic venues): https://www.espn.com/nfl/story/_/id/49030490/fifa-world-cup-grass-nfl-stadiums-debate-field-surface"
+      ],
+      "surface": "grass",
+      "team": "MIA",
+      "venue": "Hard Rock Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          105,
+          118,
+          73
+        ],
+        "source": "2026 Week 1 highlights (GB@MIN, U.S. Bank Stadium, dome), frames 387-433 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "retail model: Metrodome",
+      "prefix": "s15",
+      "product": "Act Global Xtreme Turf DX, 2.5 in monofilament (2024)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Minnesota Vikings, '9 Things to Know about Vikings New Turf at U.S. Bank Stadium': https://www.vikings.com/news/9-things-to-know-about-vikings-new-turf-at-u-s-bank-stadium-17134301",
+        "ESPN, 'Vikings changing artificial turfs, cite better injury data': https://www.espn.com/nfl/story/_/id/39160889/vikings-changing-artificial-turfs-cite-better-injury-data"
+      ],
+      "surface": "synthetic",
+      "team": "MIN",
+      "venue": "U.S. Bank Stadium"
+    },
+    {
+      "look": "synthetic_fieldturf",
+      "note": "retail turf word 1 (grass): divots hidden, wear colour worn-turf",
+      "prefix": "s16",
+      "product": "FieldTurf CORE (2024), reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "FieldTurf, 'Gillette Stadium Installs New FieldTurf CORE': https://fieldturf.com/en/articles/detail/gillette-stadium-2024/",
+        "98.5 The Sports Hub (2026-07-13), 'Gillette Stadium gets surface update after World Cup': https://985thesportshub.com/2026/07/13/gillette-stadium-gets-surface-update-after-world-cup/"
+      ],
+      "surface": "synthetic",
+      "team": "NE",
+      "venue": "Gillette Stadium"
+    },
+    {
+      "look": "synthetic_fieldturf",
+      "note": "",
+      "prefix": "s17",
+      "product": "Turf Nation S5 (2019)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Wikipedia, Caesars Superdome (surface history): https://en.wikipedia.org/wiki/Caesars_Superdome"
+      ],
+      "surface": "synthetic",
+      "team": "NO",
+      "venue": "Caesars Superdome"
+    },
+    {
+      "broadcast": {
+        "light": "night",
+        "rgb": [
+          71,
+          91,
+          61
+        ],
+        "source": "DAL@NYG (Skattebo clip, SNF 2026 wk1), MetLife Stadium, night; median turf with Modern colour's mask over 27 frames (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "Modern MetLife paints the art; retail turf word 1 (grass): divots hidden",
+      "prefix": "s18",
+      "product": "FieldTurf CORE (2023), reinstalled after the 2026 World Cup final",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "Jets X-Factor (2026-07-24), 'Jets' MetLife Stadium swaps out World Cup grass for turf': https://jetsxfactor.com/2026/07/24/jets-metlife-stadium-swap-out-world-cup-grass-turf/"
+      ],
+      "surface": "synthetic",
+      "team": "NYG",
+      "venue": "MetLife Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "night",
+        "rgb": [
+          71,
+          91,
+          61
+        ],
+        "source": "DAL@NYG (Skattebo clip, SNF 2026 wk1), MetLife Stadium, night; median turf with Modern colour's mask over 27 frames (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "Modern MetLife paints the art; retail turf word 1 (grass): divots hidden",
+      "prefix": "s19",
+      "product": "FieldTurf CORE (2023), reinstalled after the 2026 World Cup final",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "Jets X-Factor (2026-07-24), 'Jets' MetLife Stadium swaps out World Cup grass for turf': https://jetsxfactor.com/2026/07/24/jets-metlife-stadium-swap-out-world-cup-grass-turf/"
+      ],
+      "surface": "synthetic",
+      "team": "NYJ",
+      "venue": "MetLife Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          86,
+          114,
+          58
+        ],
+        "source": "2026 Week 1 highlights (MIA@LV, Allegiant Stadium, dome (translucent roof)), frames 434-464 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "grass_bermuda",
+      "note": "retail model: Oakland Coliseum (kept); the surface follows the 2026 venue",
+      "prefix": "s20",
+      "product": "Bermuda grass on a roll-in tray",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "LV",
+      "venue": "Allegiant Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "afternoon",
+        "rgb": [
+          110,
+          132,
+          76
+        ],
+        "source": "2026 Week 1 highlights (WAS@PHI, Lincoln Financial Field, late afternoon), frames 353-386 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "grass_bluegrass",
+      "note": "",
+      "prefix": "s21",
+      "product": "hybrid (Desso GrassMaster)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "PHI",
+      "venue": "Lincoln Financial Field"
+    },
+    {
+      "broadcast": {
+        "light": "day",
+        "rgb": [
+          94,
+          106,
+          71
+        ],
+        "source": "2026 Week 1 highlights (ATL@PIT, Acrisure Stadium, day), frames 97-136 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s22",
+      "product": "Bermuda grass (Kentucky bluegrass through 2025)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "The Sporting News (2025-10-16), Acrisure turf ('Kentucky bluegrass, the standard since 2009'): https://www.sportingnews.com/us/nfl/pittsburgh-steelers/news/steelers-browns-outrage-acrisure-stadium-turf-conditions/e6894b4fce2df4999a31dea0"
+      ],
+      "surface": "grass",
+      "team": "PIT",
+      "venue": "Acrisure Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          101,
+          119,
+          75
+        ],
+        "source": "2026 Week 1 highlights (ARI@LAC, SoFi Stadium, dome (canopy)), frames 465-495 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_helix",
+      "note": "the SoFi Stadium option paints the art when it is on; retail model: Edward Jones Dome",
+      "prefix": "s23",
+      "product": "Hellas Matrix Helix, reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Hellas Construction PR, 'Hellas Heads Back To SoFi Stadium, NFL Matrix Helix Turf Installs Gaining Ground': https://www.prweb.com/releases/hellas-heads-back-to-sofi-stadium-nfl-matrix-helix-r-turf-installs-gaining-ground-872489553.html",
+        "Los Angeles Rams, 'A detailed breakdown of the turf at SoFi Stadium': https://www.therams.com/news/a-detailed-breakdown-of-sofi-stadium-turf"
+      ],
+      "surface": "synthetic",
+      "team": "LAR",
+      "venue": "SoFi Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          101,
+          119,
+          75
+        ],
+        "source": "2026 Week 1 highlights (ARI@LAC, SoFi Stadium, dome (canopy)), frames 465-495 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_helix",
+      "note": "the SoFi Stadium option paints the art when it is on; retail turf word 1 (grass): divots hidden",
+      "prefix": "s24",
+      "product": "Hellas Matrix Helix, reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Hellas Construction PR, 'Hellas Heads Back To SoFi Stadium, NFL Matrix Helix Turf Installs Gaining Ground': https://www.prweb.com/releases/hellas-heads-back-to-sofi-stadium-nfl-matrix-helix-r-turf-installs-gaining-ground-872489553.html",
+        "Los Angeles Rams, 'A detailed breakdown of the turf at SoFi Stadium': https://www.therams.com/news/a-detailed-breakdown-of-sofi-stadium-turf"
+      ],
+      "surface": "synthetic",
+      "team": "LAC",
+      "venue": "SoFi Stadium"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "retail model: 3Com Park (San Francisco Park)",
+      "prefix": "s25",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "SF",
+      "venue": "Levi's Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "afternoon",
+        "rgb": [
+          86,
+          106,
+          69
+        ],
+        "source": "2026 Week 1 highlights (NE@SEA, Lumen Field, late afternoon), frames 1-33 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_fieldturf",
+      "note": "retail field is a material colour: the colour quad borrows the outside-grass texture",
+      "prefix": "s26",
+      "product": "FieldTurf CORE, reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
+        "Axios Seattle (2026-08-19), 'Artificial turf returns to Seattle's Lumen Field after World Cup': https://www.axios.com/local/seattle/2026/08/19/seattle-lumen-field-fieldturf-grass-seahawks-sounders"
+      ],
+      "surface": "synthetic",
+      "team": "SEA",
+      "venue": "Lumen Field"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s27",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "TB",
+      "venue": "Raymond James Stadium"
+    },
+    {
+      "broadcast": {
+        "light": "day",
+        "rgb": [
+          86,
+          105,
+          55
+        ],
+        "source": "2026 Week 1 highlights (NYJ@TEN, Nissan Stadium, day), frames 61-96 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_helix",
+      "note": "retail turf word 1 (grass): divots hidden",
+      "prefix": "s28",
+      "product": "Hellas Matrix Helix with organic infill (2023)",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Hellas PR (2023-02-01), 'Hellas Matrix Helix synthetic turf system being installed at the Tennessee Titans' Nissan Stadium': https://www.prnewswire.com/news-releases/hellas-matrix-helix-synthetic-turf-system-being-installed-at-the-tennessee-titans-nissan-stadium-301736736.html"
+      ],
+      "surface": "synthetic",
+      "team": "TEN",
+      "venue": "Nissan Stadium"
+    },
+    {
+      "look": "grass_bermuda",
+      "note": "",
+      "prefix": "s29",
+      "product": "Bermuda grass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "WAS",
+      "venue": "Northwest Stadium"
+    },
+    {
+      "look": "grass_bluegrass",
+      "note": "",
+      "prefix": "s30",
+      "product": "Kentucky bluegrass",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums"
+      ],
+      "surface": "grass",
+      "team": "CLE",
+      "venue": "Huntington Bank Field"
+    },
+    {
+      "broadcast": {
+        "light": "dome",
+        "rgb": [
+          100,
+          130,
+          65
+        ],
+        "source": "2026 Week 1 highlights (BUF@HOU, Reliant (NRG) Stadium, dome), frames 219-253 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
+      },
+      "look": "synthetic_helix",
+      "note": "retail turf word 1 (grass): divots hidden",
+      "prefix": "s37",
+      "product": "Hellas Matrix, reinstalled after the 2026 World Cup",
+      "sources": [
+        "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
+        "Houston Public Media (2026-05-07), World Cup grass installed over the Hellas turf at NRG Stadium: https://www.houstonpublicmedia.org/articles/news/sports/world-cup/2026/05/07/551207/how-houston-cultivated-its-grass-for-the-fifa-world-cup-and-how-its-being-installed-in-nrg-stadium/",
+        "Click2Houston (2026-05-08): https://www.click2houston.com/news/local/2026/05/08/houston-prepares-for-2026-fifa-world-cup-with-massive-nrg-stadium-turf-transformation/"
+      ],
+      "surface": "synthetic",
+      "team": "HOU",
+      "venue": "Reliant Stadium (NRG Stadium 2014-2026)"
+    }
+  ]
+}

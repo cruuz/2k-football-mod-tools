@@ -1,0 +1,186 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          33
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 0.25,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -29.511,
+          87.9
+        ],
+        [
+          29.511,
+          87.9
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          33
+        ],
+        "depth": 0.11,
+        "material": "cement01"
+      },
+      "width": 58.522,
+      "y": [
+        15.7,
+        23.93
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          30,
+          31,
+          33
+        ],
+        "depth": 0.12,
+        "material": "cement01"
+      },
+      "inset": 0.25,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -5.85,
+          -87.95
+        ],
+        [
+          43.018,
+          -87.95
+        ]
+      ],
+      "structure": {
+        "colour": [
+          30,
+          31,
+          33
+        ],
+        "depth": 0.11,
+        "material": "cement01"
+      },
+      "width": 48.768,
+      "y": [
+        15.9,
+        24.13
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -31.9,
+          29.0
+        ],
+        "y": [
+          15.5,
+          22.5
+        ],
+        "z": [
+          87.5,
+          88.1
+        ]
+      },
+      "materials": [
+        "poster",
+        "sign01",
+        "sign02",
+        "sign03"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -6.1,
+          43.3
+        ],
+        "y": [
+          15.5,
+          24.0
+        ],
+        "z": [
+          -88.2,
+          -87.8
+        ]
+      },
+      "materials": [
+        "sign01",
+        "sign02",
+        "sign03"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group150"
+    }
+  ],
+  "env": null,
+  "help": "the 2014 boards, 192 x 27 ft north and 160 x 27 ft south",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_s",
+    "jumboMarkerB": "bk_board_n"
+  },
+  "move": [
+    {
+      "materials": [
+        "digit_away_score_L",
+        "digit_away_score_R",
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "min_abs_z": 85.0,
+      "onto": "bk_board_n",
+      "shape": "group150",
+      "toward_centre": 2.0
+    },
+    {
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen",
+        "digit_playclock_L",
+        "digit_playclock_R"
+      ],
+      "min_abs_z": 85.0,
+      "onto": "bk_board_s",
+      "shape": "group150"
+    }
+  ],
+  "name": "Lincoln Financial Field",
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Sports Video Group, 'Fly, Eagles, Fly: Lincoln Financial Field Soars with 4K, Venue-Wide Upgrades' (2014-07-30): 'the north end-zone display measures 27 ft. tall x 192 ft. wide' and 'the south end-zone board 27 x 160 ft., totaling more than 9,400 sq. ft. of viewing area' (Panasonic). Its '11 fascia-mounted ribbon boards totaling more than 2,000 ft' carry no sizes of their own and are not built.",
+    "Wikipedia, Lincoln Financial Field (fetched 2026-09-25, st/renov/PHI.txt): the infobox's scoreboard 'Panasonic, North End-zone 192' x 27', South End-zone 160' x 27''; 'The upgraded sound systems and video boards were finished for the 2014 season.'",
+    "The retail s21 cityscape (PROVED OFFLINE): its lit skyline (LIGHT_buildings, up to 113 m) stands at z +426 to +743, where Center City lies north of the stadium, so +z is north and +x west (the frame st2 and st3 fixed at Acrisure Stadium and Huntington Bank Field); the 2003 corner banner structures agree with the Commons photos below.",
+    "The retail s21 scene (PROVED OFFLINE): each end's 2003 board is a feed quad on the end's middle band (group150, jumbo_tron: 12.5 x 6.7 m at z +87.9, y 15.7 to 22.4 in the north; 12.4 x 7.6 m at z -88.0, y 15.9 to 23.5 in the south) among ad panels, a player poster and scoreboard strips (sign01, sign02, poster, sign03) with the clock, score and play-clock digits (group150); the club level's rail and seats start above the band (22.6 m north, 24.1 m south). The north band runs x -39.1 to 39.7; the south band only x -5.4 to 39.3, because east of it a raised seat section stands out to z -80.3 over suites (x -44 to -6), with the visitor and home scores on its front strip.",
+    "Commons 'EaglesVsDolphinsNov15.jpg' (2015-11-15, from behind the south end zone): the north board on the band between the lower bowl and the level above, centred on the field across the upper deck's centre section, the game clock on its header. Commons 'Lincoln Financial Field, Philadelphia, 2024.jpg' (from the south-west stands): the south board on the west part of the south band, beside a glass-fronted box on its east side and the raised section beyond; the north board across the north band.",
+    "DESIGN: each board stands 0.25 m in front of its band from the old board's bottom (north 15.7 m, south 15.9 m) up 27 ft, the north board centred on the field (x -29.26 to 29.26), the south board from the raised section's west face (x -5.8) toward the south-west corner (42.97); its body closes the gap to the band. The band's 2003 panels behind the boards (the old board's housing) are cut and the rest of each band stays. The clock, score and play-clock digits move onto the boards, the north's 2 m toward the centre so the outer score digit lands on the board; the south's scores stay on the raised section's strip. Frames and bodies are the plain retail cement at a dark grey."
+  ],
+  "team": "PHI",
+  "venue": "s21"
+}

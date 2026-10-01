@@ -1,0 +1,12 @@
+{
+  "module": "mod_editor/core/nfl2k5_scorebug_resources.py",
+  "moved": {
+    "PROBE_APPEND_PINS.mnf": {
+      "before": "ee33fc2101b968175a0a9bd89b7396f7a7e23ab98793e918d6bce8f74c5e9c0e",
+      "after": "e39cc99656f1c09840c579c0fabf7ece7c3c2712b2e5b6091c259487a3d08693"
+    }
+  },
+  "unexpected": [],
+  "cause": "team marks in data/nfl2k5_scorebug_mnf/logos recoloured (b76-s12: nyg, lar; b76-s14: nyj, dal, ind, no, jax)",
+  "note": "Two runs this pass: 30137816 to ee33fc21 after nyj, dal and ind; ee33fc21 to e39cc996 after no and jax. The receipt records the last run."
+}

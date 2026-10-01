@@ -1,0 +1,22 @@
+{
+  "classification": "PROVED OFFLINE",
+  "at_utc": "2026-09-27T23:20:26.607251+00:00",
+  "removed": [
+    {
+      "path": "/media/noah/Storage/.b76-research/e2/astra-build/candidate_B_e2.xiso.iso",
+      "size": 8012931072,
+      "sha256": "b134e946c1cb3ead4aebb7a1ba1371184d21ceb45a3eafda61c2981e26174849"
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/e2/astra-build/recipe-probe.xbe",
+      "size": 12300288
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/e2/astra-build/era-probe.xbe",
+      "size": 12300288
+    }
+  ],
+  "disc_exists": false,
+  "storage_free_bytes": 30265331712,
+  "nvme_free_bytes": 115584536576
+}

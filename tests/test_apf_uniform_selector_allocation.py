@@ -20,6 +20,8 @@ import apf_uniform_selector_allocation as allocation  # noqa: E402
 class APFUniformSelectorAllocationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not allocation.DEFAULT_INVENTORY.is_file():
+            raise unittest.SkipTest(f"private APF uniform inventory absent: {allocation.DEFAULT_INVENTORY}")
         cls.inventory, cls.inventory_raw = allocation.load_inventory(
             allocation.DEFAULT_INVENTORY
         )

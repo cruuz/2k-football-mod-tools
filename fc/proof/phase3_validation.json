@@ -1,0 +1,91 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "tests": 142,
+  "logs": {
+    "tests_final.log": {
+      "tests": 83,
+      "seconds": 426.007,
+      "sha256": "0750ec3ed4565c4c60c53dbc94810a0635262908fccd9a4d6e764c314aac6d73",
+      "status": "passed"
+    },
+    "build_career_provider_final.log": {
+      "tests": 58,
+      "seconds": 27.591,
+      "sha256": "4901744a8f9f5bb92349078dd972a1c73fe92e1292a1939d44f9cca8e4c9fda9",
+      "status": "passed"
+    },
+    "manifest_final.log": {
+      "tests": 1,
+      "seconds": 0.019,
+      "sha256": "a479b3f87238bd9881b5fa447603612692970d5ab5cd6028263e71510c609e26",
+      "status": "passed"
+    }
+  },
+  "economy_generated_code": "reproduced with rookie table at 0x521598; capacity 224 bytes",
+  "provider_module_pins": 324,
+  "provider_pin_drift": [],
+  "route_syntax": "passed; not executed",
+  "native_fill_cases": 13,
+  "full_allocator_stack": {
+    "status": "complete composition and replay passed",
+    "log_sha256": "6b81650d67907fc8321fb4d947383574ceaac9a703f64f5df7f916fdecded0ac"
+  },
+  "nvme_free_bytes": 110809329664,
+  "runtime_witnessed": false,
+  "log_root": "/media/noah/Storage/.b76-research/fc/astra-build/phase3",
+  "resume_2026_09_27": {
+    "evidence": "PROVED OFFLINE",
+    "tests": 142,
+    "skipped": [],
+    "native_fill_cases": 13,
+    "native_receipt_identical": true,
+    "seconds": 498.972,
+    "source_and_input_hashes_match": true,
+    "full_build": "passed on one resumed attempt",
+    "disc_deleted": true,
+    "final_xbe_native_fill_cases": 13,
+    "full_payload_selective_reapply_exact": true,
+    "finisher_helper_fix": "Use mod_build._xbe_bytes, the existing disc reader; original tuning._xbe_bytes reference raised AttributeError before reading the disc. Final execution passed after correcting the reference.",
+    "logs": {
+      "resume_validation.log": {
+        "sha256": "700c228e77f49f8aa1d541ebb9b1d62858f4820728a99f14a33ff993918cbda2"
+      },
+      "resume_native_fill.json": {
+        "sha256": "697aa6696da1f02c9947fab78c164d8357d5afb655fb44a3b8662be2b7d958a6"
+      },
+      "resume_tree_check.json": {
+        "sha256": "58b37093a6ca331bb286aeb86d2cb335090710142e4838df6b87fb3fbe9ce081"
+      },
+      "build_resume.log": {
+        "sha256": "3f3188f8cb95afa4a4f612847aeeb06b2b1334af97640a31eb220af142580ff1"
+      },
+      "resume_build_execution.json": {
+        "sha256": "e89dac8fd21bc9c778ff477776cafe4fc33633653b0f9f86aa4d31267fb27e6e"
+      },
+      "finish_first_failure.log": {
+        "sha256": "d9bc72ea1d994b496a0af9742ae626be9fe2dcbde49eb0eedbb83d13a1058f9b"
+      },
+      "finish_resume.log": {
+        "sha256": "ae834a1f394418582896b2d9e5a011a52d6e1c0806d4e7c641df12f5c58f83f0"
+      },
+      "full_build_verification.json": {
+        "sha256": "ffd7fb1cf553aa19e5759c89a572512c17eddc428f9edb82407bf9cba81e016a"
+      },
+      "OWNER_STATUS.md": {
+        "sha256": "65a41ca9d6daa9e599c318bfb1024e1826b19d691e9f204014ab27afd2ae770d"
+      }
+    },
+    "nvme_min_sampled_bytes": 107458736128,
+    "storage_min_sampled_bytes": 18094776320,
+    "environment_event": "Transient Timeshift mount blocked two monitoring commands; existing build continued and shell access recovered without intervention.",
+    "final_checks": {
+      "evidence": "PROVED OFFLINE",
+      "diff_check": "passed",
+      "task_files_without_em_dash": 21,
+      "python_syntax": "passed",
+      "proof_copies_identical": true,
+      "disc_and_staging_absent": true,
+      "runtime_witnessed": false
+    }
+  }
+}

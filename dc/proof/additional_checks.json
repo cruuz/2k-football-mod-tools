@@ -1,0 +1,10 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "provider_module_pins_checked": 329,
+  "provider_module_pin_mismatches": [],
+  "missing_special_entries": 32,
+  "missing_entries_with_global_normalized_name_matches": [],
+  "missing_entries_with_global_name_verified_gsis_matches": [],
+  "frozen_code_changed_since_native_proofs": [],
+  "em_dash_files_in_dc_at_check": []
+}

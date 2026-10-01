@@ -5,16 +5,10 @@ user's own disc images, the folders they extract to, and the large generated
 reports under ``reports/``. All of them are gitignored, so somebody who clones
 this repo and runs pytest has none of them.
 
-Without this, a clean checkout produces 136 failures and 207 errors. Every one
-of them is a missing retail file, and the honest reading of that output is "this
-project is broken", which is the opposite of true. A skip with a reason is the
-accurate report: the test did not run because its input is absent.
-
-The decision is made from the exception the test actually raised, not from
-guessing which tests need what. A test that cannot open a path inside a
-gitignored directory is missing game data by definition, because those are
-precisely the paths git is told never to carry. Anything else, including a
-missing file the repo does ship, still fails exactly as loudly as before.
+Only missing-data errors qualify. Assertion verdicts (including unittest's
+custom failureException and pytest.fail) always remain failures, even when
+their message or exception chain names absent data. Tests that require private
+data but assert its presence must explicitly skip before making assertions.
 
 Nothing is skipped when the data is present, so a machine that has it, including
 the maintainer's and CI, runs exactly what it ran before.
@@ -66,10 +60,12 @@ GITIGNORED_TREES: tuple[Path, ...] = tuple(
         "reports/asset_samples",
         "reports/cross_title",
         "research",
+        "docs/research",
         "tools/vendor",
         "tools/generated",
         "artifacts",
         "assets",
+        "mod_editor/assets",
         # Build outputs. Several tests read a workflow manifest an earlier
         # tooling run left here, which a fresh checkout has never produced.
         "build",
@@ -85,9 +81,6 @@ GITIGNORED_TREES: tuple[Path, ...] = tuple(
 #: Individual files excluded the same way.
 GITIGNORED_FILES: tuple[Path, ...] = (ROOT / "ESPN NFL 2K5 (USA).xiso.iso",)
 
-_SUFFIXES = (".iso", ".qcow2")
-
-
 def _is_game_data(path: Path) -> bool:
     """True when this path is game data that is not on this machine at all.
 
@@ -98,8 +91,6 @@ def _is_game_data(path: Path) -> bool:
     fire on a machine that never had the data, which is the case it is for.
     """
 
-    if path.suffix.lower() in _SUFFIXES:
-        return not path.exists()
     if path in GITIGNORED_FILES:
         return not path.exists()
     return any(
@@ -115,19 +106,26 @@ def _named_in_message(error: BaseException) -> Path | None:
     raise their own type, with the path in the message and no ``filename``
     attribute to read. Matching the message is what covers those.
 
-    Requiring the tree to be *absent* is what keeps this honest. On a machine
-    that has the data, no message can trigger a skip, so a genuine failure that
-    happens to mention ``reports/assets`` still fails.
+    A path mention alone is not evidence of missing input. Require an explicit
+    file-absence statement next to the path, and match the actual tree, not a
+    suffix such as ``research`` inside a present ``docs/research`` tree.
     """
 
     text = str(error)
     for candidate in GITIGNORED_TREES + GITIGNORED_FILES:
         if candidate.exists():
             continue
-        if str(candidate) in text:
-            return candidate
-        if _names_a_path(text, candidate.relative_to(ROOT).as_posix()):
-            return candidate
+        relative = candidate.relative_to(ROOT).as_posix()
+        if str(candidate) not in text and not _names_a_path(text, relative):
+            continue
+        for name in (str(candidate), relative):
+            path = rf"(?<![\w./-]){re.escape(name)}(?:/[^\s'\"\n:,;]*)?(?![\w./-])"
+            absent = r"(?:missing(?: or symlinked)?|absent|not found|does not exist)"
+            label = r"(?:(?:required|local|retail|source|input|file|directory|path|report|tree|game|data|XISO)\s+)*"
+            before = rf"(?:\b{label}(?:is\s+)?{absent}\s*:?\s*|\bmissing\s+{label}|\bNo such file or directory:\s*)['\"]?{path}"
+            after = rf"{path}['\"]?\s+(?:is\s+)?{absent}\b"
+            if re.search(before, text, re.IGNORECASE) or re.search(after, text, re.IGNORECASE):
+                return candidate
     return None
 
 
@@ -149,10 +147,9 @@ def _names_a_path(text: str, relative: str) -> bool:
     stays a failure. A multi-segment name already looks like a path, so a word
     boundary is enough.
 
-    Both directions matter. A *preceding* separator is what lets ``research/``
-    match ``docs/research/``, since the gitignore pattern applies at any depth,
-    and it is what keeps a directory named at the end of a path from being
-    unmasked.
+    This is only a preliminary path-shaped candidate check. The caller also
+    requires explicit absence next to the configured path itself, so a match
+    for ``research`` inside a present ``docs/research`` tree cannot skip it.
     """
 
     name = re.escape(relative)
@@ -163,29 +160,41 @@ def _names_a_path(text: str, relative: str) -> bool:
     return re.search(pattern, text) is not None
 
 
-def _missing_game_data(error: BaseException) -> Path | None:
+def _missing_game_data(
+    error: BaseException, failure_exception: type[BaseException] = AssertionError,
+) -> Path | None:
     """The absent game-data path behind this error, if that is what it is."""
 
+    verdicts = (AssertionError, failure_exception)
+    if hasattr(pytest, "fail"):
+        verdicts += (pytest.fail.Exception,)
+    chain: list[BaseException] = []
     seen: set[int] = set()
     while error is not None and id(error) not in seen:
         seen.add(id(error))
-        if isinstance(error, (FileNotFoundError, NotADirectoryError)):
+        # Inspect the entire chain before accepting missing data. A wrapper
+        # must not turn an assertion verdict into a missing-input error.
+        if isinstance(error, verdicts):
+            return None
+        chain.append(error)
+        cause = error.__cause__
+        error = cause if cause is not None else error.__context__
+    for error in chain:
+        if isinstance(error, OSError):
             for name in (getattr(error, "filename", None),
                          getattr(error, "filename2", None)):
                 if not name:
                     continue
                 try:
-                    path = Path(name).resolve()
-                except OSError:
+                    path = Path(os.fsdecode(name)).resolve()
+                except (OSError, TypeError, ValueError):
                     continue
                 if _is_game_data(path):
                     return path
-        named = _named_in_message(error)
-        if named is not None:
-            return named
-        # A refusal is often re-raised as the tool's own error type with the
-        # original attached, so the cause chain has to be walked too.
-        error = error.__cause__ or error.__context__
+        elif isinstance(error, Exception):
+            named = _named_in_message(error)
+            if named is not None:
+                return named
     return None
 
 
@@ -195,7 +204,9 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
     if report.outcome != "failed" or call.excinfo is None:
         return
-    missing = _missing_game_data(call.excinfo.value)
+    testcase = getattr(item, "_testcase", None)
+    failure_exception = getattr(testcase, "failureException", AssertionError)
+    missing = _missing_game_data(call.excinfo.value, failure_exception)
     if missing is None:
         return
     try:
@@ -235,3 +246,19 @@ def pytest_sessionfinish(session, exitstatus) -> None:
             app.processEvents()
     except Exception:
         pass
+
+
+def pytest_collection_modifyitems(items) -> None:
+    """Guard the frozen v1 proof fixture without rewriting its pinned bytes.
+
+    The v2 proof pins the entire v1 test module, so its private-report
+    prerequisite lives here. Present input still runs every original assertion.
+    """
+    frozen_test = ROOT / "tests/test_nfl_group36_xemu_runtime_result.py"
+    report = ROOT / "reports/assets/nfl2k5_group36_s42_xemu_runtime_partial.v1.json"
+    if report.is_file():
+        return
+    marker = pytest.mark.skip(reason=f"private frozen v1 xemu diagnostic result absent: {report}")
+    for item in items:
+        if Path(item.path) == frozen_test:
+            item.add_marker(marker)

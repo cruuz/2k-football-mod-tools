@@ -1,0 +1,135 @@
+test_each_writer_requires_a_matching_composed_span_receipt (test_nfl2k5_model_fan_art.ModelStatus.test_each_writer_requires_a_matching_composed_span_receipt) ... ok
+test_neutral_event_slot_does_not_take_a_club_banner (test_nfl2k5_model_fan_art.Receipt.test_neutral_event_slot_does_not_take_a_club_banner) ... ok
+test_recognizes_each_pinned_model_variant (test_nfl2k5_model_fan_art.Receipt.test_recognizes_each_pinned_model_variant) ... ok
+test_tampered_bytes_parent_span_and_schema_refuse (test_nfl2k5_model_fan_art.Receipt.test_tampered_bytes_parent_span_and_schema_refuse) ... ok
+test_unknown_parent_model_is_rejected_before_any_archive_write (test_nfl2k5_model_fan_art.Receipt.test_unknown_parent_model_is_rejected_before_any_archive_write) ... ok
+test_unselected_art_keeps_exact_model_output (test_nfl2k5_model_fan_art.Receipt.test_unselected_art_keeps_exact_model_output) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.287s
+
+OK
+test_only_two_home_residual_atlases_are_authored (test_nfl2k5_stadium_shared_art.Catalog.test_only_two_home_residual_atlases_are_authored) ... ok
+test_pinned_sponsor_items_only_and_excluded_venues_absent (test_nfl2k5_stadium_shared_art.Catalog.test_pinned_sponsor_items_only_and_excluded_venues_absent) ... ok
+test_release_catalog_and_allowlist_cover_dependencies (test_nfl2k5_stadium_shared_art.Catalog.test_release_catalog_and_allowlist_cover_dependencies) ... ok
+test_special_slots_have_no_field_or_league_mark_targets (test_nfl2k5_stadium_shared_art.Catalog.test_special_slots_have_no_field_or_league_mark_targets) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.128s
+
+OK
+test_giants_and_jets_are_skipped_and_bad_items_refuse (test_nfl2k5_modern_venues_2026.ContractTests.test_giants_and_jets_are_skipped_and_bad_items_refuse) ... ok
+test_league_marks_load_from_the_art_root (test_nfl2k5_modern_venues_2026.ContractTests.test_league_marks_load_from_the_art_root) ... ok
+test_slots_become_rects_and_hashes_are_checked (test_nfl2k5_modern_venues_2026.ContractTests.test_slots_become_rects_and_hashes_are_checked) ... ok
+test_clean_turf_fills_marks_and_flattens_patterns (test_nfl2k5_modern_venues_2026.HelperTests.test_clean_turf_fills_marks_and_flattens_patterns) ... ok
+test_compose_keeps_pixels_outside_the_rects (test_nfl2k5_modern_venues_2026.HelperTests.test_compose_keeps_pixels_outside_the_rects) ... ok
+test_export_key_and_names (test_nfl2k5_modern_venues_2026.HelperTests.test_export_key_and_names) ... ok
+test_league_art_replaces_only_its_rect (test_nfl2k5_modern_venues_2026.HelperTests.test_league_art_replaces_only_its_rect) ... ok
+test_letterbox_keeps_aspect_and_clears_the_sides (test_nfl2k5_modern_venues_2026.HelperTests.test_letterbox_keeps_aspect_and_clears_the_sides) ... ok
+test_a_bundle_refit_changes_only_the_planned_textures (test_nfl2k5_modern_venues_2026.RetailTests.test_a_bundle_refit_changes_only_the_planned_textures) ... ok
+test_same_building_venues_take_their_2026_names_and_nothing_else_moves (test_nfl2k5_modern_venues_2026.RetailTests.test_same_building_venues_take_their_2026_names_and_nothing_else_moves) ... ok
+test_the_packs_read_as_retail (test_nfl2k5_modern_venues_2026.RetailTests.test_the_packs_read_as_retail) ... ok
+test_the_resolver_reproduces_the_table (test_nfl2k5_modern_venues_2026.RetailTests.test_the_resolver_reproduces_the_table) ... ok
+test_bundle_states_from_site_hashes_and_the_receipt (test_nfl2k5_modern_venues_2026.StateTests.test_bundle_states_from_site_hashes_and_the_receipt) ... ok
+test_kansas_city_fallback_is_arrowheads_art_without_the_yard_markers (test_nfl2k5_modern_venues_2026.TableTests.test_kansas_city_fallback_is_arrowheads_art_without_the_yard_markers) ... ok
+test_names_rename_only_same_building_venues (test_nfl2k5_modern_venues_2026.TableTests.test_names_rename_only_same_building_venues) ... ok
+test_the_known_variant_oddities_are_mapped (test_nfl2k5_modern_venues_2026.TableTests.test_the_known_variant_oddities_are_mapped) ... ok
+test_the_league_sponsor_sheet_reaches_every_home_venue (test_nfl2k5_modern_venues_2026.TableTests.test_the_league_sponsor_sheet_reaches_every_home_venue) ... ok
+test_the_table_covers_every_home_venue_but_the_giants_and_jets (test_nfl2k5_modern_venues_2026.TableTests.test_the_table_covers_every_home_venue_but_the_giants_and_jets) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 49.009s
+
+OK
+test_option_is_off_in_every_preset_and_runs_before_modern_surfaces (tests.mod_editor.test_nfl2k5_state_farm_model.Composition.test_option_is_off_in_every_preset_and_runs_before_modern_surfaces) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_state_farm_model.Composition.test_the_4x_pack_names_a_master_for_every_material) ... ok
+test_the_venue_art_leaves_s00_to_state_farm (tests.mod_editor.test_nfl2k5_state_farm_model.Composition.test_the_venue_art_leaves_s00_to_state_farm) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_state_farm_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art) ... ok
+test_every_bundle_is_pinned_and_the_registry_pins_the_ends (tests.mod_editor.test_nfl2k5_state_farm_model.Pins.test_every_bundle_is_pinned_and_the_registry_pins_the_ends) ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_mercedes_benz_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s01_to_the_model (tests.mod_editor.test_nfl2k5_mercedes_benz_model.Composition.test_the_venue_art_leaves_s01_to_the_model) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_mercedes_benz_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_mercedes_benz_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_the_registry_pins_the_first_and_last_stretch (tests.mod_editor.test_nfl2k5_mercedes_benz_model.Pins.test_the_registry_pins_the_first_and_last_stretch)
+The registry row's hash pins follow the pins file (they went stale once, after the Halo fix). ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_highmark_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s03_to_highmark (tests.mod_editor.test_nfl2k5_highmark_model.Composition.test_the_venue_art_leaves_s03_to_highmark) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_highmark_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_each_end_zone_takes_its_own_art (tests.mod_editor.test_nfl2k5_highmark_model.Pins.test_each_end_zone_takes_its_own_art)
+With a south set in the art root, the panels at +z show the north art in their textures' bottom halves and ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_highmark_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_the_field_fits_with_the_stripes_and_the_bills_art (tests.mod_editor.test_nfl2k5_highmark_model.Pins.test_the_field_fits_with_the_stripes_and_the_bills_art) ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_att_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s07_to_att (tests.mod_editor.test_nfl2k5_att_model.Composition.test_the_venue_art_leaves_s07_to_att) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_att_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_each_end_zone_takes_its_own_art (tests.mod_editor.test_nfl2k5_att_model.Pins.test_each_end_zone_takes_its_own_art)
+With a south set in the art root, the panels at +z show the north art in their textures' bottom halves and ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_att_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_the_field_fits_with_the_bands_and_the_cowboys_art (tests.mod_editor.test_nfl2k5_att_model.Pins.test_the_field_fits_with_the_bands_and_the_cowboys_art) ... ok
+test_the_texas_stadium_marks_are_cleared (tests.mod_editor.test_nfl2k5_att_model.Pins.test_the_texas_stadium_marks_are_cleared)
+The retail field's TEXAS STADIUM marks (two quads by the sidelines at midfield) draw nothing. ... ok
+test_option_is_off_in_every_preset_and_runs_before_modern_surfaces (tests.mod_editor.test_nfl2k5_lucas_oil_model.Composition.test_option_is_off_in_every_preset_and_runs_before_modern_surfaces) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_lucas_oil_model.Composition.test_the_4x_pack_names_a_master_for_every_material) ... ok
+test_the_venue_art_leaves_s11_to_lucas_oil (tests.mod_editor.test_nfl2k5_lucas_oil_model.Composition.test_the_venue_art_leaves_s11_to_lucas_oil) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_lucas_oil_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art) ... ok
+test_every_bundle_is_pinned_and_the_registry_pins_the_ends (tests.mod_editor.test_nfl2k5_lucas_oil_model.Pins.test_every_bundle_is_pinned_and_the_registry_pins_the_ends) ... ok
+test_option_is_off_in_every_preset_and_runs_before_modern_surfaces (tests.mod_editor.test_nfl2k5_everbank_model.Composition.test_option_is_off_in_every_preset_and_runs_before_modern_surfaces) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_everbank_model.Composition.test_the_4x_pack_names_a_master_for_every_material) ... ok
+test_the_venue_art_leaves_s12_to_the_model (tests.mod_editor.test_nfl2k5_everbank_model.Composition.test_the_venue_art_leaves_s12_to_the_model) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_everbank_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_the_registry_pins_the_ends (tests.mod_editor.test_nfl2k5_everbank_model.Pins.test_every_bundle_is_pinned_and_the_registry_pins_the_ends) ... ok
+test_option_is_off_in_every_preset_and_runs_before_modern_surfaces (tests.mod_editor.test_nfl2k5_hard_rock_model.Composition.test_option_is_off_in_every_preset_and_runs_before_modern_surfaces) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_hard_rock_model.Composition.test_the_4x_pack_names_a_master_for_every_material) ... ok
+test_the_venue_art_leaves_s14_to_the_model (tests.mod_editor.test_nfl2k5_hard_rock_model.Composition.test_the_venue_art_leaves_s14_to_the_model) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_hard_rock_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_the_registry_pins_the_ends (tests.mod_editor.test_nfl2k5_hard_rock_model.Pins.test_every_bundle_is_pinned_and_the_registry_pins_the_ends) ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_usbank_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_usbank_model.Composition.test_the_4x_pack_names_a_master_for_every_material)
+The Edition pack's masters carry the same names as the native art: the sky per time of day and the night ... ok
+test_the_build_runs_it_after_the_venue_art_and_before_modern_surfaces (tests.mod_editor.test_nfl2k5_usbank_model.Composition.test_the_build_runs_it_after_the_venue_art_and_before_modern_surfaces)
+The Build writes the Vikings' packages after Modern colour and the 2026 venue art and before Modern surfaces, ... ok
+test_the_venue_art_leaves_s15_to_us_bank (tests.mod_editor.test_nfl2k5_usbank_model.Composition.test_the_venue_art_leaves_s15_to_us_bank) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_usbank_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_usbank_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_the_registry_row_pins_the_first_and_last_stretch (tests.mod_editor.test_nfl2k5_usbank_model.Pins.test_the_registry_row_pins_the_first_and_last_stretch) ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_sofi_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s23_and_s24_to_sofi (tests.mod_editor.test_nfl2k5_sofi_model.Composition.test_the_venue_art_leaves_s23_and_s24_to_sofi) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_sofi_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_field_fits_and_splits (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_field_fits_and_splits) ... ok
+test_official_colours_survive_modern_colour (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_official_colours_survive_modern_colour)
+Modern colour's end-zone pass would move the Rams' sol #FFD100 toward lemon; the painted marks keep theirs. ... ok
+test_one_turf_for_both_records (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_one_turf_for_both_records)
+The Chargers' field lays the Rams' (dome) turf, surround and numbers, and the dome's detail normal map. ... ok
+test_the_camera_table_matches_the_retail_scenes (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_camera_table_matches_the_retail_scenes) ... ok
+test_the_kept_banners_carry_the_2026_league_cloths (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_kept_banners_carry_the_2026_league_cloths)
+banner_corp takes u4's 2026 league sheet in every bundle (st's method): the SEGA cloth's cell changes, rain ... ok
+test_the_super_bowl_field (tests.mod_editor.test_nfl2k5_sofi_model.Pins.test_the_super_bowl_field)
+s40: the LXI mark at midfield and the NFL shield on both 25s, each quad at its art's true proportions, the ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_levis_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s25_to_levis (tests.mod_editor.test_nfl2k5_levis_model.Composition.test_the_venue_art_leaves_s25_to_levis) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_levis_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_levis_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_option_is_off_in_every_preset (tests.mod_editor.test_nfl2k5_allegiant_model.Composition.test_option_is_off_in_every_preset) ... ok
+test_the_venue_art_leaves_s20_to_the_model (tests.mod_editor.test_nfl2k5_allegiant_model.Composition.test_the_venue_art_leaves_s20_to_the_model) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_allegiant_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_under_retail (tests.mod_editor.test_nfl2k5_allegiant_model.Pins.test_every_bundle_is_pinned_and_under_retail) ... ok
+test_option_is_off_in_every_preset_and_runs_before_modern_surfaces (tests.mod_editor.test_nfl2k5_lambeau_model.Composition.test_option_is_off_in_every_preset_and_runs_before_modern_surfaces) ... ok
+test_the_4x_pack_names_a_master_for_every_material (tests.mod_editor.test_nfl2k5_lambeau_model.Composition.test_the_4x_pack_names_a_master_for_every_material) ... ok
+test_the_venue_art_leaves_s10_to_the_model (tests.mod_editor.test_nfl2k5_lambeau_model.Composition.test_the_venue_art_leaves_s10_to_the_model) ... ok
+test_the_reviewed_release_catalog_carries_the_art (tests.mod_editor.test_nfl2k5_lambeau_model.ReleaseCatalog.test_the_reviewed_release_catalog_carries_the_art)
+Every authored PNG ships as an exact reviewed catalog entry, and the release checker pins the catalog. ... ok
+test_every_bundle_is_pinned_and_the_registry_pins_the_ends (tests.mod_editor.test_nfl2k5_lambeau_model.Pins.test_every_bundle_is_pinned_and_the_registry_pins_the_ends) ... ok
+
+----------------------------------------------------------------------
+Ran 67 tests in 212.361s
+
+OK

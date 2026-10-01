@@ -1,0 +1,386 @@
+{
+  "ARZ": {
+    "status": "DESIGN",
+    "page": "ARZ_defense.svg",
+    "plays": [
+      8,
+      16,
+      208,
+      40,
+      37,
+      9
+    ]
+  },
+  "ATL": {
+    "status": "DESIGN",
+    "page": "ATL_defense.svg",
+    "plays": [
+      13,
+      16,
+      9,
+      39,
+      11,
+      8
+    ]
+  },
+  "BAL": {
+    "status": "DESIGN",
+    "page": "BAL_defense.svg",
+    "plays": [
+      18,
+      10,
+      21,
+      190,
+      16,
+      15
+    ]
+  },
+  "BUF": {
+    "status": "DESIGN",
+    "page": "BUF_defense.svg",
+    "plays": [
+      10,
+      13,
+      8,
+      29,
+      201,
+      16
+    ]
+  },
+  "CAR": {
+    "status": "DESIGN",
+    "page": "CAR_defense.svg",
+    "plays": [
+      9,
+      20,
+      8,
+      19,
+      24,
+      200
+    ]
+  },
+  "CHI": {
+    "status": "DESIGN",
+    "page": "CHI_defense.svg",
+    "plays": [
+      9,
+      10,
+      20,
+      8,
+      33,
+      24
+    ]
+  },
+  "CIN": {
+    "status": "DESIGN",
+    "page": "CIN_defense.svg",
+    "plays": [
+      22,
+      4,
+      189,
+      8,
+      17,
+      9
+    ]
+  },
+  "CLE": {
+    "status": "DESIGN",
+    "page": "CLE_defense.svg",
+    "plays": [
+      15,
+      8,
+      10,
+      33,
+      39,
+      9
+    ]
+  },
+  "DAL": {
+    "status": "DESIGN",
+    "page": "DAL_defense.svg",
+    "plays": [
+      11,
+      14,
+      21,
+      31,
+      37,
+      12
+    ]
+  },
+  "DEN": {
+    "status": "DESIGN",
+    "page": "DEN_defense.svg",
+    "plays": [
+      8,
+      9,
+      11,
+      14,
+      23,
+      12
+    ]
+  },
+  "DET": {
+    "status": "DESIGN",
+    "page": "DET_defense.svg",
+    "plays": [
+      9,
+      17,
+      15,
+      194,
+      187,
+      32
+    ]
+  },
+  "GB": {
+    "status": "DESIGN",
+    "page": "GB_defense.svg",
+    "plays": [
+      17,
+      8,
+      16,
+      38,
+      39,
+      12
+    ]
+  },
+  "HOU": {
+    "status": "DESIGN",
+    "page": "HOU_defense.svg",
+    "plays": [
+      14,
+      11,
+      7,
+      10,
+      29,
+      203
+    ]
+  },
+  "IND": {
+    "status": "DESIGN",
+    "page": "IND_defense.svg",
+    "plays": [
+      8,
+      21,
+      191,
+      14,
+      27,
+      15
+    ]
+  },
+  "JAX": {
+    "status": "DESIGN",
+    "page": "JAX_defense.svg",
+    "plays": [
+      17,
+      10,
+      27,
+      9,
+      8,
+      13
+    ]
+  },
+  "KC": {
+    "status": "DESIGN",
+    "page": "KC_defense.svg",
+    "plays": [
+      21,
+      13,
+      15,
+      20,
+      26,
+      9
+    ]
+  },
+  "MIA": {
+    "status": "DESIGN",
+    "page": "MIA_defense.svg",
+    "plays": [
+      9,
+      8,
+      21,
+      182,
+      33,
+      12
+    ]
+  },
+  "MIN": {
+    "status": "DESIGN",
+    "page": "MIN_defense.svg",
+    "plays": [
+      70,
+      69,
+      90,
+      66,
+      204,
+      71
+    ]
+  },
+  "NE": {
+    "status": "DESIGN",
+    "page": "NE_defense.svg",
+    "plays": [
+      36,
+      15,
+      175,
+      159,
+      17,
+      35
+    ]
+  },
+  "NO": {
+    "status": "DESIGN",
+    "page": "NO_defense.svg",
+    "plays": [
+      19,
+      10,
+      11,
+      29,
+      16,
+      14
+    ]
+  },
+  "NYG": {
+    "status": "DESIGN",
+    "page": "NYG_defense.svg",
+    "plays": [
+      8,
+      13,
+      23,
+      11,
+      9,
+      12
+    ]
+  },
+  "NYJ": {
+    "status": "DESIGN",
+    "page": "NYJ_defense.svg",
+    "plays": [
+      23,
+      12,
+      13,
+      8,
+      204,
+      206
+    ]
+  },
+  "OAK": {
+    "status": "DESIGN",
+    "page": "OAK_defense.svg",
+    "plays": [
+      17,
+      2,
+      100,
+      5,
+      1,
+      205
+    ]
+  },
+  "PHI": {
+    "status": "DESIGN",
+    "page": "PHI_defense.svg",
+    "plays": [
+      12,
+      24,
+      9,
+      20,
+      203,
+      10
+    ]
+  },
+  "PIT": {
+    "status": "DESIGN",
+    "page": "PIT_defense.svg",
+    "plays": [
+      7,
+      17,
+      10,
+      29,
+      197,
+      22
+    ]
+  },
+  "SD": {
+    "status": "DESIGN",
+    "page": "SD_defense.svg",
+    "plays": [
+      168,
+      154,
+      158,
+      161,
+      167,
+      164
+    ]
+  },
+  "SEA": {
+    "status": "DESIGN",
+    "page": "SEA_defense.svg",
+    "plays": [
+      21,
+      15,
+      19,
+      33,
+      12,
+      16
+    ]
+  },
+  "SF": {
+    "status": "DESIGN",
+    "page": "SF_defense.svg",
+    "plays": [
+      13,
+      14,
+      184,
+      12,
+      16,
+      10
+    ]
+  },
+  "STL": {
+    "status": "DESIGN",
+    "page": "STL_defense.svg",
+    "plays": [
+      143,
+      137,
+      123,
+      122,
+      140,
+      121
+    ]
+  },
+  "TB": {
+    "status": "DESIGN",
+    "page": "TB_defense.svg",
+    "plays": [
+      8,
+      9,
+      171,
+      31,
+      11,
+      25
+    ]
+  },
+  "TEN": {
+    "status": "DESIGN",
+    "page": "TEN_defense.svg",
+    "plays": [
+      16,
+      10,
+      12,
+      202,
+      203,
+      13
+    ]
+  },
+  "WAS": {
+    "status": "DESIGN",
+    "page": "WAS_defense.svg",
+    "plays": [
+      12,
+      9,
+      16,
+      29,
+      19,
+      15
+    ]
+  }
+}

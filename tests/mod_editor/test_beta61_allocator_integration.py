@@ -82,8 +82,11 @@ class CompleteOwnerTests(unittest.TestCase):
         layout = space.layout(self.full)
         regions = layout["regions"]
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 82023)  # beta 69: J5 adds 896 RX; beta 71: the sprite scorebug owner grows from 1,408 to 4,096 RX; existing owners retain their budgets
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 83762)  # beta 69: CPU defer adds 4 RW; existing owners retain their budgets
+        # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
+        # venue labels 2304 RX to the previous 91879-byte union.
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 97767)
+        # Era rules also add one 16-byte state allocation.
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84546)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])
@@ -103,12 +106,16 @@ class CompleteOwnerTests(unittest.TestCase):
         legacy = space.apply(self.retail, legacy_requests)[0]
         # Beta 71: the two-owner layout alone needs the scale region for the 4,096-byte sprite owner, so its file
         # is one page-aligned region longer than the beta-61 size; the full union still fits FILE_SIZE (asserted above).
-        self.assertEqual(len(legacy) - space.FILE_SIZE, 69632)
+        # Beta 76 s15: the 4,608-byte sprite owner no longer fits the 4 KiB code page at CODE_VA+126976, so the
+        # two-owner layout opens the 24-page code region and its file is exactly as long as the full union's.
+        self.assertEqual(len(legacy) - space.FILE_SIZE, 270336)
+        self.assertEqual(len(legacy), len(self.full))
         # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
         # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
+        # Beta 76 s15: at 4,608 bytes it starts the 24-page code region, and the region directory follows the union.
         self.assertEqual([a["va"] for a in space.layout(legacy)["allocations"]],
-                         [space.CODE_VA, space.CODE_VA+704, space.DATA_VA,
-                          space.CODE_VA+126976, space.DATA_VA+16])
+                         [space.CODE_VA, space.CODE_VA+704, space.DATA_VA, space.DATA_VA+16,
+                          space.CODE_VA+131072, space.DATA_VA+307200])
         full_sites = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
         for a in space.layout(legacy)["allocations"]:
             if a["owner"] == tt.scorebug_runtime_patch.OWNER and a["kind"] == "code":
@@ -127,9 +134,14 @@ class CompleteOwnerTests(unittest.TestCase):
                     space.apply(bad, REQUESTS)
         with self.assertRaisesRegex(ValueError, "differ"):
             space.apply(self.full, tt.momentum_patch.REQUESTS)
-        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 4096, 16),))
+        # The era and stock-book owners consume 3584 of the previous 3776
+        # spare RX bytes. Venue labels occupy legacy tails. Pin the remaining
+        # 192-byte boundary, including alignment and the final K128 owner.
+        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 192, 16),))
         self.assertTrue(space.is_scaleout(overflow))
         self.assertEqual(space.status(overflow), "applied")
+        with self.assertRaisesRegex(ValueError, "capacity exceeded"):
+            space.plan(REQUESTS + (("extra", "code", 208, 16),))
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
             space.plan(REQUESTS + (("extra", "code", 98305, 16),))
 

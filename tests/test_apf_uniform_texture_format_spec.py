@@ -19,7 +19,14 @@ import apf_uniform_texture_format_spec as format_spec  # noqa: E402
 
 
 class ApfUniformTextureFormatSpecTest(unittest.TestCase):
+    def require_source_reports(self, *, version: int = 2) -> None:
+        pins = format_spec.SOURCE_PINS_V1 if version == 1 else format_spec.SOURCE_PINS_V2
+        missing = [path for path, *_ in pins.values() if not (ROOT / path).is_file()]
+        if missing:
+            self.skipTest("Private APF texture proof reports missing: " + ", ".join(missing))
+
     def test_immutable_v1_validates_and_keeps_exact_hash(self) -> None:
+        self.require_source_reports(version=1)
         self.assertEqual(
             format_spec.validate(format_spec.V1_SPEC),
             {"version": 1, "families": 3, "slots": 72, "mips": 24},
@@ -31,6 +38,7 @@ class ApfUniformTextureFormatSpecTest(unittest.TestCase):
         )
 
     def test_canonical_v2_validates_four_closed_families(self) -> None:
+        self.require_source_reports()
         self.assertEqual(
             format_spec.validate(),
             {"version": 2, "families": 4, "slots": 96, "mips": 33},
@@ -44,6 +52,7 @@ class ApfUniformTextureFormatSpecTest(unittest.TestCase):
         self.assertEqual(set(v2["families"]) - set(v1["families"]), {"shoulder_color"})
 
     def test_mutated_descriptor_is_rejected(self) -> None:
+        self.require_source_reports()
         original = json.loads(format_spec.DEFAULT_SPEC.read_bytes())
         mutated = copy.deepcopy(original)
         mutated["families"]["shoulder_color"]["txtr_descriptor"]["width"] = 512
@@ -54,6 +63,7 @@ class ApfUniformTextureFormatSpecTest(unittest.TestCase):
                 format_spec.validate(path)
 
     def test_mutated_per_slot_allocation_is_rejected(self) -> None:
+        self.require_source_reports()
         original = json.loads(format_spec.DEFAULT_SPEC.read_bytes())
         mutated = copy.deepcopy(original)
         mutated["families"]["shoulder_color"]["per_slot_fixed_allocations"][23][6] += 2048
@@ -64,6 +74,7 @@ class ApfUniformTextureFormatSpecTest(unittest.TestCase):
                 format_spec.validate(path)
 
     def test_mutated_source_pin_is_rejected_before_facts_are_trusted(self) -> None:
+        self.require_source_reports()
         original = json.loads(format_spec.DEFAULT_SPEC.read_bytes())
         mutated = copy.deepcopy(original)
         mutated["source_pins"][0]["sha256"] = "0" * 64
@@ -74,6 +85,7 @@ class ApfUniformTextureFormatSpecTest(unittest.TestCase):
                 format_spec.validate(path)
 
     def test_mutated_shoulder_sibling_span_is_rejected(self) -> None:
+        self.require_source_reports()
         original = json.loads(format_spec.DEFAULT_SPEC.read_bytes())
         mutated = copy.deepcopy(original)
         mutated["families"]["shoulder_color"]["preserved_sibling_files"][2]["parts"][1][3] -= 16

@@ -1,0 +1,32 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base": "c340704642e5a4b4115b2e97766a318e5a41b054",
+  "files": [
+    {
+      "path": "mod_editor/core/nfl2k5_sofi_model.py",
+      "sha256": "1cc2d26f2edcb3ed0bc4a1271a30fce630be1634189eee9ce75d14cfa53e5471",
+      "unchanged": true
+    },
+    {
+      "path": "mod_editor/core/nfl2k5_sofi_venue.py",
+      "sha256": "754b26053df033fd0f8265490eab5c8c780bac266142cc41f5695a4113eadb9b",
+      "unchanged": true
+    },
+    {
+      "path": "data/nfl2k5_sofi_model/pins.json",
+      "sha256": "c1b28ee29df0f99144eb24d1387d7dfe9aa5e32580d03c6f52700d0774207a2d",
+      "unchanged": true
+    },
+    {
+      "path": "data/nfl2k5_sofi_model/art/art.json",
+      "sha256": "abc1e6a0520064c2723b60fdbfe0a28346b81f546d124e8050abb650267cd424",
+      "unchanged": true
+    },
+    {
+      "path": "data/nfl2k5_sofi_model/art/field/s40_midfield.png",
+      "sha256": "5154e530a6aebec11eeba19acc0f565e79426ff20acea2a689abab4af50ad82c",
+      "unchanged": true
+    }
+  ],
+  "scope": "Existing u6 LXI image, field selectors, model pins and model source retained per explicit s40 exception."
+}

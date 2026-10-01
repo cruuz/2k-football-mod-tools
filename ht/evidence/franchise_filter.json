@@ -1,0 +1,59 @@
+{
+  "label": "PROVED OFFLINE",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "code_sha256": "a4a84664bef078f77c69bffa4a29dbae7a0bac872550886c9f22b2c9d09235b4",
+  "functions": {
+    "count": "0x2d15a0",
+    "name": "0x2d1630",
+    "selector": "0xc8f15c"
+  },
+  "capacity": {
+    "unique_franchise_strings": 50,
+    "menu_entries_including_all": 51,
+    "local_array_bytes": 200
+  },
+  "native_labels": {
+    "all": "All Teams",
+    "first": "49ers"
+  },
+  "evidence": "Both functions reserve 0xc8 stack bytes and clear 0x32 dwords. Count scans every descriptor and writes a new string at ESP+0x10+4*ESI without checking ESI<50; it returns unique_count+1. The name getter uses the same array and returns its ALL label for index zero.",
+  "results": [
+    {
+      "input": "retail 75 descriptors",
+      "unique_attempts": 33,
+      "returned_menu_count": 34,
+      "stopped_before_out_of_bounds_write": false,
+      "first_spill": null
+    },
+    {
+      "input": "50 synthetic unique selector strings",
+      "unique_attempts": 50,
+      "returned_menu_count": 51,
+      "stopped_before_out_of_bounds_write": false,
+      "first_spill": null
+    },
+    {
+      "input": "51 synthetic unique selector strings",
+      "unique_attempts": 51,
+      "returned_menu_count": null,
+      "stopped_before_out_of_bounds_write": true,
+      "first_spill": {
+        "index": 50,
+        "out_of_bounds": true,
+        "address": "0x27efff8"
+      }
+    },
+    {
+      "input": "65 synthetic unique selector strings",
+      "unique_attempts": 51,
+      "returned_menu_count": null,
+      "stopped_before_out_of_bounds_write": true,
+      "first_spill": {
+        "index": 50,
+        "out_of_bounds": true,
+        "address": "0x27efff8"
+      }
+    }
+  ],
+  "limitation": "Native count/string comparison executed. Synthetic tests halt immediately before the first store beyond the array; no live menu, graphics, or game was run."
+}

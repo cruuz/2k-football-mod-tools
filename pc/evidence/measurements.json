@@ -1,0 +1,137 @@
+{
+  "classification": "PROVED OFFLINE",
+  "frames": [
+    {
+      "classification": "PROVED OFFLINE",
+      "source": "/media/noah/Storage/.b76-research/main/witness/kr_candE/ari.jpg",
+      "sha256": "e2a865d1d676a9f14eb4ef8c7e92c54b39827de9dabec141a6298998ef943fed",
+      "screen": "offense formation",
+      "bar_top_weak": 569,
+      "bar_top_strong": 570,
+      "visible_ui_top": 112,
+      "visible_ui_bottom_inclusive": 639,
+      "top_headroom": 112,
+      "usable_headroom_above_menu_clip": 89.6,
+      "black_background": true,
+      "threshold_sensitivity": [
+        [
+          16,
+          112,
+          639
+        ],
+        [
+          24,
+          112,
+          639
+        ],
+        [
+          32,
+          112,
+          639
+        ]
+      ],
+      "projected_top": 36.4,
+      "projected_bottom_exclusive": 564.4,
+      "projected_bar_gap": 4.6
+    },
+    {
+      "classification": "PROVED OFFLINE",
+      "source": "/media/noah/Storage/.b76-research/main/witness/kr_candE/det.jpg",
+      "sha256": "a21fcc5601de83866054a86ca5590ec5fe992100fed888791b16e1f04bbb7792",
+      "screen": "three plays",
+      "bar_top_weak": 569,
+      "bar_top_strong": 570,
+      "visible_ui_top": 112,
+      "visible_ui_bottom_inclusive": 639,
+      "top_headroom": 112,
+      "usable_headroom_above_menu_clip": 89.6,
+      "black_background": true,
+      "threshold_sensitivity": [
+        [
+          16,
+          111,
+          639
+        ],
+        [
+          24,
+          112,
+          639
+        ],
+        [
+          32,
+          112,
+          639
+        ]
+      ],
+      "projected_top": 36.4,
+      "projected_bottom_exclusive": 564.4,
+      "projected_bar_gap": 4.6
+    },
+    {
+      "classification": "PROVED OFFLINE",
+      "source": "/media/noah/Storage/.b76-research/hx/lab-F-20260929-091218/s37-hou/attempt-01/screens/09-last-play.png",
+      "sha256": "f2a1ea9c27b3c0ed9a5764aa1515a983c18ccd9067dc000360e257ec7b26fd25",
+      "screen": "LAST PLAY",
+      "bar_top_weak": 569,
+      "bar_top_strong": 570,
+      "visible_ui_top": 112,
+      "visible_ui_bottom_inclusive": 639,
+      "top_headroom": 112,
+      "usable_headroom_above_menu_clip": 89.6,
+      "black_background": true,
+      "threshold_sensitivity": [
+        [
+          16,
+          111,
+          639
+        ],
+        [
+          24,
+          112,
+          639
+        ],
+        [
+          32,
+          112,
+          638
+        ]
+      ],
+      "projected_top": 36.4,
+      "projected_bottom_exclusive": 564.4,
+      "projected_bar_gap": 4.6
+    },
+    {
+      "classification": "PROVED OFFLINE",
+      "source": "/media/noah/Storage/.b76-research/hx/lab-20260929-072352/ari-kickoff/attempt-02/screens/toss-0131.3s.jpg",
+      "sha256": "f737067a249f48cca13759f154aa9359e267b2b4e0b152c1a4fdffca5ba0acc2",
+      "screen": "KICK RETURN / OFFENSE CHOSE",
+      "bar_top_weak": 569,
+      "bar_top_strong": 570,
+      "visible_ui_top": 100,
+      "visible_ui_bottom_inclusive": 611,
+      "top_headroom": 100,
+      "usable_headroom_above_menu_clip": 77.6,
+      "black_background": false,
+      "threshold_sensitivity": null,
+      "projected_top": 24.4,
+      "projected_bottom_exclusive": 536.4,
+      "projected_bar_gap": 32.6
+    }
+  ],
+  "method": "visible pixels; black threshold 16/24/32 with scorebug/watermark masks; kick selector chroma and gray card side strips",
+  "limitation": "occluded pixels are not measurable from these frames; JPEG edge uncertainty about 2 capture pixels",
+  "design": {
+    "classification": "DESIGN",
+    "shift_game_units": 54.0,
+    "capture_pixels": 75.6,
+    "scale": "672/480 = 1.4; world preview uses a 448-high target inside that 480-high frame",
+    "body_projected_top": 569.4577777777777,
+    "timeout_projected_top": 545.0666666666666,
+    "normal_min_shift_for_4px_gap": 53.57142857142858,
+    "timeout_min_shift_for_1px_gap": 68.52380952380958,
+    "max_shift_for_2px_menu_clip_margin": 54.0,
+    "selected_min_top": 24.400000000000006,
+    "selected_menu_clip_margin": 2.000000000000007,
+    "selected_timeout_gap": -19.33333333333337
+  }
+}

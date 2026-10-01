@@ -14,8 +14,8 @@ QUESTIONS=dict(state=dict(type='choice',instructions='Classify the broadcast sco
 REPRODUCIBLE={'normal','kickoff','first_and_ten','short_yardage','third_and_long','fourth_down','red_zone','goal_to_go','flag','timeout','two_minute','end_of_quarter','absent'}
 
 
-def prepare(frames,output,limit=200):
-    files=sorted(Path(frames).glob('frame_*.jpg'))[::10]
+def prepare(frames,output,limit=200,pattern='frame_*.jpg',stride=10):
+    files=sorted(Path(frames).glob(pattern))[::stride]
     if limit and len(files)>limit:
         files=[files[round(i*(len(files)-1)/(limit-1))] for i in range(limit)]
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
@@ -59,6 +59,8 @@ def cluster(descriptors,answers):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--frames',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--limit',type=int,default=200)
-    a=p.parse_args();print('Prepared',len(prepare(a.frames,a.output,a.limit)),'text-only requests')
+    p.add_argument('--pattern',default='frame_*.jpg',help='Frame glob; a broadcast extracted as PNG uses frame_*.png')
+    p.add_argument('--stride',type=int,default=10,help='Source-frame stride before stratification')
+    a=p.parse_args();print('Prepared',len(prepare(a.frames,a.output,a.limit,a.pattern,a.stride)),'text-only requests')
 
 if __name__=='__main__':main()

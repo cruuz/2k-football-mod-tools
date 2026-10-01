@@ -34,21 +34,23 @@ class AppliedIntegrationTests(unittest.TestCase):
         self.assertEqual(changes, ['Authored build notes'])
         panel.deleteLater()
 
-    def test_historic_hold_refuses_before_reading_resources_or_creating_output(self):
+    def test_historic_rosters_preflight_refuses_a_foreign_source_before_creating_output(self):
+        # e1 (2026-09-23) lifted the Wide Right hold: the build now reaches the historic resource preflight, which
+        # reads the source's 35 historic ROSTs and refuses anything that is not the pinned profile, before a copy.
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / 'copy.iso'
             # A source that is really there: beta 72.1 refuses a missing one by
-            # name before anything else, so the hold under test is what fires.
+            # name before anything else, so the preflight under test is what fires.
             source = Path(folder) / 'source.iso'
             source.write_bytes(b'stand-in bytes; is_disc_image is patched below')
             plan = mod_build.BuildPlan(source=str(source),
                                        target=str(target), espn25_rosters=True)
             with patch.object(mod_build.tt, 'is_disc_image', return_value=True), \
                  patch.object(mod_build.tt, '_naming_source_preflight', return_value=None), \
-                 patch.object(historic, 'read_resources') as read:
-                with self.assertRaisesRegex(ValueError, 'Historic'):
+                 patch.object(historic, 'read_resources', return_value={}) as read:
+                with self.assertRaisesRegex(ValueError, 'historic rosters refuse missing, mixed or foreign'):
                     mod_build.build(plan)
-                read.assert_not_called()
+                read.assert_called_once()
             self.assertFalse(target.exists())
 
     def test_csv_registry_api_identifies_its_real_writer_module(self):

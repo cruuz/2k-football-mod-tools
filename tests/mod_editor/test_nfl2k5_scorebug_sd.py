@@ -11,7 +11,12 @@ def sampling_receipt():
  # Maximum supported formatted widths, including native ordinal suffixes and
  # Inches. Every digit and ordinal in each set is then tested at that bound.
  longest={'score':list('888'),'clock':list('60:00'),'small':['4','TH'],'quarter':['4TH'],
-          'label':['4','th',' ','&',' ','Inch','es'],'ticks':['~','~','~']}
+          # b76 sbfix: the widest plate is "2nd & INCHES" ('nd' is the widest suffix; Inches draws in capitals).
+          'label':['2','nd',' ','&',' ','Inch','es'],'ticks':['3'],
+          # b76 s15: the widest regular-season record, the widest record tab and the possession chevron.
+          'record':['10','-6','-1'],'record_tab':['8'],'chevron':['^'],
+          # b76 sb: the TIMEOUT tab is one token.
+          'timeout_tab':['T']}
  for wide in (False,True):
   sx=s.x_scale(wide)*(s.WIDE_CONTRACTION if wide else 1);sy=448/1080
   for row in spec['static']+spec['brand']+spec['events']:
@@ -37,16 +42,19 @@ class SDTests(unittest.TestCase):
  def test_rare_dark_feather_pixels_survive_p8_palette(self):
   from PIL import Image
   import numpy as np
-  c=s.compile_folder();reserved=tuple(c.atlas.crop(c.cells['pointer']).getdata())
+  # b76 s15: the centre pointer is gone (the possession chevron replaced it); the used-timeout pips are now the
+  # atlas's rare dark feathered cell (grey at three coverages).
+  c=s.compile_folder();reserved=tuple(c.atlas.crop(c.cells['timeouts_0']).getdata())
   palette,indices=assets.quantize_alpha_aware(c.atlas,reserved=reserved)
   decoded=np.asarray(palette,dtype=np.uint8)[np.frombuffer(indices,dtype=np.uint8)].reshape(c.atlas.height,c.atlas.width,4)
-  x,y,r,b=c.cells['pointer']
+  x,y,r,b=c.cells['timeouts_0']
   self.assertTrue(np.array_equal(decoded[y:b,x:r],np.asarray(c.atlas)[y:b,x:r]))
   self.assertLessEqual(len(palette),256)
   self.assertGreater(len(set(c.atlas.getchannel('A').getdata())),64)
  def test_template_cells_and_glyph_metrics_are_distinct_coordinate_spaces(self):
   spec,_=s.load_layout();g=spec['glyph_sets']['label']['glyphs']['0'];x,y,r,b=spec['cells'][g['cell']]['box']
-  self.assertEqual([r-x,b-y],[8,12]);self.assertGreaterEqual(g['size'][1]*448/1080,12)
+  # sb2: the 30 px design grid draws at 24 px, with a prefiltered 6x9 cell.
+  self.assertEqual([r-x,b-y],[6,9]);self.assertGreaterEqual(g['size'][1]*.8*448/1080,9)
   self.assertGreaterEqual(g['size'][0]/3,8)
 
 if __name__=='__main__':unittest.main()

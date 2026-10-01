@@ -125,6 +125,8 @@ class ExecutionTests(PatchTests):
         super().setUpClass()
         from mod_editor.core import nfl2k5_team_history as th
         try:
+            from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+            require_nfl_retail_packs(XBE.parent)
             with th._outer_image()(XBE.parent) as archive:
                 entry=th._entry(archive)
                 cls.body=archive.read(entry.virtual_offset,entry.size)[th.RESOURCE_HEADER_SIZE:]
@@ -199,6 +201,68 @@ class ExecutionTests(PatchTests):
             self.assertEqual(self.call('ps_demote',ecx=self.team,edx=p),1)
         for i in range(12): self.assertEqual(self.call(0xC3EE0,ecx=self.team,edx=self.take_fa()),1)
         return players
+
+    def team_name(self,t):
+        out=[]; text=self.word(t+0x104)
+        for i in range(24):
+            c=struct.unpack('<H',self.uc.mem_read(text+2*i,2))[0]
+            if not c: break
+            out.append(chr(c))
+        return ''.join(out)
+
+    def all_star_cut_to_forty(self):
+        """The shape Noah's MyNFL2 save shows after a season on the 2026-09-23 video disc: the AFC and NFC
+        all-star teams (category 1) cut to 40 active with their old players left in the slots past the count."""
+        shaped=[]
+        for i in range(self.word(self.root+0x18)):
+            t=self.teams+500*i
+            if self.word(t+0x128)==1 and self.team_name(t) in ('AFC','NFC'):
+                self.assertGreater(self.byte(t+0x11c),40)
+                self.uc.mem_write(t+0x11c,bytes((40,)))
+                shaped.append(i)
+        self.assertEqual(len(shaped),2)
+        return shaped
+
+    def fa_members(self):
+        table=self.word(self.root+0x3c)
+        return [self.word(table+4*i) for i in range(self.word(self.root+0x38))]
+
+    def test_all_star_teams_cut_after_a_season_do_not_own_every_player(self):
+        # vb1 A2: owner() checked every team's reserve layout, so the all-star teams' old players past the
+        # count made every player "owned" and each guarded append refused (Enter the Draft's Create Player
+        # dropped to the main menu). owner() now counts the franchise teams listed() counts.
+        self.all_star_cut_to_forty()
+        fa=self.root+0x38
+        p=self.take_fa(); before=self.word(fa)
+        self.call(0x242560,ecx=fa,edx=p)
+        self.assertEqual(self.word(fa),before+1)
+        self.assertEqual(self.fa_members().count(p),1)
+        q=self.take_fa(); active=self.byte(self.team+0x11c)
+        self.assertEqual(self.call('ps_append',ecx=self.team,edx=q),1)
+        self.assertEqual(self.byte(self.team+0x11c),active+1)
+        r=self.take_fa()
+        self.assertEqual(self.call('ps_ir_append',ecx=self.team,edx=r),1)
+        self.assertEqual(self.byte(self.team+0x11c),active+2)
+
+    def test_a_franchise_team_with_players_past_its_count_still_refuses_appends(self):
+        # The conservative rule stays for teams that can own reserves.
+        t=self.teams+500*5
+        self.uc.mem_write(t+0x11c,bytes((self.byte(t+0x11c)-3,)))
+        fa=self.root+0x38
+        p=self.take_fa(); before=self.word(fa)
+        self.call(0x242560,ecx=fa,edx=p)
+        self.assertEqual(self.word(fa),before)
+        self.assertEqual(self.call('ps_append',ecx=self.team,edx=self.take_fa()),0)
+
+    def test_real_reserves_stay_owned_while_all_star_slots_are_stale(self):
+        self.all_star_cut_to_forty()
+        p=self.word(self.team+4*(self.byte(self.team+0x11c)-1))
+        self.assertEqual(self.call('ps_demote',ecx=self.team,edx=p),1)
+        fa=self.root+0x38; before=self.word(fa)
+        self.call(0x242560,ecx=fa,edx=p)
+        self.assertEqual(self.word(fa),before)
+        self.assertEqual(self.call('ps_append',ecx=self.teams+500,edx=p),0)
+        self.assertEqual(self.call('ps_ir_append',ecx=self.teams+500,edx=p),0)
 
     def test_demote_promote_capacity_ownership_and_rollbacks(self):
         players=self.fill_twelve()

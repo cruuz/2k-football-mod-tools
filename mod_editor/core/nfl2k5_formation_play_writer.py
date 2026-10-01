@@ -16,9 +16,14 @@ Stage 2 (this revision) stays inside the same proved empty capacity: an
 optional custom name appends to the name pool's verified zero tail (the pool
 count word at 0x1083C is checked against the retail invariant and kept
 consistent), and a menu link lists a play in one currently-empty 0x1FF aux
-slot, inheriting the formation's existing selection group unless one is
-chosen explicitly.  Node-chain authoring and group-bit semantics remain
-unproved and are never claimed; freehand node synthesis stays refused.
+slot in the ordinary group 3 unless one is chosen explicitly (an audible
+group 0-2 moves the play that held it to group 3).  A formation lists a play
+once: a link request for a play the formation already lists reuses that link,
+because a second one makes the play call's list of the formation endless (vb2,
+2026-09-23; see ``menu_link_problems``), and every compiled book must pass that
+check.  Node-chain authoring and group-bit
+semantics remain unproved and are never claimed; freehand node synthesis
+stays refused.
 
 The writer preserves every byte outside the newly inhabited formation/play
 records and the two count fields at 0x34/0x38.  Node bodies, string pools, and
@@ -61,6 +66,7 @@ from .nfl2k5_playbook_inspector import (
     PLAY_SIZE,
     RESOURCE_HEADER_SIZE,
     STRING_BASE,
+    menu_link_problems,
     parse_playbook_resource,
 )
 from .nfl2k5_source_cache import PACK0_RETAIL_BYTE_OFFSET, PACK0_RETAIL_SECTOR, PACK0_SHA256, PACK0_SIZE
@@ -244,12 +250,16 @@ def rule_play_request(asset_id: str, body: bytes, donor_play_index: int,
 
 @dataclass(frozen=True, slots=True)
 class FormationLinkRequest:
-    """List one play in one formation's empty 36-slot menu table.
+    """List one play in one formation's 36-slot menu table.
 
-    ``group=None`` inherits the selection group of the formation's first
-    populated slot; the group bits' gameplay meaning stays unproved, so the
-    writer only ever reuses values the book already uses (or an explicit
-    0-3 the caller accepts responsibility for).
+    A formation lists a play once: when it already lists ``play_index`` the
+    writer reuses that link (a second one makes the play call's list of the
+    formation endless, see ``menu_link_problems``). Otherwise the play takes
+    the first empty slot; ``group=None`` puts it in group 3, the ordinary list
+    (a reused link keeps its group). Groups 0-2 are the three audible slots and
+    hold one play each in every retail formation: an explicit 0-2 moves the play
+    that held that group to group 3. The group bits' gameplay meaning stays
+    unproved.
     """
 
     asset_id: str
@@ -908,8 +918,32 @@ def compile_formation_play_creations(
         allowed.append(range(body_off + pool_tail_range.start, body_off + pool_tail_range.stop))
         allowed.append(range(body_off + pool_word_range.start, body_off + pool_word_range.stop))
 
-    # Menu links: inhabit one currently-empty 0x1FF slot per request.
+    # Menu links. A formation lists a play at most once: the play call walks a formation's plays with 0xE1360,
+    # which returns the play in the link after the FIRST link holding the current play, and its play-page builder
+    # 0xACCE0 repeats that with no bound, so a second link to the same play makes the list endless and the game
+    # hangs the moment the formation is picked (vb2, Noah's Practice hang of 2026-09-23: modern_gun_core's plays
+    # replace plays their formations already listed, and this loop used to append a second link to each). A
+    # request for a play the formation already lists therefore reuses that link. A new link fills the first empty
+    # slot, in group 3 (the ordinary list) unless a group is chosen. Groups 0-2 are the three audible slots and hold
+    # one play each in every retail formation: choosing one for a play moves the play that held it to group 3, so
+    # the audible names the chosen play and the other play stays listed.
     applied_links: list[dict[str, int]] = []
+    regrouped: list[dict[str, int]] = []
+
+    def _set_group(formation_index: int, aux_off: int, slot: int, group: int) -> None:
+        field = body_off + aux_off + slot * 2
+        word = struct.unpack_from("<H", replacement, field)[0]
+        old = (word >> 9) & 0x3
+        if old == group:
+            return
+        struct.pack_into("<H", replacement, field, (word & ~0x0600) | (group << 9))
+        allowed.append(range(field, field + 2))
+        regrouped.append({"formation_index": formation_index, "slot_index": slot,
+                          "play_index": word & 0x1FF, "from_group": old, "to_group": group})
+        for link in applied_links:       # a later request can move a play an earlier one listed
+            if link["formation_index"] == formation_index and link["slot_index"] == slot:
+                link["group"] = group
+
     for req in norm_links:
         if not 0 <= req.formation_index < new_formation_count:
             raise ValidationError(
@@ -918,43 +952,50 @@ def compile_formation_play_creations(
         if not 0 <= req.play_index < new_play_count:
             raise ValidationError("That play index is outside this PLAY book.")
         aux = FORMATION_AUX_BASE + req.formation_index * FORMATION_AUX_SIZE
-        slot_ofs = None
-        inherit_group = None
-        for slot in range(FORMATION_PLAY_LINKS):
-            packed = struct.unpack_from(
-                "<H", replacement, body_off + aux + slot * 2
-            )[0]
-            populated = (packed & EMPTY_LINK) != EMPTY_LINK
-            if populated and inherit_group is None:
-                inherit_group = (packed >> 9) & 0x3
-            if not populated and slot_ofs is None:
-                slot_ofs = aux + slot * 2
-        if slot_ofs is None:
-            raise ValidationError(
-                "That formation's 36 menu slots are all populated, so the play "
-                "cannot be listed there. Choose another formation."
-            )
-        if req.group is not None:
-            group = req.group
-        elif inherit_group is not None:
-            group = inherit_group
+        words = struct.unpack_from(f"<{FORMATION_PLAY_LINKS}H", replacement, body_off + aux)
+        populated = [(word & EMPTY_LINK) != EMPTY_LINK for word in words]
+        existing = next((slot for slot, word in enumerate(words)
+                         if populated[slot] and (word & 0x1FF) == req.play_index), None)
+        if existing is not None:
+            slot, reused = existing, 1
         else:
-            raise ValidationError(
-                "That formation lists no plays yet, so there is no selection "
-                "group to inherit. Set one explicitly (0-3) or link into a "
-                "formation that already lists plays."
+            slot = next((slot for slot in range(FORMATION_PLAY_LINKS) if not populated[slot]), None)
+            if slot is None:
+                raise ValidationError(
+                    "That formation's 36 menu slots are all populated, so the play "
+                    "cannot be listed there. Choose another formation."
+                )
+            if req.group is None and not any(populated):
+                raise ValidationError(
+                    "That formation lists no plays yet, so there is no selection "
+                    "group to inherit. Set one explicitly (0-3) or link into a "
+                    "formation that already lists plays."
+                )
+            reused = 0
+        if req.group is None:
+            group = (words[existing] >> 9) & 0x3 if existing is not None else 3
+        else:
+            group = req.group
+            if group in (0, 1, 2):
+                for other in range(FORMATION_PLAY_LINKS):
+                    if (other != slot and populated[other] and (words[other] >> 9) & 0x3 == group):
+                        _set_group(req.formation_index, aux, other, 3)
+        if existing is not None:
+            _set_group(req.formation_index, aux, slot, group)
+        else:
+            slot_ofs = aux + slot * 2
+            # Bit 15 marks a populated retail link; bits 9-10 select its group.
+            struct.pack_into(
+                "<H", replacement, body_off + slot_ofs, 0x8000 | (group << 9) | req.play_index
             )
-        # Bit 15 marks a populated retail link; bits 9-10 select its group.
-        struct.pack_into(
-            "<H", replacement, body_off + slot_ofs, 0x8000 | (group << 9) | req.play_index
-        )
-        allowed.append(range(body_off + slot_ofs, body_off + slot_ofs + 2))
+            allowed.append(range(body_off + slot_ofs, body_off + slot_ofs + 2))
         applied_links.append(
             {
                 "formation_index": req.formation_index,
                 "play_index": req.play_index,
                 "group": group,
-                "slot_index": (slot_ofs - aux) // 2,
+                "slot_index": slot,
+                "reused": reused,
             }
         )
 
@@ -968,6 +1009,13 @@ def compile_formation_play_creations(
         raise ValidationError("Formation/play compilation changed an unowned byte.")
 
     reparsed = parse_playbook_resource(rebuilt, asset_id=asset_id)
+    # Every menu of the finished book must be one the play call can walk to its end (see menu_link_problems).
+    menu_problems = menu_link_problems(rebuilt)
+    if menu_problems:
+        raise ValidationError(
+            "The compiled playbook has a formation play menu the game cannot use: "
+            + "; ".join(menu_problems[:3]) + ("; ..." if len(menu_problems) > 3 else "")
+        )
     # Sanity checks
     if len(reparsed.formations) != new_formation_count:
         raise ValidationError("Reparsed formation count did not match compiled count.")
@@ -983,12 +1031,13 @@ def compile_formation_play_creations(
         # Verify aux links preserved (plus any links this call applied here)
         link_source = req.replace_index if req.replace_index is not None else req.donor_formation_index
         src_links = source.formations[link_source].play_links
+        final_group = {r["slot_index"]: r["to_group"] for r in regrouped if r["formation_index"] == dst}
         expected_links = sorted(
-            [(s.link_index, s.play_index, s.group) for s in src_links]
+            [(s.link_index, s.play_index, final_group.get(s.link_index, s.group)) for s in src_links]
             + [
                 (l["slot_index"], l["play_index"], l["group"])
                 for l in applied_links
-                if l["formation_index"] == dst
+                if l["formation_index"] == dst and not l["reused"]
             ]
         )
         dst_links = sorted(
@@ -1128,6 +1177,9 @@ def compile_formation_play_creations(
             [l["formation_index"], l["play_index"], l["group"], l["slot_index"]]
             for l in applied_links
         ],
+        "reused_links": sum(l["reused"] for l in applied_links),
+        "regrouped_links": [[r["formation_index"], r["slot_index"], r["play_index"], r["from_group"], r["to_group"]]
+                            for r in regrouped],
         "custom_names": [
             r.custom_name for r in (*norm_formations, *norm_plays) if r.custom_name
         ],

@@ -287,9 +287,19 @@ def resource_status(resource: bytes) -> str:
 
 
 def status(path: Path | str) -> str:
-    """retail | applied | foreign for a disc image or a loose pack folder."""
+    """retail | applied | foreign for a disc image or a loose pack folder.
 
+    A main roster grown for 16 reserves or extra created teams is read as the roster the arena growth
+    migrated (``nfl2k5_roster_arena.legacy_disc_resource``); the writer still refuses it.
+    """
+
+    from . import nfl2k5_roster_arena as arena
     with _outer_image()(path) as archive:
+        if arena.grown_outer(archive, ROST_OUTER_INDEX):
+            try:
+                return resource_status(arena.inspection_resource(archive, ROST_OUTER_INDEX))
+            except ValueError:
+                return "foreign"
         entry = _entry(archive)
         return resource_status(archive.read(entry.virtual_offset, entry.size))
 
@@ -346,7 +356,47 @@ def apply(path: Path | str, tags: Sequence[object], *, progress: Callable[[str],
             "record_offset": f"0x{TAG_RECORD_OFFSET:02x}", "bit": TAG_BIT, **receipt}
 
 
+# b76-vb3 (D4): the star rule. Noah, video 2 [6:13-6:17]: "I love that star players now have that star under them...
+# Obviously, Michael Vick should have that as well." A star player is one the game itself rates 90 or better: the
+# overall its roster screens print (FUN_00246D90, ``nfl2k5_my_career_prospects.native_overall``), linemen read with
+# the1wam's lineman rating when the disc carries it. On the retail roster that is 119 of the 1,696 active club players
+# (118 without the lineman rating), Vick (90) included. Retail 2K5 has no star players; the rule is the studio's.
+STAR_MIN_OVERALL = 90
+_LINEMAN_POSITIONS = (12, 13, 14)          # C, G, T: the positions the lineman rating re-reads
+
+
+def star_rule_rows(document: Any, *, min_overall: int = STAR_MIN_OVERALL, lineman: bool = False) -> list[dict[str, Any]]:
+    """The star players of any roster (a ``nfl2k5_roster_records.RosterDocument``), best first.
+
+    The pool is the one the abilities tiers rank: primary records with player-type bit 2 on an NFL club (0..31).
+    Each row: ``tag`` (the ``BuildPlan.player_tags`` entry, the primary index), ``name``, ``position``, ``club``,
+    ``overall``."""
+
+    from . import nfl2k5_my_career_prospects as prospects
+    from . import nfl2k5_roster_records as rr
+
+    _require(type(min_overall) is int and 1 <= min_overall <= 100, "the star rule's overall must be 1..100")
+    rows = []
+    for player in document.players:
+        clubs = [team for team in player.teams if 0 <= team < 32]
+        if player.pool != "primary" or not player.record.get("player_type") & 4 or not clubs:
+            continue
+        position = player.record.get("position")
+        overall = prospects.native_overall(player.record, lineman=bool(lineman) and position in _LINEMAN_POSITIONS)
+        if overall >= min_overall:
+            rows.append({"tag": str(player.index), "name": f"{player.first} {player.last}",
+                         "position": rr.POSITIONS[position], "club": clubs[0], "overall": overall})
+    return sorted(rows, key=lambda row: (-row["overall"], int(row["tag"])))
+
+
+def star_rule_tags(document: Any, *, min_overall: int = STAR_MIN_OVERALL, lineman: bool = False) -> list[str]:
+    """``BuildPlan.player_tags`` for the star rule, in roster order."""
+
+    return sorted((row["tag"] for row in star_rule_rows(document, min_overall=min_overall, lineman=lineman)), key=int)
+
+
 __all__ = ["BODY_SIZE", "OBJ_OFF", "PLAYER_SIZE", "POOLS", "RESOURCE_HEADER_SIZE", "RESOURCE_SIZE",
            "RETAIL_PRIMARY_COUNT", "RETAIL_SECONDARY_COUNT", "ROST_OUTER_INDEX", "TagRoster", "TaggedPlayer",
            "PlayerTagError", "apply", "apply_body", "body_status", "normalise_tags", "parse_body",
-           "read_players", "resolve", "resource_status", "status", "summary"]
+           "read_players", "resolve", "resource_status", "star_rule_rows", "star_rule_tags", "status", "summary",
+           "STAR_MIN_OVERALL"]

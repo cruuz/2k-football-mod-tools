@@ -458,6 +458,59 @@ def port_free(port: int) -> bool:
             return False
 
 
+def qmp_call(port: int, command: str, arguments: dict | None = None, timeout: float = 5.0) -> dict:
+    """One QMP session on 127.0.0.1:port: greeting, qmp_capabilities, then ``command``; returns its
+    "return" value. Asynchronous events (STOP, RESUME, ...) are skipped; a QMP error raises GateError."""
+    with socket.create_connection(("127.0.0.1", port), timeout=timeout) as conn:
+        conn.settimeout(timeout)
+        reader = conn.makefile("rb")
+
+        def reply() -> dict:
+            while True:
+                line = reader.readline()
+                if not line:
+                    raise GateError("qmp", f"QMP connection closed during {command}")
+                message = json.loads(line)
+                if "return" in message:
+                    return message["return"]
+                if "error" in message:
+                    raise GateError("qmp", f"{command}: {message['error']}")
+                # the greeting ("QMP") and events ("event") are not replies
+
+        greeting = json.loads(reader.readline() or b"{}")
+        if "QMP" not in greeting:
+            raise GateError("qmp", f"no QMP greeting on port {port}")
+        conn.sendall(b'{"execute": "qmp_capabilities"}\n')
+        reply()
+        request = {"execute": command}
+        if arguments:
+            request["arguments"] = arguments
+        conn.sendall(json.dumps(request).encode() + b"\n")
+        return reply()
+
+
+def vm_status(run: "XemuRun") -> dict:
+    """QMP query-status for the run ({"running": bool, "status": "running" | "paused" | ...}); {} when
+    the run has no QMP port or QMP does not answer. Never touches gdb (attaching gdb pauses the VM)."""
+    if not getattr(run, "qmp_port", None):
+        return {}
+    try:
+        return qmp_call(run.qmp_port, "query-status")
+    except (OSError, ValueError, GateError):
+        return {}
+
+
+def vm_resume(run: "XemuRun") -> bool:
+    """QMP cont; True when QMP accepted it."""
+    if not getattr(run, "qmp_port", None):
+        return False
+    try:
+        qmp_call(run.qmp_port, "cont")
+        return True
+    except (OSError, ValueError, GateError):
+        return False
+
+
 def abort_if_xemu_running() -> None:
     result = subprocess.run(["pgrep", "-x", "xemu"], capture_output=True, text=True)
     if result.returncode == 0:
@@ -529,7 +582,7 @@ class Gamepad:
         self.lines: list[str] = []
         self._reader = threading.Thread(target=self._pump, daemon=True)
         self._reader.start()
-        self._wait_for("READY", 15.0)
+        self._wait_for("READY", 30.0)  # b76: above the helper's 20 s uinput discovery window
 
     def _pump(self):
         assert self.proc.stdout is not None
@@ -575,6 +628,8 @@ class XemuRun:
         self.run_dir = run_dir
         self.display = display_number
         self.gdb_port = gdb_port
+        #: Localhost QMP port for run-state checks (vm_status / vm_resume); None = no QMP server.
+        self.qmp_port: int | None = None
         self.logs = run_dir / "logs"
         self.logs.mkdir(exist_ok=True)
         self.xephyr: subprocess.Popen | None = None
@@ -596,6 +651,26 @@ class XemuRun:
         time.sleep(1.0)
         self.window = Window(self.display)
 
+    def xemu_command(self, xiso_path: Path) -> list[str]:
+        """The flatpak xemu command line. The gdb stub listens on 127.0.0.1 only: QEMU's gdb server
+        stops the VM (vm_stop(RUN_STATE_PAUSED)) as soon as ANY client opens the port and starts it again
+        only on a gdb detach, so a stray connection to a stub on all interfaces ("tcp::PORT") left the
+        guest paused with the last frame on screen -- the 2026-09-22/23 "team-select-freeze" and
+        "boot-freeze" route errors (job x1). The optional QMP server (localhost too) lets the harness ask
+        the run state and resume without gdb."""
+        command = [
+            "flatpak", "run",
+            f"--filesystem={self.run_dir}:rw",
+            f"--filesystem={xiso_path}:ro",
+            "app.xemu.xemu",
+            "-config_path", str(self.run_dir / "xemu.toml"),
+            "-dvd_path", str(xiso_path),
+            "-gdb", f"tcp:127.0.0.1:{self.gdb_port}",
+        ]
+        if self.qmp_port:
+            command += ["-qmp", f"tcp:127.0.0.1:{self.qmp_port},server=on,wait=off"]
+        return command
+
     def start_xemu(self, xiso_path: Path):
         env = dict(
             os.environ,
@@ -604,15 +679,7 @@ class XemuRun:
             SDL_AUDIODRIVER="dummy",
             LIBGL_ALWAYS_SOFTWARE="1",
         )
-        command = [
-            "flatpak", "run",
-            f"--filesystem={self.run_dir}:rw",
-            f"--filesystem={xiso_path}:ro",
-            "app.xemu.xemu",
-            "-config_path", str(self.run_dir / "xemu.toml"),
-            "-dvd_path", str(xiso_path),
-            "-gdb", f"tcp::{self.gdb_port}",
-        ]
+        command = self.xemu_command(xiso_path)
         with (self.logs / "xemu.stderr.log").open("w") as err:
             self.xemu = subprocess.Popen(
                 command, env=env, stdout=subprocess.DEVNULL, stderr=err,

@@ -3,6 +3,7 @@
 .global _start
 _start:
 Lfca87:
+call timeout_update
 mov esi, dword ptr [0xe602b4]
 Lfca8d:
 cmp esi, edi
@@ -11,7 +12,7 @@ je Lfccc4
 Lfca95:
 push ebx
 push ebp
-mov ebp, 0xa95bb0
+mov ebp, 0xa95b50
 Lfca96:
 mov ebx, dword ptr [0xe602ec]
 Lfca9c:
@@ -36,7 +37,7 @@ cmp eax, edi
 Lfcac6:
 mov ecx, dword ptr [0xe602b8]
 Lfcacc:
-mov dword ptr [ebp-96], edx
+mov dword ptr [ebp+0], edx
 Lfcad2:
 je Lfcbdd
 Lfcad8:
@@ -70,21 +71,14 @@ cmp edx, edi
 Lfcb08:
 jne Lfcbdd
 Lfcb0e:
-fld dword ptr [ebp+132]
-Lfcb14:
-mov dword ptr [ebp-208], 1
-Lfcb1e:
-fcomp dword ptr [ebp+116]
-Lfcb24:
-fnstsw ax
-Lfcb26:
-test ah, 0x44
+mov dword ptr [ebp-112], 1
+call compare_ball
 Lfcb29:
 jnp Lfcb31
 Lfcb2b:
-mov dword ptr [ebp-208], edi
+mov dword ptr [ebp-112], edi
 Lfcb31:
-mov dword ptr [ebp+16], edi
+mov dword ptr [ebp+112], edi
 jmp finalize
 Lfcb75:
 cmp eax, 0xc
@@ -106,21 +100,16 @@ Lfcb8d:
 push 1
 pop ecx
 mov dword ptr [0xba2f10], ecx
-mov dword ptr [ebp-208], edi
-mov dword ptr [ebp+16], ecx
+mov dword ptr [ebp-112], edi
+mov dword ptr [ebp+112], ecx
 jmp finalize
 Lfcbdd:
-fld dword ptr [ebp-92]
+call compare_play
 Lfcbe3:
 mov edx, dword ptr [0xe602fc]
 Lfcbe9:
-fcomp dword ptr [ebp-108]
 Lfcbef:
-mov dword ptr [ebp-208], edi
-Lfcbf5:
-fnstsw ax
-Lfcbf7:
-test ah, 0x44
+mov dword ptr [ebp-112], edi
 Lfcbfa:
 jp Lfcc48
 Lfcbfc:
@@ -128,13 +117,7 @@ test dh, dh
 Lfcbfe:
 js Lfcc48
 Lfcc00:
-fld dword ptr [ebp+132]
-Lfcc06:
-fcomp dword ptr [ebp+116]
-Lfcc0c:
-fnstsw ax
-Lfcc0e:
-test ah, 0x44
+call compare_ball
 Lfcc11:
 jp Lfcc48
 Lfcc13:
@@ -167,7 +150,7 @@ cmp ecx, 0xd
 Lfcc3e:
 jne Lfcc53
 Lfcc40:
-mov dword ptr [ebp+16], esi
+mov dword ptr [ebp+112], esi
 Lfcc46:
 jmp Lfcc59
 Lfcc48:
@@ -176,29 +159,23 @@ Lfcc4e:
 push 1
 pop esi
 Lfcc53:
-mov dword ptr [ebp+16], edi
+mov dword ptr [ebp+112], edi
 Lfcc59:
 cmp ecx, 0xe
 Lfcc5c:
 jne Lfcc7f
 Lfcc5e:
-fld dword ptr [ebp-92]
-Lfcc64:
-fcomp dword ptr [ebp-108]
-Lfcc6a:
-fnstsw ax
-Lfcc6c:
-test ah, 0x44
+call compare_play
 Lfcc6f:
 jp Lfcc7f
 Lfcc71:
 cmp dword ptr [ebx + 0x198], edi
 Lfcc77:
-mov dword ptr [ebp+128], esi
+mov dword ptr [ebp+224], esi
 Lfcc7d:
 jne Lfcc85
 Lfcc7f:
-mov dword ptr [ebp+128], edi
+mov dword ptr [ebp+224], edi
 Lfcc85:
 
 Lfccb4:
@@ -208,13 +185,13 @@ test eax, eax
 Lfccbb:
 je Lfccc3
 Lfccbd:
-mov dword ptr [ebp+16], esi
+mov dword ptr [ebp+112], esi
 Lfccc3:
 finalize:
 push 1
 pop eax
-mov dword ptr [ebp-432], eax
-mov dword ptr [ebp-320], eax
+mov dword ptr [ebp-336], eax
+mov dword ptr [ebp-224], eax
 pop ebp
 pop ebx
 Lfccc4:
@@ -313,5 +290,108 @@ pop eax
 mov dword ptr [esi], 0x002d002d
 mov word ptr [esi+4], 0
 jmp 0xfbe4e
+compare_ball:
+fld dword ptr [ebp+228]
+fcomp dword ptr [ebp+212]
+fnstsw ax
+test ah, 0x44
+ret
+compare_play:
+fld dword ptr [ebp+4]
+fcomp dword ptr [ebp-12]
+fnstsw ax
+test ah, 0x44
+ret
+timeout_counter:
+push 6
+pop ecx
+jmp timeout_vertices
 .global code_end
 code_end:
+.org 581, 0x90
+
+# All 112 bytes, including the now obsolete quarter jump table, are pinned.
+.section .quarter,"ax"
+.global quarter_start
+quarter_start:
+push ecx
+mov edx, dword ptr [0xe602c4]
+lea eax, [edx-1]
+cmp eax, 3
+ja overtime
+lea edx, [eax*8+0xe6c3e4]
+call 0x30ab0
+pop ecx
+jmp 0x30f20
+overtime:
+sub edx, 4
+mov dword ptr [esp], edx
+push esp
+mov edx, 0xe6c4e4
+call 0x4a400
+pop ecx
+ret
+.global timeout_update
+timeout_update:
+pushad
+mov eax, dword ptr [0xa95528]
+test eax, eax
+.byte 0x74
+.byte timeout_done - . - 1
+cmp dword ptr [eax-0xa0], 0x33544f53
+.byte 0x75
+.byte timeout_done - . - 1
+lea esi, [eax+0x2d20-256+274*10+6]
+mov ebx, 0xe5fc28
+timeout_side:
+xor edx, edx
+mov eax, dword ptr [ebx]
+test eax, eax
+jz timeout_count
+mov edx, dword ptr [eax+4]
+cmp edx, 3
+jbe timeout_count
+xor edx, edx
+timeout_count:
+.byte 0xeb
+.byte timeout_row - . - 1
+.global quarter_end
+quarter_end:
+.org 112, 0x90
+
+
+# Share the two identical retail score formatter tails; fixed entries survive.
+.section .scores,"ax"
+.global timeout_done, timeout_row
+.global home_score
+home_score:
+mov eax, dword ptr [0xe5fc28]
+jmp score_common
+timeout_vertices:
+and byte ptr [esi+1], 0x0f
+or byte ptr [esi+1], dh
+add esi, 10
+loop timeout_vertices
+add bl, 64
+jns timeout_side
+timeout_done:
+popad
+ret
+.org 32, 0x90
+.global away_score
+away_score:
+mov eax, dword ptr [0xe5fc68]
+score_common:
+push dword ptr [eax]
+push esp
+mov edx, 0xe6c410
+call 0x4a400
+pop ecx
+ret
+timeout_row:
+shl edx, 12
+add dh, 0x90
+jmp timeout_counter
+.global scores_end
+scores_end:
+.org 64, 0x90

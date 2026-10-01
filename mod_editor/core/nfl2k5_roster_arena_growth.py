@@ -21,6 +21,18 @@ OWNER = 'nfl2k5_roster_arena_growth'
 CODE_SIZE = 8192
 REQUESTS = ((OWNER, 'code', CODE_SIZE, 16),)
 OPTION_OFFSET = (len(assembly.CODE) + 3) & ~3
+# The disc ROST handler C1EA0 reads the declared body size (resource header +4) into EDI and
+# refuses a body that does not fit: retail `cmp [0xB72808], edi / jb refuse` (capacity 0x91000,
+# retail body 0x90F60). A body is the 0x40-byte resource object followed by the arena, so the
+# grown body is 0x92040, which the retail compare against the 0x92000 capacity would refuse.
+# The edit compares EDI with 0x92040 and refuses only a LARGER body (`ja`): the grown main
+# roster and every smaller ROST (the 75 historic rosters) are admitted as retail admits them,
+# and C1E30, which copies the body after its 0x40-byte object (the layout of every disc ROST),
+# puts at most ARENA_SIZE bytes in the arena. Before beta 76 the edit rewrote only the compare
+# (`cmp edi, 0x92060`) and kept the retail `jb`, which refused every body below 0x92060, the
+# grown roster included: the load never ran, the roster root stayed 0, and the first boot reader
+# (C7530 -> 133B80 -> C4C50, `cmp ecx, [eax+0x18]` at C4C6A) faulted at the SEGA logo.
+RESOURCE_BODY_LIMIT = arena.ARENA_SIZE + 0x40
 HELP_TEXT = ('EXPERIMENTAL / UNWITNESSED. Retail: 65 player slots and two created teams. '
              'Patch: a larger roster save supports 16 reserves, an explicitly eligible 17th, '
              'and two optional extra created teams. Requires a migrated save.')
@@ -110,13 +122,14 @@ def sites(va):
     result.extend((
         ('arena_capacity', 0xC1F2D, bytes.fromhex('c7050828b70000100900'), bytes.fromhex('c7050828b70000200900')),
         ('arena_allocation', 0xC1F3C, bytes.fromhex('ba00100900'), bytes.fromhex('ba00200900')),
-        ('resource_admission', 0xC1EB3, bytes.fromhex('393d0828b700'), bytes.fromhex('81ff60200900')),
+        ('resource_admission', 0xC1EB3, bytes.fromhex('393d0828b7007233'),
+         b'\x81\xff' + struct.pack('<I', RESOURCE_BODY_LIMIT) + b'\x77\x33'),
         ('practice_projection', pr.STAGE_VA, pr.sites()[0][3], _jump(pr.STAGE_VA, labels['arena_stage'], pr.STAGE_SIZE)),
     ))
     return tuple(result)
 
 
-def _check_guards(image, edits):
+def _check_guards(image, edits, payload=None):
     for address, size, digest in GUARDS:
         raw = bytearray(image.read(address, size))
         for _name, va, before, after in edits:
@@ -124,6 +137,13 @@ def _check_guards(image, edits):
                 at = va-address
                 require(bytes(raw[at:at+len(before)]) in (before, after), 'foreign guarded arena instruction')
                 raw[at:at+len(before)] = before
+        # b76-k1: the roster heap (nfl2k5_k128) owns the roster block's heap call at 0xC1F37, inside
+        # the guarded 0xC1F00. Only its exact installed call is normalized back to retail here.
+        from . import nfl2k5_k128 as k128
+        if payload is not None and address <= k128.ROSTER_SITE_VA < address + size \
+                and k128.roster_site_state(payload) == 'k128':
+            at = k128.ROSTER_SITE_VA - address
+            raw[at:at + len(k128.RETAIL_ROSTER_SITE)] = k128.RETAIL_ROSTER_SITE
         require(hashlib.sha256(raw).hexdigest() == digest, 'foreign arena load/save/relocation consumer')
 
 
@@ -131,7 +151,7 @@ def _owned_state(payload):
     layout = space.layout(payload)
     found = [a for a in layout['allocations'] if a['owner'] == OWNER]
     image = XbeImage(payload)
-    _check_guards(image, sites(found[0]["va"] if found else 0))
+    _check_guards(image, sites(found[0]["va"] if found else 0), payload)
     if not found:
         # Only our new hook sites are relevant before the base PS prerequisites
         # exist; their runtime caves remain the original owner's responsibility.

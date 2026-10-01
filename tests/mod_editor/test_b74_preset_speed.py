@@ -26,7 +26,14 @@ class PresetPassTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / "retail.iso"
         synthetic_disc(self.source)
+        # A plain copy of an already compact fixture is still byte-identical.
+        # The build continues to run the real compactor and extent verifier.
+        from mod_editor.core import xdvdfs_compact
+        xdvdfs_compact.finish_private(self.source)
         self.original = self.source.read_bytes()
+        # This hashing fixture has no PLAY archive.
+        self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
+                                             return_value={"synthetic": True}))
 
     def digests(self):
         calls = []

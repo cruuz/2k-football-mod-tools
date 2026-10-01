@@ -1,0 +1,1442 @@
+{
+ "schema": "nfl2k5_modern_metlife_pins/v1",
+ "venue": "MetLife Stadium (Giants s18, Jets s19)",
+ "art": {
+  "art/s18/field/center_logo.png": "cc4455387902ee27b8fce049a53e8c245dafc20d17ad5e7aec8dde07be7c43ba",
+  "art/s18/field/endzone_N_L.png": "3c78e0515f6a870ddd6fa580fe0abe19b007b7b7791598113be2e755465e7d71",
+  "art/s18/field/endzone_N_M.png": "dec8ba6885f917b41d35468e10a3479fda6bf123c7deee0cbbcc753aa5610368",
+  "art/s18/field/endzone_N_R.png": "263204da9f59364152b61c3c1d554d32d0bdeaedd49f5f710d8099742601c943",
+  "art/s18/stadium/ad_bb01.png": "514dd5d86d784104255538d706cb2717942334d209daff481900f307dfd55b18",
+  "art/s18/stadium/ad_bb02.png": "79d74918046cc36408f9b029b14448ba3144890b2fb86a0b105771a6a806fd0d",
+  "art/s18/stadium/banner01.png": "4efcf9be8a8cbace1f77ffbc663af4e306a81e5610df9d02d80dc1152f523073",
+  "art/s18/stadium/banner02.png": "32bfd4b5b6d23cb7c03c198241ef301459391e6e132d437624df9cb2fba0af7b",
+  "art/s18/stadium/banner04.png": "a6a6312ec7174c280f01dd502f70b2b052ab15ea77e88c02b8ae4351dfa7ae7c",
+  "art/s18/stadium/banner_away_team.png": "0fceb617c859876946dc54d7fa989830bb84f34a782f9aba805391aadec6d555",
+  "art/s18/stadium/banner_corp.png": "3e6be93d2be2206ec45d64c08392e25d3ecead0c31e6f1fad5c5c7750ddc2a3d",
+  "art/s18/stadium/banner_home_player.png": "84abf8914d5b925544077efadaf8de2282425febb4b21a51fd0bc59eb182ce96",
+  "art/s18/stadium/banner_home_team.png": "0642b8d91b7e83249316c9664f137711861c063457a75925e3fe5053f8bd0376",
+  "art/s18/stadium/wall01.png": "46d63b6448a015a8f64476cc8680823680b8445b033661f37bea679b106564c2",
+  "art/s19/field/center_logo.png": "070b1bdd549373d8b4ef2b700d8a35fd09530a9f6b7a5ffc36ea32b3f59dad11",
+  "art/s19/field/endzone_N_L.png": "113c92733f68c3c257d14987ff3aaa259c0dd7e66f8bdb50e813ae38f775d0e3",
+  "art/s19/field/endzone_N_M.png": "27feb8bd21ed9387b88aacb27da40b15255da9f7c68e5ef87562d60e54b1f5f0",
+  "art/s19/field/endzone_N_R.png": "ac4904f295a4ccb9cbbd9e025e744a297d8a4087912416b44fc7b5e634d34e18",
+  "art/s19/stadium/ad_bb01.png": "0e353be9dc2bd3c98a2c42f07f1eb7edadcf33adb0a4e92e742ac0fa871056f8",
+  "art/s19/stadium/ad_bb02.png": "0709a992f0e5606cac5f276d2cc97d7924f72e314c57c45d7c08047b9377de38",
+  "art/s19/stadium/banner01.png": "bd10bd3fabf85c2527615dd7190325f71b6356dd169d9615cc6c097caa1470ad",
+  "art/s19/stadium/banner02.png": "71ba4a43b385c1837c05c7c8c5d9ac49328fbfb0de4e8ed8611d35cba63baa1a",
+  "art/s19/stadium/banner04.png": "3639b6497d7ec067ef643e84fc26bc881c7dfe8b9b0cf3eaa3de5e8ae9d4bf04",
+  "art/s19/stadium/banner_away_team.png": "465f18476dc8f89698478e5f9aa1431cbff308aea8f9931c44b4ea1d11f13bec",
+  "art/s19/stadium/banner_corp.png": "1e9d57a9c08febd5584ebcccb5775a55e8900c05b1f641737cef94df13c03f35",
+  "art/s19/stadium/banner_home_player.png": "744abb7fe3f4275d7a8c7d1dd31defc0057825cc315bd59bb0e1d6225e52a8d4",
+  "art/s19/stadium/banner_home_team.png": "81f416ca3bc9a5453dd3ca18f6ee9c86ea9d77627480b53d3822b6bb5077a52a",
+  "art/s19/stadium/wall01.png": "43fcfaf550eb401903bb11b540971bb32e3dd13d6d1267165f5f34f7c7381e7d",
+  "art/s19/stadium/wall04.png": "9a005de7780c837727810c3a6611060c581c2bda0126b1159efc2b03c00463f2"
+ },
+ "rules_sha256": "a39ad7c9d3ed9519a9bb076d78fe7b11b02c91f1f925486c92b86e89c86fa88b",
+ "bundles": [
+  {
+   "name": "s18dd.iff",
+   "outer": 3154,
+   "name_id": 2794413904,
+   "size": 1573376,
+   "retail_sha256": "ae901ca8001d4be6a4e1c36a5a534bfb375d1a05854fda1bae133257942e2eee",
+   "applied_sha256": "d0772688282fc3c68db216f8d77e2c00c06d1fd0d842e2b5af38a59390acaeb6",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 125344,
+     "retail": "18db207f966232f4f9e065495a765072f88d8aa3d2938c2cea59e7672373aa41",
+     "applied": "3c25d94bbb09f6e3387844bde7458fda622620df564fe3c3daa4126dd80f8b12",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 366784,
+     "size": 1065600,
+     "retail": "be47a9a7b92d810af8c637a9f4d8195a716bac54d05434560d2e88a26fe9475d",
+     "applied": "0ac2329eb9807ae43079ab2cb2631e89811b439c7795db333a7685877963bff9",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18dr.iff",
+   "outer": 3313,
+   "name_id": 2352983807,
+   "size": 1553728,
+   "retail_sha256": "fa61be23b5fb4c52e5e7b58388b5f8e3773cf9dee0c008b244a6a55466c13d1d",
+   "applied_sha256": "58d34fcab41d5830a25e14fe9943b5d80ea85fed5ebe62f577b51620d3e92613",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 114064,
+     "retail": "4263ae80837dbf231e975cfdb36644e8fa3879885b514355d15f24d384b61ce9",
+     "applied": "c34e090c7fcac92c29cf89853c588eef7395b661a82bfd957680662e5e0c5d50",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 357312,
+     "size": 1078000,
+     "retail": "8bfe9d238e840c2ac094464e25dda0109aa82739dc7334432d2201294367dcba",
+     "applied": "50e2c9f85af7e8c73e2eb78059a3eacda8cf37d5bc8279ff98b1221191b13233",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18ds.iff",
+   "outer": 3472,
+   "name_id": 1677575617,
+   "size": 1545504,
+   "retail_sha256": "9c02c7712c84bead9cee486c41ac26dc275084f2f0f64a27e9ecd08e9d4aa1e5",
+   "applied_sha256": "da068f3c07bd17cfeb09e414da745783dbccacb8e92829f66b02a002e377e352",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 97824,
+     "retail": "225f96a49f9a04a1d8eb58bf50a79e35ec84511673d637274e7d04332df0d72f",
+     "applied": "77986d1123b3a90eba8323138227847eda3ba7ad93b114adab195a8eabead173",
+     "encoder": "optimal",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 337936,
+     "size": 1086096,
+     "retail": "8712a0644d8fdfeee308b64789776e2eb897601ddb2b8183698f59f398103046",
+     "applied": "33fc3816c8597505fec98a841e72e1cf0eb6a4e8d94b012a5a4e7607ae9773e3",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18ad.iff",
+   "outer": 3207,
+   "name_id": 1043081280,
+   "size": 1547424,
+   "retail_sha256": "820336c6248899ccac35a4e63bcc7893768cfe49db4102f6b2293479600fa4d1",
+   "applied_sha256": "7c54ddbc4ac63921d1c65f4ce73e871736bc1548251ca7525e357cb0edf2e318",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 125424,
+     "retail": "656e4c136cba8c1bf47a3f2940ba4c54b302ed646d82beaa074bc93291640d07",
+     "applied": "10238b1a99c5dbe5f7bfb15517eb9d446e7342697fb7c572e567cea09fddf38e",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 366864,
+     "size": 1069600,
+     "retail": "c7fac0324e3be3c488df2cc017aabbeae735279011e56966fd9c40b5d248332c",
+     "applied": "bde6b90f4e1bcf3f85c30b86b265d8709f971011f09536ff8cc387b32aa78c1e",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18ar.iff",
+   "outer": 3366,
+   "name_id": 345823727,
+   "size": 1543760,
+   "retail_sha256": "0a2c3fcd025bd92079197d409b081e7bef055ae2cf2b29935e3e2b08af72f2a9",
+   "applied_sha256": "218650e200f5bf02a7330e1029acb1565830a75b08d731fdf2b82d30540d2b93",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 114144,
+     "retail": "5048f2b301ec6ec6d85a045de92709e65b62f6ed968b2291dcd2e2246d59a589",
+     "applied": "329a930437d2ac258caf7cd503c8864dfba2a441aaa9c26b96aa769bec509458",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 357392,
+     "size": 1081984,
+     "retail": "ad966efd32fa0c6c84add7887df6f3171bb12644c7bbf3013605f56830a64c99",
+     "applied": "436d7f70573d7561031f67cb134542c6fdb470899b207fb63089b8bbaa2067d9",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18as.iff",
+   "outer": 3525,
+   "name_id": 4217287377,
+   "size": 1538720,
+   "retail_sha256": "6582f883170e15aa8b22f4516efcf9a66bb454e2d2a7b222b04ac97e7db672f2",
+   "applied_sha256": "82dc02f3014b69e44c724044bb7623c81b229401734b2579d130fd432b68a7c5",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 97872,
+     "retail": "0ec48f8bc41313ae68a4dc2c21741b3af2fbb87c5a5fc6cfee84ecef95f3e9a1",
+     "applied": "1b0429c40b42fc4df5f8d026b970fa91af359b87215b038f693cd98b93149dde",
+     "encoder": "optimal",
+     "padding_bytes": 1,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 337984,
+     "size": 1090112,
+     "retail": "abb68592377ddceb45ea468b956c97949ce082f1b79a695d8ca806d88810e1ae",
+     "applied": "7e498f7e3c868d09fb11b6139fed2469f0e47d65d7a963addd561f54c6a29a68",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18nd.iff",
+   "outer": 3260,
+   "name_id": 1287173937,
+   "size": 1527440,
+   "retail_sha256": "32aef45cf3fdc436e9fd2819271d9e2964ccd3850300ce6a793ce3f601f6a744",
+   "applied_sha256": "193c06c433185456eabb447752719787bca2b5852af272977e8066d817064874",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 125344,
+     "retail": "b3336fc548b44256832c9dbc3dd8dd59f49230a599c807e39df9911b75595c30",
+     "applied": "1dbe68381260b3786e8879aa813023e38cf9316d8367957ea7d4f51f8d67848e",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 365728,
+     "size": 1071344,
+     "retail": "7a8170ec6df98082a4d880414e938a7c08cd43225c1f29932215c85f2c322281",
+     "applied": "79c0fe9355cd0e5536b8d492725d2db8e5229c951513060c024e252ce9722925",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18nr.iff",
+   "outer": 3419,
+   "name_id": 1711818398,
+   "size": 1537552,
+   "retail_sha256": "450569dad28918b34184c70e3b5e626986d867aae258654e782167ba055b0a71",
+   "applied_sha256": "f1d8488b56c215f268fe0541e7b93c44ba0f251916779b12b469203ed236cc99",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 114064,
+     "retail": "87d3f11de448c7e90dcee472c7469adee7f57347ebb85f8bc9e2a09676af33ff",
+     "applied": "ff8cfd2832cd8d338f270d0d54293bbe0a70a57fe7fe1f8f5ac370974c7d7766",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 355952,
+     "size": 1081664,
+     "retail": "6d10dbeca38d179978003953a4edaee2b15e3bb3f13c9f81f9de7057cb3d95cb",
+     "applied": "49dbb6d858f359a6239d92430abe79b188e5cbee9ccd9886d4918aa27fd171be",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s18ns.iff",
+   "outer": 3578,
+   "name_id": 2311728544,
+   "size": 1528000,
+   "retail_sha256": "251128e124380551b45b2ac5d6169a338fb4173b17afb22f81b4eb86bbce9610",
+   "applied_sha256": "eb4870f384dd0ed562ecef63dad8d622e61b83fe0adb5e015824458d1d822852",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 97808,
+     "retail": "5eaec4ef675007834104404319ac5307e9377f4ef7dcac77db05c76068ba41f7",
+     "applied": "76bc9325f251f406bf488c1e9386aede9d55e23dd0dcaf641f59555b345bb180",
+     "encoder": "optimal",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 336848,
+     "size": 1085952,
+     "retail": "aa672882309b70ddc5049419d9cbef217f5dbd8258495181c1d585530be1ecf3",
+     "applied": "7982f298e5a14de2a4e8217eca32ca81c610565680b2956a879e3ce72ffd7794",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "banner_away_team",
+      "banner_home_team",
+      "banner_home_player"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19dd.iff",
+   "outer": 3155,
+   "name_id": 998293030,
+   "size": 1654352,
+   "retail_sha256": "b65f8841cdb17d7dc361db6777bf699f6924d52f27f968cfcbb11eb1c44579c1",
+   "applied_sha256": "d6a2c07d58459f47331b7c2a64388128119e979f2257313a33ce45346965fba4",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 138176,
+     "retail": "ed21f46e0ac9de282afb7055dce7e8832a24850c802f1dca4b0b38f043ad8640",
+     "applied": "38ac12c8ef40c54a625a7dbfdcb069f84b307bd74e1174d07327de8e42bea32d",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 379632,
+     "size": 1141776,
+     "retail": "25acd229fda624221d8118df9b32e0ea0a813d348840f28cdffb93cf340791c0",
+     "applied": "a9ae45b4aa0f9edb1185ff3c66bc4fb85abfc523ce150608508af94fb533e8bb",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19dr.iff",
+   "outer": 3314,
+   "name_id": 288378761,
+   "size": 1642880,
+   "retail_sha256": "6a50b5b5bc79a9bbdc6467668ea4483de5203f59a8cb1273ee6921d55275482f",
+   "applied_sha256": "ece9b28fb4c3516480e88a397c316c2bbf258de054b318bcf24a04d10a1417d7",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 137040,
+     "retail": "2e1735d84540921e6bc7a62a8d1bdb14a03481259fe4a9fd27e5c437e6ededc7",
+     "applied": "01f491a891d5e804bc0e5ecbff09dcbd0cba90a33a006e9e33a838825403cdae",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 380288,
+     "size": 1154352,
+     "retail": "0e2274815271f9ef612acc2a9077cb0470af4395decf67d852dc09e6a9eec165",
+     "applied": "5c4278ed5c880e4d622bb0f18c202939ec040496355cc57a487f5bcdf8b4e213",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19ds.iff",
+   "outer": 3473,
+   "name_id": 4277281975,
+   "size": 1649312,
+   "retail_sha256": "bfb6b8edc6dc3e56ae904b5a546a09a01fbfd4bbbfec6e537824724b58e7dcf8",
+   "applied_sha256": "a3ffe7ffa210782777f981f887ed156b1b6874e7d5404efbcf9238dd310d5c5c",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 116160,
+     "retail": "6a003ea5a6e00f90b17ff5288e836b246069f6584dca5f377c73365d487606d9",
+     "applied": "2638a590d4bb0d9850ab9b6f3cd57e08b61e880340fce5085af74c5e7f09e607",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 356288,
+     "size": 1171872,
+     "retail": "659e23efe63bc77d3cd1f7ca0785299824ec2fdaab739815b4fead485d3f7629",
+     "applied": "f80b65315fac5b51e582aa5e33e4049369eb5deaf7fb04eb073c8edbd1373a64",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19ad.iff",
+   "outer": 3208,
+   "name_id": 2737031478,
+   "size": 1628432,
+   "retail_sha256": "16a9d20413650aa9b409b691807d6f669a3e027aa51fe000bd1b24cad4f8655a",
+   "applied_sha256": "28ef3d76de15b76da0f23ee0bef888854eb44a1da5f45ba69c63e00f2b592849",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 138256,
+     "retail": "627d9e6f00c8f31770e7c22fe53a4d306a6aea07adf1a36f8be32ac490da7b77",
+     "applied": "294cd0b348108bf36518833dd772e7d481b5085dda2c5571452a008cd4408d27",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 379712,
+     "size": 1146832,
+     "retail": "b7d957409c7bc95e607cc000e8874f0d3cba21cbcab02daeee4a5150fa1535d8",
+     "applied": "0128548b13fadb450151e9337d1d53d3495a77c677b18c65ff4704268dab3ef6",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19ar.iff",
+   "outer": 3367,
+   "name_id": 2308126873,
+   "size": 1636384,
+   "retail_sha256": "82646941c26e4d2ff977776c1153d1decd16b33bc897e2043346658e802c68a9",
+   "applied_sha256": "d2aa44ef1af5cfb55db7d11eafcd56a151b2fc528ea4bd305f4dafd7ac26e189",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 137120,
+     "retail": "bfb8c7a8675fbc2896df6a5d1159da08df72dadea5019d75016e94404a2459bc",
+     "applied": "884041917f97888ffe7c72296bca7890f9c69682789f2e054efc4ab4ab2b1461",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 380368,
+     "size": 1159424,
+     "retail": "d9998bd2a439765c6080e7d9b29da27373c0ece7e357424c16f18e39a3409f37",
+     "applied": "5999c8352631005ed83c071ca4bf1e4d21699dafd4b6a3c9f4770b00f32f2d65",
+     "encoder": "greedy",
+     "padding_bytes": 1,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19as.iff",
+   "outer": 3526,
+   "name_id": 1716605863,
+   "size": 1643680,
+   "retail_sha256": "8f1006b8133c1a2381a50e8361a2e2bc0858ebcd5a6439bd5f99a8579b3edec0",
+   "applied_sha256": "7d323109130841430760f26de0e5d2d007a4edeab394a49d22ebef83ebc91e7a",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 116208,
+     "retail": "6e378b5d305a8839818300fc0a4091b1d0f2b7c537ac701ad7d690044a8c6cd8",
+     "applied": "32bffa6a788593e9b5d252aaeca1d1cf23ca96eb989f6af1c9f6db0eb120410f",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 356336,
+     "size": 1176880,
+     "retail": "c004db0557e11e60bf61273840d895b8f0f30abf8617e74019b161d2772656e5",
+     "applied": "414ec45ccbbeb2156f16065af07ca0d952db19c19fefe5cf16e07d3df3c3abeb",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "ad_bb02",
+      "ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19nd.iff",
+   "outer": 3261,
+   "name_id": 3518453319,
+   "size": 1607536,
+   "retail_sha256": "40de2a89406db65487eb3a4ee87109aca404b55e8517f981bd3f97215436932c",
+   "applied_sha256": "c88085ce2fa38a82a6bbf7047f506093076889d806008e29dfd7a480c95b023d",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 138176,
+     "retail": "5b649b20c526923c3913991f396786e5ab719a5be3a1537c9f78adc7c1924512",
+     "applied": "0d75fa0171ecc8806423c817ed5d5a75735c7e7aec7dd8aa7a550498460e6fb5",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 378560,
+     "size": 1147648,
+     "retail": "d82c48ff6c4dd5817969d552078bb92b15d44bb14f1264cfcd8c5f1a6cae8b48",
+     "applied": "dfc0af57a8a779845a42e50afc61904ce11d7cd5fe8545f3ff291c71f5d115fb",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19nr.iff",
+   "outer": 3420,
+   "name_id": 4211582952,
+   "size": 1628624,
+   "retail_sha256": "16d96284ac958174bafc55b699705bbe1425bdaa4dacc70f3c859c5beeae4bf4",
+   "applied_sha256": "ccd18a387fd94a214ce5140fa7cc78393839854584d1a447f84751d8b0b70fa1",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 137056,
+     "retail": "59b376e6824ff07268e411bf1e39619d9cec01341fc5de7b58a21a1086b6e564",
+     "applied": "ea739e94e1ecaddddb9bc36fd30b2e65966c45f93ed18e767eee254325fcfa5a",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 378944,
+     "size": 1157776,
+     "retail": "5c9017250ebdfcbf0ffe48f9c1d0783c1425982f1ca5519990de64292c6ce38b",
+     "applied": "0bf8e67cbab9d19e61f3376ed816d3a29402116970de69ef72b5f24de33a97db",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "s19ns.iff",
+   "outer": 3579,
+   "name_id": 348507350,
+   "size": 1631040,
+   "retail_sha256": "8f227fca73f457d79175851645c0e248d594f31cb7975ac91f03f81525dbda86",
+   "applied_sha256": "6b23ce234000257f660dfcadc091c9940959f1db267186b84acb4989925b8a41",
+   "sites": [
+    {
+     "kind": "field",
+     "offset": 0,
+     "size": 116144,
+     "retail": "1a97cf865a11f1696f0ffe4adf81d37d42e2e12247fb16683caf65741db20440",
+     "applied": "bc3b87e459719ebb78f5f53aa709fe876c132ff2b173974e6348462d313f2c0c",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "center_logo"
+     ],
+     "overlays": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+     ],
+     "palettes": [],
+     "geometry": [
+      "D_graphic_overlays"
+     ]
+    },
+    {
+     "kind": "stadium",
+     "offset": 355200,
+     "size": 1170864,
+     "retail": "f5acd617535e96832a544fca705204b46dff229b4865570ea26db3fe6342e6b4",
+     "applied": "ff6ccb7e225f8d97bb9d6621877d953eba3e79ffb0eb96522bd69520862803c9",
+     "encoder": "greedy",
+     "padding_bytes": 0,
+     "patches": [
+      "banner01",
+      "banner02",
+      "banner04",
+      "LIGHT_ad_bb02",
+      "LIGHT_ad_bb01",
+      "banner_corp",
+      "wall01",
+      "wall04",
+      "banner_home_team",
+      "banner_home_player",
+      "banner_away_team"
+     ],
+     "overlays": [],
+     "palettes": [
+      "seat01",
+      "seat02",
+      "seat03",
+      "roof01",
+      "cement01",
+      "lite02",
+      "suite01",
+      "suite02",
+      "suite03",
+      "suite04"
+     ],
+     "geometry": [
+      "group41",
+      "group43",
+      "group44",
+      "group40",
+      "group42",
+      "group45",
+      "group50",
+      "group47",
+      "s19_8"
+     ]
+    }
+   ]
+  }
+ ],
+ "rost": {
+  "outer": 5,
+  "retail_sha256": "a5cf52fa5d1f2ecf911ef093a1afe6d3e4efbb2ce4d794b876c15a3ad537bacd",
+  "applied_sha256": "47d035292e6f6a8244e65f73ecee07903e3c126be90c6e802acce12900d928b3",
+  "records": [
+   {
+    "venue": "s18",
+    "state": "applied",
+    "record_offset": 2480,
+    "block": [
+     483548,
+     483658
+    ],
+    "bytes_used": 82
+   },
+   {
+    "venue": "s19",
+    "state": "applied",
+    "record_offset": 2608,
+    "block": [
+     483658,
+     483764
+    ],
+    "bytes_used": 82
+   }
+  ]
+ }
+}

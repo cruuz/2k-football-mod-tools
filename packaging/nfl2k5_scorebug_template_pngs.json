@@ -1,5 +1,1985 @@
 {
   "files": {
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_board_panel.png": {
+      "height": 128,
+      "sha256": "b17830e6827001127909b839551df88536d677df5ec940354b71f0f29f663ca2",
+      "size": 5349,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_flame.png": {
+      "height": 64,
+      "sha256": "67a8c7c06f87dd8fa9cd1aa45700ade433ec00e5890524d92ab224e61afbc1c4",
+      "size": 2573,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_lanai.png": {
+      "height": 128,
+      "sha256": "c1a79964952f30859b449a467a03779f4b3e0e3f0692a6b5a81dfb1c9bff9848",
+      "size": 745,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_lines.png": {
+      "height": 8,
+      "sha256": "fb294f5c059de3821cede20ac143f047fb6c91508e64e1bf827b3f902a1279c3",
+      "size": 88,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_mesh.png": {
+      "height": 64,
+      "sha256": "959b74054671c1c0a07fde01f0b9967660e436731b9278b1ef5718caba494133",
+      "size": 6563,
+      "width": 256
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_ribbon.png": {
+      "height": 64,
+      "sha256": "76ca5f5a07491c4feffa46f7c3d149b1bc50850050dd766ad3ab696ef089002c",
+      "size": 13072,
+      "width": 256
+    },
+    "data/nfl2k5_allegiant_model/art/LIGHT_ag_strip.png": {
+      "height": 64,
+      "sha256": "5a06592f7570eb3da4a8b81fc0118953db806373aba2e4d820395b69feca2c60",
+      "size": 3239,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_facade.png": {
+      "height": 128,
+      "sha256": "33f70012664721bbe97aa6238ce58d0eac549f3be2d14d05418bea4c4fd5a10e",
+      "size": 524,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/ag_glass_out.png": {
+      "height": 64,
+      "sha256": "96ccae1d7f87303b90a5025ba963d99159f95b48165c65ac47245f1ac7cb837d",
+      "size": 818,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_ground.png": {
+      "height": 32,
+      "sha256": "f06cdc005220a07e95932b1f4e865f2a0a892e264dc4ba48049ea07b048a80f9",
+      "size": 1383,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_hills.png": {
+      "height": 64,
+      "sha256": "2a0b898ae6c172dfeb504f79a223c41447be24724e3b8dd03e3b08003cf1870e",
+      "size": 5110,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/ag_letters.png": {
+      "height": 64,
+      "sha256": "75625aabdafca82dfcf44253bf8db695c7d18f914121e112dd6b7cd9a2bed201",
+      "size": 8256,
+      "width": 256
+    },
+    "data/nfl2k5_allegiant_model/art/ag_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_pyramid.png": {
+      "height": 64,
+      "sha256": "22b59b25c6945cd3d157a2a420d89d4d73f4a3afb2e3a4434d3cd7b7d030146c",
+      "size": 169,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_allegiant_model/art/ag_roof_rim.png": {
+      "height": 64,
+      "sha256": "98924b29eaa3093b78ce2fbe57b75c427948f9f1326f72a1085212ad08d32495",
+      "size": 1538,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_roof_top.png": {
+      "height": 64,
+      "sha256": "80af8508f94d38d7a9afdcb3fb058313ffbef59b05a054c67d67386f20d14e9b",
+      "size": 183,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_roof_under.png": {
+      "height": 128,
+      "sha256": "cde1ee9c967b542a575473f7882dfb832555cfba2f76ec507681a7adfca896be",
+      "size": 11938,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/ag_seat_back.png": {
+      "height": 128,
+      "sha256": "96766c37f77e7ebd253a31121e92d61c75f8836efb142f7139bdb220e2ba64ae",
+      "size": 7217,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_seat_front.png": {
+      "height": 128,
+      "sha256": "ea44808b595551a3b8fa9ed7f44a8cf74dbfe88a54f7e0db81389ed94cd4de7d",
+      "size": 6428,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_seat_mid.png": {
+      "height": 128,
+      "sha256": "3acd44617a47b1320c94f3e11f2123693662edb77437ccf4b034ba513fa1c94d",
+      "size": 6790,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_torch.png": {
+      "height": 128,
+      "sha256": "dd736b18f58e79c0bf9a7e92aa49853595ff46f331a8ceff770b12ecd6846d4f",
+      "size": 482,
+      "width": 64
+    },
+    "data/nfl2k5_allegiant_model/art/ag_wall.png": {
+      "height": 32,
+      "sha256": "053cbeb75754c34307e53f1412f31cd6e89edf41e1126d15c198f142837f0545",
+      "size": 5054,
+      "width": 256
+    },
+    "data/nfl2k5_allegiant_model/art/field/ag_grass.png": {
+      "height": 64,
+      "sha256": "32a87c349cca87455208a886c44bd9fc67adf24eba6c832c9a35edb5c9eb3941",
+      "size": 4990,
+      "width": 128
+    },
+    "data/nfl2k5_allegiant_model/art/field/ag_grass_outside.png": {
+      "height": 128,
+      "sha256": "d1d5d231eceadf083cd521edd44d2d2547478f8ba276b6f59a0c9f22e223e9e0",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/LIGHT_att_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/LIGHT_att_endglass.png": {
+      "height": 64,
+      "sha256": "f087e593a8de85159ec1564fb8c367296af8ae06963e20f3b3d8c1b46ba24e4b",
+      "size": 1827,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/LIGHT_att_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/LIGHT_att_lights.png": {
+      "height": 32,
+      "sha256": "68272757fdb0508113f9cde0d75d9c602ecb85eabcf9d958cbcee57eb6e59d29",
+      "size": 401,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/LIGHT_att_ribbon.png": {
+      "height": 64,
+      "sha256": "fea9dfa62b5ddd12522edb0705af7024f0aff30a700cfdb293f4cdc6ce28072d",
+      "size": 13634,
+      "width": 256
+    },
+    "data/nfl2k5_att_model/art/att_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_deck.png": {
+      "height": 128,
+      "sha256": "938ebf230c027b22830c7b157e1f03b95d95d5e4f41d1a810af703b0d4888f3a",
+      "size": 365,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_facade.png": {
+      "height": 128,
+      "sha256": "a1339564f1ad3088a562d39705b4bdbbe13f5da1bdbf82afd31b1e951405d9f7",
+      "size": 5388,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/att_ground.png": {
+      "height": 32,
+      "sha256": "5cd3a649c3a80214619c444ce7a601d104c99d713d3589af5b8eea1a1d7d0716",
+      "size": 1328,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_panels.png": {
+      "height": 128,
+      "sha256": "c44957c562a30aab7f01ad506376b27e4a87cc910c00bd2d0b12ffae8dccceb4",
+      "size": 1896,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/att_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_rail.png": {
+      "height": 16,
+      "sha256": "9b7b217f537fcad1e30b5a3fd66ab07826e375038df67a92377a18731bfb15af",
+      "size": 280,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_roof_edge.png": {
+      "height": 32,
+      "sha256": "3f6c18b0c77a456ea7e121bc1d0dc940b7301a721cf25f9ebca13046c61074a7",
+      "size": 135,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_roof_top.png": {
+      "height": 64,
+      "sha256": "e2a301470b4a9f1109d4f972da9dae5c0de6559f525acf88a7b003d537cefa03",
+      "size": 152,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_roof_under.png": {
+      "height": 64,
+      "sha256": "bc762aee590724f29f961081b4efb905ca318b33c7b336011f41313887f994c0",
+      "size": 6897,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_seat_back.png": {
+      "height": 128,
+      "sha256": "3bfbb020a419df726f31a086d21522e6f900e8b770dd72c9f38876da31730cef",
+      "size": 9239,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_seat_front.png": {
+      "height": 128,
+      "sha256": "ca50033fe490a6c7809a5a1d1877479b33ff9adb3f8b8b9084f8e06af62dc580",
+      "size": 8922,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_seat_mid.png": {
+      "height": 128,
+      "sha256": "2a9fe9f8b4c148b2d2bf2dcf982bc8bb6c74a5bd219ec5029a4f61aac13c9d3c",
+      "size": 9223,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_steel.png": {
+      "height": 32,
+      "sha256": "82509a37f9f1efaf156fe895338dbac2bced7d92a7e31d8545daa0495e659df0",
+      "size": 101,
+      "width": 32
+    },
+    "data/nfl2k5_att_model/art/att_stone.png": {
+      "height": 64,
+      "sha256": "afbf18ad2d58d03c9570c5af476726f37a65caf4e930a9268e443e8eaf8163e6",
+      "size": 1345,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_truss.png": {
+      "height": 32,
+      "sha256": "6390ebe90838be674157c7a31dd4e03ca0bc5af2fcb3b4c84ae7bea45f73a347",
+      "size": 1282,
+      "width": 64
+    },
+    "data/nfl2k5_att_model/art/att_wall.png": {
+      "height": 32,
+      "sha256": "0afbb72cfb681abc9f1888a7cf59ba56b06ae7fbfcd07ea3d7dd754ce2573be0",
+      "size": 1826,
+      "width": 256
+    },
+    "data/nfl2k5_att_model/art/field/att_grass.png": {
+      "height": 64,
+      "sha256": "68b18dc7bd090b45512eb8e14c2c77b5a01f91daa1d6c2af457568450f0bb6fe",
+      "size": 274,
+      "width": 128
+    },
+    "data/nfl2k5_att_model/art/field/att_grass_outside.png": {
+      "height": 128,
+      "sha256": "335b3c1837615bedb72f2a99c465b4c660b8c9b4f325e7400f5a73778985f676",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_board_kit/art/s30_ribbons.png": {
+      "height": 128,
+      "sha256": "baefbb0bd41ea7c00fa594eba1bd71f85717e18615908324b1edc52f963ea042",
+      "size": 5526,
+      "width": 128
+    },
+    "data/nfl2k5_espn_wipes_boards/electricity_background1.png": {
+      "height": 64,
+      "sha256": "bf6ce08b7984c6f8f3eb8433971fd2fc57fe016f955dd9f3002c5b512da58728",
+      "size": 205,
+      "width": 64
+    },
+    "data/nfl2k5_espn_wipes_boards/electricity_lightning.png": {
+      "height": 128,
+      "sha256": "e507ed06af1eb1084cd6f8279016a39f55a89e363a82c48f3c386f8795859b7c",
+      "size": 5664,
+      "width": 128
+    },
+    "data/nfl2k5_espn_wipes_boards/helmetbumper_monitor.png": {
+      "height": 256,
+      "sha256": "ae0f8ff4d887ef03d13e7df6c30c86cb78181e19a8f903b869ee0cae15ba48b8",
+      "size": 1790,
+      "width": 256
+    },
+    "data/nfl2k5_espn_wipes_boards/helmetbumper_monitorcolors.png": {
+      "height": 128,
+      "sha256": "6dc50fe6b99a2295a2050454b4307ccb895cb81f0e2378c4415db469e8616093",
+      "size": 477,
+      "width": 256
+    },
+    "data/nfl2k5_espn_wipes_boards/replay_wipe_pattern_flash.png": {
+      "height": 32,
+      "sha256": "c701acfa10bd7d493d94c76befc867cae88535b17176b637b64f6655fac93a85",
+      "size": 1259,
+      "width": 32
+    },
+    "data/nfl2k5_espn_wipes_boards/replay_wipe_rays.png": {
+      "height": 128,
+      "sha256": "0619aa13dc160b207ff6dcc9454380a1e17d7fe7a3c61db5b6153fc81dc78c3d",
+      "size": 2870,
+      "width": 256
+    },
+    "data/nfl2k5_espn_wipes_boards/replay_wipe_streaks.png": {
+      "height": 8,
+      "sha256": "6783a862edf988bb254d695a7b4a432ee3f4d8dc83d1e7392b42ab3687ac98db",
+      "size": 115,
+      "width": 8
+    },
+    "data/nfl2k5_espn_wipes_boards/scoreboard_backboard01.png": {
+      "height": 64,
+      "sha256": "abf8786f8640fa4dc3d1fa8a9543e490de896df2209c555e892ae569f668cac6",
+      "size": 244,
+      "width": 64
+    },
+    "data/nfl2k5_espn_wipes_boards/scoreboard_dot.png": {
+      "height": 64,
+      "sha256": "482ee81d99aa4517c01f5ab6c79297f83efbedb0a7bce6c3bf4f24e656f0f447",
+      "size": 167,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/LIGHT_jx_board_panel.png": {
+      "height": 128,
+      "sha256": "08e110524babe366dec8ab40ddc854a2d20521ad6892c507aeabf5799a59c768",
+      "size": 6150,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/LIGHT_jx_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/LIGHT_jx_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/LIGHT_jx_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/LIGHT_jx_ribbon.png": {
+      "height": 64,
+      "sha256": "bee4c269c1cc5a5fea34fd0dbf45127254d07e44d73cc907a30faf5ae002cc5b",
+      "size": 12863,
+      "width": 256
+    },
+    "data/nfl2k5_everbank_model/art/field/jx_grass.png": {
+      "height": 64,
+      "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58",
+      "size": 5145,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/field/jx_grass_outside.png": {
+      "height": 128,
+      "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/jx_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_board_back.png": {
+      "height": 64,
+      "sha256": "4f4dfb14213c202b8ff9ba0b28a98279b4e1e95e9e23468ca71d299d2ebd44ae",
+      "size": 226,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_cab.png": {
+      "height": 32,
+      "sha256": "91e381953e8d9a5d73d16f687f7fc53b424a055622b61b4b4c4ca4e161dc752b",
+      "size": 158,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_crane.png": {
+      "height": 32,
+      "sha256": "818c1a019f0caa9db2d197cea62ddca07f96c3ee2c2822598624bd4e93a3aa21",
+      "size": 1610,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_deck.png": {
+      "height": 32,
+      "sha256": "3dc912c8d239665d1f3ce72694761003a39aa853710092183e27507e6c6da536",
+      "size": 183,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_drained.png": {
+      "height": 32,
+      "sha256": "8576f75b5745a0a4f65f5ce6dd1ce41d1046a30896567ed3b50e9aeae70bc596",
+      "size": 133,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_fabric.png": {
+      "height": 64,
+      "sha256": "acfea6b9e060aebc1e366f499db76a0ae28282591eb59573e80d4e105b964f69",
+      "size": 160,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_facade.png": {
+      "height": 128,
+      "sha256": "f99c861540870990bf166c9d40ece17bfd7a3c37302d07c71235d77eac0d6a5f",
+      "size": 1251,
+      "width": 128
+    },
+    "data/nfl2k5_everbank_model/art/jx_fence.png": {
+      "height": 32,
+      "sha256": "2d415bbf0769d4c84e9c3e9714394e53750805ae598d00f448943d4a681ce163",
+      "size": 1935,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_letters.png": {
+      "height": 64,
+      "sha256": "8b94140952f55a9ec84ec56e8622e2f290b31d0a1a62ddfc748b5e7338fc312d",
+      "size": 8915,
+      "width": 256
+    },
+    "data/nfl2k5_everbank_model/art/jx_netting.png": {
+      "height": 32,
+      "sha256": "ed625d7db91bca33a8b7ec5c02bca6a47d66c72a7850563085230931c79ba3d5",
+      "size": 284,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_riser.png": {
+      "height": 64,
+      "sha256": "ac048af5bfbd3673686835af441f13f2012c98da66d476516b9df266fc09e0f4",
+      "size": 2972,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_roof.png": {
+      "height": 64,
+      "sha256": "cc2502d90b7db7d8f6715e4a77c433933e58e0a8628b5ff49bab9ebb476f56e0",
+      "size": 690,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_seat_back.png": {
+      "height": 128,
+      "sha256": "0b47856eb8163c3e8040475daad08d1f299592084378894c4842c3e681fe44b7",
+      "size": 10614,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_seat_front.png": {
+      "height": 128,
+      "sha256": "3030d8d7ea5c1ea10fc1115208e408a65e535b5524f1c908ab1d0c0839531844",
+      "size": 10199,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_seat_mid.png": {
+      "height": 128,
+      "sha256": "5c591ee4a55fa5e227805135967c74017ab7952cc7e2f882fc5e0b14360d6e14",
+      "size": 10450,
+      "width": 64
+    },
+    "data/nfl2k5_everbank_model/art/jx_steel.png": {
+      "height": 32,
+      "sha256": "7bb04aca4a2442c3719d5274c84088ba4e5f2366788f9188633d44857f0b0474",
+      "size": 122,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_truss.png": {
+      "height": 32,
+      "sha256": "2df2d2d7f54d7f7fb7c349aada0dca5390f1193dd7033136b46e23fee224e103",
+      "size": 1659,
+      "width": 32
+    },
+    "data/nfl2k5_everbank_model/art/jx_wall.png": {
+      "height": 32,
+      "sha256": "11fe1f003e9bcae938d5e27f630f12bfabd0d8efeb387434a495cc7079d53cfa",
+      "size": 5566,
+      "width": 256
+    },
+    "data/nfl2k5_everbank_model/art/jx_water.png": {
+      "height": 32,
+      "sha256": "545673b630bcf1e84fdd5479c5c434124abbb60fb2209b2d14b74892f8703a4a",
+      "size": 1346,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_board_panel.png": {
+      "height": 128,
+      "sha256": "5658544fb20dd1e79098f8e4cbd82d64a6903a8b17036c3883f31e74c549d1d6",
+      "size": 6595,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_lantern.png": {
+      "height": 32,
+      "sha256": "ed920678b586480a951c36106ea8f62d6290d3ebabcbfe7c58b4463ecd6261a6",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/LIGHT_ne_ribbon.png": {
+      "height": 64,
+      "sha256": "9be75d37a7030d7b9b200db1875b45717fc0a424bfce76b19a022b37c4aa22aa",
+      "size": 12781,
+      "width": 256
+    },
+    "data/nfl2k5_gillette_model/art/field/ne_grass.png": {
+      "height": 64,
+      "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58",
+      "size": 5145,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/field/ne_grass_outside.png": {
+      "height": 128,
+      "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/ne_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/ne_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/ne_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/ne_facade.png": {
+      "height": 128,
+      "sha256": "df13df947b359ee977fd34456b3561525cb94441536fa662c56cb8625f1b0859",
+      "size": 711,
+      "width": 128
+    },
+    "data/nfl2k5_gillette_model/art/ne_letters.png": {
+      "height": 64,
+      "sha256": "50b860a1cd5aca6024ae2e4310cb35dfe87db5e407bd4bba94a40f2bb0013403",
+      "size": 7483,
+      "width": 256
+    },
+    "data/nfl2k5_gillette_model/art/ne_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/ne_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/ne_seat_back.png": {
+      "height": 128,
+      "sha256": "6f4c214607fc25ae8efa611507a1d51ba808b3634d34951a21815cf371099c5a",
+      "size": 10477,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/ne_seat_front.png": {
+      "height": 128,
+      "sha256": "bd6a0b2e435d49cae47d38c1695f9f1312f53bb648cbea1f77323d8a8bc46316",
+      "size": 9635,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/ne_seat_mid.png": {
+      "height": 128,
+      "sha256": "fa105e2940217454ee7062f7553b9206b191b997169f5699b6c820174eb18b6b",
+      "size": 10119,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/ne_steel.png": {
+      "height": 32,
+      "sha256": "24e99d235a12bda39580771194c771aed48f212bc9ef591bd6de1be21cf40c45",
+      "size": 121,
+      "width": 32
+    },
+    "data/nfl2k5_gillette_model/art/ne_tower.png": {
+      "height": 128,
+      "sha256": "e030d19ec36717190b2c74f15e9f710633e033f36a91453c4d383b7dc9c4ba27",
+      "size": 423,
+      "width": 64
+    },
+    "data/nfl2k5_gillette_model/art/ne_wall.png": {
+      "height": 32,
+      "sha256": "4648d09b5314767a4b8e995599e593b9dc50e04c04b9706716a89541a73cc05f",
+      "size": 5614,
+      "width": 256
+    },
+    "data/nfl2k5_hard_rock_model/art/LIGHT_hr_board_panel.png": {
+      "height": 128,
+      "sha256": "198b5d2ebafc93056eb08e0b6c131ad4beea3a29c5421d298406dff7797ac848",
+      "size": 6231,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/LIGHT_hr_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/LIGHT_hr_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/LIGHT_hr_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/LIGHT_hr_ribbon.png": {
+      "height": 64,
+      "sha256": "bd5d7f2e30552cdfc16b528cf564f892b99a416d62743bcac2e61e8a7d80af8c",
+      "size": 12991,
+      "width": 256
+    },
+    "data/nfl2k5_hard_rock_model/art/field/hr_grass.png": {
+      "height": 64,
+      "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58",
+      "size": 5145,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/field/hr_grass_outside.png": {
+      "height": 128,
+      "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_arch.png": {
+      "height": 32,
+      "sha256": "800a2e3deb0eaad05e4d25b8172ee4ccfeea08492e187bfcbcd416de1c15d9e9",
+      "size": 2806,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_cable.png": {
+      "height": 32,
+      "sha256": "01aabd1e9f2945505b49d4445570fec304baa0bfc11c5ca5c8e0c5ed23b1c30c",
+      "size": 82,
+      "width": 8
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_column.png": {
+      "height": 32,
+      "sha256": "0876dbfe3e47d3583bb3894a988f0c547ced317b7b632fc9bac8be3c00541be5",
+      "size": 482,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_etfe.png": {
+      "height": 64,
+      "sha256": "d5cf13b556056896d156f0dd4c0d422693c039ee71461bc4c52e2bbf8d05ec19",
+      "size": 427,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_facade.png": {
+      "height": 128,
+      "sha256": "d80f4d04a2d0730f68ef1d008a8635b86643ce270e01b1246fe7fd09db6f8fb7",
+      "size": 772,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_letters.png": {
+      "height": 64,
+      "sha256": "eca5cdff175a52ec0804fa021f4d8e55d52f8359fccc84159973d653ec6b00b8",
+      "size": 8475,
+      "width": 256
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_mast.png": {
+      "height": 128,
+      "sha256": "ca530a124c7c47542538325d592e06b948b089fce30d6fc0dc0b012ca638fed1",
+      "size": 179,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_ramp.png": {
+      "height": 64,
+      "sha256": "a389eceb5616c67433bed739058e2075638a5f29c75666006bec786e72b237f5",
+      "size": 653,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_roof_edge.png": {
+      "height": 32,
+      "sha256": "74e8d667da60cc051f9bbe27af104966c70262d23da9f204b5ada9c431f53e37",
+      "size": 296,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_roof_top.png": {
+      "height": 64,
+      "sha256": "d350fb4441f4f4f049e5d648033fd0a5cf7a6beb2700b52d9baf268d35267d8b",
+      "size": 161,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_roof_under.png": {
+      "height": 128,
+      "sha256": "a7687281bf1712cb3baa81d9babddae90a20442f55670bbb921264fc1b51a79b",
+      "size": 14605,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_seat_back.png": {
+      "height": 128,
+      "sha256": "0c09fb9f47e7bbd60189e96779ddfeb4bbe9814689431889f9e262a4c3a74aef",
+      "size": 10899,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_seat_front.png": {
+      "height": 128,
+      "sha256": "d94678deee36c8966c209ab2f41015b85b88c4552844dffb86df74cca88028be",
+      "size": 10063,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_seat_mid.png": {
+      "height": 128,
+      "sha256": "ac87ddc51357337ab58756a5c50a0ef2c77798461c67ae42c7c3eacfedc642eb",
+      "size": 10517,
+      "width": 64
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_truss.png": {
+      "height": 32,
+      "sha256": "d352ee1372faec7d001c8febe479d23707bd94234a63bbf4838482327b71dfae",
+      "size": 2674,
+      "width": 128
+    },
+    "data/nfl2k5_hard_rock_model/art/hr_wall.png": {
+      "height": 32,
+      "sha256": "17de4041c3285e537b1d8ea40d5b80eee663e79e6529c2d748ce341ed3d32cf3",
+      "size": 4949,
+      "width": 256
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_base.png": {
+      "height": 64,
+      "sha256": "0766104b49999d4c367ffc17ab66303723fbc98552e7a2c6f6438d13e8bba4be",
+      "size": 936,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_board_panel.png": {
+      "height": 64,
+      "sha256": "ab34aa2b06f9146f5d1784a558c47b590abb0073742f3e32e11a27190363970b",
+      "size": 11322,
+      "width": 256
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_entry.png": {
+      "height": 64,
+      "sha256": "bb3fbf6349767d2a2fa38c5265c57cde332e3f710edeb94f673ac2440fea24fc",
+      "size": 429,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_finline.png": {
+      "height": 16,
+      "sha256": "936f1b5f5ebf81290912e0e7a612470f4cf9667ad31b0e06750671351a35f724",
+      "size": 118,
+      "width": 16
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_led.png": {
+      "height": 16,
+      "sha256": "caf146f89eb727f836b1fb2ebc3481b2edc4bc3e590406daa60301bd3278a662",
+      "size": 358,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/LIGHT_hm_lights.png": {
+      "height": 32,
+      "sha256": "f216ec3e90e15ddc0770d53dd2100f59ce23ca171cfb3a0bcfee7d725550d5b0",
+      "size": 633,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/field/hm_grass.png": {
+      "height": 64,
+      "sha256": "eae22ec6c7de1a415d24472a044756245fb375624af62296add6afa4eb4aa255",
+      "size": 270,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/field/hm_grass_outside.png": {
+      "height": 128,
+      "sha256": "73a11c3b69cbf6540bc7122cc5fc6c7e7337eca35c5ab10e7f27a6c3b2afa88c",
+      "size": 1075,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/hm_asphalt.png": {
+      "height": 64,
+      "sha256": "2ae7fa7141d3ffeeed2e5f7ceab976a1a0cb5e7cbfd060a08d4a503774103e48",
+      "size": 1853,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_black.png": {
+      "height": 64,
+      "sha256": "8f144c53cd6084263cddc88fcc78aaa12a9c338782219443807af9d96d4768b2",
+      "size": 160,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_brick.png": {
+      "height": 64,
+      "sha256": "08cc2cb96b5930b1a313d91cda487e733984eeaa1b337154d7ee1170776a2d90",
+      "size": 2256,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_building.png": {
+      "height": 64,
+      "sha256": "527dc2e0db29d4656c00f8bd230796514537d9de6ce1cad814ddf95d465c874d",
+      "size": 258,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_highmark_model/art/hm_dirt.png": {
+      "height": 64,
+      "sha256": "5d2d4c9bf4810b5a976daca1488af2778133fc6237430b5a4d2447aa5a1e1cf5",
+      "size": 5310,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_facade.png": {
+      "height": 128,
+      "sha256": "17067a090e8cfbfe2887d854845426856062f8a4db07b73a7234e72cef25d266",
+      "size": 4031,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/hm_ground.png": {
+      "height": 64,
+      "sha256": "2280e0155d627102d78587daaa9b5296aa227d6672859be7bb677dadfdef1a3c",
+      "size": 3648,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_letters_back.png": {
+      "height": 16,
+      "sha256": "04b96e0b1d38d199a7f19aa2ca1052d8b6cfca79b4765003912ccb4f3a71181b",
+      "size": 99,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_logo.png": {
+      "height": 64,
+      "sha256": "61d5fdf5d476dbd61ebfbfac83f4929b071b65f35eb88553b7ad735c7492ff2f",
+      "size": 7416,
+      "width": 128
+    },
+    "data/nfl2k5_highmark_model/art/hm_plaza.png": {
+      "height": 64,
+      "sha256": "a1ae67fc6c7fb75b05ccbed891f0bda99363d8f04a7d1dca3673f74beee906d0",
+      "size": 281,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_highmark_model/art/hm_road.png": {
+      "height": 64,
+      "sha256": "1667373b540062050eb2f12437221f5638d47a06e44fae54d58137a7e9fd94d8",
+      "size": 452,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_roof_top.png": {
+      "height": 64,
+      "sha256": "0a9958adc312b6a86228c25c06d6978e2685d740b8ff03a26c8bc124339025fe",
+      "size": 568,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_roof_under.png": {
+      "height": 64,
+      "sha256": "cbd41b05a13d17b12c1e6c1da97068a5f041d2c7218c3591544f391f78fca516",
+      "size": 275,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_seat_back.png": {
+      "height": 128,
+      "sha256": "853f553c61022b046766109af53b4a46a971b821109afd9409675fc9cc30d00d",
+      "size": 10635,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_seat_front.png": {
+      "height": 128,
+      "sha256": "49bb67c8d717b1daff166b5e92781b47ce66dc81a0c304e1d4c9dc1902da8caa",
+      "size": 11129,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_seat_mid.png": {
+      "height": 128,
+      "sha256": "8b1c3511d9a6cd86821c573be94625acc38955bc3798a6c11071e25309698912",
+      "size": 12525,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_trees.png": {
+      "height": 64,
+      "sha256": "4f3ad3a3bc1f9fc3f0328b4eb52c30272f86480916e4102134ea3ca0827debc1",
+      "size": 2092,
+      "width": 64
+    },
+    "data/nfl2k5_highmark_model/art/hm_wall.png": {
+      "height": 32,
+      "sha256": "2d1d5817282c06941e0889ee42bb57d06d9aa4ae151d0c93176ecf9016966f07",
+      "size": 6688,
+      "width": 256
+    },
+    "data/nfl2k5_kick_meter_2026/arrow32.png": {
+      "height": 32,
+      "sha256": "a691a700d169278a677524690ea8d397015e6233f9cea380875c7a632d45bb13",
+      "size": 110,
+      "width": 32
+    },
+    "data/nfl2k5_kick_meter_2026/digits.png": {
+      "height": 64,
+      "sha256": "c8aa2fca4e10dfa3e8cc8b1d9651984da3e0079965f8039dcec81dccc21a0ea5",
+      "size": 1195,
+      "width": 64
+    },
+    "data/nfl2k5_kick_meter_2026/meter128.png": {
+      "height": 128,
+      "sha256": "65e0ad70620a8253d19412236ef30466c8e19a38ad3a639400b3e9944d332980",
+      "size": 15237,
+      "width": 128
+    },
+    "data/nfl2k5_kick_meter_2026/meter64.png": {
+      "height": 64,
+      "sha256": "047695121f892fb6dc2d4e5f9610c1dc5a5d4b5e7191f2d412e1a2b568277209",
+      "size": 3443,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/LIGHT_gb_board_panel.png": {
+      "height": 128,
+      "sha256": "fde8163f65f161a271a43b7f4bf37c80bf2c03d0776eaf4564ab49c99fe191ee",
+      "size": 6069,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/LIGHT_gb_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/LIGHT_gb_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/LIGHT_gb_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/LIGHT_gb_ribbon.png": {
+      "height": 64,
+      "sha256": "1a4316bacf61ca9b8001750a9d2edb0fbdf2122ee60fe18142f4424dcb79663b",
+      "size": 13929,
+      "width": 256
+    },
+    "data/nfl2k5_lambeau_model/art/field/gb_grass.png": {
+      "height": 64,
+      "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58",
+      "size": 5145,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/field/gb_grass_outside.png": {
+      "height": 128,
+      "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/gb_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_lambeau_model/art/gb_board_back.png": {
+      "height": 64,
+      "sha256": "1a7cc87294cf1449c6cf7e09e9b8da5dc168fca7b9e0498e960ba4e5b49f0895",
+      "size": 229,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_brick.png": {
+      "height": 64,
+      "sha256": "d216b5dfba41ac481c7ae8aef8bc4a0cdf241706891e190d9a8de8672604d1be",
+      "size": 1031,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_lambeau_model/art/gb_facade.png": {
+      "height": 128,
+      "sha256": "523f3a086e5bb243f14e4f4f1d370887edc590afb50f42f2ca5d57e8bd9c6810",
+      "size": 872,
+      "width": 128
+    },
+    "data/nfl2k5_lambeau_model/art/gb_letters.png": {
+      "height": 64,
+      "sha256": "8b58a0a82e2fa6b8e09b7e8df35beb56bf6f6f0332c99dd3a190be1eec2de55f",
+      "size": 7416,
+      "width": 256
+    },
+    "data/nfl2k5_lambeau_model/art/gb_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_lambeau_model/art/gb_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_lambeau_model/art/gb_roof.png": {
+      "height": 64,
+      "sha256": "cc2502d90b7db7d8f6715e4a77c433933e58e0a8628b5ff49bab9ebb476f56e0",
+      "size": 690,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_seat_back.png": {
+      "height": 128,
+      "sha256": "c2b37a156f9cb4e24a04474c7fbe8bbfe4d0750708fc3948ada6b8d76974e9f7",
+      "size": 5926,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_seat_front.png": {
+      "height": 128,
+      "sha256": "3cfa8c77699bc6deacaf886de590d4144785e4bc71d4cd8f1a4253b64e935404",
+      "size": 4956,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_seat_mid.png": {
+      "height": 128,
+      "sha256": "7f7d41b8c6bd50070e4d065c183a49648b8b5f36b84c185bd5fa87f97be96ba3",
+      "size": 5412,
+      "width": 64
+    },
+    "data/nfl2k5_lambeau_model/art/gb_steel.png": {
+      "height": 32,
+      "sha256": "455285152d6193b45314bf18a17dfdefa64b3d444b41ec403e50030fa5141230",
+      "size": 121,
+      "width": 32
+    },
+    "data/nfl2k5_lambeau_model/art/gb_wall.png": {
+      "height": 32,
+      "sha256": "f1dd2681294337ca719643bd7a29b297c13add07675c2f2290c317967efbc955",
+      "size": 6119,
+      "width": 256
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_base.png": {
+      "height": 64,
+      "sha256": "fbd6c08582d55ed1ac94d27ce6665fb2c2fd01807b8c04096e06de92269fb650",
+      "size": 614,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_board_panel.png": {
+      "height": 128,
+      "sha256": "7b521bc39d1bfac00a1e3999120343607201a7d5881b5addd63cd03299bcafe3",
+      "size": 5176,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_curtain.png": {
+      "height": 128,
+      "sha256": "3a71595928bbc122c1d0225458ba31a3f913b0254f1c7af1a6eb496641949e6c",
+      "size": 6826,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_press.png": {
+      "height": 32,
+      "sha256": "12ed07ad863e97035ede462d32c8a4f0027022f65dfefd94d1fb1a316232e20d",
+      "size": 460,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_ribbon.png": {
+      "height": 64,
+      "sha256": "879963470123cf3f750fccfe608cab25f13fbea298d9230837a8e373572dbe4e",
+      "size": 10444,
+      "width": 256
+    },
+    "data/nfl2k5_levis_model/art/LIGHT_lv_suites.png": {
+      "height": 64,
+      "sha256": "18c85ec14722a3c0d428d4d3babe448a0cd93843fc9a802406fd9f3ef424d2ec",
+      "size": 2760,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/field/lv_grass.png": {
+      "height": 64,
+      "sha256": "a189d0cd80796a178cb3e7df924fb550a974e8819bc56cca1fee085034a255f1",
+      "size": 5024,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/field/lv_grass_outside.png": {
+      "height": 128,
+      "sha256": "6fb33e62f6a602e24b33054125523c063956211d06cb787eb1d899d34fe47e08",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/lv_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_balcony.png": {
+      "height": 16,
+      "sha256": "22bbb97dae7bf986f20ea91415cb4f31e4762bd73ccb4fc7aa63c4d559b73d56",
+      "size": 282,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_banner.png": {
+      "height": 128,
+      "sha256": "dbea5b996f4f61ade6fca3e92bc7b7db67c57025f0cb59738c41ff4e6af40a4f",
+      "size": 3990,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_black.png": {
+      "height": 32,
+      "sha256": "b9678283c5b4c260e44b9e3c94b709662c972b2e3406aacb148fe7204a076331",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_facade.png": {
+      "height": 128,
+      "sha256": "65a3360481c3f37b6129cca37b41a8a12cf2d99e00091cc604631c80c3081fbc",
+      "size": 2376,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/lv_frame.png": {
+      "height": 64,
+      "sha256": "1291328cffcf87031677c294a53125008281dfec24212ec399d28a80f34a6e19",
+      "size": 1268,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_green.png": {
+      "height": 64,
+      "sha256": "4f50a35301c7fc3b175960358502e63c525e7aa90b8b91ae184a1aa173a89b74",
+      "size": 5253,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_ground.png": {
+      "height": 32,
+      "sha256": "1df0c905cd24a081284f678078c99b354e03b2087ee7db47e8f9a81037ec80f6",
+      "size": 1385,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_hills.png": {
+      "height": 64,
+      "sha256": "381cbb1990af475b70579770560ecefc57225042a044b20820c98ad9ecfbe2ab",
+      "size": 5191,
+      "width": 128
+    },
+    "data/nfl2k5_levis_model/art/lv_letters.png": {
+      "height": 64,
+      "sha256": "1a81729e56a2222607a2fbcaafc4f66b7722ef8da319854ed6f386f80f143dd1",
+      "size": 9756,
+      "width": 256
+    },
+    "data/nfl2k5_levis_model/art/lv_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_roof_under.png": {
+      "height": 64,
+      "sha256": "242f4dae0e78cc85f811706e1770a37529c656e50754f0d038e0de87f97c1b96",
+      "size": 171,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_seat_back.png": {
+      "height": 128,
+      "sha256": "0e0592a63d6877af0c5cda0cb8ab47f3dc374cad3f603a46036f6089ca890f02",
+      "size": 11029,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_seat_front.png": {
+      "height": 128,
+      "sha256": "67fb6253460be0c179e57452d9dd1bc7ba86c9f51e2479690fad037cc3a23c28",
+      "size": 10273,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_seat_mid.png": {
+      "height": 128,
+      "sha256": "f2655a2321051782d76960a82fb9f4b999fd6f1bad83bfbf2dad06d75cbe5dc1",
+      "size": 10822,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_solar.png": {
+      "height": 64,
+      "sha256": "332dc2a467eaa21629555a20a8cabf8bec84ec00545d06776bc487aeadfdf0a4",
+      "size": 337,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_steel.png": {
+      "height": 32,
+      "sha256": "f73c425943c216a541bd0211e745e2c14e04c7d67300bac5889a6e7f3e72fbda",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_truss.png": {
+      "height": 32,
+      "sha256": "401cfc0cd91839467b29662480e283626f4c6cc156bf99ae4f8496fb19643bb6",
+      "size": 1122,
+      "width": 64
+    },
+    "data/nfl2k5_levis_model/art/lv_wall.png": {
+      "height": 32,
+      "sha256": "4376c92bd1b9d82af7a33386d7457f6ddafc8c5829f424520db00d6e3a2d517b",
+      "size": 6289,
+      "width": 256
+    },
+    "data/nfl2k5_levis_model/art/lv_water.png": {
+      "height": 32,
+      "sha256": "18bcd0aa373d079d1b2630b3773deb85c2e308ec57af4347cf45a66a7c189dfb",
+      "size": 607,
+      "width": 32
+    },
+    "data/nfl2k5_levis_model/art/lv_white.png": {
+      "height": 32,
+      "sha256": "d114121147678c4878c0cb29f6ed465b503aba502130b6b7a4bb4af22f9e7165",
+      "size": 114,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_board_wing.png": {
+      "height": 128,
+      "sha256": "7203d026e4d209974d08b67c74bbbc2aaa60230500d988ed23a110623b3ee33e",
+      "size": 346,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_clerestory.png": {
+      "height": 64,
+      "sha256": "a89343723644fe24310ce0d8d7949356f46277c720b42b0e83c85f57f7e53bdb",
+      "size": 606,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_clerestory_n.png": {
+      "height": 64,
+      "sha256": "9876ed2f21125bd2c1bbeec52ecb5fea417d45ead90db58bd549c574b138fdf4",
+      "size": 289,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_facade_glass.png": {
+      "height": 64,
+      "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9",
+      "size": 1914,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_lights.png": {
+      "height": 32,
+      "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b",
+      "size": 404,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_ribbon.png": {
+      "height": 64,
+      "sha256": "2e51003a82f8da75abe4c1816b72a77e06bad4ca55d53bcf5fc4110efdf743a8",
+      "size": 13740,
+      "width": 256
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_towers.png": {
+      "height": 64,
+      "sha256": "8ba0678e840fa2651072ee596da7d8e8194f88ee34003fd364023a7e9c984426",
+      "size": 2732,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_towers_n.png": {
+      "height": 64,
+      "sha256": "90d201a907ea5379ba71856fdd0d492bd75b1059cb768db40a5a61f45acb42e6",
+      "size": 4617,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_window.png": {
+      "height": 64,
+      "sha256": "39b2b5cd17435b1e746385a1a3f8f19c7c67ab8d009a5bb0d66004412b3b3525",
+      "size": 2487,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/LIGHT_los_window_n.png": {
+      "height": 64,
+      "sha256": "f0c6fa2054650b6ba54ce2ecc3c2bfac0f3525f35ee238ed96830eba1d77212f",
+      "size": 2605,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_arch_windows.png": {
+      "height": 64,
+      "sha256": "1136c24ad04c5086cf7148fc1331addc6b6a3957ad24b6b15a6336e222060687",
+      "size": 1045,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_banners.png": {
+      "height": 64,
+      "sha256": "053d386b565aab72d4e8b50dd7e86aae5b4304a9c9cbf4b6d142a17433073b8d",
+      "size": 7000,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_black.png": {
+      "height": 32,
+      "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_brick.png": {
+      "height": 64,
+      "sha256": "b3a6e39d7b008e905df24ff8d432e815a1755bdaac43e30d389a71b39e0448a5",
+      "size": 3883,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_fixed_top.png": {
+      "height": 64,
+      "sha256": "a45690321273e306a1dc4b1586652019308fd2cae9f3ac8a81d6aa3ffb2e4812",
+      "size": 261,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_flag.png": {
+      "height": 32,
+      "sha256": "bf0018e59d553ea8dcabc4fe8fabfb27544cfbb9ecf8a6912b165661ea096da5",
+      "size": 1526,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_lawn.png": {
+      "height": 32,
+      "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7",
+      "size": 1121,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_panel_top.png": {
+      "height": 64,
+      "sha256": "313b2c7490349b916cdc004db282e566ac6026da4a4f9ca7f5004024a13881ef",
+      "size": 331,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_roof_letters.png": {
+      "height": 32,
+      "sha256": "4c5e0a52b7f96a7ab96697d58ccffc2dc64041142256ccf61c07fc444e05593c",
+      "size": 3864,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_roof_under.png": {
+      "height": 64,
+      "sha256": "989f2533024d9df39a02a5aa5904a2150ac68fc73ea837adaf1a0a8afbf5006b",
+      "size": 378,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_seat_back.png": {
+      "height": 128,
+      "sha256": "9240e285e63605c4d86d1dad21e295b9017913f13d2e7140504efb2a65646556",
+      "size": 9175,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_seat_front.png": {
+      "height": 128,
+      "sha256": "2601ac6129c693a8140a4a6f268a054acb11433601ffe5d609c0137538b58dd6",
+      "size": 8892,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_seat_mid.png": {
+      "height": 128,
+      "sha256": "973b3f27481d148952b5628eb2a230020a016a2cd57d25758c06a0d22cb39c46",
+      "size": 8802,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_sky_a.png": {
+      "height": 64,
+      "sha256": "75ec96d1d8788f409ccd56549758cd88642a82b0e48a31994b06032ada9df459",
+      "size": 233,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_sky_d.png": {
+      "height": 64,
+      "sha256": "d59ca8ca7fe248af218ffdcfa26da871402d35070ecf1a86ef9c05778ee3fca8",
+      "size": 231,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_sky_n.png": {
+      "height": 64,
+      "sha256": "4d68e724893d9e8258030ae5e5199b1c211a4ac82b89d153726928e7a9a01fdc",
+      "size": 241,
+      "width": 128
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_tower_cap.png": {
+      "height": 64,
+      "sha256": "d3227408d0b2b7147901768c6c2bade216f1486f16e5c822e3d432709ac77f53",
+      "size": 181,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_truss.png": {
+      "height": 64,
+      "sha256": "b9c16bc179886908b4b4c406e16b89f21e7e6123296eb5b15edade612e20f38f",
+      "size": 1612,
+      "width": 64
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_wall.png": {
+      "height": 32,
+      "sha256": "c1a92ea9a42ae01d7354ec47f04e9351035daac0655d957b5226d151b1f10b1b",
+      "size": 5606,
+      "width": 256
+    },
+    "data/nfl2k5_lucas_oil_model/art/los_window_frame.png": {
+      "height": 64,
+      "sha256": "6418d2e5161d81bf838fda2a86fafa7ba985f3ed64b5f4079a56ce52cdc27937",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_column.png": {
+      "height": 128,
+      "sha256": "019addad81a38f40b3082db96f0d7ddca63384abfba8b573119b9f0ba83565c0",
+      "size": 4680,
+      "width": 32
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_halo.png": {
+      "height": 128,
+      "sha256": "4e77ad99026b96e168b48d4b0ab7b223cd9de914fb9c7b9a51b3fd3130494ad4",
+      "size": 18341,
+      "width": 256
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_lights.png": {
+      "height": 32,
+      "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf",
+      "size": 399,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_ribbon.png": {
+      "height": 64,
+      "sha256": "778cd0e8dbacf88c1519a9d2d8d9ae359f659a60ebec4fe8328dbf307c37de9f",
+      "size": 12570,
+      "width": 256
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_skyline.png": {
+      "height": 64,
+      "sha256": "736fe4512a1a3d2a044de69a0893c33846010151c49c3a4c5da5bb371c1fedac",
+      "size": 3022,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/LIGHT_mb_window.png": {
+      "height": 128,
+      "sha256": "853f8f67f8b1f845cc38c16e97a5f655e5cc3a142c40f810003e8b71c809f1f6",
+      "size": 2004,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/field/mb_grass.png": {
+      "height": 64,
+      "sha256": "95d9d05061c06f6f66f50c6fce2bea7f2fda6e176b9dc4ffc7d612c6d93eb289",
+      "size": 255,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/field/mb_grass_outside.png": {
+      "height": 128,
+      "sha256": "335b3c1837615bedb72f2a99c465b4c660b8c9b4f325e7400f5a73778985f676",
+      "size": 257,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_black.png": {
+      "height": 32,
+      "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761",
+      "size": 171,
+      "width": 32
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_glass_base.png": {
+      "height": 64,
+      "sha256": "9cb59c1556b8f802083d0131403d2bc697e8edcf3322fb58f945b4efaa9667d2",
+      "size": 4199,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_glass_out.png": {
+      "height": 64,
+      "sha256": "86d2efc4fa17235c30a20e2e21b49af1851fd2050a4d1213c4bf94a7eb5d6ca5",
+      "size": 2595,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_name.png": {
+      "height": 32,
+      "sha256": "ae6cd72367cb4e8d579fc369951df918305127c5abbe644a2a08b9f3f63a0642",
+      "size": 7523,
+      "width": 256
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_panel.png": {
+      "height": 128,
+      "sha256": "5d77466de01bf0759de19938ce66489dd0ab19747091e0241213af1e532edb3a",
+      "size": 6020,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_pinwheel.png": {
+      "height": 64,
+      "sha256": "43aa0b077a429a5e3596dcf08deab11a8c08e0e4ce5d7d2d94b6aaaababd0f81",
+      "size": 5403,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_ring.png": {
+      "height": 64,
+      "sha256": "5e80dfaed80072299170ed9a3f8f51a0477c097356a4ea93a932a5fad47280d1",
+      "size": 2640,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_roof_top.png": {
+      "height": 64,
+      "sha256": "d1b36ae4cd2257407f7f6e368e36e2978e0772adef23829fd005d6fa435cf8ce",
+      "size": 305,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_roof_under.png": {
+      "height": 128,
+      "sha256": "de004fb75637cbf2fa6e1a5e7f3bf4aface57c5e0f8682f5f284e58f91c9c725",
+      "size": 28935,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_seat_back.png": {
+      "height": 128,
+      "sha256": "114444b11041baebe2992a5affd2fd44870f45254a82b91cbb38613ed0dffb96",
+      "size": 9698,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_seat_front.png": {
+      "height": 128,
+      "sha256": "98a613ed11ce6b6e096daecf1e69ecda19cbb2d9abfb0f96bc39d1d5a5934457",
+      "size": 9244,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_seat_mid.png": {
+      "height": 128,
+      "sha256": "a7ccb734ff2d9101fd7c7a30eb6ec5943382ca600d375d6fca9b82a2456bf02c",
+      "size": 9496,
+      "width": 64
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_sign.png": {
+      "height": 64,
+      "sha256": "5d0731a2a7c814ceee24d818648b17d607227cd0928db94b6425f972aa0d716b",
+      "size": 5518,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_sky_a.png": {
+      "height": 64,
+      "sha256": "54d2fd5931e114f284b3d4115f96834aa3cdb85a8e2f5f989ab11fe760109664",
+      "size": 3580,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_sky_d.png": {
+      "height": 64,
+      "sha256": "64c72c1fa478690d6e87d994c6af4835828d22fff206a68cd1869a5e8c4d7478",
+      "size": 3311,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_sky_n.png": {
+      "height": 64,
+      "sha256": "4771a68ec9924d25080381900ac80eafb4dcaf494ee9e635f619d62b02d64023",
+      "size": 241,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_sky_o.png": {
+      "height": 64,
+      "sha256": "9fe99fa88ae48ac327b37dcc35eb953451fbd46ba809faf15bb96ef6689cdb15",
+      "size": 243,
+      "width": 128
+    },
+    "data/nfl2k5_mercedes_benz_model/art/mb_wall.png": {
+      "height": 32,
+      "sha256": "5d5e091aa2cd8f513876934aa2b834204c5085c8964e00c6a5ee380aec300c6c",
+      "size": 6028,
+      "width": 256
+    },
+    "data/nfl2k5_metlife_model/art/crowd_hats18.png": {
+      "height": 128,
+      "sha256": "876fa3c5b33cd3e6f995a90815aa412b096e756f59384eeab7b724af9dfda4c4",
+      "size": 2306,
+      "width": 128
+    },
+    "data/nfl2k5_metlife_model/art/crowd_hats19.png": {
+      "height": 128,
+      "sha256": "3dadc36038202d215ada8a0a0780bc8d5911ec0edf2106f409f550aff7f4949c",
+      "size": 2533,
+      "width": 128
+    },
+    "data/nfl2k5_metlife_model/art/ml_board_panel_s18.png": {
+      "height": 128,
+      "sha256": "a17b7396cee1ec3da00eac729c995f47cf0ca53d1edf87aa1ecae4217dde5cab",
+      "size": 18077,
+      "width": 256
+    },
+    "data/nfl2k5_metlife_model/art/ml_board_panel_s19.png": {
+      "height": 128,
+      "sha256": "84903ddc5dcc26575e20d904ad78d8bbb37029acc743f44a0b2beb1c3f5c8f8e",
+      "size": 18256,
+      "width": 256
+    },
+    "data/nfl2k5_metlife_model/art/ml_letters.png": {
+      "height": 64,
+      "sha256": "99a3c9b8cf1b821f0bb0cdc91794fd76306aec368352881669df075f0c9b6633",
+      "size": 13855,
+      "width": 512
+    },
+    "data/nfl2k5_metlife_model/art/ml_limestone.png": {
+      "height": 64,
+      "sha256": "54870654c67787dfac940f182495f55a08f9c53063c16f457fb3fc698457f562",
+      "size": 7792,
+      "width": 64
+    },
+    "data/nfl2k5_metlife_model/art/ml_louvre.png": {
+      "height": 128,
+      "sha256": "326a338f0328ad777ea16637260a1089c4ecf3415310c2f8e74335f6ea6e0347",
+      "size": 23670,
+      "width": 128
+    },
+    "data/nfl2k5_metlife_model/art/ml_portal.png": {
+      "height": 32,
+      "sha256": "5ca0afd6bca7e093c9f805f4111768713f927a8ff375c7385b0e6453235b4836",
+      "size": 134,
+      "width": 32
+    },
+    "data/nfl2k5_metlife_model/art/ml_ring_panel.png": {
+      "height": 64,
+      "sha256": "962834928249abfa2b1a99db5edfc31249e4baa9e3c9d6f04873cb8eea2684e3",
+      "size": 13447,
+      "width": 128
+    },
+    "data/nfl2k5_metlife_model/art/ml_wall_s18.png": {
+      "height": 256,
+      "sha256": "a7717bbb2aa853aeb5bdd371cb6960483cd26c0312e0f954e5869a3dc66671bc",
+      "size": 69154,
+      "width": 512
+    },
+    "data/nfl2k5_metlife_model/art/ml_wall_s19.png": {
+      "height": 256,
+      "sha256": "e897cf24977312400b2deb73ea922439c3becced25a63aef8fe23019256e0410",
+      "size": 39596,
+      "width": 512
+    },
     "data/nfl2k5_modern_arrowhead/ad01.png": {
       "height": 256,
       "sha256": "50a4de1b1a97a48154f67a133c49542245e73930d822045bd6e5565aa072efd6",
@@ -84,6 +2064,564 @@
       "size": 2849,
       "width": 64
     },
+    "data/nfl2k5_modern_metlife/art/s18/field/center_logo.png": {
+      "height": 256,
+      "sha256": "cc4455387902ee27b8fce049a53e8c245dafc20d17ad5e7aec8dde07be7c43ba",
+      "size": 37046,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s18/field/endzone_N_L.png": {
+      "height": 128,
+      "sha256": "3c78e0515f6a870ddd6fa580fe0abe19b007b7b7791598113be2e755465e7d71",
+      "size": 2721,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s18/field/endzone_N_M.png": {
+      "height": 128,
+      "sha256": "dec8ba6885f917b41d35468e10a3479fda6bf123c7deee0cbbcc753aa5610368",
+      "size": 11037,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s18/field/endzone_N_R.png": {
+      "height": 128,
+      "sha256": "263204da9f59364152b61c3c1d554d32d0bdeaedd49f5f710d8099742601c943",
+      "size": 2733,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner_away_team.png": {
+      "height": 128,
+      "sha256": "0fceb617c859876946dc54d7fa989830bb84f34a782f9aba805391aadec6d555",
+      "size": 11800,
+      "width": 128
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner_home_player.png": {
+      "height": 128,
+      "sha256": "84abf8914d5b925544077efadaf8de2282425febb4b21a51fd0bc59eb182ce96",
+      "size": 22098,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/banner_home_team.png": {
+      "height": 128,
+      "sha256": "0642b8d91b7e83249316c9664f137711861c063457a75925e3fe5053f8bd0376",
+      "size": 12389,
+      "width": 128
+    },
+    "data/nfl2k5_modern_metlife/art/s18/stadium/wall01.png": {
+      "height": 128,
+      "sha256": "46d63b6448a015a8f64476cc8680823680b8445b033661f37bea679b106564c2",
+      "size": 7024,
+      "width": 128
+    },
+    "data/nfl2k5_modern_metlife/art/s19/field/center_logo.png": {
+      "height": 256,
+      "sha256": "070b1bdd549373d8b4ef2b700d8a35fd09530a9f6b7a5ffc36ea32b3f59dad11",
+      "size": 22258,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/field/endzone_N_L.png": {
+      "height": 128,
+      "sha256": "113c92733f68c3c257d14987ff3aaa259c0dd7e66f8bdb50e813ae38f775d0e3",
+      "size": 8898,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/field/endzone_N_M.png": {
+      "height": 128,
+      "sha256": "27feb8bd21ed9387b88aacb27da40b15255da9f7c68e5ef87562d60e54b1f5f0",
+      "size": 4311,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/field/endzone_N_R.png": {
+      "height": 128,
+      "sha256": "ac4904f295a4ccb9cbbd9e025e744a297d8a4087912416b44fc7b5e634d34e18",
+      "size": 3614,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner_away_team.png": {
+      "height": 128,
+      "sha256": "465f18476dc8f89698478e5f9aa1431cbff308aea8f9931c44b4ea1d11f13bec",
+      "size": 12982,
+      "width": 128
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner_home_player.png": {
+      "height": 128,
+      "sha256": "744abb7fe3f4275d7a8c7d1dd31defc0057825cc315bd59bb0e1d6225e52a8d4",
+      "size": 25757,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/banner_home_team.png": {
+      "height": 128,
+      "sha256": "81f416ca3bc9a5453dd3ca18f6ee9c86ea9d77627480b53d3822b6bb5077a52a",
+      "size": 13864,
+      "width": 128
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/wall01.png": {
+      "height": 256,
+      "sha256": "43fcfaf550eb401903bb11b540971bb32e3dd13d6d1267165f5f34f7c7381e7d",
+      "size": 12208,
+      "width": 256
+    },
+    "data/nfl2k5_modern_metlife/art/s19/stadium/wall04.png": {
+      "height": 128,
+      "sha256": "9a005de7780c837727810c3a6611060c581c2bda0126b1159efc2b03c00463f2",
+      "size": 4671,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda.png": {
+      "height": 384,
+      "sha256": "564df28c89ed72c820ae5ea895bed202349bcea8ccadc699d9792da8b6e0fe79",
+      "size": 124508,
+      "width": 512
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda_tile.png": {
+      "height": 96,
+      "sha256": "95d1f6c8d4c3766230dc5c3bb1befb66664a3fc7a6ccb104fed83d8a652c6a91",
+      "size": 12937,
+      "width": 192
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass.png": {
+      "height": 384,
+      "sha256": "d24e1ad126df00cc3ac407789707942655f941e68892ded510ccc3a0a4c8ce0b",
+      "size": 123227,
+      "width": 512
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass_tile.png": {
+      "height": 96,
+      "sha256": "915980274a06f2bfcbdfab52710a2a5321088cccc9cb2b3c096b7c56c066b357",
+      "size": 12818,
+      "width": 192
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_fibre.png": {
+      "height": 384,
+      "sha256": "7af63431c4a3367e5d016c65eb2e53e377884e06a7edd24f1fc389d5c1200d43",
+      "size": 126815,
+      "width": 512
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_fibre_tile.png": {
+      "height": 96,
+      "sha256": "4704ecf11f13fcbad111e117969bd17a21a7feb2504b678d2bfde944a32c8754",
+      "size": 13147,
+      "width": 192
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_helix.png": {
+      "height": 384,
+      "sha256": "70a30006d3e5d01dc1a1b29d14955f28b98abedc11d2613a444b3d10b185381c",
+      "size": 127306,
+      "width": 512
+    },
+    "data/nfl2k5_modern_surfaces/art/detail_helix_tile.png": {
+      "height": 96,
+      "sha256": "47c123469c5ca8307dfbd19ef715f8cf648ecbe0be11b79837288d84ea6d1d87",
+      "size": 13205,
+      "width": 192
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_grass_bermuda.png": {
+      "height": 320,
+      "sha256": "58f5d3f287d0bbf65b96628185751cfe1336b8d92476e507f4fc4988fe623bd2",
+      "size": 7012,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_grass_bluegrass.png": {
+      "height": 320,
+      "sha256": "6943fe715e89663dc5d6c5ec5d2df197729de814aea69bb65a6a99f9418ceece",
+      "size": 5918,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_grass_checker.png": {
+      "height": 320,
+      "sha256": "375ac615975f4aa6ca62a8e0b8a3c042b709e254b5dfdd6f7f0973d9153de112",
+      "size": 6521,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_synthetic_fieldturf.png": {
+      "height": 320,
+      "sha256": "16adbbc30842ff72573b159ffa21019db5890bae9af0ca3061ecbeafc2b4bae2",
+      "size": 1752,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_synthetic_helix.png": {
+      "height": 320,
+      "sha256": "7177deac66db5eb5f05eb977cb41379dbecc51a614a6216b37bc3f3df8535d48",
+      "size": 2224,
+      "width": 128
+    },
+    "data/nfl2k5_modern_surfaces/art/pattern_synthetic_vivid.png": {
+      "height": 320,
+      "sha256": "fc93e73e465a56d09a6330649229df530c3260ad7b74c0808ed48119a926f3d7",
+      "size": 1333,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s02_ad03.png": {
+      "height": 128,
+      "sha256": "e357b6231f19f65050105a1b4276e2b10f31de379faccf9cd26df754a3ea23e6",
+      "size": 2267,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s04_panthers_score01.png": {
+      "height": 128,
+      "sha256": "b2c3cd45238af0b95b2283efa64558aa0f7f30ee7be94e06a12f39481ae419fc",
+      "size": 2226,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s04_panthers_score02.png": {
+      "height": 128,
+      "sha256": "8129c26a7c2d3ae1a6fc441cfef116a152cc6923d082eb49429f5312fb7a7c73",
+      "size": 1374,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s06_signsA1.png": {
+      "height": 256,
+      "sha256": "adb5dfa580032fe38ea8ca8db4abe7c192b0524f91204b7afbf13fa2958f19db",
+      "size": 2075,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s09_sign02_sign04.png": {
+      "height": 256,
+      "sha256": "48e2202536ddedd60709243c07b2a39bce7d2d38a48a7ca18f4ab5b921b420e7",
+      "size": 2492,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s13_ad01.png": {
+      "height": 256,
+      "sha256": "9efba970c58b25520c423f829c16096ba7ab950c0b1f50cac4fd7215edac1ac2",
+      "size": 6283,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s17_corp_temp_adbanner01.png": {
+      "height": 128,
+      "sha256": "36b98450f42973c0d7035f92ce23e1d813958ef40f8c1a9381a64ed9e004c051",
+      "size": 2372,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s17_corp_temp_adbanner02.png": {
+      "height": 128,
+      "sha256": "fd9f24f0ff1475a7e4f4116646faacdb87ff697908f31daaad06f48b9cea8f1c",
+      "size": 5278,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s17_swall3.png": {
+      "height": 128,
+      "sha256": "103d2fc5bae0cc1f5a033cff5e3ad8eecd17d35487e713965bcfa44ca6054918",
+      "size": 3617,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s22_ad_bb01.png": {
+      "height": 256,
+      "sha256": "9024de30d714b80d42cc1f2f7562ef47728f49da1bc3c21cf940efd6fd899c76",
+      "size": 9636,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s22_ad_bb02.png": {
+      "height": 256,
+      "sha256": "eb884e380e7991edbc91cfff1bc8f87766033cf98066d9c5533ff796d5934b3d",
+      "size": 2876,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s26_lambert69.png": {
+      "height": 64,
+      "sha256": "206364b4c6cc77a94271c68bc4ce7a942af5792ea0824e8af28cb1764522636b",
+      "size": 716,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s26_lambert70.png": {
+      "height": 128,
+      "sha256": "4e61b8d367be1374b5953e9e6c484ae31a086c66443ccea0227c56c808befa31",
+      "size": 3283,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s26_lambert73.png": {
+      "height": 128,
+      "sha256": "1df4ee36044f253fac6f7f503ce70a97f2ef90eb3f103279cc29b39f225e078e",
+      "size": 2560,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s26_lambert74.png": {
+      "height": 128,
+      "sha256": "36b98450f42973c0d7035f92ce23e1d813958ef40f8c1a9381a64ed9e004c051",
+      "size": 2372,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s27_lambert12.png": {
+      "height": 64,
+      "sha256": "dfd1544ce95845c7e34d8eb27b7bdfb7b6452f1634c89e1950f540cc0f87d9ea",
+      "size": 2483,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s27_lambert63.png": {
+      "height": 128,
+      "sha256": "5514497fef91ed8c61de0a471a7544e7d2c5ab1f866752b5abafca78fd84c108",
+      "size": 3887,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s27_lambert63_logos.png": {
+      "height": 128,
+      "sha256": "f8d63e2a8a204aeb1ec80add8a944059f8feaf500b628d04b488c98893e3897a",
+      "size": 2450,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s27_lambert64.png": {
+      "height": 64,
+      "sha256": "0dadd034c5ba917f5ade6c91be98fe9750608c03f6114a8dd4b036f5ab410d0a",
+      "size": 1391,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s27_lambert65.png": {
+      "height": 128,
+      "sha256": "95eecf6baa1a6c6b06f4421b3dbb2edd99c6ce8d739533e46619d0d96e39b461",
+      "size": 2299,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s28_ad_bb02.png": {
+      "height": 256,
+      "sha256": "34a0f7e12ea30ac48e5b79ec863acc0a9c0458d2f7b4aca84a632854f51769ba",
+      "size": 4074,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s29_ad_bb01_LIGHT_ad_bb01.png": {
+      "height": 256,
+      "sha256": "4c6e49b5c39eeb6a9a6f91934269c0b9859defe13915b8ac78133c051b834ef9",
+      "size": 5082,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s29_ad_bb02.png": {
+      "height": 128,
+      "sha256": "3f6f1aa0269892ca179530a6d9c50d81f4e0c40e46fa985f2f7968d913389d6b",
+      "size": 2424,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s29_banner01.png": {
+      "height": 256,
+      "sha256": "041b5a376d5d38f646d11017d3f720509566db00bfc4b69e2757b620920b6ad2",
+      "size": 10475,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s29_banner_home_team.png": {
+      "height": 128,
+      "sha256": "4c25124f9ec36b3ffcabe8ec10ed83364b056a6e28d185c2c495172e41f07765",
+      "size": 3182,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s29_exit01.png": {
+      "height": 64,
+      "sha256": "667e2d7d2d04c989e4e2738a5cf12d4c99f9d6a78b8522a52f0c62cd5e1daf87",
+      "size": 1159,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s30_LIGHT_jumbotronB1.png": {
+      "height": 128,
+      "sha256": "e413633bd40d08f418e36a036e5613e812b90096120b7f96f55f3e4c04905b25",
+      "size": 3521,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s30_jumbotronE1.png": {
+      "height": 64,
+      "sha256": "becdd4eea4cb6d976aedf43a6f978573f07b2928fd6b417cc06ec15fd632bcce",
+      "size": 1223,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s30_lambert39.png": {
+      "height": 128,
+      "sha256": "3f7091f5d48afee141d663fd9e5b52e1028edb21aed19f10e00879b4e9c5568a",
+      "size": 3718,
+      "width": 128
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s30_lambert40.png": {
+      "height": 64,
+      "sha256": "8d3ceb890f2ad3e6df551fc2fa7c56b1d4d5e1babe70e87443a893b986798ad0",
+      "size": 1514,
+      "width": 64
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s37_texscore01.png": {
+      "height": 256,
+      "sha256": "9c6e3fd5e09acaa7a45f47a9fc7cb5e75adf27d0ac9eb8f790d19634d464ba7f",
+      "size": 5507,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/extras/s37_texscore02.png": {
+      "height": 256,
+      "sha256": "167c696cded8753181df6fba437e79a51a2b8034326f2a67ab1aa723e4df9565",
+      "size": 6032,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/league/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_clere.png": {
+      "height": 32,
+      "sha256": "314004440943aa86c47b05e7e4e256a80db39c4760c30a085e6f104fd20a4964",
+      "size": 336,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_clere_night.png": {
+      "height": 32,
+      "sha256": "fb2e09a3b0155e0ee05fc9143087a69525ef63a418b1c71069edf9a31e481d21",
+      "size": 342,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_glass.png": {
+      "height": 128,
+      "sha256": "21f0cfd5b6c548d3982e7835756bbf9c8caa96199533037745190c4c86023a90",
+      "size": 3699,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_glass_night.png": {
+      "height": 128,
+      "sha256": "e264d8ef4af4cd35b900b0589e7f003336df9b35aec0a15a1dec05187deaafac",
+      "size": 1107,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_led.png": {
+      "height": 32,
+      "sha256": "3444a9f319ab1b50c783d66fd1cf5f4a6c181a780a543f8c36eed355e5348ce3",
+      "size": 426,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/LIGHT_pf_led_night.png": {
+      "height": 32,
+      "sha256": "b5ca1f6b1bcc62fb7afbf710228fc137a10b91011668d036b353ec8fa1d90c39",
+      "size": 490,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/field/pf_clear.png": {
+      "height": 128,
+      "sha256": "06ab142c3bad172a564f50931dd667c07af918ed7298107b0c41f79cd761cc8f",
+      "size": 143,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/pf_bleacher.png": {
+      "height": 64,
+      "sha256": "51be2d2820b6e96a9131b7a3d8fce551078ccc163f87fc38e22f6c5e644613d4",
+      "size": 3276,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_canvas.png": {
+      "height": 32,
+      "sha256": "f3010e7284ffdcd588860bccc915e6947915056fff0f49b494a315f732df23b4",
+      "size": 434,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_clock.png": {
+      "height": 64,
+      "sha256": "f09ceccace34c531628f4c551ccb0b1512c37f14212e5fdfb35de7bb5a5046ee",
+      "size": 2938,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/pf_dark.png": {
+      "height": 32,
+      "sha256": "ac57db0a419660b5967f15b9b2d551674a3cff89dc2c269d9e48419dfe476de7",
+      "size": 101,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_door.png": {
+      "height": 64,
+      "sha256": "563573a82332e41892bb63e72b775b25b1532293167540bae0adc89504678cb5",
+      "size": 306,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_endzone_grass.png": {
+      "height": 64,
+      "sha256": "5aa5a650bed773734baff0291b9d01d16a270d4453a93651026fdf4b20ee8b7c",
+      "size": 3726,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_endzone_turf.png": {
+      "height": 64,
+      "sha256": "bdb79d229cf2b8b1a34d60b518aa7bfdfc7e38c4d73c5c0d47ac0a9d09b9a7d2",
+      "size": 3770,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_fh_roof.png": {
+      "height": 64,
+      "sha256": "7fb50c486dd5c182346202424a1b96582d672a6ac31cfe980c1b4af1e6d55727",
+      "size": 1781,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_fh_wall.png": {
+      "height": 64,
+      "sha256": "6224468e0d71ab04a9e6ca4eff387e31b1453a7d5c022ca3935827b06a8ce1de",
+      "size": 3632,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/pf_field_strip.png": {
+      "height": 128,
+      "sha256": "24104712fb87d25ee7a4bcbf22c50bce9b5c0ee1295ee53b385920b73930c75a",
+      "size": 8232,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_numbers.png": {
+      "height": 128,
+      "sha256": "5d5608eee4e098e16c70ae5bff45ed8a4eeaf53de2b65d2d74905c834da90cc1",
+      "size": 5634,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_pad.png": {
+      "height": 64,
+      "sha256": "e327838ee130497e3e776e524c27b54c02bda65aa487b6cca47d126f3c4dd0ab",
+      "size": 311,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_paint.png": {
+      "height": 8,
+      "sha256": "f4e16fa850b4d9ff2534a14f45aa463e583b1326b33d938b44fe048cc90c9d31",
+      "size": 78,
+      "width": 8
+    },
+    "data/nfl2k5_practice_field_model/art/pf_path.png": {
+      "height": 32,
+      "sha256": "1349063d1c196585be31a62ca417b6eddca4dedf9db8d4f59ac5950226a11910",
+      "size": 868,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_roof.png": {
+      "height": 32,
+      "sha256": "e4db4cec48915f2f50f29fe5ea61407832103d25579b1f113402e538d9cbaa07",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_scissor.png": {
+      "height": 64,
+      "sha256": "1e139f107c81452545b3cf212f53b3119e7f0d61097b380af1bb3107a0679b4b",
+      "size": 1415,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_steel.png": {
+      "height": 32,
+      "sha256": "6816408770d4ffdf1de1ae96137ac30c7dd8486d41fa6e460cedbbd96b580c47",
+      "size": 796,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_stone.png": {
+      "height": 64,
+      "sha256": "098b16fcc2de917f3e2447afbab970be6a6d601faf0a0b61018049513605a2c0",
+      "size": 1626,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_turf_strip.png": {
+      "height": 128,
+      "sha256": "2b4ebbf24ccb2c1576d0cea7f0fbc343e24b24c52c964df83a61955390b15c8a",
+      "size": 8496,
+      "width": 64
+    },
+    "data/nfl2k5_practice_field_model/art/pf_white.png": {
+      "height": 32,
+      "sha256": "cf76a1258b39d5275dabc5cefb5e61959f07137684e289385e72a8735a26a60b",
+      "size": 99,
+      "width": 32
+    },
+    "data/nfl2k5_practice_field_model/art/pf_windscreen.png": {
+      "height": 32,
+      "sha256": "a358ad8db10d1025d1c18ec06bf117ca813cc8b28562dd3e3062af189b158bbe",
+      "size": 3586,
+      "width": 128
+    },
+    "data/nfl2k5_practice_field_model/art/pf_yellow.png": {
+      "height": 32,
+      "sha256": "ed48d845b75a515244f3a7f15c650b915d3f4d0fabc5db1400d2833d8cfc4cf6",
+      "size": 101,
+      "width": 32
+    },
     "data/nfl2k5_scorebug_mnf/espn_glyphs.png": {
       "height": 52,
       "sha256": "f75f89fc47cf94f828e6d65961dd179101155a06bdaad813f843e4b60e72c44b",
@@ -146,8 +2684,8 @@
     },
     "data/nfl2k5_scorebug_mnf/logos/dal.png": {
       "height": 64,
-      "sha256": "1894dcc15592bdfce22666e0d44ec2cdbe098dee1c1fb33eac46ae903d635f0e",
-      "size": 4185,
+      "sha256": "ad06ddb6d287ae7e42a9a0a0ce6d37ef1a90269b0e2853d06c0d0401ded65dc5",
+      "size": 3716,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/den.png": {
@@ -176,14 +2714,14 @@
     },
     "data/nfl2k5_scorebug_mnf/logos/ind.png": {
       "height": 64,
-      "sha256": "88a758c61588a429a0883d05dcfbe3f6f9696e5db99628dcd4228a3ee2db17d8",
-      "size": 5662,
+      "sha256": "6eee30d6c39d52676319a4772c4d8ad94df84d748dbb10ad58671b5e67310276",
+      "size": 2223,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/jax.png": {
       "height": 64,
-      "sha256": "dfd47e6d7bd1cf26804a7a7bad88ed7d7f36fa0660cb56edbeb89e9219343ffb",
-      "size": 6098,
+      "sha256": "e4d282a253e3278f7c9cf63cd51bae0da1a87ef0173055f79f9a7225192e9f01",
+      "size": 6140,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/kc.png": {
@@ -200,8 +2738,8 @@
     },
     "data/nfl2k5_scorebug_mnf/logos/lar.png": {
       "height": 64,
-      "sha256": "2e9ae595bb54d86ca4b092a55f028eb2fa8e324354decf71e038ad9a09890752",
-      "size": 3801,
+      "sha256": "ff5a826d2e071f6022647b7c5b34386b4e8375292544c6c5563e568e5cb86b40",
+      "size": 2187,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/lv.png": {
@@ -230,20 +2768,20 @@
     },
     "data/nfl2k5_scorebug_mnf/logos/no.png": {
       "height": 64,
-      "sha256": "a837e8e770cd39c6372799fa6e80828c1ff78a3b51d720891de1a5fa76ecb378",
-      "size": 5576,
+      "sha256": "2b73d5a03322d6cad675e3925fda88e760c526719887adcfcdee60028100bd5d",
+      "size": 5277,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/nyg.png": {
       "height": 64,
-      "sha256": "00bf91e61684eae478ff62eb1a57af2526c100120a40aeaf6734b7ce81316fbd",
-      "size": 1851,
+      "sha256": "d4f52a376dc396df8befc6def3db36b9f3e0f8945f9058ad463d8d539be9c718",
+      "size": 1939,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/nyj.png": {
       "height": 64,
-      "sha256": "febcd9426b57d00d7a63bdbc82b5c662df0a6279a5bd90d5f60c04f6a56cce50",
-      "size": 1839,
+      "sha256": "36515a25b4c2c7fb9f6221dd0dab3a38596e5b6bb83385df4710da1f2650deb2",
+      "size": 1140,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/phi.png": {
@@ -296,9 +2834,1923 @@
     },
     "data/nfl2k5_scorebug_sprite/template.png": {
       "height": 512,
-      "sha256": "01c376d945596f05b519caab7d6cd72716d38bbc103b503bbb64e0375ad275b1",
-      "size": 23063,
+      "sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b",
+      "size": 27963,
       "width": 1536
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_concourse.png": {
+      "height": 64,
+      "sha256": "e6172d301e39a49d0658ec9534cbdc3a727ae403fda15169cfb2ab6682ce5e05",
+      "size": 1717,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_facade.png": {
+      "height": 64,
+      "sha256": "98aeb17883989a8f89251731b16a1010806aa315332b70378da29ece70e0f26b",
+      "size": 5586,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_glass.png": {
+      "height": 64,
+      "sha256": "19740accb0fa3f4965466c9720051656bd800bfc14b0aff4f4490faf3d6ebf7d",
+      "size": 1515,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_lights.png": {
+      "height": 32,
+      "sha256": "88a3a8718fdeb0ceb34d9b2d148550900ebf90caafe6c880cf41c80d7b756ebe",
+      "size": 432,
+      "width": 64
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s23.png": {
+      "height": 64,
+      "sha256": "c1e457a4413e0b02422241055172f39e5e6db62a34fb0b6b49ca6b812a40452e",
+      "size": 15381,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_ribbon_s24.png": {
+      "height": 64,
+      "sha256": "5fbc99d57da30d85a3995c1dec180e9aa1d79a08f7f41093248bb11de3110de0",
+      "size": 12462,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s23.png": {
+      "height": 64,
+      "sha256": "d62e189b46d999c0c8f946a465234e1e970c061507d997265abd008f6bdd5ad8",
+      "size": 22463,
+      "width": 512
+    },
+    "data/nfl2k5_sofi_model/art/LIGHT_sf_screen_s24.png": {
+      "height": 64,
+      "sha256": "52a6768dfbae7127f4945b28555b7dab0e3260fb80b1ad8347c42d3bf2122fae",
+      "size": 20183,
+      "width": 512
+    },
+    "data/nfl2k5_sofi_model/art/field/s23_endzone_L.png": {
+      "height": 128,
+      "sha256": "1bb6a8b54adb82350f51d53134649a8fe7420dd84b351e11d001d03d608866d8",
+      "size": 12432,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s23_endzone_M.png": {
+      "height": 128,
+      "sha256": "2c481ac082565441831456224dc09d80a2e82a2ec326de47f12479169d34c49f",
+      "size": 10816,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s23_midfield.png": {
+      "height": 256,
+      "sha256": "5345d3c2b587e10ceec6aebb351c00542af7c2db9c576cd3c3f6dc4771c6fa05",
+      "size": 33285,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s24_endzone_L.png": {
+      "height": 128,
+      "sha256": "d24a5af9d35b02b165749ae5e5e4cbf894a57bfb2c591924a62ce7158e4df7e5",
+      "size": 7110,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s24_endzone_M.png": {
+      "height": 128,
+      "sha256": "8c98fd777729a8cf3dff4156c0ce75168ed2434e01ea6b1c876ad219805d9da4",
+      "size": 9540,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s24_endzone_R.png": {
+      "height": 128,
+      "sha256": "dbc8a7741cb27b9eef0df2cedb570db3a11462e9118a58c9e989337e223860af",
+      "size": 6563,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/field/s24_midfield.png": {
+      "height": 256,
+      "sha256": "a0e6fd8061e52d50a0535115a911060d01a4cd4dc1fe6b81467bd7379c37e1cd",
+      "size": 30082,
+      "width": 256
+    },
+    "data/nfl2k5_sofi_model/art/sf_alu.png": {
+      "height": 128,
+      "sha256": "b866394b2235b6d908b902609749d2b74ce7b25bfd32227dcb22f3487a29fb3e",
+      "size": 5988,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_concrete.png": {
+      "height": 64,
+      "sha256": "75a6f1c439ec6a5457456275f2bd21f1ebdb52154ee490f38f41e88d54a6dbb6",
+      "size": 171,
+      "width": 64
+    },
+    "data/nfl2k5_sofi_model/art/sf_dark.png": {
+      "height": 32,
+      "sha256": "244423918789673a0ba18b1e300d007a5bb01d08afd8148eef61e3cb0be567ca",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_sofi_model/art/sf_etfe_top_d.png": {
+      "height": 128,
+      "sha256": "dcf311d23f2989db41e0c5d43feb784f786860bb2b934f0fa8cce46c8837e4e1",
+      "size": 1097,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_etfe_top_n.png": {
+      "height": 128,
+      "sha256": "c975598ccc8f3644bb1a8015d51f6658ae11fb9cb6cb87fafd73f2560b8f608e",
+      "size": 994,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_etfe_under_d.png": {
+      "height": 128,
+      "sha256": "2fd0afc7c7f6039b0a0bbf73cba769479f661328b828d05d4ba93826278717cc",
+      "size": 1796,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_etfe_under_n.png": {
+      "height": 128,
+      "sha256": "43e559cc41affc9135444be9180027d029b78b6dd8972c7612fdb3130a786e13",
+      "size": 1922,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_ground.png": {
+      "height": 128,
+      "sha256": "d68c6604c8a872f5e59baaef889b1aab6e161da529ed0dddd85c857c5035e7ed",
+      "size": 25982,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_plaza.png": {
+      "height": 128,
+      "sha256": "ed1919dad8d2243e672e8b63225801ef0d1be4f9d1804d2a5c13768f41119f3f",
+      "size": 542,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_portal.png": {
+      "height": 32,
+      "sha256": "9b5ae83a95cb07e3f7a0fa8d10ece643f3a5ed757a323abc8349effa6269191d",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_sofi_model/art/sf_seat.png": {
+      "height": 128,
+      "sha256": "68678116857c3224b90565c64cad06c835077f126f70790690f2349141ff4801",
+      "size": 9741,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_sky_a.png": {
+      "height": 64,
+      "sha256": "b01ae6300600218d191159a6229500436c71a78aef4e9d821041a5eb06b4bdf7",
+      "size": 1336,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_sky_d.png": {
+      "height": 64,
+      "sha256": "1d112b7f0f011d9ca82d8898d334dc37a778bc55f94a65a4188803a74ebe8b66",
+      "size": 1346,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_sky_n.png": {
+      "height": 64,
+      "sha256": "47734b7fb1a8f90d26812fc6532d3f91fc38f5b5d33bbaedbb1ca9c4cb38b7c0",
+      "size": 5311,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_sky_o.png": {
+      "height": 64,
+      "sha256": "75263974331c54404dd1da40d51eeaeb3abb3aa9cb443f5c9559432a0237c072",
+      "size": 1340,
+      "width": 128
+    },
+    "data/nfl2k5_sofi_model/art/sf_water.png": {
+      "height": 64,
+      "sha256": "d07185b3f42586d774dd760451a162d738a638c7c14b5b1a992827aadb330fb8",
+      "size": 331,
+      "width": 64
+    },
+    "data/nfl2k5_sofi_model/art/sf_white.png": {
+      "height": 64,
+      "sha256": "ccf884fd625a3bf6e35032c89c69a6a428a6645c95acb1460bdd3087718de2a3",
+      "size": 136,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s00.png": {
+      "height": 32,
+      "sha256": "123da6b4aedea2acdbc0296d7317de253c295717b9b590913bf6548d4b80b177",
+      "size": 1824,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s00_n.png": {
+      "height": 32,
+      "sha256": "098dd8f7f8a3571d8c1440970a8060f0a61e04d38f05fff1300f10fb8fb1d219",
+      "size": 1447,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s01.png": {
+      "height": 32,
+      "sha256": "e4e798d1d1a729fab831471c9421f5aada6a4dbff049d2f9b6e2d3a057e2e81a",
+      "size": 1458,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s01_n.png": {
+      "height": 32,
+      "sha256": "f2a802ae7322028b01e8fc4132849a20b363383089a0349c1f144792594883aa",
+      "size": 1689,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s03.png": {
+      "height": 32,
+      "sha256": "e2ba68712f8202a18d8e3a1e67937354e2539fb82c276eb2f755edb15d5ce8fd",
+      "size": 850,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s03_n.png": {
+      "height": 32,
+      "sha256": "81af9692f51fd4c1e2e6ee6d154e7ab9bde911ac928487c1a7ed8100c42c39ae",
+      "size": 701,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s07.png": {
+      "height": 32,
+      "sha256": "24dbb44e5eee9dbdd7d371936316df12570dfc9a28818c5d804fd6856a292047",
+      "size": 577,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s07_n.png": {
+      "height": 32,
+      "sha256": "bd3c17b277fbd0b64072abb6b81cb266816d53542a1ea5a2fc21b9393dce2dc5",
+      "size": 605,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s10.png": {
+      "height": 32,
+      "sha256": "022361f270f6ba46950003eb87f9c0c64e9daf8c27e9fa8670263ed7600a5054",
+      "size": 448,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s10_n.png": {
+      "height": 32,
+      "sha256": "7b16e4cc709fd817561ca540155cb803f7aa47ad3e095d1beaeb63f4216e781f",
+      "size": 565,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s11.png": {
+      "height": 32,
+      "sha256": "897c78618d5e990ddfbd9002a0dd42c0c7667475b994072969d69da785e0ede5",
+      "size": 744,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s11_n.png": {
+      "height": 32,
+      "sha256": "ca5d391ee7dffca8e88ebd5eb15fb165753bdb43ecd7da415e787d2b0d925e86",
+      "size": 1030,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s12.png": {
+      "height": 32,
+      "sha256": "f1522f021cf0f331e8fcd98328c9cb61f4232a4f852bbe169558463c7ce45e6d",
+      "size": 622,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s12_n.png": {
+      "height": 32,
+      "sha256": "b9989fee55abc4aa7aa3e33f2eef8428bc0a2b064908a8264e74704aba455d6e",
+      "size": 823,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s14.png": {
+      "height": 32,
+      "sha256": "60455b27ce9c307d93266b906feb121cbadb43584a81c4089302415e0732a0ad",
+      "size": 621,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s14_n.png": {
+      "height": 32,
+      "sha256": "291500fa80a7cd1f9a9ce63023450885eb143b73a2d67ef1ee0864b7af1df5f2",
+      "size": 635,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s15.png": {
+      "height": 32,
+      "sha256": "723a9d6d1e00fb3fec31c8199d44056590bddeda293b1c17d5be9b493c60d948",
+      "size": 3057,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s15_n.png": {
+      "height": 32,
+      "sha256": "d079c376f83b76a8ff1f32142eff06c9ca10c5198cd62adc846182120d6befbc",
+      "size": 4128,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s16.png": {
+      "height": 32,
+      "sha256": "e70687a51d1aa0948f8064cc5be86102b9f41496a0e8d8789c3ad25271c8a67d",
+      "size": 1053,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s16_n.png": {
+      "height": 32,
+      "sha256": "df97ae883bf0f712ae237b553dcb468ef37a7a79009351134d1e4c66f7b20184",
+      "size": 945,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s18.png": {
+      "height": 32,
+      "sha256": "45522819657c8bd983d7f9c8ba099278e6846f5915765ac65d52fb205f460eb0",
+      "size": 2118,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s18_n.png": {
+      "height": 32,
+      "sha256": "65808a1612bfef525c333ebc68eb12b4644fc9c7fdb1261fc2bc4fbf89a658f1",
+      "size": 2047,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s20.png": {
+      "height": 32,
+      "sha256": "dfbeb4029418282dea7d423e3e4f1a39417d8a60efc2344563f6cea7c3770721",
+      "size": 3643,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s20_n.png": {
+      "height": 32,
+      "sha256": "a56b0f52fd71cb85569b8bd901ebdf9d0bca6f473abf76baa0dc6e942efa2539",
+      "size": 2776,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s23.png": {
+      "height": 32,
+      "sha256": "4213a2b3b216019f1bd96a2056752d194a292966ea6a2f379f2caec9ba2044c3",
+      "size": 2427,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s23_n.png": {
+      "height": 32,
+      "sha256": "5d4a9d72a8f4a1f3c0551547d31f2527528356d8846f0a6929b7e4f828d66539",
+      "size": 1762,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s25.png": {
+      "height": 32,
+      "sha256": "bb80d5f6bffe11972d2a23e8c8bbbf5427929e8be816e65ddb8713095ff287a2",
+      "size": 2929,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_band_s25_n.png": {
+      "height": 32,
+      "sha256": "9aef69c8d0a0d9084bdad810cf79d127643081c9df6c7e03243aee30abf08130",
+      "size": 1818,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_environment/art/env_block.png": {
+      "height": 32,
+      "sha256": "193c3ca9bd2736e42f739e3a8acf700e34920b8b3a659b66e98ba3fcc241ecac",
+      "size": 1253,
+      "width": 32
+    },
+    "data/nfl2k5_stadium_environment/art/env_block_n.png": {
+      "height": 32,
+      "sha256": "61668be3af93f56ad240cc419559ca3f33bd418d2d2f1cff5ea5dc652b02df14",
+      "size": 983,
+      "width": 32
+    },
+    "data/nfl2k5_stadium_environment/art/env_far_dry.png": {
+      "height": 64,
+      "sha256": "afd6c91d66023432b06049299aacc95dd74baacdb800c36b507fabe4a9b7f152",
+      "size": 7077,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_environment/art/env_far_green.png": {
+      "height": 64,
+      "sha256": "458ceae2b0bebd13a1e7421677c14c0af6c5065d23ee2481a7284c57e777418f",
+      "size": 7367,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_environment/art/env_far_urban.png": {
+      "height": 64,
+      "sha256": "abd02a00124088dca60f8f63f39c1e5210afe2ecfb9e4e737d5dcaf2a1e28b4e",
+      "size": 4076,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_environment/art/env_green.png": {
+      "height": 32,
+      "sha256": "02712d816f3b5ad58416e173970df08623f4f6aa2262281d482dcd6c67f3966d",
+      "size": 1297,
+      "width": 32
+    },
+    "data/nfl2k5_stadium_environment/art/env_leaf.png": {
+      "height": 32,
+      "sha256": "0664cf86cdc1be81e098966d4e9332f641935fcdc8a84fb1ca1e2a3b9d430ded",
+      "size": 2046,
+      "width": 32
+    },
+    "data/nfl2k5_stadium_environment/art/env_lot.png": {
+      "height": 64,
+      "sha256": "da8c1f447a6a07f5f4d74545319fd1d232db9063757a04b91ec69efa2ba19d97",
+      "size": 5193,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_environment/art/env_road.png": {
+      "height": 64,
+      "sha256": "a650710a71370547b98792ae38e15df349a3aa8c460d286e1732c639b2d92113",
+      "size": 1277,
+      "width": 32
+    },
+    "data/nfl2k5_stadium_environment/art/env_white.png": {
+      "height": 8,
+      "sha256": "b68de61392c506377e0d673fa36e239a47b67e603bdcb9cbf61d4ddbcd9722ff",
+      "size": 78,
+      "width": 8
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s05/texscore02_fence.png": {
+      "height": 128,
+      "sha256": "f916c6c8fb2fb41af3a6b80d0a1cc69f10a8ee7d4d935012eb7229410d232f44",
+      "size": 1633,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s05/texscore02_fence_4x.png": {
+      "height": 512,
+      "sha256": "731680ba3bb54430047b5108178be85d881621a654a20a2ea739316a2345de42",
+      "size": 5853,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/ad_bb01.png": {
+      "height": 256,
+      "sha256": "ccf64df12aef5c275afe86bbbacb9e53500ba7238c37613970452d9ebee58da6",
+      "size": 4554,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/ad_bb01_4x.png": {
+      "height": 1024,
+      "sha256": "e493518da4504ea9accc487e2356e0cdb3cdb0475b13140c14ca91c7247d05c1",
+      "size": 18054,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/exit01.png": {
+      "height": 64,
+      "sha256": "28c04bdb302649e1a18af6651ef0dbfec0fcfaaf5fbdd30ba744908272473b85",
+      "size": 1073,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/exit01_4x.png": {
+      "height": 256,
+      "sha256": "460047f33c7919e9d2133818033eea64e9d7a04cecd63a62a2b5090db4874bc0",
+      "size": 3340,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/field_center_logo.png": {
+      "height": 256,
+      "sha256": "9042867e0d01f1481795f5febfa43b29ee6233573bd45ddd5de76cfad8bf9196",
+      "size": 8812,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s31/field_center_logo_4x.png": {
+      "height": 1024,
+      "sha256": "6656a5c1434f3077e196d719a69bd286931cfc99e518348c961f1bab9bf5c5ba",
+      "size": 21140,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_away_team.png": {
+      "height": 128,
+      "sha256": "a18f813fe914a264d2879215635fe2de4f6826effcf1ffe14c118fe195f1e9c9",
+      "size": 8441,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_away_team_4x.png": {
+      "height": 512,
+      "sha256": "eb9f9d6d8182f2f097907e770b474ae82328961c6fc007b7492685f416e00ecf",
+      "size": 27928,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_player.png": {
+      "height": 128,
+      "sha256": "1d5d83cc481736ed3e1fba2e987e17f53b5e981c23d133d647584498c03ae54e",
+      "size": 9431,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_player_4x.png": {
+      "height": 512,
+      "sha256": "5e83b645276afbc607b08025ee77b7b5980f7a9bd27d7cfcecb7c75bcf11097a",
+      "size": 34175,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_team.png": {
+      "height": 128,
+      "sha256": "a18f813fe914a264d2879215635fe2de4f6826effcf1ffe14c118fe195f1e9c9",
+      "size": 8441,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_team_4x.png": {
+      "height": 512,
+      "sha256": "eb9f9d6d8182f2f097907e770b474ae82328961c6fc007b7492685f416e00ecf",
+      "size": 27928,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign01.png": {
+      "height": 256,
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc",
+      "size": 7701,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a",
+      "size": 31071,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign02.png": {
+      "height": 256,
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c",
+      "size": 6501,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign02_4x.png": {
+      "height": 1024,
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b",
+      "size": 23328,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign03.png": {
+      "height": 256,
+      "sha256": "db1f484eb8820597405cf8f3f97020bfd8186e5eda72ddea7771057b82b8f8ff",
+      "size": 6305,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "b7206efe40332c97ebbc65ac96365e24bf6507996f1c9f732a465bed117dbeed",
+      "size": 22785,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign04.png": {
+      "height": 256,
+      "sha256": "73f4e4442d3804cc63e14648bd008147e32eb6239c96636b837f9560a7b086fc",
+      "size": 6681,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/sign04_4x.png": {
+      "height": 1024,
+      "sha256": "8b09aaf3298109a30c6eb9d4dbd850332860ef97d64fa9e9b3bbb3d9cb6894db",
+      "size": 22454,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/wall02.png": {
+      "height": 256,
+      "sha256": "9f4fad78ac63382a02c5bc47537763f5ad917519d30122296449308f98e8e579",
+      "size": 1293,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/wall02_4x.png": {
+      "height": 1024,
+      "sha256": "e34095de09026106fd778906948390e096e1e151c8b6470e723a69c5c38633ba",
+      "size": 6657,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/wall03_wall01.png": {
+      "height": 256,
+      "sha256": "b41db313d2a0103e062a1ac1a4d7c3af4ad9440c61fb726030b51fcc887251ff",
+      "size": 2672,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s36/wall03_wall01_4x.png": {
+      "height": 1024,
+      "sha256": "f211ea37c5a4627a3680b2664ab52c695d5a72a92ba80dceb3a8ad036c47b58e",
+      "size": 11324,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/ad_bb01.png": {
+      "height": 256,
+      "sha256": "ccf64df12aef5c275afe86bbbacb9e53500ba7238c37613970452d9ebee58da6",
+      "size": 4554,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/ad_bb01_4x.png": {
+      "height": 1024,
+      "sha256": "e493518da4504ea9accc487e2356e0cdb3cdb0475b13140c14ca91c7247d05c1",
+      "size": 18054,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/exit01.png": {
+      "height": 64,
+      "sha256": "28c04bdb302649e1a18af6651ef0dbfec0fcfaaf5fbdd30ba744908272473b85",
+      "size": 1073,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/exit01_4x.png": {
+      "height": 256,
+      "sha256": "460047f33c7919e9d2133818033eea64e9d7a04cecd63a62a2b5090db4874bc0",
+      "size": 3340,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/field_center_logo.png": {
+      "height": 256,
+      "sha256": "9042867e0d01f1481795f5febfa43b29ee6233573bd45ddd5de76cfad8bf9196",
+      "size": 8812,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s39/field_center_logo_4x.png": {
+      "height": 1024,
+      "sha256": "6656a5c1434f3077e196d719a69bd286931cfc99e518348c961f1bab9bf5c5ba",
+      "size": 21140,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s40/banner_home_player.png": {
+      "height": 128,
+      "sha256": "206d4ea3c24b91d1ef340007c49731d428c48aeeb9c2ab3ff53314ef351d4dc6",
+      "size": 3915,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s40/banner_home_player_4x.png": {
+      "height": 512,
+      "sha256": "630612348a77e4cf78846922e17cb39e92ec1f33291764d48e523001acecacb7",
+      "size": 12535,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/field_logo.png": {
+      "height": 256,
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": 10678,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/field_logo_4x.png": {
+      "height": 1024,
+      "sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "size": 26386,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert27.png": {
+      "height": 64,
+      "sha256": "516d9d19f2b70873431ba171bb3ad66a2768f1d284a7f4c7fe6c958fa621a070",
+      "size": 1767,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert27_4x.png": {
+      "height": 256,
+      "sha256": "ffad376698a296113aff36f0653c0404ed484c1d26318392226bc0fd63a15088",
+      "size": 6523,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert28.png": {
+      "height": 128,
+      "sha256": "64ad65125847bb084d96274a73c7759ba0455bb05b4d802623ba0c941b03ab07",
+      "size": 3912,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert28_4x.png": {
+      "height": 512,
+      "sha256": "4b9d9ab2d3644662ea70e600712deed7ef2737abbe9e812d48f575689dc36cd8",
+      "size": 13456,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert31.png": {
+      "height": 64,
+      "sha256": "7c9133c7041efd86c4d503190c69ee5b9dda58d10f875172919c504a5493d1ca",
+      "size": 905,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s41/lambert31_4x.png": {
+      "height": 256,
+      "sha256": "b1c2e4e86d028599566035339ed05cada59ff834a364057724cfbbb7fc700660",
+      "size": 4082,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/banner_home_player.png": {
+      "height": 128,
+      "sha256": "34de76fa02292e5d1295327d2ca4508571f9c0321093b88a8912f7928f0bd0d0",
+      "size": 4064,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/banner_home_player_4x.png": {
+      "height": 512,
+      "sha256": "37101b5aa24cb220a59c05fc1a550c4099cde4d51ce73920b2b21b3e208a3ab1",
+      "size": 12796,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/field_logo.png": {
+      "height": 256,
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": 10678,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/field_logo_4x.png": {
+      "height": 1024,
+      "sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "size": 26386,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign01.png": {
+      "height": 256,
+      "sha256": "0fbd40dcc69421d8e2f18092273aa551dd4cf8004ec64101a4913f55f58e1208",
+      "size": 4086,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "70afc3ad1217edee8f6b25fd32eed3ac889823934a86f0949cba3dd2aba63bf0",
+      "size": 16580,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign02_sign04.png": {
+      "height": 256,
+      "sha256": "3f8487d4f15d9c9531f079911c8ecabf3af8e375100da96aa3904c81d254277b",
+      "size": 2411,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign02_sign04_4x.png": {
+      "height": 1024,
+      "sha256": "8c8fb309e0816a619cc727502912766b8729c9f780d3a2b3649272751f1e23e0",
+      "size": 11111,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign03.png": {
+      "height": 256,
+      "sha256": "4f28516168332cd203d97d5619e228083db4afb9d350645e3aa49bb39e2dbf46",
+      "size": 4228,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s42/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "f10602d927c807d4d1d46577e53c4468ca0ef4c0e4c3efe4444f941547e616b4",
+      "size": 16411,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/field_logo.png": {
+      "height": 256,
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": 10678,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/field_logo_4x.png": {
+      "height": 1024,
+      "sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "size": 26386,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/midwall01.png": {
+      "height": 64,
+      "sha256": "7445cd3ff18f45a9778f79b6112da52447ca4f990495c9bfe446a851027ef564",
+      "size": 778,
+      "width": 64
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/midwall01_4x.png": {
+      "height": 256,
+      "sha256": "c62fc8c4c8c24f5c5c4c792039bc5df7a0b56bdffc2f84b96ae81768385ccc39",
+      "size": 1687,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/scoreboard01.png": {
+      "height": 128,
+      "sha256": "a9fe09110dd2b5505d02599516588ca9de276618fd5c7030385f9ee0dc69262a",
+      "size": 744,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/scoreboard01_4x.png": {
+      "height": 512,
+      "sha256": "bb0559fcd963846c80539d0598fd6f301a89a7ae99dc1ebb976cf944b5df6318",
+      "size": 3327,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/scoreboard02.png": {
+      "height": 128,
+      "sha256": "62c05322ae53bf49379c4b1fccd33f1c20cc2c2785bd781edda331a2298e3fb0",
+      "size": 1127,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/scoreboard02_4x.png": {
+      "height": 512,
+      "sha256": "a5a3dcd6d569e7159a0308a3be78020a452ee2c94267d79758236feceda95c90",
+      "size": 4827,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/sign02.png": {
+      "height": 128,
+      "sha256": "dc6e511fb71bda15a83d3a238390b37df7b7e6efb6fb1fe1904d4ca61fbfd2eb",
+      "size": 4325,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s43/sign02_4x.png": {
+      "height": 512,
+      "sha256": "6e30347c6848977c3832b89477074014317aeb0eb03956b94e9b1c1229c60f3e",
+      "size": 15543,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/field_logo.png": {
+      "height": 256,
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": 10678,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/field_logo_4x.png": {
+      "height": 1024,
+      "sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "size": 26386,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign01.png": {
+      "height": 256,
+      "sha256": "dcba962db574cfaedccba6929f463d3ec581284fff08fe22c97d5fc262628e16",
+      "size": 4359,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "1fa31981bca5f3a76648bd94fa4199d4758d73e775f8a6a5f45fa840d9bfb506",
+      "size": 16539,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign02.png": {
+      "height": 256,
+      "sha256": "b660c86cadbb0d489f08b825e7d3454ecdafdc6d49029223ab831dbd4a495ec8",
+      "size": 4614,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign02_4x.png": {
+      "height": 1024,
+      "sha256": "d61a0036ab1cf5cc3c0c620194308ca4c105d0c538b54b4a3d888a8017487d53",
+      "size": 19654,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign03.png": {
+      "height": 256,
+      "sha256": "4f28516168332cd203d97d5619e228083db4afb9d350645e3aa49bb39e2dbf46",
+      "size": 4228,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s44/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "f10602d927c807d4d1d46577e53c4468ca0ef4c0e4c3efe4444f941547e616b4",
+      "size": 16411,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/field_logo.png": {
+      "height": 256,
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": 10678,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/field_logo_4x.png": {
+      "height": 1024,
+      "sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "size": 26386,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/panthers_score01.png": {
+      "height": 256,
+      "sha256": "10272c3687c84af9c6621723d4a14465f29c45447ddb5c6b4511bb60dd94b620",
+      "size": 3956,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/panthers_score01_4x.png": {
+      "height": 1024,
+      "sha256": "83e8f9874503f72fea2efc977cfb692642ef459300c29988faefc001d0f086a1",
+      "size": 15733,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/score01.png": {
+      "height": 256,
+      "sha256": "1ad2ba528ef549b30428e57426becb977016fb2278832a4be6fced319f1a6458",
+      "size": 3088,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/score01_4x.png": {
+      "height": 1024,
+      "sha256": "ef1bcd9a175c0ab17e91f8126ad8566fc9b6168612539a7dbb268faa072908db",
+      "size": 13496,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/sign01.png": {
+      "height": 128,
+      "sha256": "3a34df142be5cc5ff66c936b500f6995ad18933510d408a74b28e12801a35db4",
+      "size": 4180,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/sign01_4x.png": {
+      "height": 512,
+      "sha256": "33ce9cda55e860109cbed71e27bb9509fa73cfed28a86f9ac1d688e8a9fb082b",
+      "size": 11479,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/sign02.png": {
+      "height": 128,
+      "sha256": "a399950e372c15a410d5776cc13866cb5122cd79506e3cc7102695869395c61a",
+      "size": 2360,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/sign02_4x.png": {
+      "height": 512,
+      "sha256": "c248ba9bee9e6c113a7e265e3c37587e0e4446e1e1ece8e07c2ae42ca7c3ec5d",
+      "size": 5648,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/wall03.png": {
+      "height": 128,
+      "sha256": "665df8d4b112f4e25a73ff613d78c5d5ec271b9bdee515f44103c07fe958cb19",
+      "size": 854,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s45/wall03_4x.png": {
+      "height": 512,
+      "sha256": "0f2790347cba75114e2506fe9a705254cd0925fe8360a12376fe7f04d8ba1e3a",
+      "size": 2146,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/cover01.png": {
+      "height": 128,
+      "sha256": "9c2146bd3a97d539922505dbad0e5c740c4155411bf9fb4d4ae4a195d13c0a21",
+      "size": 175,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/cover01_4x.png": {
+      "height": 512,
+      "sha256": "b7d58bb33ad285a02628fd87e25c9b05073db93332c87e88d734350c0df0bb5a",
+      "size": 1163,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign01.png": {
+      "height": 256,
+      "sha256": "3674ebb2d982c30cbdd75b645bf7ce3be6294c99c3648a0bd64c3fecb6cb4898",
+      "size": 2014,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "ad7a633b9e99561909a25a681a2a8f9c83d38c63713f5aaf0e6479a14982e8be",
+      "size": 9999,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign02.png": {
+      "height": 256,
+      "sha256": "71b5464c65a6d7f8e4e523e3c6a9276e1bef9cb8423e8c6a4ded6a26a53f8350",
+      "size": 3150,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign02_4x.png": {
+      "height": 1024,
+      "sha256": "2dc754d44aa58584fed1b64d67b531f123c16e7029d821c0b4b76a774bcaa357",
+      "size": 12935,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign03.png": {
+      "height": 256,
+      "sha256": "6478a407edfa25baaa16845d6665ff0d3d669709fffdd6a60dc47e6829389a9f",
+      "size": 5290,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "a9826b40be07f95ebd42bf2dc60afd24fc37c3133d77d457b231807a08f79a17",
+      "size": 17625,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/adv01.png": {
+      "height": 256,
+      "sha256": "b1fbcfb08111b1363e4dafe783c62a3858890c215b316864776c11e09f28d7b7",
+      "size": 10324,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/adv01_4x.png": {
+      "height": 1024,
+      "sha256": "6a8cd83abc04cee115bbf5d4c3cbb70218e144211357e2c38986a2a032b34068",
+      "size": 40974,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/adv02.png": {
+      "height": 128,
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6",
+      "size": 2332,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/adv02_4x.png": {
+      "height": 512,
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54",
+      "size": 7788,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/banner_home_player.png": {
+      "height": 128,
+      "sha256": "13356d55201d7dc931734654014e26739de5cd22fef8a1953e095bef411986bb",
+      "size": 4063,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s50/banner_home_player_4x.png": {
+      "height": 512,
+      "sha256": "bf66fea7ac744a58f1ce947bb25df7b2b56e2b2cc6e919b7816647f3b728ee4a",
+      "size": 12662,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/adv01.png": {
+      "height": 256,
+      "sha256": "b1fbcfb08111b1363e4dafe783c62a3858890c215b316864776c11e09f28d7b7",
+      "size": 10324,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/adv01_4x.png": {
+      "height": 1024,
+      "sha256": "6a8cd83abc04cee115bbf5d4c3cbb70218e144211357e2c38986a2a032b34068",
+      "size": 40974,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/adv02.png": {
+      "height": 128,
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6",
+      "size": 2332,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/adv02_4x.png": {
+      "height": 512,
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54",
+      "size": 7788,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s51/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign01.png": {
+      "height": 256,
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc",
+      "size": 7701,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a",
+      "size": 31071,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign02.png": {
+      "height": 256,
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c",
+      "size": 6501,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign02_4x.png": {
+      "height": 1024,
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b",
+      "size": 23328,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign03.png": {
+      "height": 256,
+      "sha256": "6ecb761bf9b48dee23ad42a424a200cd423c1697079d3c4c4e9ad95222a0e63e",
+      "size": 6311,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "2760bcb99d0f498b4639539ece83d2d80043e73050470ccb94caed4b33b7c03d",
+      "size": 22776,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign04.png": {
+      "height": 256,
+      "sha256": "ddd5de5926b7386d1901b673e1a5cc6303bc0e16f448489c80a65dc002e098e9",
+      "size": 6753,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s52/sign04_4x.png": {
+      "height": 1024,
+      "sha256": "d26b442d871c8d7c6f4aaf014892c821c54f66fb380d32ca7f1d197ca95c3735",
+      "size": 22517,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner01.png": {
+      "height": 128,
+      "sha256": "89a0e119be3a9557309692ebc0c030e0c1c94bb0e97c2af70970fde6f9f68c67",
+      "size": 2660,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner01_4x.png": {
+      "height": 512,
+      "sha256": "0e7040a05b5d94f5e8530ac38d4e1a7aac0fb15cfa271e090df28cf48492c6e6",
+      "size": 9575,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner02.png": {
+      "height": 128,
+      "sha256": "1bd353af0efa89ef4cd8cb20193fb53babb86a770026d9ba6cc51593363dff39",
+      "size": 4361,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner02_4x.png": {
+      "height": 512,
+      "sha256": "d1c204f9f86aa2e39703cc046e8303ed3c2cb8ff64b56c0f0dbccc8747dae4ff",
+      "size": 14223,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_jumbotronA1.png": {
+      "height": 256,
+      "sha256": "f1ad30d9bd19d06dd540180bdb38e2333f4bdec1aeda6be252fb75c6f81e77d4",
+      "size": 2499,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_jumbotronA1_4x.png": {
+      "height": 1024,
+      "sha256": "02577f139d47a67aeb7f345fd9789ac98d4794e0b79374a88f1d1a53123a3c18",
+      "size": 11588,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_signsA1.png": {
+      "height": 128,
+      "sha256": "ffc7401940e4d5e598f943340cc289a7b132ad539e7d4ddea5ace6e8bd37c04e",
+      "size": 3943,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_signsA1_4x.png": {
+      "height": 512,
+      "sha256": "f1e447b2370f5b7d90e0e9bb2c26cda45d939f684c6e5af783445a79b4f93e75",
+      "size": 13560,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/lambert32.png": {
+      "height": 128,
+      "sha256": "c36a694785d319846804938b266042c4a0aa87431b95760b5805ee7a898f5e95",
+      "size": 2986,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s54/lambert32_4x.png": {
+      "height": 512,
+      "sha256": "63c15f2eb8c8fa491a4c503bc43d03a062eefe70c79640052a176ef87e77f161",
+      "size": 11595,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banner_home_player.png": {
+      "height": 128,
+      "sha256": "1018c5b5e1cb6e6af8e666069fc2d81a14e17152dd9aa0075927f324b4001603",
+      "size": 4171,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banner_home_player_4x.png": {
+      "height": 512,
+      "sha256": "e5aacf88bd62811243cc1e64ff845c758c1612df6f37faed608372b1df6fe37c",
+      "size": 12983,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banners55.png": {
+      "height": 256,
+      "sha256": "cd6687f67153d88ba702502e08ec22aafbe0fc47faaf1990585ce3b2b9e86de8",
+      "size": 4258,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s55/banners55_4x.png": {
+      "height": 1024,
+      "sha256": "84d2d3c1c69781c537374d7414d3726dafad80c4cbee786c4d2c516802b4a78b",
+      "size": 17880,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s56/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s56/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s56/banners55.png": {
+      "height": 256,
+      "sha256": "621fc6c5017c0b7c7ddea80717b057e7ee49502e0fa068a41aa605cbc9b906d7",
+      "size": 5298,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s56/banners55_4x.png": {
+      "height": 1024,
+      "sha256": "aac8bced5435024fd60bd52a970407e243d50b9f9d4544e005c059dc0793d8db",
+      "size": 21472,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/adv01.png": {
+      "height": 256,
+      "sha256": "684edb3dec34e7882b93ddae569036b271a0abb9a625c2e1e74d9a15ef6ab931",
+      "size": 10296,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/adv01_4x.png": {
+      "height": 1024,
+      "sha256": "a35981a074fbd22274c7ced087d35a3057c4a011b29ec9b2fff18cbe57d3ab74",
+      "size": 40844,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/adv02.png": {
+      "height": 128,
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6",
+      "size": 2332,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/adv02_4x.png": {
+      "height": 512,
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54",
+      "size": 7788,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s57/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign01.png": {
+      "height": 256,
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc",
+      "size": 7701,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign01_4x.png": {
+      "height": 1024,
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a",
+      "size": 31071,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign02.png": {
+      "height": 256,
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c",
+      "size": 6501,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign02_4x.png": {
+      "height": 1024,
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b",
+      "size": 23328,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign03.png": {
+      "height": 256,
+      "sha256": "6ecb761bf9b48dee23ad42a424a200cd423c1697079d3c4c4e9ad95222a0e63e",
+      "size": 6311,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign03_4x.png": {
+      "height": 1024,
+      "sha256": "2760bcb99d0f498b4639539ece83d2d80043e73050470ccb94caed4b33b7c03d",
+      "size": 22776,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign04.png": {
+      "height": 256,
+      "sha256": "fc9456348a6d2483880d242fdf9ba3e36ffe94bc487f6353ec3ffb7dd79448d3",
+      "size": 6718,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s58/sign04_4x.png": {
+      "height": 1024,
+      "sha256": "10d79c1379da1f822f200e9a3bc973d8eaf32186e223f7c84f77d5aab507a6f8",
+      "size": 22323,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/banner_corp.png": {
+      "height": 256,
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": 28933,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/banner_corp_4x.png": {
+      "height": 1024,
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "size": 99195,
+      "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner01.png": {
+      "height": 128,
+      "sha256": "89a0e119be3a9557309692ebc0c030e0c1c94bb0e97c2af70970fde6f9f68c67",
+      "size": 2660,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner01_4x.png": {
+      "height": 512,
+      "sha256": "0e7040a05b5d94f5e8530ac38d4e1a7aac0fb15cfa271e090df28cf48492c6e6",
+      "size": 9575,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner02.png": {
+      "height": 128,
+      "sha256": "c8b861a869a09f710d77c97670111a51aec827620edc448a1b5af2ad21bc227f",
+      "size": 5458,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner02_4x.png": {
+      "height": 512,
+      "sha256": "a7a3e06ce32aa632414235de9497d2c208d5985c614cd718e9714f4e4e26b0c9",
+      "size": 17797,
+      "width": 512
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/lambert48.png": {
+      "height": 128,
+      "sha256": "a865020b47450b9de4c06c31f87e0dd61075bc5b2cd80b344a50ccdea1bdb1a3",
+      "size": 2198,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s59/lambert48_4x.png": {
+      "height": 512,
+      "sha256": "0c4def1b62d25b4faf8b0392e6287b548f7dd62c1b05c983c97a6f62d1ac445c",
+      "size": 8046,
+      "width": 512
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_board_wing.png": {
+      "height": 128,
+      "sha256": "3718bd6c83fd488221af8cde7743f4ea759fed43e2ac098127397e02079af948",
+      "size": 348,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_facade_glass.png": {
+      "height": 64,
+      "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9",
+      "size": 1914,
+      "width": 128
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_lights.png": {
+      "height": 32,
+      "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b",
+      "size": 404,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/LIGHT_sf_ribbon.png": {
+      "height": 64,
+      "sha256": "d8714f1778fe4f69baac41e521ae562b41e2dbb4424c5c5211b38ad00384d238",
+      "size": 13245,
+      "width": 256
+    },
+    "data/nfl2k5_state_farm_model/art/sf_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_black.png": {
+      "height": 32,
+      "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_desert.png": {
+      "height": 32,
+      "sha256": "c3a959c534e93c6afa3a48b895c98a7f2f72bf392b20a83fc10274f352864eb2",
+      "size": 1046,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_drum.png": {
+      "height": 128,
+      "sha256": "07a6e9b399331f4d1f4b6b375b95614339fa57325d707756ef3bec1fd2d40ab4",
+      "size": 806,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_fabric_top.png": {
+      "height": 64,
+      "sha256": "72948e2fa77870ca9be83381e29be57a0be8cb19303270643af53411ee0f6b45",
+      "size": 276,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_fabric_under.png": {
+      "height": 64,
+      "sha256": "45fa0b38389451b5c6063f16c5b1ab5bfcd78f44e3084212d53abafcec908159",
+      "size": 780,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_inner.png": {
+      "height": 64,
+      "sha256": "03ed5ec40f890c9070173f4bbbcbf83e67cdaa3f00cbaf4d0bde6c645a0ee0c3",
+      "size": 392,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_lawn.png": {
+      "height": 32,
+      "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7",
+      "size": 1121,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_mountains.png": {
+      "height": 32,
+      "sha256": "f895ef01f52e4e3899f5a6ae3f30ef6124d525e2689820b12999f649c24aad50",
+      "size": 2015,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_panel_edge.png": {
+      "height": 32,
+      "sha256": "a6de2e33e08ae83a1afad1b9785f736a8a796f21d6c9856267503416afa2d67a",
+      "size": 137,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_panel_top.png": {
+      "height": 32,
+      "sha256": "456d63685244c5a8698ad1c50ce5dd5b57ffd198ed483bf5c2d04c99ef230ebc",
+      "size": 309,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_rib.png": {
+      "height": 8,
+      "sha256": "4f344b61134841f98c859bf59a8715c35fee3d3efaf5f0ad17eebeb38b4d86f6",
+      "size": 82,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_state_farm_model/art/sf_seat_back.png": {
+      "height": 128,
+      "sha256": "84b592a52e08d8d843a993a1cb2de3848e2e2d0076534c18065133172a01d63c",
+      "size": 9081,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_seat_front.png": {
+      "height": 128,
+      "sha256": "8268c2389cbb39ef7648bf738f680228e2f8d847f133a8143a1ca79f6ecd94a9",
+      "size": 8141,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_seat_mid.png": {
+      "height": 128,
+      "sha256": "7e38c459807718fae0bade26bc6b919690c92b77c132b934cd87e414bb953fb6",
+      "size": 8494,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_truss.png": {
+      "height": 64,
+      "sha256": "7571abbc8b7422afe94fd0c357e205fa5ccd7a57dd044c534f891c0e5178a92d",
+      "size": 1795,
+      "width": 64
+    },
+    "data/nfl2k5_state_farm_model/art/sf_wall.png": {
+      "height": 32,
+      "sha256": "fb3eab604f05763a6c5e37a746f6003f1371053ca1dcc4991207f5c119402ba1",
+      "size": 6979,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_board_wing.png": {
+      "height": 128,
+      "sha256": "32f8e59f3e1a5d3bf48d65d6795391740f8bf9ac49c61c6953f0be42f31e3f95",
+      "size": 3084,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_clerestory.png": {
+      "height": 64,
+      "sha256": "a89343723644fe24310ce0d8d7949356f46277c720b42b0e83c85f57f7e53bdb",
+      "size": 606,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_clerestory_n.png": {
+      "height": 64,
+      "sha256": "9876ed2f21125bd2c1bbeec52ecb5fea417d45ead90db58bd549c574b138fdf4",
+      "size": 289,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_concourse.png": {
+      "height": 64,
+      "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb",
+      "size": 1747,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_facade_glass.png": {
+      "height": 64,
+      "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9",
+      "size": 1914,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_glass.png": {
+      "height": 64,
+      "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083",
+      "size": 1613,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall.png": {
+      "height": 128,
+      "sha256": "5a624aa0412b9d9df4cda6cf9ae260cb8f4e7c412987866c2442e8a818d7118c",
+      "size": 784,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall_n.png": {
+      "height": 128,
+      "sha256": "4361f2bece434a8e0d8a572062868e7c12073966ab2eaf2daa929b757ac808d8",
+      "size": 847,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_lights.png": {
+      "height": 32,
+      "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b",
+      "size": 404,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_prow_display.png": {
+      "height": 128,
+      "sha256": "1ea9b0366b1324b7f82d7cb9eaef07a01e38100498e6977a2dc11b7e2e05ea31",
+      "size": 11114,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_ribbon.png": {
+      "height": 64,
+      "sha256": "90ecab5bfb8a16f8f9a19c67f34a3251f0c3314bc13af2342c2547cf6f90e863",
+      "size": 14802,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_signs.png": {
+      "height": 128,
+      "sha256": "96199464ecb41c51eacc9e2dc5a34865570cb65551348ee9d148726536c43d40",
+      "size": 29422,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_towers.png": {
+      "height": 64,
+      "sha256": "8ba0678e840fa2651072ee596da7d8e8194f88ee34003fd364023a7e9c984426",
+      "size": 2732,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_towers_n.png": {
+      "height": 64,
+      "sha256": "90d201a907ea5379ba71856fdd0d492bd75b1059cb768db40a5a61f45acb42e6",
+      "size": 4617,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/field/usb_turf.png": {
+      "height": 64,
+      "sha256": "5ee6e377bdc57ba36eaed2a6a795d665873c788555e1b10ac171d0a0b35619c1",
+      "size": 262,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/field/usb_turf_outside.png": {
+      "height": 128,
+      "sha256": "88d4020c9bb9c46587aa9250481200e4591d935221dd7875d3a58fb72140cb5c",
+      "size": 258,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_asphalt.png": {
+      "height": 32,
+      "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5",
+      "size": 411,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_black.png": {
+      "height": 32,
+      "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_building.png": {
+      "height": 32,
+      "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9",
+      "size": 201,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_concrete.png": {
+      "height": 64,
+      "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a",
+      "size": 166,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_dark.png": {
+      "height": 32,
+      "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f",
+      "size": 100,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_etfe_top.png": {
+      "height": 64,
+      "sha256": "6946d882cdba2a9201d714ad289238403fbb8adebcfc628027fbd6d893702b8b",
+      "size": 345,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_etfe_under.png": {
+      "height": 128,
+      "sha256": "a4c60fb905285a5cc9f4e92e34dfd18dc59d059bf956cbe5c80251fb88ca67f3",
+      "size": 12947,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_flag.png": {
+      "height": 64,
+      "sha256": "215b09271134023ee88376f931d79d6a9a14ee1c2d1136b03f52a03434b67a3d",
+      "size": 2044,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_lawn.png": {
+      "height": 32,
+      "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7",
+      "size": 1121,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_letters_back.png": {
+      "height": 16,
+      "sha256": "5ee6e15a4d08027dcc5b08247ec0a6c3891377b34a8d664cc96dbae3a463ede5",
+      "size": 104,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_plaza.png": {
+      "height": 32,
+      "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8",
+      "size": 169,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_portal.png": {
+      "height": 32,
+      "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e",
+      "size": 98,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_road.png": {
+      "height": 32,
+      "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63",
+      "size": 322,
+      "width": 32
+    },
+    "data/nfl2k5_usbank_model/art/usb_roof_under.png": {
+      "height": 64,
+      "sha256": "45ab2abaab79f5d376f256a80d38b9da1c2bf95a111acea9546f4347623824df",
+      "size": 612,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_seat_back.png": {
+      "height": 128,
+      "sha256": "5221d4e8c4a01257061f978af65ad8a2fbda2b8800f84f8c8320ae62157bd0d1",
+      "size": 9333,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_seat_front.png": {
+      "height": 128,
+      "sha256": "204bf1aeef0b09d7d596dc36b54c9448331843b88baa183f6b7c0c9e698fcfeb",
+      "size": 8535,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_seat_mid.png": {
+      "height": 128,
+      "sha256": "6fd38a978c3c9c389f1cecaae15176f7cc279efe4177b96c80842603be5a603e",
+      "size": 9176,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_sky_a.png": {
+      "height": 64,
+      "sha256": "75ec96d1d8788f409ccd56549758cd88642a82b0e48a31994b06032ada9df459",
+      "size": 233,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_sky_d.png": {
+      "height": 64,
+      "sha256": "d59ca8ca7fe248af218ffdcfa26da871402d35070ecf1a86ef9c05778ee3fca8",
+      "size": 231,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_sky_n.png": {
+      "height": 64,
+      "sha256": "4d68e724893d9e8258030ae5e5199b1c211a4ac82b89d153726928e7a9a01fdc",
+      "size": 241,
+      "width": 128
+    },
+    "data/nfl2k5_usbank_model/art/usb_truss.png": {
+      "height": 64,
+      "sha256": "d969f8fada4bb50a1bdc2598fa0d9bb6340662be63d49a86a957eafe076d27db",
+      "size": 1860,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_wall.png": {
+      "height": 32,
+      "sha256": "d29a4a568e4e8562da1d55c154cf3c48563a0e389ff3d1ca08cb65c4bbd9ff4d",
+      "size": 7795,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/usb_zinc.png": {
+      "height": 64,
+      "sha256": "3d20ee7d47d1e2a30441f5c3d47e0212e4f91d60f9f76d84be8e17d3e077b858",
+      "size": 637,
+      "width": 64
+    },
+    "data/nfl2k5_usbank_model/art/usb_zinc_top.png": {
+      "height": 64,
+      "sha256": "478f4e5d8c813d04b9e2165ac6bc057682faedfd0254a21607c2b1fb5331a463",
+      "size": 215,
+      "width": 64
     },
     "docs/mod_editor/scorebug_studio/page_fable_down.png": {
       "height": 936,
@@ -875,6 +5327,12 @@
       "sha256": "528526899be07449670d3c74e674b1c62349f8818516b38dd022dda8d50a7bff",
       "size": 187,
       "width": 64
+    },
+    "data/nfl2k5_sofi_model/art/field/s23_endzone_R_club.png": {
+      "sha256": "03d932e553ec5048cb94f97066484b94aa2a9d01c61b6e9a77c2a7c2f0c02619",
+      "size": 7684,
+      "width": 256,
+      "height": 128
     }
   },
   "schema": "nfl2k5_scorebug_template_pngs/v1"

@@ -1,0 +1,421 @@
+{
+  "label": "PROVED OFFLINE",
+  "receipt": {
+    "status": "applied",
+    "aliases": 75,
+    "entry_cost": 76,
+    "packs": {
+      "0": {
+        "offset": 13797376,
+        "size": 1570816,
+        "sha256": "383f2950ae1941e3c6e3fe30cda09cf8df139aa50716fba965febad286ac862c"
+      },
+      "F": {
+        "offset": 15368192,
+        "size": 1034240,
+        "sha256": "bd9b217c5ac4199a83a41a831b582ab449372cff4906417a8b594eee3aeacaf9"
+      }
+    },
+    "directory_count": [
+      204,
+      280
+    ],
+    "directory_growth": 0,
+    "appended": [
+      {
+        "file": "HTS-h-25-1981-49ers-3.iff",
+        "virtual_offset": 1601536,
+        "size": 12288
+      },
+      {
+        "file": "HTS-h-25-1989-49ers-3.iff",
+        "virtual_offset": 1613824,
+        "size": 12544
+      },
+      {
+        "file": "HTS-h-25-1994-49ers-2.iff",
+        "virtual_offset": 1628160,
+        "size": 13264
+      },
+      {
+        "file": "HTS-h-25-2003-49ers-0.iff",
+        "virtual_offset": 1642496,
+        "size": 13072
+      },
+      {
+        "file": "HTS-h-05-1963-bears-2.iff",
+        "virtual_offset": 1656832,
+        "size": 11280
+      },
+      {
+        "file": "HTS-h-05-1985-bears-1.iff",
+        "virtual_offset": 1669120,
+        "size": 12176
+      },
+      {
+        "file": "HTS-h-06-1981-bengals-1.iff",
+        "virtual_offset": 1681408,
+        "size": 12560
+      },
+      {
+        "file": "HTS-h-06-1988-bengals-1.iff",
+        "virtual_offset": 1695744,
+        "size": 12768
+      },
+      {
+        "file": "HTS-h-03-1964-bills-7.iff",
+        "virtual_offset": 1710080,
+        "size": 11040
+      },
+      {
+        "file": "HTS-h-03-1990-bills-2.iff",
+        "virtual_offset": 1722368,
+        "size": 12608
+      },
+      {
+        "file": "HTS-h-08-1977-broncos-2.iff",
+        "virtual_offset": 1736704,
+        "size": 12400
+      },
+      {
+        "file": "HTS-h-08-1986-broncos-1.iff",
+        "virtual_offset": 1751040,
+        "size": 12432
+      },
+      {
+        "file": "HTS-h-08-1998-broncos-0.iff",
+        "virtual_offset": 1765376,
+        "size": 13232
+      },
+      {
+        "file": "HTS-h-30-1964-browns-2.iff",
+        "virtual_offset": 1779712,
+        "size": 12016
+      },
+      {
+        "file": "HTS-h-30-1986-browns-1.iff",
+        "virtual_offset": 1792000,
+        "size": 12528
+      },
+      {
+        "file": "HTS-h-27-1979-buccaneers-3.iff",
+        "virtual_offset": 1806336,
+        "size": 12912
+      },
+      {
+        "file": "HTS-h-27-1999-buccaneers-0.iff",
+        "virtual_offset": 1820672,
+        "size": 13472
+      },
+      {
+        "file": "HTS-h-27-2002-buccaneers-0.iff",
+        "virtual_offset": 1835008,
+        "size": 13248
+      },
+      {
+        "file": "HTS-h-00-1975-cardinals-3.iff",
+        "virtual_offset": 1849344,
+        "size": 12256
+      },
+      {
+        "file": "HTS-h-24-1963-chargers-8.iff",
+        "virtual_offset": 1861632,
+        "size": 11488
+      },
+      {
+        "file": "HTS-h-24-1980-chargers-4.iff",
+        "virtual_offset": 1873920,
+        "size": 12688
+      },
+      {
+        "file": "HTS-h-24-1994-chargers-0.iff",
+        "virtual_offset": 1888256,
+        "size": 13536
+      },
+      {
+        "file": "HTS-h-13-1969-chiefs-4.iff",
+        "virtual_offset": 1902592,
+        "size": 11824
+      },
+      {
+        "file": "HTS-h-13-1993-chiefs-2.iff",
+        "virtual_offset": 1914880,
+        "size": 13200
+      },
+      {
+        "file": "HTS-h-11-1970-colts-5.iff",
+        "virtual_offset": 1929216,
+        "size": 11696
+      },
+      {
+        "file": "HTS-h-07-1971-cowboys-4.iff",
+        "virtual_offset": 1941504,
+        "size": 11952
+      },
+      {
+        "file": "HTS-h-07-1977-cowboys-3.iff",
+        "virtual_offset": 1953792,
+        "size": 12560
+      },
+      {
+        "file": "HTS-h-07-1992-cowboys-2.iff",
+        "virtual_offset": 1968128,
+        "size": 12800
+      },
+      {
+        "file": "HTS-h-14-1972-dolphins-4.iff",
+        "virtual_offset": 1982464,
+        "size": 12656
+      },
+      {
+        "file": "HTS-h-14-1984-dolphins-3.iff",
+        "virtual_offset": 1996800,
+        "size": 13024
+      },
+      {
+        "file": "HTS-h-21-1960-eagles-8.iff",
+        "virtual_offset": 2011136,
+        "size": 11632
+      },
+      {
+        "file": "HTS-h-21-1980-eagles-5.iff",
+        "virtual_offset": 2023424,
+        "size": 12592
+      },
+      {
+        "file": "HTS-h-21-2004-eagles-0.iff",
+        "virtual_offset": 2037760,
+        "size": 13072
+      },
+      {
+        "file": "HTS-h-01-1980-falcons-6.iff",
+        "virtual_offset": 2052096,
+        "size": 12448
+      },
+      {
+        "file": "HTS-h-01-1998-falcons-1.iff",
+        "virtual_offset": 2066432,
+        "size": 13216
+      },
+      {
+        "file": "HTS-h-18-1956-giants-6.iff",
+        "virtual_offset": 2080768,
+        "size": 11280
+      },
+      {
+        "file": "HTS-h-18-1986-giants-2.iff",
+        "virtual_offset": 2093056,
+        "size": 12304
+      },
+      {
+        "file": "HTS-h-18-1990-giants-2.iff",
+        "virtual_offset": 2107392,
+        "size": 12512
+      },
+      {
+        "file": "HTS-h-18-2003-giants-0.iff",
+        "virtual_offset": 2121728,
+        "size": 13008
+      },
+      {
+        "file": "HTS-h-12-1999-jaguars-1.iff",
+        "virtual_offset": 2136064,
+        "size": 13152
+      },
+      {
+        "file": "HTS-h-19-1968-jets-4.iff",
+        "virtual_offset": 2150400,
+        "size": 11648
+      },
+      {
+        "file": "HTS-h-19-1998-jets-0.iff",
+        "virtual_offset": 2162688,
+        "size": 13024
+      },
+      {
+        "file": "HTS-h-09-1953-lions-6.iff",
+        "virtual_offset": 2177024,
+        "size": 10960
+      },
+      {
+        "file": "HTS-h-09-1991-lions-3.iff",
+        "virtual_offset": 2189312,
+        "size": 12560
+      },
+      {
+        "file": "HTS-h-28-1961-oilers-5.iff",
+        "virtual_offset": 2203648,
+        "size": 11328
+      },
+      {
+        "file": "HTS-h-28-1979-oilers-2.iff",
+        "virtual_offset": 2215936,
+        "size": 12496
+      },
+      {
+        "file": "HTS-h-10-1966-packers-3.iff",
+        "virtual_offset": 2230272,
+        "size": 11984
+      },
+      {
+        "file": "HTS-h-10-1996-packers-2.iff",
+        "virtual_offset": 2242560,
+        "size": 13376
+      },
+      {
+        "file": "HTS-h-10-2004-packers-0.iff",
+        "virtual_offset": 2256896,
+        "size": 13392
+      },
+      {
+        "file": "HTS-h-04-1996-panthers-1.iff",
+        "virtual_offset": 2271232,
+        "size": 13440
+      },
+      {
+        "file": "HTS-h-04-2003-panthers-0.iff",
+        "virtual_offset": 2285568,
+        "size": 13072
+      },
+      {
+        "file": "HTS-h-16-1985-patriots-5.iff",
+        "virtual_offset": 2299904,
+        "size": 12624
+      },
+      {
+        "file": "HTS-h-16-2001-patriots-0.iff",
+        "virtual_offset": 2314240,
+        "size": 13312
+      },
+      {
+        "file": "HTS-h-16-2003-patriots-0.iff",
+        "virtual_offset": 2328576,
+        "size": 12976
+      },
+      {
+        "file": "HTS-h-20-1967-raiders-1.iff",
+        "virtual_offset": 2342912,
+        "size": 11840
+      },
+      {
+        "file": "HTS-h-20-1976-raiders-0.iff",
+        "virtual_offset": 2355200,
+        "size": 12224
+      },
+      {
+        "file": "HTS-h-20-1983-raiders-0.iff",
+        "virtual_offset": 2367488,
+        "size": 12832
+      },
+      {
+        "file": "HTS-h-23-1979-rams-4.iff",
+        "virtual_offset": 2381824,
+        "size": 12208
+      },
+      {
+        "file": "HTS-h-23-1999-rams-2.iff",
+        "virtual_offset": 2394112,
+        "size": 13088
+      },
+      {
+        "file": "HTS-h-02-2000-ravens-0.iff",
+        "virtual_offset": 2408448,
+        "size": 13184
+      },
+      {
+        "file": "HTS-h-29-1982-redskins-2.iff",
+        "virtual_offset": 2422784,
+        "size": 12896
+      },
+      {
+        "file": "HTS-h-29-1987-redskins-2.iff",
+        "virtual_offset": 2437120,
+        "size": 13040
+      },
+      {
+        "file": "HTS-h-29-1991-redskins-2.iff",
+        "virtual_offset": 2451456,
+        "size": 12736
+      },
+      {
+        "file": "HTS-h-17-1991-saints-4.iff",
+        "virtual_offset": 2465792,
+        "size": 12640
+      },
+      {
+        "file": "HTS-h-17-2000-saints-2.iff",
+        "virtual_offset": 2480128,
+        "size": 13120
+      },
+      {
+        "file": "HTS-h-26-1984-seahawks-1.iff",
+        "virtual_offset": 2494464,
+        "size": 12992
+      },
+      {
+        "file": "HTS-h-26-1999-seahawks-1.iff",
+        "virtual_offset": 2508800,
+        "size": 13280
+      },
+      {
+        "file": "HTS-h-22-1975-steelers-1.iff",
+        "virtual_offset": 2523136,
+        "size": 12352
+      },
+      {
+        "file": "HTS-h-22-1978-steelers-1.iff",
+        "virtual_offset": 2537472,
+        "size": 12544
+      },
+      {
+        "file": "HTS-h-22-1995-steelers-0.iff",
+        "virtual_offset": 2551808,
+        "size": 13488
+      },
+      {
+        "file": "HTS-h-13-1962-texans-5.iff",
+        "virtual_offset": 2566144,
+        "size": 11392
+      },
+      {
+        "file": "HTS-h-28-1999-titans-0.iff",
+        "virtual_offset": 2578432,
+        "size": 13168
+      },
+      {
+        "file": "HTS-h-15-1969-vikings-4.iff",
+        "virtual_offset": 2592768,
+        "size": 11936
+      },
+      {
+        "file": "HTS-h-15-1973-vikings-3.iff",
+        "virtual_offset": 2605056,
+        "size": 11936
+      },
+      {
+        "file": "HTS-h-15-1998-vikings-0.iff",
+        "virtual_offset": 2617344,
+        "size": 13232
+      },
+      {
+        "file": "HTS-filler.iff",
+        "virtual_offset": 2631680,
+        "size": 2048
+      }
+    ],
+    "edited_outers": [],
+    "image_growth": 2605056
+  },
+  "canonical_resources_preserved": 75,
+  "owner_states_after_hm": {
+    "historic_rosters_2026": "applied",
+    "espn25_rosters": "applied"
+  },
+  "replay_identical": true,
+  "corruption_refused_before_write": true,
+  "fixture_bytes": 16402432,
+  "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+  "writer_sha256": "36b4c4810afa1b1c7622a07e2ebd162a42eac21a541fc093daceb689bea85e26",
+  "scope": "Bounded fixture with real ROST slices and executable. Not the requested full candidate build.",
+  "fixture_deleted": true
+}

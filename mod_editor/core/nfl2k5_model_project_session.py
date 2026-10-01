@@ -22,13 +22,14 @@ MEMBER = "model-edits.json"
 
 
 def _copy_archive(source, target, document, model_payload=None):
+    manifest_payload = archive.manifest_payload(document)
     with zipfile.ZipFile(source) as old, zipfile.ZipFile(target, "x", compression=zipfile.ZIP_DEFLATED) as new:
         for info in old.infolist():
             if info.filename in {"project.json", MEMBER}:
                 continue
             with old.open(info) as src, new.open(archive._zip_info(info.filename), "w", force_zip64=True) as dst:
                 shutil.copyfileobj(src, dst, 1024 * 1024)
-        new.writestr(archive._zip_info("project.json"), P.canonical(document))
+        new.writestr(archive._zip_info("project.json"), manifest_payload)
         if model_payload is not None:
             new.writestr(archive._zip_info(MEMBER), model_payload)
     # "r+b": Windows refuses fsync on a read-only handle (EBADF); read/write keeps the archive intact.
@@ -36,16 +37,16 @@ def _copy_archive(source, target, document, model_payload=None):
         os.fsync(stream.fileno())
 
 
-def _read_models(path):
+def _read_models(path, *, open_notes=None):
     with zipfile.ZipFile(path) as zipped:
         infos = zipped.infolist()
         P.require(len(infos) <= archive.MAX_PROJECT_MEMBERS + 1
                   and len({i.filename for i in infos}) == len(infos), "Invalid project archive member count or duplicates.")
         P.require(sum(i.file_size for i in infos) <= archive.MAX_PROJECT_EXPANDED_BYTES + P.MAX_BYTES,
                   "Project archive exceeds the expanded size limit.")
-        info = zipped.getinfo("project.json")
-        P.require(info.file_size <= archive.MAX_MANIFEST_BYTES, "Project manifest is too large.")
-        document = json.loads(zipped.read(info), object_pairs_hook=archive._reject_duplicate_json_pairs)
+        document, notes = archive.read_project_manifest(zipped)
+        if open_notes is not None:
+            open_notes.extend(notes)
         metadata = document.pop("model_edits", None)
         if metadata is None:
             return document, []
@@ -207,7 +208,8 @@ class ModelProjectSession(StudioSession):
     def load_shareable_project(self, source, *, progress=None):
         P.require(not self.modified_count, "Load model edits into a fresh project session.")
         try:
-            document, records = _read_models(source)
+            open_notes = []
+            document, records = _read_models(source, open_notes=open_notes)
         except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
             raise P.ValidationError(f"Cannot read compiled model project {source}: {exc}") from exc
         if not records:
@@ -232,4 +234,5 @@ class ModelProjectSession(StudioSession):
                 self._model_restore_pending = None
         self._model_records = pending
         self.model_source_warnings = tuple(warnings)
+        self.project_open_notes = tuple(open_notes) + getattr(self, 'project_open_notes', ())
         return count + len(records)

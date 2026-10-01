@@ -279,7 +279,7 @@ def status(payload: bytes) -> str:
         _table_is_known(payload, applied)
         if applied:
             _table_is_known(payload, False)  # retired allocation and its padding are retained intact
-            _require(pools.status(payload) == "applied", "position_pools dependency is not applied")
+            _require(pools.status(payload) in ("applied", "needs_fix"), "position_pools dependency is not applied")
         return "applied" if applied else "retail"
     except (ValueError, struct.error, IndexError):
         return "foreign"

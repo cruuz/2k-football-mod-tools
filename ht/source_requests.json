@@ -1,0 +1,837 @@
+{
+  "label": "DESIGN",
+  "corrected_article": {
+    "url": "https://en.wikipedia.org/wiki/1975_St._Louis_Cardinals_(NFL)_season",
+    "need": "Football roster; replace the downloaded baseball article",
+    "status": "not fetched"
+  },
+  "season_rosters": [
+    {
+      "team": "49ers '81",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sfo/1981_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "49ers '89",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sfo/1989_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "49ers '94",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sfo/1994_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "49ers '03",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sfo/2003_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Bears '63",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/chi/1963_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 21
+    },
+    {
+      "team": "Bears '85",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/chi/1985_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 12
+    },
+    {
+      "team": "Bengals '81",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/cin/1981_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 10
+    },
+    {
+      "team": "Bengals '88",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/cin/1988_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Bills '64",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/buf/1964_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 18
+    },
+    {
+      "team": "Bills '90",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/buf/1990_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 11
+    },
+    {
+      "team": "Broncos '77",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/den/1977_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 8
+    },
+    {
+      "team": "Broncos '86",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/den/1986_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 8
+    },
+    {
+      "team": "Broncos '98",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/den/1998_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 1
+    },
+    {
+      "team": "Browns '64",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/cle/1964_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 18
+    },
+    {
+      "team": "Browns '86",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/cle/1986_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 7
+    },
+    {
+      "team": "Buccaneers '79",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/tam/1979_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 8
+    },
+    {
+      "team": "Buccaneers '99",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/tam/1999_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Buccaneers '02",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/tam/2002_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Cardinals '75",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/crd/1975_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 53
+    },
+    {
+      "team": "Chargers '63",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sdg/1963_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 21
+    },
+    {
+      "team": "Chargers '80",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sdg/1980_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Chargers '94",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sdg/1994_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 1
+    },
+    {
+      "team": "Chiefs '69",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/kan/1969_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 15
+    },
+    {
+      "team": "Chiefs '93",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/kan/1993_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 10
+    },
+    {
+      "team": "Colts '70",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/clt/1970_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 11
+    },
+    {
+      "team": "Cowboys '71",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/dal/1971_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Cowboys '77",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/dal/1977_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 11
+    },
+    {
+      "team": "Cowboys '92",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/dal/1992_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 11
+    },
+    {
+      "team": "Dolphins '72",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/mia/1972_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 13
+    },
+    {
+      "team": "Dolphins '84",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/mia/1984_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Eagles '60",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/phi/1960_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 25
+    },
+    {
+      "team": "Eagles '80",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/phi/1980_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Eagles '04",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/phi/2004_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Falcons '80",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/atl/1980_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Falcons '98",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/atl/1998_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Giants '56",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyg/1956_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 21
+    },
+    {
+      "team": "Giants '86",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyg/1986_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Giants '90",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyg/1990_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 8
+    },
+    {
+      "team": "Giants '03",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyg/2003_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Jaguars '99",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/jax/1999_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 3
+    },
+    {
+      "team": "Jets '68",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyj/1968_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 12
+    },
+    {
+      "team": "Jets '98",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nyj/1998_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Lions '53",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/det/1953_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 23
+    },
+    {
+      "team": "Lions '91",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/det/1991_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 7
+    },
+    {
+      "team": "Oilers '61",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/oti/1961_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 21
+    },
+    {
+      "team": "Oilers '79",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/oti/1979_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Packers '66",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/gnb/1966_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 14
+    },
+    {
+      "team": "Packers '96",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/gnb/1996_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Packers '04",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/gnb/2004_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 7
+    },
+    {
+      "team": "Panthers '96",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/car/1996_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Panthers '03",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/car/2003_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 3
+    },
+    {
+      "team": "Patriots '85",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nwe/1985_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 7
+    },
+    {
+      "team": "Patriots '01",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nwe/2001_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Patriots '03",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nwe/2003_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Raiders '67",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/rai/1967_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 13
+    },
+    {
+      "team": "Raiders '76",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/rai/1976_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Raiders '83",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/rai/1983_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Rams '79",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/ram/1979_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Rams '99",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/ram/1999_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Ravens '00",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/rav/2000_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Redskins '82",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/was/1982_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 5
+    },
+    {
+      "team": "Redskins '87",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/was/1987_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 7
+    },
+    {
+      "team": "Redskins '91",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/was/1991_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Saints '91",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nor/1991_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 2
+    },
+    {
+      "team": "Saints '00",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/nor/2000_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    },
+    {
+      "team": "Seahawks '84",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sea/1984_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Seahawks '99",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/sea/1999_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 2
+    },
+    {
+      "team": "Steelers '75",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/pit/1975_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 11
+    },
+    {
+      "team": "Steelers '78",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/pit/1978_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 9
+    },
+    {
+      "team": "Steelers '95",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/pit/1995_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 6
+    },
+    {
+      "team": "Texans '62",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/kan/1962_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 23
+    },
+    {
+      "team": "Titans '99",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/oti/1999_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 2
+    },
+    {
+      "team": "Vikings '69",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/min/1969_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 13
+    },
+    {
+      "team": "Vikings '73",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/min/1973_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 10
+    },
+    {
+      "team": "Vikings '98",
+      "label": "DESIGN",
+      "url": "https://www.pro-football-reference.com/teams/min/1998_roster.htm",
+      "status": "Exact requested URL; not fetched or verified in this offline job",
+      "need": "Number, position, height, weight, games and starts; compare all unresolved names with the audit",
+      "blocked_slots": 4
+    }
+  ],
+  "all_time": [
+    {
+      "franchise": "ARZ",
+      "url": "https://www.azcardinals.com/",
+      "sitemap_url": "https://www.azcardinals.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "ATL",
+      "url": "https://www.atlantafalcons.com/",
+      "sitemap_url": "https://www.atlantafalcons.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "BAL",
+      "url": "https://www.baltimoreravens.com/",
+      "sitemap_url": "https://www.baltimoreravens.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "BUF",
+      "url": "https://www.buffalobills.com/",
+      "sitemap_url": "https://www.buffalobills.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "CAR",
+      "url": "https://www.panthers.com/",
+      "sitemap_url": "https://www.panthers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "CHI",
+      "url": "https://www.chicagobears.com/",
+      "sitemap_url": "https://www.chicagobears.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "CIN",
+      "url": "https://www.bengals.com/",
+      "sitemap_url": "https://www.bengals.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "CLE",
+      "url": "https://www.clevelandbrowns.com/",
+      "sitemap_url": "https://www.clevelandbrowns.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "DAL",
+      "url": "https://www.dallascowboys.com/",
+      "sitemap_url": "https://www.dallascowboys.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "DEN",
+      "url": "https://www.denverbroncos.com/",
+      "sitemap_url": "https://www.denverbroncos.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "DET",
+      "url": "https://www.detroitlions.com/",
+      "sitemap_url": "https://www.detroitlions.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "GB",
+      "url": "https://www.packers.com/",
+      "sitemap_url": "https://www.packers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "HOU",
+      "url": "https://www.houstontexans.com/",
+      "sitemap_url": "https://www.houstontexans.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "IND",
+      "url": "https://www.colts.com/",
+      "sitemap_url": "https://www.colts.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "JAX",
+      "url": "https://www.jaguars.com/",
+      "sitemap_url": "https://www.jaguars.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "KC",
+      "url": "https://www.chiefs.com/",
+      "sitemap_url": "https://www.chiefs.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "MIA",
+      "url": "https://www.miamidolphins.com/",
+      "sitemap_url": "https://www.miamidolphins.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "MIN",
+      "url": "https://www.vikings.com/",
+      "sitemap_url": "https://www.vikings.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "NE",
+      "url": "https://www.patriots.com/",
+      "sitemap_url": "https://www.patriots.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "NO",
+      "url": "https://www.neworleanssaints.com/",
+      "sitemap_url": "https://www.neworleanssaints.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "NYG",
+      "url": "https://www.giants.com/",
+      "sitemap_url": "https://www.giants.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "NYJ",
+      "url": "https://www.newyorkjets.com/",
+      "sitemap_url": "https://www.newyorkjets.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "OAK",
+      "url": "https://www.raiders.com/",
+      "sitemap_url": "https://www.raiders.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "PHI",
+      "url": "https://www.philadelphiaeagles.com/",
+      "sitemap_url": "https://www.philadelphiaeagles.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "PIT",
+      "url": "https://www.steelers.com/",
+      "sitemap_url": "https://www.steelers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "SD",
+      "url": "https://www.chargers.com/",
+      "sitemap_url": "https://www.chargers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "SEA",
+      "url": "https://www.seahawks.com/",
+      "sitemap_url": "https://www.seahawks.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "SF",
+      "url": "https://www.49ers.com/",
+      "sitemap_url": "https://www.49ers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "STL",
+      "url": "https://www.therams.com/",
+      "sitemap_url": "https://www.therams.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "TB",
+      "url": "https://www.buccaneers.com/",
+      "sitemap_url": "https://www.buccaneers.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "TEN",
+      "url": "https://www.tennesseetitans.com/",
+      "sitemap_url": "https://www.tennesseetitans.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    },
+    {
+      "franchise": "WAS",
+      "url": "https://www.commanders.com/",
+      "sitemap_url": "https://www.commanders.com/sitemap.xml",
+      "status": "Discovery endpoint only; unverified offline",
+      "need": "Official all-time or anniversary selection with selection date, complete player list and positions; retain the direct canonical article URL and any archived official PDF. If none exists, record that instead of treating a fan roster, Hall of Fame list or all-time appearance register as a selection."
+    }
+  ],
+  "limitation": "The 32 direct official selection URLs are not known from these inputs. The endpoints above are explicit discovery requests, not verified official all-time roster pages."
+}

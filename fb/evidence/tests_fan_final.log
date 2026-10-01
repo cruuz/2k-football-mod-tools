@@ -1,0 +1,13 @@
+test_compacted_image_uses_retained_venue_sidecar (test_nfl2k5_model_fan_art.ExportReceipt.test_compacted_image_uses_retained_venue_sidecar) ... ok
+test_standalone_model_does_not_fabricate_venue_ownership (test_nfl2k5_model_fan_art.ExportReceipt.test_standalone_model_does_not_fabricate_venue_ownership) ... ok
+test_each_writer_requires_a_matching_composed_span_receipt (test_nfl2k5_model_fan_art.ModelStatus.test_each_writer_requires_a_matching_composed_span_receipt) ... ok
+test_neutral_event_slot_does_not_take_a_club_banner (test_nfl2k5_model_fan_art.Receipt.test_neutral_event_slot_does_not_take_a_club_banner) ... ok
+test_recognizes_each_pinned_model_variant (test_nfl2k5_model_fan_art.Receipt.test_recognizes_each_pinned_model_variant) ... ok
+test_tampered_bytes_parent_span_and_schema_refuse (test_nfl2k5_model_fan_art.Receipt.test_tampered_bytes_parent_span_and_schema_refuse) ... ok
+test_unknown_parent_model_is_rejected_before_any_archive_write (test_nfl2k5_model_fan_art.Receipt.test_unknown_parent_model_is_rejected_before_any_archive_write) ... ok
+test_unselected_art_keeps_exact_model_output (test_nfl2k5_model_fan_art.Receipt.test_unselected_art_keeps_exact_model_output) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.287s
+
+OK

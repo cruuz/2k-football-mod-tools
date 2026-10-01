@@ -57,11 +57,23 @@ CONSUMER_RANGES = {
 CONSUMER_RANGES.update(FAMILY_RANGES)
 
 
+def _k128_hook(payload):
+    """b76-k1: K128's arena hook, when (and only when) the whole K128 owner is installed exactly.
+
+    The late-form hook replaces the 10-byte compare at 0x327D1 inside the pinned arena init (0x326E0) with a call
+    that adds the upper 64 MB after the arena exists and then replays that compare, so the arena, the heaps and
+    every address the budget reads stay retail. Its exact bytes are compared as the retail bytes; any other change
+    there, or a hook without the rest of K128, still refuses."""
+    from . import nfl2k5_k128 as k128
+    return (k128.HOOK2_VA, k128.RETAIL_HOOK2) if k128.status(payload) == "applied" else None
+
+
 def validate_consumer_xbe(payload, keys):
     """Refuse changed code/table bytes at the audited asset binding paths."""
     keys = tuple(a.key for a in _selection(keys))
     require(len(payload) <= 16*archive.BLOCK, "Executable exceeds 16 MiB")
     sections = nfl2k5_bump_strength._sections(payload)
+    k128_hook = _k128_hook(payload)
     result = []
     for family in dict.fromkeys(("common", "memory", *(texture.BY_KEY[k].consumer for k in keys))):
         for address, size, digest in CONSUMER_RANGES[family]:
@@ -70,10 +82,15 @@ def validate_consumer_xbe(payload, keys):
             require(len(matches) == 1, "Consumer address is unmapped or ambiguous")
             s = matches[0]
             at = s.raw_offset+address-s.virtual_address
-            require(sha(payload[at:at+size]) == digest, f"Foreign {family} consumer at 0x{address:08x}")
+            window = payload[at:at+size]
+            if k128_hook is not None and address <= k128_hook[0] and k128_hook[0]+len(k128_hook[1]) <= address+size:
+                cut = k128_hook[0]-address
+                window = window[:cut]+k128_hook[1]+window[cut+len(k128_hook[1]):]
+            require(sha(window) == digest, f"Foreign {family} consumer at 0x{address:08x}")
             result.append(dict(family=family, address=address, offset=at, size=size, sha256=digest))
     return dict(xbe_sha256=sha(payload), ranges=result, pixel_consumer_in_audited_binders=False,
-                exhaustive_runtime_consumers_proved=False, runtime_witnessed=False)
+                exhaustive_runtime_consumers_proved=False, runtime_witnessed=False,
+                k128_hook_accepted=k128_hook is not None)
 
 
 def _consumer_check(disc, keys):

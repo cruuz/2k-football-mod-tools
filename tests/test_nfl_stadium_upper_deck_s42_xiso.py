@@ -21,6 +21,9 @@ MANIFEST = ROOT / "build/nfl2k5-stadium-upper-deck-subset-xiso-20260716/s42-work
 
 class UpperDeckS42XisoTests(unittest.TestCase):
     def test_both_paths_accept_exact_runtime_authority(self) -> None:
+        missing = [str(path) for path in (RUNTIME,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL upper deck runtime authority missing: " + ", ".join(missing))
         writer_path, writer_value = writer.load_runtime_authority(RUNTIME)
         verifier_path, verifier_value = verifier.load_runtime_authority(RUNTIME)
         self.assertEqual(writer_path, verifier_path)
@@ -33,6 +36,9 @@ class UpperDeckS42XisoTests(unittest.TestCase):
         )
 
     def test_runtime_authority_hash_and_semantics_fail_closed(self) -> None:
+        missing = [str(path) for path in (RUNTIME,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL upper deck runtime authority missing: " + ", ".join(missing))
         value = json.loads(RUNTIME.read_bytes())
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

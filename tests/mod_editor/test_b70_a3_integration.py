@@ -57,7 +57,9 @@ class AppliedWiringTests(unittest.TestCase):
         fixture.setUp()
         fixture.stage()
         archive = fixture.root / 'reopen.2k5mod'
-        fixture.a.save_shareable_project(archive)
+        # Saving revalidates portable fit receipts against this synthetic catalog.
+        with fixture.f.context():
+            fixture.a.save_shareable_project(archive)
         with patch.object(writer, 'build_unified_uniform_equipment_imports',
                           side_effect=AssertionError('Captions must not compile')):
             expected_labels = equipment_reporting.project_fit_labels(fixture.a)

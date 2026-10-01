@@ -19,13 +19,20 @@ import apf_xenia_controller_capture_provenance as provenance  # noqa: E402
 
 
 class ApfXeniaControllerCaptureProvenanceTest(unittest.TestCase):
-    def fixture_root(self, directory: str) -> Path:
-        root = Path(directory)
+    def require_capture_files(self):
         relatives = [provenance.MANIFEST, provenance.FROZEN_SOURCE]
         for binding in provenance.EXPECTED_BINDINGS:
             relatives.extend(
                 [binding["report"]["path"], binding["transcript"]["path"]]
             )
+        missing = [str(relative) for relative in relatives if not (ROOT / relative).is_file()]
+        if missing:
+            self.skipTest("private controller capture evidence absent: " + ", ".join(missing))
+        return relatives
+
+    def fixture_root(self, directory: str) -> Path:
+        relatives = self.require_capture_files()
+        root = Path(directory)
         for relative in relatives:
             source = ROOT / relative
             target = root / relative
@@ -34,6 +41,7 @@ class ApfXeniaControllerCaptureProvenanceTest(unittest.TestCase):
         return root
 
     def test_canonical_manifest_binds_all_three_legacy_captures(self) -> None:
+        self.require_capture_files()
         result = provenance.validate()
         self.assertEqual(result["binding_count"], 3)
         self.assertEqual(result["source_size"], 3051)

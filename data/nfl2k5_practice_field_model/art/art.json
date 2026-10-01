@@ -1,0 +1,208 @@
+{
+  "art": {
+    "LIGHT_pf_clere": {
+      "sha256": "314004440943aa86c47b05e7e4e256a80db39c4760c30a085e6f104fd20a4964",
+      "size": [
+        64,
+        32
+      ]
+    },
+    "LIGHT_pf_clere_night": {
+      "sha256": "fb2e09a3b0155e0ee05fc9143087a69525ef63a418b1c71069edf9a31e481d21",
+      "size": [
+        64,
+        32
+      ]
+    },
+    "LIGHT_pf_glass": {
+      "sha256": "21f0cfd5b6c548d3982e7835756bbf9c8caa96199533037745190c4c86023a90",
+      "size": [
+        128,
+        128
+      ]
+    },
+    "LIGHT_pf_glass_night": {
+      "sha256": "e264d8ef4af4cd35b900b0589e7f003336df9b35aec0a15a1dec05187deaafac",
+      "size": [
+        128,
+        128
+      ]
+    },
+    "LIGHT_pf_led": {
+      "sha256": "3444a9f319ab1b50c783d66fd1cf5f4a6c181a780a543f8c36eed355e5348ce3",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "LIGHT_pf_led_night": {
+      "sha256": "b5ca1f6b1bcc62fb7afbf710228fc137a10b91011668d036b353ec8fa1d90c39",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "field/pf_clear": {
+      "sha256": "06ab142c3bad172a564f50931dd667c07af918ed7298107b0c41f79cd761cc8f",
+      "size": [
+        128,
+        128
+      ]
+    },
+    "pf_bleacher": {
+      "sha256": "51be2d2820b6e96a9131b7a3d8fce551078ccc163f87fc38e22f6c5e644613d4",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_canvas": {
+      "sha256": "f3010e7284ffdcd588860bccc915e6947915056fff0f49b494a315f732df23b4",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_clock": {
+      "sha256": "f09ceccace34c531628f4c551ccb0b1512c37f14212e5fdfb35de7bb5a5046ee",
+      "size": [
+        128,
+        64
+      ]
+    },
+    "pf_dark": {
+      "sha256": "ac57db0a419660b5967f15b9b2d551674a3cff89dc2c269d9e48419dfe476de7",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_door": {
+      "sha256": "563573a82332e41892bb63e72b775b25b1532293167540bae0adc89504678cb5",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_endzone_grass": {
+      "sha256": "5aa5a650bed773734baff0291b9d01d16a270d4453a93651026fdf4b20ee8b7c",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_endzone_turf": {
+      "sha256": "bdb79d229cf2b8b1a34d60b518aa7bfdfc7e38c4d73c5c0d47ac0a9d09b9a7d2",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_fh_roof": {
+      "sha256": "7fb50c486dd5c182346202424a1b96582d672a6ac31cfe980c1b4af1e6d55727",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_fh_wall": {
+      "sha256": "6224468e0d71ab04a9e6ca4eff387e31b1453a7d5c022ca3935827b06a8ce1de",
+      "size": [
+        128,
+        64
+      ]
+    },
+    "pf_field_strip": {
+      "sha256": "24104712fb87d25ee7a4bcbf22c50bce9b5c0ee1295ee53b385920b73930c75a",
+      "size": [
+        64,
+        128
+      ]
+    },
+    "pf_numbers": {
+      "sha256": "5d5608eee4e098e16c70ae5bff45ed8a4eeaf53de2b65d2d74905c834da90cc1",
+      "size": [
+        64,
+        128
+      ]
+    },
+    "pf_pad": {
+      "sha256": "e327838ee130497e3e776e524c27b54c02bda65aa487b6cca47d126f3c4dd0ab",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_paint": {
+      "sha256": "f4e16fa850b4d9ff2534a14f45aa463e583b1326b33d938b44fe048cc90c9d31",
+      "size": [
+        8,
+        8
+      ]
+    },
+    "pf_path": {
+      "sha256": "1349063d1c196585be31a62ca417b6eddca4dedf9db8d4f59ac5950226a11910",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_roof": {
+      "sha256": "e4db4cec48915f2f50f29fe5ea61407832103d25579b1f113402e538d9cbaa07",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_scissor": {
+      "sha256": "1e139f107c81452545b3cf212f53b3119e7f0d61097b380af1bb3107a0679b4b",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_steel": {
+      "sha256": "6816408770d4ffdf1de1ae96137ac30c7dd8486d41fa6e460cedbbd96b580c47",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_stone": {
+      "sha256": "098b16fcc2de917f3e2447afbab970be6a6d601faf0a0b61018049513605a2c0",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "pf_turf_strip": {
+      "sha256": "2b4ebbf24ccb2c1576d0cea7f0fbc343e24b24c52c964df83a61955390b15c8a",
+      "size": [
+        64,
+        128
+      ]
+    },
+    "pf_white": {
+      "sha256": "cf76a1258b39d5275dabc5cefb5e61959f07137684e289385e72a8735a26a60b",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "pf_windscreen": {
+      "sha256": "a358ad8db10d1025d1c18ec06bf117ca813cc8b28562dd3e3062af189b158bbe",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "pf_yellow": {
+      "sha256": "ed48d845b75a515244f3a7f15c650b915d3f4d0fabc5db1400d2833d8cfc4cf6",
+      "size": [
+        32,
+        32
+      ]
+    }
+  },
+  "schema": "nfl2k5_practice_field_model_art/v1"
+}

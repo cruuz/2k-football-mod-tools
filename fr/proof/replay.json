@@ -1,0 +1,25 @@
+{
+  "franchise_history": {
+    "used_before": 36866,
+    "used_after": 33295,
+    "capacity": 50000,
+    "free_after": 16705,
+    "preserved_players": 615,
+    "replaced_players": 1932,
+    "roundtrip_verified": true,
+    "schema": "nfl2k5_franchise_history/v1",
+    "base_year": 2026,
+    "source_seasons": 6203,
+    "source_body_sha256": "a988ac94aaba6f41c0f3bac6e6baf3609b446668537412c66d46df4718e8acfb",
+    "output_body_sha256": "699ec8974a2649ba98d9a9257fbccb87e36f99ed8cae0ce22138992c06c84037"
+  },
+  "edits": 8094,
+  "players_changed": 8094,
+  "fields_written": 132754,
+  "moves": 0,
+  "players_moved": 0,
+  "coach_names_written": 32,
+  "team_uniform_years_written": 3,
+  "special_team_slots_written": 192,
+  "log": []
+}

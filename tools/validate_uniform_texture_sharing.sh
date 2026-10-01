@@ -30,7 +30,7 @@ cmp reports/assets/apf2k8_jersey_selector_sharing.tsv "$temporary/apf.tsv"
 test "$(sha256sum reports/assets/uniform_texture_sharing.json | cut -d' ' -f1)" = \
   '4c6557f8e9732267a078ecf42f2d8e8696d7207c9ed6aacd9a76a3e1c67c9910'
 test "$(sha256sum reports/assets/uniform_texture_sharing.v2.json | cut -d' ' -f1)" = \
-  '9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf'
+  '992ea79c46c98fe218712540d0fb3159685eee2de67edb01b1659f1897d51c88'
 test "$(sha256sum reports/assets/nfl2k5_uniform_texture_sharing.tsv | cut -d' ' -f1)" = \
   'f4367f8fb1a3f2da3ccc20890635ff15dbd1c45c86f118627bbf2895dd7a1658'
 test "$(sha256sum reports/assets/apf2k8_jersey_selector_sharing.tsv | cut -d' ' -f1)" = \

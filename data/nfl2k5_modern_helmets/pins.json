@@ -1,0 +1,108 @@
+{
+ "geometry_sha256": "b0916265e0b40baa031a6088b5759ff99022ea902e2269236d7d32918e02322d",
+ "masks": {
+  "12": {
+   "applied": "62671ef01841bcf04c46833afc7aa659b59f7eece23a967782f3fde3df6f95cd",
+   "retail": "fe31c3a0c5d16109157bd847ae17bddf0e7c089f1c3a60d03c214ddac20fe52d",
+   "stored": 1792
+  },
+  "13": {
+   "applied": "fc0cb39936eecec3ab461b2561a0cd907f5b59697b100b77abf01d44ca331724",
+   "retail": "522e0d6d069c8db6813e238e7d8f357e2fa71de60a0824fadc8d4906afc56135",
+   "stored": 1920
+  },
+  "14": {
+   "applied": "8b3c20389c8e1a72c21feace4c1da4a0e33e521da5ca6c9ddd93c212a1d82b55",
+   "retail": "644d0eb9a35cc0529a28972f9a050ff8b1f47943324456c641c440666045b078",
+   "stored": 2000
+  },
+  "15": {
+   "applied": "ffd2622ea3741fbbec405dad8be0644d1ebc3bfa58e2b83b382dc9e96bf5e802",
+   "retail": "b57f60e8b919a5533286c511cd593148376c4b5b9097a1dc3468df5b23e5a141",
+   "stored": 1872
+  },
+  "16": {
+   "applied": "c9450675b03d046e725af1c7740bfeff4fbd70c51ff8ea6d32c10527e4a8ded2",
+   "retail": "a1dedadc601cce9f2c64f2eb9505676e48a22c55f29a0e78a39759affaeda6a6",
+   "stored": 2000
+  },
+  "17": {
+   "applied": "84bd3ed7860d00e3354b1041994c77e0b6d22b04191c8ef751f323e87f2f3cb6",
+   "retail": "370355b802124efe58d85efc37a7f1dd15dd77a15cb89d4c84246b29522722c5",
+   "stored": 1808
+  },
+  "18": {
+   "applied": "c2a3961ee0eac91fc7b0c7de5337cbdcf9f25bf64c83f50c619336105817a5d3",
+   "retail": "5954551d1b45fce86f56d97f5e8886b0bc729e16a62793de0d0c7ca58aab192e",
+   "stored": 2064
+  },
+  "19": {
+   "applied": "7a7b107ed4a3cab8adb4a2fd9164dcab5e5aa08a5426458e170e56b0b981362c",
+   "retail": "ad105c6acb85895ffa3547e504fe3f5afd34215a2e1ef841a75441ddb2ad7cbf",
+   "stored": 2048
+  },
+  "20": {
+   "applied": "7c0aec1c1efb514abb9d5a525d3ad4fe22e43c31e69c47a027d79601085847ae",
+   "retail": "097ae575a998dfeee9bcd2e0b4cb33d82938fab4291b33bf890ecc7ea4c09d46",
+   "stored": 2048
+  },
+  "21": {
+   "applied": "900134fe23cb8d403cc992c80229ad571c0d26c03ed26a8c3b32f34d4f00a011",
+   "retail": "a0d355295547184aa328ab3bae196dd7bc1cd19b2c36ed35e9cf3ded628e74ad",
+   "stored": 2048
+  },
+  "22": {
+   "applied": "8f37eb1406c0db6d341273b3047208c65ff1f1837692af451060a3e39c82dffe",
+   "retail": "f7418cf9374442d06cc1e8fe9b84176c23a82409db2d0734e1a7416261158614",
+   "stored": 2160
+  },
+  "23": {
+   "applied": "3f3bb2044e6a4b0456ebcaad2d1d36c93f93be8caa50bb90af54c517ed94ae0f",
+   "retail": "d93f16da86e4603e4170ec813bcb0fb802fb043eacf04da232c47b1118b0c079",
+   "stored": 2016
+  },
+  "24": {
+   "applied": "a42964e1dbcaf0480a1b1fef817a35975e764841c8387026a3a0d76fe24576bb",
+   "retail": "64ddff43d0136c20af37514a7291fe54301ac74dfc9d0a13bc29b1c4fb288c65",
+   "stored": 2048
+  },
+  "25": {
+   "applied": "bcc5a9b97c768f849c37287294b3ab046fda9dd8d12aac78bdd5d3727cdb4c95",
+   "retail": "615f400303090fd532cb63be5fb0dae7fec9385de07f92e5c4ebe01333a6bd26",
+   "stored": 2160
+  },
+  "26": {
+   "applied": "331a9ff1c622bc9814b4051c2dc88a999d47866ca193d383cafaba773b615945",
+   "retail": "f53b6d3670ecaba8a54e7b023bc8595ae7dcf3cd75ca322b83d7657a8a4c1692",
+   "stored": 2224
+  }
+ },
+ "mode": "revolution",
+ "scenes": {
+  "o3c113": {
+   "guardian_applied": "a9b11260b4bd18a46d08ea994e6774eea4fdb41fd366412d044f7c03292d06b5",
+   "guardian_retail": "79743ebef065262b170ec467bbbadda4a3966477c92af5896aaea61daafd715b",
+   "other": "9f730fe09978ba12be18fcb6556cf21eb9c33248d7a3b566c86fa8861fb1b07f",
+   "owned_applied": "2096b325454be90ff5f53f1634957449cbe03440f4f6f06bb482e6390d72f04e",
+   "owned_retail": "2096b325454be90ff5f53f1634957449cbe03440f4f6f06bb482e6390d72f04e",
+   "span_applied": "e3f71e2b930707d68eecfc9c1fa8025da6f1d1ec2087ec3d6ebaa3fa5fec604c",
+   "span_composed": "863be42715d650f326c9d001082aa01c4d3b0b0a78b90d04cea8ad43ef057e58",
+   "span_guardian": "863be42715d650f326c9d001082aa01c4d3b0b0a78b90d04cea8ad43ef057e58",
+   "span_retail": "e3f71e2b930707d68eecfc9c1fa8025da6f1d1ec2087ec3d6ebaa3fa5fec604c",
+   "stored": 135808
+  },
+  "o3c115": {
+   "guardian_applied": "0c7d651dc40d8a8875874bf0733e7dad90dd6cb35abe035e2653cb5f36445419",
+   "guardian_retail": "1d2cd3a706e430c25508b2394fa7c2a515f9d5e6cde88f995622a5b13e995e0e",
+   "other": "354e8f4b76fce5f4d0e29c32c0b8cef3cc5f15c279315ca418a3a35ceb6aa32e",
+   "owned_applied": "9348cfdd74f5d6de04f780fc11a0a2c7ff850a1c1dbebaeee6c77a50d70140c2",
+   "owned_retail": "c3712a6250d310b5f5fc1f44762a45a06f4c2d06a8d6eece18810f913a1c7c82",
+   "span_applied": "9c0da3eccffeef1f00be1159fa0beeb05d9b288f1b9fdf516598f3a7dae657c1",
+   "span_composed": "5bf67e47b4f67ae8044df3d5f409c97d107f5309e6ee8dba9987d1a29044aaef",
+   "span_guardian": "22e198aed7a04be16275d8946adee6ef36ae560020f24e003639313f919d8a8a",
+   "span_retail": "4493cfafede437da6af7ddadfaa172bed3bd674a62801b73af3a99fc66315e43",
+   "stored": 270336
+  }
+ },
+ "schema": "nfl2k5_modern_helmets/v1"
+}

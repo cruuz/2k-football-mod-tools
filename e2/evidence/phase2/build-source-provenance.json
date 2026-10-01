@@ -1,0 +1,10 @@
+{
+  "classification": "PROVED OFFLINE",
+  "base": "b309fcf6a9e5d9af210240684ae29376b29cada8",
+  "build_code_commit": "4ef666dde377c2545f420a9f5b36bd28c7e38f7f",
+  "frozen_files": 370,
+  "frozen_manifest_sha256": "65d82761bb59fd0d2b20a4f24e4c9aea45d9dca1d61d653f66e2b5da77019ccf",
+  "all_frozen_files_match_code_commit": true,
+  "shared_git_receipt_head": "b309fcf6a9e5",
+  "explanation": "Shared Git metadata is read-only. The builder reports the shared base HEAD; all frozen code and data match the private implementation commit."
+}

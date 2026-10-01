@@ -1,0 +1,243 @@
+{
+ "schema": "nfl2k5_highmark_model_art/v1",
+ "art": {
+  "hm_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "49bb67c8d717b1daff166b5e92781b47ce66dc81a0c304e1d4c9dc1902da8caa"
+  },
+  "hm_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "8b1c3511d9a6cd86821c573be94625acc38955bc3798a6c11071e25309698912"
+  },
+  "hm_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "853f553c61022b046766109af53b4a46a971b821109afd9409675fc9cc30d00d"
+  },
+  "hm_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "hm_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "2d1d5817282c06941e0889ee42bb57d06d9aa4ae151d0c93176ecf9016966f07"
+  },
+  "LIGHT_hm_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "9cff854d46e48065486ddee13d971de55eabc2467b6adcafd3dcba27ee4e1435"
+  },
+  "LIGHT_hm_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_hm_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "hm_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "hm_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "hm_black": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "8f144c53cd6084263cddc88fcc78aaa12a9c338782219443807af9d96d4768b2"
+  },
+  "LIGHT_hm_base": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "0766104b49999d4c367ffc17ab66303723fbc98552e7a2c6f6438d13e8bba4be"
+  },
+  "hm_roof_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "0a9958adc312b6a86228c25c06d6978e2685d740b8ff03a26c8bc124339025fe"
+  },
+  "hm_roof_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "cbd41b05a13d17b12c1e6c1da97068a5f041d2c7218c3591544f391f78fca516"
+  },
+  "LIGHT_hm_led": {
+   "size": [
+    64,
+    16
+   ],
+   "sha256": "caf146f89eb727f836b1fb2ebc3481b2edc4bc3e590406daa60301bd3278a662"
+  },
+  "LIGHT_hm_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "f216ec3e90e15ddc0770d53dd2100f59ce23ca171cfb3a0bcfee7d725550d5b0"
+  },
+  "LIGHT_hm_finline": {
+   "size": [
+    16,
+    16
+   ],
+   "sha256": "936f1b5f5ebf81290912e0e7a612470f4cf9667ad31b0e06750671351a35f724"
+  },
+  "hm_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "17067a090e8cfbfe2887d854845426856062f8a4db07b73a7234e72cef25d266"
+  },
+  "hm_brick": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "08cc2cb96b5930b1a313d91cda487e733984eeaa1b337154d7ee1170776a2d90"
+  },
+  "LIGHT_hm_entry": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "bb3fbf6349767d2a2fa38c5265c57cde332e3f710edeb94f673ac2440fea24fc"
+  },
+  "hm_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "97288daa30d3e477de4e41e58da4aeee12e4be4df6481499afe454b9e0718159"
+  },
+  "hm_letters_out": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "46c99a41b7f0fb039f76efbfc470b75e52a7bc5ea1464474d1170b9145d67bb8"
+  },
+  "hm_letters_back": {
+   "size": [
+    64,
+    16
+   ],
+   "sha256": "04b96e0b1d38d199a7f19aa2ca1052d8b6cfca79b4765003912ccb4f3a71181b"
+  },
+  "hm_logo": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "61d5fdf5d476dbd61ebfbfac83f4929b071b65f35eb88553b7ad735c7492ff2f"
+  },
+  "LIGHT_hm_board_panel": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "ab34aa2b06f9146f5d1784a558c47b590abb0073742f3e32e11a27190363970b"
+  },
+  "hm_plaza": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "a1ae67fc6c7fb75b05ccbed891f0bda99363d8f04a7d1dca3673f74beee906d0"
+  },
+  "hm_ground": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "2280e0155d627102d78587daaa9b5296aa227d6672859be7bb677dadfdef1a3c"
+  },
+  "hm_asphalt": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "2ae7fa7141d3ffeeed2e5f7ceab976a1a0cb5e7cbfd060a08d4a503774103e48"
+  },
+  "hm_dirt": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5d2d4c9bf4810b5a976daca1488af2778133fc6237430b5a4d2447aa5a1e1cf5"
+  },
+  "hm_road": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "1667373b540062050eb2f12437221f5638d47a06e44fae54d58137a7e9fd94d8"
+  },
+  "hm_building": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "527dc2e0db29d4656c00f8bd230796514537d9de6ce1cad814ddf95d465c874d"
+  },
+  "hm_trees": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "4f3ad3a3bc1f9fc3f0328b4eb52c30272f86480916e4102134ea3ca0827debc1"
+  },
+  "field/hm_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "eae22ec6c7de1a415d24472a044756245fb375624af62296add6afa4eb4aa255"
+  },
+  "field/hm_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "73a11c3b69cbf6540bc7122cc5fc6c7e7337eca35c5ab10e7f27a6c3b2afa88c"
+  }
+ }
+}

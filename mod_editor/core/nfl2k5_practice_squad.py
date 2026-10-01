@@ -498,7 +498,7 @@ def _state(payload: bytes, site: Site, sections) -> str:
     return 'retail' if hashlib.sha256(got).hexdigest() == site.digest else 'foreign'
 
 
-def _base_status(xbe: bytes) -> str:
+def _standalone_status(xbe: bytes) -> str:
     """retail/applied/foreign; partial patches and malformed images fail closed."""
     try:
         sections = _sections(xbe)
@@ -506,6 +506,19 @@ def _base_status(xbe: bytes) -> str:
         return states.pop() if len(states) == 1 else 'foreign'
     except (ValueError, struct.error, IndexError):
         return 'foreign'
+
+
+def _base_status(xbe: bytes) -> str:
+    from . import nfl2k5_roster_fill_composition as composition
+    try:
+        return _standalone_status(composition.project(xbe, "squad"))
+    except (ValueError, KeyError, TypeError, struct.error, IndexError, StopIteration):
+        return 'foreign'
+
+
+def revert(xbe: bytes, retail: bytes) -> tuple[bytes, dict]:
+    from . import nfl2k5_roster_fill_composition as composition
+    return composition.revert(xbe, retail, "squad")
 
 
 def status(xbe: bytes) -> str:
@@ -527,6 +540,8 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
         'in_game_ui': False, 'changed_bytes': 0, 'sections_repinned': []}
     if state == 'applied':
         return bytes(xbe), receipt
+    from . import nfl2k5_roster_fill_composition as composition
+    shared = composition.installation_edits(xbe, "squad")
     sections = _sections(xbe)
     out = bytearray(xbe)
     touched = set()
@@ -536,6 +551,10 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
         _require(off + site.size <= section.raw_offset + section.raw_size, 'patch straddles XBE sections')
         out[off:off + site.size] = site.patched
         touched.add(section.index)
+    for address, code in shared:
+        off = _offset(xbe, address, sections)
+        out[off:off + len(code)] = code
+        touched.add(_section_for_offset(sections, off).index)
     for section in sections:
         if section.index in touched:
             at = section.header_offset + 36

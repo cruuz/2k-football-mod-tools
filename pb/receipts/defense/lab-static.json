@@ -1,0 +1,14 @@
+{
+  "status": "PROVED OFFLINE",
+  "executed": false,
+  "checks": [
+    "bash -n",
+    "Python compile without import"
+  ],
+  "files": {
+    "pb/lab/pb_lab_def.sh": "4be8028e0b41a782db7fbb0a0e9ae3db250f81b5625d6639322a1dc1328f41e6",
+    "pb/lab/pb_def_probe.py": "2af98d60c9e554f279c6dc799bdee412b923aaa009527476a7151877370b5347",
+    "pb/lab/pb_def_stats.py": "fbf22a2165db675e49541b34ff835f57854fa34cb7afc0e76b51607bb7ad5f78"
+  },
+  "runtime_witness": false
+}

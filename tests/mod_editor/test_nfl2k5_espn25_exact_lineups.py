@@ -109,6 +109,85 @@ class DatasetTests(unittest.TestCase):
                 self.assertFalse({'age', 'drafted', 'gs', 'g', 'av'} & p.keys())
                 self.assertEqual(p['jersey_source']['basis'] == 'pfr_game_season', p['pfr_name'] is not None)
 
+    def test_the_featured_back_takes_the_halfback_slot_and_a_true_fullback_the_fullback_slot(self):
+        # e1 (2026-09-23): HB rank 0 carries the featured back's retail ratings, FB rank 0 the lead blocker's. A lone
+        # box-score "RB" used to fall to whichever slot came first in the file: 8 files put the featured back at
+        # fullback, among them both Wide Right teams (Thurman Thomas, Ottis Anderson).
+        backs = {'HB', 'LHB', 'RB', 'FB'}
+        checked = 0
+        for target in self.targets.values():
+            moment = self.manifest['moments'][target['chosen_moment']]
+            side = next(s for s in moment['sides'].values() if s['outer'] == target['outer'])
+            sheet, players = self.sheets[target['outer']], target['players']
+
+            def slot_of(st):
+                return sheet[st['slot']]['position'], players[st['slot']]['retail_depth_rank']
+            box = [st for st in side['starters'] if st['position'] in backs]
+            for st in box:
+                self.assertIn(slot_of(st), (('HB', 0), ('FB', 0)), (target['csv'], st['name']))
+                if st['position'] == 'FB':
+                    self.assertEqual(slot_of(st), ('FB', 0), (target['csv'], st['name']))
+            featured = [st for st in box if st['position'] in ('HB', 'LHB')] or \
+                [st for st in box if st['position'] == 'RB' and 'HB' in exact.positions(st['season_position'])]
+            if featured:
+                self.assertIn(('HB', 0), [slot_of(st) for st in featured], target['csv'])
+                checked += 1
+        # The other 3 box scores list a fullback and no other back (Dolphins '84, 49ers '81, the Buccaneers file).
+        self.assertEqual(checked, 32)
+        wide_right = self.manifest['moments'][14]['sides']
+        for side, name in (('away', 'Thurman Thomas'), ('home', 'Ottis Anderson')):
+            st = next(s for s in wide_right[side]['starters'] if s['name'] == name)
+            target = self.targets[wide_right[side]['outer']]
+            self.assertEqual((self.sheets[target['outer']][st['slot']]['position'],
+                              target['players'][st['slot']]['retail_depth_rank']), ('HB', 0), name)
+
+    def test_no_role_filler_sits_above_a_season_player_of_its_position(self):
+        # e1 (2026-09-23): a role filler is a player who is not on the chosen season's page. Fillers used to carry
+        # rank 0, and the bench cost's depth weighting pulled them to the shallowest open slots: 83 of the 123 sat
+        # above real season players, among them a filler kicker ahead of Jan Stenerud (Chiefs '69 file) and a filler
+        # halfback ahead of Marcus Allen (Raiders '83).
+        paired = {'G', 'T', 'DE', 'DT', 'OLB', 'ILB', 'CB', 'WR'}
+        fillers = 0
+        for target in self.targets.values():
+            rows = list(zip(self.sheets[target['outer']], target['players']))
+
+            def depth(row, p):
+                return min(p['retail_depth_rank'], p['retail_depth_side']) if row['position'] in paired \
+                    else p['retail_depth_rank']
+            for row, p in rows:
+                if p['lineup_basis'] != 'nflverse_role_filler':
+                    continue
+                fillers += 1
+                deeper = [(r2['first'], r2['last']) for r2, p2 in rows if r2['position'] == row['position'] and
+                          p2['lineup_basis'] == 'season_roster_bench' and depth(r2, p2) > depth(row, p)]
+                self.assertEqual(deeper, [], (target['csv'], row['first'], row['last']))
+        self.assertEqual(fillers, 123)
+        for filename, position, rank, name in (('h-13-1969-chiefs-4.iff', 'K', 0, 'Jan Stenerud'),
+                                               ('h-20-1983-raiders-0.iff', 'HB', 1, 'Marcus Allen'),
+                                               ('h-03-1990-bills-2.iff', 'FB', 0, 'Jamie Mueller')):
+            target = next(t for t in self.targets.values() if t['filename'] == filename)
+            held = [r['first'] + ' ' + r['last'] for r, p in zip(self.sheets[target['outer']], target['players'])
+                    if r['position'] == position and p['retail_depth_rank'] == rank]
+            self.assertEqual(held, [name], (filename, position, rank))
+
+
+class StarterCostTests(unittest.TestCase):
+    def test_a_featured_back_prefers_the_halfback_slot_and_depth_still_comes_first(self):
+        from types import SimpleNamespace as NS
+
+        def slot(position, index, rank=0):
+            return NS(index=index, record=NS(position_name=position, values={'depth_rank': rank, 'depth_side': rank}))
+        featured = {'position': 'RB', 'season_position': 'RB'}
+        # The widest slot-index gap still loses to the halfback preference.
+        self.assertLess(exact.starter_cost(featured, slot('HB', 52)), exact.starter_cost(featured, slot('FB', 0)))
+        # An RB-labelled season fullback keeps the fullback slot: the season role outranks the preference.
+        season_fullback = {'position': 'RB', 'season_position': 'FB'}
+        self.assertLess(exact.starter_cost(season_fullback, slot('FB', 52)),
+                        exact.starter_cost(season_fullback, slot('HB', 0)))
+        # A box-score FB never takes a halfback slot, and depth rank still dominates everything else.
+        self.assertEqual(exact.starter_cost({'position': 'FB', 'season_position': 'FB'}, slot('HB', 0)), gen.INF)
+        self.assertLess(exact.starter_cost(featured, slot('FB', 0)), exact.starter_cost(featured, slot('HB', 0, rank=1)))
+
 
 class SourceTests(unittest.TestCase):
     @classmethod

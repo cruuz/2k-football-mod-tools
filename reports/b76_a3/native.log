@@ -1,0 +1,13 @@
+PROVED MASTER native relocation/validation: result=1; instructions=7189487
+test_every_scrimmage_key_and_factor_matches_native_buffers (tests.mod_editor.test_apf_b76_situation_weights_native.WeightNativeTests.test_every_scrimmage_key_and_factor_matches_native_buffers) ... ok
+test_no_policy_bad_headers_and_empty_draw_retain_retail (tests.mod_editor.test_apf_b76_situation_weights_native.WeightNativeTests.test_no_policy_bad_headers_and_empty_draw_retain_retail) ... ok
+test_pinned_reservations_exact_revert_and_receipts (tests.mod_editor.test_apf_b76_situation_weights_native.WeightNativeTests.test_pinned_reservations_exact_revert_and_receipts) ... ok
+test_try_key_exclusions_rows_and_scrimmage_independence (tests.mod_editor.test_apf_b76_situation_weights_native.WeightNativeTests.test_try_key_exclusions_rows_and_scrimmage_independence) ... ok
+test_vectors_distribution_isolation_and_full_cpu_calls (tests.mod_editor.test_apf_b76_situation_weights_native.WeightNativeTests.test_vectors_distribution_isolation_and_full_cpu_calls) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 316.334s
+
+OK
+
+A3 elapsed_seconds=316.788 peak_rss_kib=665940 exit=0 affinity=[24, 25, 26, 27, 28, 29, 30, 31]

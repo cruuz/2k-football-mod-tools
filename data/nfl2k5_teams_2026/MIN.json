@@ -1,0 +1,1376 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "MIN",
+ "name": "Minnesota Vikings",
+ "asset_code": "15",
+ "season": 2026,
+ "status": "Phase B job d6 (2026-09-23). Sort: REDESIGNED (2013 set: plain numbers in the Vikings font, VIKINGS under the collar, cuff stripes, new pants stripes; 2013 Norseman). Colours sourced; kit albedo INFERRED. Numbers: retail plain glyphs (15H1, 15A1) recoloured; the 2013 Vikings numeral font is not traced (open item). Helmet horn: the retail horn kept (unchanged in shape since 2006), shell recoloured; facemask grey from 2026 photos (the Wikipedia diagram shows black).",
+ "sources": {
+  "kit_rules": "https://en.wikipedia.org/w/index.php?title=Minnesota_Vikings&action=raw (Logo and uniforms: 2013 set; purple pants with the road jersey; 2026 Rivalries and Winter Warrior are alternates)",
+  "uniform_diagram": "https://en.wikipedia.org/wiki/Special:FilePath/Minnesota_Vikings_Uniforms_(2026).png (CC BY-SA)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (MIN: Purple #4F2683, Gold #FFC62F, White; 2026 NFL Record and Fact Book p.190)",
+  "road_photos": "https://www.chicagobears.com/photos/gameday-gallery-vikings-vs-bears-2026-week-2 (white jersey, purple pants, grey facemask; 2026-09-20)",
+  "stadium_photos": "https://www.vikings.com/photos/packers-game-action-week-1-2026 (U.S. Bank Stadium: purple end zones, white lettering; the Vikings wore the throwback set that day)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/MIN.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/Special:FilePath/Minnesota_Vikings_wordmark.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "purple": "#4F2683",
+  "gold": "#FFC62F",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "purple": "#4F2683",
+  "helmet_purple": "#4F2683",
+  "gold": "#FFC62F",
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "skin": "#E9BF9B",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_purple": "#4F2683",
+  "banner_purple": "#4F2683",
+  "r_helmet_purple": "#290061",
+  "r_card_purple": "#380959",
+  "r_card_gold": "#E2A818",
+  "r_atlas_purple": "#200449",
+  "r_atlas_sleeve": "#290950",
+  "r_atlas_helmet": "#1E0050"
+ },
+ "marks": {
+  "norseman_full": "norseman_full.png",
+  "vikings_chest": "vikings_wordmark_mask.png",
+  "rect": "rect_mask.png",
+  "vk_layer_silhouette": "vk_layer_silhouette.png",
+  "vk_layer_purple": "vk_layer_purple.png",
+  "vk_layer_gold": "vk_layer_gold.png",
+  "norse_layer_silhouette": "norse_layer_silhouette.png",
+  "norse_layer_black": "norse_layer_black.png",
+  "norse_layer_white": "norse_layer_white.png",
+  "norse_layer_skin": "norse_layer_skin.png",
+  "norse_layer_gold": "norse_layer_gold.png",
+  "norse_layer_purple": "norse_layer_purple.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "15H0",
+   "note": "2026 home: purple jersey, plain white numbers, small gold VIKINGS under the collar, white and gold sleeve stripes, white pants with a purple and gold stripe, purple socks",
+   "torso": {
+    "base_colour": "purple",
+    "neck_donor": "15NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "vikings_chest",
+      "colour": "gold",
+      "center": [
+       161,
+       90.5
+      ],
+      "width": 32
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "purple",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        14.04,
+        40
+       ],
+       [
+        122.0,
+        40
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        15.96,
+        46
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        15.96,
+        46
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        122.0,
+        52
+       ],
+       [
+        17.88,
+        52
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        113.96,
+        104
+       ],
+       [
+        6.0,
+        104
+       ],
+       [
+        6.0,
+        110
+       ],
+       [
+        112.04,
+        110
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        112.04,
+        110
+       ],
+       [
+        6.0,
+        110
+       ],
+       [
+        6.0,
+        116
+       ],
+       [
+        110.12,
+        116
+       ]
+      ],
+      "colour": "gold"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "purple",
+      5
+     ],
+     [
+      "gold",
+      3
+     ]
+    ],
+    "swoosh_colour": "purple",
+    "base_from": "15H1"
+   },
+   "socks": {
+    "colour": "purple"
+   },
+   "digits": {
+    "glyph_donor": "15H1",
+    "fill": "white"
+   },
+   "nameplate": {
+    "glyph_donor": "15H1",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "15H1",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_purple",
+    "shell_from": "r_helmet_purple",
+    "stripe": "gold",
+    "recolour": []
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_purple",
+      "to": "purple",
+      "region": "all",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_card_gold",
+      "to": "gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 3734,
+   "splayer": {
+    "torso_donor_outer": 3734,
+    "torso_donor": "15H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_purple",
+      "to": "purple",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_sleeve",
+      "to": "purple",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_helmet",
+      "to": "helmet_purple",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "unif_color": {
+    "facemask": "#B8BCC0",
+    "turtleneck": "#4F2683"
+   }
+  },
+  "away": {
+   "selector": "15A0",
+   "note": "2026 road: white jersey, plain purple numbers, small purple VIKINGS under the collar, purple and gold sleeve stripes, purple pants with a white and gold stripe, white socks",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "15NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "purple"
+    },
+    "decorations": [
+     {
+      "mark": "vikings_chest",
+      "colour": "purple",
+      "center": [
+       161,
+       90.5
+      ],
+      "width": 32
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        14.04,
+        40
+       ],
+       [
+        122.0,
+        40
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        15.96,
+        46
+       ]
+      ],
+      "colour": "purple"
+     },
+     {
+      "polygon": [
+       [
+        15.96,
+        46
+       ],
+       [
+        122.0,
+        46
+       ],
+       [
+        122.0,
+        52
+       ],
+       [
+        17.88,
+        52
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        113.96,
+        104
+       ],
+       [
+        6.0,
+        104
+       ],
+       [
+        6.0,
+        110
+       ],
+       [
+        112.04,
+        110
+       ]
+      ],
+      "colour": "purple"
+     },
+     {
+      "polygon": [
+       [
+        112.04,
+        110
+       ],
+       [
+        6.0,
+        110
+       ],
+       [
+        6.0,
+        116
+       ],
+       [
+        110.12,
+        116
+       ]
+      ],
+      "colour": "gold"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "purple",
+    "stripe": [
+     [
+      "white",
+      2
+     ],
+     [
+      "gold",
+      5
+     ]
+    ],
+    "swoosh_colour": "white",
+    "base_from": "15A4"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "15A1",
+    "fill": "purple"
+   },
+   "nameplate": {
+    "glyph_donor": "15H1",
+    "fill": "purple"
+   },
+   "helmet_digits": {
+    "glyph_donor": "15H1",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_purple",
+    "shell_from": "r_helmet_purple",
+    "stripe": "gold",
+    "recolour": []
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_purple",
+      "to": "purple",
+      "region": "all",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_card_gold",
+      "to": "gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 4051,
+   "splayer": {
+    "torso_donor_outer": 4051,
+    "torso_donor": "15A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_sleeve",
+      "to": "purple",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "r_atlas_helmet",
+      "to": "helmet_purple",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "unif_color": {
+    "facemask": "#B8BCC0",
+    "turtleneck": "#4F2683"
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Kevin O'Connell",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 53 active. ESPN depth chart slots (NT, LILB/RILB, WLB/SLB) show a 3-4 base. Head coach from vikings.com/team/coaches-roster/kevin-o-connell."
+ },
+ "part_intents": {
+  "home": {
+   "torso": "purple jersey body, small gold VIKINGS wordmark under the collar, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "purple with white and gold stripes near the cuff",
+   "pants": "white with a purple and gold side stripe, purple maker mark",
+   "helmet": "purple shell, white horn outlined in gold, white and grey hardware, flag and shield decals",
+   "digit_jersey": "plain white numbers",
+   "digit_arm": "plain white numbers",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "white letters",
+   "socks00": "solid purple",
+   "splayer": "far-away player atlas: white pants with purple and gold stripe, purple torso, purple helmet, purple socks, skin and glove patches",
+   "team-select_unif": "menu render: purple jersey with a white and gold number, white pants, purple helmet with the horn, dark shading",
+   "team-select_helm": "menu render: purple helmet with the white horn, dark facemask, a dark bar and yellow UI strip below",
+   "logo": "the Norseman head logo on transparency",
+   "flipchip": "the Norseman head logo on transparency, for the coin toss chip",
+   "chiclet": "a glossy purple square"
+  },
+  "away": {
+   "torso": "white jersey body, small purple VIKINGS wordmark under the collar, small NFL shield at the collar, purple maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with purple and gold stripes near the cuff",
+   "pants": "purple with a white and gold side stripe, white maker mark",
+   "helmet": "purple shell, white horn outlined in gold, white and grey hardware, flag and shield decals",
+   "digit_jersey": "plain purple numbers",
+   "digit_arm": "plain purple numbers",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "purple letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: purple pants with gold stripe, white torso, purple helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a purple and gold number, white pants, purple helmet with the horn, grey and dark shading",
+   "team-select_helm": "menu render: purple helmet with the white horn, dark facemask, a dark bar and yellow UI strip below",
+   "logo": "the Norseman head logo on transparency",
+   "flipchip": "the Norseman head logo on transparency, for the coin toss chip",
+   "chiclet": "a glossy purple square"
+  },
+  "venue": {
+   "endzone": "purple painted end zone with white VIKINGS lettering",
+   "center_logo": "none (the Metrodome bundle has no midfield texture)",
+   "banner": "cloth fan banners in purple, gold and white",
+   "wall": "stadium wall graphics: VIKINGS wordmark, Norseman, SKOL"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Kyler Murray": 3,
+   "Justin Jefferson": 3,
+   "Aaron Jones": 4,
+   "T.J. Hockenson": 0,
+   "Andrew Van Ginkel": 0,
+   "Charles Demmings": 5,
+   "Eric Wilson": 4,
+   "Caleb Banks": 5,
+   "Harrison Smith": 0,
+   "Josh Metellus": 4,
+   "Christian Darrisaw": 4,
+   "Donovan Jackson": 5,
+   "Blake Brandel": 0,
+   "Will Reichard": 0,
+   "Brett Thorson": 0,
+   "Max Bredeson": 0,
+   "Carson Wentz": 0,
+   "Jordan Addison": 4,
+   "Demond Claiborne": 5,
+   "Josh Oliver": 3,
+   "Dallas Turner": 4,
+   "James Pierre": 5,
+   "Blake Cashman": 0,
+   "Levi Drake Rodriguez": 2,
+   "Theo Jackson": 5,
+   "Jay Ward": 5,
+   "Brian O'Neill": 0,
+   "Will Fries": 0,
+   "Nick Samac": 0,
+   "J.J. McCarthy": 0,
+   "Jauan Jennings": 4,
+   "DeeJay Dallas": 5,
+   "Gavin Bartholomew": 0,
+   "Chaz Chambliss": 0,
+   "Byron Murphy": 2,
+   "Jake Golday": 0,
+   "Jalen Redmond": 5,
+   "Jacob Thomas": 2,
+   "Jakobe Thomas": 4,
+   "Ryan Van Demark": 0,
+   "Joe Huber": 0,
+   "Andrew DePaola": 0,
+   "Tai Felton": 5,
+   "Bo Richter": 0,
+   "Zemaiah Vaughn": 4,
+   "Ivan Pace": 2,
+   "Domonique Orange": 4,
+   "Caleb Tiernan": 0,
+   "Trevor Keegan": 0,
+   "Myles Price": 4,
+   "Isaiah Rodgers": 4,
+   "Elijah Williams": 5,
+   "Tyrion Ingram-Dawkins": 2
+  },
+  "dreads": [
+   "Kyler Murray",
+   "Aaron Jones",
+   "Josh Metellus",
+   "Donovan Jackson",
+   "Demond Claiborne",
+   "Josh Oliver",
+   "Jay Ward",
+   "DeeJay Dallas",
+   "Tai Felton",
+   "Elijah Williams"
+  ],
+  "hair_by_eye": {
+   "T.J. Hockenson": "#8A5A32",
+   "Andrew Van Ginkel": "#C8A060"
+  },
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED). Dreads by eye (long locs or braids). Hair by eye for T.J. Hockenson (red-brown) and Andrew Van Ginkel (long blond). Brett Thorson has no official headshot (generic head, portrait slot not used)."
+ },
+ "venue": {
+  "prefix": "s15",
+  "notes": "H. H. H. Metrodome record (s15), kept as the Vikings' stadium (Noah: keep the stadiums). End zones: purple paint with white VIKINGS (the official wordmark, widened x1.45 to span the end zone like the 2026 lettering: INFERRED) as at U.S. Bank Stadium in 2026 (week 1 photos); one texture serves both ends. The bundle has no midfield texture (u4 scoping). Walls: the 2004 champions photo walls become the 2026 wordmark, the Norseman and SKOL; sign04 ribbons and the roof01 strip carry the 2026 wordmark. Fan banners: 2026 content.",
+  "sources": [
+   "https://www.vikings.com/photos/packers-game-action-week-1-2026 (purple end zones with white lettering; SKOL fascia; Norseman wall pads)"
+  ],
+  "endzone": {
+   "paint": "field_purple",
+   "paint_alpha": 0.95,
+   "marks": [
+    {
+     "mark": "vikings_chest",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 100,
+     "stretch": 1.45
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "norse_layer_silhouette",
+   "outline": "white",
+   "fill_mark": null,
+   "fill": "purple",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_purple",
+      "items": [
+       {
+        "text": "SKOL!",
+        "colour": "gold",
+        "center": [
+         64,
+         31
+        ],
+        "height": 30
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "PURPLE\nPRIDE",
+        "colour": "banner_purple",
+        "center": [
+         64,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_purple",
+      "items": [
+       {
+        "text": "#18\nJEFFERSON",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         192,
+         31
+        ],
+        "width": 56
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "#1 MURRAY\n#3 ADDISON",
+        "colour": "banner_purple",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "banner_purple",
+      "items": [
+       {
+        "text": "DEFENSE!!",
+        "colour": "gold",
+        "center": [
+         192,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "MIGHTY\nVIKINGS",
+        "colour": "banner_purple",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         40,
+         96
+        ],
+        "width": 44
+       },
+       {
+        "text": "SKOL",
+        "colour": "banner_purple",
+        "center": [
+         90,
+         96
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "sign04": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       230,
+       38
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "vk_layer_silhouette",
+        "colour": "gold",
+        "center": [
+         115,
+         19
+        ],
+        "width": 150
+       },
+       {
+        "mark": "vk_layer_purple",
+        "colour": "purple",
+        "center": [
+         115,
+         19
+        ],
+        "width": 150
+       },
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         20,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         210,
+         19
+        ],
+        "width": 30
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       38,
+       230,
+       76
+      ],
+      "bg": "banner_purple",
+      "items": [
+       {
+        "mark": "vk_layer_silhouette",
+        "colour": "white",
+        "center": [
+         115,
+         57
+        ],
+        "width": 150
+       },
+       {
+        "mark": "vk_layer_purple",
+        "colour": "gold",
+        "center": [
+         115,
+         57
+        ],
+        "width": 150
+       }
+      ]
+     }
+    ]
+   },
+   "roof01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       232,
+       256,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "vk_layer_silhouette",
+        "colour": "gold",
+        "center": [
+         128,
+         244
+        ],
+        "width": 130
+       },
+       {
+        "mark": "vk_layer_purple",
+        "colour": "purple",
+        "center": [
+         128,
+         244
+        ],
+        "width": 130
+       },
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         24,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         232,
+         244
+        ],
+        "width": 22
+       }
+      ]
+     }
+    ]
+   },
+   "wall03_wall01": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       66,
+       256,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "vk_layer_silhouette",
+        "colour": "gold",
+        "center": [
+         128,
+         108
+        ],
+        "width": 236
+       },
+       {
+        "mark": "vk_layer_purple",
+        "colour": "purple",
+        "center": [
+         128,
+         108
+        ],
+        "width": 236
+       },
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         56,
+         196
+        ],
+        "width": 80
+       },
+       {
+        "text": "SKOL",
+        "colour": "banner_purple",
+        "center": [
+         178,
+         196
+        ],
+        "height": 40
+       }
+      ]
+     }
+    ]
+   },
+   "wall02": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       256,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "norse_layer_silhouette",
+        "colour": "white",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "mark": "norse_layer_black",
+        "colour": "black",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "mark": "norse_layer_white",
+        "colour": "white",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "mark": "norse_layer_skin",
+        "colour": "skin",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "mark": "norse_layer_gold",
+        "colour": "gold",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "mark": "norse_layer_purple",
+        "colour": "purple",
+        "center": [
+         128,
+         72
+        ],
+        "width": 128
+       },
+       {
+        "text": "SKOL",
+        "colour": "banner_purple",
+        "center": [
+         128,
+         168
+        ],
+        "height": 48
+       },
+       {
+        "mark": "vk_layer_silhouette",
+        "colour": "gold",
+        "center": [
+         128,
+         226
+        ],
+        "width": 200
+       },
+       {
+        "mark": "vk_layer_purple",
+        "colour": "purple",
+        "center": [
+         128,
+         226
+        ],
+        "width": 200
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

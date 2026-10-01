@@ -1,0 +1,17 @@
+{
+  "classification": "PROVED OFFLINE",
+  "production_applied": false,
+  "runtime_witnessed": false,
+  "sites": [
+    {
+      "va": "0xe8539",
+      "expected_hex": "85c98bf87e1283ff030f841502000083ff040f840c020000",
+      "replacement_hex": "8bf885c97e1283ff0f74088d47fd83f8017705e90c020000"
+    },
+    {
+      "va": "0xe8600",
+      "expected_hex": "85c07e1283fd030f84f100000083fd040f84e8000000",
+      "replacement_hex": "85c07e1283fd0f74088d45fd83f8017705e9e8000000"
+    }
+  ]
+}

@@ -1,0 +1,989 @@
+{
+ "schema": "vb3-d4-star-tags/1",
+ "rule": "nfl2k5_player_tags.star_rule_tags: every active NFL club player whose in-game overall (FUN_00246D90, linemen with the1wam's rating) is 90 or better",
+ "roster": "retail USA ROST",
+ "count": 120,
+ "by_position": {
+  "C": 9,
+  "CB": 5,
+  "DE": 9,
+  "DT": 7,
+  "FB": 3,
+  "FS": 8,
+  "G": 6,
+  "HB": 10,
+  "ILB": 5,
+  "K": 6,
+  "OLB": 7,
+  "P": 3,
+  "QB": 8,
+  "SS": 6,
+  "T": 8,
+  "TE": 3,
+  "WR": 17
+ },
+ "player_tags": [
+  "50",
+  "71",
+  "80",
+  "88",
+  "99",
+  "106",
+  "125",
+  "128",
+  "131",
+  "133",
+  "141",
+  "143",
+  "147",
+  "182",
+  "186",
+  "193",
+  "202",
+  "217",
+  "218",
+  "221",
+  "235",
+  "247",
+  "260",
+  "264",
+  "281",
+  "284",
+  "291",
+  "316",
+  "364",
+  "380",
+  "386",
+  "424",
+  "443",
+  "451",
+  "474",
+  "491",
+  "551",
+  "554",
+  "565",
+  "568",
+  "580",
+  "589",
+  "607",
+  "615",
+  "622",
+  "630",
+  "646",
+  "668",
+  "680",
+  "702",
+  "704",
+  "707",
+  "710",
+  "722",
+  "727",
+  "731",
+  "740",
+  "742",
+  "747",
+  "764",
+  "767",
+  "787",
+  "805",
+  "817",
+  "829",
+  "832",
+  "841",
+  "846",
+  "848",
+  "855",
+  "876",
+  "881",
+  "884",
+  "886",
+  "923",
+  "948",
+  "952",
+  "958",
+  "995",
+  "998",
+  "1055",
+  "1059",
+  "1060",
+  "1070",
+  "1073",
+  "1119",
+  "1122",
+  "1127",
+  "1140",
+  "1146",
+  "1153",
+  "1158",
+  "1184",
+  "1194",
+  "1211",
+  "1212",
+  "1223",
+  "1237",
+  "1247",
+  "1260",
+  "1265",
+  "1292",
+  "1338",
+  "1352",
+  "1361",
+  "1395",
+  "1399",
+  "1418",
+  "1437",
+  "1440",
+  "1459",
+  "1501",
+  "1516",
+  "1518",
+  "1519",
+  "1530",
+  "1556",
+  "1564",
+  "1573",
+  "1583"
+ ],
+ "players": [
+  {
+   "tag": "630",
+   "name": "Marvin Harrison",
+   "position": "WR",
+   "overall": 100,
+   "team": "Indianapolis Colts"
+  },
+  {
+   "tag": "841",
+   "name": "Randy Moss",
+   "position": "WR",
+   "overall": 100,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "1158",
+   "name": "Terrell Owens",
+   "position": "WR",
+   "overall": 100,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1265",
+   "name": "Torry Holt",
+   "position": "WR",
+   "overall": 100,
+   "team": "St. Louis Rams"
+  },
+  {
+   "tag": "128",
+   "name": "Ray Lewis",
+   "position": "ILB",
+   "overall": 99,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "1127",
+   "name": "Brian Dawkins",
+   "position": "FS",
+   "overall": 99,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "615",
+   "name": "Peyton Manning",
+   "position": "QB",
+   "overall": 98,
+   "team": "Indianapolis Colts"
+  },
+  {
+   "tag": "707",
+   "name": "Will Shields",
+   "position": "G",
+   "overall": 98,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "731",
+   "name": "Tony Gonzalez",
+   "position": "TE",
+   "overall": 98,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "846",
+   "name": "Matt Birk",
+   "position": "C",
+   "overall": 98,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "876",
+   "name": "Adam Vinatieri",
+   "position": "K",
+   "overall": 98,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "1059",
+   "name": "Kevin Mawae",
+   "position": "C",
+   "overall": 98,
+   "team": "New York Jets"
+  },
+  {
+   "tag": "221",
+   "name": "Kris Jenkins",
+   "position": "DT",
+   "overall": 97,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "884",
+   "name": "Rodney Harrison",
+   "position": "SS",
+   "overall": 97,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "1184",
+   "name": "Alan Faneca",
+   "position": "G",
+   "overall": 97,
+   "team": "Pittsburgh Steelers"
+  },
+  {
+   "tag": "1212",
+   "name": "Hines Ward",
+   "position": "WR",
+   "overall": 97,
+   "team": "Pittsburgh Steelers"
+  },
+  {
+   "tag": "1292",
+   "name": "LaDainian Tomlinson",
+   "position": "HB",
+   "overall": 97,
+   "team": "San Diego Chargers"
+  },
+  {
+   "tag": "106",
+   "name": "Chris McAlister",
+   "position": "CB",
+   "overall": 96,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "125",
+   "name": "Jamal Lewis",
+   "position": "HB",
+   "overall": 96,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "193",
+   "name": "Lawyer Milloy",
+   "position": "SS",
+   "overall": 96,
+   "team": "Buffalo Bills"
+  },
+  {
+   "tag": "291",
+   "name": "Brian Urlacher",
+   "position": "ILB",
+   "overall": 96,
+   "team": "Chicago Bears"
+  },
+  {
+   "tag": "386",
+   "name": "Roy Williams",
+   "position": "FS",
+   "overall": 96,
+   "team": "Dallas Cowboys"
+  },
+  {
+   "tag": "568",
+   "name": "Darren Sharper",
+   "position": "SS",
+   "overall": 96,
+   "team": "Green Bay Packers"
+  },
+  {
+   "tag": "958",
+   "name": "Michael Strahan",
+   "position": "DE",
+   "overall": 96,
+   "team": "New York Giants"
+  },
+  {
+   "tag": "1260",
+   "name": "Orlando Pace",
+   "position": "T",
+   "overall": 96,
+   "team": "St. Louis Rams"
+  },
+  {
+   "tag": "1418",
+   "name": "Walter Jones",
+   "position": "T",
+   "overall": 96,
+   "team": "Seattle Seahawks"
+  },
+  {
+   "tag": "1459",
+   "name": "Derrick Brooks",
+   "position": "OLB",
+   "overall": 96,
+   "team": "Tampa Bay Buccaneers"
+  },
+  {
+   "tag": "1518",
+   "name": "Craig Hentrich",
+   "position": "P",
+   "overall": 96,
+   "team": "Tennessee Titans"
+  },
+  {
+   "tag": "1519",
+   "name": "Steve McNair",
+   "position": "QB",
+   "overall": 96,
+   "team": "Tennessee Titans"
+  },
+  {
+   "tag": "474",
+   "name": "Tom Nalen",
+   "position": "C",
+   "overall": 95,
+   "team": "Denver Broncos"
+  },
+  {
+   "tag": "646",
+   "name": "Marcus Stroud",
+   "position": "DT",
+   "overall": 95,
+   "team": "Jacksonville Jaguars"
+  },
+  {
+   "tag": "710",
+   "name": "Priest Holmes",
+   "position": "HB",
+   "overall": 95,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "727",
+   "name": "Willie Roaf",
+   "position": "T",
+   "overall": 95,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "1437",
+   "name": "Simeon Rice",
+   "position": "DE",
+   "overall": 95,
+   "team": "Tampa Bay Buccaneers"
+  },
+  {
+   "tag": "141",
+   "name": "Edward Reed",
+   "position": "SS",
+   "overall": 94,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "281",
+   "name": "Mike Brown",
+   "position": "FS",
+   "overall": 94,
+   "team": "Chicago Bears"
+  },
+  {
+   "tag": "316",
+   "name": "Olin Kreutz",
+   "position": "C",
+   "overall": 94,
+   "team": "Chicago Bears"
+  },
+  {
+   "tag": "565",
+   "name": "Brett Favre",
+   "position": "QB",
+   "overall": 94,
+   "team": "Green Bay Packers"
+  },
+  {
+   "tag": "607",
+   "name": "Mike Vanderjagt",
+   "position": "K",
+   "overall": 94,
+   "team": "Indianapolis Colts"
+  },
+  {
+   "tag": "1070",
+   "name": "Warren Sapp",
+   "position": "DT",
+   "overall": 94,
+   "team": "Oakland Raiders"
+  },
+  {
+   "tag": "1530",
+   "name": "Derrick Mason",
+   "position": "WR",
+   "overall": 94,
+   "team": "Tennessee Titans"
+  },
+  {
+   "tag": "1564",
+   "name": "LaVar Arrington",
+   "position": "OLB",
+   "overall": 94,
+   "team": "Washington Redskins"
+  },
+  {
+   "tag": "1583",
+   "name": "Laveranues Coles",
+   "position": "WR",
+   "overall": 94,
+   "team": "Washington Redskins"
+  },
+  {
+   "tag": "80",
+   "name": "Keith Brooking",
+   "position": "ILB",
+   "overall": 93,
+   "team": "Atlanta Falcons"
+  },
+  {
+   "tag": "143",
+   "name": "Jonathan Ogden",
+   "position": "T",
+   "overall": 93,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "202",
+   "name": "Eric Moulds",
+   "position": "WR",
+   "overall": 93,
+   "team": "Buffalo Bills"
+  },
+  {
+   "tag": "247",
+   "name": "Todd Sauerbrun",
+   "position": "P",
+   "overall": 93,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "264",
+   "name": "Jeff Mitchell",
+   "position": "C",
+   "overall": 93,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "284",
+   "name": "Ruben Brown",
+   "position": "G",
+   "overall": 93,
+   "team": "Chicago Bears"
+  },
+  {
+   "tag": "364",
+   "name": "Chad Johnson",
+   "position": "WR",
+   "overall": 93,
+   "team": "Cincinnati Bengals"
+  },
+  {
+   "tag": "424",
+   "name": "Champ Bailey",
+   "position": "CB",
+   "overall": 93,
+   "team": "Denver Broncos"
+  },
+  {
+   "tag": "740",
+   "name": "Casey Wiegmann",
+   "position": "C",
+   "overall": 93,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "742",
+   "name": "Patrick Surtain",
+   "position": "CB",
+   "overall": 93,
+   "team": "Miami Dolphins"
+  },
+  {
+   "tag": "817",
+   "name": "Michael Bennett",
+   "position": "HB",
+   "overall": 93,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "832",
+   "name": "Corey Chavous",
+   "position": "SS",
+   "overall": 93,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "881",
+   "name": "Tom Brady",
+   "position": "QB",
+   "overall": 93,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "1338",
+   "name": "Fred Beasley",
+   "position": "FB",
+   "overall": 93,
+   "team": "San Francisco 49ers"
+  },
+  {
+   "tag": "1395",
+   "name": "Steve Hutchinson",
+   "position": "G",
+   "overall": 93,
+   "team": "Seattle Seahawks"
+  },
+  {
+   "tag": "1556",
+   "name": "Clinton Portis",
+   "position": "HB",
+   "overall": 93,
+   "team": "Washington Redskins"
+  },
+  {
+   "tag": "131",
+   "name": "Matt Stover",
+   "position": "K",
+   "overall": 92,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "147",
+   "name": "Todd Heap",
+   "position": "TE",
+   "overall": 92,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "217",
+   "name": "Julius Peppers",
+   "position": "DE",
+   "overall": 92,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "235",
+   "name": "Stephen Davis",
+   "position": "HB",
+   "overall": 92,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "260",
+   "name": "Steve Smith",
+   "position": "WR",
+   "overall": 92,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "380",
+   "name": "La'Roi Glover",
+   "position": "DT",
+   "overall": 92,
+   "team": "Dallas Cowboys"
+  },
+  {
+   "tag": "554",
+   "name": "Ahman Green",
+   "position": "HB",
+   "overall": 92,
+   "team": "Green Bay Packers"
+  },
+  {
+   "tag": "622",
+   "name": "Tarik Glenn",
+   "position": "T",
+   "overall": 92,
+   "team": "Indianapolis Colts"
+  },
+  {
+   "tag": "747",
+   "name": "Jason Taylor",
+   "position": "DE",
+   "overall": 92,
+   "team": "Miami Dolphins"
+  },
+  {
+   "tag": "923",
+   "name": "Deuce McAllister",
+   "position": "HB",
+   "overall": 92,
+   "team": "New Orleans Saints"
+  },
+  {
+   "tag": "948",
+   "name": "Joe Horn",
+   "position": "WR",
+   "overall": 92,
+   "team": "New Orleans Saints"
+  },
+  {
+   "tag": "952",
+   "name": "LeCharles Bentley",
+   "position": "C",
+   "overall": 92,
+   "team": "New Orleans Saints"
+  },
+  {
+   "tag": "1140",
+   "name": "David Akers",
+   "position": "K",
+   "overall": 92,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1146",
+   "name": "Donovan McNabb",
+   "position": "QB",
+   "overall": 92,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1194",
+   "name": "Joey Porter",
+   "position": "OLB",
+   "overall": 92,
+   "team": "Pittsburgh Steelers"
+  },
+  {
+   "tag": "1237",
+   "name": "Aeneas Williams",
+   "position": "FS",
+   "overall": 92,
+   "team": "St. Louis Rams"
+  },
+  {
+   "tag": "1573",
+   "name": "Chris Samuels",
+   "position": "T",
+   "overall": 92,
+   "team": "Washington Redskins"
+  },
+  {
+   "tag": "71",
+   "name": "Cory Hall",
+   "position": "FS",
+   "overall": 91,
+   "team": "Atlanta Falcons"
+  },
+  {
+   "tag": "99",
+   "name": "Peerless Price",
+   "position": "WR",
+   "overall": 91,
+   "team": "Atlanta Falcons"
+  },
+  {
+   "tag": "443",
+   "name": "Dan Neil",
+   "position": "G",
+   "overall": 91,
+   "team": "Denver Broncos"
+  },
+  {
+   "tag": "451",
+   "name": "Jason Elam",
+   "position": "K",
+   "overall": 91,
+   "team": "Denver Broncos"
+  },
+  {
+   "tag": "491",
+   "name": "Cory Schlesinger",
+   "position": "FB",
+   "overall": 91,
+   "team": "Detroit Lions"
+  },
+  {
+   "tag": "551",
+   "name": "Mike Wahle",
+   "position": "G",
+   "overall": 91,
+   "team": "Green Bay Packers"
+  },
+  {
+   "tag": "668",
+   "name": "Chris Hanson",
+   "position": "P",
+   "overall": 91,
+   "team": "Jacksonville Jaguars"
+  },
+  {
+   "tag": "680",
+   "name": "Jimmy Smith",
+   "position": "WR",
+   "overall": 91,
+   "team": "Jacksonville Jaguars"
+  },
+  {
+   "tag": "702",
+   "name": "Tony Richardson",
+   "position": "FB",
+   "overall": 91,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "767",
+   "name": "Zach Thomas",
+   "position": "ILB",
+   "overall": 91,
+   "team": "Miami Dolphins"
+  },
+  {
+   "tag": "787",
+   "name": "David Boston",
+   "position": "WR",
+   "overall": 91,
+   "team": "Miami Dolphins"
+  },
+  {
+   "tag": "829",
+   "name": "Daunte Culpepper",
+   "position": "QB",
+   "overall": 91,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "848",
+   "name": "Ty Law",
+   "position": "CB",
+   "overall": 91,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "855",
+   "name": "Richard Seymour",
+   "position": "DE",
+   "overall": 91,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "995",
+   "name": "Jeremy Shockey",
+   "position": "TE",
+   "overall": 91,
+   "team": "New York Giants"
+  },
+  {
+   "tag": "998",
+   "name": "Amani Toomer",
+   "position": "WR",
+   "overall": 91,
+   "team": "New York Giants"
+  },
+  {
+   "tag": "1055",
+   "name": "Santana Moss",
+   "position": "WR",
+   "overall": 91,
+   "team": "New York Jets"
+  },
+  {
+   "tag": "1060",
+   "name": "Charles Woodson",
+   "position": "CB",
+   "overall": 91,
+   "team": "Oakland Raiders"
+  },
+  {
+   "tag": "1073",
+   "name": "Rod Woodson",
+   "position": "FS",
+   "overall": 91,
+   "team": "Oakland Raiders"
+  },
+  {
+   "tag": "1119",
+   "name": "Jevon Kearse",
+   "position": "DE",
+   "overall": 91,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1122",
+   "name": "Corey Simon",
+   "position": "DT",
+   "overall": 91,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1352",
+   "name": "Julian Peterson",
+   "position": "OLB",
+   "overall": 91,
+   "team": "San Francisco 49ers"
+  },
+  {
+   "tag": "1440",
+   "name": "Anthony McFarland",
+   "position": "DT",
+   "overall": 91,
+   "team": "Tampa Bay Buccaneers"
+  },
+  {
+   "tag": "1501",
+   "name": "Lance Schulters",
+   "position": "FS",
+   "overall": 91,
+   "team": "Tennessee Titans"
+  },
+  {
+   "tag": "1516",
+   "name": "Keith Bulluck",
+   "position": "OLB",
+   "overall": 91,
+   "team": "Tennessee Titans"
+  },
+  {
+   "tag": "50",
+   "name": "Pete Kendall",
+   "position": "C",
+   "overall": 90,
+   "team": "Arizona Cardinals"
+  },
+  {
+   "tag": "88",
+   "name": "Michael Vick",
+   "position": "QB",
+   "overall": 90,
+   "team": "Atlanta Falcons"
+  },
+  {
+   "tag": "133",
+   "name": "Peter Boulware",
+   "position": "OLB",
+   "overall": 90,
+   "team": "Baltimore Ravens"
+  },
+  {
+   "tag": "182",
+   "name": "London Fletcher",
+   "position": "ILB",
+   "overall": 90,
+   "team": "Buffalo Bills"
+  },
+  {
+   "tag": "186",
+   "name": "Takeo Spikes",
+   "position": "OLB",
+   "overall": 90,
+   "team": "Buffalo Bills"
+  },
+  {
+   "tag": "218",
+   "name": "Mike Rucker",
+   "position": "DE",
+   "overall": 90,
+   "team": "Carolina Panthers"
+  },
+  {
+   "tag": "580",
+   "name": "Mike Flanagan",
+   "position": "C",
+   "overall": 90,
+   "team": "Green Bay Packers"
+  },
+  {
+   "tag": "589",
+   "name": "Dwight Freeney",
+   "position": "DE",
+   "overall": 90,
+   "team": "Indianapolis Colts"
+  },
+  {
+   "tag": "704",
+   "name": "Jerome Woods",
+   "position": "FS",
+   "overall": 90,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "722",
+   "name": "Trent Green",
+   "position": "QB",
+   "overall": 90,
+   "team": "Kansas City Chiefs"
+  },
+  {
+   "tag": "764",
+   "name": "Ricky Williams",
+   "position": "HB",
+   "overall": 90,
+   "team": "Miami Dolphins"
+  },
+  {
+   "tag": "805",
+   "name": "Chris Hovan",
+   "position": "DT",
+   "overall": 90,
+   "team": "Minnesota Vikings"
+  },
+  {
+   "tag": "886",
+   "name": "Matt Light",
+   "position": "T",
+   "overall": 90,
+   "team": "New England Patriots"
+  },
+  {
+   "tag": "1153",
+   "name": "Jon Runyan",
+   "position": "T",
+   "overall": 90,
+   "team": "Philadelphia Eagles"
+  },
+  {
+   "tag": "1211",
+   "name": "Plaxico Burress",
+   "position": "WR",
+   "overall": 90,
+   "team": "Pittsburgh Steelers"
+  },
+  {
+   "tag": "1223",
+   "name": "Leonard Little",
+   "position": "DE",
+   "overall": 90,
+   "team": "St. Louis Rams"
+  },
+  {
+   "tag": "1247",
+   "name": "Jeff Wilkins",
+   "position": "K",
+   "overall": 90,
+   "team": "St. Louis Rams"
+  },
+  {
+   "tag": "1361",
+   "name": "Tony Parrish",
+   "position": "SS",
+   "overall": 90,
+   "team": "San Francisco 49ers"
+  },
+  {
+   "tag": "1399",
+   "name": "Shaun Alexander",
+   "position": "HB",
+   "overall": 90,
+   "team": "Seattle Seahawks"
+  }
+ ]
+}

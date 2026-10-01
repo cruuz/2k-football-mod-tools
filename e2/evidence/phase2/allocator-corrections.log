@@ -1,0 +1,32 @@
+.....................F.....                                                    [100%]
+=================================== FAILURES ===================================
+____ SyntheticTests.test_sealed_code_ro_replay_and_changed_request_refusal _____
+
+self = <test_nfl2k5_allocator_scaleout.SyntheticTests testMethod=test_sealed_code_ro_replay_and_changed_request_refusal>
+
+    def test_sealed_code_ro_replay_and_changed_request_refusal(self):
+        code = b'\x90' * LARGE[0][2]
+        grown, _ = space.install_code(self.grown, 'synthetic_scaleout', code)
+>       grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * 1024)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/mod_editor/test_nfl2k5_allocator_scaleout.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+mod_editor/core/nfl2k5_xbe_space.py:993: in install_read_only
+    return _install_scaleout(payload, owner, content, "read_only")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mod_editor/core/nfl2k5_xbe_space.py:974: in _install_scaleout
+    _require(len(content) == sum(a["size"] for a in allocations), "content must fill its exact named allocation")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ok = False, message = 'content must fill its exact named allocation'
+
+    def _require(ok, message):
+        if not ok:
+>           raise ValueError(message)
+E           ValueError: content must fill its exact named allocation
+
+mod_editor/core/nfl2k5_xbe_space.py:64: ValueError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_nfl2k5_allocator_scaleout.py::SyntheticTests::test_sealed_code_ro_replay_and_changed_request_refusal
+1 failed, 26 passed, 138 subtests passed in 937.80s (0:15:37)

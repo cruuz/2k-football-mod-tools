@@ -1,0 +1,2084 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "DEN",
+ "name": "Denver Broncos",
+ "asset_code": "08",
+ "season": 2026,
+ "status": "Phase B d4 (2026-09-23): REDESIGNED (2024 Mile High Collection): Sunset Orange home and Summit White road over white pants, navy collar and cuff peaks, BRONCOS chest wordmark, triangle clusters, new condensed numerals (Barlow Condensed Bold, a close OFL font: INFERRED), Midnight Navy helmet without the 1997 stripe. Albedo from the palette; layout INFERRED from the uniform diagram and 2026 photos.",
+ "sources": {
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (DEN, 2026 NFL Record and Fact Book)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/DEN.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Denver_Broncos&action=raw (Logos and uniforms, 2024-present)",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Denver_Broncos_Uniforms_2024-Present.png (CC BY-SA 4.0)",
+  "uniform_schedule": "https://www.denverbroncos.com/news/broncos-announce-2026-uniform-schedule (road white x9, home orange x4, navy x2, throwback x2)",
+  "home_photos": "https://www.denverbroncos.com/photos/art-of-the-game-the-broncos-team-photographers-favorite-photos-from-a-week-2-win-vs-the-jaguars (2026-09-20, orange over white, orange socks, navy helmet)",
+  "road_photos": "https://www.chiefs.com/photos/photos-game-action-from-regular-season-week-1-broncos-vs-chiefs (2026-09-14, white over white; that game used the white alternate helmet)",
+  "number_font": "Barlow Condensed Bold (SIL Open Font License, github.com/google/fonts ofl/barlowcondensed): the closest open font to the 2024 numerals by eye; the club's own font is not published"
+ },
+ "palette": {
+  "orange": "#FC4C02",
+  "navy": "#0A2343",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "orange": "#FC4C02",
+  "navy": "#0A2343",
+  "helmet_navy": "#0A2343",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_orange": "#FC4C02",
+  "field_navy": "#0A2343",
+  "screen_grey": "#AEAEAE",
+  "screen_ink": "#2A2A2A",
+  "screen_dark": "#262626"
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense": "3-4",
+  "head_coach": "Sean Payton",
+  "defense_source": "nflverse depth_charts_2026 since 2026-09-09: LDE, NT, RDE, LILB, RILB, SLB, WLB slots (3-4)"
+ },
+ "marks": {
+  "team_logo": "den_horse_club.png",
+  "team_logo_left": "den_horse_left.png",
+  "team_logo_silhouette": "den_horse_silhouette.png",
+  "chest_wordmark": "den_chest_wordmark.png",
+  "triangle": "den_triangle.png",
+  "ez_letters": "den_ez_letters.png",
+  "ez_outline": "den_ez_outline.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "08H0",
+   "note": "2026 home (Sunset Orange): orange jersey, navy collar, navy BRONCOS above white numbers with a thin navy outline, navy triangles, white and navy peaks at the cuffs, white pants with an orange hip wedge and navy stripe, orange socks, Midnight Navy helmet",
+   "torso": {
+    "base_colour": "orange",
+    "neck_donor": "08H2",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "navy",
+      "width": 3
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "chest_wordmark",
+      "colour": "navy",
+      "center": [
+       161,
+       86
+      ],
+      "width": 30
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        110.1
+       ],
+       [
+        89,
+        105.9
+       ],
+       [
+        91.3,
+        110.1
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        119.1
+       ],
+       [
+        89,
+        114.9
+       ],
+       [
+        91.3,
+        119.1
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        128.1
+       ],
+       [
+        89,
+        123.9
+       ],
+       [
+        91.3,
+        128.1
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        110.1
+       ],
+       [
+        233,
+        105.9
+       ],
+       [
+        235.3,
+        110.1
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        119.1
+       ],
+       [
+        233,
+        114.9
+       ],
+       [
+        235.3,
+        119.1
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        128.1
+       ],
+       [
+        233,
+        123.9
+       ],
+       [
+        235.3,
+        128.1
+       ]
+      ],
+      "colour": "navy"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "orange",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       4,
+       49,
+       124,
+       58
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       4,
+       58,
+       124,
+       62
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        7.5,
+        58.5
+       ],
+       [
+        12,
+        50
+       ],
+       [
+        16.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        25.5,
+        58.5
+       ],
+       [
+        30,
+        50
+       ],
+       [
+        34.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        43.5,
+        58.5
+       ],
+       [
+        48,
+        50
+       ],
+       [
+        52.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        61.5,
+        58.5
+       ],
+       [
+        66,
+        50
+       ],
+       [
+        70.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        79.5,
+        58.5
+       ],
+       [
+        84,
+        50
+       ],
+       [
+        88.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        97.5,
+        58.5
+       ],
+       [
+        102,
+        50
+       ],
+       [
+        106.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        115.5,
+        58.5
+       ],
+       [
+        120,
+        50
+       ],
+       [
+        124.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "rect": [
+       4,
+       113,
+       124,
+       122
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       4,
+       122,
+       124,
+       126
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        7.5,
+        122.5
+       ],
+       [
+        12,
+        114
+       ],
+       [
+        16.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        25.5,
+        122.5
+       ],
+       [
+        30,
+        114
+       ],
+       [
+        34.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        43.5,
+        122.5
+       ],
+       [
+        48,
+        114
+       ],
+       [
+        52.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        61.5,
+        122.5
+       ],
+       [
+        66,
+        114
+       ],
+       [
+        70.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        79.5,
+        122.5
+       ],
+       [
+        84,
+        114
+       ],
+       [
+        88.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        97.5,
+        122.5
+       ],
+       [
+        102,
+        114
+       ],
+       [
+        106.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        115.5,
+        122.5
+       ],
+       [
+        120,
+        114
+       ],
+       [
+        124.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "navy",
+      4
+     ]
+    ],
+    "swoosh_colour": "navy",
+    "decorations": [
+     {
+      "rect": [
+       105,
+       0,
+       169,
+       205
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       342,
+       0,
+       407,
+       205
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        133.5,
+        0
+       ],
+       [
+        151.5,
+        0
+       ],
+       [
+        144.5,
+        104
+       ],
+       [
+        140.5,
+        104
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       140.5,
+       0,
+       144.5,
+       256
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        360.5,
+        0
+       ],
+       [
+        378.5,
+        0
+       ],
+       [
+        371.5,
+        104
+       ],
+       [
+        367.5,
+        104
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       367.5,
+       0,
+       371.5,
+       256
+      ],
+      "colour": "navy"
+     }
+    ],
+    "note": "the white rects clear the retail 1997 tapered side panel (x 107-166 and 345-404, y to 201) that lies outside the band the tool clears"
+   },
+   "socks": {
+    "colour": "orange"
+   },
+   "digits": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "white",
+    "outline": "navy",
+    "outline_frac": 0.03
+   },
+   "nameplate": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "#08124A",
+    "shell": "helmet_navy",
+    "recolour": [
+     {
+      "from": "#BC2709",
+      "to": "helmet_navy",
+      "tolerance": 0.35,
+      "box": [
+       128,
+       20,
+       198,
+       242
+      ]
+     },
+     {
+      "from": "#62192C",
+      "to": "helmet_navy",
+      "tolerance": 0.3,
+      "box": [
+       128,
+       20,
+       198,
+       242
+      ]
+     }
+    ],
+    "decorations": [
+     {
+      "polygon": [
+       [
+        159.5,
+        47
+       ],
+       [
+        162,
+        41.5
+       ],
+       [
+        164.5,
+        47
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        55
+       ],
+       [
+        162,
+        49.5
+       ],
+       [
+        164.5,
+        55
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        63
+       ],
+       [
+        162,
+        57.5
+       ],
+       [
+        164.5,
+        63
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        95
+       ],
+       [
+        162,
+        89.5
+       ],
+       [
+        164.5,
+        95
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        103
+       ],
+       [
+        162,
+        97.5
+       ],
+       [
+        164.5,
+        103
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        111
+       ],
+       [
+        162,
+        105.5
+       ],
+       [
+        164.5,
+        111
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        143
+       ],
+       [
+        162,
+        137.5
+       ],
+       [
+        164.5,
+        143
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        151
+       ],
+       [
+        162,
+        145.5
+       ],
+       [
+        164.5,
+        151
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        159
+       ],
+       [
+        162,
+        153.5
+       ],
+       [
+        164.5,
+        159
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        191
+       ],
+       [
+        162,
+        185.5
+       ],
+       [
+        164.5,
+        191
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        199
+       ],
+       [
+        162,
+        193.5
+       ],
+       [
+        164.5,
+        199
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        207
+       ],
+       [
+        162,
+        201.5
+       ],
+       [
+        164.5,
+        207
+       ]
+      ],
+      "colour": "orange"
+     }
+    ],
+    "decal": {
+     "mark": "team_logo_left",
+     "boxes": {
+      "top": [
+       26,
+       50,
+       134,
+       106
+      ],
+      "lower": [
+       26,
+       146,
+       134,
+       204
+      ]
+     },
+     "erase": "box",
+     "scale": 1.0
+    },
+    "note": "the 1997-2023 centre stripe becomes shell navy (rules limited to its box); the 2024 orange triangle clusters are drawn on the centre line x 162 (four clusters of three, direction INFERRED). Both retail decals are upright left-facing copies, so the boxes are not named 'upper' (no 180 turn) and the mark is the club horse mirrored."
+   },
+   "outer_index": 3678,
+   "splayer": {
+    "torso_donor_outer": 3678,
+    "torso_donor": "08H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#002155",
+      "to": "#CA3D02",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#002055",
+      "to": "#CA3D02",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#030E47",
+      "to": "#0A2140",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#F03900",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#00164D",
+      "to": "orange",
+      "region": "jersey",
+      "tolerance": 0.4
+     },
+     {
+      "from": "#E43200",
+      "to": "navy",
+      "region": "pants",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#030847",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#00164D",
+      "to": "orange",
+      "region": "helmet",
+      "tolerance": 0.085,
+      "cards": [
+       "unif_256"
+      ],
+      "note": "the lower jersey falls inside the card's fixed helmet box; the jersey navy sits about 0.09 from the helmet navy family, so a tight rule moves only the jersey"
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "08A0",
+   "note": "2026 road (Summit White): white jersey, orange collar, orange BRONCOS above navy numbers with a thin orange outline, orange triangles, orange and navy peaks at the cuffs, white pants with an orange hip wedge and navy stripe, white socks, Midnight Navy helmet (the primary; the week 1 road game used the white alternate helmet)",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "08H2",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "orange",
+      "width": 3
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "navy"
+    },
+    "decorations": [
+     {
+      "mark": "chest_wordmark",
+      "colour": "orange",
+      "center": [
+       161,
+       86
+      ],
+      "width": 30
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        110.1
+       ],
+       [
+        89,
+        105.9
+       ],
+       [
+        91.3,
+        110.1
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        119.1
+       ],
+       [
+        89,
+        114.9
+       ],
+       [
+        91.3,
+        119.1
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        86.7,
+        128.1
+       ],
+       [
+        89,
+        123.9
+       ],
+       [
+        91.3,
+        128.1
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        110.1
+       ],
+       [
+        233,
+        105.9
+       ],
+       [
+        235.3,
+        110.1
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        119.1
+       ],
+       [
+        233,
+        114.9
+       ],
+       [
+        235.3,
+        119.1
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        230.7,
+        128.1
+       ],
+       [
+        233,
+        123.9
+       ],
+       [
+        235.3,
+        128.1
+       ]
+      ],
+      "colour": "orange"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       4,
+       49,
+       124,
+       58
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       4,
+       58,
+       124,
+       62
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        7.5,
+        58.5
+       ],
+       [
+        12,
+        50
+       ],
+       [
+        16.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        25.5,
+        58.5
+       ],
+       [
+        30,
+        50
+       ],
+       [
+        34.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        43.5,
+        58.5
+       ],
+       [
+        48,
+        50
+       ],
+       [
+        52.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        61.5,
+        58.5
+       ],
+       [
+        66,
+        50
+       ],
+       [
+        70.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        79.5,
+        58.5
+       ],
+       [
+        84,
+        50
+       ],
+       [
+        88.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        97.5,
+        58.5
+       ],
+       [
+        102,
+        50
+       ],
+       [
+        106.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        115.5,
+        58.5
+       ],
+       [
+        120,
+        50
+       ],
+       [
+        124.5,
+        58.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "rect": [
+       4,
+       113,
+       124,
+       122
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       4,
+       122,
+       124,
+       126
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        7.5,
+        122.5
+       ],
+       [
+        12,
+        114
+       ],
+       [
+        16.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        25.5,
+        122.5
+       ],
+       [
+        30,
+        114
+       ],
+       [
+        34.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        43.5,
+        122.5
+       ],
+       [
+        48,
+        114
+       ],
+       [
+        52.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        61.5,
+        122.5
+       ],
+       [
+        66,
+        114
+       ],
+       [
+        70.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        79.5,
+        122.5
+       ],
+       [
+        84,
+        114
+       ],
+       [
+        88.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        97.5,
+        122.5
+       ],
+       [
+        102,
+        114
+       ],
+       [
+        106.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        115.5,
+        122.5
+       ],
+       [
+        120,
+        114
+       ],
+       [
+        124.5,
+        122.5
+       ]
+      ],
+      "colour": "navy"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "navy",
+      4
+     ]
+    ],
+    "swoosh_colour": "navy",
+    "decorations": [
+     {
+      "rect": [
+       105,
+       0,
+       169,
+       205
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       342,
+       0,
+       407,
+       205
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        133.5,
+        0
+       ],
+       [
+        151.5,
+        0
+       ],
+       [
+        144.5,
+        104
+       ],
+       [
+        140.5,
+        104
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       140.5,
+       0,
+       144.5,
+       256
+      ],
+      "colour": "navy"
+     },
+     {
+      "polygon": [
+       [
+        360.5,
+        0
+       ],
+       [
+        378.5,
+        0
+       ],
+       [
+        371.5,
+        104
+       ],
+       [
+        367.5,
+        104
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "rect": [
+       367.5,
+       0,
+       371.5,
+       256
+      ],
+      "colour": "navy"
+     }
+    ],
+    "note": "the white rects clear the retail 1997 tapered side panel (x 107-166 and 345-404, y to 201) that lies outside the band the tool clears"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "navy",
+    "outline": "orange",
+    "outline_frac": 0.03
+   },
+   "nameplate": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "navy"
+   },
+   "helmet_digits": {
+    "glyph_donor": "08H0",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/DEN/refs/fonts/BarlowCondensed-Bold.ttf",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "#08124A",
+    "shell": "helmet_navy",
+    "recolour": [
+     {
+      "from": "#BC2709",
+      "to": "helmet_navy",
+      "tolerance": 0.35,
+      "box": [
+       128,
+       20,
+       198,
+       242
+      ]
+     },
+     {
+      "from": "#62192C",
+      "to": "helmet_navy",
+      "tolerance": 0.3,
+      "box": [
+       128,
+       20,
+       198,
+       242
+      ]
+     }
+    ],
+    "decorations": [
+     {
+      "polygon": [
+       [
+        159.5,
+        47
+       ],
+       [
+        162,
+        41.5
+       ],
+       [
+        164.5,
+        47
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        55
+       ],
+       [
+        162,
+        49.5
+       ],
+       [
+        164.5,
+        55
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        63
+       ],
+       [
+        162,
+        57.5
+       ],
+       [
+        164.5,
+        63
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        95
+       ],
+       [
+        162,
+        89.5
+       ],
+       [
+        164.5,
+        95
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        103
+       ],
+       [
+        162,
+        97.5
+       ],
+       [
+        164.5,
+        103
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        111
+       ],
+       [
+        162,
+        105.5
+       ],
+       [
+        164.5,
+        111
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        143
+       ],
+       [
+        162,
+        137.5
+       ],
+       [
+        164.5,
+        143
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        151
+       ],
+       [
+        162,
+        145.5
+       ],
+       [
+        164.5,
+        151
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        159
+       ],
+       [
+        162,
+        153.5
+       ],
+       [
+        164.5,
+        159
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        191
+       ],
+       [
+        162,
+        185.5
+       ],
+       [
+        164.5,
+        191
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        199
+       ],
+       [
+        162,
+        193.5
+       ],
+       [
+        164.5,
+        199
+       ]
+      ],
+      "colour": "orange"
+     },
+     {
+      "polygon": [
+       [
+        159.5,
+        207
+       ],
+       [
+        162,
+        201.5
+       ],
+       [
+        164.5,
+        207
+       ]
+      ],
+      "colour": "orange"
+     }
+    ],
+    "decal": {
+     "mark": "team_logo_left",
+     "boxes": {
+      "top": [
+       26,
+       50,
+       134,
+       106
+      ],
+      "lower": [
+       26,
+       146,
+       134,
+       204
+      ]
+     },
+     "erase": "box",
+     "scale": 1.0
+    },
+    "note": "the 1997-2023 centre stripe becomes shell navy (rules limited to its box); the 2024 orange triangle clusters are drawn on the centre line x 162 (four clusters of three, direction INFERRED). Both retail decals are upright left-facing copies, so the boxes are not named 'upper' (no 180 turn) and the mark is the club horse mirrored."
+   },
+   "outer_index": 3995,
+   "splayer": {
+    "torso_donor_outer": 3995,
+    "torso_donor": "08A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#002155",
+      "to": "#E6E8EC",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#030E48",
+      "to": "#0A2140",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#002B61",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#E22E00",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ]
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#C61B00",
+      "to": "navy",
+      "region": "pants",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#000542",
+      "to": "helmet_navy",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ]
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "helmet": "Midnight Navy shell, white horse head with orange mane and navy outline, grey hardware, flag and shield decals; no centre stripe",
+   "digit_helmet": "white numbers",
+   "torso": "Sunset Orange jersey body, navy collar, small navy BRONCOS wordmark and navy triangles, NFL shield at the collar, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "orange sleeve with a white band and navy peaks at the cuff",
+   "pants": "white with an orange hip wedge and a thin navy side stripe, navy maker mark",
+   "digit_jersey": "white condensed numbers with a thin navy outline",
+   "digit_arm": "white condensed numbers with a thin navy outline",
+   "nameplate": "white letters",
+   "socks00": "solid orange",
+   "splayer": "far-away player atlas: white pants with a navy stripe, orange torso, navy helmet, orange socks, skin and glove patches",
+   "team-select_unif": "menu render: orange jersey with a white number, white pants with a navy stripe, navy helmet with the horse logo",
+   "team-select_helm": "menu render: navy helmet with the horse logo, dark facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "helmet": "Midnight Navy shell, white horse head with orange mane and navy outline, grey hardware, flag and shield decals; no centre stripe",
+   "digit_helmet": "white numbers",
+   "torso": "white jersey body, orange collar, small orange BRONCOS wordmark and orange triangles, NFL shield at the collar, navy maker marks; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with an orange band and navy peaks at the cuff",
+   "pants": "white with an orange hip wedge and a thin navy side stripe, navy maker mark",
+   "digit_jersey": "navy condensed numbers with a thin orange outline",
+   "digit_arm": "navy condensed numbers with a thin orange outline",
+   "nameplate": "navy letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants with a navy stripe, white torso, navy helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a navy number, white pants with a navy stripe, navy helmet with the horse logo",
+   "team-select_helm": "menu render: navy helmet with the horse logo, dark facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "Sunset Orange painted end zone with navy BRONCOS letters in a thin white outline",
+   "center_logo": "the Broncos horse head logo",
+   "banner": "cloth fan banners in navy, orange and white",
+   "screen": "stadium sign reading EMPOWER FIELD at Mile High"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Adam Trautman": 0,
+   "Alex Forsyth": 0,
+   "Alex Palczewski": 0,
+   "Alex Singleton": 0,
+   "Ben Powers": 0,
+   "Bo Nix": 0,
+   "Brandon Jones": 2,
+   "Courtland Sutton": 4,
+   "D.J. Jones": 4,
+   "Dallen Bentley": 0,
+   "Devon Key": 2,
+   "Dondrea Tillman": 4,
+   "Evan Engram": 2,
+   "Eyioma Uwazurike": 5,
+   "Garett Bolles": 0,
+   "J.K. Dobbins": 4,
+   "JL Skinner": 4,
+   "Ja'Quan McMillian": 4,
+   "Jahdae Barron": 4,
+   "Jarrett Stidham": 0,
+   "Jaylen Waddle": 3,
+   "Jeremy Crawshaw": 0,
+   "Jonah Coleman": 3,
+   "Jonah Elliss": 1,
+   "Jordan Jackson": 4,
+   "Jordan Turner": 4,
+   "Justin Strnad": 0,
+   "Karene Reid": 1,
+   "Kris Abrams-Draine": 3,
+   "Lil'Jordan Humphrey": 4,
+   "Luke Wattenberg": 0,
+   "Malcolm Roach": 4,
+   "Marvin Mims": 3,
+   "Matt Peart": 4,
+   "Mike McGlinchey": 0,
+   "Nate Adkins": 0,
+   "Nik Bonitto": 3,
+   "Pat Bryant": 3,
+   "Pat Surtain": 3,
+   "Que Robinson": 3,
+   "Quinn Meinerz": 0,
+   "RJ Harvey": 4,
+   "Riley Moss": 0,
+   "Sai'vion Jones": 4,
+   "Sam Ehlinger": 0,
+   "Talanoa Hufanga": 2,
+   "Troy Franklin": 3,
+   "Tycen Anderson": 3,
+   "Tyler Badie": 3,
+   "Tyler Onyedim": 4,
+   "Wil Lutz": 0,
+   "Zach Allen": 0
+  },
+  "dreads": [
+   "Jahdae Barron",
+   "Nik Bonitto",
+   "Pat Bryant",
+   "Tyler Onyedim",
+   "RJ Harvey",
+   "Lil'Jordan Humphrey",
+   "Jordan Turner"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) by eye from the official 2026 headshots (INFERRED); automatic estimates in faces.json. Dreads by eye. Kage Casey has no 2026 headshot: generic head."
+ },
+ "venue": {
+  "prefix": "s08",
+  "notes": "Broncos home games at the retail Invesco Field scene: the same building is Empower Field at Mile High in 2026. End zones: painted Sunset Orange with BRONCOS in navy block letters and a thin white outline (2026 week 2 tilt-shift photo; both ends orange with navy letters; the far end's word could not be read, so both read BRONCOS: INFERRED; letterforms from a bold geometric font, INFERRED). s08 has no midfield texture (u4 is scoping a native fix); the centre logo is authored anyway (the club horse, full colour, hand step). The wall strips, seat logo and ad boards already carry the unchanged 1997 horse and are left retail. The scoreboard's INVESCO FIELD becomes EMPOWER FIELD and its 2004 date line reads BRONCOS COUNTRY. Fan banners: 2026 players.",
+  "sources": [
+   "https://www.denverbroncos.com/photos/art-of-the-game-the-broncos-team-photographers-favorite-photos-from-a-week-2-win-vs-the-jaguars (2026-09-20, orange end zones with navy BRONCOS)"
+  ],
+  "endzone": {
+   "paint": "field_orange",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "ez_outline",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 65.81,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_letters",
+     "colour": "field_navy",
+     "center": [
+      384,
+      64
+     ],
+     "height": 65.81,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "team_logo_silhouette",
+   "outline": "white",
+   "fill_mark": "team_logo_silhouette",
+   "fill": "navy",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "navy",
+      "items": [
+       {
+        "text": "BRONCOS\nCOUNTRY",
+        "colour": "white",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "NIX\n#10",
+        "colour": "orange",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "orange",
+      "items": [
+       {
+        "text": "SUTTON\n#14",
+        "colour": "white",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       133,
+       2,
+       252,
+       61
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "SURTAIN\n#2",
+        "colour": "navy",
+        "center": [
+         192.5,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       125
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "D-E-F-E-N-S-E",
+        "colour": "navy",
+        "center": [
+         64.0,
+         94.5
+        ],
+        "height": 12
+       }
+      ]
+     },
+     {
+      "slot": [
+       133,
+       66,
+       251,
+       125
+      ],
+      "bg": "navy",
+      "items": [
+       {
+        "text": "MILE HIGH\nMAGIC",
+        "colour": "orange",
+        "center": [
+         192.0,
+         94.5
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "WADDLE\n#17",
+        "colour": "navy",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "orange",
+      "items": [
+       {
+        "text": "BONITTO\n#15",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "screen": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       4,
+       128,
+       34
+      ],
+      "bg": "screen_grey",
+      "items": [
+       {
+        "text": "EMPOWER FIELD",
+        "colour": "screen_ink",
+        "center": [
+         64,
+         18
+        ],
+        "height": 13
+       }
+      ]
+     },
+     {
+      "slot": [
+       4,
+       76,
+       124,
+       94
+      ],
+      "bg": "screen_dark",
+      "items": [
+       {
+        "text": "BRONCOS COUNTRY",
+        "colour": "white",
+        "center": [
+         64,
+         85
+        ],
+        "height": 7
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

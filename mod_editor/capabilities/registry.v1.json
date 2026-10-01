@@ -5434,6 +5434,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_custom_intro rebuild source.iso output.iso intro.mov",
+        "module": "mod_editor/core/nfl2k5_custom_intro.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_custom_intro.py",
+        "tests/mod_editor/test_nfl2k5_sofdec.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build-only option that takes a movie made by tools/nfl2k5_intro_encode.py; in no preset."
+      },
+      "id": "nfl2k5.boot.custom_intro",
+      "input_constraints": [
+        "Pinned USA boot loop and the other three boot movies must be retail; the intro (outer 4296) must be the pinned retail movie or an earlier custom one. Foreign states refuse.",
+        "The movie must pass every retail CRI Sofdec rule for a 640x480 boot movie; the muxer reproduces all 29 retail ADX streams byte for byte.",
+        "Separate output only; every other outer and named file is hash-verified before publication; restore writes the pinned retail intro back.",
+        "Do not combine with Trim intro videos (it skips every startup movie). Composes with the Crib movie cut: a shrink past pack F spills into pack E (F keeps one sector), and restore regrows E to the retail source's pack size, giving back the Crib-cut image byte for byte."
+      ],
+      "portme": [
+        "Witness the new intro playing (picture, sound, skip button) and the boot reaching the menus before claiming console acceptance."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executables or discs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_sofdec.py"
+        ],
+        "scope": "The retail header-stage code accepts the file with the retail intro's reads and 10,171,344-byte allocation under bounded native execution; the CRI decoder, GPU, audio and whole game were not run.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a movie path; empty (off) in every preset; explicit opt-in",
+            "name": "custom_intro",
+            "required": true
+          }
+        ],
+        "notes": "Direct Build and saved-project wiring is implemented; the encoder tools/nfl2k5_intro_encode.py needs FFmpeg."
+      },
+      "source_container": {
+        "format": "CRI Sofdec resource (MPEG-1 program stream: MPEG-1 video, ADX audio) in XDVDFS",
+        "hash_pins": [
+          "c5c52a954ac0b40738e37decb9c2ebccfb976d601b5db29a2f0659852744d62a",
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Outer entry 4296 intro.mov (50,241,536 bytes); streaming 16-pack archive resize.",
+        "retail_file": "User-owned ESPN NFL 2K5 USA disc image"
+      },
+      "summary": "Replace the boot intro movie with one made from any clip, keeping the executable and the other startup movies retail.",
+      "surface": "menus",
+      "title": "Custom intro video (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_custom_intro"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli camera source.xbe output.xbe",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
@@ -5810,7 +5875,8 @@
         "Pinned USA Crib dispatcher and exact resource IDs, sizes and hashes; mixed or foreign states refuse.",
         "Separate source/output images; transaction verifies every retained outer and named file before publication.",
         "An XBE-only hook reclaims zero disc bytes. Use the independent image rebuild option.",
-        "Streaming buffers at most 1 MiB for archive/disc copying; large builds require scratch capacity plus 100 GiB remaining free."
+        "Streaming buffers at most 1 MiB for archive/disc copying; large builds require scratch capacity plus 100 GiB remaining free.",
+        "Composes with Custom intro video and Trim intro videos in either order: a shrink larger than pack F spills into the packs before it (F keeps one sector), the same image whichever runs first."
       ],
       "portme": [
         "Complete Noah's precise witness list in ASTRA_MY_CAREER_REPORT.md before claiming played runtime acceptance."
@@ -5998,6 +6064,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_espn25_more_moments status source.xbe",
+        "module": "mod_editor/core/nfl2k5_espn25_more_moments.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_espn25_more_moments.py",
+        "tests/mod_editor/test_nfl2k5_espn25_more_moments.py",
+        "tests/nfl2k5_espn25_more_moments_native.py",
+        "tools/nfl2k5_espn25_more_moments.S",
+        "docs/nfl2k5_espn25_more_moments_contract.md",
+        "mod_editor/core/nfl2k5_historic_styles.py",
+        "tests/mod_editor/test_nfl2k5_historic_styles.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build-time option on a disc image: 25 more ESPN 25th Anniversary moments (rows 26 to 50) with their own team-season files; the retail 25 moments and the 75 retail historic teams are untouched."
+      },
+      "id": "nfl2k5.espn25.more_moments",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve the complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "Hooks at 20BD80 (search), 20CBAA and 20CBD5 (the two loader calls), 20C695 (a won moment's mark) and 2C5A71 (the details screen's venue text, display only); in-place edits at 20C340 (count), 20C390 (completed test) and 20C4A1 (announcer guard); 13 pinned retail regions; owned 2560 RX and 16 RW bytes.",
+        "situation.iff must be the retail 25-moment collection; the team files are appended as new outer entries (one directory slot each, 101 free) in pack F.",
+        "Refuses together with a saved ESPN Anniversary plan. Rebuild from a verified base to remove it.",
+        "Historic and moment teams on style 0 of a franchise move to a spare style (nfl2k5_historic_styles): the first index past the franchise's uniform table with no art (the Eagles: era 9), holding copies of the retail style-0 kit files and the logos.cdf, mini.cdf and flipchip.cdf members; the CACR records keep their sorted hashes. The copies come from the retail source after any project has written 2026 art to style 0."
+      ],
+      "portme": [
+        "ESPN 25th Anniversary: scroll to the last row, open a new moment, check Controller Assign, play it to the field; then back out and open a retail moment."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All 50 Anniversary moments appeared in the lab list; selected added moments and previews loaded. Completion saving across all added rows and full games remain unwitnessed.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false",
+            "name": "espn25_more_moments",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only, disc images only. Off skips the writer, its allocation and its resources."
+      },
+      "source_container": {
+        "format": "XBE and outer archive in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "situation.iff (pack 0, outer 22) grown in place; one new outer entry per team-season in pack F; owned 2560 RX and 16 RW executable bytes.",
+        "retail_file": "user-owned default.xbe and vc_53450030 packs in an NFL 2K5 USA disc"
+      },
+      "summary": "Rows 26 to 50 of the ESPN 25th Anniversary list: each new moment's two team-seasons load from their own new files through a moment-only team table, so the roster block does not grow; completed marks for rows 26 to 32 are saved like retail and rows 33 to 50 last for the session.",
+      "surface": "players_rosters",
+      "title": "ESPN 25th Anniversary: 25 more moments (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_more_moments"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_espn25_scenarios build source.iso espn25-plan.json output.iso",
         "module": "mod_editor/core/nfl2k5_espn25_scenarios.py",
         "operation": "write"
@@ -6063,6 +6197,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_economy <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_franchise_economy.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "fc/FC_REPORT.md",
+        "tests/mod_editor/test_franchise_economy.py",
+        "data/nfl2k5_franchise_economy.json",
+        "fc/proof/money_strings.json",
+        "fc/data/identity_review.json",
+        "fc/data/fc_contract_fragment.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "DESIGN: off in every preset. New franchise and matching contract fragment required. This remains an approximation and is not approved as an exact current-NFL release."
+      },
+      "id": "nfl2k5.franchise.economy_2026",
+      "input_constraints": [
+        "PROVED OFFLINE: every complete retail span must match its SHA-256 guard; mixed or foreign states refuse before mutation.",
+        "DESIGN: use a new franchise and matching 1:4 contract fragment; existing saves are not migrated."
+      ],
+      "portme": [
+        "DESIGN: exact annual cap, original cash/APY and real dead-money accounting require an independent persistent contract model. Main runs and reviews the lab; keep off for release."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "DESIGN: distribute code, source citations and recipes; never distribute a generated XBE, disc or raw retail bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "fc/FC_REPORT.md"
+        ],
+        "scope": "PROVED OFFLINE: native currency callbacks and financial primitives. DESIGN: loader, screen layout, input routes and save I/O require Main lab review.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in every preset; explicit opt-in",
+            "name": "franchise_economy",
+            "required": true
+          }
+        ],
+        "notes": "DESIGN: internal 1:4 accounting; shared franchise money formatter multiplies by four. No external save migration."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "guarded native franchise routines and data spans",
+        "retail_file": "user-owned NFL 2K5 USA default.xbe"
+      },
+      "summary": "DESIGN: fitted 2026 contract fragment, scaled accounting, real-dollar currency formatter, bounded roster reconciliation and trade values. Exact original APY, cash and guarantees remain unrepresented.",
+      "surface": "schedules_franchise",
+      "title": "2026 franchise economy (experimental, real-dollar display)",
+      "validation_command": "python3 -m tests.mod_editor.test_franchise_economy"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli practice_squad_screen <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
@@ -6100,8 +6300,8 @@
         "evidence": [
           "ASTRA_PS_NATIVE_SCREEN_REPORT.md"
         ],
-        "scope": "Bounded CPU execution of native page dispatch, construction, transactions, rebuilding and teardown. Graphics, controller use, Xbox loading and save lifecycle remain unwitnessed.",
-        "status": "not-tested"
+        "scope": "The lab opened the Giants Practice Squad from the Coach's Desk and switched between Active and Reserves without the old popup. Complete transaction, save lifecycle and Xbox coverage remain unwitnessed.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -7247,6 +7447,78 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_k128 apply source.xbe new-128mb.xbe [--roster-heap]",
+        "module": "mod_editor/core/nfl2k5_k128.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_k128.py",
+        "tests/mod_editor/test_nfl2k5_k128.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build-time option; needs xemu System memory 128 MB; asleep at 64 MB and on any other kernel; off in every preset."
+      },
+      "id": "nfl2k5.gameplay.k128_memory",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input with the retail entry point; reserve the complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "Owned 512 RX bytes (R1's 226-byte K128-late stubs, the optional roster heap pick and in-game block cap, the optional early entry); the XBE entry, the 10-byte compare at 0x327D1 (left retail by the early form) and, with the roster heap, the call at 0xC1F37 and the 9-byte in-game block site at 0x84EC2.",
+        "The roster heap and the early form need the 128 MB option; the roster heap composes with the arena growth (16 reserves, extra created teams).",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Set xemu System memory to 128 MB, build a disc with the option, play Quick Game into live play; then the same disc at 64 MB (the patch sleeps)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All three 128 MB options reached the coin toss and live play in the lab, including the early graphics-memory form. The later 64 MB message screen remains offline only. Set xemu System Memory to 128 MB; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false",
+            "name": "k128_memory",
+            "required": true
+          },
+          {
+            "allowed": "false | true; default false; needs k128_memory",
+            "name": "k128_roster_heap",
+            "required": true
+          },
+          {
+            "allowed": "false | true; default false; needs k128_memory",
+            "name": "k128_early",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE entry point, arena init 0x326E0 (0x327D1), roster setup 0xC1F00 (0xC1F37); owned 512 RX bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Lets the game use 128 MB on stock xemu set to 128 MB: a guarded startup patch teaches the running 4627 kernel the upper 64 MB after the game built its arena, the game's own >64 MB branch takes a 49 to 63 MB region, and optionally the roster block moves there out of the main heap.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "128 MB memory and the roster heap (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_k128"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli dynamic_kickoff_relocated <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
@@ -7254,7 +7526,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "ASTRA_XBE_SPACE_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_xbe_space.py"
+        "tests/mod_editor/test_nfl2k5_xbe_space.py",
+        "tests/mod_editor/test_nfl2k5_anniversary_kickoff.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7307,6 +7580,68 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Kickoff in extra space (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_xbe_space"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_anniversary_kickoff apply source.xbe retail-disc.iso new-copy.xbe --return-blocking",
+        "module": "mod_editor/core/nfl2k5_anniversary_kickoff.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_kickoff_blocking.py",
+        "mod_editor/core/nfl2k5_anniversary_kickoff.py",
+        "tests/mod_editor/test_nfl2k5_anniversary_kickoff.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build-time option and a feel test for Noah; the new (2026) kickoff only, after the ball first touches; nothing changes before the catch; off in every preset."
+      },
+      "id": "nfl2k5.gameplay.kickoff_return_blocking",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input carrying the dynamic kickoff and the kick rules, in a disc image built from the user's retail disc: the rule rides with the 25th Anniversary kickoff gate and its owned allocation (3,584 RX and 736 RW bytes). Foreign or mixed bytes refuse.",
+        "One trampoline in front of the dynamic kickoff's target selector hook at 0x2FAFF0. Outside game mode 8 and after the ball's first touch (kickoff state FLAGS & 7 != 0), a return blocker skips coverage players another receiving player's drive-block task (callback 0x23CE70) already targets, and takes the nearest unclaimed man in three passes before he would wait.",
+        "An installed gate keeps its setting; rebuild from a verified base to turn the rule on or off."
+      ],
+      "portme": [
+        "Build a disc with the dynamic kickoff and this option, play Quick Game kickoffs that land in the landing zone and are returned, and compare the return blocking with a disc built without the option; the 25th Anniversary moments keep the retail kickoff either way."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Lab only (job b76-vb3, runs r2 and r3, headless xemu at 16:9, CPU vs CPU kicks): nobody but the kicker and the returners moved before the ball's first touch (0.0 cm over a whole flight); after landing-zone touches ten return blockers took ten different coverage players, none took the kicker, and all moved. Not witnessed by Noah; the feel is his call.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false; needs the dynamic kickoff on a disc image",
+            "name": "kickoff_return_blocking",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off installs the 25th Anniversary gate without the rule, so every NFL kickoff keeps the dynamic kickoff's own blocking; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "The dynamic kickoff's target selector hook at 0x2FAFF0 (native FUN_002FAFF0) and the 25th Anniversary gate's owned allocation.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "On the new (2026) kickoff, after the ball first touches, each return blocker takes a coverage player no teammate is already blocking, and a free blocker takes the nearest unclaimed man instead of standing still. Nothing changes before the catch.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Kickoff return blocking: one blocker per man after the catch (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_anniversary_kickoff"
     },
     {
       "backend": {
@@ -8101,6 +8436,71 @@
       "surface": "logos_cards",
       "title": "NFL 2K5 Team Select cards",
       "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_historic_teams_quick_game apply source.xbe new-historic-teams.xbe",
+        "module": "mod_editor/core/nfl2k5_historic_teams_quick_game.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_historic_teams_quick_game.py",
+        "tests/mod_editor/test_nfl2k5_historic_teams_quick_game.py",
+        "tools/nfl2k5_historic_teams_quick_game.S",
+        "ht/evidence/native.json",
+        "ht/HT_REPORT.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build-time option for local Quick Game, Practice and First Person Football. Other flows and network sessions keep retail stepping."
+      },
+      "id": "nfl2k5.menus.historic_teams_quick_game",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve the complete selected owner union before installation. Foreign or mixed bytes refuse.",
+        "Six Team Select step calls (2C22D0, 2C2280, 2C2392, 2C2349, 2C1B02, 2C1B52) and 14 pinned retail regions; owned 1280 RX and 16 RW bytes.",
+        "Loads only into an empty created-team slot or one holding a historic team, never a user-created team or the slot the other side is showing.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Main must run ht/lab/ht_smoke_candB.sh, inspect names and classic equipment, and witness Practice and First Person Football starts. Other modes remain restricted pending native route proof."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Historic teams loaded in mixed and historic-pair Quick Games on candidate E with era uniforms; a Jets 1968 player card showed George Sauer. Full coverage of every historic team remains unwitnessed.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false",
+            "name": "historic_teams_quick_game",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Team Select step calls in 2C2240, 2C2310, 2C1AC0 and 2C1B10; owned 1280 RX and 16 RW bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Local Quick Game, Practice and First Person Football Team Select can step through all 75 historic descriptors using two existing spare slots and the native loader. Created teams are protected.",
+      "surface": "menus",
+      "title": "Historic teams in Quick Game (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_historic_teams_quick_game"
     },
     {
       "backend": {
@@ -9486,18 +9886,20 @@
         "mod_editor/core/nfl2k5_team_names_2026.py",
         "ASTRA_ROSTERS_DATA_REPORT.md",
         "data/nfl2k5_team_names_2026.json",
-        "tests/mod_editor/test_nfl2k5_team_names_2026.py"
+        "tests/mod_editor/test_nfl2k5_team_names_2026.py",
+        "data/nfl2k5_team_colours_2026.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Explicit disc-only 2026 names with fixed-space short forms; existing saves keep their own names."
+        "reason": "Disc-only 2026 names with the full names; saves keep the names they were saved with."
       },
       "id": "nfl2k5.players.team_names_2026",
       "input_constraints": [
-        "Module-pinned manifest; 35 exact preflight cells, 17 writes, mixed/foreign refusal and zero growth.",
+        "Module-pinned manifest and colour table; mixed or foreign bytes refuse; zero growth.",
+        "Refuses together with Uniform choice.",
         "Historic ROSTs, STRG, commentary and existing saves keep their own names."
       ],
       "portme": [
@@ -9511,8 +9913,8 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "EXPERIMENTAL / UNWITNESSED; no played or screen witness.",
-        "status": "not-tested"
+        "scope": "The release draft records full 2026 names in Play Now and MyNFL and home games for renamed teams. Menu colours and every renamed screen remain unverified.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -9522,19 +9924,19 @@
             "required": true
           }
         ],
-        "notes": "Main ROST outer 5; team indexes 7, 8, 22, 23, 25, identity fields and independent labels."
+        "notes": "Main ROST outer 5, teams 7, 8, 22, 23, 25 (identity abbreviation and nickname, city, city abbreviation, label nickname); asset codes and label abbreviations stay retail. default.xbe: 0x2BEA4A, 0x2BEA7D, 0xE9A45C, 0xE9AC0, 0x20C588/0xC03F0, 0x6160F, 0x31F830, 0x4E7FE0."
       },
       "source_container": {
         "format": "ROST resource",
         "hash_pins": [
-          "fea1e37b7fb23887b8231d3e971b5113eeecef1d815001b9032da6b0eac8d13b"
+          "4c2d54e574b9316530273df938da9d9dd8bbe62ff886b49a777fd6f1f94376b5"
         ],
         "resource": "Main ROST outer 5, 0x20 wrapper and 0x90F60 body",
         "retail_file": "User-owned main disc ROST or signed save"
       },
-      "summary": "One grouped pass writes 17 fixed-space modern identity/label cells; no changes to saves, STRG, asset codes or pointers.",
+      "summary": "Writes the full 2026 names (Arizona ARI; Los Angeles Chargers LAC; Las Vegas Raiders LV; Los Angeles Rams LAR; Washington Commanders) into the main ROST with zero growth, and installs six in-place XBE key paths so schedules, user playbooks, 25th Anniversary moments and old saves still find their teams. Also installs the 2026 Dallas jersey rule and the 2026 menu colours.",
       "surface": "players_rosters",
-      "title": "2026 team names (experimental)",
+      "title": "2026 team names and menu colours (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_team_names_2026"
     },
     {
@@ -9576,8 +9978,8 @@
         "evidence": [
           "reports/gameplay_tuning/nfl2k5_star_filled_proof.json"
         ],
-        "scope": "Native queue, decoder, model selection, tag walk, material copy and vertex writes executed with bounded service/GPU stubs; no rasterization or played-mode witness.",
-        "status": "not-tested"
+        "scope": "The hollow white outline star with a thin dark under-edge was seen in the W2 lab at 1x. Near tips were clean; the distant stroke became dashes. Replays showed no added stars; Xbox appearance remains unwitnessed.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -9935,8 +10337,8 @@
         "evidence": [
           "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md"
         ],
-        "scope": "Bounded Unicorn consumers proved; Xbox kernel allocation, complete disc boot, created-team UI and franchise gameplay remain unwitnessed.",
-        "status": "not-tested"
+        "scope": "The release draft records 16 reserves and two extra created teams in game at 128 MB. Boot and match entry were witnessed; every created-team screen, full franchise lifecycle and Xbox loading remain unverified.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -9981,14 +10383,16 @@
         "ASTRA_ESPN25_EXACT_LINEUPS_REPORT.md",
         "tests/mod_editor/test_nfl2k5_espn25_exact_lineups.py",
         "ASTRA_B69_J6_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
+        "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py",
+        "tests/mod_editor/test_nfl2k5_historic_release_practice_squad.py",
+        "tests/mod_editor/test_nfl2k5_espn25_one_pool.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off. EXPERIMENTAL / UNWITNESSED."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Off in every preset. The Wide Right freeze is root-caused and repaired (the practice squad import guard met the release routine's stale pointers); lab runs only, Noah has not played it. Works with the retail or One-pool position layout."
       },
       "id": "nfl2k5.rosters.espn25_real_rosters",
       "input_constraints": [
@@ -9997,7 +10401,7 @@
         "Season rosters are incomplete: named same-franchise nearby-season role fillers and retained unknown numbers are disclosed per player."
       ],
       "portme": [
-        "Retain the build block until the failing game's archive completion and scene state are captured and diagnosed; do not infer scene readiness from native roster import/export."
+        "Keep it off in every preset until Noah plays the moments: check the teams at Controller Assign after backing out of another moment, the on-field and pause-menu names and numbers, and a finished moment."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10009,20 +10413,21 @@
         "evidence": [
           "ASTRA_ESPN25_IN_GAME_REPORT.md",
           "ASTRA_B69_J6_REPORT.md",
-          "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py"
+          "tests/mod_editor/test_nfl2k5_espn25_loading_wait.py",
+          "tests/mod_editor/test_nfl2k5_espn25_one_pool.py"
         ],
-        "scope": "Native team import, archive wait with supplied completion, scenario setup and export. Complete scene/graphics/audio load and the reported music freeze remain unproved.",
-        "status": "not-tested"
+        "scope": "The Wide Right repair and Anniversary loading were seen in the lab, as recorded in the release draft. Later historic-roster corrections remain offline only; full moment and save coverage is not claimed.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false in every preset; build is blocked even when explicitly selected",
+            "allowed": "boolean; false in Basic, Advanced and Experimental; opt-in only",
             "name": "espn25_rosters",
             "required": true
           }
         ],
-        "notes": "Historic moment rosters cannot be built: Wide Right has an unresolved loading freeze. Native team reload completes with supplied archive completions; the failing game load still needs its archive completion and scene state captured. Keep this option off."
+        "notes": "Opt-in. Composes with One-pool positions and the EDGE rename (pinned One-pool profile per resource). The historic-team release repair is installed with it and with every practice squad build."
       },
       "source_container": {
         "format": "uncompressed ROST resources in XDVDFS outer archive",
@@ -10036,6 +10441,70 @@
       "surface": "players_rosters",
       "title": "Historic moments: real rosters (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn25_rosters"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_historic_rosters",
+        "module": "mod_editor/core/nfl2k5_historic_rosters.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "ht/HT_REPORT.md",
+        "ht/TEAM_AUDIT.md",
+        "tests/mod_editor/test_nfl2k5_historic_rosters.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "view",
+        "reason": "The source inspection is read-only. The separately selected Build option writes isolated season aliases on a private disc copy."
+      },
+      "id": "nfl2k5.rosters.historic_season_audit",
+      "input_constraints": [
+        "All 75 compact rosters require per-value source or INFERRED/DESIGN labels.",
+        "Season aliases require historic local Team Select; canonical moment resources retain their existing owner.",
+        "No unresolved row, duplicate identity or invalid encoded value is accepted."
+      ],
+      "portme": [
+        "Main-only xemu acceptance and player-specific gameplay calibration."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source only. Decoded retail slot audits and draft retail rating vectors are private research data and excluded from the release allowlist. Attributed source facts retain their source licenses.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ht/evidence/phase2_native.json"
+        ],
+        "scope": "Historic rosters loaded with historic teams in candidate E Quick Games, including a George Sauer card for the 1968 Jets. Later historic-roster corrections remain offline only; this does not certify every player or team.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in every preset; source-validated isolated writer when true",
+            "name": "historic_rosters_2026",
+            "required": true
+          }
+        ],
+        "notes": "Requires historic_teams_quick_game. Adds 75 HTS resources and one filler."
+      },
+      "source_container": {
+        "format": "uncompressed ROST resources in XDVDFS outer archive",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "75 historic ROST files enumerated by the retail main roster",
+        "retail_file": "user-owned NFL 2K5 USA disc or extraction"
+      },
+      "summary": "PROVED OFFLINE: 75 compact source-labelled season rosters and isolated HTS archive writer. DESIGN: individual ratings priors and live gameplay acceptance.",
+      "surface": "players_rosters",
+      "title": "Historic season roster sources and Build option",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_historic_rosters"
     },
     {
       "backend": {
@@ -10516,6 +10985,149 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_espn_marks status <source>",
+        "module": "mod_editor/core/nfl2k5_espn_marks.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_espn_marks.py",
+        "tests/mod_editor/test_nfl2k5_espn_marks_sprite.py",
+        "tests/mod_editor/test_nfl2k5_presentation_standalone.py",
+        "data/nfl2k5_espn_marks_pins.json",
+        "data/nfl2k5_presentation_standalone.json",
+        "docs/espn_marks/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-2026 source (the module's revert command restores the retail spans from a retail source)."
+      },
+      "id": "nfl2k5.scorebug_presentation.espn_marks_2026",
+      "input_constraints": [
+        "Four pinned standalone TXTR chunks of gamedata.iff (outer 346, pack 0): nfl_chiclet 24, shield_espn 26, espnLogo1 33, z_ESPN_bug 57. Each is compiled from the source's own retail span and a shipped PNG, refit inside its retail span with the 32-byte wrapper (scratch word included) and the 128-byte descriptor region byte-identical, checked against its applied pin and read back; only retail or already-2026 spans are accepted.",
+        "shield_espn is laid into the retail two-row wrap that the score_bug bar, the replay overlay and the voice_of and weather_3row overlays reassemble with the same two slanted triangles.",
+        "Grades A (nfl_chiclet, shield_espn, espnLogo1) and B (z_ESPN_bug) are offered; telecircle1/2, passicons, replayicons, endQTR_textures and score_buga stay refused (grade C) with their reasons in the receipt; espn1 and nflShield1 are DXT1 and refused.",
+        "Composes with the sprite scorebug in either order (b76 c1): the sprite accepts gamedata.iff when every byte outside the four spans is retail and each span is at its retail or applied pin, and a gamedata.iff grown by exactly the sprite's own appended collection is accepted here; anything else is foreign. Refuses the Hi-res pack's scorebug family, which rewrites shield_espn and re-lays gamedata.iff around a larger score_buga. Appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness the replay overlay, the retail field scorebug, the weather and voice-of overlays and a league chip in game; trace the consumers of espnLogo1 and z_ESPN_bug before raising z_ESPN_bug above B."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/espn_marks/README.md",
+          "tests/mod_editor/test_nfl2k5_espn_marks.py"
+        ],
+        "scope": "Offline byte receipts, decoder read-back and the wrap reassembly check only; no played or appearance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the four marks; Off leaves the source as it is. The typed provider builds the same four marks through p8_texture edits with asset ids p8:346:<texture>."
+      },
+      "source_container": {
+        "format": "In-place fixed-span standalone TXTR resources of gamedata.iff in pack 0 of the vc_53450030 archive",
+        "hash_pins": [
+          "be075d94bff90e3cb1f352759beecac310538269aa22e4ea888a2e185a9e7e03",
+          "4517f5602ebab791e0d54e5f5bc8c3881e4f31addf5afe7f869c3b7c2f2cb1c7",
+          "7a331fbb644efbc8bd9129e389dc12ccbda972249aad2e6de6d205a8f7aa519f",
+          "33ae3da83e34c0b3e42f8836158164aaea36464d8b55931ed7093e8b894a29e4"
+        ],
+        "resource": "outer 346 (gamedata.iff): chunks 24, 26, 33, 57",
+        "retail_file": "vc_53450030/0 (pack 0 of the archive)"
+      },
+      "summary": "Four ESPN presentation marks redrawn from the 2026 Monday Night Football broadcast: the red 2026 ESPN wordmark in the replay overlay's logo, the current NFL shield in the league chip, and the white ESPN wordmark textures, each refit inside its retail span. Off in every preset; unwitnessed in game.",
+      "surface": "scorebug_presentation",
+      "title": "ESPN presentation marks (2026) (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn_marks"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_espn_wipes_boards status <source>",
+        "module": "mod_editor/core/nfl2k5_espn_wipes_boards.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_espn_wipes_boards.py",
+        "tests/mod_editor/test_nfl2k5_presentation_scenes.py",
+        "data/nfl2k5_espn_wipes_boards_pins.json",
+        "docs/espn_wipes_boards/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-2026 source (the module's revert command restores the retail spans from a retail source)."
+      },
+      "id": "nfl2k5.scorebug_presentation.espn_wipes_boards_2026",
+      "input_constraints": [
+        "Fourteen embedded P8 textures in six pinned scene resources: replay_wipe (4), fullscreen_WipeElectricity (2) and fullscreen_WipeRedFlashy (1), the raw MRKS slots 1, 3 and 4 of wipe.cdf (outer 3114, pack 4); scoreboard (outer 347 chunk 5), helmetbumper (outer 18 chunk 11) and playercard (outer 3 chunk 57), VC-LZ SCNEs in pack 0.",
+        "Every descriptor passes the stadium writer's fixed-allocation contract. Raw MRKS resources change only their pixel and palette bytes at the same allocation; VC-LZ scenes are refit to the retail consumed length with the 32-byte wrapper (scratch word included) and the opaque tail byte-identical, and the retail scratch still covers the in-place decode. Each resource is compiled from the source's own retail span and the shipped PNGs, checked against its applied pin and read back; only retail or already-2026 spans are accepted.",
+        "Geometry, material colours and dynamic text are not changed: the replay wipe's 3D ESPN letters keep their retail material colours. The coin, the studio, the coach desk, the commissioner, RedName, the logo and coin wipes and the menus stay retail with their reasons in the receipt; bermanintro is read-only. Appearance in game, and the pause board's relation to the pause score and clock strip, are unwitnessed."
+      ],
+      "portme": [
+        "Witness an instant replay's transition, the pause board, the helmet bumper and a player card in game; the 3D ESPN letters of the replay wipe take their colour from material +0x18 words, the next lever toward the red 2026 letters."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/espn_wipes_boards/README.md",
+          "tests/mod_editor/test_nfl2k5_espn_wipes_boards.py"
+        ],
+        "scope": "Offline byte receipts and decoder read-back through the retail geometry only; no played or appearance outcome is witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On repaints the fourteen textures of the six resources; Off leaves the source as it is."
+      },
+      "source_container": {
+        "format": "In-place fixed-span embedded scene textures: raw MRKS resources of wipe.cdf (pack 4) and VC-LZ SCNE resources in pack 0 of the vc_53450030 archive",
+        "hash_pins": [
+          "2f77f4e186006086631727ed1b9dddb8160f3a4143ad1199e6e22c7091aea8de",
+          "bcf95e87bfbeaf15123480dde587f62ed25c727e13d181b1bb6507be3875f924",
+          "a1dbcfa42444ce32eed38f63798a9225c6ac19a4a7159acfa4dde2ecd3754959",
+          "6870716399096589c5713f592fd69ee6e78c32e04c80a007d11c292449b34710",
+          "17c2069326d984a9f08e70445eb494133fe7015c16eed75e48e5081089e71c1b",
+          "3c8b3815415e82c9db000593cb258f71d175fd31b6901461cde85b2475f547c3"
+        ],
+        "resource": "outer 3114 (wipe.cdf) slots 1, 3, 4; outer 347 chunk 5; outer 18 chunk 11; outer 3 chunk 57",
+        "retail_file": "vc_53450030/4 and vc_53450030/0 (packs 4 and 0 of the archive)"
+      },
+      "summary": "The instant replay transition, two wipes, the pause-menu scoreboard, the helmet bumper's set monitor and the player card's league shield repainted to the 2026 Monday Night Football package from the 2026 broadcast frames, each inside its retail allocation. Off in every preset; unwitnessed in game.",
+      "surface": "scorebug_presentation",
+      "title": "ESPN 2026 wipes and boards (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_espn_wipes_boards"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_scorebug_mod_project.py build --project <scorebug-project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
         "module": "tools/nfl2k5_scorebug_mod_project.py",
         "operation": "write"
@@ -10598,6 +11210,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_kick_meter_2026 status <source>",
+        "module": "mod_editor/core/nfl2k5_kick_meter_2026.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_kick_meter_2026.py",
+        "data/nfl2k5_kick_meter_2026_pins.json",
+        "data/nfl2k5_kick_meter_2026/geometry.json",
+        "reports/b76_km/author_kick_meter.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-2026 source (the module's revert command restores the retail spans from a retail source)."
+      },
+      "id": "nfl2k5.scorebug_presentation.kick_meter_2026",
+      "input_constraints": [
+        "Three pinned VC-LZ SCNE chunks of gamedata.iff (outer 346, pack 0): KickArrow 75, KickMeter 76, windmeter 77. Each is compiled from the source's own retail span (retail span and decoded SHA-256 pins), refit into its retail stored span with the 32-byte wrapper (scratch word included) byte-identical, checked against its applied pin and read back; only retail or already-2026 spans are accepted.",
+        "Data only: the KickMeter's two P8 textures (64x64, 128x128), its 575 vertex slots (positions, UVs, colours; every slot keeps its submesh and bone selector) and the strip lists of its 13 submeshes inside their retail command areas; the windmeter's vertex colours; the KickArrow's 32x32 texture. Bones, aux_14 bindings, curves, materials and texture descriptors stay retail, so the value, timing, sweep, MAX window (v >= 0.98), MAX clip, wind read-out and aim are the game's own.",
+        "The band's U at each path point is the retail fill scroll (a_meter +0x28) at the time the marker (bone 1) passes that point, sampled from the retail curves; the fill front stays under the marker at every value. The wind speed digits: a digits-only FONT ('-' to '9', 64x64 P8, the retail FONT contract) drawn from the 2026 bar's traced numerals is appended to gamedata.iff as its last chunk (6,688 bytes, through a streamed pack-0 rebuild), and the kick HUD init's font3 lookup (push operand at 0xBABED) is re-pointed at the UTF-16 name \"windmeter\" the executable already carries (lookups are typed, so the windmeter scene still resolves); 4 XBE bytes, guarded, section digests re-sealed.",
+        "Composes with the sprite scorebug and the ESPN presentation marks: the sprite accepts gamedata.iff when every byte outside the four marks and these three spans is retail and each span is at its retail or applied pin, sets the wind digits FONT aside when it is the outer's last chunk (its exact pinned bytes), and a gamedata.iff grown by exactly the sprite's own appended collection (then the FONT) is accepted here. Refuses the Hi-res pack's scorebug family, which re-lays gamedata.iff. Appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness a field goal, a punt and a kickoff with the meter through its whole swing, a MAX lock, a windy and a calm kick (the wind digits in the new font inside the MPH tab), and the aim arrow in game."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_kick_meter_2026.py"
+        ],
+        "scope": "The complete 2026 kick meter, wind arrow and digits, swing, forced MAX and clearing on kick were seen in lab 3. That run did not show NO WIND; Xbox appearance remains unwitnessed.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On redraws the three kick HUD scenes; Off leaves the source as it is."
+      },
+      "source_container": {
+        "format": "In-place fixed-span VC-LZ SCNE resources in pack 0 of the vc_53450030 archive",
+        "hash_pins": [
+          "be48267e6f4aba4c26f8ec900e421c9f87bd95d509cbeae4598800b0fc378891",
+          "7e7a35c0c0cd0054b10694a45365e6c1679dafbcc9d7e2f2269880dbfb05ae70",
+          "a1028d833501be37d91f0b5f7d0f7f7d29448e550a09d14e7732bbc5028cac76"
+        ],
+        "resource": "outer 346 (gamedata.iff) chunks 75, 76, 77",
+        "retail_file": "vc_53450030/0 (pack 0 of the archive)"
+      },
+      "summary": "The kick meter, its aim arrow and the wind arrow redrawn in the 2026 ESPN score bar's look (black badge, bright rim, white fill and slider thumb, red MAX window, bold MAX), the three scenes inside their retail allocations, and the wind speed in the bar's numerals (a small appended font); the meter's timing, sweep and MAX window stay the game's own. Off in every preset; unwitnessed in game.",
+      "surface": "scorebug_presentation",
+      "title": "Kick meter, 2026 ESPN style (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_kick_meter_2026"
+    },
+    {
+      "backend": {
         "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime",
         "module": "tools/nfl2k5_scorebug_reference.py",
         "operation": "write"
@@ -10625,6 +11305,8 @@
         "reports/b71_s4/final-delivery-suite-summary.json",
         "docs/mod_editor/sprite_scorebug.md",
         "tests/mod_editor/test_nfl2k5_scorebug_sprite.py",
+        "tests/mod_editor/test_nfl2k5_scorebug_historic_teams.py",
+        "tests/mod_editor/test_nfl2k5_espn_marks_sprite.py",
         "reports/b71_s5/scene-route.json",
         "reports/b71_s5/measurements.json",
         "reports/b71_s5/states.json",
@@ -10647,7 +11329,7 @@
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
-        "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
+        "User-owned pinned NFL 2K5 USA disc with retail HUD resources (the four ESPN presentation marks may be at their retail or 2026 pins), or a completely recognized runtime installation.",
         "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
         "An XBE alone cannot install the atlas, 33 shared logos and enlarged scene. Use the shipped sprite PNG/JSON folder or a validated compatible design and rebuild from a supported base."
       ],
@@ -10704,8 +11386,8 @@
           "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
           "tests/mod_editor/test_nfl2k5_scorebug_watermark.py"
         ],
-        "scope": "Native collection loading and read-back verify the enlarged scene and atlas. Native retail getters, the down binding/slide gate and retained event callbacks execute in bounded fixtures. All measured static colours and geometry pass at 6 RGB units and 1 HUD pixel. The deliberately larger SD text is documented as incompatible with exact broadcast cap and digit dimensions. The 16:9 label has 12 ink scanlines, 2.654-pixel effective stems and no skipped digit texel columns. Auto watermark tests execute the weekday site with and without the extended calendar. Native CPU execution and software rasterization do not prove GPU or played-game appearance.",
-        "status": "not-tested"
+        "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only. TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -11190,7 +11872,7 @@
         "A route edit may select only a donor and target assignment from the same canonical PLAY resource. The writer copies the donor descriptor word and repoints the target to the donor's existing stock chain.",
         "The compiler reparses the complete replacement, changes only the target's two four-byte fields, refuses duplicate targets and orphaned source chains, and never authors, moves, or resizes node data.",
         "Creates inhabit only the fixed 0x13390 body: proved-empty formation, aux, and play slots plus the name pool's verified zero tail; capacities 50/270 are enforced and no allocation grows or relocates.",
-        "A created formation or play reuses its donor's bytes and name pointer unless a custom name is supplied; a menu link inherits the formation's existing selection group unless one is chosen explicitly (0-3), and group-bit gameplay semantics are not claimed.",
+        "A created formation or play reuses its donor's bytes and name pointer unless a custom name is supplied; a menu link lists a play once per formation (a slot the formation already has for the play is kept) and goes in group 3 unless one is chosen explicitly (0-3; groups 0-2 hold one play each, so choosing one moves its previous play to group 3), and group-bit gameplay semantics are not claimed.",
         "Authored formations write the eleven 14-byte slot records (three x and three depth columns, all set equal, signed centimetres) plus the mirror-partner nibble; the record's header, eligible-slot list, package map, flags and aux link table stay the donor's unless a personnel category swap is requested (aux +0x48/+0x4C).",
         "Authored plays append new 8-byte node chains to the book's node pool (count word at +0x40 bumped, zero tail verified, 3,500-node capacity), rewrite only the eleven descriptor/pointer fields of the created play, and must pass the ported retail validator (chain grammar, side nibble, feature byte, ball-possession simulation, handoff pairing); the descriptor high byte is inherited from the donor slot.",
         "Node operands are encoded with the retail per-opcode encoders (bit-exact round trip on all 91,833 stock nodes); opcode 0x19 is refused because the game refuses it, and motion/link chains (0x1A) are editable only as raw operands.",
@@ -11670,6 +12352,79 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_allegiant_model status <source>",
+        "module": "mod_editor/core/nfl2k5_allegiant_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_allegiant_model.py",
+        "data/nfl2k5_allegiant_model/pins.json",
+        "docs/allegiant_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Allegiant Stadium for the Raiders; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Raiders' packages to it and lends it the Raiders' field art from its folder."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_allegiant",
+      "input_constraints": [
+        "Nine pinned stretches (s20 Raiders, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Allegiant Stadium: the charcoal bowl in four stacks with the heights measured on three solved photo poses, the fixed roof's dark steel ring and ETFE dome with its floodlights, the lanai's curved glass on the drum's north face with its deck, header and name and the Al Davis torch, the south primary board on the live feed between its stat panels with the game's digits and the name over it, the two north boards turned over the corner seats, the black glass drum with its white light lines and the LED mesh toward I-15 on the OpenStreetMap outline, the plazas, lots, roads and neighbours, the Strip's towers and the Luxor's pyramid, the ranges on the horizon) and the intro_cameras SCNE (five new flyover shots on s20's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Raiders end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on. The surface word stays grass.",
+        "The s20 row in the main ROST: Allegiant Stadium, Las Vegas, NV, capacity 65,000; the indoor word becomes 1 (the roof is fixed: no rain or snow falls), the grass word and the climate as retail.",
+        "34 authored PNGs in data/nfl2k5_allegiant_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_allegiant_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Raiders home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the three boards on the feed, the lanai's glass with the Strip beyond it and the torch, the end zones and midfield, the roof's ring and floodlights, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/allegiant_model/README.md",
+          "tests/mod_editor/test_nfl2k5_allegiant_model.py"
+        ],
+        "scope": "The Allegiant model was seen in a headless xemu lab: Raiders day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Raiders bundles and the s20 stadium row; Off leaves the source as it is (an already-built source stays Allegiant Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s20 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s20 row of the main ROST",
+        "hash_pins": [
+          "63632a745ff023a328d16ef92e41baf9bca707308a8fc0818d1c39dd37c0dbed",
+          "c4ed97e06517d20d92969afa10654611811abc1aa1bdb72050c2b9b2b17a41d4",
+          "5bb67457acaba6e7865d7ba8152e31b21d29a5f3a669277172c31b86cb7ed6b9",
+          "930def168e3c79e0106cb97c2eed5441212aaf09c3b0df2d158bd04464a85fc0"
+        ],
+        "resource": "archive entries s20{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s20",
+        "retail_file": "the vc_53450030 archive packs holding the Raiders stadium bundles, and the main roster"
+      },
+      "summary": "The Las Vegas Raiders' Allegiant Stadium (opened 2020) built as a new stadium model to the real building, its heights measured on three solved photo poses: the charcoal bowl under the fixed ETFE roof and its dark steel ring, the lanai's glass wall with the Strip beyond it and the Al Davis torch, the south primary board and the two north boards (triangulated, 5,978 sq ft each) on the live feed, the black glass drum with its light lines and the LED mesh toward I-15, the lots, the Strip's towers and the ranges, a new pregame flyover with exterior passes, a grass field in bands with the Raiders' 2026 end zones and midfield, and the name Allegiant Stadium on the s20 row (indoor: the roof is fixed). Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Allegiant Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_allegiant_model"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_modern_arrowhead status <source>",
         "module": "mod_editor/core/nfl2k5_modern_arrowhead.py",
         "operation": "write"
@@ -11707,8 +12462,8 @@
           "docs/modern_arrowhead/README.md",
           "tests/mod_editor/test_nfl2k5_modern_arrowhead.py"
         ],
-        "scope": "Offline byte receipts and decoder read-back only; no played or appearance outcome is witnessed.",
-        "status": "not-tested"
+        "scope": "The Arrowhead model was seen in a headless xemu lab: the Chiefs home venue in the lab and candidate C smoke run. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -11735,6 +12490,1378 @@
       "surface": "stadiums_fields",
       "title": "Modern Arrowhead (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_arrowhead"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_att_model status <source>",
+        "module": "mod_editor/core/nfl2k5_att_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_att_model.py",
+        "data/nfl2k5_att_model/pins.json",
+        "docs/att_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox AT&T Stadium for the Cowboys; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Cowboys' packages to it and lends it the Cowboys' field art from its folder."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_att",
+      "input_constraints": [
+        "Nine pinned stretches (s07 Cowboys, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (AT&T Stadium: the bowl with its club and suite levels, the 300 level and the tall upper deck, the Party Pass decks and the glass end walls, the centre-hung board with its four screens on the live feed, the dome closed over the field between its two arches, the leaning glass facade on the OpenStreetMap outline, the parking, roads and nearby buildings) and the intro_cameras SCNE (five new flyover shots on s07's own channels, two of them outside); s07 carries no cityscape; each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: turf in light and dark 5-yard bands (the retail turf quad's UVs remapped in place so the colour map runs goal line to goal line), the turf outside the field of play, the retail TEXAS STADIUM field marks cleared, and the 2026 venue art folder's Cowboys end zones and midfield composed over clean turf when that folder is given; composed before the Modern colour grade when that option is on. The surface word stays turf.",
+        "The s07 row in the main ROST: AT&T Stadium, Arlington, TX, capacity 80,000; the indoor word stays 1 (the roof is closed: no rain or snow falls, as retail), the turf word and the climate as retail.",
+        "30 authored PNGs in data/nfl2k5_att_model/art (the reviewed PNG catalog; plain type and plain stars only, no logos) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_att_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Cowboys home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the board's four screens on the feed, the end zones and midfield, the roof and arches, the Party Pass decks and the glass end walls, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/att_model/README.md",
+          "tests/mod_editor/test_nfl2k5_att_model.py"
+        ],
+        "scope": "The AT&T model was seen in a headless xemu lab: Cowboys day, night and flyover; an early centre board showed white and was sent back for repair. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the stadium and intro-camera stretch of the nine Cowboys bundles and the s07 stadium row; Off leaves the source as it is (an already-built source stays AT&T Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s07 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s07 row of the main ROST",
+        "hash_pins": [
+          "b48b1b75b8b5cb7614493a6bb9f2c7f2e613714a5111016012967ccfab3d3ea8",
+          "11e582de3fe4b78b1388312af8d62b888d56e003243bb83ef70eeb8128cb2ecc",
+          "876bfd59b2c66a4bccb8705fb0ade92b5365d23cf8d39165cf8b6403a117e5dc",
+          "ee823b10b2b2240a3c77a39f6dc85fed2a44ced6c11338c5d65d77a356fc9611"
+        ],
+        "resource": "archive entries s07{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s07",
+        "retail_file": "the vc_53450030 archive packs holding the Cowboys stadium bundles, and the main roster"
+      },
+      "summary": "The Dallas Cowboys' AT&T Stadium (opened 2009) built as a new stadium model to the real building: the bowl with its tall upper deck, the Party Pass decks and the glass end walls, the centre-hung board with its four screens on the live feed, the dome closed between its two arches, the leaning glass facade on the real footprint and the site, a new pregame flyover with exterior passes, a turf field in bands with the Cowboys' 2026 end zones and midfield, and the name AT&T Stadium on the s07 row; the roof stays closed. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "AT&T Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_att_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_board_kit status <source>",
+        "module": "mod_editor/core/nfl2k5_board_kit.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_board_kit.py",
+        "data/nfl2k5_board_kit/s02.json",
+        "data/nfl2k5_board_kit/s04.json",
+        "data/nfl2k5_board_kit/s06.json",
+        "data/nfl2k5_board_kit/s08.json",
+        "data/nfl2k5_board_kit/s09.json",
+        "data/nfl2k5_board_kit/s13.json",
+        "data/nfl2k5_board_kit/s17.json",
+        "data/nfl2k5_board_kit/s21.json",
+        "data/nfl2k5_board_kit/s22.json",
+        "data/nfl2k5_board_kit/s26.json",
+        "data/nfl2k5_board_kit/s27.json",
+        "data/nfl2k5_board_kit/s29.json",
+        "data/nfl2k5_board_kit/s30.json",
+        "data/nfl2k5_board_kit/s37.json",
+        "data/nfl2k5_board_kit/pins/s02.json",
+        "data/nfl2k5_board_kit/pins/s04.json",
+        "data/nfl2k5_board_kit/pins/s06.json",
+        "data/nfl2k5_board_kit/pins/s08.json",
+        "data/nfl2k5_board_kit/pins/s09.json",
+        "data/nfl2k5_board_kit/pins/s13.json",
+        "data/nfl2k5_board_kit/pins/s17.json",
+        "data/nfl2k5_board_kit/pins/s21.json",
+        "data/nfl2k5_board_kit/pins/s22.json",
+        "data/nfl2k5_board_kit/pins/s26.json",
+        "data/nfl2k5_board_kit/pins/s27.json",
+        "data/nfl2k5_board_kit/pins/s29.json",
+        "data/nfl2k5_board_kit/pins/s30.json",
+        "data/nfl2k5_board_kit/pins/s37.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Modern stadium boards; Off in every preset. Needs a disc image; Off does not restore an already-built source. It runs after Modern colour and the 2026 venue art and keeps their work (it changes geometry only and adds no texture); Modern playing surfaces, run after it, keeps the boards."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_board_kit",
+      "input_constraints": [
+        "One hundred and twenty-six pinned stretches (s02 Ravens, s04 Panthers, s06 Bengals, s08 Broncos, s09 Lions, s13 Chiefs, s17 Saints, s21 Eagles, s22 Steelers, s26 Seahawks, s27 Buccaneers, s29 Commanders, s30 Browns, s37 Texans; day/afternoon/night x dry/rain/snow): the stadium SCNE of each bundle renovated in place from its own scene by the one reader of data/nfl2k5_board_kit/VENUE.json (the old boards, their frames and ad strips taken out; the new boards on the jumbo_tron feed at vertex colour 116, each cropped from the 640 x 448 feed picture to its own aspect; frames and structures in retail materials; the clock and score digits moved onto the new boards where the old boards carried them and left in place elsewhere (at Ford Field they stay on the fascias); the jumbotron markers moved to the boards' centres), at Cleveland also the 2014 end-zone LED ribbons (six, 2.5 ft high, on the upper decks' front fascias, their plain-type art in the old boards' freed lit slot, never a texture the 2026 venue art paints) and the Dawg Pound's upper rows behind the east board cut and closed by a glass-fronted fan area on white steel; refit in the retail stored span with the scratch word not above retail; every bundle and archive entry keeps its size; the decoded scenes stay under retail; no texture or material added or removed.",
+        "Composes with Modern colour (its field and detail sites untouched; its receipt takes the new bundle hashes) and with the 2026 venue art (its repainted stadium textures kept byte for byte; its receipt takes the new bundle hashes and it reads the bundles it did not paint as the kit's); runs after both and before Modern playing surfaces.",
+        "Board sizes and places from published facts: M&T Bank Stadium's 2017 end-zone boards (200 x 36 ft) and its four 2018-19 corner boards (33 x 44 ft) on their suites, Bank of America Stadium's 2014 boards (56 x 199 ft), Paycor Stadium's 2015 boards (130 x 36 ft), Empower Field at Mile High's 2023 board (225 x 72 ft) and its two north corner displays (98 x 30 ft, grown in the retail corner housings at their tilt), Ford Field's 2017 end-zone boards (152 x 39.5 ft) and their four flanking displays (59 x 13 ft), Arrowhead Stadium's 2019 west board (37 x 150 ft) and the Drum Deck, the Superdome's 2016 boards (333 x 38 ft, the team's figure), Lincoln Financial Field's 2014 boards (192 x 27 ft at the north end, 160 x 27 ft at the south), Acrisure Stadium's 2014 northwest board (35 x 72 ft; the open end's 2007 board is the retail screen's size), Lumen Field's 2022 north boards (39.9 x 70.3 ft), Raymond James Stadium's 2016 end-zone boards (160 x 60 ft) and four corner displays (61 x 43 ft), Northwest Stadium's 2023 end-zone boards (95.1 x 27.3 ft), Huntington Bank Field's 2014 boards (192 ft wide at the top, 178 in the middle, 132 at the bottom, 40 ft high, on their structures) and NRG Stadium's 2013 boards (277 x 52 ft); no sponsor marks; the only new art is the ribbons' plain type in the team's colours (data/nfl2k5_board_kit/art, the reviewed PNG catalog); no retail bytes shipped.",
+        "The rule on the 2026 venue art: the kit never covers the venue art on a structure that still stands in 2026 (no ribbon over the fascia sign bands it repaints); it cuts a venue-art panel that belongs to a board housing the renovation replaced (the old boards' ad strips, frames and housings) rather than leave it behind a new surface; covered_venue_art checks every venue.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness a home game in each stadium on the kit by day and one at night: the new boards on the live picture (no white feedback, no stretch), the clock and scores on them where the old boards carried them (on the fascias at Ford Field), nothing left floating or missing where the old boards stood, the Cleveland boards on their structures, and the game cameras."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_board_kit.py"
+        ],
+        "scope": "The first board kit was seen on candidate E at the Superdome, Huntington Bank Field and Empower Field, with live video. Later venues and board passes remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the stadium stretch of the one hundred and twenty-six Ravens, Panthers, Bengals, Broncos, Lions, Chiefs, Saints, Eagles, Steelers, Seahawks, Buccaneers, Commanders, Browns and Texans bundles; Off leaves the source as it is (an already-built source keeps the new boards)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the one hundred and twenty-six s02, s04, s06, s08, s09, s13, s17, s21, s22, s26, s27, s29, s30 and s37 bundles of the vc_53450030 archive packs (the stadium chunk)",
+        "hash_pins": [
+          "a54fbdd6b319068852f0335e1b95eafc1ffd72bf1e8bd3416897ef004e3e3004",
+          "aa1c3d08317ba3176bed77f27f537615f2290d63d0bd8e0182269db3bf366823",
+          "552534d8724d47806bc6019e629220ee2828aec902773fb7e89db4581d736b1a",
+          "430edcb90ccccf2b2173a5e8cb8a05a858dd88353b9a4337fb49f13c326dc6ff",
+          "0cd2a449e7154def9c4935b1413e69928459d09a4cb92edc736e1faa325c033c",
+          "c29bc47e355d3d799693ed2ddc47be0158fdab52bebdf1d480ad8a888c5d2280",
+          "a79bb2cc67c20f1efe374c8215005781693f57f57bbce509b507c3cb1be294c5",
+          "6f653b2677f044abc17dac9be57a192abac27136d2d7f1b0fced8c6e1f709ba0",
+          "b1e31ce5fa8f6af94ad11f6b19a15d78690c3519ab41fc1b0fb2146344591888",
+          "04b2d50031954ebdebfe2a21ea8b094fd2473dfab27b373034fdc6e884bc3448",
+          "c73fe2dd46c809df49033de6c33c062a834eea0d1cbfdcc260d99a1dfa84944c",
+          "74423e72d875b659a30681e8502d1db9ab0c3a488492e6d8d46d336296317751",
+          "8dd4329e44ad616882ab220af7eb8d8b108060b95246b84bfba778b6d6316e2b",
+          "c3ec34fae3d78f9fbaea1f38215dca486474243fc183dc12badd534122ab47e7",
+          "c4a88cf48f8bc0fbe7cb0d8c6edb952dd4b259cb55c4a62ab650a9e0a55fff12",
+          "a31f9560fb3861d3abb81c7f8474a999dd7220ce781c3bc074128938da69fa64",
+          "6edd0f5e9a25edb2c2e2f66c150f053e69995597915caf237ae185867cd07751",
+          "5f5925fe610b46e539bb60ccb6f32dd6807dfa05bd59c71e740766670876c46c",
+          "b960f11fd9110e43d589914b33b5d9256f0c07e8548a4db5c8f69a302b9c1c88",
+          "f0f3b75e9ba8bb687ecd70ce047660c1a9eea508299907e4431520ae481cdb3e",
+          "159b0edd1bcf2c634d6879712f00c77eae30837569646044db8fee6eb58bb54a",
+          "f6e15d3a1caed5c26a03ba39cc4cf620dac8b2feaa89c8ad50dff3801eeee9d6",
+          "e3dfe580cef5c505f6f4dc170ff157be8d4fa4f7970137bd65e9a9b10e7f15d3",
+          "6cf5aac2ac31c78767a8b89f9494115245b34c7453009142544310895ef8a485",
+          "fc7f110ffd248e6b3eb6f4caf336a702969f6be9356bbaccab1f1831135d77e1",
+          "12c8eafd6f41cdc61ac80e541e866bd231dad2136cb7e78e87101f3dc477d449",
+          "3d94ac9d7d4c69c13f8541246540401a08c09b124b478a0cadebe78c795c2713",
+          "1de24319871bddb6c1ee47928b7da375262916cfacfc3f3df2013e74eb3fa297"
+        ],
+        "resource": "archive entries s02, s04, s06, s08, s09, s13, s17, s21, s22, s26, s27, s29, s30 and s37{d,a,n}{d,r,s}.iff: the stadium scene",
+        "retail_file": "the vc_53450030 archive packs holding the Ravens, Panthers, Bengals, Broncos, Lions, Chiefs, Saints, Eagles, Steelers, Seahawks, Buccaneers, Commanders, Browns and Texans stadium bundles"
+      },
+      "summary": "The renovations since 2004 in fourteen stadiums the teams still play in, on the retail stadium models: the end-zone video boards at their 2026 size and place, each on the live picture cropped to its own shape, the old boards and frames taken out, the clock and scores moved onto the new boards where the old boards carried them and left in place elsewhere (at Ford Field they stay on the fascia ribbon), at Cleveland the end-zone LED ribbons and the Dawg Pound's fan area, and at Denver the north corner displays (M&T Bank Stadium, Bank of America Stadium, Paycor Stadium, Empower Field at Mile High, Ford Field, Arrowhead Stadium, Caesars Superdome, Lincoln Financial Field, Acrisure Stadium, Lumen Field, Raymond James Stadium, Northwest Stadium, Huntington Bank Field, NRG Stadium). Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern stadium boards (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_board_kit"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_everbank_model status <source>",
+        "module": "mod_editor/core/nfl2k5_everbank_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_everbank_model.py",
+        "data/nfl2k5_everbank_model/pins.json",
+        "docs/everbank_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkboxes EverBank Stadium for the Jaguars and its 2026 construction (on with the stadium by default; untick it for the 2025 stadium); the stadium is Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Jaguars' packages to it and lends it the Jaguars' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_everbank",
+      "input_constraints": [
+        "Nine pinned stretches (s12 Jaguars, day/afternoon/night x dry/rain/snow), each in two variants (the 2026 construction, on by default, and the 2025 stadium): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (EverBank Stadium: the 100, 200 and 400 levels, the two 2014 end zone boards (362 ft long) on the live feed between their stat panels with the game's digits on the south board's, the north end's pool deck, the light banks, the building on the OpenStreetMap outline, Daily's Place under its fabric roof, the surroundings from st3's environment kit outside the plaza (lots with their cars, roads, parks, water, trees and blocks from OpenStreetMap, the far ground to the haze and the horizon band at 1,800 m); with the construction the 400 level stripped to bare risers without crowd, the canopy's steel trusses round the outside, three tower cranes, the lights lowered into the upper section, the pool deck closed behind fencing and safety netting) and the intro_cameras SCNE (five new flyover shots on s12's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Jaguars end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on; Modern playing surfaces, run after it, paints the grass on its palette for s12. The surface word stays grass.",
+        "The s12 row in the main ROST: the 2026 venue names' strings (EverBank Stadium, Jacksonville, FL; either order), capacity 42,507 with the construction or 67,814 without; the indoor word stays 0 (open air), the grass word and the climate as retail.",
+        "36 authored PNGs in data/nfl2k5_everbank_model/art (the reviewed PNG catalog; plain type only, no logos or players; the lattices and meshes see-through) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_everbank_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Jaguars home game by day and one at night with the construction on, and one by day with it off: the flyover (every shot, the exterior passes with the cranes and trusses included), the coin toss and the game cameras; check both end zone boards on the feed and the score on the south one, the stripped 400 level without crowd and the lowered lights (on), the full upper decks and the lights on their masts (off), the end zones and midfield, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/everbank_model/README.md",
+          "tests/mod_editor/test_nfl2k5_everbank_model.py"
+        ],
+        "scope": "The EverBank model was seen in a headless xemu lab: the 2026 construction bowl and live boards on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          },
+          {
+            "allowed": "true (default) or false; read only with enabled",
+            "name": "construction",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Jaguars bundles and the s12 stadium row; construction (modern_everbank_construction, on by default) builds the 2026 season's construction and capacity, off the 2025 stadium and capacity. Off leaves the source as it is (an already-built source stays EverBank Stadium's)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s12 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s12 row of the main ROST",
+        "hash_pins": [
+          "3baabdf9e98ed284216cc27445856f7f8a9060dd1356ab033ad079327f90e587",
+          "9cadc8092a99e3d0a800080b1d0266ba7289850b4cd8c5f856c59a11b9dece79",
+          "3e6daaa0559282ca150e6552cc0241592c3a49a887f7a8d5a66442a45e42d528",
+          "e5c6be1dc68e0e1719c31e846c7c797aff0af967f75381e803a66b55c00151e5",
+          "cd95bcaa91f13b2af7cd2578532a85c6adf67cd8c69808d75d4765a6e31e0088",
+          "574f94744189caa2dd64cda003a1a980e44efaf105361cf01d4f5a1bb0d229f3"
+        ],
+        "resource": "archive entries s12{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s12",
+        "retail_file": "the vc_53450030 archive packs holding the Jaguars stadium bundles, and the main roster"
+      },
+      "summary": "The Jacksonville Jaguars' EverBank Stadium as the 2026 season finds it, built as a new stadium model: the bowl with its club levels, the two 2014 end zone boards on the live feed with the score, the north pool deck, Daily's Place, and the 2026 construction as its own switch (on by default: the 400 level stripped to bare risers, the canopy's trusses, three tower cranes, the lowered lights and safety netting; off: the 2025 stadium), a new pregame flyover with exterior passes, the grass in bands with the Jaguars' 2026 end zones and midfield, and EverBank Stadium with the season's capacity on the s12 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "EverBank Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_everbank_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_gillette_model status <source>",
+        "module": "mod_editor/core/nfl2k5_gillette_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_gillette_model.py",
+        "data/nfl2k5_gillette_model/pins.json",
+        "docs/gillette_model/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Gillette Stadium for the Patriots; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Patriots' packages to it and lends it the Patriots' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_gillette",
+      "input_constraints": [
+        "Nine pinned stretches (s16 Patriots, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Gillette Stadium after the 2021 to 2023 north end renovation: the 2002 bowl with its club tier, suites and upper decks, the 2023 convex north board on its new structure between its stat wings with the name over it, the lighthouse on the north plaza, the 2010 south board between its stat panels with the game's digits, the light banks, the building's walls on the OpenStreetMap outline, the surroundings from st3's environment kit outside the plaza (lots with their cars, roads, parks, water, trees and blocks from OpenStreetMap, the far ground to the haze and the horizon band at 1,800 m)) and the intro_cameras SCNE (five new flyover shots on s16's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: the playing surface in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the surface outside the field of play, and the 2026 venue art folder's Patriots end zones and midfield composed over the clean surface when that folder is given (s16 lays both ends on the same three textures, so each end's panels are split onto their own halves, the Mercedes-Benz model's method); composed before the Modern colour grade when that option is on; Modern playing surfaces, run after it, paints the 2026 turf on its palette for s16. The surface word stays retail.",
+        "The s16 row in the main ROST: Gillette Stadium, Foxborough, MA (retail spells it Foxboro), capacity 64,628; the indoor word stays 0 (open air), the grass word and the climate as retail.",
+        "26 authored PNGs in data/nfl2k5_gillette_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_gillette_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness a Patriots home game by day, one at night and a forced snow game: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the north and south boards on the feed, the lighthouse, the end zones and midfield (each end the right way round), and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/gillette_model/README.md",
+          "tests/mod_editor/test_nfl2k5_gillette_model.py"
+        ],
+        "scope": "The Gillette model was seen in a headless xemu lab: the lighthouse, north end and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Patriots bundles and the s16 stadium row; Off leaves the source as it is (an already-built source stays Gillette Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s16 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s16 row of the main ROST",
+        "hash_pins": [
+          "9cfb084ca94003169c95a177498beb6f884495cd4625e1bd80d7bb11b9811c48",
+          "1e5fbfe851e5c505f9129249c46d49bb60aef0e931f59e4b6ad828b118faaacb",
+          "1bf261ef9dc96dbcdd5530eb671ee94e16a7712f5ab304e53473678024f6a1de",
+          "615d8dd29fccaa4e8b1d5e93a6800ec2b032388622761a454701434962d2e573"
+        ],
+        "resource": "archive entries s16{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s16",
+        "retail_file": "the vc_53450030 archive packs holding the Patriots stadium bundles, and the main roster"
+      },
+      "summary": "The New England Patriots' Gillette Stadium as it stands after the 2021 to 2023 north end renovation, built as a new stadium model to the real building: the 2002 bowl, the 2023 convex north board with the lighthouse behind it, the south board, both on the live feed, the building on the real footprint with Patriot Place, a new pregame flyover with exterior passes, the 2026 field with the Patriots' end zones and midfield, and today's capacity on the s16 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Gillette Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_gillette_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_hard_rock_model status <source>",
+        "module": "mod_editor/core/nfl2k5_hard_rock_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_hard_rock_model.py",
+        "data/nfl2k5_hard_rock_model/pins.json",
+        "docs/hard_rock_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Hard Rock Stadium for the Dolphins; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Dolphins' packages to it and lends it the Dolphins' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_hard_rock",
+      "input_constraints": [
+        "Nine pinned stretches (s14 Dolphins, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Hard Rock Stadium since its 2016 modernization: the aqua bowl in four stacks, the white shade canopy over the seats with its plan measured on the orthophoto and its heights on a solved photo pose, the translucent ETFE ring round the opening, the edge truss with its lamps and arches, the four white spires with their cables and the eight super columns, the four corner boards on the live feed between their stat panels with the game's digits, the white building with its spiral ramps and the name on the canopy's fascia on the OpenStreetMap outline, the surroundings from st3's environment kit outside the plaza (lots with their cars, roads, parks, water, trees and blocks from OpenStreetMap, the far ground to the haze and the horizon band at 1,800 m)) and the intro_cameras SCNE (five new flyover shots on s14's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Dolphins end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on; Modern playing surfaces, run after it, paints the grass on its palette for s14. The surface word stays grass.",
+        "The s14 row in the main ROST: Hard Rock Stadium, Miami, FL (the 2026 venue names' own strings, so the two compose in either order), capacity 64,767; the indoor word stays 0 (the canopy leaves the field open: rain falls), the grass word and the climate as retail.",
+        "33 authored PNGs in data/nfl2k5_hard_rock_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_hard_rock_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Dolphins home game by day, one at night and a forced rain game: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the four corner boards on the feed, the canopy with its ETFE ring and the spires, the end zones and midfield, the rain falling onto the open field, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/hard_rock_model/README.md",
+          "tests/mod_editor/test_nfl2k5_hard_rock_model.py"
+        ],
+        "scope": "The Hard Rock model was seen in a headless xemu lab: the canopy, spires, exterior and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Dolphins bundles and the s14 stadium row; Off leaves the source as it is (an already-built source stays Hard Rock Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s14 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s14 row of the main ROST",
+        "hash_pins": [
+          "41adaee558a90e06cbbd3a47753fea8339f09e728347dc1d0b0684e76e6f1173",
+          "1883f50e66001bd3f82f3fc63f60633a9d4178af70d735dffb5b5c3b44e8e91d",
+          "1cc8ec3ca37e416eec9ac2d50a787e5f3a94361e2a3d227577ee167d7131b173",
+          "bc5bc23b4fb818e4c78e92db466930afaa9067611f9feae529e5cd49940ae3de"
+        ],
+        "resource": "archive entries s14{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s14",
+        "retail_file": "the vc_53450030 archive packs holding the Dolphins stadium bundles, and the main roster"
+      },
+      "summary": "The Miami Dolphins' Hard Rock Stadium as it stands since its 2016 modernization, built as a new stadium model to the real building: the aqua bowl under the white shade canopy with its translucent ring round the open field, the four spires and their cables, the four corner boards on the live feed, the building with its spiral ramps on the real footprint, a new pregame flyover with exterior passes, the 2026 grass with the Dolphins' end zones and midfield, and the name Hard Rock Stadium on the s14 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Hard Rock Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_hard_rock_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_highmark_model status <source>",
+        "module": "mod_editor/core/nfl2k5_highmark_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_highmark_model.py",
+        "data/nfl2k5_highmark_model/pins.json",
+        "docs/highmark_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Highmark Stadium for the Bills; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Bills' packages to it and lends it the Bills' field art from its folder."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_highmark",
+      "input_constraints": [
+        "Nine pinned stretches (s03 Bills, day/afternoon/night x dry/rain/snow): the cityscape SCNE collapsed and folded into the stretch, the stadium SCNE written from scratch by nfl2k5_scne_builder (the new Highmark Stadium: the steep stacked bowl in its four stacks, the canopy over the stands with its floodlights and blue LED lines, the two end-zone boards on the live feed with the Highmark Stadium signs, the silver-panelled facade on the OpenStreetMap outline with the north portal, the parking, roads and the old stadium's cleared site) and the intro_cameras SCNE (five new flyover shots on s03's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: Kentucky bluegrass mown in 5-yard bands (the retail turf quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Bills end zones and midfield composed over clean grass when that folder is given (each end its own panels when the folder carries a south set: the retail panels share three textures, so each texture carries one end in each half); rain and snow looks tinted from the dry art; composed before the Modern colour grade when that option is on. The surface word stays turf.",
+        "The s03 row in the main ROST: Highmark Stadium, Orchard Park, NY, capacity 60,108; open air (rain and snow still fall), the turf word and the climate as retail.",
+        "34 authored PNGs in data/nfl2k5_highmark_model/art (the reviewed PNG catalog; the Highmark Stadium wordmark cut from the official logo, never redrawn) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_highmark_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Bills home game by day, one at night and one in snow: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the boards' feed, the end zones and midfield, the canopy, the name on every screen, the crowd and the snow falling on the field."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/highmark_model/README.md",
+          "tests/mod_editor/test_nfl2k5_highmark_model.py"
+        ],
+        "scope": "The Highmark model was seen in a headless xemu lab: Bills day, night and snow. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the cityscape, stadium and intro-camera stretch of the nine Bills bundles and the s03 stadium row; Off leaves the source as it is (an already-built source stays Highmark)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s03 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s03 row of the main ROST",
+        "hash_pins": [
+          "7b103d8845e69c49bceea39b00d350aa20d8e57d06a08b4f1c4ca56a2882b4a1",
+          "54efde6ab9953b0617f93553551057bd81520d2437af0bfe19a21c67522a1282",
+          "011740844a7e4237e1aefe2953a1813ca64e09091e7c33e56bbc87a60a7ee37d",
+          "3363d7c02ad27feae530182ac93cc2fc9fde8c2cddd6684985152d2f80b3aa8f"
+        ],
+        "resource": "archive entries s03{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s03",
+        "retail_file": "the vc_53450030 archive packs holding the Bills stadium bundles, and the main roster"
+      },
+      "summary": "The Buffalo Bills' new Highmark Stadium (opened 2026) built as a new stadium model to the real building: the steep stacked bowl with its red-to-royal seats, the canopy over the stands, two end-zone boards carrying the live feed, the silver facade on the real footprint, the site and the old stadium's cleared lot, a new pregame flyover with exterior passes, a bluegrass field mown in bands with the Bills' 2026 end zones and midfield, and the name Highmark Stadium on the s03 row; open to rain and snow. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Highmark Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_highmark_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_lambeau_model status <source>",
+        "module": "mod_editor/core/nfl2k5_lambeau_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_lambeau_model.py",
+        "data/nfl2k5_lambeau_model/pins.json",
+        "docs/lambeau_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Lambeau Field for the Packers; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Packers' packages to it and lends it the Packers' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_lambeau",
+      "input_constraints": [
+        "Nine pinned stretches (s10 Packers, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Lambeau Field as it stands: the bowl of aluminium bleachers, the suites' glass over the sidelines, the 2013 south end zone expansion's two upper tiers, the two 2023 end zone boards (48 x about 220 ft) on the live feed between their stat panels with the game's digits on the south board's and their green backs carrying the name, the north end's rooftop terrace, the side scoreboards, the LED lights on their masts, the white roofs out to the brick and green walls with the tower gates and the atrium's block, the surroundings from st3's environment kit outside the plaza (lots with their cars, roads, parks, water, trees and blocks from OpenStreetMap, the far ground to the haze and the horizon band at 1,800 m)) and the intro_cameras SCNE (five new flyover shots on s10's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Packers end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on; Modern playing surfaces, run after it, paints the grass on its palette for s10. The surface word stays grass.",
+        "The s10 row in the main ROST: its strings stay (Lambeau Field, Green Bay, WI; the 2026 venue names leave it), capacity 81,441; the indoor word stays 0 (open air), the grass word and the climate as retail.",
+        "27 authored PNGs in data/nfl2k5_lambeau_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_lambeau_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Packers home game by day, one at night and a forced snow game: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check both end zone boards on the feed and the score on the south one, the south end's upper tiers, the lights on their masts, the end zones and midfield, the snow falling into the open bowl, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/lambeau_model/README.md",
+          "tests/mod_editor/test_nfl2k5_lambeau_model.py"
+        ],
+        "scope": "The Lambeau model was seen in a headless xemu lab: the brick bowl, south end and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Packers bundles and the s10 stadium row's capacity; Off leaves the source as it is (an already-built source stays Lambeau Field's)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s10 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s10 row of the main ROST",
+        "hash_pins": [
+          "c7bdff363dcb2957dd9b8d3aef990ea9a1b0369e3343334168daaf370f1aba6d",
+          "4b05dee53a35959c219e4c482c246d9994e3eab8ce5fd317ac3fa889dc369688",
+          "13cca2066764a2909442b3066bdf37d98e4bb7df521a371f9fe4925b09f2d40b",
+          "9aef6c6e2e94ba37c2fffbc87861a2234de055084473979eb717580df1e4c912"
+        ],
+        "resource": "archive entries s10{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s10",
+        "retail_file": "the vc_53450030 archive packs holding the Packers stadium bundles, and the main roster"
+      },
+      "summary": "The Green Bay Packers' Lambeau Field as it stands today, built as a new stadium model to the real building: the bowl of bleachers with the suites over the sidelines, the 2013 south end zone expansion, the two 2023 end zone boards on the live feed with the score, the north end's rooftop terrace, the LED lights on their masts, the brick and green building with its tower gates, a new pregame flyover with exterior passes, the grass in bands with the Packers' 2026 end zones and midfield, and today's capacity on the s10 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Lambeau Field (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_lambeau_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_levis_model status <source>",
+        "module": "mod_editor/core/nfl2k5_levis_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_levis_model.py",
+        "data/nfl2k5_levis_model/pins.json",
+        "docs/levis_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Levi's Stadium for the 49ers; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the 49ers' packages to it and lends it the 49ers' field art from its folder."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_levis",
+      "input_constraints": [
+        "Nine pinned stretches (s25 49ers, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Levi's Stadium: the red bowl in four stacks, the suite tower along the west sideline with its club, suite and press levels, balconies, roof and light truss, the east upper deck with its lights, the two end-zone 4K boards on the live feed between their stat panels with the plain-type name over each, the precast west face with its glass curtain and the open steel frame round the other sides on the OpenStreetMap outline, the decks, lots, roads, light rail, creek, neighbours and the hills) and the intro_cameras SCNE (five new flyover shots on s25's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's 49ers end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on. The surface word stays grass.",
+        "The s25 row in the main ROST: Levi's Stadium, Santa Clara, CA, capacity 68,500; the indoor word stays 0 (open: rain and snow fall), the grass word and the climate as retail.",
+        "37 authored PNGs in data/nfl2k5_levis_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_levis_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a 49ers home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the two boards on the feed, the end zones and midfield, the suite tower and its lights, the east upper deck's lights, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/levis_model/README.md",
+          "tests/mod_editor/test_nfl2k5_levis_model.py"
+        ],
+        "scope": "The Levi's model was seen in a headless xemu lab: 49ers day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine 49ers bundles and the s25 stadium row; Off leaves the source as it is (an already-built source stays Levi's Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s25 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s25 row of the main ROST",
+        "hash_pins": [
+          "ba0e1c95200155c602eea10b8395378d4c75989f0bbef11546bae1af3f668aec",
+          "b13336f4ec04d622ab4e6c1a7448d33abb8a61aca262cd893bef45925a84d519",
+          "dd23e78790ce5fea1dad06fc6fd6b7c8669efc684f75b33d3ef5625c15f5f96e",
+          "fbb061bf84bc0f87bbb5943620cf4fd79dabe7d781171422a472fa793883c68b"
+        ],
+        "resource": "archive entries s25{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s25",
+        "retail_file": "the vc_53450030 archive packs holding the 49ers stadium bundles, and the main roster"
+      },
+      "summary": "The San Francisco 49ers' Levi's Stadium (opened 2014; the 2025 4K boards) built as a new stadium model to the real building: the red bowl with the suite tower along the west sideline, the steep east upper deck with its lights, the two end-zone boards on the live feed, the precast west face and the open steel frame on the real footprint and the site with its hills, a new pregame flyover with exterior passes, a grass field in bands with the 49ers' 2026 end zones and midfield, and the name Levi's Stadium on the s25 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Levi's Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_levis_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_lucas_oil_model status <source>",
+        "module": "mod_editor/core/nfl2k5_lucas_oil_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_lucas_oil_model.py",
+        "data/nfl2k5_lucas_oil_model/pins.json",
+        "docs/lucas_oil_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Lucas Oil Stadium for the Colts; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Colts' packages to it and lends it the Colts' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_lucas_oil",
+      "input_constraints": [
+        "Nine pinned stretches (s11 Colts, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (Lucas Oil Stadium: the blue bowl in four stacks, the gabled roof on the axis drawn closed with its two retractable panels, the fixed roof and the trusses, the north window with downtown's towers beyond it, the wordmark and the Colts' banners, the two corner boards on the live feed with auxiliary boards over them, the brick and limestone fieldhouse with its corner towers on the OpenStreetMap outline, the lots, streets, rail, blocks and downtown) and the intro_cameras SCNE (five new flyover shots on s11's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail. s11 carries no cityscape.",
+        "The field scene of each bundle: the 2026 venue art folder's Colts end zones (each end its own retail textures) and midfield horseshoe in place when that folder is given, then the turf and the apron on the Modern playing surfaces palette for s11 (that option's own painter and fit: the synthetic look, the 2026 broadcast measured at Lucas Oil Stadium, the dome light); composed before the Modern colour grade when that option is on. The surface word stays turf.",
+        "The s11 row in the main ROST: Lucas Oil Stadium, Indianapolis, IN, capacity 67,000; the indoor word stays 1 (the roof drawn closed: no rain or snow), the turf word and the flat climate as retail.",
+        "40 authored PNGs in data/nfl2k5_lucas_oil_model/art (the reviewed PNG catalog; plain type, the Lucas Oil Stadium wordmark cut from its Wikimedia Commons public-domain file, never redrawn; no players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_lucas_oil_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Colts home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the two corner boards on the feed, the end zones and the midfield horseshoe, the north window and downtown through it, the gabled roof, the banners, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/lucas_oil_model/README.md",
+          "tests/mod_editor/test_nfl2k5_lucas_oil_model.py"
+        ],
+        "scope": "The Lucas Oil model was seen in a headless xemu lab: Colts day and flyover; the night route missed Team Select. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the stadium and intro-camera stretch of the nine Colts bundles and the s11 stadium row; Off leaves the source as it is (an already-built source stays Lucas Oil Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s11 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s11 row of the main ROST",
+        "hash_pins": [
+          "73b6108105c258909ac0f587d98eaf9f82f3f7af5931e6009b58918ecc94933d",
+          "da673aaf38125a65995d38d9fc2ff7da4489ab30c2bb91ee1ac255ff87302ef4",
+          "9bf537ba551091dbb0d6b2798237556cd46b4fece64262b8d96e3e748bed83ca",
+          "5f7f7d3d3409dfd082f4d88b569a88a8cf0da5fd476cd1803b65e587efe189f3"
+        ],
+        "resource": "archive entries s11{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s11",
+        "retail_file": "the vc_53450030 archive packs holding the Colts stadium bundles, and the main roster"
+      },
+      "summary": "The Indianapolis Colts' Lucas Oil Stadium (opened 2008) built as a new stadium model to the real building: the blue bowl under the gabled roof drawn closed, the north window with downtown beyond it, the two corner boards on the live feed, the Colts' banners, the brick fieldhouse with its corner towers on the real footprint, a new pregame flyover with exterior passes, the 2026 turf with the Colts' end zones and midfield horseshoe, and the name Lucas Oil Stadium on the s11 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Lucas Oil Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_lucas_oil_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_mercedes_benz_model status <source>",
+        "module": "mod_editor/core/nfl2k5_mercedes_benz_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_mercedes_benz_model.py",
+        "data/nfl2k5_mercedes_benz_model/pins.json",
+        "docs/mercedes_benz_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Mercedes-Benz Stadium for the Falcons; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Falcons' packages to it and lends it the Falcons' field art from its folder."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_mercedes_benz",
+      "input_constraints": [
+        "Nine pinned stretches (s01 Falcons, day/afternoon/night x dry/rain/snow; s01 has no cityscape): the stadium SCNE written from scratch by nfl2k5_scne_builder (Mercedes-Benz Stadium: the red bowl in four stacks with the heights measured on two solved photo poses, the Halo ring board with the live feed on six of its twelve panels at the picture's aspect and the game's digits on the two graphics panels over the sidelines, the fixed roof's steel round the opening and the eight-panel pinwheel closed, the window to the city at the east end with its bridge and name, towers, column board and the star panel, the facade's eight irregular units on the OpenStreetMap outline (silver-grey metal petals and glass of different widths, heights and leans turning over the roofline to the ring, which stands proud of them; the glass band round the concourses in large panes), the star on the big south-west petal and the south-east one and the venue's sign, the plaza, downtown and Midtown's towers of 60 m and more, the surroundings from st3's environment kit outside the plaza (lots with their cars, roads, parks, water, trees and blocks from OpenStreetMap, the far ground to the haze and the horizon band at 1,800 m) and a sky backdrop (s01's retail bundles carry none)) and the intro_cameras SCNE (five new flyover shots on s01's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: turf in 5-yard bands (the retail turf quad's UVs remapped in place so the colour map runs goal line to goal line), the turf outside the field of play, and the 2026 venue art folder's Falcons end zones and midfield composed over clean turf when that folder is given; composed before the Modern colour grade when that option is on. The surface word stays turf.",
+        "The s01 row in the main ROST: Mercedes-Benz Stadium, Atlanta, GA, capacity 71,000; the indoor word stays 1 (the roof is modelled closed), the surface word and the climate as retail.",
+        "38 authored PNGs in data/nfl2k5_mercedes_benz_model/art (the reviewed PNG catalog: plain type, the Mercedes-Benz star rendered from the official vector and the venue's sign from its own logo's wordmark, both pinned by SHA-256 in the art tool; no club logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_mercedes_benz_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Falcons home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the Halo's feed panels and the score on it, the window to the city, the pinwheel from inside and above, the petals with the star and the sign, the end zones and midfield, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mercedes_benz_model/README.md",
+          "tests/mod_editor/test_nfl2k5_mercedes_benz_model.py"
+        ],
+        "scope": "The Mercedes-Benz model was seen in a headless xemu lab: Falcons day and night; the early Halo text was inverted and was sent back for repair. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the stadium and intro-camera stretch of the nine Falcons bundles and the s01 stadium row; Off leaves the source as it is (an already-built source stays Mercedes-Benz Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s01 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s01 row of the main ROST",
+        "hash_pins": [
+          "63ba9409e1330aed7dca26f82b4b85ad108579f85f57e4f898b2732b43bba2a6",
+          "c6211915cc63c61a7be0d19c268a107ebb3ee5cc7b8e4f1eefbbcdf4377d8360",
+          "58e71859906ced218a934f61a5f36c822bad97cda028c1a40f347c04a179ed11",
+          "e1f0fef6a02eef5e483149bdf09dcf1289e6f19d1c603e29d2f97901e9f0137f"
+        ],
+        "resource": "archive entries s01{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s01",
+        "retail_file": "the vc_53450030 archive packs holding the Falcons stadium bundles, and the main roster"
+      },
+      "summary": "The Atlanta Falcons' Mercedes-Benz Stadium (opened 2017) built as a new stadium model to the real building, its heights and the Halo measured on two solved photo poses: the red bowl, the Halo ring board round the roof's opening with the live feed and the score, the eight-panel pinwheel roof closed, the window to the city at the east end with its bridge, towers and column board and downtown beyond it, the silver petals and glass of the facade turning over the roofline with the Mercedes-Benz star (the official vector) and the venue's sign (its own logo's wordmark) where the building shows them, the site and the skyline, a new pregame flyover with exterior passes, a turf field in bands with the Falcons' 2026 end zones and midfield, and the name Mercedes-Benz Stadium on the s01 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Mercedes-Benz Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_mercedes_benz_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_metlife status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_metlife.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_metlife.py",
+        "data/nfl2k5_modern_metlife/pins.json",
+        "docs/modern_metlife/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox; Off in every preset. Needs a disc image; Off does not restore an already-modern source."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_metlife",
+      "input_constraints": [
+        "Eighteen pinned bundles (s18 Giants Stadium and s19 Jets Stadium, day/afternoon/night x dry/rain/snow): the field SCNE (end zones, midfield) and the stadium SCNE (palette rules, signage patches, nine collapsed shapes, eighteen moved light-glow and flare markers) refit inside their fixed VC-LZ spans with the retail wrappers; only retail or already-modern bundles are accepted.",
+        "Twenty-nine authored RGBA8 PNGs in data/nfl2k5_modern_metlife compiled at build time into the retail P8 allocations (palette and mips regenerated); the crowd scenes, the grass colour map and bump map, the cityscape and the flyover cameras are untouched.",
+        "The main ROST's stadium records s18 and s19: name and display name become MetLife Stadium; the asset codes (the engine's file-name keys) stay.",
+        "Appearance in game is unwitnessed."
+      ],
+      "portme": [
+        "Witness a Giants home game and a Jets home game (flyover, field, stands) by day and at night; check the rim glows, flares and player shadows at night."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_metlife/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_metlife.py"
+        ],
+        "scope": "The MetLife appearance was seen with the complete model in Giants and Jets lab games. The separate skin-only route and later art revisions remain unwitnessed.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the eighteen Giants and Jets stadium bundles and the two ROST stadium records; Off leaves the source as it is (an already-modern source stays modern)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the eighteen s18/s19 bundles of the vc_53450030 archive packs, and the main ROST (outer 5)",
+        "hash_pins": [
+          "ae901ca8001d4be6a4e1c36a5a534bfb375d1a05854fda1bae133257942e2eee",
+          "fa61be23b5fb4c52e5e7b58388b5f8e3773cf9dee0c008b244a6a55466c13d1d",
+          "9c02c7712c84bead9cee486c41ac26dc275084f2f0f64a27e9ecd08e9d4aa1e5",
+          "820336c6248899ccac35a4e63bcc7893768cfe49db4102f6b2293479600fa4d1"
+        ],
+        "resource": "archive entries s18{d,a,n}{d,r,s}.iff and s19{d,a,n}{d,r,s}.iff: field scene and stadium scene; ROST outer 5 stadium records s18 and s19",
+        "retail_file": "the vc_53450030 archive packs holding the Giants and Jets stadium bundles"
+      },
+      "summary": "The Giants and Jets home stadium packages become MetLife Stadium: charcoal seats, silver steel, cool glass, team wall pads, LED ribbons and end-zone boards with MetLife and team content, the 2026 end zones and midfield marks, no rooftop press box and no light towers (their shapes collapse; the light glows move onto the roof rim), and the venue name MetLife Stadium, refit inside the retail spans. Off in every preset; the crowd, grass and cityscape stay retail; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern MetLife Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_metlife"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_metlife_model status <source>",
+        "module": "mod_editor/core/nfl2k5_metlife_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_metlife_model.py",
+        "tests/mod_editor/test_nfl2k5_scne_builder.py",
+        "data/nfl2k5_metlife_model/pins.json",
+        "docs/metlife_model/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox beside Modern MetLife Stadium (turning it on turns the skin on); Off in every preset. Needs a disc image; Off does not restore an already-modelled source."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_metlife_model",
+      "input_constraints": [
+        "Needs Modern MetLife Stadium (the skin) in the same build, or a source that already carries it: the model is written over the skin's stadium scene and reuses its signage, boards and crowd hooks.",
+        "Eighteen pinned stretches (s18 Giants and s19 Jets, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (the MetLife bowl, suite levels, four corner boards, the Solar Ring, the louvre facade, the plaza and gates) and the intro_cameras SCNE (five new flyover shots, one outside), each fitted in the retail stored span with a literal fill; every bundle and archive entry keeps its size, and the decoded scene is smaller than retail.",
+        "Four crowd outers (2550, 2845, 2551, 2846): the Giants and Jets superfan atlases get the 2026 marks over the user's own retail pixels, refit in their fixed spans.",
+        "Ten authored PNGs in data/nfl2k5_metlife_model/art and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_metlife_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness a Giants home game and a Jets home game by day, at night and in one weather: the flyover (every shot, the exterior first), the coin toss and the game cameras; check the corner boards, the ring glow at night and the crowd."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/metlife_model/README.md",
+          "tests/mod_editor/test_nfl2k5_metlife_model.py"
+        ],
+        "scope": "The MetLife model was seen in a headless xemu lab: Giants day and Jets night, with live boards and the exterior. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the stadium and intro-camera stretch of the eighteen Giants and Jets bundles and the four crowd outers; Off leaves the source as it is (an already-modelled source stays modelled)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the eighteen s18/s19 bundles of the vc_53450030 archive packs (stadium and intro_cameras chunks) and the four crowd outers",
+        "hash_pins": [
+          "1e6f0ffe3af39b12cf464fb65f09b36b00488320419611aae05f9c929486c25d",
+          "28c956ae4d4235f6ac27b22ffc4975d4d34adbf889fd3a534deb73e1936a38fc",
+          "6a80c5e1ce69f121a58115af77bf6e94391866a1b40003226af25c0906061759",
+          "3510d536cc277beb8298a4c7ee89dfe8db1f6aa3e6634cf0ee782a6beccb6ba4"
+        ],
+        "resource": "archive entries s18{d,a,n}{d,r,s}.iff and s19{d,a,n}{d,r,s}.iff: the stadium and intro_cameras scenes; outers 2550, 2845, 2551 and 2846: the crowds18 and crowds19 superfan atlases",
+        "retail_file": "the vc_53450030 archive packs holding the Giants and Jets stadium bundles and crowd scenes"
+      },
+      "summary": "MetLife Stadium rebuilt as a new stadium model for Giants and Jets home games, to the real plan and section: the 100, 200 and 300 levels with the suite and club levels, the four corner video boards carrying the live feed, the Solar Ring with its LED strip in team colour at night, the louvre facade on the OpenStreetMap footprint with the METLIFE STADIUM lettering, the plaza and gates, a new pregame flyover with an exterior shot, and 2026 superfans. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern MetLife model (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_metlife_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_practice_field_model status <source>",
+        "module": "mod_editor/core/nfl2k5_practice_field_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_practice_field_model.py",
+        "data/nfl2k5_practice_field_model/pins.json",
+        "docs/practice_field_model/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Modern practice facility; Off in every preset. Needs a disc image; Off does not restore an already-built source. With the 2026 venue art folder it takes the current NFL shield for midfield from the folder's league marks; Modern playing surfaces leaves s32 to it. Its sub-option, the practicing team's logo at midfield, has its own check box, also off."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_practice_field",
+      "input_constraints": [
+        "Nine pinned stretches (s32, the practice field every practice mode loads: main-menu Practice and Basic Training, franchise Free Practice, MyCareer practice; day/afternoon/night x dry/rain/snow): the cityscape collapsed (its grass, parking, road, tree and hills textures serve the new scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (a modern outdoor NFL practice facility: two more practice fields, natural grass and synthetic, with lines, numbers and yellow goalposts; the indoor field house; the glass team headquarters; windscreen fences, six LED light poles, three filming towers, training-camp bleachers with the game's crowd, a pavilion, a practice video board on the live feed, two practice clocks carrying the game's digits, sleds, dummies, JUGS machines and tents; lawns, parking, a road, tree lines and the horizon) and the intro_cameras SCNE (five new flyover shots on s32's own channels); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: the retail field's layout kept, plain grass end zones, the conference shields and the playoff mark cleared, the current NFL shield on a square midfield quad when the 2026 venue art folder carries it (league marks never ship; without it the midfield keeps the game's own mark), Modern colour's grade when that option is on, then job tf's G-A natural grass (tf's painter, detail normal and divots), so the field reads applied under Modern playing surfaces' signature. The side fields and lawns in the stadium scene are baked to tf's day targets.",
+        "The ROST s32 row is not written.",
+        "With team_logo: the allocator owner nfl2k5_team_logo_swap, 64 read-only bytes of nfl2k5_xbe_space holding the retail seven field swap pairs and an eighth (the field material teamlogo, 0xE7C9D8, to the TXTR logo, 0xE65BF0, both strings the executable carries), and the swap loop's two bounds re-pointed (0x9C5E2 to the table + 4, 0x9C661 to the table + 0x44), pinned by SHA-256 with an exact revert; no retail scene named field carries teamlogo, so only the practice field changes. Off in every preset.",
+        "29 authored PNGs in data/nfl2k5_practice_field_model/art (the reviewed PNG catalog; plain type only, no logos or players); no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness main-menu Practice (Scrimmage and Basic Training), a franchise Free Practice and a MyCareer practice by day and at night: the facility round the field, the practice cameras, the video board on the feed, the practice clocks, the bleacher fans, the midfield mark, and the field and side-field greens against the stadium scene."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/practice_field_model/README.md",
+          "tests/mod_editor/test_nfl2k5_practice_field_model.py"
+        ],
+        "scope": "The practice facility was reached in Practice > Scrimmage on candidate E. Its final revisions and every other practice route remain unverified in game.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          },
+          {
+            "allowed": "false (default) or true; needs enabled",
+            "name": "team_logo",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field (with its detail normal and divots), the collapsed cityscape and the stadium and intro-camera stretch of the nine s32 bundles; Off leaves the source as it is (an already-built source stays the practice facility). team_logo (modern_practice_field_team_logo) also names the practice field's midfield material teamlogo and installs the allocator owner nfl2k5_team_logo_swap in default.xbe."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE and TXTR resources in the nine s32 bundles of the vc_53450030 archive packs (field, detail_normal, divots, cityscape, stadium and intro_cameras chunks)",
+        "hash_pins": [
+          "47735697e36f90838d94f94a562d56cac06980efca5ec2ac49e0037960a83669",
+          "d22b2d39b7ff255170b6bd01ab5d467578f1de6417dd43e1d0c8cc774cdc6d7e",
+          "03400fa3ee42a9d1fec2f8bf6f2792210b0ce2483efdbd00a5d30ddb3f9ba562",
+          "33ce6cc6065a057225a44832305e5c13d3a9feb93e742c0199ca7f7cebf179f3"
+        ],
+        "resource": "archive entries s32{d,a,n}{d,r,s}.iff: the field, detail_normal, divots, cityscape, stadium and intro_cameras chunks",
+        "retail_file": "the vc_53450030 archive packs holding the practice field bundles"
+      },
+      "summary": "A modern outdoor NFL practice facility replaces the practice field (the college-style bowl of venue s32 that main-menu Practice, Basic Training, franchise Free Practice and MyCareer practice load): the practice field in job tf's modern natural grass with plain end zones, two more practice fields, the indoor field house, the glass team headquarters, windscreens, light poles, filming towers, training-camp bleachers with fans, a pavilion, a practice video board on the live feed, practice clocks with the game's digits, sleds and dummies, and a new pregame flyover. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern practice facility (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_practice_field_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_sofi_model status <source>",
+        "module": "mod_editor/core/nfl2k5_sofi_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_sofi_model.py",
+        "tests/mod_editor/test_nfl2k5_sofi_venue.py",
+        "data/nfl2k5_sofi_model/pins.json",
+        "docs/sofi_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_event_fields.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox SoFi Stadium for the Rams and Chargers; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Rams and Chargers packages to it."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_sofi",
+      "input_constraints": [
+        "Eighteen pinned stretches (s23 Rams and s24 Chargers, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (the bowl sunk 100 ft below grade, the translucent canopy on its columns, the Infinity Screen with the live feed in 16:9 windows, the plaza, Rivers Lake and the surroundings), the intro_cameras SCNE (five new flyover shots, one of them outside) and, on s24, the cityscape folded into the stretch; each fitted in the retail stored span; every bundle and archive entry keeps its size.",
+        "The first Super Bowl venue (row s40, the executable's season index 0; the XBE's venue codes are untouched): the same model in its nine bundles with Super Bowl LXI dressing (the LXI mark, the NFL's own reveal raster used as sourced, at midfield and on the screen and ribbons; the current NFL shield on both 25-yard lines), and the s40 row named Super Bowl LXI with SoFi Stadium as its display name, Inglewood, CA, roofed, turf, SoFi's climate.",
+        "The field scene of each bundle: one turf for both records (the dome turf, surround, numbers and detail normal map), both teams' 2026 end zones and midfield from the authored art in data/nfl2k5_sofi_model/art/field, a dry field in every weather; composed before the Modern colour grade when that option is on, the marks keeping their official colours.",
+        "The three stadium rows in the main ROST (s23, s24 and s40): SoFi Stadium (the s40 row: Super Bowl LXI at SoFi Stadium), Inglewood, CA, capacity 70,240, indoor (no rain or snow on the field), turf, one climate.",
+        "Four crowd outers (2555, 2850, 2556, 2851): the Rams and Chargers superfans in their 2026 colours over the user's own retail pixels, refit in their fixed spans.",
+        "Thirty-nine authored PNGs in data/nfl2k5_sofi_model/art (the reviewed PNG catalog) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_sofi_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent.",
+        "When enabled, the builder keeps the first Super Bowl jump-table entry at s40, including migration from the older s44 calendar. Without SoFi, the 2026 calendar still defaults to s44. Indices 1-4 and the s45 fallback stay retail. Offline proof only."
+      ],
+      "portme": [
+        "Witness a Rams home game by day and a Chargers home game at night and on a rain roll: the flyover (every shot, the exterior pass included), the coin toss and the game cameras; check the Infinity Screen feed, both end zones and midfields, the canopy, the name on every screen and the crowd."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/sofi_model/README.md",
+          "tests/mod_editor/test_nfl2k5_sofi_model.py"
+        ],
+        "scope": "The SoFi model was seen in a headless xemu lab: Rams day and Chargers night with forced rain and a dry field. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the stadium, intro-camera (and s24 and s40 cityscape) stretch of the twenty-seven Rams, Chargers and Super Bowl bundles, the three stadium rows and the four crowd outers; Off leaves the source as it is (an already-built source stays SoFi)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the eighteen s23/s24 bundles of the vc_53450030 archive packs (field, stadium, intro_cameras and s24 cityscape chunks), the s23 and s24 rows of the main ROST and the four crowd outers",
+        "hash_pins": [
+          "152de2b2a9e11e6c881ae6fb40934975768cbaec303d11ea39543766bfdd9a67",
+          "a723c672aa55946ab40aeff23adfa5b98be5aa2fa4db27d0b298f4b8a831ae6c",
+          "7016f66823744c23cafb2c62a6cb3776ab3fc9f0648aaed9b62dd0aa4af8933c",
+          "238547bc0d6e88a3a023dcfaaf5fc5fc69820ea19e4bf55c2e14cf978047ad75"
+        ],
+        "resource": "archive entries s23, s24 and s40{d,a,n}{d,r,s}.iff: the field, stadium, intro_cameras and cityscape scenes; the main ROST stadium rows s23, s24 and s40; outers 2555, 2850, 2556 and 2851: the crowds23 and crowds24 superfan atlases",
+        "retail_file": "the vc_53450030 archive packs holding the Rams and Chargers stadium bundles and crowd scenes, and the main roster"
+      },
+      "summary": "SoFi Stadium built as a new stadium model shared by the Rams and Chargers, to the real plan and section: the bowl sunk below grade under the translucent canopy, the Infinity Screen carrying the live feed, LED ribbons in team colour, the plaza and Rivers Lake, a new pregame flyover with an exterior pass, one turf with both teams' 2026 end zones and midfield, the name SoFi Stadium on the two stadium rows (roofed, turf, one climate) and 2026 superfans; a franchise's first Super Bowl (Super Bowl LXI) is played there too. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "SoFi Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_sofi_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_state_farm_model status <source>",
+        "module": "mod_editor/core/nfl2k5_state_farm_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_state_farm_model.py",
+        "data/nfl2k5_state_farm_model/pins.json",
+        "docs/state_farm_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox State Farm Stadium for the Cardinals; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Cardinals' packages to it and lends it the Cardinals' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_state_farm",
+      "input_constraints": [
+        "Nine pinned stretches (s00 Cardinals, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (State Farm Stadium: the red bowl in four stacks, the fabric roof drawn open with its dome and radial ribs, the opening over the field between the Brunel trusses, the two retractable panels parked over the ends on their tracks, the two end boards on the live feed, the silver drum with its petals, slots, glass gates and the wordmark on the OpenStreetMap outline, the lots, roads, blocks, the desert and the mountains) and the intro_cameras SCNE (five new flyover shots on s00's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
+        "The field scene of each bundle: the 2026 venue art folder's Cardinals end zones (each end its own retail textures, in each bundle's weather look) and a new midfield quad carrying the folder's midfield when that folder is given, then the grass and the apron on the Modern playing surfaces palette for s00 in the bundle's own light (that option's own painter and fit); composed before the Modern colour grade when that option is on. The field keeps the retail scratch word; the surface word stays grass.",
+        "The s00 row in the main ROST: State Farm Stadium, Glendale, AZ, capacity 63,400; the indoor word stays 0 (the roof drawn open: rain and snow fall), the grass word and the Tempe climate as retail.",
+        "30 authored PNGs in data/nfl2k5_state_farm_model/art (the reviewed PNG catalog; plain type, the State Farm Stadium wordmark cut from its Wikimedia Commons public-domain file, never redrawn; no players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_state_farm_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Cardinals home game by day, one at night and a forced rain game: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the two boards on the feed, the end zones and midfield, the open roof with the parked panels, the rain falling through the opening onto the grass, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/state_farm_model/README.md",
+          "tests/mod_editor/test_nfl2k5_state_farm_model.py"
+        ],
+        "scope": "The State Farm model was seen in a headless xemu lab: Cardinals day, night, flyover and forced rain. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field, the collapsed cityscape and the stadium and intro-camera stretch of the nine Cardinals bundles and the s00 stadium row; Off leaves the source as it is (an already-built source stays State Farm Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s00 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s00 row of the main ROST",
+        "hash_pins": [
+          "a09d2f3c7ec3d4655b77dde36088f5cd8e01148219c91273171acfc3614a5376",
+          "9ef7f3b1a35e74e98b160c5badcbf360ee7cbf6cacf7003b8b6375dbbedb6e69",
+          "5256e590b35c2c529651551efc67651785b0cb626d476b69715bed51b71da620",
+          "e6974ec29a5a5adb19cf01ccaa10a051bf7e5452755ab0533693920465ddc18d"
+        ],
+        "resource": "archive entries s00{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s00",
+        "retail_file": "the vc_53450030 archive packs holding the Cardinals stadium bundles, and the main roster"
+      },
+      "summary": "The Arizona Cardinals' State Farm Stadium (opened 2006) built as a new stadium model to the real building: the red bowl under the fabric roof drawn open with its panels parked on their tracks, the two end boards on the live feed, the silver barrel-cactus drum on the real footprint with the desert and the mountains, a new pregame flyover with exterior passes, the 2026 grass with the Cardinals' end zones and midfield, and the name State Farm Stadium on the s00 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "State Farm Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_state_farm_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_surfaces status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_surfaces.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_surfaces.py",
+        "data/nfl2k5_modern_surfaces/pins.json",
+        "data/nfl2k5_modern_surfaces/venues.json",
+        "docs/modern_surfaces/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Modern playing surfaces; Off in every preset. Needs a disc image; Off does not restore an already-built source. Runs after every stadium writer (Modern colour, Arrowhead, MetLife and its model, the 2026 venue art, SoFi, Highmark) and keeps their receipts reading applied."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_surfaces",
+      "input_constraints": [
+        "The 288 home-venue bundles (s00 to s30 and s37, day/afternoon/night x dry/rain/snow) of the vc_53450030 archive packs, as the source and every earlier stadium option left them; every bundle and archive entry keeps its size.",
+        "Per bundle: the field SCNE refit inside its fixed VC-LZ span with the retail 32-byte wrapper (loader scratch word included): the colour map (color_premipped, or the outside-grass texture record where the field was a material colour), the outside grass, planar UVs for the colour submesh inside the shape's UV constant with the end-zone UVs re-encoded unmoved, and the end zones' turf-coloured palette entries; the detail_normal TXTR (raw 175,872 bytes written in place, or a compressed chunk refit with the tiled art); the divots TXTR palette (alpha cleared on synthetic turf); on synthetic turf the Fldd wear colour word (word 1).",
+        "The venue table data/nfl2k5_modern_surfaces/venues.json: each 2026 home venue's surface (16 grass, 16 synthetic records) with public sources; colour targets are 2026 broadcast medians solved against each bundle's light rig (retail, or Modern colour's configured rigs from its receipt).",
+        "Fourteen procedural PNGs in data/nfl2k5_modern_surfaces/art (the reviewed PNG catalog), drawn by tools/nfl2k5_modern_surfaces_art.py; no photos, image models or retail bytes are shipped.",
+        "The ROST turf word (+0x1C) is never written: gameplay is unchanged.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness a synthetic venue (MetLife, SoFi or Lumen) and a grass venue (Arrowhead or Lambeau) by day and at night: the broadcast camera, the coin toss and a pre-snap close-up; check the 5-yard bands or mowing stripes, the fibre or blade grain up close, the end zones' turf matching the field, and no shimmer in the far field."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_surfaces/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_surfaces.py"
+        ],
+        "scope": "The tf-v3 playing surfaces were seen in six lab games: Giants day/night, Chiefs, Rams at SoFi, Bills and Colts. Later close-mip corrections remain offline only; no claim for every venue and condition.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On repaints the playing surface of every home-venue field (colour map, UVs, outside grass, end-zone turf, detail normal, divots, wear colour); Off leaves the source as it is (an already-built source stays surfaced)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span resources in the 288 home-venue bundles of the vc_53450030 archive packs: the field SCNE, the detail_normal and divots TXTR chunks and the Fldd chunk",
+        "hash_pins": [
+          "abb297c412c98abf9dc084df8b29bc66861ae2564e31a0357a46116eac456f88",
+          "88b0adbc194359bcd1689e041e172e216f5db2c0aa5f7b3b1f72c2634dc42132",
+          "ec57f347a7690235aa97c468cea26535cdede82e0e2f523402af1a096b052aa5",
+          "67963d00b6a73109eb853082770886544b8d1a2c6c027230cc4c99cf42adb9b2"
+        ],
+        "resource": "archive entries s00..s30 and s37 {d,a,n}{d,r,s}.iff: the field scene, detail_normal, divots and Fldd chunks",
+        "retail_file": "the vc_53450030 archive packs holding the home-venue stadium bundles"
+      },
+      "summary": "Every team's home field gets the surface its 2026 stadium really has, cited per venue: modern synthetic turf (the saturated even green of FieldTurf and Hellas fields with factory 5-yard bands, fine fibres and dark infill up close instead of flat carpet) or modern natural grass (brighter, mown in 5-yard stripes or a checkerboard, fine blades). Colours follow 2026 broadcast stills per light; gameplay and the turf word are unchanged. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern playing surfaces (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_surfaces"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_usbank_model status <source>",
+        "module": "mod_editor/core/nfl2k5_usbank_model.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_usbank_model.py",
+        "data/nfl2k5_usbank_model/pins.json",
+        "docs/usbank_model/README.md",
+        "mod_editor/core/nfl2k5_model_fan_art.py",
+        "tests/mod_editor/test_nfl2k5_model_fan_art.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox U.S. Bank Stadium for the Vikings; Off in every preset. Needs a disc image; Off does not restore an already-built source. With it on, the 2026 venue art leaves the Vikings' packages to it and lends it the Vikings' field art from its folder; Modern playing surfaces, run after it, keeps its field."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_usbank",
+      "input_constraints": [
+        "Nine pinned stretches (s15 Vikings, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (U.S. Bank Stadium: the purple bowl in four stacks with the club and suite levels, the fixed roof on its ridge truss north of the axis with the pale ETFE to the south and the dark opaque half to the north, the open queen's post trusses, the clerestory windows, the Legacy Gate glass wall and the prow's blade with its wordmark and display, the west and east end-zone boards on the live feed, the east end's banner, flag and partner panels, the plaza, roads, blocks and downtown's towers on the OpenStreetMap outline) and the intro_cameras SCNE (five new flyover shots on s15's own channels, two of them outside; camera 1's animated field of view held); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail. s15 carries no cityscape.",
+        "The field scene of each bundle: the 2026 venue art folder's Vikings end zones (both ends share the retail textures) over clean turf when that folder is given, then the turf and the apron on the Modern playing surfaces palette for s15 (that option's own painter and fit: the synthetic look, the 2026 broadcast measured at U.S. Bank Stadium, the dome light) and a new midfield quad in the field scene carrying the folder's Vikings head; composed before the Modern colour grade when that option is on. The field keeps the retail scratch word; the surface word stays turf.",
+        "The s15 row in the main ROST: U.S. Bank Stadium, Minneapolis, MN, capacity 66,202; the indoor word stays 1 (the fixed roof: no rain or snow), the turf word and the flat climate as retail.",
+        "45 authored PNGs in data/nfl2k5_usbank_model/art (the reviewed PNG catalog; plain type, the U.S. Bank Stadium wordmark and the 3M and Land O'Lakes marks cut from their Wikimedia Commons public-domain files, never redrawn; no players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_usbank_model/footprint.json; no retail bytes are shipped.",
+        "Appearance in game is unwitnessed by the owner.",
+        "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
+      ],
+      "portme": [
+        "Witness a Vikings home game by day and one at night: the flyover (every shot, the exterior passes included), the coin toss and the game cameras; check the two boards on the feed, the end zones and the midfield head, the glass wall and downtown through it, the roof's two halves, the east end's banner and panels, and the name on every screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/usbank_model/README.md",
+          "tests/mod_editor/test_nfl2k5_usbank_model.py"
+        ],
+        "scope": "The U.S. Bank model was seen in a headless xemu lab: Vikings day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the field and the stadium and intro-camera stretch of the nine Vikings bundles and the s15 stadium row; Off leaves the source as it is (an already-built source stays U.S. Bank Stadium)."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the nine s15 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s15 row of the main ROST",
+        "hash_pins": [
+          "e0e6744e35f064142a90a493fe306f511c1ee7855e55752076ad8caeef699376",
+          "52d1ef0614f1826021a0c844deb017c6eafcbe3be07898f2f6341add95b83380",
+          "81f415d012a8294c5aa9ee1e1705fca97bdfbed943c7ac0cadfc64f942be75ec",
+          "87aea8abef3acd8610e148491c6e0add94fbfe81d5eb08e6d277036c1c1f6be5"
+        ],
+        "resource": "archive entries s15{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s15",
+        "retail_file": "the vc_53450030 archive packs holding the Vikings stadium bundles, and the main roster"
+      },
+      "summary": "The Minnesota Vikings' U.S. Bank Stadium (opened 2016) built as a new stadium model to the real building: the purple bowl under the fixed roof (the pale ETFE beside the dark opaque half on the ridge truss), the Legacy Gate glass wall and the prow, the two end-zone boards on the live feed, downtown through the glass on the real footprint, a new pregame flyover with exterior passes, the 2026 turf with the Vikings' end zones and midfield head, and the name U.S. Bank Stadium on the s15 row. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "U.S. Bank Stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_usbank_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_venues_2026 status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_venues_2026.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_venues_2026.py",
+        "data/nfl2k5_modern_venues_2026/venues.json",
+        "data/nfl2k5_modern_venues_2026/names.json",
+        "mod_editor/core/nfl2k5_stadium_shared_art.py",
+        "data/nfl2k5_stadium_shared_art/special_venues.json",
+        "data/nfl2k5_stadium_shared_art/design.json",
+        "tests/mod_editor/test_nfl2k5_stadium_shared_art.py",
+        "data/nfl2k5_stadium_shared_art/event_fields.json",
+        "tests/mod_editor/test_nfl2k5_event_fields.py",
+        "ev/evidence/field_proof.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox with a folder of team venue art; Off in every preset. Needs a disc image; Off does not restore an already-2026 source."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_venues_2026",
+      "input_constraints": [
+        "Thirty home venues (every team's own stadium record except the Giants and Jets, which Modern MetLife owns), nine pinned bundles each (day/afternoon/night x dry/rain/snow): the field SCNE (end zones, midfield) and the stadium SCNE (team walls, pads, boards, ribbons, signs, fan banners and the 2004 NFL shield regions) refit inside their fixed VC-LZ spans with the retail wrappers; only retail bundles are accepted.",
+        "A folder of user-made art in the metlife_team_art/v1 contract (<team>/venue/manifest.json, every PNG pinned by SHA-256, the team's spec.json for replaced regions) and optional league marks (_league/manifest.json: the current NFL shield, AFC and NFC), authored against the dry-day bundle; rain, snow and night looks come from the user's own retail pairs.",
+        "Kansas City (s13) is written only with Modern Arrowhead off; its reviewed art fills what the Kansas City folder leaves out, except the sideline yard markers.",
+        "The main ROST's stadium records of the twelve venues whose building is still the team's home (data/nfl2k5_modern_venues_2026/names.json): name and display name become the 2026 names; the asset codes (the engine's file-name keys) and every other record stay.",
+        "Appearance in game is unwitnessed.",
+        "Residual sponsor items reach two home atlases and 19 special slots through the venue-art pass. Seven plain-type P8 event field logos replace the complete native textures in all nine variants: s31/s39 PRO BOWL / ALL-STARS; s41-s45 SUPER BOWL / CHAMPIONSHIP. s40 stays with the SoFi model and its existing LXI art. The ten board-kit venues have no shared items."
+      ],
+      "portme": [
+        "Witness home games at two venues by day and one at night (end zones, midfield, field walls, fan banners, boards), and one rain or snow game."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_modern_venues_2026.py"
+        ],
+        "scope": "The first venue art was seen at Pittsburgh and Kansas City. The release draft also records the environment kit at nine venues. Later sponsor sweeps, venue read-back changes and environment pass 3 remain offline only.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "\"\" (default, off) or the path of a venue art folder",
+            "name": "modern_venues_2026",
+            "required": false
+          }
+        ],
+        "notes": "Writes the home stadium packages of every team the folder carries (and, with league marks, every venue's 2004 shields); Off leaves the source as it is."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE resources in the 270 home-venue bundles of the vc_53450030 archive packs",
+        "hash_pins": [
+          "d4dc3adef6ab77d41ea501b4e3b7613a52090be875ccade9f2962e953d143b11",
+          "9aa2283f8e3c15506a14ffbd0bfaa98e9834f76b8030a048065df2e93a846e96",
+          "81db236bfd1a982d50ad731175c6e0bcb474fc302a2a9d51f81a291916583991",
+          "705724db0c2f3416f82187265eaaff239f98e6c4d4efc01f19f9d312f375a66a",
+          "3ff1c086a715022c54e264e43de30db5b6ebed042190bac5ab16bb1aa527f516",
+          "1b3d9a18b4438423e26b7c96b34b17ca1e8c6f25cd14be820fd66828822d5404",
+          "6d8c0deafff683ae482ff8acae3584aae155a2e235b9dc425379b52d4eb4fa42"
+        ],
+        "resource": "archive entries <prefix>{d,a,n}{d,r,s}.iff for s00-s17, s20-s30 and s37: field scene and stadium scene; ROST outer 5 stadium records of the twelve same-building venues; shared sponsor slots plus the event field logos in s31, s39 and s41-s45",
+        "retail_file": "the vc_53450030 archive packs holding the home stadium bundles"
+      },
+      "summary": "Every team's 2026 end zones, midfield mark and stadium wall art (walls, pads, boards, ribbons, signs, fan banners) written into its home stadium from a folder of team venue art, with the current NFL shield and conference marks in place of the 2004 ones; the stadiums themselves stay retail, and the twelve still in use take their 2026 names. Off in every preset; unwitnessed in game. Special event slots use yearless plain-type field identities through the shared-art supplement.",
+      "surface": "stadiums_fields",
+      "title": "2026 field and wall art in every home stadium (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_venues_2026"
     },
     {
       "backend": {
@@ -12326,6 +14453,77 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_helmets status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_helmets.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_helmets.py",
+        "data/nfl2k5_modern_helmets/pins.json",
+        "data/nfl2k5_modern_helmets/geometry.json",
+        "docs/modern_helmets/README.md"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Modern helmets and facemasks; Off in every preset. Needs a disc image; Off does not restore an already-built source. Composes with the Guardian overlay; the Guardian helmet C trial is refused with it."
+      },
+      "id": "nfl2k5.uniforms.modern_helmets",
+      "input_constraints": [
+        "Helmet Revolution (roster +0x0C bit 6 = 1, shell C) keeps its retail shape and texture coordinates, so every team's helmet art maps as painted, and gains the modern Riddell SpeedFlex details close up: the flex panel's U-shaped cut, the temple, crown, rear and side vents, the jaw-flap seam and the rear shelf (thin dark parts 0.12 cm above the shell, drawn by the helmet decal submesh). The Standard shell A stays retail for the classic scenarios. Shell B stays the Guardian overlay's.",
+        "Facemasks 12-26 (roster +0x20 bits 10-14) become fifteen current Riddell masks (SpeedFlex SF- and Axiom W- catalogue), each fitted to the manufacturer's front and side product photos of that mask (proportions and bar layout), seated on the Revolution shell, and their fifteen low-LOD textures (outer 3 chunks 143-157) drawn from the same bars; masks 0-11 stay retail.",
+        "hi_head (outer 3 chunk 115) is re-authored in place: vertex counts, streams, skin palette and morph records unchanged, the facemask run re-partitioned (the masks, then the details), the decal submesh's command pointer moved there, the resource refitted in its retail stored span with the wrapper unchanged (zero memory delta). lo_body (chunk 113) stays retail.",
+        "The 75 historic team files keep the classic set: 34 Revolution records move to Standard and 26 records on masks 12-26 to the nearest retail mask (field level; composes with the historic moment rosters in either order).",
+        "The details sample a texel that is near black in every team's helmet art and stay inside the Guardian cap; the retail shell C, visor, decals and accessories keep every vertex.",
+        "Players wear the modern parts only when their roster equipment fields say so: the league roster's equipment fragment sets helmet 1 and a modern mask by position.",
+        "Appearance in game is unwitnessed by the owner."
+      ],
+      "portme": [
+        "Witness a 2026 game close up (coin toss, replays) and at distance: the Revolution shell's art and the new details (flex-panel cut, vents, seams), the bumpers and decals, several masks by position, the low-LOD mask; then a historic team and an Anniversary moment (retail helmets and masks); then Guardian caps in practice over helmet C."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/modern_helmets/README.md",
+          "tests/mod_editor/test_nfl2k5_modern_helmets.py"
+        ],
+        "scope": "Offline byte receipts, decoder read-back, pinned composition with the Guardian overlay and the historic moment rosters in either order; renders of the decoded scenes; Noah has not seen it.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On rewrites the facemask run and the decal command pointer of hi_head, the fifteen modern mask textures and the equipment fields of 60 historic records; Off leaves the source as it is."
+      },
+      "source_container": {
+        "format": "In-place fixed-span SCNE and TXTR resources in outer 3 (the common player group) of the vc_53450030 archive packs, and field-level edits in historic ROST outers 113-187",
+        "hash_pins": [
+          "4493cfafede437da6af7ddadfaa172bed3bd674a62801b73af3a99fc66315e43",
+          "e3f71e2b930707d68eecfc9c1fa8025da6f1d1ec2087ec3d6ebaa3fa5fec604c"
+        ],
+        "resource": "hi_head o3c115 (270,336 B stored) and lo_body o3c113 (135,808 B stored), mask12-mask26 TXTR, nine historic ROSTs; no archive growth",
+        "retail_file": "User-owned USA vc_53450030 archive"
+      },
+      "summary": "Modern helmets and facemasks: the Revolution helmet with the modern Riddell details (flex-panel cut, vents, seams) and fifteen current Riddell masks in slots 12-26, the classic Standard helmet and masks 0-11 kept for the historic teams and the Anniversary moments.",
+      "surface": "uniforms",
+      "title": "Modern helmets and facemasks (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_helmets"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_weather_time_of_day.py apply-resource <source.rost> <plan.json> <new.rost>",
         "module": "tools/nfl2k5_weather_time_of_day.py",
         "operation": "write"
@@ -12490,7 +14688,9 @@
         "tests/mod_editor/test_nfl2k5_olb_row.py",
         "ASTRA_B65_POSITIONS_REPORT.md",
         "docs/mod_editor/nfl2k5_b65_positions_evidence.json",
-        "tests/mod_editor/test_nfl2k5_position_choices.py"
+        "tests/mod_editor/test_nfl2k5_position_choices.py",
+        "sd/SD2_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_lineup_iterator.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -12518,8 +14718,8 @@
         "evidence": [
           "ASTRA_OLB_ROW_REPORT.md"
         ],
-        "scope": "Native bounded selectors and player queries proved offline. Game rendering, saved franchise routes and future seasons remain unwitnessed.",
-        "status": "not-tested"
+        "scope": "Candidate D reproduced the tired-linebacker freeze on demand. The repaired code in E survived the same forced drain for 180 seconds and 102 lineups; an E CPU game also completed without a stall. Other causes of freezing and Xbox behaviour remain unverified.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
@@ -12539,7 +14739,7 @@
         "resource": "Sixteen .rdata pointer lists; ROST outer 5 and 113 through 187",
         "retail_file": "default.xbe and vc_53450030/0"
       },
-      "summary": "EXPERIMENTAL / UNWITNESSED. Pools skips OLB in native Create Player/MyPlayer, merges DE/OLB ratings under EDGE, and compacts sixteen filters plus the trade-needs picker. Requires reclassified rosters.",
+      "summary": "EXPERIMENTAL / UNWITNESSED. Pools skips OLB in native Create Player/MyPlayer, merges DE/OLB ratings under EDGE, and compacts sixteen filters plus the trade-needs picker. Includes the CPU lineup exhaustion repair; pre-repair discs report needs_fix. Requires reclassified disc rosters.",
       "surface": "players_rosters",
       "title": "EDGE and LB position pickers and templates",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_position_choices"

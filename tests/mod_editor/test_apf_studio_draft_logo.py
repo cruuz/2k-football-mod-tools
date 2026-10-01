@@ -116,6 +116,10 @@ class DraftLogoCatalogTests(unittest.TestCase):
         )
 
     def test_ui_does_not_hide_capability_cards_and_names_raw_exports(self) -> None:
+        from PyQt5.QtWidgets import QApplication
+        # Other offscreen tests may already own an application. These imports
+        # and pure status helpers must neither create nor replace one.
+        application = QApplication.instance()
         from mod_editor.apf_studio import gui
 
         source = inspect.getsource(gui.CapabilityPanel.set_cards)
@@ -137,7 +141,7 @@ class DraftLogoCatalogTests(unittest.TestCase):
         self.assertEqual(
             gui._asset_status_text(raw), "↓ Raw parts ZIP only"
         )
-        self.assertIsNone(gui.QApplication.instance())
+        self.assertIs(gui.QApplication.instance(), application)
 
 
 class DraftLogoSessionAndProjectTests(unittest.TestCase):

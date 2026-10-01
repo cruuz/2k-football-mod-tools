@@ -28,6 +28,8 @@ def compiled_reads():
         raise unittest.SkipTest('retail extracted PLAY archive missing')
     from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
     from mod_editor.core import nfl2k5_playbook_pack as pack
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(EXTRACT)
     with OuterImage(EXTRACT) as archive:
         raw = archive.read_entry(BOOK_ENTRIES['MIN'])
     compiled = pack.apply_pack_to_resource(raw, pack.load_pack(ROOT / 'data/playbooks/softdrink_option.2k5book'))

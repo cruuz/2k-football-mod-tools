@@ -1,0 +1,356 @@
+{
+  "classification": "PROVED OFFLINE",
+  "finding": "All 31 legacy peek logs have actual hex memory output. The eip summary was missing because peek did not request registers.",
+  "boundary": "Separately sampled peeks cannot prove one atomic binding state or full payload identity. Deleted RAM is not reconstructed.",
+  "cases": [
+    {
+      "case": "original",
+      "source": "/media/noah/Storage/.b76-research/e2/lab_D/run/original/logs",
+      "peeks": {
+        "mode": {
+          "value": [
+            8
+          ],
+          "log_sha256": "651ef25670c4528cbad5d09af43d95f12858ef3de2e4b13fdb640b04aa184cb6",
+          "contains_explicit_eip": false
+        },
+        "ordinal": {
+          "value": [
+            0
+          ],
+          "log_sha256": "baed33991415baae7e43ec24a2ed91bde1b0cf4f509c242a45d86a464fc86aab",
+          "contains_explicit_eip": false
+        },
+        "home-book-name": {
+          "value": "E2R-GB-pb.iff",
+          "log_sha256": "4852bc5d915dd78748392c4d708289e8cf62ac7ecb6d2665668cf3f531781c10",
+          "contains_explicit_eip": false
+        },
+        "away-book-name": {
+          "value": "E2R-DAL-pb.iff",
+          "log_sha256": "8e70b099959871edafc93dfbc82fdbed5bbc6c16b41baf90e2c54edc8752781f",
+          "contains_explicit_eip": false
+        },
+        "bound-books": {
+          "value": [
+            12016192,
+            12094928
+          ],
+          "log_sha256": "d2900ef1d694754459e4bf417782449330d4ad008d55f8d81034f3f17a9c2cea",
+          "contains_explicit_eip": false
+        },
+        "home-book-header": {
+          "value": [
+            12083840,
+            48,
+            264,
+            24,
+            2578,
+            12016500,
+            12025500,
+            16778253,
+            52298774,
+            153093391,
+            304159007,
+            287246367,
+            12029500,
+            12055420,
+            12055836,
+            0
+          ],
+          "log_sha256": "86644a24b0892b3ff6f773c622c084e63a90a1b63cd2309a890f1e6771d0cd8a",
+          "contains_explicit_eip": false
+        },
+        "away-book-header": {
+          "value": [
+            12162576,
+            41,
+            269,
+            24,
+            2674,
+            12095236,
+            12104236,
+            16777742,
+            50856469,
+            152634639,
+            354030871,
+            320277271,
+            12108236,
+            12134156,
+            12134572,
+            0
+          ],
+          "log_sha256": "6d2646faba873bf4b2d696f3f3990265abe055f3735c0d0c8f01158d85a0a47c",
+          "contains_explicit_eip": false
+        },
+        "preview-ordinal": {
+          "value": [
+            0
+          ],
+          "log_sha256": "e94da995e6cabf921bd5d9d6eb7e676ac610f0a70fb893f8f1849e4681300590",
+          "contains_explicit_eip": false
+        }
+      }
+    },
+    {
+      "case": "super_bowl",
+      "source": "/media/noah/Storage/.b76-research/e2/lab_D/run/super_bowl/logs",
+      "peeks": {
+        "mode": {
+          "value": [
+            8
+          ],
+          "log_sha256": "e20752ece8dc83dd781dccb9b57ac96325bc50504f5293663cdc0255c093388e",
+          "contains_explicit_eip": false
+        },
+        "ordinal": {
+          "value": [
+            14
+          ],
+          "log_sha256": "addd0f1e96986d814493dec7aa20eb3a6592b88c0e7fd999a7041fbc337c8a83",
+          "contains_explicit_eip": false
+        },
+        "home-book-name": {
+          "value": "E2R-NYG-pb.iff",
+          "log_sha256": "175bae99d248d0163c5a0bb6d40661ceb7556ade42fa7f91f4ca8c7946351b17",
+          "contains_explicit_eip": false
+        },
+        "away-book-name": {
+          "value": "E2R-BUF-pb.iff",
+          "log_sha256": "816def0ba34593d143274ff09a40ceb149eae88167442bf7fdbcb7e6c348c884",
+          "contains_explicit_eip": false
+        },
+        "bound-books": {
+          "value": [
+            12016192,
+            12094928
+          ],
+          "log_sha256": "3c3aa5cf2c25d1d6e4d9f31d0cf48bdbcda2997d4708508f6fd1557d67706b2a",
+          "contains_explicit_eip": false
+        },
+        "home-book-header": {
+          "value": [
+            12083840,
+            43,
+            269,
+            22,
+            2609,
+            12016500,
+            12025500,
+            17565184,
+            50855938,
+            203096335,
+            404491546,
+            320672797,
+            12029500,
+            12055420,
+            12055836,
+            0
+          ],
+          "log_sha256": "ed900c88a67d673e0c421f4e57ed638c1388dfe1e70d42dbeb58d5c5c15de6d4",
+          "contains_explicit_eip": false
+        },
+        "away-book-header": {
+          "value": [
+            12162576,
+            46,
+            270,
+            25,
+            2710,
+            12095236,
+            12104236,
+            17304323,
+            51970584,
+            203097348,
+            303828507,
+            421202459,
+            12108236,
+            12134156,
+            12134572,
+            0
+          ],
+          "log_sha256": "fd4d286008f5380707db5bb1c7a1ace7890c38e0b1c998d0640a5058fbf4bf2f",
+          "contains_explicit_eip": false
+        },
+        "preview-ordinal": {
+          "value": [
+            14
+          ],
+          "log_sha256": "fcb7ec6f550b4f14f367bf73bea62d3725683e454b920bd9ba9f3a0e5e5d439a",
+          "contains_explicit_eip": false
+        }
+      }
+    },
+    {
+      "case": "moment50",
+      "source": "/media/noah/Storage/.b76-research/e2/lab_D/run/moment50/logs",
+      "peeks": {
+        "mode": {
+          "value": [
+            8
+          ],
+          "log_sha256": "18dcbb52e77f9b621e776a790235d9867f684f3d4a246751ecd4ea01bafb4656",
+          "contains_explicit_eip": false
+        },
+        "ordinal": {
+          "value": [
+            49
+          ],
+          "log_sha256": "589212074f4d335cbcd4f28673853df8ab876d360534ec529ee461fed34a27ee",
+          "contains_explicit_eip": false
+        },
+        "home-book-name": {
+          "value": "E2R-KC-pb.iff",
+          "log_sha256": "ae22aae361d7c97e18c0ea561d242c0f6ae4d34eda3e76b797c05197bc309121",
+          "contains_explicit_eip": false
+        },
+        "away-book-name": {
+          "value": "E2R-SF-pb.iff",
+          "log_sha256": "9b527620ff2bd62cbe01d09e73b763dc5e10e4357dca7775a48e7f338ce478f6",
+          "contains_explicit_eip": false
+        },
+        "bound-books": {
+          "value": [
+            12016192,
+            12094928
+          ],
+          "log_sha256": "8daf2e56799f0b74e59bee0e94397afe4bf27c23b4344cf5d0fadf630009c672",
+          "contains_explicit_eip": false
+        },
+        "home-book-header": {
+          "value": [
+            12083840,
+            42,
+            261,
+            23,
+            2718,
+            12016500,
+            12025500,
+            17762311,
+            1180180,
+            152700173,
+            219876889,
+            270275612,
+            12029500,
+            12055420,
+            12055836,
+            0
+          ],
+          "log_sha256": "7542109763c9a1fe875425eaf2c36551161cb88264e6a3c15256b8ce40982994",
+          "contains_explicit_eip": false
+        },
+        "away-book-header": {
+          "value": [
+            12162576,
+            39,
+            249,
+            23,
+            2403,
+            12095236,
+            12104236,
+            17237004,
+            50725397,
+            152503300,
+            353900054,
+            320212502,
+            12108236,
+            12134156,
+            12134572,
+            0
+          ],
+          "log_sha256": "c25664312f67457ad35d353f98d9771f39d970d9c0150b0035d81f5cec5eaa13",
+          "contains_explicit_eip": false
+        },
+        "preview-ordinal": {
+          "value": [
+            49
+          ],
+          "log_sha256": "9f6920fbdca49932b4e4e315b6da727ebbaeae135a41d8d567f8c643b7d7d472",
+          "contains_explicit_eip": false
+        }
+      }
+    },
+    {
+      "case": "mixed",
+      "source": "/media/noah/Storage/.b76-research/e2/lab_D/run/mixed/logs",
+      "peeks": {
+        "mode": {
+          "value": [
+            4
+          ],
+          "log_sha256": "672632e75fd1d9a29ebaf4241a327c96c3d833524fd47220750154ae0cd92a25",
+          "contains_explicit_eip": false
+        },
+        "ordinal": {
+          "value": [
+            0
+          ],
+          "log_sha256": "8befcdb7d85bf524212128c9577e5fca9a2703a4030b37fd869a9b545766848b",
+          "contains_explicit_eip": false
+        },
+        "home-book-name": {
+          "value": "E2R-CHI-pb.iff",
+          "log_sha256": "faac13ea0cbb2df71663a90ecea851b1969ccace6eebb0e8d7afd1fa5fcc44de",
+          "contains_explicit_eip": false
+        },
+        "away-book-name": {
+          "value": "GB-pb.iff",
+          "log_sha256": "ed66da5e64fb42f0c6de17a0bfb62c13d25dc30e3e45a87360278a18749131e9",
+          "contains_explicit_eip": false
+        },
+        "bound-books": {
+          "value": [
+            12016192,
+            12094928
+          ],
+          "log_sha256": "d2900ef1d694754459e4bf417782449330d4ad008d55f8d81034f3f17a9c2cea",
+          "contains_explicit_eip": false
+        },
+        "home-book-header": {
+          "value": [
+            12083840,
+            41,
+            266,
+            23,
+            2739,
+            12016500,
+            12025500,
+            17762311,
+            50987539,
+            152634637,
+            270144536,
+            270210075,
+            12029500,
+            12055420,
+            12055836,
+            0
+          ],
+          "log_sha256": "c993ba5c59bc416c8045b8ae91e9855ad19c0dc02784ffb85556d659f6b9d3e1",
+          "contains_explicit_eip": false
+        },
+        "away-book-header": {
+          "value": [
+            12162576,
+            48,
+            264,
+            24,
+            2941,
+            12095236,
+            12104236,
+            16777229,
+            35521046,
+            153092623,
+            304159007,
+            287246367,
+            12108236,
+            12134156,
+            12134572,
+            0
+          ],
+          "log_sha256": "ea211406b70274531edec9af46ca9b5552486c009c65aa61470e3b7819327242",
+          "contains_explicit_eip": false
+        }
+      }
+    }
+  ]
+}

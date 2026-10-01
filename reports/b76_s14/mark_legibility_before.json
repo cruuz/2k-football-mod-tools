@@ -1,0 +1,989 @@
+{
+ "schema": "b76-s14-mark-legibility/v1",
+ "tag": "before",
+ "logos_rev": null,
+ "contrast_ratio": 3.0,
+ "oklab_distance": 0.2,
+ "espn_unchanged": {
+  "DEN": 0.593,
+  "KC": 0.818,
+  "LV": 0.649,
+  "HOU": 0.561
+ },
+ "threshold": 0.561,
+ "below_threshold": [
+  "NYJ",
+  "DAL",
+  "WAS",
+  "IND",
+  "CHI",
+  "NO",
+  "CAR",
+  "ATL",
+  "JAX"
+ ],
+ "method": "1. ``texel_share``: the s12 survey (reports/b76_s12/mark_contrast.py), unchanged: the share of opaque mark texels\n   (alpha above 128) whose WCAG contrast against the team's wing tint is at least 3:1.\n2. ``edge_share``: the same test on the mark's silhouette only (opaque texels with a transparent 4-neighbour).\n   A mark reads as a shape when its outline stands off the wing, even where its fill matches the wing.\n3. ``rendered``: the offline native render of the team against itself (the all-teams sheet state) three times:\n   with the mark, with an empty mark cell, and with the mark's own silhouette in flat white. The mark's footprint\n   is every 1080p pixel the white silhouette changes, so parts of a mark that vanish into the wing still count.\n   Each footprint pixel is compared with the empty render at the same pixel (the wing there), so the wing's own\n   coverage, the P8 atlas and the display resampling are all included. ``rendered_share`` is the share of\n   footprint pixels at 3:1 or better; ``standoff`` (the measure the threshold uses) also counts a pixel whose\n   colour differs from the wing by OKLab distance 0.20 or more, a hue change such as the Giants' red keyline on\n   a blue wing that luminance contrast alone misses. Each is the lower of the two sides.\n\nThe threshold is the lowest ``standoff`` among the marks ESPN draws unchanged on its 2026 bar (DEN, KC, LV and\nHOU in the 2026 broadcasts measured here). A mark below it is recoloured only when a cited on-dark colourway\ndiffers from the primary (reports/b76_s14/author.py MARKS).",
+ "rows": [
+  {
+   "team": "NYJ",
+   "wing": "#35705D",
+   "texel_share": 0.0,
+   "edge_share": 0.0,
+   "median_contrast": 1.51,
+   "mark_median_rgb": [
+    0,
+    86,
+    60
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.0,
+     "standoff": 0.0,
+     "median_contrast": 1.48,
+     "median_oklab_distance": 0.115,
+     "mark_pixels": 8141
+    },
+    "home": {
+     "rendered_share": 0.0,
+     "standoff": 0.0,
+     "median_contrast": 1.43,
+     "median_oklab_distance": 0.106,
+     "mark_pixels": 8159
+    }
+   },
+   "rendered_share": 0.0,
+   "standoff": 0.0
+  },
+  {
+   "team": "DAL",
+   "wing": "#264360",
+   "texel_share": 0.233,
+   "edge_share": 0.0,
+   "median_contrast": 1.71,
+   "mark_median_rgb": [
+    2,
+    31,
+    69
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.256,
+     "standoff": 0.32,
+     "median_contrast": 1.16,
+     "median_oklab_distance": 0.085,
+     "mark_pixels": 4793
+    },
+    "home": {
+     "rendered_share": 0.258,
+     "standoff": 0.324,
+     "median_contrast": 1.18,
+     "median_oklab_distance": 0.086,
+     "mark_pixels": 4760
+    }
+   },
+   "rendered_share": 0.256,
+   "standoff": 0.32
+  },
+  {
+   "team": "WAS",
+   "wing": "#8C5A5A",
+   "texel_share": 0.292,
+   "edge_share": 1.0,
+   "median_contrast": 2.25,
+   "mark_median_rgb": [
+    108,
+    15,
+    12
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.335,
+     "standoff": 0.421,
+     "median_contrast": 1.38,
+     "median_oklab_distance": 0.145,
+     "mark_pixels": 19078
+    },
+    "home": {
+     "rendered_share": 0.332,
+     "standoff": 0.418,
+     "median_contrast": 1.38,
+     "median_oklab_distance": 0.143,
+     "mark_pixels": 19094
+    }
+   },
+   "rendered_share": 0.332,
+   "standoff": 0.418
+  },
+  {
+   "team": "IND",
+   "wing": "#013369",
+   "texel_share": 0.284,
+   "edge_share": 1.0,
+   "median_contrast": 1.1,
+   "mark_median_rgb": [
+    2,
+    49,
+    108
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.347,
+     "standoff": 0.447,
+     "median_contrast": 1.82,
+     "median_oklab_distance": 0.166,
+     "mark_pixels": 6257
+    },
+    "home": {
+     "rendered_share": 0.349,
+     "standoff": 0.444,
+     "median_contrast": 1.79,
+     "median_oklab_distance": 0.164,
+     "mark_pixels": 6280
+    }
+   },
+   "rendered_share": 0.347,
+   "standoff": 0.444
+  },
+  {
+   "team": "CHI",
+   "wing": "#545C6A",
+   "texel_share": 0.114,
+   "edge_share": 1.0,
+   "median_contrast": 2.04,
+   "mark_median_rgb": [
+    127,
+    44,
+    28
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.27,
+     "standoff": 0.498,
+     "median_contrast": 1.8,
+     "median_oklab_distance": 0.199,
+     "mark_pixels": 8987
+    },
+    "home": {
+     "rendered_share": 0.266,
+     "standoff": 0.499,
+     "median_contrast": 1.81,
+     "median_oklab_distance": 0.2,
+     "mark_pixels": 9022
+    }
+   },
+   "rendered_share": 0.266,
+   "standoff": 0.498
+  },
+  {
+   "team": "NO",
+   "wing": "#6A5E46",
+   "texel_share": 0.667,
+   "edge_share": 1.0,
+   "median_contrast": 3.3,
+   "mark_median_rgb": [
+    134,
+    126,
+    113
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.361,
+     "standoff": 0.498,
+     "median_contrast": 2.2,
+     "median_oklab_distance": 0.199,
+     "mark_pixels": 4816
+    },
+    "home": {
+     "rendered_share": 0.362,
+     "standoff": 0.498,
+     "median_contrast": 2.2,
+     "median_oklab_distance": 0.199,
+     "mark_pixels": 4802
+    }
+   },
+   "rendered_share": 0.361,
+   "standoff": 0.498
+  },
+  {
+   "team": "CAR",
+   "wing": "#00649B",
+   "texel_share": 0.638,
+   "edge_share": 0.296,
+   "median_contrast": 3.28,
+   "mark_median_rgb": [
+    0,
+    1,
+    2
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.062,
+     "standoff": 0.507,
+     "median_contrast": 1.41,
+     "median_oklab_distance": 0.202,
+     "mark_pixels": 13579
+    },
+    "home": {
+     "rendered_share": 0.062,
+     "standoff": 0.514,
+     "median_contrast": 1.42,
+     "median_oklab_distance": 0.203,
+     "mark_pixels": 13595
+    }
+   },
+   "rendered_share": 0.062,
+   "standoff": 0.507
+  },
+  {
+   "team": "ATL",
+   "wing": "#B43C4F",
+   "texel_share": 0.601,
+   "edge_share": 0.116,
+   "median_contrast": 3.53,
+   "mark_median_rgb": [
+    143,
+    83,
+    83
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.405,
+     "standoff": 0.545,
+     "median_contrast": 2.01,
+     "median_oklab_distance": 0.224,
+     "mark_pixels": 6353
+    },
+    "home": {
+     "rendered_share": 0.406,
+     "standoff": 0.549,
+     "median_contrast": 2.02,
+     "median_oklab_distance": 0.228,
+     "mark_pixels": 6353
+    }
+   },
+   "rendered_share": 0.405,
+   "standoff": 0.545
+  },
+  {
+   "team": "JAX",
+   "wing": "#267E8C",
+   "texel_share": 0.48,
+   "edge_share": 0.915,
+   "median_contrast": 2.79,
+   "mark_median_rgb": [
+    122,
+    103,
+    21
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.414,
+     "standoff": 0.56,
+     "median_contrast": 2.3,
+     "median_oklab_distance": 0.237,
+     "mark_pixels": 10430
+    },
+    "home": {
+     "rendered_share": 0.415,
+     "standoff": 0.552,
+     "median_contrast": 2.3,
+     "median_oklab_distance": 0.236,
+     "mark_pixels": 10418
+    }
+   },
+   "rendered_share": 0.414,
+   "standoff": 0.552
+  },
+  {
+   "team": "HOU",
+   "wing": "#EB0028",
+   "texel_share": 0.725,
+   "edge_share": 0.995,
+   "median_contrast": 4.39,
+   "mark_median_rgb": [
+    110,
+    8,
+    31
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.479,
+     "standoff": 0.611,
+     "median_contrast": 2.6,
+     "median_oklab_distance": 0.27,
+     "mark_pixels": 8033
+    },
+    "home": {
+     "rendered_share": 0.487,
+     "standoff": 0.561,
+     "median_contrast": 2.71,
+     "median_oklab_distance": 0.26,
+     "mark_pixels": 8020
+    }
+   },
+   "rendered_share": 0.479,
+   "standoff": 0.561
+  },
+  {
+   "team": "BAL",
+   "wing": "#665A8F",
+   "texel_share": 0.468,
+   "edge_share": 0.987,
+   "median_contrast": 2.92,
+   "mark_median_rgb": [
+    135,
+    108,
+    92
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.476,
+     "standoff": 0.577,
+     "median_contrast": 2.74,
+     "median_oklab_distance": 0.26,
+     "mark_pixels": 12125
+    },
+    "home": {
+     "rendered_share": 0.476,
+     "standoff": 0.572,
+     "median_contrast": 2.72,
+     "median_oklab_distance": 0.255,
+     "mark_pixels": 12151
+    }
+   },
+   "rendered_share": 0.476,
+   "standoff": 0.572
+  },
+  {
+   "team": "NE",
+   "wing": "#264360",
+   "texel_share": 0.421,
+   "edge_share": 1.0,
+   "median_contrast": 2.14,
+   "mark_median_rgb": [
+    146,
+    82,
+    110
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.508,
+     "standoff": 0.592,
+     "median_contrast": 3.03,
+     "median_oklab_distance": 0.323,
+     "mark_pixels": 10366
+    },
+    "home": {
+     "rendered_share": 0.523,
+     "standoff": 0.583,
+     "median_contrast": 3.08,
+     "median_oklab_distance": 0.309,
+     "mark_pixels": 10355
+    }
+   },
+   "rendered_share": 0.508,
+   "standoff": 0.583
+  },
+  {
+   "team": "DEN",
+   "wing": "#1E69C9",
+   "texel_share": 0.598,
+   "edge_share": 0.696,
+   "median_contrast": 3.2,
+   "mark_median_rgb": [
+    209,
+    101,
+    125
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.519,
+     "standoff": 0.594,
+     "median_contrast": 3.27,
+     "median_oklab_distance": 0.345,
+     "mark_pixels": 9546
+    },
+    "home": {
+     "rendered_share": 0.526,
+     "standoff": 0.593,
+     "median_contrast": 3.44,
+     "median_oklab_distance": 0.345,
+     "mark_pixels": 9550
+    }
+   },
+   "rendered_share": 0.519,
+   "standoff": 0.593
+  },
+  {
+   "team": "GB",
+   "wing": "#203731",
+   "texel_share": 0.544,
+   "edge_share": 1.0,
+   "median_contrast": 5.2,
+   "mark_median_rgb": [
+    172,
+    166,
+    66
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.534,
+     "standoff": 0.597,
+     "median_contrast": 3.59,
+     "median_oklab_distance": 0.33,
+     "mark_pixels": 16665
+    },
+    "home": {
+     "rendered_share": 0.535,
+     "standoff": 0.6,
+     "median_contrast": 3.61,
+     "median_oklab_distance": 0.331,
+     "mark_pixels": 16644
+    }
+   },
+   "rendered_share": 0.534,
+   "standoff": 0.597
+  },
+  {
+   "team": "BUF",
+   "wing": "#00338D",
+   "texel_share": 0.308,
+   "edge_share": 1.0,
+   "median_contrast": 2.12,
+   "mark_median_rgb": [
+    70,
+    49,
+    145
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.494,
+     "standoff": 0.608,
+     "median_contrast": 2.97,
+     "median_oklab_distance": 0.292,
+     "mark_pixels": 11128
+    },
+    "home": {
+     "rendered_share": 0.497,
+     "standoff": 0.601,
+     "median_contrast": 2.98,
+     "median_oklab_distance": 0.289,
+     "mark_pixels": 11148
+    }
+   },
+   "rendered_share": 0.494,
+   "standoff": 0.601
+  },
+  {
+   "team": "TB",
+   "wing": "#A71930",
+   "texel_share": 0.143,
+   "edge_share": 0.462,
+   "median_contrast": 1.47,
+   "mark_median_rgb": [
+    174,
+    20,
+    45
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.147,
+     "standoff": 0.643,
+     "median_contrast": 2.27,
+     "median_oklab_distance": 0.24,
+     "mark_pixels": 7156
+    },
+    "home": {
+     "rendered_share": 0.15,
+     "standoff": 0.629,
+     "median_contrast": 2.25,
+     "median_oklab_distance": 0.236,
+     "mark_pixels": 7154
+    }
+   },
+   "rendered_share": 0.147,
+   "standoff": 0.629
+  },
+  {
+   "team": "SEA",
+   "wing": "#4C647C",
+   "texel_share": 0.458,
+   "edge_share": 0.993,
+   "median_contrast": 2.9,
+   "mark_median_rgb": [
+    159,
+    170,
+    175
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.57,
+     "standoff": 0.632,
+     "median_contrast": 4.27,
+     "median_oklab_distance": 0.357,
+     "mark_pixels": 13884
+    },
+    "home": {
+     "rendered_share": 0.561,
+     "standoff": 0.633,
+     "median_contrast": 4.23,
+     "median_oklab_distance": 0.354,
+     "mark_pixels": 13897
+    }
+   },
+   "rendered_share": 0.561,
+   "standoff": 0.632
+  },
+  {
+   "team": "ARI",
+   "wing": "#97233F",
+   "texel_share": 0.204,
+   "edge_share": 0.988,
+   "median_contrast": 2.26,
+   "mark_median_rgb": [
+    174,
+    30,
+    61
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.249,
+     "standoff": 0.636,
+     "median_contrast": 2.18,
+     "median_oklab_distance": 0.265,
+     "mark_pixels": 6373
+    },
+    "home": {
+     "rendered_share": 0.247,
+     "standoff": 0.635,
+     "median_contrast": 2.18,
+     "median_oklab_distance": 0.264,
+     "mark_pixels": 6379
+    }
+   },
+   "rendered_share": 0.247,
+   "standoff": 0.635
+  },
+  {
+   "team": "LV",
+   "wing": "#646464",
+   "texel_share": 0.785,
+   "edge_share": 1.0,
+   "median_contrast": 3.55,
+   "mark_median_rgb": [
+    35,
+    36,
+    36
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.403,
+     "standoff": 0.649,
+     "median_contrast": 1.85,
+     "median_oklab_distance": 0.273,
+     "mark_pixels": 9645
+    },
+    "home": {
+     "rendered_share": 0.401,
+     "standoff": 0.666,
+     "median_contrast": 1.86,
+     "median_oklab_distance": 0.273,
+     "mark_pixels": 9656
+    }
+   },
+   "rendered_share": 0.401,
+   "standoff": 0.649
+  },
+  {
+   "team": "PHI",
+   "wing": "#26636B",
+   "texel_share": 0.559,
+   "edge_share": 0.969,
+   "median_contrast": 3.08,
+   "mark_median_rgb": [
+    141,
+    157,
+    163
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.555,
+     "standoff": 0.654,
+     "median_contrast": 3.68,
+     "median_oklab_distance": 0.318,
+     "mark_pixels": 10033
+    },
+    "home": {
+     "rendered_share": 0.556,
+     "standoff": 0.663,
+     "median_contrast": 3.7,
+     "median_oklab_distance": 0.322,
+     "mark_pixels": 10019
+    }
+   },
+   "rendered_share": 0.555,
+   "standoff": 0.654
+  },
+  {
+   "team": "SF",
+   "wing": "#C44C4C",
+   "texel_share": 0.407,
+   "edge_share": 0.873,
+   "median_contrast": 1.95,
+   "mark_median_rgb": [
+    196,
+    22,
+    18
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.321,
+     "standoff": 0.744,
+     "median_contrast": 2.33,
+     "median_oklab_distance": 0.282,
+     "mark_pixels": 17895
+    },
+    "home": {
+     "rendered_share": 0.322,
+     "standoff": 0.733,
+     "median_contrast": 2.43,
+     "median_oklab_distance": 0.287,
+     "mark_pixels": 17886
+    }
+   },
+   "rendered_share": 0.321,
+   "standoff": 0.733
+  },
+  {
+   "team": "CIN",
+   "wing": "#BC3B0F",
+   "texel_share": 0.509,
+   "edge_share": 1.0,
+   "median_contrast": 3.08,
+   "mark_median_rgb": [
+    255,
+    78,
+    2
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.622,
+     "standoff": 0.793,
+     "median_contrast": 4.12,
+     "median_oklab_distance": 0.407,
+     "mark_pixels": 15098
+    },
+    "home": {
+     "rendered_share": 0.622,
+     "standoff": 0.804,
+     "median_contrast": 4.08,
+     "median_oklab_distance": 0.403,
+     "mark_pixels": 15075
+    }
+   },
+   "rendered_share": 0.622,
+   "standoff": 0.793
+  },
+  {
+   "team": "MIN",
+   "wing": "#4F2683",
+   "texel_share": 0.578,
+   "edge_share": 0.858,
+   "median_contrast": 4.12,
+   "mark_median_rgb": [
+    179,
+    156,
+    62
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.65,
+     "standoff": 0.795,
+     "median_contrast": 3.82,
+     "median_oklab_distance": 0.338,
+     "mark_pixels": 5044
+    },
+    "home": {
+     "rendered_share": 0.645,
+     "standoff": 0.794,
+     "median_contrast": 3.79,
+     "median_oklab_distance": 0.336,
+     "mark_pixels": 5045
+    }
+   },
+   "rendered_share": 0.645,
+   "standoff": 0.794
+  },
+  {
+   "team": "NYG",
+   "wing": "#0B2265",
+   "texel_share": 0.832,
+   "edge_share": 0.236,
+   "median_contrast": 14.45,
+   "mark_median_rgb": [
+    254,
+    253,
+    253
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.731,
+     "standoff": 0.796,
+     "median_contrast": 13.5,
+     "median_oklab_distance": 0.693,
+     "mark_pixels": 15415
+    },
+    "home": {
+     "rendered_share": 0.742,
+     "standoff": 0.811,
+     "median_contrast": 13.62,
+     "median_oklab_distance": 0.697,
+     "mark_pixels": 15164
+    }
+   },
+   "rendered_share": 0.731,
+   "standoff": 0.796
+  },
+  {
+   "team": "KC",
+   "wing": "#E31837",
+   "texel_share": 0.661,
+   "edge_share": 0.987,
+   "median_contrast": 4.45,
+   "mark_median_rgb": [
+    251,
+    221,
+    221
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.681,
+     "standoff": 0.818,
+     "median_contrast": 5.13,
+     "median_oklab_distance": 0.422,
+     "mark_pixels": 13175
+    },
+    "home": {
+     "rendered_share": 0.683,
+     "standoff": 0.822,
+     "median_contrast": 5.25,
+     "median_oklab_distance": 0.426,
+     "mark_pixels": 13152
+    }
+   },
+   "rendered_share": 0.681,
+   "standoff": 0.818
+  },
+  {
+   "team": "PIT",
+   "wing": "#805B09",
+   "texel_share": 0.575,
+   "edge_share": 0.297,
+   "median_contrast": 3.98,
+   "mark_median_rgb": [
+    247,
+    203,
+    197
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.819,
+     "standoff": 0.868,
+     "median_contrast": 8.13,
+     "median_oklab_distance": 0.548,
+     "mark_pixels": 9868
+    },
+    "home": {
+     "rendered_share": 0.815,
+     "standoff": 0.868,
+     "median_contrast": 8.15,
+     "median_oklab_distance": 0.545,
+     "mark_pixels": 9893
+    }
+   },
+   "rendered_share": 0.815,
+   "standoff": 0.868
+  },
+  {
+   "team": "LAR",
+   "wing": "#003594",
+   "texel_share": 1.0,
+   "edge_share": 1.0,
+   "median_contrast": 7.42,
+   "mark_median_rgb": [
+    255,
+    209,
+    0
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.817,
+     "standoff": 0.887,
+     "median_contrast": 9.99,
+     "median_oklab_distance": 0.627,
+     "mark_pixels": 10637
+    },
+    "home": {
+     "rendered_share": 0.817,
+     "standoff": 0.891,
+     "median_contrast": 9.62,
+     "median_oklab_distance": 0.627,
+     "mark_pixels": 10614
+    }
+   },
+   "rendered_share": 0.817,
+   "standoff": 0.887
+  },
+  {
+   "team": "MIA",
+   "wing": "#006A71",
+   "texel_share": 0.475,
+   "edge_share": 0.805,
+   "median_contrast": 2.7,
+   "mark_median_rgb": [
+    252,
+    166,
+    164
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.81,
+     "standoff": 0.891,
+     "median_contrast": 4.66,
+     "median_oklab_distance": 0.399,
+     "mark_pixels": 7683
+    },
+    "home": {
+     "rendered_share": 0.805,
+     "standoff": 0.888,
+     "median_contrast": 4.63,
+     "median_oklab_distance": 0.397,
+     "mark_pixels": 7678
+    }
+   },
+   "rendered_share": 0.805,
+   "standoff": 0.888
+  },
+  {
+   "team": "DET",
+   "wing": "#0076B6",
+   "texel_share": 0.227,
+   "edge_share": 0.335,
+   "median_contrast": 1.18,
+   "mark_median_rgb": [
+    25,
+    129,
+    187
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.665,
+     "standoff": 0.899,
+     "median_contrast": 3.37,
+     "median_oklab_distance": 0.316,
+     "mark_pixels": 7529
+    },
+    "home": {
+     "rendered_share": 0.615,
+     "standoff": 0.899,
+     "median_contrast": 3.31,
+     "median_oklab_distance": 0.31,
+     "mark_pixels": 7520
+    }
+   },
+   "rendered_share": 0.615,
+   "standoff": 0.899
+  },
+  {
+   "team": "CLE",
+   "wing": "#6F614C",
+   "texel_share": 0.312,
+   "edge_share": 1.0,
+   "median_contrast": 1.67,
+   "mark_median_rgb": [
+    252,
+    60,
+    13
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.824,
+     "standoff": 0.915,
+     "median_contrast": 3.87,
+     "median_oklab_distance": 0.419,
+     "mark_pixels": 12098
+    },
+    "home": {
+     "rendered_share": 0.832,
+     "standoff": 0.912,
+     "median_contrast": 4.16,
+     "median_oklab_distance": 0.438,
+     "mark_pixels": 12140
+    }
+   },
+   "rendered_share": 0.824,
+   "standoff": 0.912
+  },
+  {
+   "team": "TEN",
+   "wing": "#33709E",
+   "texel_share": 0.343,
+   "edge_share": 0.0,
+   "median_contrast": 1.66,
+   "mark_median_rgb": [
+    163,
+    149,
+    210
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.844,
+     "standoff": 0.932,
+     "median_contrast": 4.68,
+     "median_oklab_distance": 0.397,
+     "mark_pixels": 9921
+    },
+    "home": {
+     "rendered_share": 0.84,
+     "standoff": 0.927,
+     "median_contrast": 4.68,
+     "median_oklab_distance": 0.397,
+     "mark_pixels": 9956
+    }
+   },
+   "rendered_share": 0.84,
+   "standoff": 0.927
+  },
+  {
+   "team": "LAC",
+   "wing": "#006094",
+   "texel_share": 0.633,
+   "edge_share": 1.0,
+   "median_contrast": 4.08,
+   "mark_median_rgb": [
+    202,
+    194,
+    193
+   ],
+   "rendered": {
+    "away": {
+     "rendered_share": 0.877,
+     "standoff": 0.939,
+     "median_contrast": 5.91,
+     "median_oklab_distance": 0.449,
+     "mark_pixels": 8933
+    },
+    "home": {
+     "rendered_share": 0.871,
+     "standoff": 0.937,
+     "median_contrast": 5.84,
+     "median_oklab_distance": 0.448,
+     "mark_pixels": 8941
+    }
+   },
+   "rendered_share": 0.871,
+   "standoff": 0.937
+  }
+ ],
+ "note": "Offline model only; the calibration gate reports FAIL. No in-game result is claimed."
+}

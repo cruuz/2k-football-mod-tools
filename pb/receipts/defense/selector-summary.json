@@ -1,0 +1,2533 @@
+{
+  "status": "PROVED OFFLINE",
+  "teams": {
+    "ARZ": {
+      "status": "PROVED OFFLINE",
+      "team": "ARZ",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000001248,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 26.87399995335827,
+        "zone": 73.12600004663139,
+        "split_family": 54.351617625197214,
+        "blitz": 26.87399995335826,
+        "cover0": 2.774367098069852,
+        "replacement": 12.516254947619956,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 46,
+          "coverage": 183,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 5,
+          "coverage": 28,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 0,
+          "coverage": 33,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 3,
+          "coverage": 11,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "ATL": {
+      "status": "PROVED OFFLINE",
+      "team": "ATL",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.9999999999162,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 33.102389516684525,
+        "zone": 66.89761048332939,
+        "split_family": 43.58106523330789,
+        "blitz": 35.61416696960188,
+        "cover0": 3.0744054298919417,
+        "replacement": 15.8413748371579,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 26,
+          "front": 41,
+          "coverage": 176,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 22,
+          "front": 7,
+          "coverage": 17,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 23,
+          "front": 3,
+          "coverage": 27,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 24,
+          "front": 0,
+          "coverage": 20,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "BAL": {
+      "status": "PROVED OFFLINE",
+      "team": "BAL",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.9999999999765,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 26.859734738674977,
+        "zone": 73.14026526132945,
+        "split_family": 53.27784268866059,
+        "blitz": 33.41643547869876,
+        "cover0": 2.228769128740658,
+        "replacement": 16.611549881694433,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 32,
+          "coverage": 36,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 25,
+          "front": 50,
+          "coverage": 11,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 26,
+          "front": 45,
+          "coverage": 194,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 27,
+          "front": 45,
+          "coverage": 11,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "BUF": {
+      "status": "PROVED OFFLINE",
+      "team": "BUF",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000001478,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 43.42384651973054,
+        "zone": 56.576153480252266,
+        "split_family": 38.630799995172794,
+        "blitz": 30.601606175786923,
+        "cover0": 5.6843843278481305,
+        "replacement": 17.945353485085047,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 33,
+          "front": 36,
+          "coverage": 48,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 27,
+          "front": 5,
+          "coverage": 13,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 28,
+          "front": 7,
+          "coverage": 9,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 29,
+          "front": 4,
+          "coverage": 35,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "CAR": {
+      "status": "PROVED OFFLINE",
+      "team": "CAR",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999987932,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 21.32280699034124,
+        "zone": 78.67719300967295,
+        "split_family": 45.54600996344651,
+        "blitz": 26.850278026556506,
+        "cover0": 2.6514065809604896,
+        "replacement": 11.961531968925597,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 32,
+          "front": 40,
+          "coverage": 54,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 28,
+          "front": 4,
+          "coverage": 26,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 29,
+          "front": 5,
+          "coverage": 10,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 30,
+          "front": 4,
+          "coverage": 33,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "CHI": {
+      "status": "PROVED OFFLINE",
+      "team": "CHI",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.9999999999682,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 41.30194031302706,
+        "zone": 58.69805968695934,
+        "split_family": 40.47869397957074,
+        "blitz": 28.68811921880515,
+        "cover0": 4.276067860663303,
+        "replacement": 13.40763157609467,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 37,
+          "coverage": 183,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 0,
+          "coverage": 31,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 5,
+          "coverage": 31,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 4,
+          "coverage": 29,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "CIN": {
+      "status": "PROVED OFFLINE",
+      "team": "CIN",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000004215,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 34.61000506679068,
+        "zone": 65.38999493319794,
+        "split_family": 34.31694251175936,
+        "blitz": 19.711651428806505,
+        "cover0": 5.9385125606742415,
+        "replacement": 9.267003907955946,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 31,
+          "front": 35,
+          "coverage": 37,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 27,
+          "front": 48,
+          "coverage": 22,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 28,
+          "front": 29,
+          "coverage": 21,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 29,
+          "front": 48,
+          "coverage": 2,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "CLE": {
+      "status": "PROVED OFFLINE",
+      "team": "CLE",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999993975,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 31.67676814304592,
+        "zone": 68.3232318569591,
+        "split_family": 43.893168470691194,
+        "blitz": 33.40920242838306,
+        "cover0": 2.835566219150241,
+        "replacement": 14.791047126287221,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 30,
+          "front": 51,
+          "coverage": 194,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 31,
+          "front": 6,
+          "coverage": 204,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 28,
+          "front": 1,
+          "coverage": 18,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 29,
+          "front": 1,
+          "coverage": 14,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "DAL": {
+      "status": "PROVED OFFLINE",
+      "team": "DAL",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999993764,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 44.719869980243764,
+        "zone": 55.280130019775896,
+        "split_family": 39.079148577809136,
+        "blitz": 19.92037952015376,
+        "cover0": 2.7454817289122233,
+        "replacement": 8.114294199848205,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 27,
+          "front": 43,
+          "coverage": 180,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 23,
+          "front": 3,
+          "coverage": 15,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 7,
+          "coverage": 30,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 2,
+          "coverage": 17,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "DEN": {
+      "status": "PROVED OFFLINE",
+      "team": "DEN",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999995546,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 44.00955179079217,
+        "zone": 55.99044820921217,
+        "split_family": 39.393600178170566,
+        "blitz": 30.532410417640353,
+        "cover0": 6.215487947352727,
+        "replacement": 14.020248406752552,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 42,
+          "coverage": 172,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 3,
+          "coverage": 9,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 5,
+          "coverage": 31,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 3,
+          "coverage": 27,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "DET": {
+      "status": "PROVED OFFLINE",
+      "team": "DET",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000014396,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 41.21676137884167,
+        "zone": 58.783238621089986,
+        "split_family": 42.459875493182786,
+        "blitz": 28.52846052588477,
+        "cover0": 2.9809459033671684,
+        "replacement": 13.448211512326726,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 41,
+          "coverage": 181,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 4,
+          "coverage": 17,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 6,
+          "coverage": 18,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 7,
+          "coverage": 26,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "GB": {
+      "status": "PROVED OFFLINE",
+      "team": "GB",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.999999999854,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 28.264121701787577,
+        "zone": 71.73587829824598,
+        "split_family": 52.59072650399038,
+        "blitz": 28.455148810957546,
+        "cover0": 2.8009283458009286,
+        "replacement": 12.636083123408104,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 34,
+          "front": 41,
+          "coverage": 47,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 31,
+          "front": 0,
+          "coverage": 19,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 32,
+          "front": 3,
+          "coverage": 28,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 33,
+          "front": 4,
+          "coverage": 17,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "HOU": {
+      "status": "PROVED OFFLINE",
+      "team": "HOU",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999998633,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 31.192722272161628,
+        "zone": 68.80727772783928,
+        "split_family": 45.710413444115545,
+        "blitz": 22.41528843587451,
+        "cover0": 1.8628699697202695,
+        "replacement": 12.025455197272205,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 26,
+          "front": 44,
+          "coverage": 197,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 23,
+          "front": 5,
+          "coverage": 6,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 24,
+          "front": 0,
+          "coverage": 32,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 25,
+          "front": 1,
+          "coverage": 35,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "IND": {
+      "status": "PROVED OFFLINE",
+      "team": "IND",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000015552,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 34.12605745407411,
+        "zone": 65.87394254587083,
+        "split_family": 43.915961697230365,
+        "blitz": 28.636562241921197,
+        "cover0": 4.867230642184835,
+        "replacement": 16.468485636462248,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 32,
+          "front": 38,
+          "coverage": 184,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 28,
+          "front": 1,
+          "coverage": 187,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 29,
+          "front": 3,
+          "coverage": 21,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 30,
+          "front": 1,
+          "coverage": 18,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "JAX": {
+      "status": "PROVED OFFLINE",
+      "team": "JAX",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.0000000000285,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 22.999926998206444,
+        "zone": 77.00007300179522,
+        "split_family": 47.74919357515709,
+        "blitz": 24.965552953293244,
+        "cover0": 6.048079861803746,
+        "replacement": 13.642626735763088,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 43,
+          "coverage": 189,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 0,
+          "coverage": 12,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 7,
+          "coverage": 19,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 3,
+          "coverage": 22,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "KC": {
+      "status": "PROVED OFFLINE",
+      "team": "KC",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999993767,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 34.227644595590576,
+        "zone": 65.77235540442811,
+        "split_family": 51.46509032899355,
+        "blitz": 34.227644595590576,
+        "cover0": 6.342728820207646,
+        "replacement": 18.578912626776876,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 29,
+          "front": 36,
+          "coverage": 184,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 25,
+          "front": 0,
+          "coverage": 24,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 26,
+          "front": 5,
+          "coverage": 13,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 27,
+          "front": 0,
+          "coverage": 29,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "MIA": {
+      "status": "PROVED OFFLINE",
+      "team": "MIA",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999997928,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 19.46295022299788,
+        "zone": 80.53704977701949,
+        "split_family": 47.36757412399593,
+        "blitz": 20.504159521197852,
+        "cover0": 2.599044458127931,
+        "replacement": 9.376654791347274,
+        "modern": 99.99999999999999
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 30,
+          "front": 46,
+          "coverage": 176,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 26,
+          "front": 3,
+          "coverage": 8,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 27,
+          "front": 5,
+          "coverage": 28,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 28,
+          "front": 163,
+          "coverage": 28,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "MIN": {
+      "status": "PROVED OFFLINE",
+      "team": "MIN",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.9999999999918,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 20.515193005007205,
+        "zone": 79.48480699499521,
+        "split_family": 61.56684779805553,
+        "blitz": 45.83057571684901,
+        "cover0": 5.34414056381326,
+        "replacement": 22.19227054473967,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 31,
+          "front": 0,
+          "coverage": 11,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 28,
+          "front": 61,
+          "coverage": 68,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 29,
+          "front": 60,
+          "coverage": 83,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 30,
+          "front": 60,
+          "coverage": 73,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "NE": {
+      "status": "PROVED OFFLINE",
+      "team": "NE",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.0000000000285,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 28.376209637233934,
+        "zone": 71.62379036276339,
+        "split_family": 40.92788020727829,
+        "blitz": 28.37620963723395,
+        "cover0": 2.2680299481764035,
+        "replacement": 15.347955077732788,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 29,
+          "front": 26,
+          "coverage": 166,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 25,
+          "front": 12,
+          "coverage": 158,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 26,
+          "front": 10,
+          "coverage": 163,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 27,
+          "front": 11,
+          "coverage": 210,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "NO": {
+      "status": "PROVED OFFLINE",
+      "team": "NO",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999991567,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 22.689865397230374,
+        "zone": 77.31013460278125,
+        "split_family": 39.53716290338163,
+        "blitz": 25.61325178428273,
+        "cover0": 2.921283945537042,
+        "replacement": 13.179054301129339,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 41,
+          "coverage": 53,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 5,
+          "coverage": 23,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 5,
+          "coverage": 32,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 4,
+          "coverage": 23,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "NYG": {
+      "status": "PROVED OFFLINE",
+      "team": "NYG",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.0000000000794,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 26.723522891903166,
+        "zone": 73.27647710807649,
+        "split_family": 50.49406993083137,
+        "blitz": 22.494496347580096,
+        "cover0": 2.965057115568635,
+        "replacement": 11.769058001435795,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 30,
+          "front": 48,
+          "coverage": 186,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 26,
+          "front": 7,
+          "coverage": 16,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 27,
+          "front": 0,
+          "coverage": 33,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 28,
+          "front": 6,
+          "coverage": 13,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "NYJ": {
+      "status": "PROVED OFFLINE",
+      "team": "NYJ",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000000034,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 26.99843282370852,
+        "zone": 73.00156717629275,
+        "split_family": 53.24630150344476,
+        "blitz": 32.91468854631439,
+        "cover0": 2.622807747086413,
+        "replacement": 17.748767167814535,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 38,
+          "coverage": 51,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 23,
+          "front": 5,
+          "coverage": 25,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 3,
+          "coverage": 27,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 2,
+          "coverage": 23,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "OAK": {
+      "status": "PROVED OFFLINE",
+      "team": "OAK",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.00000000009464,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 20.471346386204523,
+        "zone": 79.52865361377977,
+        "split_family": 44.11831799340918,
+        "blitz": 21.74483867998946,
+        "cover0": 4.425009720849536,
+        "replacement": 8.051789553237606,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 30,
+          "front": 33,
+          "coverage": 160,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 25,
+          "front": 13,
+          "coverage": 0,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 27,
+          "front": 14,
+          "coverage": 0,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 28,
+          "front": 11,
+          "coverage": 15,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "PHI": {
+      "status": "PROVED OFFLINE",
+      "team": "PHI",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999989635,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 43.8851383128815,
+        "zone": 56.114861687169274,
+        "split_family": 39.69262876718894,
+        "blitz": 20.61474246567335,
+        "cover0": 2.403542287654551,
+        "replacement": 10.84331920984727,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 27,
+          "front": 48,
+          "coverage": 192,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 0,
+          "coverage": 10,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 7,
+          "coverage": 26,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 2,
+          "coverage": 40,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "PIT": {
+      "status": "PROVED OFFLINE",
+      "team": "PIT",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.999999999992,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 20.622982001016453,
+        "zone": 79.37701799898166,
+        "split_family": 43.33577365447979,
+        "blitz": 21.474747363399274,
+        "cover0": 5.519336500214661,
+        "replacement": 12.449942696201056,
+        "modern": 99.99999999999999
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 42,
+          "coverage": 49,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 53,
+          "coverage": 27,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 54,
+          "coverage": 22,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 56,
+          "coverage": 31,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "SD": {
+      "status": "PROVED OFFLINE",
+      "team": "SD",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 240.0000000000121,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 21.38733257770004,
+        "zone": 78.6126674222945,
+        "split_family": 50.641646625058165,
+        "blitz": 21.16267470340575,
+        "cover0": 4.140218476841912,
+        "replacement": 9.339072329514451,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 28,
+          "front": 4,
+          "coverage": 12,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 24,
+          "front": 210,
+          "coverage": 174,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 25,
+          "front": 212,
+          "coverage": 173,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 26,
+          "front": 170,
+          "coverage": 201,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "SEA": {
+      "status": "PROVED OFFLINE",
+      "team": "SEA",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999995566,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 27.825731534111693,
+        "zone": 72.17426846589372,
+        "split_family": 53.28697502781633,
+        "blitz": 22.739583027112523,
+        "cover0": 3.3870746000584777,
+        "replacement": 11.986720972541468,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 29,
+          "front": 42,
+          "coverage": 55,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 26,
+          "front": 5,
+          "coverage": 19,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 27,
+          "front": 6,
+          "coverage": 12,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 28,
+          "front": 1,
+          "coverage": 13,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "SF": {
+      "status": "PROVED OFFLINE",
+      "team": "SF",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999982117,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 33.262651935968606,
+        "zone": 66.73734806408893,
+        "split_family": 46.002358245186585,
+        "blitz": 34.28234536409946,
+        "cover0": 2.9134097946615416,
+        "replacement": 19.715296390794048,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 26,
+          "front": 41,
+          "coverage": 177,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 22,
+          "front": 7,
+          "coverage": 24,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 23,
+          "front": 7,
+          "coverage": 31,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 24,
+          "front": 4,
+          "coverage": 28,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "STL": {
+      "status": "PROVED OFFLINE",
+      "team": "STL",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999988503,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 24.509523128185457,
+        "zone": 75.49047687184293,
+        "split_family": 51.42062670175964,
+        "blitz": 21.0532908274307,
+        "cover0": 2.7505714447161442,
+        "replacement": 9.835989964787261,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 32,
+          "front": 162,
+          "coverage": 185,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 28,
+          "front": 133,
+          "coverage": 126,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 29,
+          "front": 136,
+          "coverage": 125,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 30,
+          "front": 132,
+          "coverage": 159,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "TB": {
+      "status": "PROVED OFFLINE",
+      "team": "TB",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999982117,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 27.710579900505614,
+        "zone": 72.28942009954633,
+        "split_family": 46.002358245186585,
+        "blitz": 34.28234536409946,
+        "cover0": 5.826819589323284,
+        "replacement": 19.715296390794048,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 36,
+          "front": 38,
+          "coverage": 164,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 32,
+          "front": 7,
+          "coverage": 25,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 33,
+          "front": 7,
+          "coverage": 29,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 34,
+          "front": 4,
+          "coverage": 27,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "TEN": {
+      "status": "PROVED OFFLINE",
+      "team": "TEN",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999995603,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 23.999715224795185,
+        "zone": 76.00028477521319,
+        "split_family": 44.81974759803187,
+        "blitz": 20.440926678478867,
+        "cover0": 4.048861567906353,
+        "replacement": 11.433116870252594,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 26,
+          "front": 48,
+          "coverage": 186,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 21,
+          "front": 7,
+          "coverage": 12,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 22,
+          "front": 3,
+          "coverage": 16,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 23,
+          "front": 7,
+          "coverage": 10,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    },
+    "WAS": {
+      "status": "PROVED OFFLINE",
+      "team": "WAS",
+      "scope": "Conditional native-selector fixture, not live CPU rates",
+      "state_count": 252,
+      "ordinary_state_equivalents": 239.99999999987332,
+      "category_counts": {
+        "11": 12,
+        "13": 84,
+        "14": 84,
+        "15": 72
+      },
+      "rates": {
+        "man": 19.694670571202405,
+        "zone": 80.30532942881885,
+        "split_family": 64.11616482459877,
+        "blitz": 45.460819521288016,
+        "cover0": 5.345881410905924,
+        "replacement": 24.787893759401815,
+        "modern": 100.0
+      },
+      "native_full_selector_witnesses": [
+        {
+          "requested_code": 11,
+          "category_code": 11,
+          "formation": 29,
+          "front": 44,
+          "coverage": 172,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 13,
+          "category_code": 13,
+          "formation": 25,
+          "front": 0,
+          "coverage": 11,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 14,
+          "category_code": 14,
+          "formation": 26,
+          "front": 3,
+          "coverage": 14,
+          "down": 1,
+          "distance": 10,
+          "yardline": 1,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        },
+        {
+          "requested_code": 15,
+          "category_code": 15,
+          "formation": 27,
+          "front": 3,
+          "coverage": 37,
+          "down": 1,
+          "distance": 10,
+          "yardline": 5,
+          "matchup": 0.5,
+          "prevent_fixture": false
+        }
+      ],
+      "limitations": [
+        "Full 0x20B400 situational/game-plan policy is replaced with a category fixture.",
+        "Distance has no effect in this fixture; native 0x208480 still receives down and field position.",
+        "Formation score=1, player matchup=.5, 54-float profile=0, mirror/prevent predicates=false.",
+        "Split-family is authored coverage intent, not observed pre-snap two-high.",
+        "Native validator and candidate/score/lottery code execute; full-game behavior needs main lab."
+      ]
+    }
+  }
+}

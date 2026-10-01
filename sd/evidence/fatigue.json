@@ -1,0 +1,67 @@
+[
+  {
+    "player": "0xb31624",
+    "side": 1,
+    "status_bits": 0,
+    "active": 0,
+    "energy": 0.6971361041069031,
+    "out_threshold": 5,
+    "in_threshold": 16,
+    "eligible": 0,
+    "exit_branch": [
+      "0x18856d"
+    ]
+  },
+  {
+    "player": "0xb31678",
+    "side": 1,
+    "status_bits": 0,
+    "active": 0,
+    "energy": 0.5275464653968811,
+    "out_threshold": 5,
+    "in_threshold": 16,
+    "eligible": 0,
+    "exit_branch": [
+      "0x18856d"
+    ]
+  },
+  {
+    "player": "0xb3157c",
+    "side": 1,
+    "status_bits": 0,
+    "active": 11793584,
+    "energy": 1.0,
+    "out_threshold": 5,
+    "in_threshold": 16,
+    "eligible": 1,
+    "exit_branch": [
+      "0x188577"
+    ]
+  },
+  {
+    "player": "0xb31480",
+    "side": 1,
+    "status_bits": 0,
+    "active": 0,
+    "energy": 0.7693036794662476,
+    "out_threshold": 5,
+    "in_threshold": 16,
+    "eligible": 0,
+    "exit_branch": [
+      "0x18856d"
+    ]
+  },
+  {
+    "player": "0xb3142c",
+    "side": 1,
+    "status_bits": 0,
+    "active": 11793504,
+    "energy": 0.9842127561569214,
+    "out_threshold": 5,
+    "in_threshold": 16,
+    "eligible": 1,
+    "exit_branch": [
+      "0x188577"
+    ]
+  }
+]

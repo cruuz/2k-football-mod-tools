@@ -1,0 +1,1167 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "BAL",
+  "name": "Baltimore Ravens",
+  "asset_code": "02",
+  "season": 2026,
+  "status": "Phase B job d2, 2026-09-23. SORT: redesigned (the April 16, 2026 'Next Flight' set: midnight purple, numbers without drop shadow or gold with a midnight purple stroke, RAVENS or BALTIMORE above the number, feather wings at the collar, talon-stripe pants). Number shapes are the retail Ravens font with the shadow removed (the 2026 numerals keep the same family).",
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "3-4",
+    "note": "nflverse roster_2026 week 3: 53 active. Base defense from the nflverse 2026 depth charts (pos_grp 'Base 3-4 D' in every snapshot since 2026-09-09).",
+    "head_coach": "Jesse Minter",
+    "depth_since": "2026-09-09",
+    "head_coach_source": "https://www.baltimoreravens.com/team/coaches-roster/jesse-minter (Head Coach; 'now leads the team that first hired him'); confirmed 2026-09-23, matches nflverse games.csv (used only for the career record)"
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Rasheen Ali": 4,
+      "Mark Andrews": 0,
+      "Chidobe Awuzie": 4,
+      "Rashod Bateman": 3,
+      "Teddye Buchanan": 2,
+      "Ethan Burke": 0,
+      "Calais Campbell": 4,
+      "Josh Cuevas": 1,
+      "Ryan Eckley": 0,
+      "Joe Fagnano": 0,
+      "Zay Flowers": 3,
+      "Mike Green": 4,
+      "Jovaughn Gwyn": 3,
+      "Kyle Hamilton": 3,
+      "Jaylinn Hawkins": 4,
+      "Trey Hendrickson": 0,
+      "Derrick Henry": 4,
+      "Matthew Hibner": 0,
+      "Jay Higgins": 4,
+      "Justice Hill": 4,
+      "Marlon Humphrey": 3,
+      "Tyler Huntley": 4,
+      "Olaivavega Ioane": 2,
+      "Keondre Jackson": 3,
+      "Lamar Jackson": 4,
+      "John Jenkins": 5,
+      "Travis Jones": 4,
+      "Carl Jones": 4,
+      "Emery Jones": 5,
+      "Tyler Loop": 0,
+      "Nnamdi Madubuike": 5,
+      "Keyon Martin": 4,
+      "Nick Moore": 0,
+      "Chris Moore": 2,
+      "Aeneas Peebles": 4,
+      "Ethan Pocic": 0,
+      "Chandler Rivers": 4,
+      "Tavius Robinson": 3,
+      "Roger Rosengarten": 0,
+      "Elijah Sarratt": 3,
+      "John Simpson": 4,
+      "Trenton Simpson": 5,
+      "Roquan Smith": 4,
+      "Durham Smythe": 0,
+      "Ronnie Stanley": 4,
+      "Malaki Starks": 4,
+      "Carson Vinson": 3,
+      "Andrew Vorhees": 0,
+      "Devontez Walker": 5,
+      "Broderick Washington": 4,
+      "LaJohntay Wester": 4,
+      "Nate Wiggins": 3,
+      "Zion Young": 4
+    },
+    "dreads": [
+      "Carl Jones",
+      "Tavius Robinson",
+      "Nate Wiggins",
+      "Zion Young"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots on u1's Giants scale (INFERRED); the automatic cheek estimate stays in faces.json as skin_lab. Dreads and twists by eye."
+  },
+  "sources": {
+    "unveiling": "https://www.baltimoreravens.com/news/ravens-new-uniforms-jerseys-helmets-next-flight-collection-midnight-purple-matte-black-wings-talon-stripes",
+    "gallery": "https://www.baltimoreravens.com/photos/ravens-next-flight-uniform-collection-new-jerseys-photos",
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Baltimore_Ravens_Uniforms_(2026).png (CC BY 4.0)",
+    "games_2026": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2026",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (BAL, 2026 NFL Record and Fact Book p.44)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/BAL.svg",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "purple": "#24135F",
+    "black": "#000000",
+    "gold": "#9A7611",
+    "white": "#FFFFFF"
+  },
+  "albedo": {
+    "jersey_purple": "#2E1667",
+    "midnight_purple": "#1C0D40",
+    "purple": "#24135F",
+    "black": "#000000",
+    "white": "#FFFFFF",
+    "gold": "#9A7611",
+    "light_purple": "#5B3C9E",
+    "retail_helmet_purple": "#58187C",
+    "retail_card_purple": "#401088",
+    "retail_atlas_purple": "#381878",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A"
+  },
+  "marks": {
+    "team_logo_full": "club_logo.png",
+    "wm_ravens": "wm_RAVENS_fill.png",
+    "wm_baltimore": "wm_BALTIMORE_fill.png",
+    "shield_h1": "shield_h1.png",
+    "shield_h2": "shield_h2.png",
+    "shield_a1": "shield_a1.png",
+    "shield_a2": "shield_a2.png",
+    "wm2_black": "wm2_black.png",
+    "wm2_gold": "wm2_gold.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "02H0",
+      "note": "2026 home (standard, Next Flight): purple jersey, white numbers with a midnight purple stroke (no shadow, no gold), RAVENS above the number, black feather wings at the collar, shield patch on the sleeves, white TV numbers; white pants with a midnight purple talon stripe and a thin gold line; white socks; gloss black helmet with the primary logo",
+      "torso": {
+        "base_colour": "jersey_purple",
+        "neck_donor": "02N0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "black",
+            "width": 1.5
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "white"
+        },
+        "decorations": [
+          {
+            "polygon": [
+              [
+                152.53,
+                63.32
+              ],
+              [
+                148.13,
+                56.02
+              ],
+              [
+                143.47,
+                48.85
+              ],
+              [
+                149.85,
+                64.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                169.47,
+                63.32
+              ],
+              [
+                173.87,
+                56.02
+              ],
+              [
+                178.53,
+                48.85
+              ],
+              [
+                172.15,
+                64.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                142.12,
+                51.82
+              ],
+              [
+                137.14,
+                43.36
+              ],
+              [
+                131.89,
+                35.04
+              ],
+              [
+                139.45,
+                53.18
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                179.88,
+                51.82
+              ],
+              [
+                184.86,
+                43.36
+              ],
+              [
+                190.11,
+                35.04
+              ],
+              [
+                182.55,
+                53.18
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                40.32
+              ],
+              [
+                129.76,
+                30.7
+              ],
+              [
+                123.92,
+                21.22
+              ],
+              [
+                132.66,
+                41.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                40.32
+              ],
+              [
+                192.24,
+                30.7
+              ],
+              [
+                198.08,
+                21.22
+              ],
+              [
+                189.34,
+                41.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                28.82
+              ],
+              [
+                129.17,
+                18.04
+              ],
+              [
+                122.74,
+                7.4
+              ],
+              [
+                132.66,
+                30.18
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                28.82
+              ],
+              [
+                192.83,
+                18.04
+              ],
+              [
+                199.26,
+                7.4
+              ],
+              [
+                189.34,
+                30.18
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                17.32
+              ],
+              [
+                128.58,
+                5.38
+              ],
+              [
+                121.56,
+                -6.41
+              ],
+              [
+                132.66,
+                18.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                17.32
+              ],
+              [
+                193.42,
+                5.38
+              ],
+              [
+                200.44,
+                -6.41
+              ],
+              [
+                189.34,
+                18.68
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "mark": "wm_ravens",
+            "colour": "white",
+            "at": "chest_logo",
+            "offset": [
+              0,
+              -1.5
+            ],
+            "width": 44
+          },
+          {
+            "mark": "wm_baltimore",
+            "colour": "white",
+            "at": "back_collar",
+            "width": 28
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "jersey_purple",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "shield_h1",
+            "center": [
+              60.5,
+              26.5
+            ],
+            "width": 38.0
+          },
+          {
+            "mark": "shield_h2",
+            "center": [
+              67.375,
+              90.5
+            ],
+            "width": 37.75
+          }
+        ],
+        "art_shift_rows": 6
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [
+          [
+            "midnight_purple",
+            9
+          ],
+          [
+            "gold",
+            2
+          ]
+        ],
+        "swoosh_colour": "black"
+      },
+      "socks": {
+        "colour": "white"
+      },
+      "digits": {
+        "glyph_donor": "02X0",
+        "fill": "white",
+        "outline": "midnight_purple",
+        "outline_frac": 0.035
+      },
+      "helmet_digits": {
+        "glyph_donor": "02X0",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "02H0",
+        "fill": "white"
+      },
+      "helmet": {
+        "shell_from": "black",
+        "shell": "black",
+        "recolour": [
+          {
+            "from": "retail_helmet_purple",
+            "to": "jersey_purple"
+          }
+        ],
+        "decal": {
+          "mark": "team_logo_full"
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_purple",
+            "to": "jersey_purple",
+            "region": "jersey",
+            "tolerance": 0.22
+          }
+        ],
+        "logo": {
+          "mark": "team_logo_full"
+        }
+      },
+      "outer_index": 3636,
+      "splayer": {
+        "torso_donor_outer": 3636,
+        "torso_donor": "02H0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ],
+        "recolour": [
+          {
+            "from": "retail_atlas_purple",
+            "to": "jersey_purple",
+            "region": "torso",
+            "tolerance": 0.24
+          },
+          {
+            "from": "retail_atlas_purple",
+            "to": "jersey_purple",
+            "region": "sleeve",
+            "tolerance": 0.24
+          }
+        ],
+        "logo": {
+          "mark": "team_logo_full"
+        }
+      }
+    },
+    "away": {
+      "selector": "02A0",
+      "note": "2026 away (Next Flight): white jersey, purple numbers with a midnight purple stroke, BALTIMORE above the number, purple feather wings at the collar, shield patch; purple pants with a black talon stripe; white socks; the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "02N0",
+        "collar_shield": true,
+        "collar_trim": [
+          {
+            "colour": "midnight_purple",
+            "width": 1.5
+          }
+        ],
+        "sleeve_swooshes": {
+          "colour": "jersey_purple"
+        },
+        "decorations": [
+          {
+            "polygon": [
+              [
+                152.53,
+                63.32
+              ],
+              [
+                148.13,
+                56.02
+              ],
+              [
+                143.47,
+                48.85
+              ],
+              [
+                149.85,
+                64.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                169.47,
+                63.32
+              ],
+              [
+                173.87,
+                56.02
+              ],
+              [
+                178.53,
+                48.85
+              ],
+              [
+                172.15,
+                64.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                142.12,
+                51.82
+              ],
+              [
+                137.14,
+                43.36
+              ],
+              [
+                131.89,
+                35.04
+              ],
+              [
+                139.45,
+                53.18
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                179.88,
+                51.82
+              ],
+              [
+                184.86,
+                43.36
+              ],
+              [
+                190.11,
+                35.04
+              ],
+              [
+                182.55,
+                53.18
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                40.32
+              ],
+              [
+                129.76,
+                30.7
+              ],
+              [
+                123.92,
+                21.22
+              ],
+              [
+                132.66,
+                41.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                40.32
+              ],
+              [
+                192.24,
+                30.7
+              ],
+              [
+                198.08,
+                21.22
+              ],
+              [
+                189.34,
+                41.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                28.82
+              ],
+              [
+                129.17,
+                18.04
+              ],
+              [
+                122.74,
+                7.4
+              ],
+              [
+                132.66,
+                30.18
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                28.82
+              ],
+              [
+                192.83,
+                18.04
+              ],
+              [
+                199.26,
+                7.4
+              ],
+              [
+                189.34,
+                30.18
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                135.34,
+                17.32
+              ],
+              [
+                128.58,
+                5.38
+              ],
+              [
+                121.56,
+                -6.41
+              ],
+              [
+                132.66,
+                18.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "polygon": [
+              [
+                186.66,
+                17.32
+              ],
+              [
+                193.42,
+                5.38
+              ],
+              [
+                200.44,
+                -6.41
+              ],
+              [
+                189.34,
+                18.68
+              ]
+            ],
+            "colour": "jersey_purple"
+          },
+          {
+            "mark": "wm_baltimore",
+            "colour": "black",
+            "at": "chest_logo",
+            "offset": [
+              0,
+              -1.5
+            ],
+            "width": 52
+          },
+          {
+            "mark": "wm_ravens",
+            "colour": "white",
+            "at": "back_collar",
+            "width": 26
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "shield_a1",
+            "center": [
+              60.125,
+              26.5
+            ],
+            "width": 36.75
+          },
+          {
+            "mark": "shield_a2",
+            "center": [
+              67.125,
+              90.5
+            ],
+            "width": 36.75
+          }
+        ],
+        "art_shift_rows": 5
+      },
+      "pants": {
+        "base_colour": "jersey_purple",
+        "stripe": [
+          [
+            "black",
+            9
+          ],
+          [
+            "light_purple",
+            3
+          ]
+        ],
+        "swoosh_colour": "white"
+      },
+      "socks": {
+        "colour": "white"
+      },
+      "digits": {
+        "glyph_donor": "02X0",
+        "fill": "jersey_purple",
+        "outline": "midnight_purple",
+        "outline_frac": 0.035
+      },
+      "helmet_digits": {
+        "glyph_donor": "02X0",
+        "fill": "white"
+      },
+      "nameplate": {
+        "glyph_donor": "02A0",
+        "fill": "black"
+      },
+      "helmet": {
+        "shell_from": "black",
+        "shell": "black",
+        "recolour": [
+          {
+            "from": "retail_helmet_purple",
+            "to": "jersey_purple"
+          }
+        ],
+        "decal": {
+          "mark": "team_logo_full"
+        }
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_purple",
+            "to": "jersey_purple",
+            "region": "jersey",
+            "tolerance": 0.22
+          },
+          {
+            "from": "#E0E0E0",
+            "to": "jersey_purple",
+            "region": "pants",
+            "tolerance": 0.35
+          }
+        ],
+        "logo": {
+          "mark": "team_logo_full"
+        }
+      },
+      "outer_index": 3953,
+      "splayer": {
+        "torso_donor_outer": 3953,
+        "torso_donor": "02A0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ],
+        "recolour": [
+          {
+            "from": "white",
+            "to": "jersey_purple",
+            "region": "pants",
+            "tolerance": 0.3
+          }
+        ],
+        "logo": {
+          "mark": "team_logo_full"
+        }
+      }
+    }
+  },
+  "part_intents": {
+    "home": {
+      "torso": "purple jersey body with black feather wings beside the collar, a small white RAVENS above the numbers, NFL shield at the collar, white shoulder swooshes; the light grey patch is the neck opening",
+      "sleeve": "plain purple sleeve with the Ravens shield patch (gold, black, red and white Maryland quarters)",
+      "pants": "white pants with a dark purple side stripe and a thin gold line, black maker mark",
+      "helmet": "gloss black shell with a purple stripe and the purple, black and gold raven head logo, white and grey hardware",
+      "digit_jersey": "white numbers with a thin dark purple outline",
+      "digit_arm": "white numbers with a thin dark purple outline",
+      "digit_helmet": "white numbers (unused)",
+      "nameplate": "white letters",
+      "socks00": "solid white",
+      "splayer": "far-away player atlas: white pants with a dark stripe, purple torso, black helmet, white socks, skin and glove patches",
+      "team-select_unif": "menu render: purple jersey with white numbers, white pants, black helmet with the raven logo",
+      "team-select_helm": "menu render: black helmet with the purple raven logo, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: a purple and black raven head with a gold B and gold outline",
+      "chiclet": "a small glossy chip in the team's purple",
+      "flipchip": "a zoomed raven head: purple, black, gold and white"
+    },
+    "away": {
+      "torso": "white jersey body with purple feather wings beside the collar, a small black BALTIMORE above the numbers, NFL shield at the collar, purple shoulder swooshes; the light grey patch is the neck opening",
+      "sleeve": "plain white sleeve with the Ravens shield patch",
+      "pants": "purple pants with a black side stripe and a light purple edge, white maker mark",
+      "helmet": "gloss black shell with a purple stripe and the purple, black and gold raven head logo, white and grey hardware",
+      "digit_jersey": "purple numbers with a thin dark purple outline",
+      "digit_arm": "purple numbers with a thin dark purple outline",
+      "digit_helmet": "white numbers (unused)",
+      "nameplate": "black letters",
+      "socks00": "solid white",
+      "splayer": "far-away player atlas: purple pants, white torso, black helmet, white socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with purple numbers, purple pants, black helmet with the raven logo",
+      "team-select_helm": "menu render: black helmet with the purple raven logo, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: a purple and black raven head with a gold B and gold outline",
+      "chiclet": "a small glossy chip in the team's purple",
+      "flipchip": "a zoomed raven head: purple, black, gold and white"
+    },
+    "venue": {
+      "endzone": "purple painted end zone with BALTIMORE RAVENS in white trimmed in black",
+      "center_logo": "the purple, black and gold raven head logo",
+      "banner": "cloth fan banners and wall pads in purple, black, gold and white"
+    }
+  },
+  "notes_d2": {
+    "neck_donor": "02N0 is a synthetic clean neck mask (the retail 02H0 neck grey connected to the top edge only): art.py reads every near-grey pixel as neck, and the retail torsos carry grey mesh dots (about 1,900 on the away) and a grey NFL shield under the V"
+  },
+  "venue": {
+    "prefix": "s02",
+    "notes": "Ravens home games at M&T Bank Stadium (retail record s02; one end-zone texture set serves both ends). End zones: purple paint with BALTIMORE RAVENS in white trimmed in black, the 2025 30th-season design (the 1996 lettering); kept for 2026 INFERRED (no 2026 end-zone source found; week 2 2026 photos show painted end zones). Midfield: the primary raven head logo. Walls: the retail wall atlases show marks still in use in 2026 (the BALTIMORE RAVENS wordmark, the raven head, the shield patch, the front-facing head used on the 2026 alternate helmets), so ravenswall_03, ravenswall_04, wall05, exitbanner and text stay retail; the plain pads take the 2026 purple; the 2000 World Champions ribbon becomes the two-title ribbon. Fan banner texts are 2026 players and common fan phrases (INFERRED fan content).",
+    "sources": [
+      "https://bleacherreport.com/articles/25248539-ravens-reveal-purple-throwback-end-zones-2025-nfl-season-new-photo (2025 purple end zones, 1996 lettering)",
+      "https://en.wikipedia.org/wiki/M%26T_Bank_Stadium (BALTIMORE RAVENS end-zone name; MO letters painted gold or white for Mo Gaba since 2020)",
+      "https://www.baltimoreravens.com/photos/game-action-gallery-ravens-vs-saints-week-2 (2026-09-20, M&T Bank Stadium)",
+      "https://commons.wikimedia.org/wiki/File:Baltimore_Ravens_wordmark.svg (public domain)"
+    ],
+    "endzone": {
+      "paint": "jersey_purple",
+      "paint_alpha": 0.93,
+      "marks": [
+        {
+          "mark": "wm2_gold",
+          "colour": "black",
+          "center": [
+            384,
+            64
+          ],
+          "height": 96,
+          "stretch": 1.12
+        },
+        {
+          "mark": "wm2_black",
+          "colour": "white",
+          "center": [
+            384,
+            64
+          ],
+          "height": 96,
+          "stretch": 1.12
+        }
+      ]
+    },
+    "center_logo": {
+      "fill_mark": "team_logo_full",
+      "fill": "jersey_purple",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "jersey_purple",
+            "items": [
+              {
+                "text": "#8 LAMAR",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#22 KING\nHENRY",
+                "colour": "jersey_purple",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "PLAY LIKE\nA RAVEN",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 14
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "gold",
+            "items": [
+              {
+                "text": "#4 ZAY",
+                "colour": "black",
+                "center": [
+                  192,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "jersey_purple",
+            "items": [
+              {
+                "text": "RAVENS\nFLOCK",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#14 HAMILTON",
+                "colour": "jersey_purple",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "BALTIMORE\nRAVENS",
+                "colour": "white",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#0 ROQUAN\nSMITH",
+                "colour": "jersey_purple",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "ravenswall_01": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              128
+            ],
+            "bg": "jersey_purple",
+            "items": []
+          }
+        ]
+      },
+      "ravenswall_02": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              256,
+              256
+            ],
+            "bg": "midnight_purple",
+            "items": []
+          }
+        ]
+      },
+      "ad03": {
+        "banners": [
+          {
+            "slot": [
+              2,
+              40,
+              126,
+              57
+            ],
+            "bg": "jersey_purple",
+            "items": [
+              {
+                "text": "2X SUPER BOWL CHAMPIONS",
+                "colour": "white",
+                "center": [
+                  64,
+                  48.5
+                ],
+                "height": 9,
+                "max_width": 118
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "sources_uw": {
+    "sleeve_swoosh_2026": "u1/teams/BAL/refs/img_nextflight/Purple_Shoulder_Badge.jpg (baltimoreravens.com 2026 Next Flight uniform photo): the swoosh sits right above the shoulder badge"
+  }
+}

@@ -40,9 +40,14 @@ def _installed(payload):
                                  (vals["target_min"], vals["target_max"]), vals["tb_prob"])
     expected, labels = code_for(settings, code["va"], data["va"])
     space._require(payload[code["raw"]:code["raw"] + code["size"]] == expected, "foreign relocated code")
+    views = None
     for name, (va, original) in kickoff.HOOKS.items():
         off = kickoff._offset(payload, va, len(original))
-        space._require(payload[off:off + len(original)] == kickoff._hook_bytes(name, labels), "mixed kickoff hooks")
+        want = kickoff._hook_bytes(name, labels)
+        if payload[off:off + len(original)] != want:
+            # b76-vb3: a site the 25th Anniversary gate sends through its mode-8 trampoline reads as this owner's
+            views = kickoff.gate_views(payload) if views is None else views
+            space._require(views.get(va) == want, "mixed kickoff hooks")
     old = kickoff._offset(payload, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
     old_bytes = payload[old:old + kickoff.CAVE_SIZE]
     space._require(hashlib.sha256(old_bytes).hexdigest() == kickoff.RETAIL_CAVE_SHA256

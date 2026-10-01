@@ -1,0 +1,230 @@
+{
+  "schema": "nfl2k5.espn25.edits.v1",
+  "moments": [
+    {
+      "moment": 0,
+      "text": {
+        "title": "THE ICE BOWL",
+        "description": "Bart Starr drove Green Bay from its own 32 with Dallas leading 17-14. On the frozen Lambeau Field turf, Starr followed Jerry Kramer and Ken Bowman into the end zone on a one-yard sneak with 13 seconds left. The Packers won the 1967 NFL Championship Game 21-17 and advanced to Super Bowl II.",
+        "objective": "Lead Bart Starr and the Packers past Dallas on the frozen Lambeau Field turf.",
+        "date": "December 31, 1967"
+      }
+    },
+    {
+      "moment": 1,
+      "text": {
+        "title": "THE HEIDI BOWL",
+        "description": "Daryle Lamonica and the Raiders trailed Joe Namath's Jets 32-29 when NBC cut away to show Heidi. Lamonica found Charlie Smith for the go-ahead touchdown. On the ensuing kickoff, Earl Christy fumbled and Preston Ridlehuber recovered in the end zone. Oakland scored twice in nine seconds to win 43-32.",
+        "objective": "Rally Daryle Lamonica's Raiders past Joe Namath's Jets.",
+        "date": "November 17, 1968"
+      }
+    },
+    {
+      "moment": 2,
+      "text": {
+        "title": "MERRY CHRISTMAS MIAMI",
+        "description": "Bob Griese brought Miami back against Kansas City on Christmas Day. His touchdown pass to Marv Fleming tied the playoff game at 24. Jan Stenerud missed a late chance to win it, and the teams needed two overtime periods. Garo Yepremian's field goal gave the Dolphins a 27-24 win after 82 minutes, 40 seconds of play.",
+        "objective": "Bring Bob Griese's Dolphins back and win with Garo Yepremian.",
+        "date": "December 25, 1971"
+      }
+    },
+    {
+      "moment": 3,
+      "text": {
+        "title": "THE IMMACULATE RECEPTION",
+        "description": "Terry Bradshaw faced fourth-and-10 with Pittsburgh trailing Oakland 7-6. His pass toward John Fuqua deflected near Jack Tatum, and Franco Harris caught the loose ball before it hit the turf. Harris ran for the winning touchdown in a 13-7 Steelers victory. The disputed ricochet became the Immaculate Reception.",
+        "objective": "Find Franco Harris and turn Terry Bradshaw's last chance into a win.",
+        "date": "December 23, 1972"
+      }
+    },
+    {
+      "moment": 4,
+      "text": {
+        "title": "THE SEA OF HANDS",
+        "description": "Ken Stabler had Oakland eight yards from the end zone, trailing Miami 26-21. With Vern Den Herder pulling him down, Stabler lofted a pass to Clarence Davis. Davis secured the ball among three Dolphins for the touchdown. The Raiders won the AFC divisional playoff 28-26, ending Miami's bid for a third straight Super Bowl title.",
+        "objective": "Connect Ken Stabler with Clarence Davis to beat Miami.",
+        "date": "December 21, 1974"
+      }
+    },
+    {
+      "moment": 5,
+      "text": {
+        "title": "THE FINAL COMEBACK",
+        "description": "Roger Staubach faced a 34-21 deficit against Washington in his final regular-season game. He found Ron Springs for a touchdown, then led Dallas downfield again. Tony Hill caught Staubach's winning eight-yard pass with 39 seconds left. The Cowboys won 35-34, claimed the NFC East and knocked Washington out of the playoffs.",
+        "objective": "Find Tony Hill with Roger Staubach to win the NFC East.",
+        "date": "December 16, 1979"
+      }
+    },
+    {
+      "moment": 6,
+      "text": {
+        "title": "MONTANA'S COMEBACK",
+        "description": "Joe Montana and the 49ers trailed Archie Manning's Saints 35-7 at halftime. Montana led a second-half rally, and Lenvil Elliott's touchdown run helped tie the score at 35. Ray Wersching kicked the winning field goal in overtime for a 38-35 San Francisco victory. The 28-point rally set a regular-season record at the time.",
+        "objective": "Rally Joe Montana's 49ers from 28 points down.",
+        "date": "December 7, 1980"
+      }
+    },
+    {
+      "moment": 7,
+      "text": {
+        "title": "EPIC IN MIAMI",
+        "description": "Dan Fouts and the Chargers led Miami 24-0 before Don Strock led a comeback. Kellen Winslow caught 13 passes for 166 yards and blocked a late field-goal attempt. The playoff game went to overtime tied at 38. Rolf Benirschke's 29-yard field goal finally gave San Diego a 41-38 win at the Orange Bowl.",
+        "objective": "Win this epic with Dan Fouts and Kellen Winslow.",
+        "date": "January 2, 1982"
+      }
+    },
+    {
+      "moment": 8,
+      "text": {
+        "title": "THE CATCH",
+        "description": "Joe Montana rolled right with San Francisco trailing Dallas 27-21 in the NFC Championship Game. Dwight Clark leaped over Everson Walls to catch Montana's high pass for a six-yard touchdown with 51 seconds left. Ray Wersching's extra point made it 28-27, and the 49ers held on to reach Super Bowl XVI.",
+        "objective": "Find Dwight Clark with Joe Montana to beat Dallas.",
+        "date": "January 10, 1982"
+      }
+    },
+    {
+      "moment": 9,
+      "text": {
+        "title": "WASHINGTON RALLIES",
+        "description": "Joe Theismann's Washington team trailed the Los Angeles Raiders 35-20 in the fourth quarter at RFK Stadium. Theismann led three scoring drives, finishing the comeback with a touchdown pass to Joe Washington. Mark Moseley's extra point delivered a 37-35 victory in a regular-season meeting of the eventual Super Bowl teams.",
+        "objective": "Lead Joe Theismann's comeback against the Raiders.",
+        "date": "October 2, 1983"
+      }
+    },
+    {
+      "moment": 10,
+      "text": {
+        "title": "THE DRIVE",
+        "description": "John Elway took over at Denver's two-yard line, trailing Cleveland 20-13 with 5:32 left in the AFC Championship Game. He led a 98-yard drive and found Mark Jackson for the tying touchdown with 37 seconds remaining. Rich Karlis kicked the winning field goal in overtime, sending the Broncos to Super Bowl XXI with a 23-20 win.",
+        "objective": "Drive John Elway's Broncos 98 yards and beat Cleveland.",
+        "date": "January 11, 1987"
+      }
+    },
+    {
+      "moment": 11,
+      "text": {
+        "title": "THE 2-SECOND MISCALCULATION",
+        "description": "Sam Wyche called a fourth-down run with Cincinnati leading San Francisco 26-20. James Brooks was stopped, leaving Joe Montana two seconds and one play from the Bengals' 25. Montana hit Jerry Rice in the end zone, and Ray Wersching's extra point gave the 49ers an improbable 27-26 regular-season victory at Riverfront Stadium.",
+        "objective": "Find Jerry Rice with Joe Montana in two seconds.",
+        "date": "September 20, 1987"
+      }
+    },
+    {
+      "moment": 12,
+      "text": {
+        "title": "SAME OLD BUCS",
+        "description": "Neil Lomax and the St. Louis Cardinals trailed Tampa Bay 28-3 entering the fourth quarter. Lomax threw touchdown passes to Robert Awalt and twice to J.T. Smith, while Niko Noga returned a fumble for another score. Donald Igwebuike's late field-goal attempt hit the crossbar, and the Cardinals escaped Busch Stadium with a 31-28 win.",
+        "objective": "Rally Neil Lomax's Cardinals from 25 points down.",
+        "date": "November 8, 1987"
+      }
+    },
+    {
+      "moment": 13,
+      "text": {
+        "title": "SUPER BOWL XXIII",
+        "description": "Super Bowl XXIII: Joe Montana took over at San Francisco's eight-yard line with Cincinnati leading 16-13 and 3:10 left. Jerry Rice helped move the 49ers downfield, then John Taylor caught Montana's 10-yard touchdown pass with 34 seconds remaining. San Francisco won 20-16 at Joe Robbie Stadium.",
+        "objective": "Win Super Bowl XXIII with Joe Montana and John Taylor.",
+        "date": "January 22, 1989"
+      }
+    },
+    {
+      "moment": 14,
+      "text": {
+        "title": "WIDE RIGHT",
+        "description": "Super Bowl XXV: Jim Kelly led Buffalo's last drive with the Giants ahead 20-19. Thurman Thomas helped the Bills reach the New York 29. Scott Norwood's 47-yard field-goal attempt sailed wide right with eight seconds left. Jeff Hostetler, Ottis Anderson and the Giants held on for a one-point championship victory at Tampa Stadium.",
+        "objective": "Win Super Bowl XXV with Jim Kelly and Scott Norwood.",
+        "date": "January 27, 1991"
+      }
+    },
+    {
+      "moment": 15,
+      "text": {
+        "title": "HOUSTON'S HEARTS RIPPED OUT",
+        "description": "John Elway took over at Denver's two-yard line with Houston ahead 24-23, 2:07 left and no Broncos timeouts. Elway converted one fourth down with a scramble and another with a pass to Vance Johnson. David Treadwell's 28-yard field goal with 16 seconds remaining gave Denver a 26-24 AFC divisional playoff win at Mile High Stadium.",
+        "objective": "Lead John Elway past Warren Moon's Oilers.",
+        "date": "January 4, 1992"
+      }
+    },
+    {
+      "moment": 16,
+      "text": {
+        "title": "THE TWO TD COMEBACK ON KC",
+        "description": "John Elway and the Broncos trailed Kansas City 19-6 late in the fourth quarter. Elway led two touchdown drives, using Arthur Marshall on the final march before finding Vance Johnson for the winning 12-yard score with 38 seconds left. David Treadwell's extra point completed Denver's 20-19 comeback at Mile High Stadium.",
+        "objective": "Find Vance Johnson with John Elway to beat Kansas City.",
+        "date": "October 4, 1992"
+      }
+    },
+    {
+      "moment": 17,
+      "text": {
+        "title": "THE 32-POINT COMEBACK",
+        "description": "Frank Reich and the Bills trailed Warren Moon's Oilers 35-3 in the third quarter of their AFC Wild Card game. Reich threw four touchdown passes, three to Andre Reed, as Buffalo came back. After Houston forced overtime, Nate Odomes intercepted Moon and Steve Christie kicked the winning field goal. Buffalo won 41-38 at Rich Stadium.",
+        "objective": "Rally Frank Reich's Bills from 32 points down.",
+        "date": "January 3, 1993"
+      }
+    },
+    {
+      "moment": 18,
+      "text": {
+        "title": "THE HEARTBREAKER",
+        "description": "Joe Montana and John Elway traded late scoring drives on Monday night at Mile High Stadium. Elway's touchdown run put Denver ahead 28-24 with 1:29 left. Montana answered by moving Kansas City downfield and finding Willie Davis for a five-yard touchdown with eight seconds remaining. The Chiefs won 31-28 in Denver.",
+        "objective": "Find Willie Davis with Joe Montana to beat Denver.",
+        "date": "October 17, 1994"
+      }
+    },
+    {
+      "moment": 19,
+      "text": {
+        "title": "THE COLTS' COLLAPSE",
+        "description": "Todd Collins and the Bills trailed Jim Harbaugh's Colts 26-0 in the second quarter at Rich Stadium. Antowain Smith rushed for three touchdowns as Buffalo rallied to lead. Harbaugh found Marvin Harrison for a late touchdown, but Indianapolis failed on the two-point try. Buffalo completed the comeback with a 37-35 victory.",
+        "objective": "Rally Todd Collins and Antowain Smith past Indianapolis.",
+        "date": "September 21, 1997"
+      }
+    },
+    {
+      "moment": 20,
+      "text": {
+        "title": "SUPER BOWL XXXII",
+        "description": "Super Bowl XXXII: John Elway's helicopter run helped Denver score in the third quarter. The final drive came later, with the score tied at 24. Terrell Davis scored his third touchdown with 1:45 left, and John Mobley broke up Brett Favre's fourth-down pass. Denver beat Green Bay 31-24 at Qualcomm Stadium for its first Super Bowl title.",
+        "objective": "Win Super Bowl XXXII with John Elway.",
+        "date": "January 25, 1998"
+      }
+    },
+    {
+      "moment": 21,
+      "text": {
+        "title": "A YARD TOO SHORT",
+        "description": "Super Bowl XXXIV: Steve McNair drove Tennessee to the St. Louis 10, down 23-16 with six seconds left. McNair found Kevin Dyson on a slant, but Mike Jones tackled Dyson one yard short of the goal line as time expired. Kurt Warner and the Rams won 23-16 at the Georgia Dome. A Titans touchdown would have left the conversion to decide a tie or a lead.",
+        "objective": "Find Kevin Dyson with Steve McNair in Super Bowl XXXIV.",
+        "date": "January 30, 2000"
+      }
+    },
+    {
+      "moment": 22,
+      "text": {
+        "title": "VINATIERI STRIKES AGAIN",
+        "description": "Super Bowl XXXVI: Kurt Warner tied the game at 17 with 1:30 left. Tom Brady then drove New England from its own 17 into field-goal range, completing key passes to J.R. Redmond and Troy Brown. Adam Vinatieri made a 48-yard field goal as time expired. The Patriots beat the Rams 20-17 at the Louisiana Superdome for their first Super Bowl title.",
+        "objective": "Win Super Bowl XXXVI with Tom Brady and Vinatieri.",
+        "date": "February 3, 2002"
+      }
+    },
+    {
+      "moment": 23,
+      "text": {
+        "title": "THE BOTCHED SNAP",
+        "description": "Jeff Garcia and Terrell Owens helped San Francisco rally from a 38-14 deficit against the Giants. Garcia's touchdown pass to Tai Streets put the 49ers ahead 39-38. Trey Junkin's bad snap disrupted New York's last field-goal try, and Matt Allen's pass fell incomplete. A missed interference call on Rich Seubert left the Giants without another attempt.",
+        "objective": "Rally Jeff Garcia's 49ers past Kerry Collins and the Giants.",
+        "date": "January 5, 2003"
+      }
+    },
+    {
+      "moment": 24,
+      "text": {
+        "title": "FOURTH AND TWENTY-SIX",
+        "description": "Donovan McNabb faced fourth-and-26 at Philadelphia's 26 with Green Bay leading 17-14. Freddie Mitchell caught McNabb's pass for 28 yards to keep the drive alive. David Akers tied the game, Brian Dawkins intercepted Brett Favre in overtime, and Akers kicked the winner. The Eagles advanced with a 20-17 divisional playoff victory.",
+        "objective": "Find Freddie Mitchell with Donovan McNabb on fourth-and-26.",
+        "date": "January 11, 2004"
+      }
+    }
+  ]
+}

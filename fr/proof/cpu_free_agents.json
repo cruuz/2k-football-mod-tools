@@ -1,0 +1,131 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "body_sha256": "699ec8974a2649ba98d9a9257fbccb87e36f99ed8cae0ce22138992c06c84037",
+  "initial_candidates": 236,
+  "initial_pool_all_modern": true,
+  "cases": [
+    {
+      "position": 0,
+      "result": 1,
+      "signed": [
+        "Mark Gronowski"
+      ]
+    },
+    {
+      "position": 1,
+      "result": 1,
+      "signed": [
+        "Jake Moody"
+      ]
+    },
+    {
+      "position": 2,
+      "result": 1,
+      "signed": [
+        "Jack Browning"
+      ]
+    },
+    {
+      "position": 3,
+      "result": 1,
+      "signed": [
+        "Luke Floriea"
+      ]
+    },
+    {
+      "position": 4,
+      "result": 1,
+      "signed": [
+        "Brandon Crossley"
+      ]
+    },
+    {
+      "position": 5,
+      "result": 1,
+      "signed": [
+        "Demani Richardson"
+      ]
+    },
+    {
+      "position": 6,
+      "result": 1,
+      "signed": [
+        "Alex Cook"
+      ]
+    },
+    {
+      "position": 7,
+      "result": 1,
+      "signed": [
+        "Jermar Jefferson"
+      ]
+    },
+    {
+      "position": 8,
+      "result": 1,
+      "signed": [
+        "Lucas Scott"
+      ]
+    },
+    {
+      "position": 9,
+      "result": 1,
+      "signed": [
+        "Jaheim Bell"
+      ]
+    },
+    {
+      "position": 10,
+      "result": 1,
+      "signed": [
+        "Dyontae Johnson"
+      ]
+    },
+    {
+      "position": 11,
+      "result": 1,
+      "signed": [
+        "Nick Jackson"
+      ]
+    },
+    {
+      "position": 12,
+      "result": 1,
+      "signed": [
+        "Zeke Correll"
+      ]
+    },
+    {
+      "position": 13,
+      "result": 1,
+      "signed": [
+        "Josh Priebe"
+      ]
+    },
+    {
+      "position": 14,
+      "result": 1,
+      "signed": [
+        "Austin Deculus"
+      ]
+    },
+    {
+      "position": 15,
+      "result": 1,
+      "signed": [
+        "Israel Antwine"
+      ]
+    },
+    {
+      "position": 16,
+      "result": 1,
+      "signed": [
+        "Julian Okwara"
+      ]
+    }
+  ],
+  "signed": 17,
+  "old_players_signed": 0,
+  "substituted_routines": [],
+  "limitation": "Bounded native start and CPU fill. Full season rollover and UI still require lab captures."
+}

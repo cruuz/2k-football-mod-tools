@@ -97,9 +97,11 @@ def author_brand_only(folder):
   boxes=[c['box'] for n,c in spec['cells'].items() if n!=name and c['box'][2]>c['box'][0]]
   x,y=free_slot(sheet,boxes,built.size)
   sheet.paste(built,(x,y));spec['cells'][name]['box']=[x,y,x+built.width,y+built.height]
- spec['sampling']=(spec.get('sampling','')+' Watermark cells are area-filtered premultiplied with a coverage '
+ note=('Watermark cells are area-filtered premultiplied with a coverage '
   'curve that keeps the measured ink band\'s edge rows at full alpha, and are packed with a one-pixel '
-  'transparent gutter away from the sheet edge.').strip()
+  'transparent gutter away from the sheet edge.')
+ # vb3: re-running --brand-only on a re-measured mask must not repeat the note.
+ if note not in spec.get('sampling',''):spec['sampling']=(spec.get('sampling','')+' '+note).strip()
  spec['provenance']['brand_filter']=('tools/scorebug_sprite/author_default.py --brand-only: exact-area '
   'premultiplied box filter, then rows the measured ink band covers by at least %g are divided by their '
   'own coverage'%BRAND_KNEE)

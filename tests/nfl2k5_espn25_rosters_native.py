@@ -35,11 +35,13 @@ class CPU:
             assert 0x10000 <= va and va + virtual_size <= 0x1610000 and offset + size <= len(payload)
             self.write(va, payload[offset:offset + size])
         self.stubs, self.events = {}, []
-        self._code_hook = self.uc.hook_add(UC_HOOK_CODE, self._hook)
+        # Fast bounded harness subclasses only need archive lookup during init.
+        scope = dict(begin=0x449E0, end=0x449E0) if hasattr(self, 'BOUNDARIES') else {}
+        self._code_hook = self.uc.hook_add(UC_HOOK_CODE, self._hook, **scope)
         self.write(self.MAIN, resources[5][32:])
         self.w(0xB72918, self.MAIN + 64)
         self.run(0xC0500, ecx=self.MAIN + 64)
-        self.load_situ(resources[22][:32 + 29104])
+        self.load_situ(resources[22][:32 + e.u32(resources[22], 4)])
 
     def read(self, at, size):
         return bytes(self.uc.mem_read(at, size))

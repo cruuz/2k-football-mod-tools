@@ -35,6 +35,9 @@ class ScneBoundsOwnershipTests(unittest.TestCase):
         self.assertEqual(len(evidence["files"]), 7)
 
     def test_executable_dataflow_is_exact(self) -> None:
+        missing = [str(path) for path in (XBE, XBE_HEADER) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL SCNE executable evidence missing: " + ", ".join(missing))
         evidence = bounds.executable_evidence(XBE, XBE_HEADER)
         self.assertEqual(evidence["md5"], bounds.EXPECTED_XBE_MD5)
         self.assertEqual(evidence["sha256"], bounds.EXPECTED_XBE_SHA256)
@@ -113,6 +116,9 @@ class ScneBoundsOwnershipTests(unittest.TestCase):
                 self.assertTrue(measured["contains_all_vertices"])
 
     def test_checked_report_keeps_general_authoring_closed(self) -> None:
+        missing = [str(path) for path in (REPORT,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL SCNE bounds report missing: " + ", ".join(missing))
         report = json.loads(REPORT.read_text(encoding="utf-8"))
         self.assertEqual(report["schema"], bounds.SCHEMA)
         claims = report["claim_flags"]

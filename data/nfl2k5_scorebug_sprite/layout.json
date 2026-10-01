@@ -55,15 +55,7 @@
     675,
     0,
     766,
-    17
-   ]
-  },
-  "pointer": {
-   "box": [
-    768,
-    0,
-    772,
-    2
+    15
    ]
   },
   "wing": {
@@ -119,7 +111,7 @@
     1177,
     0,
     1266,
-    16
+    15
    ]
   },
   "score_0": {
@@ -494,200 +486,200 @@
    "box": [
     264,
     47,
-    272,
-    59
+    270,
+    56
    ]
   },
   "label_1": {
    "box": [
     274,
     47,
-    279,
-    59
+    278,
+    56
    ]
   },
   "label_2": {
    "box": [
     281,
     47,
-    288,
-    59
+    286,
+    56
    ]
   },
   "label_3": {
    "box": [
     290,
     47,
-    297,
-    59
+    295,
+    56
    ]
   },
   "label_4": {
    "box": [
     299,
     47,
-    307,
-    59
+    305,
+    56
    ]
   },
   "label_5": {
    "box": [
     309,
     47,
-    316,
-    59
+    314,
+    56
    ]
   },
   "label_6": {
    "box": [
     318,
     47,
-    325,
-    59
+    324,
+    56
    ]
   },
   "label_7": {
    "box": [
     327,
     47,
-    333,
-    59
+    332,
+    56
    ]
   },
   "label_8": {
    "box": [
     335,
     47,
-    342,
-    59
+    340,
+    56
    ]
   },
   "label_9": {
    "box": [
     344,
     47,
-    351,
-    59
+    350,
+    56
    ]
   },
   "label_st": {
    "box": [
     353,
     47,
-    364,
-    59
+    362,
+    56
    ]
   },
   "label_nd": {
    "box": [
     366,
     47,
-    380,
-    59
+    377,
+    56
    ]
   },
   "label_rd": {
    "box": [
     382,
     47,
-    393,
-    59
+    391,
+    56
    ]
   },
   "label_th": {
    "box": [
     395,
     47,
-    406,
-    59
+    404,
+    56
    ]
   },
   "label_&": {
    "box": [
     408,
     47,
-    417,
-    59
+    415,
+    56
    ]
   },
   "label_Goal": {
    "box": [
     419,
     47,
-    455,
-    59
+    447,
+    56
    ]
   },
   "label_GOAL": {
    "box": [
     457,
     47,
-    493,
-    59
+    485,
+    56
    ]
   },
   "label_and": {
    "box": [
     495,
     47,
-    517,
-    59
+    513,
+    56
    ]
   },
   "label_OT": {
    "box": [
     519,
     47,
-    530,
-    59
+    528,
+    56
    ]
   },
   "label_ST": {
    "box": [
     532,
     47,
-    543,
-    59
+    541,
+    56
    ]
   },
   "label_ND": {
    "box": [
     545,
     47,
-    559,
-    59
+    556,
+    56
    ]
   },
   "label_RD": {
    "box": [
     561,
     47,
-    572,
-    59
+    570,
+    56
    ]
   },
   "label_TH": {
    "box": [
     574,
     47,
-    585,
-    59
+    583,
+    56
    ]
   },
   "label_Inch": {
    "box": [
-    587,
-    47,
-    613,
-    59
+    100,
+    300,
+    124,
+    309
    ]
   },
   "label_es": {
    "box": [
-    615,
-    47,
-    629,
-    59
+    136,
+    300,
+    148,
+    309
    ]
   },
   "tick": {
@@ -732,10 +724,370 @@
   },
   "quarter_OT": {
    "box": [
-    699,
-    47,
-    709,
-    56
+    155,
+    300,
+    167,
+    309
+   ]
+  },
+  "record_d0": {
+   "box": [
+    1,
+    65,
+    6,
+    72
+   ]
+  },
+  "record_m0": {
+   "box": [
+    8,
+    65,
+    17,
+    72
+   ]
+  },
+  "record_d1": {
+   "box": [
+    19,
+    65,
+    24,
+    72
+   ]
+  },
+  "record_m1": {
+   "box": [
+    26,
+    65,
+    35,
+    72
+   ]
+  },
+  "record_d2": {
+   "box": [
+    37,
+    65,
+    42,
+    72
+   ]
+  },
+  "record_m2": {
+   "box": [
+    44,
+    65,
+    53,
+    72
+   ]
+  },
+  "record_d3": {
+   "box": [
+    55,
+    65,
+    60,
+    72
+   ]
+  },
+  "record_m3": {
+   "box": [
+    62,
+    65,
+    71,
+    72
+   ]
+  },
+  "record_d4": {
+   "box": [
+    73,
+    65,
+    78,
+    72
+   ]
+  },
+  "record_m4": {
+   "box": [
+    80,
+    65,
+    89,
+    72
+   ]
+  },
+  "record_d5": {
+   "box": [
+    91,
+    65,
+    96,
+    72
+   ]
+  },
+  "record_m5": {
+   "box": [
+    98,
+    65,
+    107,
+    72
+   ]
+  },
+  "record_d6": {
+   "box": [
+    109,
+    65,
+    114,
+    72
+   ]
+  },
+  "record_m6": {
+   "box": [
+    116,
+    65,
+    125,
+    72
+   ]
+  },
+  "record_d7": {
+   "box": [
+    127,
+    65,
+    132,
+    72
+   ]
+  },
+  "record_m7": {
+   "box": [
+    134,
+    65,
+    143,
+    72
+   ]
+  },
+  "record_d8": {
+   "box": [
+    145,
+    65,
+    150,
+    72
+   ]
+  },
+  "record_m8": {
+   "box": [
+    152,
+    65,
+    161,
+    72
+   ]
+  },
+  "record_d9": {
+   "box": [
+    163,
+    65,
+    168,
+    72
+   ]
+  },
+  "record_m9": {
+   "box": [
+    170,
+    65,
+    179,
+    72
+   ]
+  },
+  "record_d10": {
+   "box": [
+    181,
+    65,
+    192,
+    72
+   ]
+  },
+  "record_m10": {
+   "box": [
+    194,
+    65,
+    209,
+    72
+   ]
+  },
+  "record_d11": {
+   "box": [
+    211,
+    65,
+    222,
+    72
+   ]
+  },
+  "record_m11": {
+   "box": [
+    224,
+    65,
+    239,
+    72
+   ]
+  },
+  "record_d12": {
+   "box": [
+    241,
+    65,
+    252,
+    72
+   ]
+  },
+  "record_m12": {
+   "box": [
+    254,
+    65,
+    269,
+    72
+   ]
+  },
+  "record_d13": {
+   "box": [
+    271,
+    65,
+    282,
+    72
+   ]
+  },
+  "record_m13": {
+   "box": [
+    284,
+    65,
+    299,
+    72
+   ]
+  },
+  "record_d14": {
+   "box": [
+    301,
+    65,
+    312,
+    72
+   ]
+  },
+  "record_m14": {
+   "box": [
+    314,
+    65,
+    329,
+    72
+   ]
+  },
+  "record_d15": {
+   "box": [
+    331,
+    65,
+    342,
+    72
+   ]
+  },
+  "record_m15": {
+   "box": [
+    344,
+    65,
+    359,
+    72
+   ]
+  },
+  "record_d16": {
+   "box": [
+    361,
+    65,
+    372,
+    72
+   ]
+  },
+  "record_m16": {
+   "box": [
+    374,
+    65,
+    389,
+    72
+   ]
+  },
+  "record_d17": {
+   "box": [
+    391,
+    65,
+    402,
+    72
+   ]
+  },
+  "record_m17": {
+   "box": [
+    404,
+    65,
+    419,
+    72
+   ]
+  },
+  "record_tab": {
+   "box": [
+    421,
+    65,
+    439,
+    74
+   ]
+  },
+  "chevron": {
+   "box": [
+    441,
+    65,
+    463,
+    72
+   ]
+  },
+  "timeouts_0": {
+   "box": [
+    465,
+    65,
+    491,
+    67
+   ]
+  },
+  "timeouts_1": {
+   "box": [
+    493,
+    65,
+    519,
+    67
+   ]
+  },
+  "timeouts_2": {
+   "box": [
+    521,
+    65,
+    547,
+    67
+   ]
+  },
+  "timeouts_3": {
+   "box": [
+    549,
+    65,
+    575,
+    67
+   ]
+  },
+  "espn_plate_mark": {
+   "box": [
+    0,
+    300,
+    33,
+    309
+   ]
+  },
+  "label_Down": {
+   "box": [
+    60,
+    300,
+    87,
+    309
+   ]
+  },
+  "timeout_tab": {
+   "box": [
+    0,
+    320,
+    114,
+    337
    ]
   }
  },
@@ -1406,19 +1758,19 @@
     "Inch": {
      "cell": "label_Inch",
      "size": [
-      78.261,
+      91.957,
       30
      ],
-     "advance": 80.261,
+     "advance": 97.174,
      "raise": 0
     },
     "es": {
      "cell": "label_es",
      "size": [
-      43.043,
+      45.978,
       30
      ],
-     "advance": 45.043,
+     "advance": 47.978,
      "raise": 0
     },
     " ": {
@@ -1432,23 +1784,65 @@
     "~": {
      "cell": "tick",
      "size": [
-      18,
-      6
+      22.5,
+      7.5
      ],
-     "advance": 30
+     "advance": 37.5
+    },
+    "ESPN": {
+     "cell": "espn_plate_mark",
+     "size": [
+      125,
+      30
+     ],
+     "advance": 125,
+     "raise": -1.25
+    },
+    "Down": {
+     "cell": "label_Down",
+     "size": [
+      104.348,
+      28.696
+     ],
+     "advance": 106.348,
+     "raise": 0
     }
    }
   },
   "ticks": {
    "cap_height": 6,
    "glyphs": {
-    "~": {
-     "cell": "tick",
+    "0": {
+     "cell": "timeouts_0",
      "size": [
-      18,
+      78,
       6
      ],
-     "advance": 30
+     "advance": 78
+    },
+    "1": {
+     "cell": "timeouts_1",
+     "size": [
+      78,
+      6
+     ],
+     "advance": 78
+    },
+    "2": {
+     "cell": "timeouts_2",
+     "size": [
+      78,
+      6
+     ],
+     "advance": 78
+    },
+    "3": {
+     "cell": "timeouts_3",
+     "size": [
+      78,
+      6
+     ],
+     "advance": 78
     }
    }
   },
@@ -1522,10 +1916,498 @@
     "OT": {
      "cell": "quarter_OT",
      "size": [
-      30,
+      37.278,
       22
      ],
-     "advance": 32
+     "advance": 39.278
+    },
+    "OT1": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT2": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT3": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT4": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT5": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT6": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT7": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT8": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    },
+    "OT9": {
+     "cell": "quarter_OT",
+     "size": [
+      37.278,
+      22
+     ],
+     "advance": 39.278
+    }
+   }
+  },
+  "record": {
+   "cap_height": 17,
+   "glyphs": {
+    "0": {
+     "cell": "record_d0",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "1": {
+     "cell": "record_d1",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "2": {
+     "cell": "record_d2",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "3": {
+     "cell": "record_d3",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "4": {
+     "cell": "record_d4",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "5": {
+     "cell": "record_d5",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "6": {
+     "cell": "record_d6",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "7": {
+     "cell": "record_d7",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "8": {
+     "cell": "record_d8",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "9": {
+     "cell": "record_d9",
+     "size": [
+      15.0,
+      17
+     ],
+     "advance": 18.0,
+     "raise": 0
+    },
+    "-0": {
+     "cell": "record_m0",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-1": {
+     "cell": "record_m1",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-2": {
+     "cell": "record_m2",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-3": {
+     "cell": "record_m3",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-4": {
+     "cell": "record_m4",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-5": {
+     "cell": "record_m5",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-6": {
+     "cell": "record_m6",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-7": {
+     "cell": "record_m7",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-8": {
+     "cell": "record_m8",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "-9": {
+     "cell": "record_m9",
+     "size": [
+      27.0,
+      17
+     ],
+     "advance": 30.0,
+     "raise": 0
+    },
+    "10": {
+     "cell": "record_d10",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "11": {
+     "cell": "record_d11",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "12": {
+     "cell": "record_d12",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "13": {
+     "cell": "record_d13",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "14": {
+     "cell": "record_d14",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "15": {
+     "cell": "record_d15",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "16": {
+     "cell": "record_d16",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "17": {
+     "cell": "record_d17",
+     "size": [
+      33.0,
+      17
+     ],
+     "advance": 36.0,
+     "raise": 0
+    },
+    "-10": {
+     "cell": "record_m10",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-11": {
+     "cell": "record_m11",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-12": {
+     "cell": "record_m12",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-13": {
+     "cell": "record_m13",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-14": {
+     "cell": "record_m14",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-15": {
+     "cell": "record_m15",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-16": {
+     "cell": "record_m16",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    },
+    "-17": {
+     "cell": "record_m17",
+     "size": [
+      45.0,
+      17
+     ],
+     "advance": 48.0,
+     "raise": 0
+    }
+   }
+  },
+  "record_tab": {
+   "cap_height": 23,
+   "glyphs": {
+    "3": {
+     "cell": "record_tab",
+     "size": [
+      54.0,
+      23
+     ],
+     "advance": 54.0,
+     "raise": 0
+    },
+    "4": {
+     "cell": "record_tab",
+     "size": [
+      72.0,
+      23
+     ],
+     "advance": 72.0,
+     "raise": 0
+    },
+    "5": {
+     "cell": "record_tab",
+     "size": [
+      90.0,
+      23
+     ],
+     "advance": 90.0,
+     "raise": 0
+    },
+    "6": {
+     "cell": "record_tab",
+     "size": [
+      102.0,
+      23
+     ],
+     "advance": 102.0,
+     "raise": 0
+    },
+    "7": {
+     "cell": "record_tab",
+     "size": [
+      103.0,
+      23
+     ],
+     "advance": 103.0,
+     "raise": 0
+    },
+    "8": {
+     "cell": "record_tab",
+     "size": [
+      103.0,
+      23
+     ],
+     "advance": 103.0,
+     "raise": 0
+    }
+   }
+  },
+  "chevron": {
+   "cap_height": 19.0,
+   "glyphs": {
+    "^": {
+     "cell": "chevron",
+     "size": [
+      66.0,
+      19.0
+     ],
+     "advance": 66.0,
+     "raise": 0
+    }
+   }
+  },
+  "timeout_tab": {
+   "cap_height": 21,
+   "glyphs": {
+    "T": {
+     "cell": "timeout_tab",
+     "size": [
+      172,
+      21
+     ],
+     "advance": 172,
+     "raise": 0
     }
    }
   }
@@ -1573,10 +2455,10 @@
   {
    "name": "housing",
    "box": [
-    834,
-    993,
-    1086,
-    1049
+    829,
+    990,
+    1090,
+    1046
    ],
    "cell": "housing",
    "material": 3,
@@ -1588,7 +2470,7 @@
    "box": [
     839,
     999,
-    1019,
+    1022,
     1039
    ],
    "cell": "capsule",
@@ -1600,24 +2482,11 @@
    "name": "plate",
    "box": [
     822,
-    945,
+    948,
     1096,
-    987
+    986
    ],
    "cell": "plate",
-   "material": 4,
-   "tint": "possessing team",
-   "z": -17
-  },
-  {
-   "name": "pointer",
-   "box": [
-    951,
-    942,
-    965,
-    947
-   ],
-   "cell": "pointer",
    "material": 4,
    "tint": "possessing team",
    "z": -17
@@ -1659,7 +2528,7 @@
    ],
    "cell": "red",
    "material": 9,
-   "tint": "none",
+   "tint": "play clock cell",
    "z": -17
   },
   {
@@ -1751,7 +2620,8 @@
     1006
    ],
    "size": 27,
-   "z": -15
+   "z": -15,
+   "strip_minute": true
   },
   {
    "name": "play_clock",
@@ -1785,7 +2655,7 @@
     1030
    ],
    "glyph_set": "quarter",
-   "slots": 3,
+   "slots": 1,
    "material": 6,
    "colour": "#171717",
    "alignment": "center",
@@ -1806,7 +2676,7 @@
     1038
    ],
    "glyph_set": "ticks",
-   "slots": 3,
+   "slots": 1,
    "material": 7,
    "colour": "#F6F6F6",
    "alignment": "left",
@@ -1828,7 +2698,7 @@
     1038
    ],
    "glyph_set": "ticks",
-   "slots": 3,
+   "slots": 1,
    "material": 7,
    "colour": "#F6F6F6",
    "alignment": "left",
@@ -1845,9 +2715,9 @@
    "source": "down and distance",
    "box": [
     829,
-    950,
+    955,
     1089,
-    980
+    979
    ],
    "glyph_set": "label",
    "slots": 8,
@@ -1856,10 +2726,144 @@
    "alignment": "center",
    "anchor": [
     959,
-    950
+    955
    ],
-   "size": 30,
+   "size": 24,
    "z": -15
+  },
+  {
+   "name": "away_record_tab",
+   "source": "away record tab",
+   "box": [
+    442,
+    1024,
+    545.0,
+    1047
+   ],
+   "glyph_set": "record_tab",
+   "slots": 1,
+   "material": 9,
+   "colour": "#FFFFFF",
+   "alignment": "left",
+   "anchor": [
+    442,
+    1024
+   ],
+   "size": 23,
+   "z": -17.5
+  },
+  {
+   "name": "home_record_tab",
+   "source": "home record tab",
+   "box": [
+    1374.0,
+    1024,
+    1477,
+    1047
+   ],
+   "glyph_set": "record_tab",
+   "slots": 1,
+   "material": 9,
+   "colour": "#FFFFFF",
+   "alignment": "right",
+   "anchor": [
+    1477,
+    1024
+   ],
+   "size": 23,
+   "z": -17.5
+  },
+  {
+   "name": "away_record",
+   "source": "away record",
+   "box": [
+    447.0,
+    1027,
+    541.0,
+    1044
+   ],
+   "glyph_set": "record",
+   "slots": 3,
+   "material": 7,
+   "colour": "#FFFFFF",
+   "alignment": "left",
+   "anchor": [
+    447.0,
+    1027
+   ],
+   "size": 17,
+   "z": -15
+  },
+  {
+   "name": "home_record",
+   "source": "home record",
+   "box": [
+    1378.0,
+    1027,
+    1472.0,
+    1044
+   ],
+   "glyph_set": "record",
+   "slots": 3,
+   "material": 7,
+   "colour": "#FFFFFF",
+   "alignment": "right",
+   "anchor": [
+    1472.0,
+    1027
+   ],
+   "size": 17,
+   "z": -15
+  },
+  {
+   "name": "possession",
+   "source": "possession",
+   "box": [
+    721.5,
+    943.0,
+    787.5,
+    962.0
+   ],
+   "glyph_set": "chevron",
+   "slots": 1,
+   "material": 4,
+   "colour": "#FFFFFF",
+   "alignment": "center",
+   "anchor": [
+    754.5,
+    943
+   ],
+   "alt_anchor": [
+    1157.75,
+    943
+   ],
+   "size": 19.0,
+   "z": -16
+  },
+  {
+   "name": "timeout_tab",
+   "source": "timeout tab",
+   "box": [
+    458,
+    900,
+    802,
+    942
+   ],
+   "glyph_set": "timeout_tab",
+   "slots": 1,
+   "material": 9,
+   "colour": "#FFFFFF",
+   "alignment": "center",
+   "anchor": [
+    630.0,
+    900
+   ],
+   "alt_anchor": [
+    1291.0,
+    900
+   ],
+   "size": 42,
+   "z": -16
   }
  ],
  "brand": [
@@ -1926,9 +2930,9 @@
    "material": 0,
    "box": [
     822,
-    945,
+    948,
     1096,
-    987
+    986
    ],
    "cell": "event",
    "z": -13
@@ -1938,9 +2942,9 @@
    "material": 1,
    "box": [
     822,
-    945,
+    948,
     1096,
-    987
+    986
    ],
    "cell": "event",
    "z": -13
@@ -1950,9 +2954,9 @@
    "material": 2,
    "box": [
     822,
-    945,
+    948,
     1096,
-    987
+    986
    ],
    "cell": "flag",
    "z": -13
@@ -1962,9 +2966,9 @@
    "material": 10,
    "box": [
     822,
-    945,
+    948,
     1096,
-    987
+    986
    ],
    "cell": "event",
    "z": -13
@@ -2015,10 +3019,10 @@
     "shift_y": 0.0
    },
    "CHI": {
-    "fill_x": 0.92,
+    "fill_x": 1.14,
     "height": 1.0,
     "zoom": 0.976,
-    "shift_x": 0.0,
+    "shift_x": 0.046875,
     "shift_y": 0.0
    },
    "CIN": {
@@ -2106,10 +3110,10 @@
     "shift_y": 0.0
    },
    "NYG": {
-    "fill_x": 0.92,
+    "fill_x": 1.14,
     "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
+    "zoom": 0.953,
+    "shift_x": -0.0156,
     "shift_y": 0.0
    },
    "NYJ": {
@@ -2127,10 +3131,10 @@
     "shift_y": 0.0
    },
    "PHI": {
-    "fill_x": 0.92,
+    "fill_x": 1.02,
     "height": 1.0,
     "zoom": 0.976,
-    "shift_x": 0.0,
+    "shift_x": -0.015625,
     "shift_y": 0.0
    },
    "PIT": {
@@ -2141,10 +3145,10 @@
     "shift_y": 0.0
    },
    "LAR": {
-    "fill_x": 0.92,
+    "fill_x": 1.1,
     "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
+    "zoom": 0.953,
+    "shift_x": 0.0469,
     "shift_y": 0.0
    },
    "LAC": {
@@ -2252,22 +3256,74 @@
  "provenance": {
   "font": "Broadcast temporal-median contour traces; reconstructed absent glyphs listed in report",
   "font_distributed": false,
-  "author": "reports/b72_s10/author.py",
+  "author": "reports/b76_s14/author.py",
   "rendered_once": true,
   "brand": "Direct measured MNF and NFL masks from supplied live broadcasts",
   "team_shapes": "Neutral masks and white pill; validated official team tints",
-  "fidelity_report": "reports/b72_s10/FIDELITY.md",
-  "revision": "b72-s10",
+  "fidelity_report": "reports/b76_s14/AUTHOR_STEPS.json",
+  "revision": "b76-s14",
   "geometry_steps": [
-   "wing_colour",
-   "housing_rim",
-   "down_capsule",
-   "logo",
-   "pill",
-   "score"
+   "marks",
+   "fits",
+   "wing",
+   "housing",
+   "tray",
+   "wingcell",
+   "display"
   ],
-  "wing_decay": 65,
-  "brand_filter": "tools/scorebug_sprite/author_default.py --brand-only: exact-area premultiplied box filter, then rows the measured ink band covers by at least 0.4 are divided by their own coverage"
+  "brand_filter": "tools/scorebug_sprite/author_default.py --brand-only: exact-area premultiplied box filter, then rows the measured ink band covers by at least 0.4 are divided by their own coverage",
+  "measured_from": "2026 Giants at Rams Monday Night Football, reports/b76_s12/harvest.json",
+  "base_author": "reports/b76_s12/author.py (cells replaced in place, not regenerated)",
+  "wing_model": {
+   "form": "a1*exp(-x/d1)*(1-v1*y/109) + a2*exp(-y/d2)*exp(-x/d3) + a3*exp(-(109-y)/d4)*exp(-x/d5), clipped to 1",
+   "a1": 0.8761,
+   "d1": 41.19,
+   "v1": 0.2879,
+   "a2": 0.45,
+   "d2": 13.82,
+   "d3": 461.6,
+   "a3": 1.5,
+   "d4": 2.839,
+   "d5": 83.55
+  },
+  "display_layer": "data/nfl2k5_scorebug_sprite/broadcast_display.json (wing and wash)",
+  "sb": {
+   "job": "b76-sb 2026-09-24",
+   "method": "temporal medians of read-only broadcast frames, area-filtered to the 16:9 HUD footprint; no generated art",
+   "sources": {
+    "espn_plate_mark": "2026 MNF Giants at Rams off-air frames with the black ESPN plate",
+    "label_Down": "2026 MNF Broncos at Chiefs, every settled \"3rd Down\" second",
+    "timeout_tab": "2026 MNF Broncos at Chiefs, the two away TIMEOUT popups (3914..3915, 7055..7058)",
+    "flag": "2026 MNF Giants at Rams, every FLAG frame",
+    "dividers": "removed; ESPN capsule has none"
+   }
+  },
+  "sbfix": {
+   "job": "b76-sbfix 2026-09-25",
+   "method": "capitals assembled from the traced broadcast masks in reports/b72_s9/glyphs (I, E from GOAL's L; C from GOAL's G mirrored; N, H, S, T the pill's traced capitals scaled to the cap; O GOAL's O); no generated art",
+   "why": "the 2026 ESPN bar writes its only word distance in capitals (GOAL, 398 s of the full Broncos at Chiefs game) and never showed an Inches plate; the retail \"Inches\" and \"OT%d\" draw as INCHES and OT",
+   "cells": {
+    "label_Inch": [
+     100,
+     300,
+     124,
+     309
+    ],
+    "label_es": [
+     136,
+     300,
+     148,
+     309
+    ],
+    "quarter_OT": [
+     155,
+     300,
+     167,
+     309
+    ]
+   }
+  },
+  "sb2": "reports/b76_sb2/author_receipt.json; PHI/CHI official-mark placement and 24 px down labels; ESPN mark keeps its box"
  },
  "layer_order": "increasing-z",
  "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.",

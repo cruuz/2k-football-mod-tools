@@ -33,6 +33,8 @@ def resources():
     if not (EXTRACT / 'vc_53450030/0').is_file():
         raise unittest.SkipTest('Retail extracted vc_53450030/0 is absent; exact PLAY acceptance requires it')
     from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(EXTRACT)
     with OuterImage(EXTRACT) as archive:
         return {team: archive.read_entry(entry) for team, entry in BOOK_ENTRIES.items()}
 

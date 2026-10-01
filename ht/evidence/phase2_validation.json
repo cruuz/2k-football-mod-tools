@@ -1,0 +1,129 @@
+{
+  "label": "PROVED OFFLINE",
+  "results": {
+    "phase2-focused-tests.log": {
+      "sha256": "8c2251a9bd6cfb773a1a7a7a876918c78ba895c8d04b397b762d403cc25103d2",
+      "tail": [
+        ".................................................s................................                [100%]",
+        "81 passed, 1 skipped, 119 subtests passed in 400.73s (0:06:40)"
+      ]
+    },
+    "phase2-provider-tests.log": {
+      "sha256": "a3960b222862455deb2ba1de7ff1547a9365f12a08087f21b44676a0d6d875cf",
+      "tail": [
+        "........                                                        [100%]",
+        "8 passed, 9 subtests passed in 14.18s"
+      ]
+    },
+    "phase2-native.log": {
+      "sha256": "7dce836a6bb6bc8affd7274cf214a476fe4d9ee5dffd8364e1f8973cdebc7863",
+      "tail": [
+        "PROVED OFFLINE: flow 7 Vikings '69 40",
+        "PROVED OFFLINE: flow 7 Vikings '73 40",
+        "PROVED OFFLINE: flow 7 Vikings '98 53"
+      ]
+    },
+    "phase2-stock-native.log": {
+      "sha256": "c747ed5a1641d226ba25dfc9432a191bd0b8ec42671b02e7b849897662fef7d8",
+      "tail": [
+        "PROVED OFFLINE {'flow': 7, 'team': \"Vikings '69\", 'book': 'E2R-MIN-pb.iff', 'categories': 26, 'players': 40}",
+        "PROVED OFFLINE {'flow': 7, 'team': \"Vikings '73\", 'book': 'E2R-MIN-pb.iff', 'categories': 26, 'players': 40}",
+        "PROVED OFFLINE {'flow': 7, 'team': \"Vikings '98\", 'book': 'E2R-MIN-pb.iff', 'categories': 26, 'players': 53}"
+      ]
+    },
+    "stock_native": {
+      "loads": 225,
+      "categories": 5160,
+      "sha256": "f2674b49fcb4e05bc35b74cbd8af9f73550fdc4dc5f4f093830def331206e718",
+      "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+      "writer_sha256": "36b4c4810afa1b1c7622a07e2ebd162a42eac21a541fc093daceb689bea85e26"
+    },
+    "phase2-composed-tests.log": {
+      "sha256": "062d3be7aa9f80ce79f0efed5c65420c9cf9ff1b0d24b8aad3d089f92abf1cf8",
+      "tail": [
+        "...............................................................                               [100%]",
+        "63 passed, 51 subtests passed in 177.88s (0:02:57)"
+      ]
+    },
+    "phase2-composed-provider-final.log": {
+      "sha256": "4266a1b9505123fa559a345fe9829a670d0dc375bc0f6b224ecfa22625cf2881",
+      "tail": [
+        "........                                                        [100%]",
+        "8 passed, 9 subtests passed in 13.78s"
+      ]
+    },
+    "phase2-source-test.log": {
+      "sha256": "8d0092fbaf2e5bf0d3c3137e8f12f676865f33ca42fff1291769c51a6e1f7e4e",
+      "tail": [
+        ".                                                                        [100%]",
+        "1 passed, 22 deselected in 1.61s"
+      ]
+    },
+    "phase2-reproduction.log": {
+      "sha256": "0f2d348853d0d90a9271ada7736f492fef78b8a68dcbddd7ca1cadda52499c48",
+      "tail": [
+        "    \"ht/evidence/phase2_value_decisions.json\": \"4666357edc606a4f2db69e405cffa36555f0ad5c2374006a21e7997e43865078\"",
+        "  }",
+        "}"
+      ]
+    },
+    "phase2-final-data-tests.log": {
+      "sha256": "7ad87d8f81f10365253fa666ec5626086a5745d611a29678063dd6e39bf6a28f",
+      "tail": [
+        "...............................                        [100%]",
+        "31 passed, 18 subtests passed in 15.33s"
+      ]
+    },
+    "phase2-preflight.log": {
+      "sha256": "7acddf6f9a648d51ff68bd6a083df9c06456afad731e9337d7ba92292730d604",
+      "tail": [
+        "[20:40:16] stack /media/noah/Storage/.b76-research/ht/astra-build/phase2-stack at ; preset softdrink_experimental; project league_project_k2_v52_frozen.json; roster edits league_roster_edits_candB_nofc.json",
+        "[20:52:09] preflight OK in 713 s"
+      ]
+    },
+    "phase2-composed-final-tests.log": {
+      "sha256": "6bc1096a51eb7687ee84ffb853dcee2f4138a559421a4fefc52a6507993184c0",
+      "tail": [
+        "..................................................................                   [100%]",
+        "66 passed, 60 subtests passed in 184.06s (0:03:04)"
+      ]
+    },
+    "phase2-transaction.log": {
+      "sha256": "8c7898ec2f6a21e735f5c3611164c6b123c743cfa2b529818e65c8a0c85363cb",
+      "tail": [
+        "  \"scope\": \"Bounded fixture with real ROST slices and executable. Not the requested full candidate build.\",",
+        "  \"fixture_deleted\": true",
+        "}"
+      ]
+    },
+    "maximum_pairs": [
+      {
+        "flow": 1,
+        "team": "Packers '04",
+        "players_per_side": 55,
+        "pool_used": 110,
+        "export_players": 110
+      },
+      {
+        "flow": 3,
+        "team": "Packers '04",
+        "players_per_side": 55,
+        "pool_used": 110,
+        "export_players": 110
+      },
+      {
+        "flow": 7,
+        "team": "Packers '04",
+        "players_per_side": 55,
+        "pool_used": 110,
+        "export_players": 110
+      }
+    ]
+  },
+  "reproduction": {
+    "manifest_sha256": "7d68eb7c7798c28c839114d180701d6942d875b0d8f271dc3ea668f699b662db",
+    "ledger_sha256": "4666357edc606a4f2db69e405cffa36555f0ad5c2374006a21e7997e43865078",
+    "exact": true
+  },
+  "preflight_scope": "Composed candidate B passed before final identity and equipment-order corrections. The queued full workflow repeats preflight with the final source."
+}

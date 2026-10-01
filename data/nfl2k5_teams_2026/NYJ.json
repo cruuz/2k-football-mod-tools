@@ -1,0 +1,459 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "NYJ",
+ "name": "New York Jets",
+ "asset_code": "19",
+ "season": 2026,
+ "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); authored albedo INFERRED from 2025-26 game photos; kit rules from the 2024 Legacy redesign (Wikipedia) and the 2026 week 1 and 2025 week 1 galleries.",
+ "sort": "recoloured: the 2024-26 Legacy look is the retail 1978-85 set (19H3/19A3) in Legacy green with the 2024 JETS wordmark; built from those donor sets",
+ "sources": {
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_New_York_Jets&action=raw (2024 Legacy primary, 2026 White Out helmet)",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:New_York_Jets_Uniforms_(2026).png",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (NYJ: Legacy Green #115740, White, Black; 2026 Record and Fact Book p.122)",
+  "home_photos": "https://www.newyorkjets.com/photos/jets-steelers-game-photo-gallery-09-07-2025 (green over white, green socks)",
+  "road_photos": "https://www.newyorkjets.com/photos/game-photos-jets-vs-titans-week-1-regular-season-09-13-2026 (white over green)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/NYJ.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/File:New_York_Jets_2024_(wordmark).svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "green": "#115740",
+  "white": "#FFFFFF",
+  "black": "#000000"
+ },
+ "albedo": {
+  "jersey_green": "#145F47",
+  "helmet_green": "#115740",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "retail_helmet_green": "#005B1A",
+  "retail_card_green": "#005820",
+  "retail_card_helm_green": "#005030",
+  "retail_atlas_green": "#006030",
+  "retail_atlas_white": "#E0E0E0",
+  "retail_card_white": "#E8E8E8",
+  "temp_magenta": "#FF00FF"
+ },
+ "marks": {
+  "logo_full": "nyj_logo_full.png",
+  "wordmark_white": "jets_wordmark_white.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "19H0",
+   "outer_index": 3770,
+   "note": "2026 home (Legacy): Legacy green jersey, plain white block numbers, two white sleeve stripes, white collar, white pants with one green stripe, green socks, metallic green helmet with the white 2024 JETS wordmark and a white facemask",
+   "torso": {
+    "base_colour": "jersey_green",
+    "neck_donor": "18H6",
+    "collar_trim": [
+     {
+      "colour": "white",
+      "width": 2.2
+     }
+    ],
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_green",
+    "stripes_from": "19H3",
+    "stripe_colour": "white"
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "jersey_green",
+      14
+     ]
+    ],
+    "swoosh_colour": "jersey_green"
+   },
+   "socks": {
+    "colour": "jersey_green"
+   },
+   "digits": {
+    "glyph_donor": "19H3",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "19H3",
+    "fill": "helmet_green"
+   },
+   "nameplate": {
+    "glyph_donor": "19H3",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_green",
+    "shell_from": "retail_helmet_green",
+    "recolour": [],
+    "decal": {
+     "mark": "wordmark_white",
+     "boxes": {
+      "upper": [
+       26,
+       60,
+       126,
+       100
+      ],
+      "lower": [
+       24,
+       154,
+       126,
+       194
+      ]
+     },
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_green",
+      "to": "jersey_green",
+      "region": "jersey",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_card_green",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_card_helm_green",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ],
+    "logo": {
+     "mark": "wordmark_white",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3773,
+    "torso_donor": "19H3",
+    "sleeve_from_donor": true,
+    "recolour": [
+     {
+      "from": "retail_atlas_green",
+      "to": "jersey_green",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_green",
+      "to": "jersey_green",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_atlas_white",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.35
+     }
+    ],
+    "logo": {
+     "mark": "wordmark_white",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      110,
+      112
+     ],
+     "size": [
+      22,
+      9
+     ]
+    }
+   }
+  },
+  "away": {
+   "selector": "19A0",
+   "outer_index": 4087,
+   "note": "2026 road (Legacy): white jersey, plain green block numbers, two green sleeve stripes, green collar, green pants with one white stripe, white socks, the green helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "18H6",
+    "collar_trim": [
+     {
+      "colour": "jersey_green",
+      "width": 2.2
+     }
+    ],
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "jersey_green"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": "19A3",
+    "stripe_colour": "jersey_green"
+   },
+   "pants": {
+    "base_colour": "jersey_green",
+    "stripe": [
+     [
+      "white",
+      14
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "19A3",
+    "fill": "jersey_green"
+   },
+   "helmet_digits": {
+    "glyph_donor": "19A3",
+    "fill": "helmet_green"
+   },
+   "nameplate": {
+    "glyph_donor": "19A3",
+    "fill": "jersey_green"
+   },
+   "helmet": {
+    "shell": "helmet_green",
+    "shell_from": "retail_helmet_green",
+    "recolour": [],
+    "decal": {
+     "mark": "wordmark_white",
+     "boxes": {
+      "upper": [
+       26,
+       60,
+       126,
+       100
+      ],
+      "lower": [
+       24,
+       154,
+       126,
+       194
+      ]
+     },
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_green",
+      "to": "jersey_green",
+      "region": "jersey",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_card_green",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_card_helm_green",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.25
+     },
+     {
+      "from": "retail_card_green",
+      "to": "temp_magenta",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "retail_card_white",
+      "to": "jersey_green",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "temp_magenta",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "wordmark_white",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 4090,
+    "torso_donor": "19A3",
+    "sleeve_from_donor": true,
+    "recolour": [
+     {
+      "from": "retail_atlas_white",
+      "to": "helmet_green",
+      "region": "helmet",
+      "tolerance": 0.35
+     }
+    ],
+    "logo": {
+     "mark": "wordmark_white",
+     "box": [
+      92,
+      100,
+      128,
+      128
+     ],
+     "centre": [
+      110,
+      112
+     ],
+     "size": [
+      22,
+      9
+     ]
+    }
+   }
+  }
+ },
+ "venue": {
+  "prefix": "s19",
+  "notes": "Jets home games are at MetLife Stadium, whose art (s18/s19, including the Jets' green end zones and walls) is u2's MetLife writer. This team folder supplies no venue items.",
+  "sources": [],
+  "endzone": {
+   "paint": "jersey_green",
+   "marks": []
+  },
+  "banners": {}
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "4-3",
+  "head_coach": "Aaron Glenn",
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense_note": "nflverse depth_charts_2026 (ESPN) lists the NYJ base defense as 'Base 4-3 D' since 2026-09-09"
+ },
+ "part_intents": {
+  "home": {
+   "torso": "Legacy green jersey body, white V collar, NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "green with two white stripes",
+   "pants": "white with one green side stripe, green maker mark",
+   "helmet": "metallic green shell with the white JETS wordmark and jet, hardware and decals",
+   "digit_jersey": "plain white block numbers",
+   "digit_arm": "plain white block numbers",
+   "digit_helmet": "green (no helmet numbers)",
+   "nameplate": "white letters",
+   "socks00": "solid green",
+   "splayer": "far-away player atlas: white pants with a green stripe, green torso, green helmet, green socks",
+   "team-select_unif": "menu render: green jersey with a white number, white pants with a green stripe, green helmet with the white JETS wordmark, dark shading",
+   "team-select_helm": "menu render: green helmet with the white JETS wordmark, grey or white facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, green V collar, NFL shield, green maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with two green stripes",
+   "pants": "green with one white side stripe, white maker mark",
+   "helmet": "metallic green shell with the white JETS wordmark and jet, hardware and decals",
+   "digit_jersey": "plain green block numbers",
+   "digit_arm": "plain green block numbers",
+   "digit_helmet": "green (no helmet numbers)",
+   "nameplate": "green letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: green pants with a white stripe, white torso, green helmet, white socks",
+   "team-select_unif": "menu render: white jersey with a green number, green pants with a white stripe, green helmet",
+   "team-select_helm": "menu render: green helmet with the white JETS wordmark, a dark bar and yellow UI strip below"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Adonai Mitchell": 2,
+   "Andre Cisco": 3,
+   "Andrew Beck": 0,
+   "Arian Smith": 4,
+   "Armand Membou": 4,
+   "Austin McNamara": 0,
+   "Azareye'h Thomas": 2,
+   "Blake Grupe": 0,
+   "Braelon Allen": 3,
+   "Braiden McGregor": 0,
+   "Brandon Stephens": 4,
+   "Breece Hall": 4,
+   "Cade Klubnik": 0,
+   "Chukwuma Okorafor": 5,
+   "D'Angelo Ponds": 4,
+   "Dane Belton": 2,
+   "Darrell Jackson": 4,
+   "David Bailey": 5,
+   "David Onyemata": 5,
+   "Demario Davis": 5,
+   "Dylan Parham": 3,
+   "Francisco Mauigoa": 1,
+   "Garrett Wilson": 3,
+   "Geno Smith": 4,
+   "Harrison Phillips": 0,
+   "Isaiah Davis": 1,
+   "Isaiah Williams": 4,
+   "Jamien Sherwood": 3,
+   "Jarvis Brownlee": 4,
+   "Jelani Woods": 4,
+   "Jeremy Ruckert": 0,
+   "Joe Tippmann": 0,
+   "Jordan Clark": 3,
+   "Jordan Meredith": 0,
+   "Joseph Ossai": 4,
+   "Josh Myers": 0,
+   "Jowon Briggs": 3,
+   "Kene Nwangwu": 5,
+   "Kenyon Sadiq": 2,
+   "Kingsley Enagbare": 4,
+   "Malachi Moore": 3,
+   "Marcelino McCrary-Ball": 4,
+   "Mason Taylor": 0,
+   "Max Mitchell": 1,
+   "Minkah Fitzpatrick": 2,
+   "Nahshon Wright": 4,
+   "Olumuyiwa Fashanu": 5,
+   "Qwan'tez Stiggers": 4,
+   "T'Vondre Sweat": 4,
+   "Thomas Hennessy": 0,
+   "Trevin Wallace": 3,
+   "Troy Reeder": 0,
+   "Will McDonald": 4
+  },
+  "dreads": [
+   "Adonai Mitchell",
+   "Chukwuma Okorafor",
+   "D'Angelo Ponds",
+   "David Bailey",
+   "Demario Davis",
+   "Dylan Parham",
+   "Jarvis Brownlee",
+   "Kingsley Enagbare",
+   "Marcelino McCrary-Ball",
+   "Olumuyiwa Fashanu",
+   "T'Vondre Sweat",
+   "Will McDonald"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) and dreadlocks, by eye from the official 2026 headshots (INFERRED). Hair set by eye for Hall (durag), Wright and Davis (cap): the automatic sample read the headwear or the backdrop.",
+  "hair_by_eye": {
+   "Breece Hall": "#141010",
+   "Nahshon Wright": "#15110F",
+   "Demario Davis": "#15110F"
+  }
+ }
+}

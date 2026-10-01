@@ -1,0 +1,4724 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "retail": [
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 462,
+        "0x208820": 3696,
+        "0x2b6f70": 336,
+        "0x2815f0": 1920,
+        "0x281620": 3240
+      },
+      "environment_calls": {
+        "0xe89f0": 2312,
+        "0x246a80": 25692,
+        "0xcb2d0": 280
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "ARZ"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 254,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 254,
+        "0x1a9a80": 254,
+        "0x281580": 2032,
+        "0xe1440": 9906,
+        "0xe1a80": 414,
+        "0x208820": 3312,
+        "0x2b6f70": 288,
+        "0x2815f0": 1752,
+        "0x281620": 2820
+      },
+      "environment_calls": {
+        "0xe89f0": 2120,
+        "0x246a80": 23796,
+        "0xcb2d0": 264
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "ATL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 11046,
+        "0xe1a80": 419,
+        "0x208820": 3352,
+        "0x2b6f70": 308,
+        "0x2815f0": 1836,
+        "0x281620": 2960
+      },
+      "environment_calls": {
+        "0xe89f0": 2140,
+        "0x246a80": 24804,
+        "0xcb2d0": 224
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "BAL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 12420,
+        "0xe1a80": 458,
+        "0x208820": 3664,
+        "0x2b6f70": 320,
+        "0x2815f0": 1824,
+        "0x281620": 3180
+      },
+      "environment_calls": {
+        "0xe89f0": 2356,
+        "0x246a80": 26124,
+        "0xcb2d0": 304
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "BUF"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 458,
+        "0x208820": 3664,
+        "0x2b6f70": 320,
+        "0x2815f0": 1920,
+        "0x281620": 3180
+      },
+      "environment_calls": {
+        "0xe89f0": 2328,
+        "0x246a80": 26192,
+        "0xcb2d0": 264
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CAR"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 10906,
+        "0xe1a80": 438,
+        "0x208820": 3504,
+        "0x2b6f70": 316,
+        "0x2815f0": 1896,
+        "0x281620": 3080
+      },
+      "environment_calls": {
+        "0xe89f0": 2252,
+        "0x246a80": 25444,
+        "0xcb2d0": 232
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CHI"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11880,
+        "0xe1a80": 472,
+        "0x208820": 3776,
+        "0x2b6f70": 376,
+        "0x2815f0": 1980,
+        "0x281620": 3240
+      },
+      "environment_calls": {
+        "0xe89f0": 2388,
+        "0x246a80": 26988,
+        "0xcb2d0": 328
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CIN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11836,
+        "0xe1a80": 453,
+        "0x208820": 3624,
+        "0x2b6f70": 348,
+        "0x2815f0": 1944,
+        "0x281620": 3120
+      },
+      "environment_calls": {
+        "0xe89f0": 2240,
+        "0x246a80": 24812,
+        "0xcb2d0": 312
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CLE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11029,
+        "0xe1a80": 426,
+        "0x208820": 3408,
+        "0x2b6f70": 324,
+        "0x2815f0": 1776,
+        "0x281620": 2820
+      },
+      "environment_calls": {
+        "0xe89f0": 2228,
+        "0x246a80": 24952,
+        "0xcb2d0": 280
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DAL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 464,
+        "0x208820": 3712,
+        "0x2b6f70": 340,
+        "0x2815f0": 1908,
+        "0x281620": 3300
+      },
+      "environment_calls": {
+        "0xe89f0": 2324,
+        "0x246a80": 25808,
+        "0xcb2d0": 440
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 255,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 255,
+        "0x1a9a80": 255,
+        "0x281580": 2040,
+        "0xe1440": 10455,
+        "0xe1a80": 434,
+        "0x208820": 3472,
+        "0x2b6f70": 280,
+        "0x2815f0": 1764,
+        "0x281620": 2840
+      },
+      "environment_calls": {
+        "0xe89f0": 2212,
+        "0x246a80": 24900,
+        "0xcb2d0": 288
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DET"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 51,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 51,
+        "0x1a9a80": 51,
+        "0x281580": 408,
+        "0xe1440": 765,
+        "0xe1a80": 54,
+        "0x208820": 432,
+        "0x2815f0": 180,
+        "0x281620": 180,
+        "0x2b6f70": 16
+      },
+      "environment_calls": {
+        "0xe89f0": 212,
+        "0x246a80": 2328,
+        "0xcb2d0": 8
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "Editor"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 12672,
+        "0xe1a80": 484,
+        "0x208820": 3872,
+        "0x2b6f70": 276,
+        "0x2815f0": 1848,
+        "0x281620": 3540
+      },
+      "environment_calls": {
+        "0xe89f0": 2412,
+        "0x246a80": 26812,
+        "0xcb2d0": 224
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "GB"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 218,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 218,
+        "0x1a9a80": 218,
+        "0x281580": 1744,
+        "0xe1440": 8938,
+        "0xe1a80": 452,
+        "0x208820": 3616,
+        "0x2b6f70": 204,
+        "0x2815f0": 1104,
+        "0x281620": 2920
+      },
+      "environment_calls": {
+        "0xe89f0": 2388,
+        "0x246a80": 26688,
+        "0xcb2d0": 240
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "GEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 10800,
+        "0xe1a80": 400,
+        "0x208820": 3200,
+        "0x2b6f70": 340,
+        "0x2815f0": 1956,
+        "0x281620": 2880
+      },
+      "environment_calls": {
+        "0xe89f0": 2008,
+        "0x246a80": 23244,
+        "0xcb2d0": 312
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "HOU"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 265,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 265,
+        "0x1a9a80": 265,
+        "0x281580": 2120,
+        "0xe1440": 11925,
+        "0xe1a80": 474,
+        "0x208820": 3792,
+        "0x2b6f70": 292,
+        "0x2815f0": 1908,
+        "0x281620": 3700
+      },
+      "environment_calls": {
+        "0xe89f0": 2396,
+        "0x246a80": 26752,
+        "0xcb2d0": 272
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "IND"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 430,
+        "0x208820": 3440,
+        "0x2b6f70": 316,
+        "0x2815f0": 1932,
+        "0x281620": 3080
+      },
+      "environment_calls": {
+        "0xe89f0": 2188,
+        "0x246a80": 24392,
+        "0xcb2d0": 272
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "JAX"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 261,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 261,
+        "0x1a9a80": 261,
+        "0x281580": 2088,
+        "0xe1440": 10962,
+        "0xe1a80": 435,
+        "0x208820": 3480,
+        "0x2b6f70": 316,
+        "0x2815f0": 1908,
+        "0x281620": 3040
+      },
+      "environment_calls": {
+        "0xe89f0": 2216,
+        "0x246a80": 24912,
+        "0xcb2d0": 240
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "KC"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 259,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 259,
+        "0x1a9a80": 259,
+        "0x281580": 2072,
+        "0xe1440": 11137,
+        "0xe1a80": 474,
+        "0x208820": 3792,
+        "0x2b6f70": 340,
+        "0x2815f0": 1728,
+        "0x281620": 3420
+      },
+      "environment_calls": {
+        "0xe89f0": 2396,
+        "0x246a80": 26700,
+        "0xcb2d0": 360
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "MIA"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 12236,
+        "0xe1a80": 487,
+        "0x208820": 3896,
+        "0x2b6f70": 264,
+        "0x2815f0": 1788,
+        "0x281620": 3620
+      },
+      "environment_calls": {
+        "0xe89f0": 2444,
+        "0x246a80": 26800,
+        "0xcb2d0": 200
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "MIN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 250,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 250,
+        "0x1a9a80": 250,
+        "0x281580": 2000,
+        "0xe1440": 10500,
+        "0xe1a80": 443,
+        "0x208820": 3544,
+        "0x2b6f70": 300,
+        "0x2815f0": 1716,
+        "0x281620": 3140
+      },
+      "environment_calls": {
+        "0xe89f0": 2292,
+        "0x246a80": 27496,
+        "0xcb2d0": 280
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10824,
+        "0xe1a80": 425,
+        "0x208820": 3400,
+        "0x2b6f70": 332,
+        "0x2815f0": 1872,
+        "0x281620": 2900
+      },
+      "environment_calls": {
+        "0xe89f0": 2164,
+        "0x246a80": 24148,
+        "0xcb2d0": 344
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NO"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 468,
+        "0x208820": 3744,
+        "0x2b6f70": 292,
+        "0x2815f0": 1884,
+        "0x281620": 3400
+      },
+      "environment_calls": {
+        "0xe89f0": 2392,
+        "0x246a80": 26976,
+        "0xcb2d0": 248
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NYG"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 423,
+        "0x208820": 3384,
+        "0x2b6f70": 316,
+        "0x2815f0": 1800,
+        "0x281620": 2820
+      },
+      "environment_calls": {
+        "0xe89f0": 2216,
+        "0x246a80": 25028,
+        "0xcb2d0": 224
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NYJ"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11610,
+        "0xe1a80": 474,
+        "0x208820": 3792,
+        "0x2815f0": 1728,
+        "0x281620": 3280,
+        "0x2b6f70": 328
+      },
+      "environment_calls": {
+        "0xe89f0": 2424,
+        "0x246a80": 27104,
+        "0xcb2d0": 336
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "OAK"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 267,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 267,
+        "0x1a9a80": 267,
+        "0x281580": 2136,
+        "0xe1440": 10947,
+        "0xe1a80": 446,
+        "0x208820": 3568,
+        "0x2815f0": 1860,
+        "0x281620": 2980,
+        "0x2b6f70": 300
+      },
+      "environment_calls": {
+        "0xe89f0": 2304,
+        "0x246a80": 26080,
+        "0xcb2d0": 256
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PHI"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 401,
+        "0x208820": 3208,
+        "0x2b6f70": 296,
+        "0x2815f0": 1764,
+        "0x281620": 2840
+      },
+      "environment_calls": {
+        "0xe89f0": 2036,
+        "0x246a80": 23704,
+        "0xcb2d0": 272
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PIT"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 27,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 27,
+        "0x1a9a80": 27,
+        "0x281580": 216,
+        "0xe1440": 621,
+        "0xe1a80": 186,
+        "0x208820": 1488,
+        "0x2815f0": 180,
+        "0x281620": 1600,
+        "0x2b6f70": 24
+      },
+      "environment_calls": {
+        "0xe89f0": 952,
+        "0x246a80": 10940,
+        "0xcb2d0": 48
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PRACTICE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 12887,
+        "0xe1a80": 594,
+        "0x208820": 4752,
+        "0x2b6f70": 268,
+        "0x2815f0": 2040,
+        "0x281620": 5140
+      },
+      "environment_calls": {
+        "0xe89f0": 2828,
+        "0x246a80": 29700,
+        "0xcb2d0": 488
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "reference"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 436,
+        "0x208820": 3488,
+        "0x2b6f70": 320,
+        "0x2815f0": 1824,
+        "0x281620": 3060
+      },
+      "environment_calls": {
+        "0xe89f0": 2200,
+        "0x246a80": 25640,
+        "0xcb2d0": 296
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SD"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 452,
+        "0x208820": 3616,
+        "0x2b6f70": 344,
+        "0x2815f0": 1908,
+        "0x281620": 3180
+      },
+      "environment_calls": {
+        "0xe89f0": 2304,
+        "0x246a80": 25956,
+        "0xcb2d0": 312
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SEA"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 249,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 249,
+        "0x1a9a80": 249,
+        "0x281580": 1992,
+        "0xe1440": 9711,
+        "0xe1a80": 404,
+        "0x208820": 3232,
+        "0x2b6f70": 280,
+        "0x2815f0": 1692,
+        "0x281620": 2700
+      },
+      "environment_calls": {
+        "0xe89f0": 2080,
+        "0x246a80": 23316,
+        "0xcb2d0": 208
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SF"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x2b6f70": 344,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 488,
+        "0x208820": 3904,
+        "0x2815f0": 1932,
+        "0x281620": 3500
+      },
+      "environment_calls": {
+        "0x246a80": 27176,
+        "0xe89f0": 2436,
+        "0xcb2d0": 240
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "STL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 253,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 253,
+        "0x1a9a80": 253,
+        "0x281580": 2024,
+        "0xe1440": 12397,
+        "0xe1a80": 499,
+        "0x208820": 3992,
+        "0x2b6f70": 300,
+        "0x2815f0": 1752,
+        "0x281620": 3600
+      },
+      "environment_calls": {
+        "0xe89f0": 2464,
+        "0x246a80": 27652,
+        "0xcb2d0": 264
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "TB"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10296,
+        "0xe1a80": 408,
+        "0x208820": 3264,
+        "0x2b6f70": 316,
+        "0x2815f0": 1776,
+        "0x281620": 2600
+      },
+      "environment_calls": {
+        "0xe89f0": 2108,
+        "0x246a80": 23448,
+        "0xcb2d0": 240
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "TEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 260,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 260,
+        "0x1a9a80": 260,
+        "0x281580": 2080,
+        "0xe1440": 10920,
+        "0xe1a80": 476,
+        "0x208820": 3808,
+        "0x2b6f70": 336,
+        "0x2815f0": 1776,
+        "0x281620": 3260
+      },
+      "environment_calls": {
+        "0xe89f0": 2364,
+        "0x246a80": 26328,
+        "0xcb2d0": 344
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "WAS"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 232,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 232,
+        "0x1a9a80": 232,
+        "0x281580": 1856,
+        "0xe1440": 10440,
+        "0xe1a80": 500,
+        "0x208820": 4000,
+        "0x2b6f70": 240,
+        "0x2815f0": 1308,
+        "0x281620": 3360
+      },
+      "environment_calls": {
+        "0xe89f0": 2568,
+        "0x246a80": 28556,
+        "0xcb2d0": 424
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "WCO"
+    }
+  ],
+  "compiled": [
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d8c0338afab3af9d60e3a851ad0705e8d377980c38a8e6758abe94f3ff685e87",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 200,
+        "0x2815f0": 1920,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19740,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_arz_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "b5e90b9bf3bf7bf8e53c73667051e7238e5a03297669b225bf3058ce3c4da844",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 254,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 254,
+        "0x1a9a80": 254,
+        "0x281580": 2032,
+        "0xe1440": 9906,
+        "0xe1a80": 302,
+        "0x208820": 2416,
+        "0x2b6f70": 208,
+        "0x2815f0": 1752,
+        "0x281620": 1900
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 19040,
+        "0xcb2d0": 32
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_atl_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "76aaa874cb3d891105caa0277445f301589bb1ab585fb673f4834270d52673af",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 11046,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 280,
+        "0x2815f0": 1836,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 20388,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_bal_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "787a0d9c3434f37b2dfe99767477c51b6fd2778f13354368333c434a92a9610d",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 12420,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 184,
+        "0x2815f0": 1824,
+        "0x281620": 2100
+      },
+      "environment_calls": {
+        "0xe89f0": 1816,
+        "0x246a80": 20404,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_buf_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "85168a02872e474c7026b53b5c3aadd2fdf2e7aa9710ed91aaf483fef216393b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 204,
+        "0x2815f0": 1920,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20584,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_car_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "3dc3bdd40b755c650701d9ef038279a30242ec48e9fd7cca5820190a73d02e8d",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 10906,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 272,
+        "0x2815f0": 1896,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20636,
+        "0xcb2d0": 96
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_chi_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d4e376d6656612127b87ec7d2319c0ff9eaa6b1db7fdc0a0499a934e2844d154",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11880,
+        "0xe1a80": 330,
+        "0x208820": 2640,
+        "0x2b6f70": 164,
+        "0x2815f0": 1980,
+        "0x281620": 2480
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 20996,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_cin_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "391a96840274e8556234401e813861ed6aa74cd69f13446156795c390ad192a1",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11836,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 216,
+        "0x2815f0": 1944,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1664,
+        "0x246a80": 18720,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_cle_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "938ee14b061bb4c29e3ba6dd716b833d980a06650ab9ba05c1c7fc6ee4a35a5d",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11029,
+        "0xe1a80": 319,
+        "0x208820": 2552,
+        "0x2b6f70": 212,
+        "0x2815f0": 1776,
+        "0x281620": 2020
+      },
+      "environment_calls": {
+        "0xe89f0": 1800,
+        "0x246a80": 20680,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_dal_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "df12f51474d90c5af62f44433ef68000951dfdb4309426fd08cdde630bb3eb94",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 160,
+        "0x2815f0": 1908,
+        "0x281620": 2380
+      },
+      "environment_calls": {
+        "0xe89f0": 1732,
+        "0x246a80": 19600,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_den_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "90417c5af3429761b7b58754026a08327ae11c2cbe5248b619174749e827ee3e",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 255,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 255,
+        "0x1a9a80": 255,
+        "0x281580": 2040,
+        "0xe1440": 10455,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 256,
+        "0x2815f0": 1764,
+        "0x281620": 1820
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 19568,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_det_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "c0ac291a31530a64022ec1f3947005dfe2a26a8cb1b7508efdc8a2fb7e9718c2",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 12672,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 212,
+        "0x2815f0": 1848,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19716,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_gb_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "56caaf9e828a2d2e93a3782f30c1ec61419ef26d69dbd391bd7c8b8683804c6b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 10800,
+        "0xe1a80": 305,
+        "0x208820": 2440,
+        "0x2b6f70": 264,
+        "0x2815f0": 1956,
+        "0x281620": 2060
+      },
+      "environment_calls": {
+        "0xe89f0": 1628,
+        "0x246a80": 19492,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_hou_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "eea646513c6dd33aa63feb1b3a384485798d68020e58eb757dcf24e52498c795",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 265,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 265,
+        "0x1a9a80": 265,
+        "0x281580": 2120,
+        "0xe1440": 11925,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 208,
+        "0x2815f0": 1908,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1796,
+        "0x246a80": 20764,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ind_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "aa04a21bad4fa874b7f927fde285971524085a53365aae48cb3bf3fff5d39496",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 272,
+        "0x2815f0": 1932,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1740,
+        "0x246a80": 19948,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_jax_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6f9bb580c6be1f370760973fc42cfdd8aa0fd940ff6d512e44359c9fc7b5908c",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 261,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 261,
+        "0x1a9a80": 261,
+        "0x281580": 2088,
+        "0xe1440": 10962,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 140,
+        "0x2815f0": 1908,
+        "0x281620": 2460
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 19812,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_kc_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7f99460f1f03ccafb94fa10917b3cc30be3eeebaf1f8bbccbf3023d5ad219b8b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 259,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 259,
+        "0x1a9a80": 259,
+        "0x281580": 2072,
+        "0xe1440": 11137,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 236,
+        "0x2815f0": 1728,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1736,
+        "0x246a80": 19832,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_mia_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "60d73d2cb7a19644c21f91c1a9a399a300eab4be2553faa3a06f30cff57f293e",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 12236,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 220,
+        "0x2815f0": 1788,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 19804,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_min_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "2918778e225d2a7c4f1e76978f4e30e5bb75daf20c8de4eb8eb79aa6b64618fc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 250,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 250,
+        "0x1a9a80": 250,
+        "0x281580": 2000,
+        "0xe1440": 10500,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 128,
+        "0x2815f0": 1716,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1772,
+        "0x246a80": 22060,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ne_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "138e5590e1019780a781ee67f86c1f3154abc179d0db4d665f0a1e0cb05faf15",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10824,
+        "0xe1a80": 312,
+        "0x208820": 2496,
+        "0x2b6f70": 164,
+        "0x2815f0": 1872,
+        "0x281620": 2340
+      },
+      "environment_calls": {
+        "0xe89f0": 1712,
+        "0x246a80": 19456,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_no_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "757a9fd0ffba93e66e4f492d8b63ba4bb78da33d185a6a01d72eebc75a62a575",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 327,
+        "0x208820": 2616,
+        "0x2b6f70": 224,
+        "0x2815f0": 1884,
+        "0x281620": 2120
+      },
+      "environment_calls": {
+        "0xe89f0": 1828,
+        "0x246a80": 21240,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_giants_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "32052dc616a5a4d90019b125c9e1f92d0dafee3ff04b506c941488c9cc83876e",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 321,
+        "0x208820": 2568,
+        "0x2b6f70": 148,
+        "0x2815f0": 1800,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1808,
+        "0x246a80": 20612,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_nyj_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "f73e7f7766988635956ad5af0e3d8bf325a886524461bd8131d34f2f53b10795",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11610,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 188,
+        "0x2815f0": 1728,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20524,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_oak_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "74acff67a9c502157aab8e9b5ac1a9d4a11ef0901515e4387c87ca542f39bfa6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 267,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 267,
+        "0x1a9a80": 267,
+        "0x281580": 2136,
+        "0xe1440": 10947,
+        "0xe1a80": 325,
+        "0x208820": 2600,
+        "0x2b6f70": 268,
+        "0x2815f0": 1860,
+        "0x281620": 1800
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 21264,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_phi_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "2e03e953eac84827fb03f0046b9362b78e27f6938a43d7413353d6e0c3eb353c",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 295,
+        "0x208820": 2360,
+        "0x2b6f70": 148,
+        "0x2815f0": 1764,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1612,
+        "0x246a80": 19216,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_pit_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "4df7a106266e067652a0bac71bab351197981a2378ae805f76d8d376173deb9b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 208,
+        "0x2815f0": 1824,
+        "0x281620": 2080
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 20216,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sd_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e7fd4bd000b45efff0e85df768c5e68cfc23d7b9501c3999723cdef4af33f743",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 252,
+        "0x2815f0": 1908,
+        "0x281620": 2140
+      },
+      "environment_calls": {
+        "0xe89f0": 1788,
+        "0x246a80": 20524,
+        "0xcb2d0": 112
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sea_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "fde365979b3375edaae9bf2246e8ef5654b9e262496bb200d5a9e5e79437e8cc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 249,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 249,
+        "0x1a9a80": 249,
+        "0x281580": 1992,
+        "0xe1440": 9711,
+        "0xe1a80": 297,
+        "0x208820": 2376,
+        "0x2b6f70": 216,
+        "0x2815f0": 1692,
+        "0x281620": 1880
+      },
+      "environment_calls": {
+        "0xe89f0": 1652,
+        "0x246a80": 18708,
+        "0xcb2d0": 80
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sf_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "5008099f6944bd670d62bf16b51cf131df95470e18cf48a19c4529df82767466",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x2b6f70": 312,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 322,
+        "0x208820": 2576,
+        "0x2815f0": 1932,
+        "0x281620": 1940
+      },
+      "environment_calls": {
+        "0x246a80": 20504,
+        "0xe89f0": 1772,
+        "0xcb2d0": 136
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_stl_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "aaff74010e97f0505a9b3ef64bd44b725427567be9e8b0c6dc09387f9de61f2f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 253,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 253,
+        "0x1a9a80": 253,
+        "0x281580": 2024,
+        "0xe1440": 12397,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 220,
+        "0x2815f0": 1752,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 19272,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_tb_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "749fed2057913222206a1d108a85a7c7d2aea2e222fea3ec98a4bded37cae70d",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10296,
+        "0xe1a80": 307,
+        "0x208820": 2456,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1704,
+        "0x246a80": 19240,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ten_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "69ba9d26ecb61744ef5ef3f72f09a4c662b323fdf38a9e41d280e6c28ed2fa5f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 260,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 260,
+        "0x1a9a80": 260,
+        "0x281580": 2080,
+        "0xe1440": 10920,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 18924,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_was_modern.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 200,
+        "0x2815f0": 1920,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19884,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_arz_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 254,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 254,
+        "0x1a9a80": 254,
+        "0x281580": 2032,
+        "0xe1440": 9906,
+        "0xe1a80": 302,
+        "0x208820": 2416,
+        "0x2b6f70": 208,
+        "0x2815f0": 1752,
+        "0x281620": 1900
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 19328,
+        "0xcb2d0": 32
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_atl_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 11046,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 280,
+        "0x2815f0": 1836,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 20692,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_bal_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 12420,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 184,
+        "0x2815f0": 1824,
+        "0x281620": 2100
+      },
+      "environment_calls": {
+        "0xe89f0": 1816,
+        "0x246a80": 20660,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_buf_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 204,
+        "0x2815f0": 1920,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20712,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_car_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 10906,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 272,
+        "0x2815f0": 1896,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20860,
+        "0xcb2d0": 96
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_chi_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11880,
+        "0xe1a80": 330,
+        "0x208820": 2640,
+        "0x2b6f70": 164,
+        "0x2815f0": 1980,
+        "0x281620": 2480
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 21060,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_cin_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11836,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 216,
+        "0x2815f0": 1944,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1664,
+        "0x246a80": 18992,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_cle_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11029,
+        "0xe1a80": 319,
+        "0x208820": 2552,
+        "0x2b6f70": 212,
+        "0x2815f0": 1776,
+        "0x281620": 2020
+      },
+      "environment_calls": {
+        "0xe89f0": 1800,
+        "0x246a80": 20760,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_dal_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 160,
+        "0x2815f0": 1908,
+        "0x281620": 2380
+      },
+      "environment_calls": {
+        "0xe89f0": 1732,
+        "0x246a80": 19808,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_den_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 255,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 255,
+        "0x1a9a80": 255,
+        "0x281580": 2040,
+        "0xe1440": 10455,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 256,
+        "0x2815f0": 1764,
+        "0x281620": 1820
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 19856,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_det_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 12672,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 212,
+        "0x2815f0": 1848,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19988,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_gb_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 10800,
+        "0xe1a80": 305,
+        "0x208820": 2440,
+        "0x2b6f70": 264,
+        "0x2815f0": 1956,
+        "0x281620": 2060
+      },
+      "environment_calls": {
+        "0xe89f0": 1628,
+        "0x246a80": 19604,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_hou_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 265,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 265,
+        "0x1a9a80": 265,
+        "0x281580": 2120,
+        "0xe1440": 11925,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 208,
+        "0x2815f0": 1908,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1796,
+        "0x246a80": 21004,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ind_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 272,
+        "0x2815f0": 1932,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1740,
+        "0x246a80": 20140,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_jax_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 261,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 261,
+        "0x1a9a80": 261,
+        "0x281580": 2088,
+        "0xe1440": 10962,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 140,
+        "0x2815f0": 1908,
+        "0x281620": 2460
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 20148,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_kc_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 259,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 259,
+        "0x1a9a80": 259,
+        "0x281580": 2072,
+        "0xe1440": 11137,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 236,
+        "0x2815f0": 1728,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1736,
+        "0x246a80": 19960,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_mia_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 12236,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 220,
+        "0x2815f0": 1788,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 20204,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_min_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 250,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 250,
+        "0x1a9a80": 250,
+        "0x281580": 2000,
+        "0xe1440": 10500,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 128,
+        "0x2815f0": 1716,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1772,
+        "0x246a80": 21692,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ne_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10824,
+        "0xe1a80": 312,
+        "0x208820": 2496,
+        "0x2b6f70": 164,
+        "0x2815f0": 1872,
+        "0x281620": 2340
+      },
+      "environment_calls": {
+        "0xe89f0": 1712,
+        "0x246a80": 19760,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_no_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 327,
+        "0x208820": 2616,
+        "0x2b6f70": 224,
+        "0x2815f0": 1884,
+        "0x281620": 2120
+      },
+      "environment_calls": {
+        "0xe89f0": 1828,
+        "0x246a80": 21272,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_nyg_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 321,
+        "0x208820": 2568,
+        "0x2b6f70": 148,
+        "0x2815f0": 1800,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1808,
+        "0x246a80": 20884,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_nyj_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11610,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 188,
+        "0x2815f0": 1728,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20620,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_oak_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 267,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 267,
+        "0x1a9a80": 267,
+        "0x281580": 2136,
+        "0xe1440": 10947,
+        "0xe1a80": 325,
+        "0x208820": 2600,
+        "0x2b6f70": 268,
+        "0x2815f0": 1860,
+        "0x281620": 1800
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 21376,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_phi_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 295,
+        "0x208820": 2360,
+        "0x2b6f70": 148,
+        "0x2815f0": 1764,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1612,
+        "0x246a80": 19232,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_pit_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 208,
+        "0x2815f0": 1824,
+        "0x281620": 2080
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 20328,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sd_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 252,
+        "0x2815f0": 1908,
+        "0x281620": 2140
+      },
+      "environment_calls": {
+        "0xe89f0": 1788,
+        "0x246a80": 20572,
+        "0xcb2d0": 112
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sea_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 249,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 249,
+        "0x1a9a80": 249,
+        "0x281580": 1992,
+        "0xe1440": 9711,
+        "0xe1a80": 297,
+        "0x208820": 2376,
+        "0x2b6f70": 216,
+        "0x2815f0": 1692,
+        "0x281620": 1880
+      },
+      "environment_calls": {
+        "0xe89f0": 1652,
+        "0x246a80": 18932,
+        "0xcb2d0": 80
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_sf_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x2b6f70": 312,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 322,
+        "0x208820": 2576,
+        "0x2815f0": 1932,
+        "0x281620": 1940
+      },
+      "environment_calls": {
+        "0x246a80": 20664,
+        "0xe89f0": 1772,
+        "0xcb2d0": 136
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_stl_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 253,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 253,
+        "0x1a9a80": 253,
+        "0x281580": 2024,
+        "0xe1440": 12397,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 220,
+        "0x2815f0": 1752,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 19512,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_tb_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10296,
+        "0xe1a80": 307,
+        "0x208820": 2456,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1704,
+        "0x246a80": 19352,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_ten_defense.2k5book"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 260,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 260,
+        "0x1a9a80": 260,
+        "0x281580": 2080,
+        "0xe1440": 10920,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 19404,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "softdrink_was_defense.2k5book"
+    }
+  ],
+  "final": [
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 200,
+        "0x2815f0": 1920,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19884,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "ARZ"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 254,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 254,
+        "0x1a9a80": 254,
+        "0x281580": 2032,
+        "0xe1440": 9906,
+        "0xe1a80": 302,
+        "0x208820": 2416,
+        "0x2b6f70": 208,
+        "0x2815f0": 1752,
+        "0x281620": 1900
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 19328,
+        "0xcb2d0": 32
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "ATL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 11046,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 280,
+        "0x2815f0": 1836,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 20692,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "BAL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 12420,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 184,
+        "0x2815f0": 1824,
+        "0x281620": 2100
+      },
+      "environment_calls": {
+        "0xe89f0": 1816,
+        "0x246a80": 20660,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "BUF"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 204,
+        "0x2815f0": 1920,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20712,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CAR"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 10906,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 272,
+        "0x2815f0": 1896,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20860,
+        "0xcb2d0": 96
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CHI"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11880,
+        "0xe1a80": 330,
+        "0x208820": 2640,
+        "0x2b6f70": 164,
+        "0x2815f0": 1980,
+        "0x281620": 2480
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 21060,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CIN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11836,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 216,
+        "0x2815f0": 1944,
+        "0x281620": 2280
+      },
+      "environment_calls": {
+        "0xe89f0": 1664,
+        "0x246a80": 18992,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "CLE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11029,
+        "0xe1a80": 319,
+        "0x208820": 2552,
+        "0x2b6f70": 212,
+        "0x2815f0": 1776,
+        "0x281620": 2020
+      },
+      "environment_calls": {
+        "0xe89f0": 1800,
+        "0x246a80": 20760,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DAL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 160,
+        "0x2815f0": 1908,
+        "0x281620": 2380
+      },
+      "environment_calls": {
+        "0xe89f0": 1732,
+        "0x246a80": 19808,
+        "0xcb2d0": 24
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 255,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 255,
+        "0x1a9a80": 255,
+        "0x281580": 2040,
+        "0xe1440": 10455,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 256,
+        "0x2815f0": 1764,
+        "0x281620": 1820
+      },
+      "environment_calls": {
+        "0xe89f0": 1700,
+        "0x246a80": 19856,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "DET"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "2709a1d09169e7954a5fd711b98fc7f3ffb6413136f5c2cf59347d00a221c9b6",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 51,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 51,
+        "0x1a9a80": 51,
+        "0x281580": 408,
+        "0xe1440": 765,
+        "0xe1a80": 54,
+        "0x208820": 432,
+        "0x2815f0": 180,
+        "0x281620": 180,
+        "0x2b6f70": 16
+      },
+      "environment_calls": {
+        "0xe89f0": 212,
+        "0x246a80": 2328,
+        "0xcb2d0": 8
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "Editor"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 12672,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 212,
+        "0x2815f0": 1848,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1728,
+        "0x246a80": 19988,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "GB"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a79ef59b7534c27bf57994f0b48873f1465248046833f917cc581f78986a966c",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 218,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 218,
+        "0x1a9a80": 218,
+        "0x281580": 1744,
+        "0xe1440": 8938,
+        "0xe1a80": 452,
+        "0x208820": 3616,
+        "0x2b6f70": 204,
+        "0x2815f0": 1104,
+        "0x281620": 2920
+      },
+      "environment_calls": {
+        "0xe89f0": 2388,
+        "0x246a80": 26688,
+        "0xcb2d0": 240
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "GEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 10800,
+        "0xe1a80": 305,
+        "0x208820": 2440,
+        "0x2b6f70": 264,
+        "0x2815f0": 1956,
+        "0x281620": 2060
+      },
+      "environment_calls": {
+        "0xe89f0": 1628,
+        "0x246a80": 19604,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "HOU"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 265,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 265,
+        "0x1a9a80": 265,
+        "0x281580": 2120,
+        "0xe1440": 11925,
+        "0xe1a80": 324,
+        "0x208820": 2592,
+        "0x2b6f70": 208,
+        "0x2815f0": 1908,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1796,
+        "0x246a80": 21004,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "IND"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 272,
+        "0x2815f0": 1932,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1740,
+        "0x246a80": 20140,
+        "0xcb2d0": 72
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "JAX"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 261,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 261,
+        "0x1a9a80": 261,
+        "0x281580": 2088,
+        "0xe1440": 10962,
+        "0xe1a80": 318,
+        "0x208820": 2544,
+        "0x2b6f70": 140,
+        "0x2815f0": 1908,
+        "0x281620": 2460
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 20148,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "KC"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 259,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 259,
+        "0x1a9a80": 259,
+        "0x281580": 2072,
+        "0xe1440": 11137,
+        "0xe1a80": 309,
+        "0x208820": 2472,
+        "0x2b6f70": 236,
+        "0x2815f0": 1728,
+        "0x281620": 1780
+      },
+      "environment_calls": {
+        "0xe89f0": 1736,
+        "0x246a80": 19960,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "MIA"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 266,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 266,
+        "0x1a9a80": 266,
+        "0x281580": 2128,
+        "0xe1440": 12236,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 220,
+        "0x2815f0": 1788,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1748,
+        "0x246a80": 20204,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "MIN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 250,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 250,
+        "0x1a9a80": 250,
+        "0x281580": 2000,
+        "0xe1440": 10500,
+        "0xe1a80": 313,
+        "0x208820": 2504,
+        "0x2b6f70": 128,
+        "0x2815f0": 1716,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1772,
+        "0x246a80": 21692,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10824,
+        "0xe1a80": 312,
+        "0x208820": 2496,
+        "0x2b6f70": 164,
+        "0x2815f0": 1872,
+        "0x281620": 2340
+      },
+      "environment_calls": {
+        "0xe89f0": 1712,
+        "0x246a80": 19760,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NO"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 327,
+        "0x208820": 2616,
+        "0x2b6f70": 224,
+        "0x2815f0": 1884,
+        "0x281620": 2120
+      },
+      "environment_calls": {
+        "0xe89f0": 1828,
+        "0x246a80": 21272,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NYG"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 321,
+        "0x208820": 2568,
+        "0x2b6f70": 148,
+        "0x2815f0": 1800,
+        "0x281620": 2240
+      },
+      "environment_calls": {
+        "0xe89f0": 1808,
+        "0x246a80": 20884,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "NYJ"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11610,
+        "0xe1a80": 316,
+        "0x208820": 2528,
+        "0x2b6f70": 188,
+        "0x2815f0": 1728,
+        "0x281620": 2040
+      },
+      "environment_calls": {
+        "0xe89f0": 1792,
+        "0x246a80": 20620,
+        "0xcb2d0": 64
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "OAK"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 267,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 267,
+        "0x1a9a80": 267,
+        "0x281580": 2136,
+        "0xe1440": 10947,
+        "0xe1a80": 325,
+        "0x208820": 2600,
+        "0x2b6f70": 268,
+        "0x2815f0": 1860,
+        "0x281620": 1800
+      },
+      "environment_calls": {
+        "0xe89f0": 1820,
+        "0x246a80": 21376,
+        "0xcb2d0": 40
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PHI"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 10783,
+        "0xe1a80": 295,
+        "0x208820": 2360,
+        "0x2b6f70": 148,
+        "0x2815f0": 1764,
+        "0x281620": 2180
+      },
+      "environment_calls": {
+        "0xe89f0": 1612,
+        "0x246a80": 19232,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PIT"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 27,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 27,
+        "0x1a9a80": 27,
+        "0x281580": 216,
+        "0xe1440": 621,
+        "0xe1a80": 186,
+        "0x208820": 1488,
+        "0x2815f0": 180,
+        "0x281620": 1600,
+        "0x2b6f70": 24
+      },
+      "environment_calls": {
+        "0xe89f0": 952,
+        "0x246a80": 10940,
+        "0xcb2d0": 48
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "PRACTICE"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "a78b73d4cdf0d8bd2862c5ee4ef6d2c6bd9d42446211c4abdeb7c609b5cdc690",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 263,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 263,
+        "0x1a9a80": 263,
+        "0x281580": 2104,
+        "0xe1440": 12887,
+        "0xe1a80": 594,
+        "0x208820": 4752,
+        "0x2b6f70": 268,
+        "0x2815f0": 2040,
+        "0x281620": 5140
+      },
+      "environment_calls": {
+        "0xe89f0": 2828,
+        "0x246a80": 29700,
+        "0xcb2d0": 488
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "reference"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 270,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 270,
+        "0x1a9a80": 270,
+        "0x281580": 2160,
+        "0xe1440": 11070,
+        "0xe1a80": 306,
+        "0x208820": 2448,
+        "0x2b6f70": 208,
+        "0x2815f0": 1824,
+        "0x281620": 2080
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 20328,
+        "0xcb2d0": 56
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SD"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x281580": 2152,
+        "0xe1440": 11567,
+        "0xe1a80": 323,
+        "0x208820": 2584,
+        "0x2b6f70": 252,
+        "0x2815f0": 1908,
+        "0x281620": 2140
+      },
+      "environment_calls": {
+        "0xe89f0": 1788,
+        "0x246a80": 20572,
+        "0xcb2d0": 112
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SEA"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 249,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 249,
+        "0x1a9a80": 249,
+        "0x281580": 1992,
+        "0xe1440": 9711,
+        "0xe1a80": 297,
+        "0x208820": 2376,
+        "0x2b6f70": 216,
+        "0x2815f0": 1692,
+        "0x281620": 1880
+      },
+      "environment_calls": {
+        "0xe89f0": 1652,
+        "0x246a80": 18932,
+        "0xcb2d0": 80
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "SF"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 269,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 269,
+        "0x1a9a80": 269,
+        "0x2b6f70": 312,
+        "0x281580": 2152,
+        "0xe1440": 12105,
+        "0xe1a80": 322,
+        "0x208820": 2576,
+        "0x2815f0": 1932,
+        "0x281620": 1940
+      },
+      "environment_calls": {
+        "0x246a80": 20664,
+        "0xe89f0": 1772,
+        "0xcb2d0": 136
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "STL"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 253,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 253,
+        "0x1a9a80": 253,
+        "0x281580": 2024,
+        "0xe1440": 12397,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 220,
+        "0x2815f0": 1752,
+        "0x281620": 1980
+      },
+      "environment_calls": {
+        "0xe89f0": 1680,
+        "0x246a80": 19512,
+        "0xcb2d0": 88
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "TB"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 264,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 264,
+        "0x1a9a80": 264,
+        "0x281580": 2112,
+        "0xe1440": 10296,
+        "0xe1a80": 307,
+        "0x208820": 2456,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1704,
+        "0x246a80": 19352,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "TEN"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 260,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 260,
+        "0x1a9a80": 260,
+        "0x281580": 2080,
+        "0xe1440": 10920,
+        "0xe1a80": 303,
+        "0x208820": 2424,
+        "0x2b6f70": 148,
+        "0x2815f0": 1776,
+        "0x281620": 2200
+      },
+      "environment_calls": {
+        "0xe89f0": 1672,
+        "0x246a80": 19404,
+        "0xcb2d0": 16
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "WAS"
+    },
+    {
+      "schema": "nfl2k5-native-play-scoring/v1",
+      "status": "PROVED OFFLINE",
+      "resource_sha256": "e1153d37198fd7f6c71fc41541c4cada06efb284ba360d0a6e976ca64ac7c152",
+      "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "plays": 232,
+      "contexts": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "calls": {
+        "0x161e30": 1,
+        "0x1a9840": 232,
+        "0x1a9a80": 232,
+        "0x281580": 1856,
+        "0xe1440": 10440,
+        "0xe1a80": 500,
+        "0x208820": 4000,
+        "0x2b6f70": 240,
+        "0x2815f0": 1308,
+        "0x281620": 3360
+      },
+      "environment_calls": {
+        "0xe89f0": 2568,
+        "0x246a80": 28556,
+        "0xcb2d0": 424
+      },
+      "faults": [],
+      "fault_count": 0,
+      "runtime_witness": false,
+      "book": "WCO"
+    }
+  ],
+  "totals": {
+    "books": {
+      "retail": 37,
+      "compiled": 64,
+      "final": 37
+    },
+    "plays": 35422,
+    "faults": 0,
+    "calls": {
+      "0x161e30": 138,
+      "0x1a9840": 35422,
+      "0x1a9a80": 35422,
+      "0x281580": 283376,
+      "0xe1440": 1505722,
+      "0xe1a80": 48038,
+      "0x208820": 384304,
+      "0x2b6f70": 31648,
+      "0x2815f0": 245112,
+      "0x281620": 328560
+    }
+  }
+}

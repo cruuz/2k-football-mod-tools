@@ -1,0 +1,951 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "SF",
+ "abbreviation_2026": "SF",
+ "name": "San Francisco 49ers",
+ "asset_code": "25",
+ "season": 2026,
+ "status": "Phase B job d8 (2026-09-23). Colours sourced (team_colors_official_2026.json); albedo INFERRED from 2026 game photos (week 2 home vs MIA, week 1 at LA).",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "4-3",
+  "defense_note": "ESPN's 2026 chart: LDE, LDT, RDT, RDE, WLB, MLB, SLB (a 4-3, DC Robert Saleh).",
+  "roster_abbreviation": "SF",
+  "head_coach": "Kyle Shanahan",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status): 53 active.",
+  "head_coach_source": "https://www.49ers.com/team/coaches-roster/kyle-shanahan (Head Coach; matches nflverse games.csv 2026)"
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Ashtyn Davis": 1,
+   "Brock Purdy": 0,
+   "Carver Willis": 0,
+   "Christian McCaffrey": 0,
+   "Colton McKivitz": 0,
+   "Connor Colby": 0,
+   "Dominick Puni": 1,
+   "Eddy Pineiro": 1,
+   "Garret Wallow": 1,
+   "George Kittle": 0,
+   "Jake Brendel": 0,
+   "Jarrett Patterson": 1,
+   "Jon Weeks": 0,
+   "Kurtis Rourke": 0,
+   "Kyle Juszczyk": 0,
+   "Luke Farrell": 0,
+   "Luke Gifford": 0,
+   "Mac Jones": 0,
+   "Mike Evans": 2,
+   "Nick Bosa": 0,
+   "Brayden Willis": 3,
+   "Enrique Cruz": 2,
+   "Fred Warner": 2,
+   "Jordan James": 3,
+   "Jordan Watkins": 2,
+   "Trent Williams": 3,
+   "Demarcus Robinson": 3,
+   "Deommodore Lenoir": 3,
+   "Ephesians Prysock": 3,
+   "Gracen Halton": 3,
+   "Jack Jones": 3,
+   "Jacob Cowing": 3,
+   "James Thompson": 3,
+   "Marques Sigle": 3,
+   "Jaden Dugger": 3,
+   "Ji'Ayir Brown": 4,
+   "Kaelon Black": 4,
+   "KhaDarel Hodge": 3,
+   "Malik Mustapha": 4,
+   "Ogbo Okoronkwo": 4,
+   "Osa Odighizuwa": 4,
+   "Renardo Green": 4,
+   "Romello Height": 3,
+   "Tyshun Samuel": 4,
+   "C.J. West": 4,
+   "Corliss Waitman": 4,
+   "Dre Greenlaw": 4,
+   "Khalid Kareem": 4,
+   "Siran Neal": 4,
+   "Tatum Bethune": 4,
+   "Vederian Lowe": 4,
+   "Keion White": 5,
+   "Upton Stout": 5
+  },
+  "dreads": [
+   "Jordan James",
+   "Demarcus Robinson",
+   "Ji'Ayir Brown",
+   "Kaelon Black",
+   "Osa Odighizuwa",
+   "Renardo Green",
+   "C.J. West",
+   "Dre Greenlaw"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots against the Giants pilot's calibration (INFERRED); the automatic cheek estimate reads studio-lit darker skin as light, so it is kept only as skin_lab in faces.json. Dreads (locs, long twists) by eye. Hair colours set by eye where the automatic sample read the backdrop between locs or a shadow (first contact sheet, 2026-09-23).",
+  "hair_by_eye": {
+   "George Kittle": "#7E6044",
+   "Renardo Green": "#3A2A20"
+  }
+ },
+ "sources": {
+  "kit_rules": "https://www.49ers.com/news/49ers-reveal-uniform-schedule-for-the-2026-season-throwback-rivalry-black-jersey (red primary 8 games, white primary 5 road games)",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_San_Francisco_49ers&action=raw (2009 classic set, 2017 two stripes, 2022 third sleeve stripe and saloon 49ERS chest wordmark)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (SF: 49ers Red #AA0000, 49ers Gold #B3995D, White, Black; 2026 NFL Record and Fact Book)",
+  "home_photos": "https://www.49ers.com/photos/game-photos-dolphins-vs-49ers-week-2-nfl (2026-09-20, red jersey, gold pants, red socks)",
+  "road_photos": "https://www.therams.com/photos/game-action-rams-vs-49ers-week-1-melbourne-cricket-ground-australia-2026 (2026-09-10, white jersey, gold pants, white socks)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/SF.svg",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:San_Francisco_49ers_wordmark.svg (PD-textlogo; the saloon 49ERS)",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "red": "#AA0000",
+  "gold": "#B3995D",
+  "white": "#FFFFFF",
+  "black": "#000000"
+ },
+ "albedo": {
+  "jersey_red": "#B0080E",
+  "helmet_gold": "#B8995C",
+  "pants_gold": "#B89C62",
+  "red": "#AA0000",
+  "white": "#FFFFFF",
+  "black": "#111111",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_red": "#A5070C",
+  "banner_red": "#B0080E",
+  "retail_helmet_gold": "#B48458",
+  "retail_helmet_red": "#9F0610",
+  "retail_splayer_red": "#880011",
+  "retail_splayer_gold": "#BB8855",
+  "retail_card_red": "#AC0A18",
+  "retail_card_gold": "#D3A071",
+  "retail_card_helmet_gold": "#93743C",
+  "retail_card_white": "#DCD9D4",
+  "retail_helmet_black": "#090806",
+  "gold": "#B3995D",
+  "sign_dark": "#161616"
+ },
+ "marks": {
+  "club_logo": "club_logo_full.png",
+  "wordmark": "wordmark_fill.png",
+  "wordmark_full": "wordmark_full.png",
+  "logo_L0_black": "logo_L0_black.png",
+  "logo_L1_gold": "logo_L1_gold.png",
+  "logo_L2_red": "logo_L2_red.png",
+  "logo_L3_white": "logo_L3_white.png",
+  "wm49_L0_black": "wm49_L0_black.png",
+  "wm49_L1_gold": "wm49_L1_gold.png",
+  "wm49_L2_red": "wm49_L2_red.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "25H0",
+   "outer_index": 3829,
+   "note": "2026 red primary: scarlet jersey, plain white block numbers, three white sleeve stripes, small white saloon 49ERS under the collar, metallic gold pants with a red-white-red stripe, red socks, gold helmet with the SF oval",
+   "torso": {
+    "base_colour": "jersey_red",
+    "neck_donor": "25H0",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      161,
+      90.5
+     ],
+     "width": 20
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_red",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       0,
+       37,
+       128,
+       41
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       44,
+       128,
+       48
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       51,
+       128,
+       55
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       101,
+       128,
+       105
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       108,
+       128,
+       112
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       0,
+       115,
+       128,
+       119
+      ],
+      "colour": "white"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_gold",
+    "stripe": [
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "white",
+      3
+     ],
+     [
+      "jersey_red",
+      4
+     ]
+    ],
+    "swoosh_colour": "jersey_red"
+   },
+   "socks": {
+    "colour": "jersey_red"
+   },
+   "digits": {
+    "glyph_donor": "00H0",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "00H0",
+    "fill": "white"
+   },
+   "nameplate": {
+    "glyph_donor": "25H0",
+    "fill": "white",
+    "font": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
+   },
+   "helmet": {
+    "shell": "helmet_gold",
+    "shell_from": "retail_helmet_gold",
+    "recolour": [
+     {
+      "from": "retail_helmet_red",
+      "to": "white",
+      "region": "stripe_band"
+     },
+     {
+      "from": "retail_helmet_black",
+      "to": "jersey_red",
+      "region": "stripe_band",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_helmet_red",
+      "to": "jersey_red"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_red",
+      "to": "jersey_red",
+      "region": "jersey"
+     },
+     {
+      "from": "retail_card_gold",
+      "to": "pants_gold",
+      "region": "pants"
+     },
+     {
+      "from": "retail_card_helmet_gold",
+      "to": "helmet_gold",
+      "region": "helmet"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3829,
+    "torso_donor": "25H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "torso"
+     },
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "sleeve"
+     },
+     {
+      "from": "retail_splayer_gold",
+      "to": "helmet_gold",
+      "region": "helmet"
+     },
+     {
+      "from": "retail_splayer_gold",
+      "to": "pants_gold",
+      "region": "pants"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "25A0",
+   "outer_index": 4146,
+   "note": "2026 white primary: white jersey, plain red block numbers, three red sleeve stripes, small red saloon 49ERS under the collar, metallic gold pants with a red-white-red stripe, white socks, gold helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "25H0",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "jersey_red",
+     "center": [
+      161,
+      90.5
+     ],
+     "width": 20
+    },
+    "sleeve_swooshes": {
+     "colour": "jersey_red"
+    },
+    "neck_note": "neck mask from the home torso: the white 25A0 torso's mesh dots are near the neck grey and would be painted as neck"
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       0,
+       37,
+       128,
+       41
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       44,
+       128,
+       48
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       51,
+       128,
+       55
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       101,
+       128,
+       105
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       108,
+       128,
+       112
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       115,
+       128,
+       119
+      ],
+      "colour": "jersey_red"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_gold",
+    "stripe": [
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "white",
+      3
+     ],
+     [
+      "jersey_red",
+      4
+     ]
+    ],
+    "swoosh_colour": "jersey_red"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "00H0",
+    "fill": "jersey_red"
+   },
+   "helmet_digits": {
+    "glyph_donor": "00H0",
+    "fill": "white"
+   },
+   "nameplate": {
+    "glyph_donor": "25A0",
+    "fill": "jersey_red",
+    "font": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
+   },
+   "helmet": {
+    "shell": "helmet_gold",
+    "shell_from": "retail_helmet_gold",
+    "recolour": [
+     {
+      "from": "retail_helmet_red",
+      "to": "white",
+      "region": "stripe_band"
+     },
+     {
+      "from": "retail_helmet_black",
+      "to": "jersey_red",
+      "region": "stripe_band",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_helmet_red",
+      "to": "jersey_red"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_gold",
+      "to": "pants_gold",
+      "region": "pants"
+     },
+     {
+      "from": "retail_card_helmet_gold",
+      "to": "helmet_gold",
+      "region": "helmet"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 4146,
+    "torso_donor": "25A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "sleeve"
+     },
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "sleeve"
+     },
+     {
+      "from": "retail_splayer_gold",
+      "to": "helmet_gold",
+      "region": "helmet"
+     },
+     {
+      "from": "retail_splayer_gold",
+      "to": "pants_gold",
+      "region": "pants"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "scarlet red jersey body, small white 49ERS under the collar, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "scarlet red with three white stripes near the hem",
+   "pants": "metallic gold with a thin red-white-red side stripe, red maker mark",
+   "helmet": "metallic gold shell, red SF oval logo with white letters and black ring, center stripe, grey and white hardware, flag and shield decals",
+   "digit_jersey": "plain white block numbers",
+   "digit_arm": "plain white block numbers",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "white serif letters",
+   "socks00": "solid scarlet red",
+   "splayer": "far-away player atlas: gold pants, red torso, gold helmet, red socks, skin and glove patches",
+   "team-select_unif": "menu render: red jersey with a white number, gold pants, gold helmet with the SF oval, dark shading",
+   "team-select_helm": "menu render: gold helmet with the SF oval, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the team logo: red oval with white SF letters, black outline and a thin gold ring (menu and in-game logo texture)",
+   "flipchip": "coin toss and in-game team chip: the SF oval logo, cropped to fill the square",
+   "chiclet": "a glossy square in the team red (menu colour chip)"
+  },
+  "away": {
+   "torso": "white jersey body, small red 49ERS under the collar, small NFL shield at the collar, red maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with three red stripes near the hem",
+   "pants": "metallic gold with a thin red-white-red side stripe, red maker mark",
+   "helmet": "metallic gold shell, red SF oval logo with white letters and black ring, center stripe, grey and white hardware, flag and shield decals",
+   "digit_jersey": "plain red block numbers",
+   "digit_arm": "plain red block numbers",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "red serif letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: gold pants, white torso, gold helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a red number, gold pants, gold helmet, grey and dark shading",
+   "team-select_helm": "menu render: gold helmet with the SF oval, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the team logo: red oval with white SF letters, black outline and a thin gold ring (menu and in-game logo texture)",
+   "flipchip": "coin toss and in-game team chip: the SF oval logo, cropped to fill the square",
+   "chiclet": "a glossy square in the team red (menu colour chip)"
+  },
+  "venue": {
+   "endzone": "grass end zone with the saloon 49ERS wordmark: red letters, gold trim, black outline",
+   "center_logo": "the SF oval: red oval, white SF, black and gold rings",
+   "banner": "cloth fan banners in red, gold, white with 49ers text",
+   "wall": "scarlet red wall pads with the SF oval",
+   "screen": "dark sign with gold welcome text"
+  }
+ },
+ "venue": {
+  "prefix": "s25",
+  "notes": "49ers home games stay at the retail San Francisco venue (Noah: keep the stadiums). End zones: the saloon 49ERS wordmark (club colours: red letters, gold trim, black outline) on grass at both ends, as at Levi's Stadium in the regular season (49erswebzone 2019 design; INFERRED unchanged in 2026). Midfield: the SF oval in full colour (2026 week 2 photos). Wall pads 2026 red with the SF oval; fan banners with 2026 players.",
+  "sources": [
+   "https://www.49erswebzone.com/articles/127032-look-49ers-new-end-zone-design-levis-stadium/",
+   "https://www.49ers.com/photos/celebration-photos-dolphins-vs-49ers-week-2 (midfield SF oval, 2026-09-20)"
+  ],
+  "endzone": {
+   "paint": "field_red",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "wm49_L0_black",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "wm49_L1_gold",
+     "colour": "gold",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "wm49_L2_red",
+     "colour": "red",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_red",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "wm49_L0_black",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "wm49_L1_gold",
+     "colour": "gold",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    },
+    {
+     "mark": "wm49_L2_red",
+     "colour": "red",
+     "center": [
+      384,
+      64
+     ],
+     "height": 72,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "FAITHFUL\nTO THE BAY",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "mark": "logo_L0_black",
+        "colour": "black",
+        "center": [
+         64,
+         96
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L1_gold",
+        "colour": "gold",
+        "center": [
+         64,
+         96
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L2_red",
+        "colour": "red",
+        "center": [
+         64,
+         96
+        ],
+        "width": 70
+       },
+       {
+        "mark": "logo_L3_white",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "width": 70
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#13\nPURDY",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "CMC\n#23",
+        "colour": "jersey_red",
+        "center": [
+         192,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "text": "KITTLE\n#85",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BOSA\n#97",
+        "colour": "black",
+        "center": [
+         192,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "gold",
+      "items": [
+       {
+        "text": "QUEST\nFOR SIX",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#54\nWARNER",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "wall05": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "mark": "logo_L0_black",
+        "colour": "black",
+        "center": [
+         64,
+         58
+        ],
+        "width": 84
+       },
+       {
+        "mark": "logo_L1_gold",
+        "colour": "gold",
+        "center": [
+         64,
+         58
+        ],
+        "width": 84
+       },
+       {
+        "mark": "logo_L2_red",
+        "colour": "red",
+        "center": [
+         64,
+         58
+        ],
+        "width": 84
+       },
+       {
+        "mark": "logo_L3_white",
+        "colour": "white",
+        "center": [
+         64,
+         58
+        ],
+        "width": 84
+       }
+      ]
+     }
+    ]
+   },
+   "wall03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "jersey_red",
+      "items": []
+     }
+    ]
+   },
+   "screen01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "sign_dark",
+      "items": [
+       {
+        "text": "Welcome to\nSAN FRANCISCO\nHome of the 49ERS",
+        "colour": "gold",
+        "center": [
+         64,
+         32
+        ],
+        "height": 11
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

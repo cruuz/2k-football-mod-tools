@@ -22,6 +22,9 @@ SPEC.loader.exec_module(MODULE)
 class FranchiseLimitFeasibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in [value[0] for value in MODULE.SOURCES.values()] if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL franchise proof sources missing: " + ", ".join(missing))
         cls.report = MODULE.generate()
 
     def test_matrix_is_exactly_bounded(self) -> None:

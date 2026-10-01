@@ -12,6 +12,12 @@ from .errors import ValidationError
 #: written file for a moment after the writing process exits; a file that is
 #: genuinely absent stays absent through every attempt and is reported as such.
 RECEIPT_READ_BACKOFF = (0.05, 0.1, 0.2, 0.4, 0.8)
+# Per-span metadata, not pixels: equipment_palette caps colour-change examples
+# at 64 per texture while preserving exact aggregate quality measurements.
+# Do not raise this to accommodate a per-pixel audit (beta 75 could emit 50 MiB
+# for only three textures); that also multiplied retained reports in Studio.
+# The pinned 28,530-texture catalog has at most 14 textures per physical group,
+# so the verbose colour examples now stop at 896 entries per import receipt.
 RECEIPT_SIZE_BOUND = 32 * 1024 * 1024
 
 

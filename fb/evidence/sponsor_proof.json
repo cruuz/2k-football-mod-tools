@@ -1,0 +1,757 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "checks": [
+    {
+      "venue": "s05",
+      "changed": [
+        {
+          "key": "texscore02_fence",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "a2bb1b4cbbaf9d086c3fac766478c489bc8d749ac1a600f30b199aa2a212c8fc",
+          "after": "72bdc737b23429d110071c784b6ad69e076042484d32e3ed8944900400fc8982"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1362368,
+      "source_bundles_verified": 9,
+      "compressed_refit_readback": true,
+      "other_scene_bytes_unchanged": true
+    },
+    {
+      "venue": "s06",
+      "changed": [
+        {
+          "key": "signsA1",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "e40f12444e24e2832334456ad992c8d62d63a050303b433d246ac7dedc67599f",
+          "after": "7956b7db2a0a8b6cb48a573723be13736bbe4d6ec6402c0dbf95a10698d23042"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1375808,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s31",
+      "changed": [
+        {
+          "key": "ad_bb01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "e00b97e05765b71164edce65eb5c0c25b7d1bfa245d5b7f4309b1603555cc9ba",
+          "after": "8e640946b6e3354be0a1a84e17b379a44f1eb858be02cf6c92ca9263e52fdcb3"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "exit01",
+          "size": [
+            64,
+            64
+          ],
+          "format": "P8",
+          "before": "6cbe014fbfb7ca8977769765bed20c883452ff486e346f00a8a1be600fb14a0d",
+          "after": "377b5b3827448dcb3e8469154accd6e613eb848bb3767a50f624116917ad636c"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1167168,
+      "source_bundles_verified": 9,
+      "compressed_refit_readback": true,
+      "other_scene_bytes_unchanged": true
+    },
+    {
+      "venue": "s36",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "5d5a3a02fbd3f79f669fc145083a9b341ab6d2a98f71c7a582eaefbfd2083908",
+          "after": "7307b37f9a74da032189709b2296ab5676519106c5cca261aecd4dc2a910e487"
+        },
+        {
+          "key": "banner_away_team",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "c52d93e26154432ffaeb941cbff7d9f6f8e65438096742e774dc3bdcb8961ecd",
+          "after": "d10d665447aad0711ad1a5e36e51dafa72282db8abb2735009d0bc2deab5a51f"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "banner_home_player",
+          "size": [
+            256,
+            128
+          ],
+          "format": "P8",
+          "before": "2b684b14f30b8dd3c1b52797da88abec400dadfa8eb24b45c55ca22fd80c151d",
+          "after": "b7afbca798f877573fabaf450163926ef652dd46e73deb403734cbd30569a1f5"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "90db7a8b1f56040cafef9bc4518476428b30f025778361aad8cb90787fb969f9",
+          "after": "fe595fbc5df6415bc7b29d3d76decd37fcf11eb1b54c6dc624f2b01b7e398598"
+        },
+        {
+          "key": "banner_home_team",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "c52d93e26154432ffaeb941cbff7d9f6f8e65438096742e774dc3bdcb8961ecd",
+          "after": "d10d665447aad0711ad1a5e36e51dafa72282db8abb2735009d0bc2deab5a51f"
+        },
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "43105719621353fbd73eaded41b765604d03bc75cf58a28f87edee9e202848e5",
+          "after": "1f73c648c3a43b979ebeb80f0f721f90bec0f3dc9675bb5eaede2fed98f3eba7"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1291904,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s39",
+      "changed": [
+        {
+          "key": "ad_bb01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "e00b97e05765b71164edce65eb5c0c25b7d1bfa245d5b7f4309b1603555cc9ba",
+          "after": "8e640946b6e3354be0a1a84e17b379a44f1eb858be02cf6c92ca9263e52fdcb3"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "exit01",
+          "size": [
+            64,
+            64
+          ],
+          "format": "P8",
+          "before": "6cbe014fbfb7ca8977769765bed20c883452ff486e346f00a8a1be600fb14a0d",
+          "after": "377b5b3827448dcb3e8469154accd6e613eb848bb3767a50f624116917ad636c"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1167168,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s41",
+      "changed": [
+        {
+          "key": "lambert28",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "09c9b1ab5af7e2616fe6fae5fbe791b3b17267fd511383593fce587eac007b26",
+          "after": "1aacc46039a17b390b5132e582c14ee8e1b5d324942476065b64c8e02db874ff"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1370880,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s42",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "0d8ec075c3dab93f38ec943f85fbf8ea51398f7ed24208eb1cc0d920e4890d3c",
+          "after": "891c508af0c36b117203e1918b404884cdf1dd0f1cbb7320213d633c789925b7"
+        },
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "5f0ccffa290ba319e09e9a3fcc307f955d3a894d9b545289cad5b74d7ed262c6",
+          "after": "f225b9be7e854f2deffb43b3eb20f47c01a4681b746260db631a174b01a6a176"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1260224,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s43",
+      "changed": [
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "midwall01",
+          "size": [
+            64,
+            64
+          ],
+          "format": "P8",
+          "before": "9ba8703d266f7177d4329717e4267b5072bff49d8615d5f0cf0ac591f502e1bb",
+          "after": "88efa25bb10c6304c72f72e6c9ad3840d600dad68de52a0bbef0c4a95f9ff39c"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "4681f5047cbf1ffbab2db9ef1f76343d832199fe27a392e56807583c8a41bd21",
+          "after": "599e8fd8dfa8a7f9f69878065bf9560eb15951f202058f6945295abb4779a3a6"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1312064,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s44",
+      "changed": [
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "9bd6aab9718a977003759ed93dba03b96ae485d908ae1446b61e3a442ab8863c",
+          "after": "77618e5e4d8a46f9a145ef4dab5ab8728e3425e003296eff50563ce1b3283925"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1326464,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s45",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "4b0146a0082255c51805a7fc1fc0cdd34fc06e87e4b4136930a644c11b60dade",
+          "after": "da7362d16d62f376f398cd68e11dfc4289c9ad8170421110cd819aec75a542c4"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "panthers_score01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "af91ae2f463d89ce0f32183e772fb4f608592aa040de5c41e6955c831ac58f60",
+          "after": "82e4ea41fecf77d04259911b628915e55c39255691b6e27e5f2789d5cb14a426"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "f69031a6aed33872b01138a88be3c9183a92b8a0fd2ccb1a258617ed70f9ea9b",
+          "after": "e0ce50874b01eecab6f3087691e0b089fcc421d896c037e73bd5deaa858bbf4e"
+        },
+        {
+          "key": "wall03",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "e845f33116b98b7d671b34f48dad922dc616cafd19ee115b6db40e7df967c304",
+          "after": "a23581414b1b386d66ce4f65514a6f5b706fc29e9e20f20f152a7799fe7a7f19"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1120832,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s48",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "59a2a56b15a181f917544b7911b730456973273e7cc98e7d9c8d25d543b241f1",
+          "after": "a828f087eece2d165ef82bb96bfaac3ef035c1a65585cc88d27a8f0d68d9431e"
+        },
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "c404056f38daf3ac7578e41e76a12c32b4aa3a459946734bf85553c53f2707ce",
+          "after": "659904fb48221999171e4cd47c162fe353456c0fd45a141c0df30d487ea87a0a"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "11e4ccf51cdd239b9cbf0137abcb488cdaa7743e583c4dfba98b686a90d1f753",
+          "after": "f98741bf604609b698eb597b4d98c6aba5b7310e5a77729c692f4fe9e26016d4"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1288576,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s50",
+      "changed": [
+        {
+          "key": "adv01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "f36d8e6aecc783b21d3a4c0270f585be4bdef70c68ae85785530c60301ee57cd",
+          "after": "66e718280366cf348eb5e0308f2e0a8a3ed85f54122e260897646357885f2cb8"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "adv02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "2f6072f90658d362083d7e29a6834a7e0bcabd04b7003e7765baa68ee64e8a1c",
+          "after": "96e9c0e33b3fa42ec786ca8ba9bfb73f9f56404f5b7483993fdebf3cdf879ead"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1319744,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s51",
+      "changed": [
+        {
+          "key": "adv01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "79adf7b3a58f0af5f573549267855d5bd64adbf87c1fe65e57c0c3f8ab01127c",
+          "after": "bc40a33340a104bb94e0960a0d1f1e6f9aa839fd400fe2b5d7767cb1316a4f30"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "adv02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "2f6072f90658d362083d7e29a6834a7e0bcabd04b7003e7765baa68ee64e8a1c",
+          "after": "96e9c0e33b3fa42ec786ca8ba9bfb73f9f56404f5b7483993fdebf3cdf879ead"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1303360,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s52",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "5d5a3a02fbd3f79f669fc145083a9b341ab6d2a98f71c7a582eaefbfd2083908",
+          "after": "7307b37f9a74da032189709b2296ab5676519106c5cca261aecd4dc2a910e487"
+        },
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "c59d2d233f08db35f2e8cc5fb01cba11c516441e3681478f6393042d71f67c73",
+          "after": "b03ddf35a1c44a6dd651582691a4e5ae5157dd2d4a46db653a21180812ec2f78"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "90db7a8b1f56040cafef9bc4518476428b30f025778361aad8cb90787fb969f9",
+          "after": "fe595fbc5df6415bc7b29d3d76decd37fcf11eb1b54c6dc624f2b01b7e398598"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1382016,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s53",
+      "changed": [
+        {
+          "key": "corp_temp_adbanner02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "4b64bd143831ded51eef50dbf17b8a7688afba1e3cbcb9f2020c11cee634ed08",
+          "after": "c0cd99cdf39a8861f271ebeec38b58813005902112f33443a238236fe6ae7f54"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1552896,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s54",
+      "changed": [
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "LIGHT_signsA1",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "bb4628fdc55942c68ee69eae2c45c67db7dc90ed34be5d0f647012412ccbdcbd",
+          "after": "d56de24430c9f80d05100d3b6e8a325e3690a868388d84c9e2f26d3f3dc2c8c9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1601408,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s55",
+      "changed": [
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "banners55",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "f08aa4b582a266e7f78ea60536cbf365048a83d71efa1ebb357ec34a4cf1990a",
+          "after": "094435b33fbc839ec0d8f713641af43cc3c058effbae69d5d14182564d2efd1a"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1440768,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s56",
+      "changed": [
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1561920,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s57",
+      "changed": [
+        {
+          "key": "adv01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "bdaac615a08ff4df9df15cb56fc31d109a12c06924bbed8b7f68254582f040bd",
+          "after": "16ae3dea4eecc40062589785ff2f13f2be2617b4537adc67f8c2ce7e0e540e04"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "adv02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "2f6072f90658d362083d7e29a6834a7e0bcabd04b7003e7765baa68ee64e8a1c",
+          "after": "96e9c0e33b3fa42ec786ca8ba9bfb73f9f56404f5b7483993fdebf3cdf879ead"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1303360,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s58",
+      "changed": [
+        {
+          "key": "sign01",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "5d5a3a02fbd3f79f669fc145083a9b341ab6d2a98f71c7a582eaefbfd2083908",
+          "after": "7307b37f9a74da032189709b2296ab5676519106c5cca261aecd4dc2a910e487"
+        },
+        {
+          "key": "sign03",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "79ee5c86b71dca98f7df347d4bd90997783e19dc0fa02f8b87d3332465c98e44",
+          "after": "2da6e4808d951cc24a3e31088e26af0e952bf2bbadc1e1fa73ca06bb31bee4f2"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        },
+        {
+          "key": "sign02",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "90db7a8b1f56040cafef9bc4518476428b30f025778361aad8cb90787fb969f9",
+          "after": "fe595fbc5df6415bc7b29d3d76decd37fcf11eb1b54c6dc624f2b01b7e398598"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1293440,
+      "source_bundles_verified": 9
+    },
+    {
+      "venue": "s59",
+      "changed": [
+        {
+          "key": "corp_temp_adbanner02",
+          "size": [
+            128,
+            128
+          ],
+          "format": "P8",
+          "before": "b741f40eee36053541f341f7fe821afe47361a793e27d585bd91b90debb8317d",
+          "after": "944101ebae9de6766ed6f52da62389d11a934acdd5e5c3a1f7f2afeaddcde4ce"
+        },
+        {
+          "key": "banner_corp",
+          "size": [
+            256,
+            256
+          ],
+          "format": "P8",
+          "before": "a6731f76588155974689ae6b3bd2df21113ca3c6f1583439e45dfc22ac5d9fe6",
+          "after": "9f7b86d19e96cf22f923248d1d64180e57ca4fd99476e8634e64002658b77ab9"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1648768,
+      "source_bundles_verified": 9
+    }
+  ],
+  "peak_rss_kib": 823132
+}

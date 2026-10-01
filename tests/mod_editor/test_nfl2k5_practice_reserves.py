@@ -104,6 +104,8 @@ class ExecutionTests(unittest.TestCase):
             raise unittest.SkipTest("not the pinned USA retail XBE")
         cls.patched = composed(cls.retail)
         from mod_editor.core import nfl2k5_team_history as th
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
         with th._outer_image()(XBE.parent) as archive:
             entry = th._entry(archive)
             cls.body = archive.read(entry.virtual_offset, entry.size)[th.RESOURCE_HEADER_SIZE:]

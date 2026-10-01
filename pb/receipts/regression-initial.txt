@@ -1,0 +1,25 @@
+PROVED OFFLINE: Initial combined run before fixing a test-only integer cast.
+...F................................................................................ [ 83%]
+.................                       [100%]
+=================================== FAILURES ===================================
+__________ OfflineTests.test_screen_release_and_end_around_direction ___________
+
+self = <test_nfl2k5_complete_offense.OfflineTests testMethod=test_screen_release_and_end_around_direction>
+
+    def test_screen_release_and_end_around_direction(self):
+        by_id = {p.id: p for p in self.pack.plays}
+        for fid, menu in self.pack.menus:
+            form = self.pack.formations_by_id[fid]
+            for pid in menu:
+                play = by_id[pid]
+                self.assertNotIn(play.concept, ('RB Middle','Duo','Jet Sweep'))
+                if play.concept == 'End Around':
+                    carrier = play.assignments[0][-1][1][0]
+>                   self.assertLess(form.slot_positions[carrier][0]*play.assignments[carrier][-1][1][1],0)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   TypeError: tuple indices must be integers or slices, not float
+
+tests/mod_editor/test_nfl2k5_complete_offense.py:73: TypeError
+=========================== short test summary info ============================
+FAILED tests/mod_editor/test_nfl2k5_complete_offense.py::OfflineTests::test_screen_release_and_end_around_direction
+1 failed, 100 passed, 5997 subtests passed in 742.18s (0:12:22)

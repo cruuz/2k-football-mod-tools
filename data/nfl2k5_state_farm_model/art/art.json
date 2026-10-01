@@ -1,0 +1,215 @@
+{
+ "schema": "nfl2k5_state_farm_model_art/v1",
+ "art": {
+  "sf_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "8268c2389cbb39ef7648bf738f680228e2f8d847f133a8143a1ca79f6ecd94a9"
+  },
+  "sf_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "7e38c459807718fae0bade26bc6b919690c92b77c132b934cd87e414bb953fb6"
+  },
+  "sf_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "84b592a52e08d8d843a993a1cb2de3848e2e2d0076534c18065133172a01d63c"
+  },
+  "sf_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "sf_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "fb3eab604f05763a6c5e37a746f6003f1371053ca1dcc4991207f5c119402ba1"
+  },
+  "LIGHT_sf_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "d8714f1778fe4f69baac41e521ae562b41e2dbb4424c5c5211b38ad00384d238"
+  },
+  "LIGHT_sf_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_sf_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "sf_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "sf_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "sf_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "fef4bf464826fde41f95fcd6f0e30b5bf02021f3bd8f513d2066a9a704a17a98"
+  },
+  "sf_fabric_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "45fa0b38389451b5c6063f16c5b1ab5bfcd78f44e3084212d53abafcec908159"
+  },
+  "sf_fabric_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "72948e2fa77870ca9be83381e29be57a0be8cb19303270643af53411ee0f6b45"
+  },
+  "sf_panel_top": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "456d63685244c5a8698ad1c50ce5dd5b57ffd198ed483bf5c2d04c99ef230ebc"
+  },
+  "sf_truss": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "7571abbc8b7422afe94fd0c357e205fa5ccd7a57dd044c534f891c0e5178a92d"
+  },
+  "sf_panel_edge": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "a6de2e33e08ae83a1afad1b9785f736a8a796f21d6c9856267503416afa2d67a"
+  },
+  "sf_rib": {
+   "size": [
+    32,
+    8
+   ],
+   "sha256": "4f344b61134841f98c859bf59a8715c35fee3d3efaf5f0ad17eebeb38b4d86f6"
+  },
+  "sf_inner": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "03ed5ec40f890c9070173f4bbbcbf83e67cdaa3f00cbaf4d0bde6c645a0ee0c3"
+  },
+  "LIGHT_sf_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "f4b136f21be08430571f02a4ccae7e9238f7cc0eed80f4615737d73c9dd2e04b"
+  },
+  "sf_drum": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "07a6e9b399331f4d1f4b6b375b95614339fa57325d707756ef3bec1fd2d40ab4"
+  },
+  "LIGHT_sf_facade_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9"
+  },
+  "sf_logo": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "976d4866c58b9ed85379aba7b8fb9f24dccea6abacde5e5c743be184a55a01b0"
+  },
+  "LIGHT_sf_board_wing": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "3718bd6c83fd488221af8cde7743f4ea759fed43e2ac098127397e02079af948"
+  },
+  "sf_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "sf_lawn": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "27b6fbc60df0e541ba667e64b3669f6453ad342ffe14d1b4a014737fad9017c7"
+  },
+  "sf_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "sf_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "sf_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "sf_desert": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c3a959c534e93c6afa3a48b895c98a7f2f72bf392b20a83fc10274f352864eb2"
+  },
+  "sf_mountains": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "f895ef01f52e4e3899f5a6ae3f30ef6124d525e2689820b12999f649c24aad50"
+  }
+ }
+}

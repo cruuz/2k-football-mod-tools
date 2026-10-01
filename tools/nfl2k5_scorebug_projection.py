@@ -358,13 +358,16 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
                     possession='home', game_seconds=790, play_seconds=12, quarter=1,
-                    ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False, broadcast="play_now"):
+                    ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False, broadcast="play_now",
+                    records=None, season='regular', phase=4, trace=None, previous_down=None, previous_timeouts=None):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
     and the GPU render-list boundary are replaced. Settled score transforms run
     by default. score_transforms=False reproduces the old harness omission.
     """
+    from mod_editor.core import nfl2k5_scorebar_v3 as static_bar
+    live_timeouts = struct.unpack_from('<I', decoded, 0x60)[0] == static_bar.TIMEOUT_MAGIC
     sprite = len(decoded) > r.layout.SCNE_SIZE and struct.unpack_from('<I', decoded, 0x60)[0] == 0x35525053
     if r.digest(decoded) == art.TEMPLATE_SCENE_SHA256 and scorebug_folder is None:
         from mod_editor.core.nfl2k5_scorebug_template import DEFAULT_FOLDER
@@ -404,6 +407,9 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         m.put(0xe60184,1 if broadcast=='monday_afternoon' else 2)
         m.put(0xe576b4,0);m.put(0xe576bc,0)
         m.uc.mem_write(0xe57c40,bytes([1,0,1,9,13 if broadcast=='sunday_night' else 14,26,8,0]))
+        if records is not None:
+            franchise_records_fixture(m, records, season)
+        m.put(0xe602b4, phase)
     if sprite:
         m.uc.mem_write(0xfc760, (b'\xe9'+struct.pack('<i',0xfbd50-0xfc765)) if goal_to_go else bytes.fromhex('d9eec3'))  # explicit field-boundary query
     if possession not in ('home','away'):
@@ -423,7 +429,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     # FBA40 uses the native field coordinate, positive from midfield toward
     # the possessing team's goal (one yard = 91.44 native distance units).
     m.float(m.play + 0x38, (ball_yards - 50) * 91.44)
-    m.put(m.home + 4, timeouts[0]); m.put(m.away + 4, timeouts[1])
+    # Beta 76 sb: the owner's setup captures the timeouts left; a drop seen by a later frame raises the TIMEOUT tab.
+    m.put(m.home + 4, (previous_timeouts or timeouts)[0]); m.put(m.away + 4, (previous_timeouts or timeouts)[1])
     loaded_textures = {}
     if texture_span is not None:
         loaded_textures[hex(m.load_texture(texture_span))] = texture_span
@@ -451,16 +458,22 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
             private_receipts.append(m.load_private_font(span, private_font(span, source)))
     m.put(0xa6a9d0, 720); m.put(0xa6a9d4, 480)
     m.run(0xfccd0, limit=500000)
+    if trace is not None:
+        trace['setup'] = set(m.visits)
     instance = m.get(0xa9552c)
     if instance != body + 352:
         raise ValueError('native scene instance identity changed')
     # The frame driver still executes all native transforms and root operands.
     # Explicit geometry sample; the binding/draw audit below runs separately.
     if visibility_state is None:
-        m.uc.mem_write(0xfc9c0, bytes.fromhex('c20400'))
+        # Explicit visibility fixture still executes the shipped timeout reader.
+        # Full visibility-state tests execute FC9C0 and its actual call site.
+        stub = (b'\xe8' + struct.pack('<i', static_bar.TIMEOUT_VA - 0xfc9c5) if live_timeouts else b'')
+        m.uc.mem_write(0xfc9c0, stub + bytes.fromhex('c20400'))
     else:
         configure_visibility(m, visibility_state)
     m.put(0xa95870, mode)
+    m.put(m.home + 4, timeouts[0]); m.put(m.away + 4, timeouts[1])
     m.run(0xfc200)
     for i in range(2):
         record = 0xa9594c + i * 0x38
@@ -478,7 +491,14 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         m.put(record + 0x38, int(i in visible_elements))
         m.float(record + 0x3c, (30 * slide if i == 0 else m.floats(record + 0x30, 1)[0])
                 if i in visible_elements else m.floats(record + 0x2c, 1)[0])
+    if previous_down is not None:
+        # Beta 76 sb: one 1/60 s frame on the previous down, so the owner sees the down step (the interim label).
+        m.put(m.play + 4, previous_down)
+        m.run(0xfce70, (struct.unpack('<I', struct.pack('<f', 1 / 60))[0],), limit=500000)
+        m.put(m.play + 4, down)
     m.run(0xfce70, (0,), limit=500000)
+    if trace is not None:
+        trace['frame'] = set(m.visits)
     visibility_trace = []
     if visibility_state is not None:
         for step in range(40):
@@ -490,7 +510,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     m.run(0x22c00, (body + r.layout.SHAPE, matrices), limit=10000)
     m.uc.mem_write(wide.RENDER_LIST_VA, bytes.fromhex('31c0c3'))
     m.run(0x2ac80, ecx=0xa95530, limit=10000)
-    if sprite:
+    if sprite or live_timeouts:
         # Read back the streams the owner actually wrote, after the native
         # frame path. Never substitute host-generated dynamic preview quads.
         decoded = bytes(m.uc.mem_read(body, len(decoded)))
@@ -578,9 +598,59 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 down_pointer=bounds(range(76,80)) if runtime_textures is not None else None,
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
                 text_scale_x=27 / 32 if widescreen else 1,
+                timeout_uvs=({v: list(struct.unpack_from('<2h', decoded, r.layout.S1+v*10+4))
+                              for v in range(274,286)} if live_timeouts else {}),
                 scene_sha256=r.digest(decoded),
                 limitations=['CPU fixture, not console execution', 'GPU state and rasterization not executed',
                              'per-frame gameplay predicates replaced', 'explicit score phase sample'])
+
+
+# Beta 76 s15: the sprite owner's Franchise record reader runs at setup on these inputs. Mode, stage and game-mode
+# words follow FUN_000c73b0 (the fixture game start): regular season 8/7, playoffs 9/6, preseason 7/7, a Quick Game with
+# a Franchise loaded keeps stage 8 but game mode 4, tournaments are mode 1 with game mode 5.
+FRANCHISE_SEASONS = {'regular': (2, 8, 7), 'playoffs': (2, 9, 6), 'preseason': (2, 7, 7), 'quick_game': (2, 8, 4),
+                     'tournament': (1, 8, 5)}
+REGULAR_ROWS = 17  # retail stage table Season row (+4): rows 0..16 are the regular season
+
+
+def franchise_records_fixture(m, records, season='regular'):
+    """A synthetic league for the owner's setup-time record reader.
+
+    League records at ``[0xE5786C + i * 4]`` (i = 0 home, 1 away, 2.. opponents), the staged home/away teams at
+    0xE5FE68/0xE5FE6C, an otherwise empty grid (type 7) and one played game per row for each side: home in slot 1, away
+    in slot 2, rows 1..16 (row 0 slot 0 is the fixture's current game). ``records`` maps 'home'/'away' to (W, L, T) or
+    None. In the playoffs the current game moves to the Divisional row (18) and each side also won a Wild Card game in
+    row 17, which the regular-season count must leave out. Only the retail per-week counters read these cells."""
+    mode, stage, game_mode = FRANCHISE_SEASONS[season]
+    teams = [m.alloc(0x1f4) for _ in range(34)]
+    for i, team in enumerate(teams):
+        m.put(0xe5786c + i * 4, team)
+    m.put(0xe5fe68, teams[0]); m.put(0xe5fe6c, teams[1])
+    if mode != 2 or m.get(0xe576a0) == 2:
+        m.put(0xe576a0, mode)
+    m.put(0xe576a4, stage); m.put(0xe5ff80, game_mode)
+    current = bytes(m.uc.mem_read(0xe57c40, 8))
+    grid, scores = bytearray(bytes((7, 0, 0, 0, 0, 0, 0, 0)) * (22 * 17)), bytearray(22 * 17 * 10)
+    grid[0:8] = current
+    for index, side in ((0, 'home'), (1, 'away')):
+        w, l, t = records.get(side) or (0, 0, 0)
+        for row, result in enumerate(['W'] * w + ['L'] * l + ['T'] * t, 1):
+            if row >= REGULAR_ROWS:
+                raise ValueError('the record fixture holds at most 16 games a side')
+            cell = row * 17 + 1 + index
+            ours, theirs = {'W': (21, 7), 'L': (7, 21), 'T': (10, 10)}[result]
+            grid[cell * 8:cell * 8 + 8] = bytes((3, index, 2 + row, 10, 1, 26, 1, 0))
+            scores[cell * 10:cell * 10 + 10] = bytes((ours, 0, 0, 0, 0, theirs, 0, 0, 0, 0))
+    if season == 'playoffs':
+        for index in (0, 1):
+            cell = REGULAR_ROWS * 17 + index
+            grid[cell * 8:cell * 8 + 8] = bytes((3, index, 20 + index, 1, 16, 27, 1, 0))
+            scores[cell * 10:cell * 10 + 10] = bytes((24, 0, 0, 0, 0, 3, 0, 0, 0, 0))
+        divisional = (REGULAR_ROWS + 1) * 17
+        grid[divisional * 8:divisional * 8 + 8] = current
+        m.put(0xe576b4, REGULAR_ROWS + 1); m.put(0xe576bc, 0)
+    m.uc.mem_write(0xe57c40, bytes(grid))
+    m.uc.mem_write(0xe587f0, bytes(scores))
 
 
 def configure_visibility(m, state):
@@ -893,7 +963,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     for i in range(r.layout.VCOUNT):
         offset = r.layout.S1 + i * 10
         colors.append(color(struct.unpack_from('<I', decoded, offset)[0]))
-        q = struct.unpack_from('<2h', decoded, offset + 4)
+        q = geometry.get('timeout_uvs', {}).get(i, struct.unpack_from('<2h', decoded, offset + 4))
         raw_uv.append(q)
         uv.append([v / (32768 if v < 0 else 32767) * uv_transform[k] + uv_transform[k+2]
                    for k, v in enumerate(q)])

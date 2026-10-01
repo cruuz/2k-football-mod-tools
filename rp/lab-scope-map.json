@@ -1,0 +1,325 @@
+{
+  "modern_metlife_model": {
+    "capability": "nfl2k5.stadiums_fields.modern_metlife_model",
+    "scope": "The MetLife model was seen in a headless xemu lab: Giants day and Jets night, with live boards and the exterior. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2256,
+      2272,
+      2341
+    ]
+  },
+  "modern_sofi": {
+    "capability": "nfl2k5.stadiums_fields.modern_sofi",
+    "scope": "The SoFi model was seen in a headless xemu lab: Rams day and Chargers night with forced rain and a dry field. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2310,
+      2334,
+      2340
+    ]
+  },
+  "modern_highmark": {
+    "capability": "nfl2k5.stadiums_fields.modern_highmark",
+    "scope": "The Highmark model was seen in a headless xemu lab: Bills day, night and snow. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2458,
+      2474,
+      2475,
+      2489,
+      2490
+    ]
+  },
+  "modern_att": {
+    "capability": "nfl2k5.stadiums_fields.modern_att",
+    "scope": "The AT&T model was seen in a headless xemu lab: Cowboys day, night and flyover; an early centre board showed white and was sent back for repair. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2562,
+      2570,
+      2581
+    ]
+  },
+  "modern_levis": {
+    "capability": "nfl2k5.stadiums_fields.modern_levis",
+    "scope": "The Levi's model was seen in a headless xemu lab: 49ers day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2567,
+      2570
+    ]
+  },
+  "modern_allegiant": {
+    "capability": "nfl2k5.stadiums_fields.modern_allegiant",
+    "scope": "The Allegiant model was seen in a headless xemu lab: Raiders day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2588
+    ]
+  },
+  "modern_mercedes_benz": {
+    "capability": "nfl2k5.stadiums_fields.modern_mercedes_benz",
+    "scope": "The Mercedes-Benz model was seen in a headless xemu lab: Falcons day and night; the early Halo text was inverted and was sent back for repair. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2588
+    ]
+  },
+  "modern_usbank": {
+    "capability": "nfl2k5.stadiums_fields.modern_usbank",
+    "scope": "The U.S. Bank model was seen in a headless xemu lab: Vikings day, night and flyover. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2593
+    ]
+  },
+  "modern_lucas_oil": {
+    "capability": "nfl2k5.stadiums_fields.modern_lucas_oil",
+    "scope": "The Lucas Oil model was seen in a headless xemu lab: Colts day and flyover; the night route missed Team Select. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2593
+    ]
+  },
+  "modern_state_farm": {
+    "capability": "nfl2k5.stadiums_fields.modern_state_farm",
+    "scope": "The State Farm model was seen in a headless xemu lab: Cardinals day, night, flyover and forced rain. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2597
+    ]
+  },
+  "modern_hard_rock": {
+    "capability": "nfl2k5.stadiums_fields.modern_hard_rock",
+    "scope": "The Hard Rock model was seen in a headless xemu lab: the canopy, spires, exterior and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2699
+    ]
+  },
+  "modern_gillette": {
+    "capability": "nfl2k5.stadiums_fields.modern_gillette",
+    "scope": "The Gillette model was seen in a headless xemu lab: the lighthouse, north end and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2702
+    ]
+  },
+  "modern_lambeau": {
+    "capability": "nfl2k5.stadiums_fields.modern_lambeau",
+    "scope": "The Lambeau model was seen in a headless xemu lab: the brick bowl, south end and live board on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2703
+    ]
+  },
+  "modern_everbank": {
+    "capability": "nfl2k5.stadiums_fields.modern_everbank",
+    "scope": "The EverBank model was seen in a headless xemu lab: the 2026 construction bowl and live boards on candidate E. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2704
+    ]
+  },
+  "modern_arrowhead": {
+    "capability": "nfl2k5.stadiums_fields.modern_arrowhead",
+    "scope": "The Arrowhead model was seen in a headless xemu lab: the Chiefs home venue in the lab and candidate C smoke run. Later model, sponsor, board and environment revisions remain offline only; no Xbox witness.",
+    "log_lines": [
+      2265,
+      2581
+    ]
+  },
+  "modern_metlife": {
+    "capability": "nfl2k5.stadiums_fields.modern_metlife",
+    "scope": "The MetLife appearance was seen with the complete model in Giants and Jets lab games. The separate skin-only route and later art revisions remain unwitnessed.",
+    "log_lines": [
+      2256,
+      2272,
+      2341
+    ]
+  },
+  "modern_board_kit": {
+    "capability": "nfl2k5.stadiums_fields.modern_board_kit",
+    "scope": "The first board kit was seen on candidate E at the Superdome, Huntington Bank Field and Empower Field, with live video. Later venues and board passes remain offline only; no Xbox witness.",
+    "log_lines": [
+      2705,
+      2706,
+      2707
+    ]
+  },
+  "modern_practice_field": {
+    "capability": "nfl2k5.stadiums_fields.modern_practice_field",
+    "scope": "The practice facility was reached in Practice > Scrimmage on candidate E. Its final revisions and every other practice route remain unverified in game.",
+    "log_lines": [
+      2807
+    ]
+  },
+  "modern_surfaces": {
+    "capability": "nfl2k5.stadiums_fields.modern_surfaces",
+    "scope": "The tf-v3 playing surfaces were seen in six lab games: Giants day/night, Chiefs, Rams at SoFi, Bills and Colts. Later close-mip corrections remain offline only; no claim for every venue and condition.",
+    "log_lines": [
+      2576,
+      2581
+    ]
+  },
+  "modern_venues_2026": {
+    "capability": "nfl2k5.stadiums_fields.modern_venues_2026",
+    "scope": "The first venue art was seen at Pittsburgh and Kansas City. The release draft also records the environment kit at nine venues. Later sponsor sweeps, venue read-back changes and environment pass 3 remain offline only.",
+    "log_lines": [
+      2255,
+      2265,
+      2660
+    ]
+  },
+  "espn25_more_moments": {
+    "capability": "nfl2k5.espn25.more_moments",
+    "scope": "All 50 Anniversary moments appeared in the lab list; selected added moments and previews loaded. Completion saving across all added rows and full games remain unwitnessed.",
+    "log_lines": [
+      2120,
+      2182,
+      2623
+    ]
+  },
+  "historic_teams_quick_game": {
+    "capability": "nfl2k5.menus.historic_teams_quick_game",
+    "scope": "Historic teams loaded in mixed and historic-pair Quick Games on candidate E with era uniforms; a Jets 1968 player card showed George Sauer. Full coverage of every historic team remains unwitnessed.",
+    "log_lines": [
+      2699,
+      2712
+    ]
+  },
+  "historic_rosters_2026": {
+    "capability": "nfl2k5.rosters.historic_season_audit",
+    "scope": "Historic rosters loaded with historic teams in candidate E Quick Games, including a George Sauer card for the 1968 Jets. Later historic-roster corrections remain offline only; this does not certify every player or team.",
+    "log_lines": [
+      2699,
+      2712
+    ]
+  },
+  "espn25_rosters": {
+    "capability": "nfl2k5.rosters.espn25_real_rosters",
+    "scope": "The Wide Right repair and Anniversary loading were seen in the lab, as recorded in the release draft. Later historic-roster corrections remain offline only; full moment and save coverage is not claimed.",
+    "log_lines": [
+      2207,
+      2301,
+      2723
+    ]
+  },
+  "practice_squad_screen": {
+    "capability": "nfl2k5.franchise.practice_squad_screen",
+    "scope": "The lab opened the Giants Practice Squad from the Coach's Desk and switched between Active and Reserves without the old popup. Complete transaction, save lifecycle and Xbox coverage remain unwitnessed.",
+    "log_lines": [
+      2263
+    ]
+  },
+  "position_pools": {
+    "capability": "nfl2k5_xbox.position_pool_filters",
+    "scope": "Candidate D reproduced the tired-linebacker freeze on demand. The repaired code in E survived the same forced drain for 180 seconds and 102 lineups; an E CPU game also completed without a stall. Other causes of freezing and Xbox behaviour remain unverified.",
+    "log_lines": [
+      2649,
+      2700,
+      2717
+    ]
+  },
+  "team_names_2026": {
+    "capability": "nfl2k5.players.team_names_2026",
+    "scope": "The release draft records full 2026 names in Play Now and MyNFL and home games for renamed teams. Menu colours and every renamed screen remain unverified.",
+    "log_lines": []
+  },
+  "player_star": {
+    "capability": "nfl2k5.players_rosters.filled_star",
+    "scope": "The hollow white outline star with a thin dark under-edge was seen in the W2 lab at 1x. Near tips were clean; the distant stroke became dashes. Replays showed no added stars; Xbox appearance remains unwitnessed.",
+    "log_lines": [
+      2449,
+      2452
+    ]
+  },
+  "kick_meter_2026": {
+    "capability": "nfl2k5.scorebug_presentation.kick_meter_2026",
+    "scope": "The complete 2026 kick meter, wind arrow and digits, swing, forced MAX and clearing on kick were seen in lab 3. That run did not show NO WIND; Xbox appearance remains unwitnessed.",
+    "log_lines": [
+      2487
+    ]
+  },
+  "scorebug_runtime": {
+    "capability": "nfl2k5.scorebug_presentation.runtime",
+    "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only. TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
+    "log_lines": [
+      2345,
+      2356
+    ]
+  },
+  "k128_memory": {
+    "capability": "nfl2k5.gameplay.k128_memory",
+    "scope": "All three 128 MB options reached the coin toss and live play in the lab, including the early graphics-memory form. The later 64 MB message screen remains offline only. Set xemu System Memory to 128 MB; no Xbox witness.",
+    "log_lines": [
+      2075,
+      2211,
+      2245,
+      2277
+    ]
+  },
+  "reserves_16": {
+    "capability": "nfl2k5.rosters.arena_growth",
+    "scope": "The release draft records 16 reserves and two extra created teams in game at 128 MB. Boot and match entry were witnessed; every created-team screen, full franchise lifecycle and Xbox loading remain unverified.",
+    "log_lines": [
+      2075,
+      2211
+    ]
+  },
+  "k128_roster_heap": {
+    "capability": null,
+    "scope": "All three 128 MB options reached the coin toss and live play in the lab, including the early graphics-memory form. The later 64 MB message screen remains offline only. Set xemu System Memory to 128 MB; no Xbox witness.",
+    "log_lines": [
+      2075,
+      2211
+    ]
+  },
+  "k128_early": {
+    "capability": null,
+    "scope": "All three 128 MB options reached the coin toss and live play in the lab, including the early graphics-memory form. The later 64 MB message screen remains offline only. Set xemu System Memory to 128 MB; no Xbox witness.",
+    "log_lines": [
+      2277
+    ]
+  },
+  "created_teams_extra": {
+    "capability": null,
+    "scope": "The release draft records 16 reserves and two extra created teams in game at 128 MB. Boot and match entry were witnessed; every created-team screen, full franchise lifecycle and Xbox loading remain unverified.",
+    "log_lines": [
+      2075,
+      2211
+    ]
+  },
+  "modern_everbank_construction": {
+    "capability": null,
+    "scope": "The 2026 construction setting was seen on candidate E: stripped concrete, lattice towers and a crane. The off setting and later changes remain unwitnessed.",
+    "log_lines": [
+      2704
+    ]
+  },
+  "kickoff_return_blocking": {
+    "capability": null,
+    "scope": "Lab kicks kept the setup-zone players still before first touch. After landing-zone catches, ten return blockers took ten distinct coverage players. Full-game feel and Xbox play remain unverified.",
+    "log_lines": [
+      2224,
+      2246
+    ]
+  },
+  "espn25_named_previews": {
+    "capability": null,
+    "scope": "All 50 named previews; three historic venue names on E.",
+    "log_lines": [
+      2623,
+      2723,
+      2726,
+      2727
+    ]
+  },
+  "historic_stock_books": {
+    "capability": null,
+    "scope": "Four verified home sides on E; away content still unwitnessed.",
+    "log_lines": [
+      2725,
+      2727
+    ]
+  },
+  "xemu_display_list_fix": {
+    "capability": null,
+    "scope": "Release draft What was seen in game section; no full stability claim.",
+    "log_lines": []
+  },
+  "widescreen": {
+    "capability": null,
+    "scope": "Menu studio remains 4:3 within 16:9; gameplay remains wider.",
+    "log_lines": [
+      2246
+    ]
+  }
+}

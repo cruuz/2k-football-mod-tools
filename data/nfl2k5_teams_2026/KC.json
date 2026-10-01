@@ -1,0 +1,1628 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "KC",
+ "name": "Kansas City Chiefs",
+ "asset_code": "13",
+ "season": 2026,
+ "status": "Phase B d4 (2026-09-23): KEPT its 2004 look (red and white, white/red numbers with gold trim, white-gold sleeve bands, red-gold pants stripes). 2026 colours from the palette; Reebok marks become Nike swooshes; helmet decal redrawn from the NFL club mark. Albedo INFERRED from retail tones and 2026 week 1 photos.",
+ "sources": {
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (KC, 2026 NFL Record and Fact Book)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/KC.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Logos_and_uniforms_of_the_Kansas_City_Chiefs&action=raw",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Uniform_Set_of_the_Kansas_City_Chiefs.svg (CC BY-SA 4.0)",
+  "home_photos": "https://www.chiefs.com/photos/photos-game-action-from-regular-season-week-1-broncos-vs-chiefs (2026-09-14, red over white)",
+  "no_change_2026": "https://www.colorwaysports.com/stories/chiefs-uniform-schedule-2026 (no alternate, no throwback, no new helmet in 2026)",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Kansas_City_Chiefs_wordmark.svg (public domain)"
+ },
+ "palette": {
+  "red": "#E31837",
+  "gold": "#FFB612",
+  "white": "#FFFFFF",
+  "black": "#000000"
+ },
+ "albedo": {
+  "red": "#E31837",
+  "helmet_red": "#C1142F",
+  "gold": "#FFB612",
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_red": "#C8102E",
+  "banner_gold": "#FFB612",
+  "pad_red": "#C8102E"
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense": "4-3",
+  "head_coach": "Andy Reid",
+  "defense_source": "nflverse depth_charts_2026 since 2026-09-09: LDE, RDE, LDT, RDT, MLB, SLB, WLB slots (4-3)"
+ },
+ "marks": {
+  "team_logo": "kc_arrowhead_decal.png",
+  "team_logo_club": "kc_arrowhead_club.png",
+  "team_logo_silhouette": "kc_arrowhead_silhouette.png",
+  "team_letters": "kc_letters_mask.png",
+  "wordmark_fill": "kc_wordmark_fill.png",
+  "wordmark_outline": "kc_wordmark_outline.png",
+  "logo_black": "kc_arrowhead_black.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "13H0",
+   "note": "2026 home: red jersey, white numbers trimmed in gold, white-gold-white sleeve bands, white pants with red-gold-red stripe, red socks, red helmet with the arrowhead",
+   "torso": {
+    "base_colour": "red",
+    "neck_donor": "13H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "polygon": [
+       [
+        216.0,
+        74.0
+       ],
+       [
+        215.87,
+        75.11
+       ],
+       [
+        215.5,
+        76.17
+       ],
+       [
+        214.91,
+        77.12
+       ],
+       [
+        214.12,
+        77.91
+       ],
+       [
+        213.17,
+        78.5
+       ],
+       [
+        212.11,
+        78.87
+       ],
+       [
+        211.0,
+        79.0
+       ],
+       [
+        209.89,
+        78.87
+       ],
+       [
+        208.83,
+        78.5
+       ],
+       [
+        207.88,
+        77.91
+       ],
+       [
+        207.09,
+        77.12
+       ],
+       [
+        206.5,
+        76.17
+       ],
+       [
+        206.13,
+        75.11
+       ],
+       [
+        206.0,
+        74.0
+       ],
+       [
+        206.13,
+        72.89
+       ],
+       [
+        206.5,
+        71.83
+       ],
+       [
+        207.09,
+        70.88
+       ],
+       [
+        207.88,
+        70.09
+       ],
+       [
+        208.83,
+        69.5
+       ],
+       [
+        209.89,
+        69.13
+       ],
+       [
+        211.0,
+        69.0
+       ],
+       [
+        212.11,
+        69.13
+       ],
+       [
+        213.17,
+        69.5
+       ],
+       [
+        214.12,
+        70.09
+       ],
+       [
+        214.91,
+        70.88
+       ],
+       [
+        215.5,
+        71.83
+       ],
+       [
+        215.87,
+        72.89
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        215.1,
+        74.0
+       ],
+       [
+        215.0,
+        74.91
+       ],
+       [
+        214.69,
+        75.78
+       ],
+       [
+        214.21,
+        76.56
+       ],
+       [
+        213.56,
+        77.21
+       ],
+       [
+        212.78,
+        77.69
+       ],
+       [
+        211.91,
+        78.0
+       ],
+       [
+        211.0,
+        78.1
+       ],
+       [
+        210.09,
+        78.0
+       ],
+       [
+        209.22,
+        77.69
+       ],
+       [
+        208.44,
+        77.21
+       ],
+       [
+        207.79,
+        76.56
+       ],
+       [
+        207.31,
+        75.78
+       ],
+       [
+        207.0,
+        74.91
+       ],
+       [
+        206.9,
+        74.0
+       ],
+       [
+        207.0,
+        73.09
+       ],
+       [
+        207.31,
+        72.22
+       ],
+       [
+        207.79,
+        71.44
+       ],
+       [
+        208.44,
+        70.79
+       ],
+       [
+        209.22,
+        70.31
+       ],
+       [
+        210.09,
+        70.0
+       ],
+       [
+        211.0,
+        69.9
+       ],
+       [
+        211.91,
+        70.0
+       ],
+       [
+        212.78,
+        70.31
+       ],
+       [
+        213.56,
+        70.79
+       ],
+       [
+        214.21,
+        71.44
+       ],
+       [
+        214.69,
+        72.22
+       ],
+       [
+        215.0,
+        73.09
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        213.5,
+        74.0
+       ],
+       [
+        213.38,
+        74.43
+       ],
+       [
+        213.02,
+        74.82
+       ],
+       [
+        212.47,
+        75.13
+       ],
+       [
+        211.77,
+        75.33
+       ],
+       [
+        211.0,
+        75.4
+       ],
+       [
+        210.23,
+        75.33
+       ],
+       [
+        209.53,
+        75.13
+       ],
+       [
+        208.98,
+        74.82
+       ],
+       [
+        208.62,
+        74.43
+       ],
+       [
+        208.5,
+        74.0
+       ],
+       [
+        208.62,
+        73.57
+       ],
+       [
+        208.98,
+        73.18
+       ],
+       [
+        209.53,
+        72.87
+       ],
+       [
+        210.23,
+        72.67
+       ],
+       [
+        211.0,
+        72.6
+       ],
+       [
+        211.77,
+        72.67
+       ],
+       [
+        212.47,
+        72.87
+       ],
+       [
+        213.02,
+        73.18
+       ],
+       [
+        213.38,
+        73.57
+       ]
+      ],
+      "colour": "red"
+     }
+    ],
+    "note_patch": "AFL ten-year patch (Lamar Hunt tribute, on the jersey since 2008) drawn as a small roundel on the player's left chest, above the front number box (layout front_numbers starts at y 80); side INFERRED (texture right of the collar V = player's left)."
+   },
+   "sleeve": {
+    "base_colour": "red",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        8.0,
+        45.0
+       ],
+       [
+        122.0,
+        45.0
+       ],
+       [
+        122.0,
+        51.0
+       ],
+       [
+        12.0,
+        51.0
+       ],
+       [
+        8.0,
+        46.0
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        19.0,
+        58.0
+       ],
+       [
+        122.0,
+        58.0
+       ],
+       [
+        122.0,
+        64.0
+       ],
+       [
+        22.0,
+        64.0
+       ],
+       [
+        19.0,
+        60.0
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        109.0
+       ],
+       [
+        119.0,
+        109.0
+       ],
+       [
+        119.0,
+        111.0
+       ],
+       [
+        115.0,
+        115.0
+       ],
+       [
+        6.0,
+        115.0
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        122.0
+       ],
+       [
+        109.0,
+        122.0
+       ],
+       [
+        106.0,
+        128.0
+       ],
+       [
+        6.0,
+        128.0
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        13.0,
+        51.0
+       ],
+       [
+        122.0,
+        51.0
+       ],
+       [
+        122.0,
+        58.0
+       ],
+       [
+        18.0,
+        58.0
+       ],
+       [
+        13.0,
+        52.0
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        115.0
+       ],
+       [
+        115.0,
+        115.0
+       ],
+       [
+        115.0,
+        116.0
+       ],
+       [
+        110.0,
+        122.0
+       ],
+       [
+        6.0,
+        122.0
+       ]
+      ],
+      "colour": "gold"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "red",
+      7
+     ],
+     [
+      "gold",
+      8
+     ],
+     [
+      "red",
+      7
+     ]
+    ],
+    "swoosh_colour": "red"
+   },
+   "socks": {
+    "colour": "red"
+   },
+   "digits": {
+    "glyph_donor": "13H0",
+    "fill": "white",
+    "outline": "gold",
+    "outline_frac": 0.033
+   },
+   "nameplate": {
+    "glyph_donor": "13H0",
+    "fill": "white",
+    "outline": "gold",
+    "outline_frac": 0.08
+   },
+   "helmet_digits": {
+    "glyph_donor": "13H0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "#B3011F",
+    "shell": "helmet_red",
+    "recolour": [],
+    "decal": {
+     "mark": "team_logo",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 3717,
+   "splayer": {
+    "torso_donor_outer": 3717,
+    "torso_donor": "13H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#BF0030",
+      "to": "#CD1632",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#C30033",
+      "to": "#D11633",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#AE001D",
+      "to": "#BC132E",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ],
+    "note": "recolour 'from' = the atlas's own measured red; 'to' = the 2026 albedo scaled by the atlas/texture brightness ratio (atlas shading kept)"
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#D30038",
+      "to": "red",
+      "region": "all",
+      "tolerance": 0.22
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "13A0",
+   "note": "2026 road: white jersey, red numbers trimmed in gold, red-gold-red sleeve bands, red pants with white-gold-white stripe, white socks, the same helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "13H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "red"
+    },
+    "decorations": [
+     {
+      "polygon": [
+       [
+        216.0,
+        74.0
+       ],
+       [
+        215.87,
+        75.11
+       ],
+       [
+        215.5,
+        76.17
+       ],
+       [
+        214.91,
+        77.12
+       ],
+       [
+        214.12,
+        77.91
+       ],
+       [
+        213.17,
+        78.5
+       ],
+       [
+        212.11,
+        78.87
+       ],
+       [
+        211.0,
+        79.0
+       ],
+       [
+        209.89,
+        78.87
+       ],
+       [
+        208.83,
+        78.5
+       ],
+       [
+        207.88,
+        77.91
+       ],
+       [
+        207.09,
+        77.12
+       ],
+       [
+        206.5,
+        76.17
+       ],
+       [
+        206.13,
+        75.11
+       ],
+       [
+        206.0,
+        74.0
+       ],
+       [
+        206.13,
+        72.89
+       ],
+       [
+        206.5,
+        71.83
+       ],
+       [
+        207.09,
+        70.88
+       ],
+       [
+        207.88,
+        70.09
+       ],
+       [
+        208.83,
+        69.5
+       ],
+       [
+        209.89,
+        69.13
+       ],
+       [
+        211.0,
+        69.0
+       ],
+       [
+        212.11,
+        69.13
+       ],
+       [
+        213.17,
+        69.5
+       ],
+       [
+        214.12,
+        70.09
+       ],
+       [
+        214.91,
+        70.88
+       ],
+       [
+        215.5,
+        71.83
+       ],
+       [
+        215.87,
+        72.89
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        215.1,
+        74.0
+       ],
+       [
+        215.0,
+        74.91
+       ],
+       [
+        214.69,
+        75.78
+       ],
+       [
+        214.21,
+        76.56
+       ],
+       [
+        213.56,
+        77.21
+       ],
+       [
+        212.78,
+        77.69
+       ],
+       [
+        211.91,
+        78.0
+       ],
+       [
+        211.0,
+        78.1
+       ],
+       [
+        210.09,
+        78.0
+       ],
+       [
+        209.22,
+        77.69
+       ],
+       [
+        208.44,
+        77.21
+       ],
+       [
+        207.79,
+        76.56
+       ],
+       [
+        207.31,
+        75.78
+       ],
+       [
+        207.0,
+        74.91
+       ],
+       [
+        206.9,
+        74.0
+       ],
+       [
+        207.0,
+        73.09
+       ],
+       [
+        207.31,
+        72.22
+       ],
+       [
+        207.79,
+        71.44
+       ],
+       [
+        208.44,
+        70.79
+       ],
+       [
+        209.22,
+        70.31
+       ],
+       [
+        210.09,
+        70.0
+       ],
+       [
+        211.0,
+        69.9
+       ],
+       [
+        211.91,
+        70.0
+       ],
+       [
+        212.78,
+        70.31
+       ],
+       [
+        213.56,
+        70.79
+       ],
+       [
+        214.21,
+        71.44
+       ],
+       [
+        214.69,
+        72.22
+       ],
+       [
+        215.0,
+        73.09
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        213.5,
+        74.0
+       ],
+       [
+        213.38,
+        74.43
+       ],
+       [
+        213.02,
+        74.82
+       ],
+       [
+        212.47,
+        75.13
+       ],
+       [
+        211.77,
+        75.33
+       ],
+       [
+        211.0,
+        75.4
+       ],
+       [
+        210.23,
+        75.33
+       ],
+       [
+        209.53,
+        75.13
+       ],
+       [
+        208.98,
+        74.82
+       ],
+       [
+        208.62,
+        74.43
+       ],
+       [
+        208.5,
+        74.0
+       ],
+       [
+        208.62,
+        73.57
+       ],
+       [
+        208.98,
+        73.18
+       ],
+       [
+        209.53,
+        72.87
+       ],
+       [
+        210.23,
+        72.67
+       ],
+       [
+        211.0,
+        72.6
+       ],
+       [
+        211.77,
+        72.67
+       ],
+       [
+        212.47,
+        72.87
+       ],
+       [
+        213.02,
+        73.18
+       ],
+       [
+        213.38,
+        73.57
+       ]
+      ],
+      "colour": "red"
+     }
+    ],
+    "note_neck": "neck mask from 13H0: the white retail 13A0 torso's mesh pixels sit near the neck grey and would be read as neck"
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        9.0,
+        45.0
+       ],
+       [
+        122.0,
+        45.0
+       ],
+       [
+        122.0,
+        51.0
+       ],
+       [
+        13.0,
+        51.0
+       ],
+       [
+        9.0,
+        47.0
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        19.0,
+        58.0
+       ],
+       [
+        122.0,
+        58.0
+       ],
+       [
+        122.0,
+        64.0
+       ],
+       [
+        22.0,
+        64.0
+       ],
+       [
+        19.0,
+        60.0
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        109.0
+       ],
+       [
+        119.0,
+        109.0
+       ],
+       [
+        118.0,
+        112.0
+       ],
+       [
+        115.0,
+        115.0
+       ],
+       [
+        6.0,
+        115.0
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        122.0
+       ],
+       [
+        109.0,
+        122.0
+       ],
+       [
+        108.0,
+        125.0
+       ],
+       [
+        105.0,
+        128.0
+       ],
+       [
+        6.0,
+        128.0
+       ]
+      ],
+      "colour": "red"
+     },
+     {
+      "polygon": [
+       [
+        13.0,
+        51.0
+       ],
+       [
+        122.0,
+        51.0
+       ],
+       [
+        122.0,
+        58.0
+       ],
+       [
+        18.0,
+        58.0
+       ],
+       [
+        13.0,
+        52.0
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        6.0,
+        115.0
+       ],
+       [
+        115.0,
+        115.0
+       ],
+       [
+        115.0,
+        116.0
+       ],
+       [
+        110.0,
+        122.0
+       ],
+       [
+        6.0,
+        122.0
+       ]
+      ],
+      "colour": "gold"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "red",
+    "stripe": [
+     [
+      "white",
+      7
+     ],
+     [
+      "red",
+      1
+     ],
+     [
+      "gold",
+      7
+     ],
+     [
+      "red",
+      1
+     ],
+     [
+      "white",
+      7
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "13A0",
+    "fill": "red",
+    "outline": "gold",
+    "outline_frac": 0.033
+   },
+   "nameplate": {
+    "glyph_donor": "13A0",
+    "fill": "red",
+    "outline": "gold",
+    "outline_frac": 0.08
+   },
+   "helmet_digits": {
+    "glyph_donor": "13A0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "#B3011F",
+    "shell": "helmet_red",
+    "recolour": [],
+    "decal": {
+     "mark": "team_logo",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 4034,
+   "splayer": {
+    "torso_donor_outer": 4034,
+    "torso_donor": "13A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#B8002D",
+      "to": "#C51530",
+      "region": "pants",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#B0001D",
+      "to": "#BE142E",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ],
+    "note": "recolour 'from' = the atlas's own measured red; 'to' = the 2026 albedo scaled by the atlas/texture brightness ratio (atlas shading kept)"
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "#D30038",
+      "to": "red",
+      "region": "all",
+      "tolerance": 0.22
+     }
+    ]
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "red jersey body, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "red sleeve with white-gold-white bands",
+   "pants": "white with a red-gold-red side stripe, red maker mark",
+   "helmet": "red shell, white arrowhead with red KC and black outline, white and grey hardware, flag and shield decals",
+   "digit_jersey": "white numbers with a thin gold outline",
+   "digit_arm": "white numbers with a thin gold outline",
+   "digit_helmet": "black numbers (unused by the Chiefs helmet)",
+   "nameplate": "white letters with a gold outline",
+   "socks00": "solid red",
+   "splayer": "far-away player atlas: white pants with red and gold stripe, red torso, red helmet, red socks, skin and glove patches",
+   "team-select_unif": "menu render: red jersey with a white number trimmed in gold, white pants with red and gold stripe, red helmet with arrowhead",
+   "team-select_helm": "menu render: red helmet with the white arrowhead, white facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, small NFL shield at the collar, red maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with red-gold-red bands",
+   "pants": "red with a white-gold-white side stripe, white maker mark",
+   "helmet": "red shell, white arrowhead with red KC and black outline, white and grey hardware, flag and shield decals",
+   "digit_jersey": "red numbers with a thin gold outline",
+   "digit_arm": "red numbers with a thin gold outline",
+   "digit_helmet": "black numbers (unused by the Chiefs helmet)",
+   "nameplate": "red letters with a gold outline",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: red pants with white and gold stripe, white torso, red helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a red number trimmed in gold, red pants with white and gold stripe, red helmet",
+   "team-select_helm": "menu render: red helmet with the white arrowhead, white facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "unpainted end zone: red CHIEFS wordmark with a white outline, arrowhead logos at both sides",
+   "center_logo": "white arrowhead with red KC and a black outline",
+   "banner": "cloth fan banners in Chiefs red, gold and white with white or red lettering",
+   "wall": "red field-level wall pads"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Alohi Gilman": 1,
+   "Ashton Gillotte": 0,
+   "Ben VanSumeren": 0,
+   "Brashard Smith": 5,
+   "Bryson Eason": 4,
+   "Chamarri Conner": 4,
+   "Chris Jones": 3,
+   "Christian Roland-Wallace": 5,
+   "Creed Humphrey": 0,
+   "Cyrus Allen": 3,
+   "Diego Pounds": 5,
+   "Drue Tranquill": 0,
+   "Emmett Johnson": 5,
+   "Felix Anudike-Uzomah": 4,
+   "Garrett Nussmeier": 0,
+   "George Karlaftis": 0,
+   "Harrison Butker": 0,
+   "Hunter Nourzad": 0,
+   "Jack Cochrane": 0,
+   "Jack Pyburn": 0,
+   "Jaden Hicks": 2,
+   "Jadon Canady": 3,
+   "Jake Briningstool": 0,
+   "Jalen Royals": 3,
+   "James Winchester": 0,
+   "Jared Wiley": 0,
+   "Jaylon Moore": 4,
+   "Jeffrey Bassa": 4,
+   "Josh Simmons": 3,
+   "Joshua Ezeudu": 4,
+   "Justin Fields": 3,
+   "Kahlil Benson": 4,
+   "Kenneth Walker": 4,
+   "Khyiris Tonga": 2,
+   "Kingsley Suamataia": 2,
+   "Kristian Fulton": 3,
+   "L'Jarius Sneed": 4,
+   "Mansoor Delane": 3,
+   "Matt Araiza": 0,
+   "Mike Caliendo": 0,
+   "Nick Bolton": 4,
+   "Nikko Remigio": 1,
+   "Noah Gray": 0,
+   "Nohl Williams": 3,
+   "Patrick Mahomes": 2,
+   "Peter Woods": 2,
+   "R Mason Thomas": 4,
+   "Rashee Rice": 3,
+   "Travis Kelce": 0,
+   "Trey Smith": 4,
+   "Tyquan Thornton": 3,
+   "Xavier Nwankpa": 3,
+   "Xavier Worthy": 4
+  },
+  "dreads": [
+   "L'Jarius Sneed",
+   "Brashard Smith",
+   "Bryson Eason",
+   "Cyrus Allen",
+   "Emmett Johnson",
+   "Jalen Royals",
+   "Jeffrey Bassa",
+   "Kristian Fulton",
+   "Nohl Williams",
+   "R Mason Thomas",
+   "Rashee Rice",
+   "Nick Bolton"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) by eye from the official 2026 headshots (INFERRED); automatic cheek estimates kept in faces.json. Dreads by eye. Rashee Rice's headshot had a red Chiefs headband across the forehead: a cleaned copy (band inpainted, original kept as .orig.png) feeds his custom face."
+ },
+ "venue": {
+  "prefix": "s13",
+  "notes": "Chiefs home games at the retail Arrowhead scene (GEHA Field at Arrowhead Stadium in 2026). End zones: unpainted turf with the italic CHIEFS wordmark in red with a white outline (2026 week 1 touchdown photo shows slanted bar ends; the official wordmark is the italic one), flanked by arrowhead logos (INFERRED: both sides, as the earlier modern_arrowhead art has). Midfield: the arrowhead logo (full colour; written by hand from the club SVG, the tool's centre logo takes two single-colour layers). Field-level pads: red (2026 photos) instead of the retail green. Fan banners: 2026 names and chants.",
+  "sources": [
+   "https://www.chiefs.com/photos/photos-game-action-from-regular-season-week-1-broncos-vs-chiefs (2026-09-14, end zone lettering and red pads)",
+   "https://commons.wikimedia.org/wiki/File:Kansas_City_Chiefs_wordmark.svg"
+  ],
+  "endzone": {
+   "paint": "field_red",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "wordmark_outline",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 92.35,
+     "stretch": 1.0
+    },
+    {
+     "mark": "wordmark_fill",
+     "colour": "field_red",
+     "center": [
+      384,
+      64
+     ],
+     "height": 92.35,
+     "stretch": 1.0
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      88,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      88,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    },
+    {
+     "mark": "team_letters",
+     "colour": "field_red",
+     "center": [
+      88,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      680,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      680,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    },
+    {
+     "mark": "team_letters",
+     "colour": "field_red",
+     "center": [
+      680,
+      64
+     ],
+     "height": 56,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "team_logo_silhouette",
+   "outline": "white",
+   "fill_mark": "team_letters",
+   "fill": "field_red",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "CHIEFS\nKINGDOM",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "banner_gold",
+      "items": [
+       {
+        "text": "GO\nCHIEFS!",
+        "colour": "red",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "MAHOMES\n#15",
+        "colour": "red",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "KELCE\n#87",
+        "colour": "white",
+        "center": [
+         192.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "banner_gold",
+      "items": [
+       {
+        "text": "RED\nFRIDAY",
+        "colour": "red",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "WORTHY\n#1",
+        "colour": "red",
+        "center": [
+         192.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "red",
+      "items": [
+       {
+        "text": "JONES\n#95",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "RUN IT\nBACK",
+        "colour": "red",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "wall02": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "pad_red",
+      "items": []
+     }
+    ]
+   },
+   "wall04": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "pad_red",
+      "items": []
+     }
+    ]
+   },
+   "wall03": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       64
+      ],
+      "bg": "pad_red",
+      "items": []
+     }
+    ]
+   }
+  }
+ }
+}

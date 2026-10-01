@@ -40,6 +40,15 @@ from mod_editor.core import nfl2k5_weather_haze as weather_haze
 from mod_editor.core import nfl2k5_coin_defer as coin_defer
 from mod_editor.core import nfl2k5_decided_clock as decided_clock
 from mod_editor.core import nfl2k5_cpu_scrambles as cpu_scrambles
+from mod_editor.core import nfl2k5_historic_teams_quick_game as historic_quick_game
+from mod_editor.core import nfl2k5_era_rules as era_rules
+from mod_editor.core import nfl2k5_stock_books as stock_books
+from mod_editor.core import nfl2k5_moment_venues as moment_venues
+from mod_editor.core import nfl2k5_espn25_more_moments as more_moments
+from mod_editor.core import nfl2k5_anniversary_kickoff as anniversary_kickoff
+from mod_editor.core import nfl2k5_widescreen_menus as widescreen_menus
+from mod_editor.core import nfl2k5_team_logo_swap as team_logo_swap
+from mod_editor.core import nfl2k5_k128 as k128
 
 
 # Historical v1 footprint: S5 relocates its larger RX owner after the scale
@@ -58,6 +67,21 @@ REQUESTS = (camera.REQUESTS + tuple(r for r in LEGACY_REQUESTS if r[0] != runtim
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + seven.REQUESTS)
 REQUESTS += accelerated_clock.REQUESTS
 REQUESTS += coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS
+REQUESTS += historic_quick_game.REQUESTS
+REQUESTS += more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS
+# e2 stock books and era rules reserve here. Their native suites install the
+# actual data profiles over the disc-derived Anniversary gate; that dependency
+# cannot be installed in reverse order by this generic allocator-order test.
+# b76-vb3: the 25th Anniversary kickoff gate reserves with the union; it is not in owner_calls because it installs only
+# over the dynamic kickoff and the kick rules with the disc's retail special-teams tables (its own suite covers that).
+REQUESTS += anniversary_kickoff.REQUESTS
+# b76-vb3 D2: 4:3 menus under widescreen; it installs over widescreen, which the reverse gate defers, so it only
+# reserves here (its own suite covers the install).
+REQUESTS += widescreen_menus.REQUESTS
+# b76-pf P1: the field swap's eighth pair (64 RO bytes, sorted after every other RO owner); its own suite covers the
+# install, so it only reserves here.
+REQUESTS += team_logo_swap.REQUESTS
+REQUESTS += k128.REQUESTS  # b76-k1
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -108,7 +132,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
               (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}), (weather_haze, {}),
               (coin_defer, {}), (decided_clock, {}), (cpu_scrambles, {}),
-              (arena_growth, dict(created_teams_extra=2)))
+              (arena_growth, dict(created_teams_extra=2)), (historic_quick_game, {}), (more_moments.Probe, {}), (k128, dict(roster_heap=True)))
 
 
 def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):
@@ -172,6 +196,9 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     old = manifest.document["allocator_layout"]["allocations"]
     layout = space.layout(allocated)
     current = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
+    # Repeated owner/kind rows (a split owner such as e2p3's moment venues over two RX page tails) are told apart by
+    # owner_offset, their position in the owner's logical content (nfl2k5_xbe_space.layout).
+    current_rows = {(a["owner"], a["kind"], a.get("owner_offset", 0)): a for a in layout["allocations"]}
     preset_camera = None
     spans = []
     for span in manifest.document["spans"]:
@@ -202,7 +229,7 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         if len(matches) != 1:
             raise AssertionError("manifest contains an unrecognized grown owner span")
         before = matches[0]
-        after = current[(before["owner"], before["kind"])]
+        after = current_rows[(before["owner"], before["kind"], before.get("owner_offset", 0))]
         if (before["size"], before["align"]) != (after["size"], after["align"]):
             raise AssertionError("manifest child size/alignment changed")
         delta = after["va"] - before["va"]
@@ -268,7 +295,10 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         va, original = legacy_kickoff.HOOKS[name]
         if image.read(va, len(original)) != original:
             raise AssertionError(f"kickoff {name} retail pin differs")
-        if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER)
+        # b76-vb3: the 25th Anniversary kickoff gate installs last over the kickoff and re-points these five hooks
+        # (each forwards to the kickoff's own cave label outside mode 8), so the regenerated manifest reserves them
+        # for it as well; any other owner here is still a conflict.
+        if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER, anniversary_kickoff.OWNER)
                for r in manifest.overlaps(va, va + len(original))):
             raise AssertionError(f"kickoff {name} overlaps a different owner")
         installed = installed_image.read(va, len(original))

@@ -27,6 +27,9 @@ RUNTIME = Path(
 class APFAssassinsHelmetSelectorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (SOURCE, patch.core.ALLOCATION_REPORT, patch.core.CAPACITY_REPORT) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF helmet selector sources missing: " + ", ".join(missing))
         cls.result = patch.build_patch(SOURCE)
         cls.source = patch.transport._validate_source(SOURCE)
 

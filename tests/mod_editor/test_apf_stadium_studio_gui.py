@@ -87,9 +87,11 @@ class ApfStadiumStudioGuiTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     def test_page_inventory_exports_and_bounded_geometry_import_boundary(self) -> None:
         texture = _asset(14, 1, "stadium_wall", "TXTR", ApfCategory.STADIUMS)

@@ -391,6 +391,60 @@ class CaveOracleTests(unittest.TestCase):
             assert oracle.assess(start, 1, kind="data")["verdict"] == "reserved"
         assert manifest.document["section_digests_verified"]
 
+    def test_release_manifest_reserves_the_lineman_dispatch_and_wrapper_cave(self):
+        # Beta 76 (f1): the1wam's lineman rating rides in the ultimate recipe. The manifest model
+        # applies it in its dormant-owner probe, so no later owner can be handed its overall
+        # dispatch site or its 0x1D2400 wrapper cave (retail reads that cave "unknown", not live).
+        retail = self.retail()
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(retail), source_root=ROOT)
+        oracle = CaveOracle(retail, manifest=manifest, instruction_budget=1, reference_budget=1)
+        assert "nfl2k5_lineman_rating" in manifest.document["extra_owners"]
+        for start, size in ((0x246D60, 0x17), (0x1D2400, 0x40)):
+            for va in range(start, start + size):
+                assert oracle.assess(va, 1)["verdict"] == "reserved", hex(va)
+            row = oracle.assess(start, size)
+            assert row["verdict"] == "reserved" and not row["allocatable"], row
+            assert any(e["detail"].startswith("nfl2k5_lineman_rating: declared") for e in row["witnesses"]), row
+            with self.assertRaises(OracleError):
+                oracle.require_cave(start, size)
+
+    def test_release_manifest_reserves_the_elbow_option_handlers(self):
+        # Beta 76 (f1): the Edit Player elbow rows ride in the ultimate recipe too. Their four
+        # next/previous handler spans (0x34521F+24, 0x34525F+30, 0x3452CF+24, 0x34530F+30) are
+        # declared edits of the dormant-owner probe, so no later owner can be handed them.
+        retail = self.retail()
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(retail), source_root=ROOT)
+        oracle = CaveOracle(retail, manifest=manifest, instruction_budget=1, reference_budget=1)
+        assert "nfl2k5_elbow_options" in manifest.document["extra_owners"]
+        for start, size in ((0x34521F, 24), (0x34525F, 30), (0x3452CF, 24), (0x34530F, 30)):
+            for va in range(start, start + size):
+                assert oracle.assess(va, 1)["verdict"] == "reserved", hex(va)
+            row = oracle.assess(start, size)
+            assert row["verdict"] == "reserved" and not row["allocatable"], row
+            assert any(e["detail"].startswith("nfl2k5_elbow_options: declared") for e in row["witnesses"]), row
+            with self.assertRaises(OracleError):
+                oracle.require_cave(start, size)
+
+    def test_release_manifest_reserves_the_music_policy_fields(self):
+        # Beta 76 (f1): the ultimate recipe selects jukebox menus, every collection unlocked and the
+        # jukebox UserList. The dormant-owner probe applies that policy, so its 16 .data fields (menu
+        # policy dword, fourteen unlock dwords, the 12-byte UserList) stay reserved.
+        from mod_editor.core import nfl2k5_music_policy as policy
+        retail = self.retail()
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(retail), source_root=ROOT)
+        oracle = CaveOracle(retail, manifest=manifest, instruction_budget=1, reference_budget=1)
+        assert "nfl2k5_music_policy" in manifest.document["extra_owners"]
+        assert len(policy.SITES) == 16
+        for site in policy.SITES:
+            start, size = site.va, len(site.before)
+            for va in range(start, start + size):
+                assert oracle.assess(va, 1, kind="data")["verdict"] == "reserved", hex(va)
+            row = oracle.assess(start, size, kind="data")
+            assert row["verdict"] == "reserved" and not row["allocatable"], row
+            assert any(e["detail"].startswith("nfl2k5_music_policy: declared") for e in row["witnesses"]), row
+            with self.assertRaises(OracleError):
+                oracle.require_cave(start, size, kind="data")
+
     def test_release_manifest_includes_resource_build_steps(self):
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail()), source_root=ROOT)
         if (os.environ.get("NFL2K5_CAVE_MANIFEST") and manifest.document.get("model") ==

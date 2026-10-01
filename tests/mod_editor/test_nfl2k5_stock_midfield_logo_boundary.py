@@ -15,6 +15,9 @@ _XBE = _ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe"
 class TextureCorpusBoundaryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (_INVENTORY,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private NFL texture inventory missing: " + ", ".join(missing))
         cls.rows = json.loads(_INVENTORY.read_text(encoding="utf-8"))["textures"]
 
     def test_center_logo_is_exactly_the_create_team_outer_range(self) -> None:

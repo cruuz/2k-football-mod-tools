@@ -1,0 +1,271 @@
+{
+  "art": {
+    "env_band_s00": {
+      "sha256": "123da6b4aedea2acdbc0296d7317de253c295717b9b590913bf6548d4b80b177",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s00_n": {
+      "sha256": "098dd8f7f8a3571d8c1440970a8060f0a61e04d38f05fff1300f10fb8fb1d219",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s01": {
+      "sha256": "e4e798d1d1a729fab831471c9421f5aada6a4dbff049d2f9b6e2d3a057e2e81a",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s01_n": {
+      "sha256": "f2a802ae7322028b01e8fc4132849a20b363383089a0349c1f144792594883aa",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s03": {
+      "sha256": "e2ba68712f8202a18d8e3a1e67937354e2539fb82c276eb2f755edb15d5ce8fd",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s03_n": {
+      "sha256": "81af9692f51fd4c1e2e6ee6d154e7ab9bde911ac928487c1a7ed8100c42c39ae",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s07": {
+      "sha256": "24dbb44e5eee9dbdd7d371936316df12570dfc9a28818c5d804fd6856a292047",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "env_band_s07_n": {
+      "sha256": "bd3c17b277fbd0b64072abb6b81cb266816d53542a1ea5a2fc21b9393dce2dc5",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "env_band_s10": {
+      "sha256": "022361f270f6ba46950003eb87f9c0c64e9daf8c27e9fa8670263ed7600a5054",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s10_n": {
+      "sha256": "7b16e4cc709fd817561ca540155cb803f7aa47ad3e095d1beaeb63f4216e781f",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s11": {
+      "sha256": "897c78618d5e990ddfbd9002a0dd42c0c7667475b994072969d69da785e0ede5",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s11_n": {
+      "sha256": "ca5d391ee7dffca8e88ebd5eb15fb165753bdb43ecd7da415e787d2b0d925e86",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s12": {
+      "sha256": "f1522f021cf0f331e8fcd98328c9cb61f4232a4f852bbe169558463c7ce45e6d",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s12_n": {
+      "sha256": "b9989fee55abc4aa7aa3e33f2eef8428bc0a2b064908a8264e74704aba455d6e",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s14": {
+      "sha256": "60455b27ce9c307d93266b906feb121cbadb43584a81c4089302415e0732a0ad",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s14_n": {
+      "sha256": "291500fa80a7cd1f9a9ce63023450885eb143b73a2d67ef1ee0864b7af1df5f2",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s15": {
+      "sha256": "723a9d6d1e00fb3fec31c8199d44056590bddeda293b1c17d5be9b493c60d948",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s15_n": {
+      "sha256": "d079c376f83b76a8ff1f32142eff06c9ca10c5198cd62adc846182120d6befbc",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s16": {
+      "sha256": "e70687a51d1aa0948f8064cc5be86102b9f41496a0e8d8789c3ad25271c8a67d",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s16_n": {
+      "sha256": "df97ae883bf0f712ae237b553dcb468ef37a7a79009351134d1e4c66f7b20184",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s18": {
+      "sha256": "45522819657c8bd983d7f9c8ba099278e6846f5915765ac65d52fb205f460eb0",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s18_n": {
+      "sha256": "65808a1612bfef525c333ebc68eb12b4644fc9c7fdb1261fc2bc4fbf89a658f1",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s20": {
+      "sha256": "dfbeb4029418282dea7d423e3e4f1a39417d8a60efc2344563f6cea7c3770721",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s20_n": {
+      "sha256": "a56b0f52fd71cb85569b8bd901ebdf9d0bca6f473abf76baa0dc6e942efa2539",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s23": {
+      "sha256": "4213a2b3b216019f1bd96a2056752d194a292966ea6a2f379f2caec9ba2044c3",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s23_n": {
+      "sha256": "5d4a9d72a8f4a1f3c0551547d31f2527528356d8846f0a6929b7e4f828d66539",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s25": {
+      "sha256": "bb80d5f6bffe11972d2a23e8c8bbbf5427929e8be816e65ddb8713095ff287a2",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_band_s25_n": {
+      "sha256": "9aef69c8d0a0d9084bdad810cf79d127643081c9df6c7e03243aee30abf08130",
+      "size": [
+        256,
+        32
+      ]
+    },
+    "env_block": {
+      "sha256": "193c3ca9bd2736e42f739e3a8acf700e34920b8b3a659b66e98ba3fcc241ecac",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "env_block_n": {
+      "sha256": "61668be3af93f56ad240cc419559ca3f33bd418d2d2f1cff5ea5dc652b02df14",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "env_far_dry": {
+      "sha256": "afd6c91d66023432b06049299aacc95dd74baacdb800c36b507fabe4a9b7f152",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "env_far_green": {
+      "sha256": "458ceae2b0bebd13a1e7421677c14c0af6c5065d23ee2481a7284c57e777418f",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "env_far_urban": {
+      "sha256": "abd02a00124088dca60f8f63f39c1e5210afe2ecfb9e4e737d5dcaf2a1e28b4e",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "env_green": {
+      "sha256": "02712d816f3b5ad58416e173970df08623f4f6aa2262281d482dcd6c67f3966d",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "env_leaf": {
+      "sha256": "0664cf86cdc1be81e098966d4e9332f641935fcdc8a84fb1ca1e2a3b9d430ded",
+      "size": [
+        32,
+        32
+      ]
+    },
+    "env_lot": {
+      "sha256": "da8c1f447a6a07f5f4d74545319fd1d232db9063757a04b91ec69efa2ba19d97",
+      "size": [
+        64,
+        64
+      ]
+    },
+    "env_road": {
+      "sha256": "a650710a71370547b98792ae38e15df349a3aa8c460d286e1732c639b2d92113",
+      "size": [
+        32,
+        64
+      ]
+    },
+    "env_white": {
+      "sha256": "b68de61392c506377e0d673fa36e239a47b67e603bdcb9cbf61d4ddbcd9722ff",
+      "size": [
+        8,
+        8
+      ]
+    }
+  },
+  "schema": "nfl2k5_stadium_environment_art/v1"
+}

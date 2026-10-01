@@ -24,6 +24,8 @@ def resources(plan):
     from mod_editor.core import nfl2k5_kickoff_returns as returns
     from mod_editor.core import nfl2k5_depth_roles as roles
     from mod_editor.core import nfl2k5_screen_timing as timing
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(XBE.parent)
     with roster.OuterImage(XBE.parent) as archive:
         re, pe = archive.entries[5], archive.entries[308]
         if re.size > 1024**2 or pe.size != 78768:

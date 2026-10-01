@@ -1,0 +1,769 @@
+{
+  "status": "DESIGN",
+  "teams": {
+    "ARZ": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Mike LaFleur / Nathaniel Hackett",
+      "scheme": "McVay/LaFleur condensed zone",
+      "family": "mcvay",
+      "key_players": "Trey McBride; Marvin Harrison Jr.",
+      "feature_role": "TE1",
+      "width": 0.9,
+      "route_depth_step": 2,
+      "emphasis": [
+        "TE Seam",
+        "TE Drag",
+        "Y Cross"
+      ],
+      "personnel_bias": {
+        "12": 8
+      },
+      "staff_source": "https://www.azcardinals.com/team/coaches-roster/mike-lafleur",
+      "players_source": "https://www.azcardinals.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Trey McBride"
+    },
+    "ATL": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Kevin Stefanski / Tommy Rees",
+      "scheme": "Stefanski zone and play action",
+      "family": "wide_zone",
+      "key_players": "Bijan Robinson; Kyle Pitts Sr.",
+      "feature_role": "HB1",
+      "width": 0.95,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Outside Zone",
+        "RB Slip",
+        "PA Boot"
+      ],
+      "personnel_bias": {
+        "12": 5
+      },
+      "staff_source": "https://www.atlantafalcons.com/team/coaches-roster/tommy-rees",
+      "players_source": "https://www.atlantafalcons.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Bijan Robinson"
+    },
+    "BAL": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Declan Doyle",
+      "scheme": "Johnson/Payton heavy personnel blend",
+      "family": "power",
+      "key_players": "Derrick Henry; Mark Andrews; Lamar Jackson",
+      "feature_role": "TE1",
+      "width": 0.9,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Downhill",
+        "Counter",
+        "TE Seam"
+      ],
+      "personnel_bias": {
+        "12": 3
+      },
+      "staff_source": "https://www.baltimoreravens.com/news/ravens-name-declan-doyle-offensive-coordinator",
+      "players_source": "https://www.baltimoreravens.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Mark Andrews"
+    },
+    "BUF": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Joe Brady / Pete Carmichael",
+      "scheme": "Payton/Brady spread timing",
+      "family": "west_coast",
+      "key_players": "James Cook III; Dalton Kincaid; Josh Allen",
+      "feature_role": "HB1",
+      "width": 1.05,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Inside Zone",
+        "RB Slip",
+        "Levels"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.buffalobills.com/news/bills-name-pete-carmichael-as-offensive-coordinator",
+      "players_source": "https://www.buffalobills.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "James Cook III"
+    },
+    "CAR": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Dave Canales / Brad Idzik",
+      "scheme": "Canales West Coast zone",
+      "family": "west_coast",
+      "key_players": "Tetairoa McMillan; Chuba Hubbard",
+      "feature_role": "WR1",
+      "width": 1.0,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Outside Zone",
+        "Stick",
+        "Drive"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.panthers.com/news/dave-canales-offensive-coordinator-brad-idzik-to-call-plays-in-2026",
+      "players_source": "https://www.panthers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Tetairoa McMillan"
+    },
+    "CHI": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Ben Johnson / Press Taylor",
+      "scheme": "Johnson multiple gap and play action",
+      "family": "power",
+      "key_players": "Colston Loveland; Rome Odunze",
+      "feature_role": "TE1",
+      "width": 0.85,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Counter",
+        "PA Boot",
+        "TE Seam"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.chicagobears.com/news/press-taylor-excited-for-new-opportunity-as-bears-offensive-coordinator",
+      "players_source": "https://www.chicagobears.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Colston Loveland"
+    },
+    "CIN": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Zac Taylor / Dan Pitcher",
+      "scheme": "Taylor spread passing",
+      "family": "spread",
+      "key_players": "Ja'Marr Chase; Tee Higgins",
+      "feature_role": "WR1",
+      "width": 1.1,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Dagger",
+        "Levels",
+        "Mesh"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.bengals.com/team/coaches-roster/",
+      "players_source": "https://www.bengals.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Ja'Marr Chase"
+    },
+    "CLE": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Todd Monken / Travis Switzer",
+      "scheme": "Monken vertical and gap blend",
+      "family": "vertical",
+      "key_players": "Harold Fannin Jr.; Quinshon Judkins",
+      "feature_role": "TE1",
+      "width": 0.95,
+      "route_depth_step": 2,
+      "emphasis": [
+        "TE Seam",
+        "Counter",
+        "Y Cross"
+      ],
+      "personnel_bias": {
+        "11": 5
+      },
+      "staff_source": "https://www.clevelandbrowns.com/news/browns-finalize-the-2026-coaching-staff",
+      "players_source": "https://www.clevelandbrowns.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Harold Fannin Jr."
+    },
+    "DAL": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Brian Schottenheimer / Klayton Adams",
+      "scheme": "Schottenheimer vertical timing",
+      "family": "vertical",
+      "key_players": "CeeDee Lamb; George Pickens",
+      "feature_role": "WR1",
+      "width": 1.05,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Dagger",
+        "Drive",
+        "Inside Zone"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.dallascowboys.com/team/coaches-roster/klayton-adams",
+      "players_source": "https://www.dallascowboys.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "CeeDee Lamb"
+    },
+    "DEN": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Sean Payton / Davis Webb",
+      "scheme": "Payton West Coast progression",
+      "family": "west_coast",
+      "key_players": "Courtland Sutton; Bo Nix",
+      "feature_role": "WR1",
+      "width": 1.0,
+      "route_depth_step": 0,
+      "emphasis": [
+        "Stick",
+        "Levels",
+        "Mesh"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.denverbroncos.com/news/head-coach-sean-payton-names-davis-webb-as-offensive-coordinator-and-logan-kilgore-as-quarterbacks-coach",
+      "players_source": "https://www.denverbroncos.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Courtland Sutton"
+    },
+    "DET": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Dan Campbell / Drew Petzing",
+      "scheme": "Petzing gap/zone and TE matchups",
+      "family": "power",
+      "key_players": "Jahmyr Gibbs; Sam LaPorta",
+      "feature_role": "HB1",
+      "width": 0.95,
+      "route_depth_step": 1,
+      "emphasis": [
+        "RB Slip",
+        "Counter",
+        "TE Seam"
+      ],
+      "personnel_bias": {
+        "12": 8
+      },
+      "staff_source": "https://www.detroitlions.com/news/5-things-to-know-about-new-oc-drew-petzing",
+      "players_source": "https://www.detroitlions.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Jahmyr Gibbs"
+    },
+    "GB": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Matt LaFleur / Adam Stenavich",
+      "scheme": "LaFleur wide zone and verticals",
+      "family": "wide_zone",
+      "key_players": "Josh Jacobs; Tucker Kraft",
+      "feature_role": "TE1",
+      "width": 0.95,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Outside Zone",
+        "TE Seam",
+        "Dagger"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.packers.com/news/packers-announce-coaching-staff-changes-march-19-2026",
+      "players_source": "https://www.packers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Tucker Kraft"
+    },
+    "HOU": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Nick Caley",
+      "scheme": "McVay/Patriots structured passing",
+      "family": "mcvay",
+      "key_players": "Nico Collins; C.J. Stroud",
+      "feature_role": "WR1",
+      "width": 0.95,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Dagger",
+        "Levels",
+        "PA Boot"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.houstontexans.com/team/coaches-roster/",
+      "players_source": "https://www.houstontexans.com/video/nico-collins-on-c-j-stroud-the-wr-room-and-otas-full-q-a",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Nico Collins"
+    },
+    "IND": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Shane Steichen / Jim Bob Cooter",
+      "scheme": "Steichen vertical and zone",
+      "family": "vertical",
+      "key_players": "Jonathan Taylor; Tyler Warren",
+      "feature_role": "TE1",
+      "width": 1.0,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Inside Zone",
+        "TE Seam",
+        "Y Cross"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.colts.com/news/colts-announce-2026-coaching-staff-marian-hobby-defensive-line-lou-anarumo",
+      "players_source": "https://www.colts.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Tyler Warren"
+    },
+    "JAX": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Liam Coen / Grant Udinski",
+      "scheme": "Coen McVay multiple",
+      "family": "mcvay",
+      "key_players": "Brian Thomas Jr.; Trevor Lawrence",
+      "feature_role": "WR1",
+      "width": 0.9,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Dagger",
+        "Downhill",
+        "Flood"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.jaguars.com/news/k00022-jaguars-retain-offensive-coordinator-grant-udinski-defensive-coordinator-anthony-campanile",
+      "players_source": "https://www.jaguars.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Brian Thomas Jr."
+    },
+    "KC": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Andy Reid / Eric Bieniemy",
+      "scheme": "Reid West Coast spread",
+      "family": "west_coast",
+      "key_players": "Travis Kelce; Rashee Rice; Patrick Mahomes",
+      "feature_role": "TE1",
+      "width": 1.0,
+      "route_depth_step": 0,
+      "emphasis": [
+        "Mesh",
+        "Stick",
+        "RB Slip"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.chiefs.com/team/coaches-roster/eric-bieniemy",
+      "players_source": "https://www.chiefs.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Travis Kelce"
+    },
+    "MIA": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Bobby Slowik",
+      "scheme": "Shanahan/Slowik zone",
+      "family": "wide_zone",
+      "key_players": "De'Von Achane",
+      "feature_role": "HB1",
+      "width": 0.85,
+      "route_depth_step": 0,
+      "emphasis": [
+        "Outside Zone",
+        "RB Slip",
+        "End Around"
+      ],
+      "personnel_bias": {
+        "11": 8
+      },
+      "staff_source": "https://www.miamidolphins.com/team/coaches-roster/bobby-slowik",
+      "players_source": "https://www.miamidolphins.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "De'Von Achane"
+    },
+    "MIN": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Kevin O'Connell / Wes Phillips",
+      "scheme": "McVay wide zone and crossers",
+      "family": "wide_zone",
+      "key_players": "Justin Jefferson; T.J. Hockenson",
+      "feature_role": "WR1",
+      "width": 0.95,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Y Cross",
+        "Dagger",
+        "Outside Zone"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.vikings.com/news/2026-coaching-staff-updates-promotions-hires",
+      "players_source": "https://www.vikings.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Justin Jefferson"
+    },
+    "NE": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Josh McDaniels",
+      "scheme": "Erhardt-Perkins fixed progression subset",
+      "family": "west_coast",
+      "key_players": "Hunter Henry; Drake Maye",
+      "feature_role": "TE1",
+      "width": 1.0,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Levels",
+        "TE Seam",
+        "Drive"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.patriots.com/team/coaches-roster/josh-mcdaniels",
+      "players_source": "https://www.patriots.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Hunter Henry"
+    },
+    "NO": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Kellen Moore / Doug Nussmeier",
+      "scheme": "Moore vertical and quick game",
+      "family": "vertical",
+      "key_players": "Chris Olave; Tyler Shough",
+      "feature_role": "WR1",
+      "width": 1.05,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Levels",
+        "Dagger",
+        "RB Slip"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.neworleanssaints.com/team/coaches-roster/doug-nussmeier",
+      "players_source": "https://www.neworleanssaints.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Chris Olave"
+    },
+    "NYG": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Matt Nagy / Greg Roman",
+      "scheme": "Nagy/Roman TE hybrid",
+      "family": "power",
+      "key_players": "Isaiah Likely; Jaxson Dart",
+      "feature_role": "TE1",
+      "width": 1.0,
+      "route_depth_step": 0,
+      "emphasis": [
+        "TE Seam",
+        "TE Drag",
+        "Y Cross"
+      ],
+      "personnel_bias": {
+        "12": 25
+      },
+      "staff_source": "https://www.giants.com/news/john-harbaugh-announces-2026-coaching-staff-coordinators-matt-nagy-dennard-wilson-chris-horton",
+      "players_source": "https://www.giants.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Isaiah Likely"
+    },
+    "NYJ": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Frank Reich",
+      "scheme": "Reich West Coast vertical blend",
+      "family": "west_coast",
+      "key_players": "Garrett Wilson; Breece Hall",
+      "feature_role": "WR1",
+      "width": 1.05,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Drive",
+        "RB Slip",
+        "Dagger"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.newyorkjets.com/team/coaches-roster/frank-reich",
+      "players_source": "https://www.newyorkjets.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Garrett Wilson"
+    },
+    "OAK": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Klint Kubiak / Andrew Janocko",
+      "scheme": "Kubiak wide zone",
+      "family": "wide_zone",
+      "key_players": "Brock Bowers; Ashton Jeanty",
+      "feature_role": "TE1",
+      "width": 0.85,
+      "route_depth_step": 1,
+      "emphasis": [
+        "TE Seam",
+        "Outside Zone",
+        "TE Drag"
+      ],
+      "personnel_bias": {
+        "12": 5
+      },
+      "staff_source": "https://www.raiders.com/news/raiders-announce-2026-coaching-staff",
+      "players_source": "https://www.raiders.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Brock Bowers"
+    },
+    "PHI": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Sean Mannion",
+      "scheme": "LaFleur branch with downhill core",
+      "family": "wide_zone",
+      "key_players": "Saquon Barkley; DeVonta Smith",
+      "feature_role": "WR1",
+      "width": 0.95,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Downhill",
+        "Outside Zone",
+        "PA Boot"
+      ],
+      "personnel_bias": {
+        "12": 3
+      },
+      "staff_source": "https://www.philadelphiaeagles.com/team/coaches/sean-mannion",
+      "players_source": "https://www.philadelphiaeagles.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "DeVonta Smith"
+    },
+    "PIT": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Mike McCarthy / Brian Angelichio",
+      "scheme": "McCarthy West Coast",
+      "family": "west_coast",
+      "key_players": "DK Metcalf; Pat Freiermuth",
+      "feature_role": "WR1",
+      "width": 1.05,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Drive",
+        "Levels",
+        "TE Seam"
+      ],
+      "personnel_bias": {
+        "11": 8
+      },
+      "staff_source": "https://www.steelers.com/news/steelers-complete-2026-coaching-staff",
+      "players_source": "https://www.steelers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "DK Metcalf"
+    },
+    "SD": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Mike McDaniel",
+      "scheme": "McDaniel wide zone and crossers",
+      "family": "wide_zone",
+      "key_players": "Ladd McConkey; Justin Herbert",
+      "feature_role": "WR1",
+      "width": 0.85,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Outside Zone",
+        "Y Cross",
+        "RB Slip"
+      ],
+      "personnel_bias": {
+        "11": 5
+      },
+      "staff_source": "https://www.chargers.com/team/coaches-roster/mike-mcdaniel",
+      "players_source": "https://www.chargers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Ladd McConkey"
+    },
+    "SEA": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Brian Fleury",
+      "scheme": "Shanahan/Fleury zone and play action",
+      "family": "wide_zone",
+      "key_players": "Jaxon Smith-Njigba; Sam Darnold",
+      "feature_role": "WR1",
+      "width": 0.9,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Outside Zone",
+        "PA Boot",
+        "Drive"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.seahawks.com/news/seahawks-hire-offensive-coordinator-brian-fleury",
+      "players_source": "https://www.seahawks.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Jaxon Smith-Njigba"
+    },
+    "SF": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Kyle Shanahan / Klay Kubiak",
+      "scheme": "Shanahan wide zone with fullback",
+      "family": "wide_zone",
+      "key_players": "Christian McCaffrey; George Kittle; Kyle Juszczyk",
+      "feature_role": "HB1",
+      "width": 0.85,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Outside Zone",
+        "RB Slip",
+        "PA Boot"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.49ers.com/news/day-3-of-49ers-camp-2026-key-takeaways-from-wednesday-s-practice",
+      "players_source": "https://www.49ers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Christian McCaffrey"
+    },
+    "STL": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Sean McVay / Nate Scheelhaase",
+      "scheme": "McVay condensed downhill",
+      "family": "mcvay",
+      "key_players": "Puka Nacua; Kyren Williams",
+      "feature_role": "WR1",
+      "width": 0.8,
+      "route_depth_step": 2,
+      "emphasis": [
+        "Downhill",
+        "Dagger",
+        "PA Boot"
+      ],
+      "personnel_bias": {},
+      "staff_source": "https://www.therams.com/team/coaches-roster/nate-scheelhaase",
+      "players_source": "https://www.therams.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Puka Nacua"
+    },
+    "TB": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Zac Robinson",
+      "scheme": "McVay/Robinson condensed passing",
+      "family": "mcvay",
+      "key_players": "Emeka Egbuka; Bucky Irving",
+      "feature_role": "WR1",
+      "width": 0.9,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Levels",
+        "RB Slip",
+        "Dagger"
+      ],
+      "personnel_bias": {
+        "12": 7
+      },
+      "staff_source": "https://www.buccaneers.com/news/buccaneers-offensive-preview-training-camp-2026",
+      "players_source": "https://www.buccaneers.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Emeka Egbuka"
+    },
+    "TEN": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "Brian Daboll",
+      "scheme": "Daboll spread progression",
+      "family": "spread",
+      "key_players": "Cam Ward; Calvin Ridley",
+      "feature_role": "WR1",
+      "width": 1.1,
+      "route_depth_step": 0,
+      "emphasis": [
+        "Mesh",
+        "Stick",
+        "Levels"
+      ],
+      "personnel_bias": {
+        "11": 4
+      },
+      "staff_source": "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll",
+      "players_source": "https://www.tennesseetitans.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Calvin Ridley"
+    },
+    "WAS": {
+      "status": "DESIGN",
+      "staff_status": "INFERRED",
+      "staff": "David Blough",
+      "scheme": "Blough multiple spread design",
+      "family": "spread",
+      "key_players": "Terry McLaurin; Jayden Daniels",
+      "feature_role": "WR1",
+      "width": 1.05,
+      "route_depth_step": 1,
+      "emphasis": [
+        "Mesh",
+        "Drive",
+        "Y Cross"
+      ],
+      "personnel_bias": {
+        "12": 3
+      },
+      "staff_source": "https://www.commanders.com/news/commanders-name-david-blough-offensive-coordinator",
+      "players_source": "https://www.commanders.com/team/depth-chart",
+      "baseline": "tendencies_2025.json",
+      "sources_checked": "2026-09-24",
+      "role_note": "DESIGN: place named target at the feature role on the SOFTDRINK roster; no roster identity is rewritten.",
+      "feature_player": "Terry McLaurin"
+    }
+  }
+}

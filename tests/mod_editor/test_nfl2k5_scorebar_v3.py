@@ -52,6 +52,8 @@ class NativeV3Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from nfl2k5_scorebug_exact import Build
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACK.parents[1])
         cls.build=Build(PACK,XBE);cls.addClassCleanup(cls.build.close)
         cls.temp=tempfile.TemporaryDirectory();cls.addClassCleanup(cls.temp.cleanup)
         cls.output=Path(cls.temp.name).resolve()

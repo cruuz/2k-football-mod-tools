@@ -136,6 +136,15 @@ class StaticTopologyConformanceSpecTests(unittest.TestCase):
 
     def test_geometry_implementation_evidence_is_hash_pinned_and_nongeometric(self) -> None:
         evidence = self.spec["source_evidence"]
+        required_reports = (
+            "nfl_group36_geometry_roundtrip_report",
+            "nfl_upper_deck_changed_count_boundary",
+            "apf_topology_roundtrip_report",
+        )
+        missing = [evidence[key]["path"] for key in required_reports
+                   if not (ROOT / evidence[key]["path"]).is_file()]
+        if missing:
+            self.skipTest("private geometry proof reports absent: " + ", ".join(missing))
         for key in (
             "nfl_group36_geometry_writer",
             "nfl_group36_geometry_independent_verifier",

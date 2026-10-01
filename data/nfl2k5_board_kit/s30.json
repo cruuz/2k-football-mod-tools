@@ -1,0 +1,1143 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.45,
+        "depth": 0.12,
+        "material": "lambert42"
+      },
+      "inset": 0.35,
+      "name": "bk_board_e",
+      "outline": [
+        [
+          18.288,
+          0.0
+        ],
+        [
+          58.522,
+          0.0
+        ],
+        [
+          58.522,
+          12.192
+        ],
+        [
+          0.0,
+          12.192
+        ],
+        [
+          4.267,
+          6.096
+        ]
+      ],
+      "path": [
+        [
+          -29.261,
+          -119.38
+        ],
+        [
+          29.261,
+          -119.38
+        ]
+      ],
+      "structure": {
+        "depth": 4.0,
+        "material": "lambert19"
+      },
+      "y": [
+        26.55,
+        38.74
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.45,
+        "depth": 0.12,
+        "material": "lambert42"
+      },
+      "inset": 0.35,
+      "name": "bk_board_w",
+      "outline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          40.234,
+          0.0
+        ],
+        [
+          54.254,
+          6.096
+        ],
+        [
+          58.522,
+          12.192
+        ],
+        [
+          0.0,
+          12.192
+        ]
+      ],
+      "path": [
+        [
+          -29.261,
+          120.68
+        ],
+        [
+          29.261,
+          120.68
+        ]
+      ],
+      "structure": {
+        "depth": 4.0,
+        "material": "lambert19"
+      },
+      "y": [
+        26.55,
+        38.74
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -48.5,
+          48.5
+        ],
+        "y": [
+          36.5,
+          56.0
+        ],
+        "z": [
+          -139.0,
+          -134.0
+        ]
+      },
+      "materials": [
+        "LIGHT_jumbotronA1",
+        "LIGHT_jumbotronB1",
+        "lambert39",
+        "lambert40",
+        "jumbotronE1",
+        "lambert19",
+        "lambert42"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -48.5,
+          48.5
+        ],
+        "y": [
+          36.5,
+          56.0
+        ],
+        "z": [
+          133.0,
+          139.0
+        ]
+      },
+      "materials": [
+        "LIGHT_jumbotronA1",
+        "LIGHT_jumbotronB1",
+        "lambert39",
+        "lambert40",
+        "jumbotronE1",
+        "lambert19",
+        "lambert42"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -49.5,
+          49.6
+        ],
+        "y": [
+          14.0,
+          46.0
+        ],
+        "z": [
+          -140.0,
+          -119.6
+        ]
+      },
+      "materials": [
+        "deckA1",
+        "stairsA1_premipped",
+        "crowd",
+        "tunnelB1",
+        "lambert68",
+        "lambert19",
+        "LIGHT_luxBoxB2"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group384"
+    }
+  ],
+  "help": "the 2014 boards on their structures, 192 ft wide at the top, the Dawg Pound's fan area and the end-zone LED ribbons",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_e",
+    "jumboMarkerCShape": "bk_board_w"
+  },
+  "move": [
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4"
+      ],
+      "onto": "bk_board_e",
+      "shape": "group384"
+    },
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_colen"
+      ],
+      "onto": "bk_board_e",
+      "shape": "group390"
+    },
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_away_score_L",
+        "digit_away_score_R"
+      ],
+      "onto": "bk_board_e",
+      "shape": "group384",
+      "toward_centre": 16.0
+    },
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4"
+      ],
+      "onto": "bk_board_w",
+      "shape": "group384"
+    },
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_colen"
+      ],
+      "onto": "bk_board_w",
+      "shape": "group389"
+    },
+    {
+      "dy": -8.4,
+      "materials": [
+        "digit_home_score_L",
+        "digit_home_score_R",
+        "digit_away_score_L",
+        "digit_away_score_R"
+      ],
+      "onto": "bk_board_w",
+      "shape": "group384",
+      "toward_centre": 30.0
+    }
+  ],
+  "name": "Huntington Bank Field",
+  "paint": [
+    {
+      "art": "s30_ribbons.png",
+      "material": "LIGHT_jumbotronA1"
+    }
+  ],
+  "panels": [
+    {
+      "name": "bk_fan_deck_e",
+      "parts": [
+        {
+          "colour_from": "LIGHT_luxBoxB2",
+          "material": "LIGHT_luxBoxB2",
+          "quad": [
+            [
+              29.9,
+              25.7,
+              -119.4
+            ],
+            [
+              49.4,
+              25.7,
+              -119.4
+            ],
+            [
+              49.4,
+              39.2,
+              -119.4
+            ],
+            [
+              29.9,
+              39.2,
+              -119.4
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 6.0
+        },
+        {
+          "colour_from": "LIGHT_luxBoxB2",
+          "material": "LIGHT_luxBoxB2",
+          "quad": [
+            [
+              -49.2,
+              25.7,
+              -119.4
+            ],
+            [
+              -29.9,
+              25.7,
+              -119.4
+            ],
+            [
+              -29.9,
+              39.2,
+              -119.4
+            ],
+            [
+              -49.2,
+              39.2,
+              -119.4
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 6.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -29.9,
+              25.5,
+              -119.45
+            ],
+            [
+              29.9,
+              25.5,
+              -119.45
+            ],
+            [
+              29.9,
+              26.2,
+              -119.45
+            ],
+            [
+              -29.9,
+              26.2,
+              -119.45
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -49.2,
+              39.2,
+              -119.35000000000001
+            ],
+            [
+              49.4,
+              39.2,
+              -119.35000000000001
+            ],
+            [
+              49.4,
+              39.95,
+              -119.35000000000001
+            ],
+            [
+              -49.2,
+              39.95,
+              -119.35000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "concreteA1",
+          "material": "concreteA1",
+          "quad": [
+            [
+              -49.2,
+              39.95,
+              -119.35000000000001
+            ],
+            [
+              49.4,
+              39.95,
+              -119.35000000000001
+            ],
+            [
+              49.4,
+              39.95,
+              -137.9
+            ],
+            [
+              -49.2,
+              39.95,
+              -137.9
+            ]
+          ],
+          "toward": [
+            0.0,
+            200.0,
+            -128.0
+          ],
+          "uv_m": 8.0
+        },
+        {
+          "colour_from": "LIGHT_luxBoxB2",
+          "material": "LIGHT_luxBoxB2",
+          "quad": [
+            [
+              49.4,
+              25.7,
+              -119.4
+            ],
+            [
+              49.4,
+              25.7,
+              -137.9
+            ],
+            [
+              49.4,
+              39.95,
+              -137.9
+            ],
+            [
+              49.4,
+              39.95,
+              -119.4
+            ]
+          ],
+          "toward": [
+            200.0,
+            30.0,
+            -128.0
+          ],
+          "uv_m": 6.0
+        },
+        {
+          "colour_from": "LIGHT_luxBoxB2",
+          "material": "LIGHT_luxBoxB2",
+          "quad": [
+            [
+              -49.2,
+              25.7,
+              -119.4
+            ],
+            [
+              -49.2,
+              25.7,
+              -137.9
+            ],
+            [
+              -49.2,
+              39.95,
+              -137.9
+            ],
+            [
+              -49.2,
+              39.95,
+              -119.4
+            ]
+          ],
+          "toward": [
+            -200.0,
+            30.0,
+            -128.0
+          ],
+          "uv_m": 6.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -49.2,
+              25.7,
+              -137.9
+            ],
+            [
+              49.4,
+              25.7,
+              -137.9
+            ],
+            [
+              49.4,
+              39.95,
+              -137.9
+            ],
+            [
+              -49.2,
+              39.95,
+              -137.9
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            -400.0
+          ],
+          "uv_m": 6.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              29.724999999999998,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              30.075,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              30.075,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              29.724999999999998,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -30.075,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -29.724999999999998,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -29.724999999999998,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              -30.075,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              34.605000000000004,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              34.955,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              34.955,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              34.605000000000004,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -34.955,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -34.605000000000004,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -34.605000000000004,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              -34.955,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              39.475,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              39.824999999999996,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              39.824999999999996,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              39.475,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -39.824999999999996,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -39.475,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -39.475,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              -39.824999999999996,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              44.355000000000004,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              44.705,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              44.705,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              44.355000000000004,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -44.705,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -44.355000000000004,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -44.355000000000004,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              -44.705,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              49.050000000000004,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              49.4,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              49.4,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              49.050000000000004,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -49.2,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -48.85000000000001,
+              25.7,
+              -119.33000000000001
+            ],
+            [
+              -48.85000000000001,
+              39.2,
+              -119.33000000000001
+            ],
+            [
+              -49.2,
+              39.2,
+              -119.33000000000001
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              29.9,
+              32.3,
+              -119.34
+            ],
+            [
+              49.4,
+              32.3,
+              -119.34
+            ],
+            [
+              49.4,
+              32.55,
+              -119.34
+            ],
+            [
+              29.9,
+              32.55,
+              -119.34
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "lambert19",
+          "material": "lambert19",
+          "quad": [
+            [
+              -49.2,
+              32.3,
+              -119.34
+            ],
+            [
+              -29.9,
+              32.3,
+              -119.34
+            ],
+            [
+              -29.9,
+              32.55,
+              -119.34
+            ],
+            [
+              -49.2,
+              32.55,
+              -119.34
+            ]
+          ],
+          "toward": [
+            0.0,
+            30.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "ribbons": [
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_e1",
+      "path": [
+        [
+          -46.226,
+          -89.947
+        ],
+        [
+          -43.22,
+          -90.97
+        ],
+        [
+          -36.93,
+          -93.0
+        ],
+        [
+          -34.4,
+          -93.67
+        ],
+        [
+          -20.967,
+          -95.184
+        ]
+      ],
+      "row": [
+        0.26172,
+        0.48828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    },
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_e2",
+      "path": [
+        [
+          -19.97,
+          -95.255
+        ],
+        [
+          -6.46,
+          -95.67
+        ],
+        [
+          6.46,
+          -95.67
+        ],
+        [
+          19.97,
+          -95.255
+        ]
+      ],
+      "row": [
+        0.01172,
+        0.23828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    },
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_e3",
+      "path": [
+        [
+          20.967,
+          -95.184
+        ],
+        [
+          34.23,
+          -93.68
+        ],
+        [
+          36.897,
+          -93.112
+        ]
+      ],
+      "row": [
+        0.26172,
+        0.48828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    },
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_w1",
+      "path": [
+        [
+          -46.221,
+          89.929
+        ],
+        [
+          -34.31,
+          93.17
+        ],
+        [
+          -20.927,
+          94.684
+        ]
+      ],
+      "row": [
+        0.76172,
+        0.98828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    },
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_w2",
+      "path": [
+        [
+          -19.93,
+          94.755
+        ],
+        [
+          -6.45,
+          95.17
+        ],
+        [
+          6.45,
+          95.17
+        ],
+        [
+          19.93,
+          94.755
+        ]
+      ],
+      "row": [
+        0.01172,
+        0.23828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    },
+    {
+      "backing": {
+        "border": 0.1,
+        "depth": 0.02,
+        "material": "lambert42"
+      },
+      "colour_from": "LIGHT_upperRiserSignA1",
+      "inset": 0.05,
+      "material": "LIGHT_jumbotronA1",
+      "name": "bk_ribbon_w3",
+      "path": [
+        [
+          20.927,
+          94.684
+        ],
+        [
+          34.31,
+          93.17
+        ],
+        [
+          36.5,
+          92.578
+        ]
+      ],
+      "row": [
+        0.76172,
+        0.98828
+      ],
+      "tile_m": 3.363,
+      "y": [
+        12.05,
+        12.812
+      ]
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "SVG News, 30 July 2014, 'Cleveland Browns Revitalize In-Venue Video at FirstEnergy Stadium': 'The two main video displays will be nearly 40 ft. high and measure 192 ft. wide at the top, angling to 178 ft. wide in the middle and approximately 132 ft. wide along the bottom'; 'each new main end-zone display featuring a unique angled pattern on its north edge'; the new boards '32 ft. lower and 56 ft. closer to the field'.",
+    "cleveland.com, June 2014 (archived): 'Two new video boards, nearly triple the size of the old units'; 'They are also 32 feet lower and 56 feet closer to the field'; Wikipedia, Huntington Bank Field: 'the upper level of the Dawg Pound was reduced to make way for a new, larger scoreboard'.",
+    "The retail s30 scene (PROVED OFFLINE): the old boards' feed quads (group384) 31.7 x 9.7 m at y 37.5 to 47.3, z -136.1 (east, the Dawg Pound end: the cityscape puts the lake at -x, so -x is north and -z east) and +137.4 (west); their structures (group390, group389) to y 55; the clock and score digits on them.",
+    "SVG News, 30 July 2014 (Karen Hogan Ketchum): 'Daktronics will install 14 LED ribbon displays: three at each end zone along the fascia of the upper seating area, three on each sideline's fascia, and one on each sideline's seating fascia'; 'All 2.5 ft. high, the fascia displays range from 40 ft. to 372 ft. wide'. The kit builds the six end-zone ribbons on the upper decks' front fascias (the retail play clocks stay clear above them); the eight sideline ones are not built (main, 2026-09-28 21:12): they would sit on the retail sign bands the 2026 venue art repaints (LIGHT_upperRiserSignA1, signsA1), whose 2026 league signage already reads as the modern ribbon band, and the kit never covers the 2026 venue art. A known difference from the stadium. Their art is plain type in the Browns' colours (tools/nfl2k5_board_kit_art.py), in the old boards' freed lit slot LIGHT_jumbotronA1.",
+    "Wikipedia, Huntington Bank Field: 'During stadium renovations in 2014, the upper level of the Dawg Pound was reduced to make way for a new, larger scoreboard, auxiliary scoreboard, and additional fan areas, and the bleacher seating in the upper level was replaced with chairbacks' (The Plain Dealer, 16 June 2014). Pose from Commons photos of 21 September and 12 October 2014 (st3/bk/refs/cle c04, c06): the reduced upper rows under the east board, a glass-fronted fan area behind it on white steel, level with the board's top. The kit cuts the east upper rows behind the board's face (z < -119.6) and closes the space with that box (bk_fan_deck_e).",
+    "The logo sweep (2026-09-29, main's call): the old boards' LIGHT_jumbotronA1 also carries an ESPN VIDEOGAMES cell. It is this kit's paint slot (the ribbons' art), which the 2026 venue art never paints, so the sweep leaves it: with the kit on (every candidate) the ribbons' art takes the slot; with the kit off the old boards keep that one cell."
+  ],
+  "team": "CLE",
+  "venue": "s30"
+}

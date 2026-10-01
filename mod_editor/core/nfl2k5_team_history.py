@@ -615,9 +615,19 @@ def resource_status(resource: bytes) -> str:
 
 
 def status(path: Path | str) -> str:
-    """retail | applied | applied-custom | foreign for a disc image or a loose pack folder."""
+    """retail | applied | applied-custom | foreign for a disc image or a loose pack folder.
 
+    A main roster grown for 16 reserves or extra created teams is read as the roster the arena growth
+    migrated (``nfl2k5_roster_arena.legacy_disc_resource``); the writer still refuses it.
+    """
+
+    from . import nfl2k5_roster_arena as arena
     with _outer_image()(path) as archive:
+        if arena.grown_outer(archive, ROST_OUTER_INDEX):
+            try:
+                return resource_status(arena.inspection_resource(archive, ROST_OUTER_INDEX))
+            except ValueError:
+                return "foreign"
         entry = _entry(archive)
         return resource_status(archive.read(entry.virtual_offset, entry.size))
 

@@ -28,6 +28,9 @@ REPORT = ROOT / "reports/specs/apf2k8_uniform_selector_bank_ownership.v1.json"
 class UniformSelectorBankOwnershipTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (EXPORT_ROOT / "manifest.json", EXPORT_ROOT / ownership.PSEUDO_SHARD, EXPORT_ROOT / ownership.LEDGER_SHARD, TRACE) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF bank ownership exports missing: " + ", ".join(missing))
         cls.report = ownership.build_report(EXPORT_ROOT, TRACE)
 
     def test_orientation_is_closed_by_literal_wrappers_and_accessors(self) -> None:

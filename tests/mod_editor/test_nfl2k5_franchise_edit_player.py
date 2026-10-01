@@ -28,7 +28,8 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(set(edit.REQUESTS) <= set(REQUESTS))
         self.assertTrue(set(edit.REQUESTS) <= set(space.dormant_union()))
         plan = space.plan(rows, scaleout=True)
-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 2824)  # beta 69: J5's 140 RO bytes plus alignment; existing owner budgets unchanged
+        # Beta 76 adds 64 bytes for team-logo routing and 2176 for era rules.
+        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 584)
         self.assertEqual(len(edit.read_only_bytes()), 704)
         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)

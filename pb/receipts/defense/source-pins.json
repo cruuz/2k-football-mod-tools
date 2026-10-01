@@ -1,0 +1,21 @@
+{
+  "status": "PROVED OFFLINE",
+  "read_only_inputs": [
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/DEFENSE_PLAY_RESEARCH_2026-09-04.md",
+      "sha256": "607101b999f923df8ebbb29edbadce345d9f09e020e1cc6f06f231e510b0cbe7"
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/ASTRA_DEFENSE_PLAY_REPORT_2026-09-05.md",
+      "sha256": "841c8aa7f2f5520fefb3e441af823dc3a9cb1355b034bca876ab2e452f03e801"
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/ASTRA_MATCH_COVERAGE_REPORT.md",
+      "sha256": "42b792f4c5a25bedab55d52225b32c1642890b2eb41d873c12ec08cba0404fbe"
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/ultimate/ULTIMATE_BUILD_RECIPE_2026-09-23_final_DRAFT.json",
+      "sha256": "391483b16ec764e2382764df65424f034cbee6a22347ab1bb28fdec533c06e8e"
+    }
+  ]
+}

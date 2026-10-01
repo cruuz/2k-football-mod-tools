@@ -577,6 +577,7 @@ class StudioOperationResult:
     output: Path | None = None
     project_identity: ProjectTargetIdentity | None = None
     changed: bool | None = None
+    project_migrated: bool = False
 
 
 @dataclass(frozen=True)
@@ -2861,6 +2862,7 @@ class Nfl2k5StudioFacade:
         preview = playbook_pack.preview_pack(
             pack, target, book, body,
             resource=self._playbook_raw_resource(asset_id),
+            xbe=self.source_path,
             staged_formation_targets=staged_f,
             staged_play_targets=staged_p,
         )
@@ -2903,6 +2905,7 @@ class Nfl2k5StudioFacade:
             staged_f, staged_p = self.staged_replace_targets(asset_id)
             preview = playbook_pack.preview_pack(
                 pack, team, book, body,
+                xbe=self.source_path,
                 staged_formation_targets=staged_f, staged_play_targets=staged_p,
             )
             blocked = [row for row in preview.plan.rows if row.status not in ("ok", "retargeted")]
@@ -3000,7 +3003,8 @@ class Nfl2k5StudioFacade:
         )
         progress("Checking the pack", 2, 3)
         report = playbook_pack.check_pack(
-            pack, resource=self._playbook_raw_resource(asset_id), asset_id=asset_id
+            pack, resource=self._playbook_raw_resource(asset_id), asset_id=asset_id,
+            xbe=self.source_path,
         )
         if not report.ok:
             raise ValidationError(
@@ -3732,7 +3736,8 @@ class Nfl2k5StudioFacade:
             'If you build first, Build applies the same refit to the disc and lists it.\n'
             + '\n'.join(f"{r['set_selector']} / {r['asset_id']}: {r['fit_error']}" for r in refits)) if refits else ''
         return StudioOperationResult(
-            "\n".join(getattr(candidate, "model_source_warnings", ()))
+            ''.join(note + '\n' for note in getattr(candidate, 'project_open_notes', ()))
+            + "\n".join(getattr(candidate, "model_source_warnings", ()))
             + ("\n" if getattr(candidate, "model_source_warnings", ()) else "")
             + f"Loaded {' and '.join(parts)} from {source.name}. "
             + (
@@ -3742,6 +3747,7 @@ class Nfl2k5StudioFacade:
             ) + refit_note,
             current_identity.path,
             current_identity,
+            project_migrated=bool(getattr(candidate, 'project_open_notes', ())),
         )
 
     def refit_equipment(self, asset_id: str, progress: ProgressSink) -> object:

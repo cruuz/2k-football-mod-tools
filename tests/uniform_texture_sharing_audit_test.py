@@ -19,6 +19,9 @@ import uniform_texture_sharing_audit as audit  # noqa: E402
 class UniformTextureSharingAuditTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in audit.DEFAULT_PATHS.values() if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private uniform sharing audit sources missing: " + ", ".join(missing))
         cls.report, cls.nfl_groups, cls.apf_rows = audit.build_report()
 
     def test_nfl_content_aliases_are_not_physical_span_aliases(self) -> None:

@@ -1,0 +1,165 @@
+{
+  "classification": "DESIGN",
+  "common": {
+    "away": "PHI",
+    "home": "CHI",
+    "away_score": 0,
+    "home_score": 7,
+    "quarter": 1,
+    "clock": 0,
+    "play_clock": 40,
+    "down": 1,
+    "distance": 10,
+    "possession": "home",
+    "broadcast": "monday_night",
+    "away_record": [
+      2,
+      0,
+      0
+    ],
+    "home_record": [
+      1,
+      1,
+      0
+    ]
+  },
+  "rows": [
+    [
+      "chi_interim",
+      28,
+      {
+        "away_score": 0,
+        "home_score": 0,
+        "clock": 887,
+        "down": 2,
+        "previous_down": 1
+      }
+    ],
+    [
+      "chi_first10",
+      41,
+      {
+        "home_score": 0,
+        "clock": 781,
+        "play_clock": 38
+      }
+    ],
+    [
+      "phi_first10",
+      113,
+      {
+        "clock": 519,
+        "possession": "away"
+      }
+    ],
+    [
+      "fourth1_white6",
+      69,
+      {
+        "home_score": 0,
+        "clock": 654,
+        "play_clock": 6,
+        "down": 4,
+        "distance": 1
+      }
+    ],
+    [
+      "fourth1_red5",
+      70,
+      {
+        "home_score": 0,
+        "clock": 653,
+        "play_clock": 5,
+        "down": 4,
+        "distance": 1
+      }
+    ],
+    [
+      "third16",
+      144,
+      {
+        "clock": 417,
+        "play_clock": 17,
+        "down": 3,
+        "distance": 16,
+        "possession": "away"
+      }
+    ],
+    [
+      "flag",
+      245,
+      {
+        "quarter": 2,
+        "clock": 895,
+        "play_clock": 25,
+        "event": "FLAG"
+      }
+    ],
+    [
+      "chi_goal",
+      270,
+      {
+        "quarter": 2,
+        "clock": 880,
+        "play_clock": 31,
+        "down": 2,
+        "goal_to_go": true
+      }
+    ],
+    [
+      "phi_goal",
+      510,
+      {
+        "quarter": 2,
+        "home_score": 10,
+        "clock": 0,
+        "play_clock": 30,
+        "down": 2,
+        "goal_to_go": true,
+        "possession": "away",
+        "away_timeouts": 0
+      }
+    ],
+    [
+      "player_tags_ESPN",
+      188,
+      {
+        "clock": 119,
+        "event": "hang time"
+      }
+    ],
+    [
+      "post_punt_ESPN",
+      194,
+      {
+        "clock": 113,
+        "play_clock": 25,
+        "event": "ball on"
+      }
+    ],
+    [
+      "red2",
+      530,
+      {
+        "away_score": 7,
+        "home_score": 10,
+        "quarter": 3,
+        "clock": 818,
+        "play_clock": 2,
+        "down": 3,
+        "distance": 5,
+        "possession": "away"
+      }
+    ],
+    [
+      "under_minute",
+      230,
+      {
+        "clock": 5,
+        "down": 2,
+        "distance": 12
+      }
+    ]
+  ],
+  "unobserved": "Distance underneath interim/FLAG is a preview input, not measured; event/phase inputs emulate the observed plate; no player-tag implementation."
+}

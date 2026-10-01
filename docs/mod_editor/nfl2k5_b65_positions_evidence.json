@@ -1189,6 +1189,16 @@
       "written_sha256": "2c985fe7577796da27f2e58dcdad0a91b1ae280ee6e73a68510aa137bc921a1a"
     },
     {
+      "name": "lineup_iterator",
+      "va": "0xe8410",
+      "size": 896,
+      "written_sha256": "0db60643f40c36424e96bee4453311e05349dc43d7980044e1912399e331cc4b",
+      "group": "lineup",
+      "accepted_sha256": [
+        "1fc978d82879f9086fcaa6545edad42bfbb1de9a7bc4e64054dc3668bf0d0887"
+      ]
+    },
+    {
       "name": "enum_to_kind_olb",
       "va": "0x510230",
       "size": 4,
@@ -2146,14 +2156,15 @@
     }
   ],
   "minimal_composition": {
-    "edge_modern_pools_sha256": "1496fb848cf1e4c918b1d1618f007ddbb0b99ab06ae7b80feb07e4693f4e6744",
-    "with_inline_mycareer_sha256": "ef9e935881cafda12e0c6f05303d431e44d7f9f792c48536d15c0a0a66c5552e",
-    "pool_changed_bytes": 1045,
+    "edge_modern_pools_sha256": "4245439d7b5753956cbb3014b75b03ae0e6c33423a22b2a542fe399f9c69c013",
+    "with_inline_mycareer_sha256": "307fbdd9828531301f23b545a9aed6050089358aa9274207441032fad1be6b09",
+    "pool_changed_bytes": 1914,
     "pool_sections_repinned": [
       0,
       12,
       14
     ],
     "mycareer_content_bytes": 14858
-  }
+  },
+  "lineup_exhaustion_revision": "SD2, 2026-09-28; PROVED OFFLINE; see sd/SD2_REPORT.md"
 }

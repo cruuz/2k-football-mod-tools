@@ -19,6 +19,9 @@ import nfl_main_menu_label_patch as patch  # noqa: E402
 class MainMenuLabelPatchTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe",) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Retail NFL executable missing: " + ", ".join(missing))
         cls.source_path = ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe"
         cls.source = cls.source_path.read_bytes()
 

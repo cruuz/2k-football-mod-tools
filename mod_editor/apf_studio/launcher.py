@@ -475,7 +475,7 @@ class XeniaLauncher:
         if kind == "charge_abilities":
             from mod_editor.core import apf2k8_charge_abilities
             return (apf2k8_charge_abilities.FILENAME, apf2k8_charge_abilities.canonical_payload,
-                    "Charge-abilities patch", " Ability-based charge cap; EXPERIMENTAL. Gameplay UNWITNESSED.")
+                    "Charge-abilities patch", " Revision 3 adds Finesse spin/juke and Power stiff arm/shoulder charge. EXPERIMENTAL. Gameplay UNWITNESSED.")
         if kind == "situations":
             from .situation_masks import FILENAME
             from mod_editor.core.apf2k8_situation_mask import canonical_payload
@@ -507,6 +507,13 @@ class XeniaLauncher:
                 profile, patch_enabled = validator(destination.read_bytes())
                 installed = True
                 detail = f" ({profile.name})"
+                if kind == "charge_abilities":
+                    from mod_editor.core.apf2k8_charge_abilities import parse_payload, CURRENT_REVISION
+                    revision = parse_payload(destination.read_bytes()).revision
+                    detail += f" [revision {revision}]"
+                    if revision < CURRENT_REVISION:
+                        defect = "beta 75 feedback bug" if revision == 1 else "Finesse move qualification bug"
+                        detail += f" [{defect}; install a newly exported revision {CURRENT_REVISION} patch]"
                 if config.exists():
                     self.settings._regular(config, "Xenia config")
                     enabled = patch_enabled and tomllib.loads(config.read_text(encoding="utf-8-sig")).get("Memory", {}).get("apply_patches") is True
@@ -526,6 +533,11 @@ class XeniaLauncher:
         source = self.settings._regular(source, _title)
         payload = source.read_bytes()
         _profile, enabled = validator(payload)
+        if kind == "charge_abilities":
+            from mod_editor.core.apf2k8_charge_abilities import parse_payload, CURRENT_REVISION
+            revision = parse_payload(payload).revision
+            if revision < CURRENT_REVISION:
+                raise LaunchError(f"This legacy revision {revision} charge patch needs replacement; export revision {CURRENT_REVISION}")
         if not enabled:
             raise LaunchError("The chosen patch is disabled; export an enabled Studio patch")
         destination = self.settings.patches_folder / filename

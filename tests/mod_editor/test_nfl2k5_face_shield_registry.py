@@ -23,6 +23,9 @@ class Nfl2k5FaceShieldRegistryTests(unittest.TestCase):
         )
 
     def test_registry_remains_structurally_valid(self) -> None:
+        missing = [str(path) for path in [ROOT / path for row in self.document["capabilities"] for path in row["evidence"]] if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private full-registry evidence missing: " + ", ".join(missing))
         self.assertIs(validate_data(self.document, check_files=True), self.document)
 
     def test_public_claim_names_exact_safe_boundary(self) -> None:

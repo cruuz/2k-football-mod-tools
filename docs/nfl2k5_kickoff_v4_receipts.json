@@ -253,8 +253,8 @@
       16
     ]
   ],
-  "union_allocated_sha256": "bccc1042bfa5922a1d78b19fac3c8c51c3c58f524ddfec6b498dba0a550b3988",
-  "relocated_output_sha256": "fdc713b1dcf2fa601387725d91e0ca3a13f416b7ed319ed09485a10a3a108b10",
+  "union_allocated_sha256": "c0af036d118ed86967d83dd779e641ba8cc9a8201f2145c98d26acbded8c8d45",
+  "relocated_output_sha256": "ea73f14b77f0a82431c6f7336f927f45cbe44c053d454b54d4d126ec739b423b",
   "code_bytes_used": 1935,
   "code_allocation": 1939,
   "state_allocation": 10,

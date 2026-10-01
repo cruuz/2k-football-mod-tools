@@ -46,7 +46,8 @@ class BindingsTests(ScreenMachine):
     def test_current_human_team_guards_and_no_first_coach_fallback(self):
         self.demote()
         before = self.snapshot()
-        for address, value in ((0xE576A0, 0), (0xE576A0, 2), (0xE3C0A0, 0),
+        # League mode 0 (none), 1 (Tournament) and 3 refuse; only 2 (Franchise) opens the screen.
+        for address, value in ((0xE576A0, 0), (0xE576A0, 1), (0xE576A0, 3), (0xE3C0A0, 0),
                                (0xE3C0A0, self.team + 1), (0xE3C0A0, self.other),
                                (0xE5775C, 0), (self.root + 0x18, 129),
                                (self.root + 4, 0), (0xB72918, 0)):
@@ -213,6 +214,27 @@ class BindingsTests(ScreenMachine):
         self.assertEqual(self.word(self.MANAGER + 0x100), 0)
         self.assertEqual(self.heap_live, set())
         self.assertEqual(bytes(self.uc.mem_read(self.data["va"], 256)), bytes(256))
+
+    def test_franchise_league_mode_opens_the_row_and_other_modes_refuse(self):
+        # Noah's recording 2026-09-23 [v1 5:06-5:30]: in a MyNFL franchise (league mode 2) every press
+        # said "Select your franchise team first." because the context compared the mode with 1
+        # (Tournament). Franchise init 0x13EE10 stores 2 through 0xC7570.
+        self.menu_art_stubs = {0xf2920, 0xf3cd0, 0xf3d60, 0xf2d40, 0xf3680, 0xf3180}
+        self.put(self.MANAGER, self.MANAGER + 0x800)
+        self.put(self.MANAGER + 8, self.labels["descriptor"])
+        self.put(self.MANAGER + 0x100, 1)
+        self.put(0xAA2408, 0)
+        self.call(self.labels["row"], ecx=self.MANAGER)
+        self.assertEqual(self.word(0xAA2408), self.labels["descriptor"])
+        self.assertEqual(self.dialogs, [])
+        for mode in (0, 1, 3):
+            with self.subTest(mode=mode):
+                self.put(0xE576A0, mode)
+                self.put(0xAA2408, 0)
+                self.call(self.labels["row"], ecx=self.MANAGER)
+                self.assertEqual(self.word(0xAA2408), 0)
+                self.assertEqual(self.dialogs[-1], (0x5042FC, self.labels["invalid_text"]))
+        self.put(0xE576A0, 2)
 
     def test_real_activation_binding_passes_manager_sheet_and_row(self):
         self.page()

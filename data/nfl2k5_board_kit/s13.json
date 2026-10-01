@@ -1,0 +1,601 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.4,
+        "colour": [
+          50,
+          52,
+          56
+        ],
+        "depth": 0.12,
+        "material": "wall010"
+      },
+      "inset": 0.0,
+      "name": "bk_board_w",
+      "path": [
+        [
+          -22.91,
+          -107.9
+        ],
+        [
+          22.91,
+          -107.9
+        ]
+      ],
+      "structure": {
+        "colour": [
+          50,
+          52,
+          56
+        ],
+        "depth": 1.5,
+        "material": "wall010"
+      },
+      "width": 45.72,
+      "y": [
+        40.6,
+        51.878
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -19.5,
+          19.5
+        ],
+        "y": [
+          41.5,
+          52.6
+        ],
+        "z": [
+          -105.6,
+          -105.0
+        ]
+      },
+      "materials": [
+        "ad01"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -16.0,
+          16.0
+        ],
+        "y": [
+          35.0,
+          40.0
+        ],
+        "z": [
+          -107.5,
+          -102.5
+        ]
+      },
+      "materials": [
+        "crowd"
+      ]
+    }
+  ],
+  "env": null,
+  "help": "the 2019 west board, 150 x 37 ft, and the Drum Deck",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_w"
+  },
+  "name": "Arrowhead Stadium",
+  "panels": [
+    {
+      "name": "bk_drum_deck",
+      "parts": [
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              0.0,
+              38.16,
+              -102.9
+            ],
+            [
+              0.0,
+              38.16,
+              -107.73
+            ],
+            [
+              -15.35,
+              38.16,
+              -107.0
+            ]
+          ],
+          "toward": [
+            0.0,
+            60.0,
+            -105.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              0.0,
+              38.16,
+              -102.9
+            ],
+            [
+              0.0,
+              38.16,
+              -107.73
+            ],
+            [
+              15.35,
+              38.16,
+              -107.0
+            ]
+          ],
+          "toward": [
+            0.0,
+            60.0,
+            -105.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              15.35,
+              34.6,
+              -102.9
+            ],
+            [
+              -15.35,
+              34.6,
+              -102.9
+            ]
+          ],
+          "toward": [
+            0.0,
+            36.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              -15.35,
+              38.16,
+              -107.0
+            ],
+            [
+              -15.35,
+              37.9,
+              -107.0
+            ],
+            [
+              -15.35,
+              34.8,
+              -102.9
+            ]
+          ],
+          "toward": [
+            -40.0,
+            37.0,
+            -105.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              15.35,
+              38.16,
+              -102.9
+            ],
+            [
+              15.35,
+              38.16,
+              -107.0
+            ],
+            [
+              15.35,
+              37.9,
+              -107.0
+            ],
+            [
+              15.35,
+              34.8,
+              -102.9
+            ]
+          ],
+          "toward": [
+            40.0,
+            37.0,
+            -105.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "rail02",
+          "material": "rail02",
+          "quad": [
+            [
+              -15.35,
+              39.26,
+              -102.95
+            ],
+            [
+              15.35,
+              39.26,
+              -102.95
+            ],
+            [
+              15.35,
+              38.16,
+              -102.95
+            ],
+            [
+              -15.35,
+              38.16,
+              -102.95
+            ]
+          ],
+          "toward": [
+            0.0,
+            39.0,
+            0.0
+          ],
+          "two_sided": true,
+          "uv_m": 2.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              23.31,
+              38.16,
+              -107.92
+            ],
+            [
+              -23.31,
+              38.16,
+              -107.92
+            ]
+          ],
+          "toward": [
+            0.0,
+            39.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              -23.31,
+              40.2,
+              -109.4
+            ],
+            [
+              -23.31,
+              38.16,
+              -109.4
+            ],
+            [
+              -23.31,
+              38.16,
+              -107.92
+            ]
+          ],
+          "toward": [
+            -60.0,
+            39.0,
+            -108.65
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              23.31,
+              40.2,
+              -109.4
+            ],
+            [
+              23.31,
+              38.16,
+              -109.4
+            ],
+            [
+              23.31,
+              38.16,
+              -107.92
+            ]
+          ],
+          "toward": [
+            60.0,
+            39.0,
+            -108.65
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              23.31,
+              40.2,
+              -109.4
+            ],
+            [
+              -23.31,
+              40.2,
+              -109.4
+            ],
+            [
+              -23.31,
+              38.16,
+              -109.4
+            ],
+            [
+              23.31,
+              38.16,
+              -109.4
+            ]
+          ],
+          "toward": [
+            0.0,
+            39.0,
+            -160.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              0.0,
+              40.2,
+              -107.73
+            ],
+            [
+              -13.82,
+              40.2,
+              -107.15
+            ],
+            [
+              -13.82,
+              40.2,
+              -107.92
+            ],
+            [
+              0.0,
+              40.2,
+              -107.92
+            ]
+          ],
+          "toward": [
+            0.0,
+            80.0,
+            -107.8
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              -13.82,
+              40.2,
+              -107.15
+            ],
+            [
+              -23.31,
+              40.2,
+              -106.09
+            ],
+            [
+              -23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              -13.82,
+              40.2,
+              -107.92
+            ]
+          ],
+          "toward": [
+            -18.0,
+            80.0,
+            -107.2
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              0.0,
+              40.2,
+              -107.73
+            ],
+            [
+              13.82,
+              40.2,
+              -107.15
+            ],
+            [
+              13.82,
+              40.2,
+              -107.92
+            ],
+            [
+              0.0,
+              40.2,
+              -107.92
+            ]
+          ],
+          "toward": [
+            0.0,
+            80.0,
+            -107.8
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "wall010",
+          "material": "wall010",
+          "quad": [
+            [
+              13.82,
+              40.2,
+              -107.15
+            ],
+            [
+              23.31,
+              40.2,
+              -106.09
+            ],
+            [
+              23.31,
+              40.2,
+              -107.92
+            ],
+            [
+              13.82,
+              40.2,
+              -107.92
+            ]
+          ],
+          "toward": [
+            18.0,
+            80.0,
+            -107.2
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    },
+    {
+      "name": "bk_board_w_back",
+      "parts": [
+        {
+          "colour": [
+            50,
+            52,
+            56
+          ],
+          "material": "wall010",
+          "quad": [
+            [
+              23.31,
+              52.278,
+              -109.58
+            ],
+            [
+              -23.31,
+              52.278,
+              -109.58
+            ],
+            [
+              -23.31,
+              40.2,
+              -109.58
+            ],
+            [
+              23.31,
+              40.2,
+              -109.58
+            ]
+          ],
+          "toward": [
+            0.0,
+            46.0,
+            -160.0
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "replace": [
+    {
+      "keep": [],
+      "shape": "group379"
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Kansas City Chiefs, 'From a state-of-the-art scoreboard and new seats to updated infrastructure' (2019-08-27, chiefs.com) and Daktronics, 'Daktronics upgrades Arrowhead Stadium for Kansas City Chiefs': in 2019 the west end zone display was replaced with a 37 ft high by 150 ft wide HDR board (10 mm), with the GEHA Drum Deck (now the Drum Deck: the GEHA name ended on 2026-08-05) below it; the east end keeps its football-shaped display (the 2010 HD retrofit, Wikipedia).",
+    "Which end is west (PROVED OFFLINE, retail against photo): the retail +z end carries the smaller oval with a small board on posts above it, as the east end does in the October 2019 Commons photo from section 335 behind the CHIEFS end zone (r007); so -z, with the larger oval, the flag and the two flanking boards, is the west end.",
+    "The retail s13 scene (PROVED OFFLINE): the west oval is group379 (the 10.7 x 6.4 m feed, its frame, posts and flag in lite01, its back in wall01; the shape is removed) and group370's ad01 face at z -105.5 (cut); the flanking boards at x +-34 to +-51 stay. The west upper deck's centre section is one sloped seat quad under rows of crowd strips; its parapet (wall01, 2 m) runs z -107.73 at the centre to -105.49 at x +-28.66, its top 40.2 to 40.8 m.",
+    "DESIGN: the board stands on the parapet at the centre (its face at z -107.9, its frame's foot at 40.2 m), on a concrete base behind the parapet with a cap from the parapet to the base, so it reads as mounted from the field and from the air; frame and body in the retail concrete (wall010) at a dark colour, since rail02 is a see-through railing. The Drum Deck is a concrete platform over the centre section's top three rows (their crowd strips cut), level with the parapet's foot (38.2 m), from z -102.9 to the parapet, with its front face down to the seats and a steel rail. The deck's name sign and the north-side World Cup seat removal are left out.",
+    "DESIGN (main, 2026-09-29): a plain panel in the retail concrete at the board's dark colour covers the board's back (a solid panel from behind, the concrete's pattern tiled flat), 4 cm behind the body's back (z -109.54)."
+  ],
+  "team": "KC",
+  "venue": "s13"
+}

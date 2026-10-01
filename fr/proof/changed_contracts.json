@@ -1,0 +1,913 @@
+[
+  {
+    "index": 86,
+    "name": "Zach Harrison",
+    "team": 14,
+    "gsis_id": "00-0038980",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 25,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        1017778
+      ],
+      "represented_cap_dollars": [
+        1000000
+      ],
+      "errors_dollars": [
+        -17778
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 10,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      411300
+    ]
+  },
+  {
+    "index": 128,
+    "name": "Carl Jones",
+    "team": 24,
+    "gsis_id": "00-0039460",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        949167
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        10833
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 7,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      289583
+    ]
+  },
+  {
+    "index": 176,
+    "name": "Jordan Hancock",
+    "team": 3,
+    "gsis_id": "00-0040192",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 77,
+        "contract_type": 6,
+        "contract_bonus": 0,
+        "contract_length": 3,
+        "contract_remaining": 3
+      },
+      "source_cap_dollars": [
+        671721,
+        1200054,
+        1315054
+      ],
+      "represented_cap_dollars": [
+        680000,
+        1024000,
+        1364000
+      ],
+      "errors_dollars": [
+        8279,
+        -176054,
+        48946
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 90,
+      "contract_type": 7,
+      "contract_bonus": 5,
+      "contract_length": 3,
+      "contract_remaining": 3
+    },
+    "old_source_cap": [
+      1085054,
+      1200054,
+      1315054
+    ]
+  },
+  {
+    "index": 239,
+    "name": "Claudin Cherelus",
+    "team": 20,
+    "gsis_id": "00-0038493",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 20,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        801667
+      ],
+      "represented_cap_dollars": [
+        800000
+      ],
+      "errors_dollars": [
+        -1667
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 32,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1295000
+    ]
+  },
+  {
+    "index": 287,
+    "name": "Scott Daly",
+    "team": 1,
+    "gsis_id": "00-0034067",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        955556
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        4444
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 32,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1300000
+    ]
+  },
+  {
+    "index": 437,
+    "name": "Zach Allen",
+    "team": 4,
+    "gsis_id": "00-0035248",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 2611,
+        "contract_type": 7,
+        "contract_bonus": 0,
+        "contract_length": 4,
+        "contract_remaining": 4
+      },
+      "source_cap_dollars": [
+        20865000,
+        15853000,
+        36243000,
+        36418000
+      ],
+      "represented_cap_dollars": [
+        20884000,
+        20884000,
+        31328000,
+        31328000
+      ],
+      "errors_dollars": [
+        19000,
+        5031000,
+        -4915000,
+        -5090000
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 2639,
+      "contract_type": 6,
+      "contract_bonus": 0,
+      "contract_length": 4,
+      "contract_remaining": 4
+    },
+    "old_source_cap": [
+      16477000,
+      16950000,
+      37340000,
+      37515000
+    ]
+  },
+  {
+    "index": 442,
+    "name": "Garett Bolles",
+    "team": 4,
+    "gsis_id": "00-0033538",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 1487,
+        "contract_type": 6,
+        "contract_bonus": 0,
+        "contract_length": 3,
+        "contract_remaining": 3
+      },
+      "source_cap_dollars": [
+        13200000,
+        25700000,
+        24700000
+      ],
+      "represented_cap_dollars": [
+        13216000,
+        19824000,
+        26432000
+      ],
+      "errors_dollars": [
+        16000,
+        -5876000,
+        1732000
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 953,
+      "contract_type": 6,
+      "contract_bonus": 0,
+      "contract_length": 3,
+      "contract_remaining": 3
+    },
+    "old_source_cap": [
+      8452000,
+      27887000,
+      25887000
+    ]
+  },
+  {
+    "index": 510,
+    "name": "Levi Onwuzurike",
+    "team": 18,
+    "gsis_id": "00-0036954",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 29,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        1147500
+      ],
+      "represented_cap_dollars": [
+        1160000
+      ],
+      "errors_dollars": [
+        12500
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 8,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      330300
+    ]
+  },
+  {
+    "index": 529,
+    "name": "Devin Cochran",
+    "team": 18,
+    "gsis_id": "00-0037414",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 7,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        289583
+      ],
+      "represented_cap_dollars": [
+        280000
+      ],
+      "errors_dollars": [
+        -9583
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 6,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      247500
+    ]
+  },
+  {
+    "index": 630,
+    "name": "Darius Slayton",
+    "team": 10,
+    "gsis_id": "00-0035535",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 29,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        1155556
+      ],
+      "represented_cap_dollars": [
+        1160000
+      ],
+      "errors_dollars": [
+        4444
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 32,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1300000
+    ]
+  },
+  {
+    "index": 772,
+    "name": "Andre Jones",
+    "team": 12,
+    "gsis_id": "00-0038635",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 53,
+        "contract_type": 7,
+        "contract_bonus": 5,
+        "contract_length": 2,
+        "contract_remaining": 2
+      },
+      "source_cap_dollars": [
+        955556,
+        1190000
+      ],
+      "represented_cap_dollars": [
+        952000,
+        1164000
+      ],
+      "errors_dollars": [
+        -3556,
+        -26000
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 6,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      247500
+    ]
+  },
+  {
+    "index": 819,
+    "name": "Nick Samac",
+    "team": 31,
+    "gsis_id": "00-0039237",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 16,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        621667
+      ],
+      "represented_cap_dollars": [
+        640000
+      ],
+      "errors_dollars": [
+        18333
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 27,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1075000
+    ]
+  },
+  {
+    "index": 853,
+    "name": "Dell Pettus",
+    "team": 21,
+    "gsis_id": "00-0039692",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 16,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        624667
+      ],
+      "represented_cap_dollars": [
+        640000
+      ],
+      "errors_dollars": [
+        15333
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 27,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1078000
+    ]
+  },
+  {
+    "index": 880,
+    "name": "Mitch Wishnowsky",
+    "team": 21,
+    "gsis_id": "00-0034941",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        955556
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        4444
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 9,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      371672
+    ]
+  },
+  {
+    "index": 955,
+    "name": "Nikko Reed",
+    "team": 15,
+    "gsis_id": "00-0040471",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        949167
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        10833
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 6,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      247500
+    ]
+  },
+  {
+    "index": 1038,
+    "name": "Troy Reeder",
+    "team": 17,
+    "gsis_id": "00-0035617",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        955556
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        4444
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 10,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      411300
+    ]
+  },
+  {
+    "index": 1055,
+    "name": "Arian Smith",
+    "team": 17,
+    "gsis_id": "00-0040582",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 92,
+        "contract_type": 6,
+        "contract_bonus": 1,
+        "contract_length": 3,
+        "contract_remaining": 3
+      },
+      "source_cap_dollars": [
+        852080,
+        1380413,
+        1495413
+      ],
+      "represented_cap_dollars": [
+        856000,
+        1224000,
+        1592000
+      ],
+      "errors_dollars": [
+        3920,
+        -156413,
+        96587
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 104,
+      "contract_type": 7,
+      "contract_bonus": 6,
+      "contract_length": 3,
+      "contract_remaining": 3
+    },
+    "old_source_cap": [
+      1265413,
+      1380413,
+      1495413
+    ]
+  },
+  {
+    "index": 1156,
+    "name": "Zach Ertz",
+    "team": 13,
+    "gsis_id": "00-0030061",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 7,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        293600
+      ],
+      "represented_cap_dollars": [
+        280000
+      ],
+      "errors_dollars": [
+        -13600
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 32,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1300000
+    ]
+  },
+  {
+    "index": 1220,
+    "name": "Tanner Ingle",
+    "team": 23,
+    "gsis_id": "00-0038366",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 24,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        949167
+      ],
+      "represented_cap_dollars": [
+        960000
+      ],
+      "errors_dollars": [
+        10833
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 7,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      289583
+    ]
+  },
+  {
+    "index": 1235,
+    "name": "Ronnie Rivers",
+    "team": 23,
+    "gsis_id": "00-0037557",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 16,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        621667
+      ],
+      "represented_cap_dollars": [
+        640000
+      ],
+      "errors_dollars": [
+        18333
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 27,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      1075000
+    ]
+  },
+  {
+    "index": 1315,
+    "name": "Hayden Rucci",
+    "team": 8,
+    "gsis_id": "00-0039489",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 22,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        893333
+      ],
+      "represented_cap_dollars": [
+        880000
+      ],
+      "errors_dollars": [
+        -13333
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 6,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      247500
+    ]
+  },
+  {
+    "index": 1331,
+    "name": "Ogbo Okoronkwo",
+    "team": 0,
+    "gsis_id": "00-0034807",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 25,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        1015278
+      ],
+      "represented_cap_dollars": [
+        1000000
+      ],
+      "errors_dollars": [
+        -15278
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 11,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      448172
+    ]
+  },
+  {
+    "index": 1336,
+    "name": "C.J. West",
+    "team": 0,
+    "gsis_id": "00-0040711",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 91,
+        "contract_type": 6,
+        "contract_bonus": 1,
+        "contract_length": 3,
+        "contract_remaining": 3
+      },
+      "source_cap_dollars": [
+        844440,
+        1372773,
+        1487773
+      ],
+      "represented_cap_dollars": [
+        848000,
+        1212000,
+        1572000
+      ],
+      "errors_dollars": [
+        3560,
+        -160773,
+        84227
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 103,
+      "contract_type": 7,
+      "contract_bonus": 6,
+      "contract_length": 3,
+      "contract_remaining": 3
+    },
+    "old_source_cap": [
+      1257773,
+      1372773,
+      1487773
+    ]
+  },
+  {
+    "index": 1552,
+    "name": "Isaac Yiadom",
+    "team": 25,
+    "gsis_id": "00-0034780",
+    "fit": {
+      "evidence": "DESIGN",
+      "fields": {
+        "contract_value": 25,
+        "contract_type": 2,
+        "contract_bonus": 0,
+        "contract_length": 1,
+        "contract_remaining": 1
+      },
+      "source_cap_dollars": [
+        1015278
+      ],
+      "represented_cap_dollars": [
+        1000000
+      ],
+      "errors_dollars": [
+        -15278
+      ],
+      "meaning": "remaining cap liability fitted to native curves; not cash or guaranteed money"
+    },
+    "old_fields": {
+      "contract_value": 6,
+      "contract_type": 2,
+      "contract_bonus": 0,
+      "contract_length": 1,
+      "contract_remaining": 1
+    },
+    "old_source_cap": [
+      247500
+    ]
+  }
+]

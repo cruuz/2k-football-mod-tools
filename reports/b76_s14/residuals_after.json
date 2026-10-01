@@ -1,0 +1,503 @@
+{
+ "tag": "after",
+ "metric": "mean player pixels over both states or matchups and both aspects; the logo and wing proxies overlap and must not be summed",
+ "rows": [
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "wing_colour",
+   "visible_area_px": 986,
+   "rgb_diagnostic_px": 7123
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "logo",
+   "visible_area_px": 1203,
+   "rgb_diagnostic_px": 9436
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "score",
+   "visible_area_px": 265,
+   "rgb_diagnostic_px": 878
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "down_capsule",
+   "visible_area_px": 608,
+   "rgb_diagnostic_px": 3595
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "housing_rim",
+   "visible_area_px": 156,
+   "rgb_diagnostic_px": 3749
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "43",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "pill",
+   "visible_area_px": 231,
+   "rgb_diagnostic_px": 936
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "wing_colour",
+   "visible_area_px": 992,
+   "rgb_diagnostic_px": 7309
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "logo",
+   "visible_area_px": 1266,
+   "rgb_diagnostic_px": 9605
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "score",
+   "visible_area_px": 199,
+   "rgb_diagnostic_px": 739
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "down_capsule",
+   "visible_area_px": 571,
+   "rgb_diagnostic_px": 3604
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "housing_rim",
+   "visible_area_px": 162,
+   "rgb_diagnostic_px": 3740
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q1",
+   "aspect": "169",
+   "reference": "frame_000120.png",
+   "reference_sha256": "931a7e70a97ab3792f4b2afc95cd33b863db8341c1cc2682e7dec514a7eabfc3",
+   "feature": "pill",
+   "visible_area_px": 230,
+   "rgb_diagnostic_px": 948
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "wing_colour",
+   "visible_area_px": 890,
+   "rgb_diagnostic_px": 7169
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "logo",
+   "visible_area_px": 1205,
+   "rgb_diagnostic_px": 9493
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "score",
+   "visible_area_px": 138,
+   "rgb_diagnostic_px": 992
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "down_capsule",
+   "visible_area_px": 540,
+   "rgb_diagnostic_px": 3459
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "housing_rim",
+   "visible_area_px": 158,
+   "rgb_diagnostic_px": 3717
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "43",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "pill",
+   "visible_area_px": 444,
+   "rgb_diagnostic_px": 1350
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "wing_colour",
+   "visible_area_px": 907,
+   "rgb_diagnostic_px": 7314
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "logo",
+   "visible_area_px": 1268,
+   "rgb_diagnostic_px": 9642
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "score",
+   "visible_area_px": 70,
+   "rgb_diagnostic_px": 808
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "down_capsule",
+   "visible_area_px": 501,
+   "rgb_diagnostic_px": 3469
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "housing_rim",
+   "visible_area_px": 162,
+   "rgb_diagnostic_px": 3727
+  },
+  {
+   "group": "NYG_LAR",
+   "case": "NYG_LAR_q4",
+   "aspect": "169",
+   "reference": "frame_000620.png",
+   "reference_sha256": "fd25f90e071674acbdd761ee4df1969fbfe4e074a3520427b337a0016defee97",
+   "feature": "pill",
+   "visible_area_px": 498,
+   "rgb_diagnostic_px": 1442
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "wing_colour",
+   "visible_area_px": 707,
+   "rgb_diagnostic_px": 5099
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "logo",
+   "visible_area_px": 1209,
+   "rgb_diagnostic_px": 8288
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "score",
+   "visible_area_px": 4,
+   "rgb_diagnostic_px": 561
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "down_capsule",
+   "visible_area_px": 556,
+   "rgb_diagnostic_px": 3881
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "housing_rim",
+   "visible_area_px": 771,
+   "rgb_diagnostic_px": 3751
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "43",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "pill",
+   "visible_area_px": 344,
+   "rgb_diagnostic_px": 1195
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "wing_colour",
+   "visible_area_px": 739,
+   "rgb_diagnostic_px": 5204
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "logo",
+   "visible_area_px": 1255,
+   "rgb_diagnostic_px": 8390
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "score",
+   "visible_area_px": 0,
+   "rgb_diagnostic_px": 532
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "down_capsule",
+   "visible_area_px": 569,
+   "rgb_diagnostic_px": 3893
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "housing_rim",
+   "visible_area_px": 770,
+   "rgb_diagnostic_px": 3764
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "DEN_KC",
+   "aspect": "169",
+   "reference": "s_00724.jpg",
+   "reference_sha256": "6274b8fcc7f644999d1be7aaa74472b2ae865a76d80019cd0a05093c061f932f",
+   "feature": "pill",
+   "visible_area_px": 341,
+   "rgb_diagnostic_px": 1269
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "wing_colour",
+   "visible_area_px": 1120,
+   "rgb_diagnostic_px": 4111
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "logo",
+   "visible_area_px": 2272,
+   "rgb_diagnostic_px": 8622
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "score",
+   "visible_area_px": 43,
+   "rgb_diagnostic_px": 888
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "down_capsule",
+   "visible_area_px": 649,
+   "rgb_diagnostic_px": 2602
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "housing_rim",
+   "visible_area_px": 596,
+   "rgb_diagnostic_px": 3854
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "43",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "pill",
+   "visible_area_px": 492,
+   "rgb_diagnostic_px": 1722
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "wing_colour",
+   "visible_area_px": 1096,
+   "rgb_diagnostic_px": 4125
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "logo",
+   "visible_area_px": 2220,
+   "rgb_diagnostic_px": 8558
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "score",
+   "visible_area_px": 20,
+   "rgb_diagnostic_px": 821
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "down_capsule",
+   "visible_area_px": 673,
+   "rgb_diagnostic_px": 2586
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "housing_rim",
+   "visible_area_px": 592,
+   "rgb_diagnostic_px": 3842
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "case": "LV_HOU",
+   "aspect": "169",
+   "reference": "frame_005000.jpg",
+   "reference_sha256": "559562073ef693f73561954f9aba6a826f52d877c261301d2fe4e1fe85d08846",
+   "feature": "pill",
+   "visible_area_px": 518,
+   "rgb_diagnostic_px": 1744
+  }
+ ],
+ "NYG_LAR": {
+  "wing_colour": 943.75,
+  "logo": 1235.5,
+  "score": 168.0,
+  "down_capsule": 555.0,
+  "housing_rim": 159.5,
+  "pill": 350.75
+ },
+ "DEN_KC_LV_HOU": {
+  "wing_colour": 915.5,
+  "logo": 1739.0,
+  "score": 16.75,
+  "down_capsule": 611.75,
+  "housing_rim": 682.25,
+  "pill": 423.75
+ },
+ "seconds": 57.5
+}

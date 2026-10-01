@@ -21,6 +21,8 @@ PINS = (
 def resources():
     from mod_editor.core import nfl2k5_roster_records as roster
     try:
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
         with roster._outer_image()(XBE.parent) as archive:
             out = []
             for entry, offset, size, kind, name, digest in PINS:

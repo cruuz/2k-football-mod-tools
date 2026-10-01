@@ -160,7 +160,8 @@ def observe_build_choices(panel, changed):
     for widget in panel.findChildren(QObject):
         if isinstance(widget, QCheckBox):
             widget.toggled.connect(changed)
-        elif isinstance(widget, QComboBox):
+        elif isinstance(widget, QComboBox) and widget is not getattr(panel, "equipment_refit_choice", None):
+            # This picker targets a refit action; refreshing its rows is not a Build edit.
             widget.currentIndexChanged.connect(changed)
         elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
             widget.valueChanged.connect(changed)

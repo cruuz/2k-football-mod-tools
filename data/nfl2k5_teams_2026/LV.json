@@ -1,0 +1,686 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "LV",
+ "name": "Las Vegas Raiders",
+ "asset_code": "20",
+ "season": 2026,
+ "status": "Phase B d4 (2026-09-23): KEPT its 2004 look (black home and white road jerseys, silver numbers at home, black numbers with a silver outline on the road, silver pants with a black stripe, silver helmet with a black stripe). Palette silver; Reebok marks become Nike swooshes; helmet shield redrawn from the NFL club mark. Albedo INFERRED from retail tones and 2026 week 1-2 photos.",
+ "sources": {
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (LV, 2026 NFL Record and Fact Book)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/LV.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Las_Vegas_Raiders&action=raw (Logos and uniforms)",
+  "home_photos": "https://www.raiders.com/photos/top-shots-raiders-vs-dolphins-week-1 (2026-09-13, black over silver)",
+  "road_photos": "https://www.chargers.com/photos/2026-game-action-photos-week-2-raiders (2026-09-20, white over silver)",
+  "no_change_2026": "https://www.colorwaysports.com/stories/raiders-uniform-schedule-2026 (no alternate, no throwback, no alternate helmet in 2026)",
+  "head_coach": "raiders.com photo captions, 2026 week 1: 'Las Vegas Raiders Head Coach Klint Kubiak'"
+ },
+ "palette": {
+  "silver": "#C8C7C7",
+  "black": "#000000",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "black": "#121216",
+  "silver": "#C8C7C7",
+  "helmet_silver": "#BCBCBE",
+  "white": "#FFFFFF",
+  "pure_black": "#000000",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_black": "#0E0E10",
+  "pad_black": "#141416",
+  "banner_silver": "#C8C7C7"
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "depth_since": "2026-09-09",
+  "depth_note": "mean rank over the regular-season depth chart snapshots since 2026-09-09",
+  "defense": "3-4",
+  "head_coach": "Klint Kubiak",
+  "roster_abbreviation": "OAK",
+  "defense_source": "nflverse depth_charts_2026 since 2026-09-09: LDE, NT, RDE, LILB, RILB, SLB, WLB slots (3-4)",
+  "head_coach_note": "nflverse games.csv spells him 'Klint Kubliak' (typo); the written name is Klint Kubiak (raiders.com). First season as a head coach, so the career record before 2026 is 0-0 under either spelling."
+ },
+ "marks": {
+  "team_logo": "lv_shield_club.png",
+  "team_logo_silhouette": "lv_shield_silhouette.png",
+  "raiders_letters": "lv_raiders_letters.png",
+  "raiders_outline": "lv_raiders_letters_outline.png",
+  "shield_black": "lv_shield_black.png",
+  "shield_silver": "lv_shield_silver.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "20H0",
+   "note": "2026 home: black jersey with plain silver numbers, plain black sleeves, silver pants with a black stripe, black socks, silver helmet with a black stripe and the shield",
+   "torso": {
+    "base_colour": "black",
+    "neck_donor": "20H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "black",
+    "stripes_from": null
+   },
+   "pants": {
+    "base_colour": "silver",
+    "stripe": [
+     [
+      "pure_black",
+      14
+     ]
+    ],
+    "swoosh_colour": "pure_black"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "20H0",
+    "fill": "silver"
+   },
+   "nameplate": {
+    "glyph_donor": "20H0",
+    "fill": "silver"
+   },
+   "helmet_digits": {
+    "glyph_donor": "20H0",
+    "fill": "pure_black"
+   },
+   "helmet": {
+    "shell_from": "#B2B3B6",
+    "shell": "helmet_silver",
+    "recolour": [],
+    "decal": {
+     "mark": "team_logo",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 3778,
+   "splayer": {
+    "torso_donor_outer": 3778,
+    "torso_donor": "20H0",
+    "sleeve_from_donor": false
+   },
+   "card": {
+    "recolour": []
+   }
+  },
+  "away": {
+   "selector": "20A0",
+   "note": "2026 road: white jersey with black numbers in a thin silver outline, plain white sleeves, silver pants with a black stripe, black socks, the same helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "20H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "pure_black"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null
+   },
+   "pants": {
+    "base_colour": "silver",
+    "stripe": [
+     [
+      "pure_black",
+      14
+     ]
+    ],
+    "swoosh_colour": "pure_black"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "20A0",
+    "fill": "pure_black",
+    "outline": "silver",
+    "outline_frac": 0.048
+   },
+   "nameplate": {
+    "glyph_donor": "20A0",
+    "fill": "pure_black"
+   },
+   "helmet_digits": {
+    "glyph_donor": "20A0",
+    "fill": "pure_black"
+   },
+   "helmet": {
+    "shell_from": "#B2B3B6",
+    "shell": "helmet_silver",
+    "recolour": [],
+    "decal": {
+     "mark": "team_logo",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 4095,
+   "splayer": {
+    "torso_donor_outer": 4095,
+    "torso_donor": "20A0",
+    "sleeve_from_donor": false
+   },
+   "card": {
+    "recolour": []
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "helmet": "silver shell, black centre stripe, the black Raiders shield with silver and white details, grey hardware, flag and shield decals",
+   "digit_helmet": "black numbers (unused by the Raiders helmet)",
+   "torso": "black jersey body, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "plain black",
+   "pants": "silver with a black side stripe, black maker mark",
+   "digit_jersey": "plain silver numbers",
+   "digit_arm": "plain silver numbers",
+   "nameplate": "silver letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: silver pants with a black stripe, black torso, silver helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: black jersey with a silver number, silver pants, silver helmet lit warm (cream) by the render lights",
+   "team-select_helm": "menu render: silver helmet with the Raiders shield, grey facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "helmet": "silver shell, black centre stripe, the black Raiders shield with silver and white details, grey hardware, flag and shield decals",
+   "digit_helmet": "black numbers (unused by the Raiders helmet)",
+   "torso": "white jersey body, small NFL shield at the collar, black maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "plain white",
+   "pants": "silver with a black side stripe, black maker mark",
+   "digit_jersey": "black numbers with a thin silver outline",
+   "digit_arm": "black numbers with a thin silver outline",
+   "nameplate": "black letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: silver pants with a black stripe, white torso, silver helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a black number, silver pants, silver helmet lit warm (cream) by the render lights",
+   "team-select_helm": "menu render: silver helmet with the Raiders shield, grey facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "black painted end zone, white RAIDERS with a silver outline, Raiders shields at both sides",
+   "center_logo": "the black Raiders shield with white border and silver details",
+   "banner": "cloth fan banners in black, silver and white with white or black lettering",
+   "wall": "black field-level pads; a black board reading the home of the Las Vegas Raiders"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "AJ Cole": 0,
+   "Adam Butler": 4,
+   "Aidan O'Connell": 0,
+   "Alex Ward": 0,
+   "Ashton Jeanty": 4,
+   "Brock Bowers": 0,
+   "Bryce Cabeldue": 0,
+   "Caleb Rogers": 3,
+   "Charles Grant": 4,
+   "Cody Lindenberg": 0,
+   "Connor Heyward": 3,
+   "DJ Glaze": 4,
+   "Dalton Johnson": 2,
+   "Dareke Young": 4,
+   "Darien Porter": 3,
+   "Darrell Luter": 5,
+   "Dylan Laube": 0,
+   "Eric Stokes": 3,
+   "Fernando Mendoza": 1,
+   "Foley Fatukasi": 5,
+   "Ian Thomas": 5,
+   "Isaiah Pola-Mao": 2,
+   "JJ Pegues": 4,
+   "Jack Bech": 0,
+   "Jackson Powers-Johnson": 0,
+   "Jalen Nailor": 3,
+   "Jeremy Chinn": 3,
+   "Jermod McCoy": 3,
+   "Jonah Laulu": 2,
+   "Kirk Cousins": 0,
+   "Kolton Miller": 0,
+   "Kwity Paye": 5,
+   "Malcolm Koonce": 4,
+   "Malik Benson": 3,
+   "Matt Gay": 0,
+   "Maxx Crosby": 0,
+   "Michael Mayer": 0,
+   "Mike Washington": 3,
+   "Nakobe Dean": 3,
+   "Patrick Johnson": 3,
+   "Quay Walker": 3,
+   "Segun Olubi": 5,
+   "Spencer Burford": 4,
+   "Taron Johnson": 3,
+   "Thomas Booker": 4,
+   "Tommy Eichenberg": 0,
+   "Tonka Hemingway": 4,
+   "Tre Tucker": 3,
+   "Trey Zuhn": 0,
+   "Treydan Stukes": 3,
+   "Tristin McCollum": 2,
+   "Tyler Linderbaum": 0
+  },
+  "dreads": [
+   "Ashton Jeanty",
+   "Eric Stokes",
+   "Tre Tucker",
+   "Darrell Luter",
+   "Ian Thomas",
+   "Jalen Nailor",
+   "Jermod McCoy",
+   "Mike Washington",
+   "Spencer Burford",
+   "Tonka Hemingway"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest) by eye from the official 2026 headshots (INFERRED); automatic estimates kept in faces.json. Dreads by eye from the headshot sheet. Hezekiah Masses has no 2026 headshot: generic head."
+ },
+ "venue": {
+  "prefix": "s20",
+  "notes": "Raiders home games at the retail Oakland Coliseum scene (Allegiant Stadium since 2020; Noah: keep the stadiums, only the team art changes). End zones: painted black (2026 week 1 photo shows black paint past the goal line), the shield's own RAIDERS lettering in white with a silver outline, shields at both sides; both ends read RAIDERS (the retail south end read OAKLAND): INFERRED, no 2026 photo shows the lettering. Midfield: the Raiders shield (full colour, written by hand from the club SVG). Field-level pads black (2026 photo: black wall with the shield). The ad board 'Home of your Oakland Raiders' becomes 'Home of the Las Vegas Raiders'.",
+  "sources": [
+   "https://www.raiders.com/photos/top-shots-raiders-vs-dolphins-week-1 (2026-09-13, black end zone paint and black field wall)",
+   "https://static.www.nfl.com/league/api/clubs/logos/LV.svg"
+  ],
+  "endzone": {
+   "paint": "field_black",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "raiders_outline",
+     "colour": "silver",
+     "center": [
+      384,
+      64
+     ],
+     "height": 63.57,
+     "stretch": 1.0
+    },
+    {
+     "mark": "raiders_letters",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 63.57,
+     "stretch": 1.0
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      84,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_black",
+     "colour": "pure_black",
+     "center": [
+      84,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_silver",
+     "colour": "silver",
+     "center": [
+      84,
+      64.0
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      684,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_black",
+     "colour": "pure_black",
+     "center": [
+      684,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_silver",
+     "colour": "silver",
+     "center": [
+      684,
+      64.0
+     ],
+     "height": 86,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_black",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "raiders_outline",
+     "colour": "silver",
+     "center": [
+      384,
+      64
+     ],
+     "height": 63.57,
+     "stretch": 1.0
+    },
+    {
+     "mark": "raiders_letters",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 63.57,
+     "stretch": 1.0
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      84,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_black",
+     "colour": "pure_black",
+     "center": [
+      84,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_silver",
+     "colour": "silver",
+     "center": [
+      84,
+      64.0
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "team_logo_silhouette",
+     "colour": "white",
+     "center": [
+      684,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_black",
+     "colour": "pure_black",
+     "center": [
+      684,
+      64
+     ],
+     "height": 86,
+     "stretch": 1.12
+    },
+    {
+     "mark": "shield_silver",
+     "colour": "silver",
+     "center": [
+      684,
+      64.0
+     ],
+     "height": 86,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "team_logo_silhouette",
+   "outline": "white",
+   "fill_mark": "shield_black",
+   "fill": "pure_black",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       61
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "RAIDER\nNATION",
+        "colour": "white",
+        "center": [
+         64.0,
+         30.5
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "banner_silver",
+      "items": [
+       {
+        "text": "JUST WIN,\nBABY!",
+        "colour": "pure_black",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       62
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "CROSBY\n#98",
+        "colour": "banner_silver",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       133,
+       2,
+       252,
+       62
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BOWERS\n#89",
+        "colour": "pure_black",
+        "center": [
+         192.5,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       2,
+       70,
+       254,
+       125
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "SILVER & BLACK",
+        "colour": "white",
+        "center": [
+         128.0,
+         96.5
+        ],
+        "height": 18
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       5,
+       2,
+       123,
+       62
+      ],
+      "bg": "banner_silver",
+      "items": [
+       {
+        "text": "JEANTY\n#2",
+        "colour": "pure_black",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       5,
+       66,
+       123,
+       126
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "LAS VEGAS\nRAIDERS",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "ad_bb02": {
+    "banners": [
+     {
+      "slot": [
+       65,
+       128,
+       179,
+       217
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "WELCOME TO\nTHE HOME OF THE",
+        "colour": "banner_silver",
+        "center": [
+         122,
+         146
+        ],
+        "height": 8
+       },
+       {
+        "text": "LAS VEGAS\nRAIDERS",
+        "colour": "white",
+        "center": [
+         122,
+         188
+        ],
+        "height": 14
+       }
+      ]
+     }
+    ]
+   },
+   "wall06": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "pad_black",
+      "items": []
+     }
+    ]
+   },
+   "wall01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       128
+      ],
+      "bg": "pad_black",
+      "items": []
+     }
+    ]
+   }
+  }
+ }
+}

@@ -114,11 +114,17 @@ def _integer(value, low, high):
         raise ValidationError(f"Choose a whole number from {low} to {high}")
 
 
+def policy_rows(policies, name, factory):
+    rows = policies.get(name, [])
+    return list(rows) + [factory() for _ in range(13-len(rows))]
+
+
 def validate_request(request):
     if not isinstance(request, dict):
         raise ValidationError("Choose a CPU Play Calling edit")
     fields = {
         "situation_mask": {"book", "key", "formation", "exclude"},
+        "situation_weight": {"book", "key", "formation", "value"},
         "situation_personnel_row": {"book", "key", "category", "value"},
         "situation_masks_enabled": {"enabled"},
         "ratings": {"book", "formation", "ratings"},
@@ -140,11 +146,16 @@ def validate_request(request):
     if kind == "situation_masks_enabled" and type(request["enabled"]) is not bool:
         raise ValidationError("Choose whether situation exclusions are enabled")
     if kind == "situation_personnel_row":
-        _integer(request["key"], 0, 11)
+        _integer(request["key"], 0, 12)
         if request["value"] is not None:
             _integer(request["value"], 0, 10)
+    if kind == "situation_weight":
+        from mod_editor.core.apf2k8_situation_mask import canonical_formation_weights
+        _integer(request["key"], 0, 12)
+        _integer(request["formation"], 0, 150)
+        canonical_formation_weights({request["book"]: [{str(request["formation"]): request["value"]} for _ in range(13)]})
     if kind == "situation_mask":
-        _integer(request["key"], 0, 11)
+        _integer(request["key"], 0, 12)
         _integer(request["formation"], 0, 150)
         if type(request["exclude"]) is not bool:
             raise ValidationError("Choose whether to exclude this formation here")
@@ -217,9 +228,11 @@ class State:
     situation_masks: dict = field(default_factory=dict)
     situation_masks_enabled: bool = False
     situation_personnel_rows: dict = field(default_factory=dict)
+    situation_formation_weights: dict = field(default_factory=dict)
 
     def copy(self):
         return replace(self, books=dict(self.books), sides=dict(self.sides),
+                       situation_formation_weights=deepcopy(self.situation_formation_weights),
                        situation_personnel_rows={name: [dict(row) for row in rows] for name, rows in self.situation_personnel_rows.items()},
                        situation_masks={name: [list(row) for row in rows] for name, rows in self.situation_masks.items()})
 
@@ -348,8 +361,8 @@ class PlayCallingService:
             inputs.append(digest(state.master))
         if kind == 'tendency':
             inputs.append(digest(state.rost))
-        if kind in {'situation_mask', 'situation_personnel_row'}:
-            inputs.extend((state.situation_masks, state.situation_personnel_rows, digest(state.master)))
+        if kind in {'situation_mask', 'situation_personnel_row', 'situation_weight'}:
+            inputs.extend((state.situation_masks, state.situation_personnel_rows, state.situation_formation_weights, digest(state.master)))
         if kind == 'situation_masks_enabled':
             inputs.append(state.situation_masks_enabled)
         return json_bytes([request, inputs, self.backend.lineup_callers])
@@ -488,10 +501,12 @@ class PlayCallingService:
         kind = request["kind"]
         if kind == "situation_masks_enabled":
             return state.situation_masks_enabled
+        if kind == "situation_weight":
+            return policy_rows(state.situation_formation_weights, request["book"], dict)[request["key"]].get(str(request["formation"]), 1.)
         if kind == "situation_personnel_row":
-            return state.situation_personnel_rows.get(request["book"], [{} for _ in range(12)])[request["key"]].get(str(request["category"]))
+            return policy_rows(state.situation_personnel_rows, request["book"], dict)[request["key"]].get(str(request["category"]))
         if kind == "situation_mask":
-            return request["formation"] in state.situation_masks.get(request["book"], [[] for _ in range(12)])[request["key"]]
+            return request["formation"] in policy_rows(state.situation_masks, request["book"], list)[request["key"]]
         if kind == "scheme":
             team = next(t for t in state.teams if t["team_index"] == request["team"])
             return {"book": team["offense"], "book_sha256": digest(state.books[team["offense"]]),
@@ -533,8 +548,20 @@ class PlayCallingService:
         scheme_receipt = None
         if kind == "situation_masks_enabled":
             state.situation_masks_enabled = request["enabled"]
+        elif kind == "situation_weight":
+            from mod_editor.core.apf2k8_situation_mask import canonical_formation_weights
+            name = request["book"]
+            if name not in state.books or state.sides.get(name) != "offense":
+                raise ValidationError("Choose an offensive book for formation weights")
+            if self._record(state.books[name], request["formation"]) is None:
+                raise ValidationError("This formation is no longer in the book; refresh its candidates")
+            rows = state.situation_formation_weights.setdefault(name, [{} for _ in range(13)])
+            rows[request["key"]][str(request["formation"])] = request["value"]
+            state.situation_formation_weights = canonical_formation_weights(state.situation_formation_weights)
+            from .situation_masks import policy_data
+            policy_data(state)
         elif kind == "situation_personnel_row":
-            from mod_editor.core.apf2k8_situation_mask import canonical_personnel_rows, encode_data
+            from mod_editor.core.apf2k8_situation_mask import canonical_personnel_rows
             name = request["book"]
             if name not in state.books or state.sides.get(name) != "offense":
                 raise ValidationError("Choose an offensive book for personnel rows")
@@ -542,9 +569,11 @@ class PlayCallingService:
             if category.row > 10:
                 raise ValidationError("Choose ordinary offensive personnel for this situation")
             rows = state.situation_personnel_rows.setdefault(name, [{} for _ in range(12)])
+            if request["key"] == 12 and len(rows) == 12: rows.append({})
             rows[request["key"]][str(request["category"])] = request["value"]
-            state.situation_personnel_rows = canonical_personnel_rows(state.situation_personnel_rows)
-            encode_data(state.situation_masks, state.situation_personnel_rows)
+            state.situation_personnel_rows = canonical_personnel_rows(state.situation_personnel_rows, key_count=max(map(len, state.situation_personnel_rows.values()), default=12))
+            from .situation_masks import policy_data
+            policy_data(state)
         elif kind == "situation_mask":
             from mod_editor.core.apf2k8_situation_mask import canonical_policies
             name = request["book"]
@@ -553,13 +582,14 @@ class PlayCallingService:
             if self._record(state.books[name], request["formation"]) is None:
                 raise ValidationError("This formation is no longer in the book; refresh its candidates")
             rows = state.situation_masks.setdefault(name, [[] for _ in range(12)])
+            if request["key"] == 12 and len(rows) == 12: rows.append([])
             values = set(rows[request["key"]])
             if request["exclude"]: values.add(request["formation"])
             else: values.discard(request["formation"])
             rows[request["key"]] = sorted(values)
-            state.situation_masks = canonical_policies(state.situation_masks)
-            from mod_editor.core.apf2k8_situation_mask import encode_data
-            encode_data(state.situation_masks, state.situation_personnel_rows)
+            state.situation_masks = canonical_policies(state.situation_masks, key_count=max(map(len, state.situation_masks.values()), default=12))
+            from .situation_masks import policy_data
+            policy_data(state)
         elif kind == "scheme":
             from mod_editor.core.apf2k8_offensive_schemes import apply_scheme
             team = next(t for t in state.teams if t["team_index"] == request["team"])
@@ -663,7 +693,7 @@ class PlayCallingService:
         if key is not None:
             books = {name: body for name, body in state.books.items() if original.books.get(name) != body}
             fields = {name: deepcopy(getattr(state, name)) for name in
-                      ('master', 'rost', 'teams', 'sides', 'situation_masks', 'situation_masks_enabled', 'situation_personnel_rows')
+                      ('master', 'rost', 'teams', 'sides', 'situation_masks', 'situation_masks_enabled', 'situation_personnel_rows', 'situation_formation_weights')
                       if getattr(original, name) != getattr(state, name)}
             self._remember(self._transitions, key, (books, fields, deepcopy(event)), 128)
         return state, event
@@ -883,9 +913,10 @@ class PlayCallingService:
         state, model = context["state"], self.backend.model
         book = state.books[context["book"]]
         tendency = context.get("preview_tendency", context["tendency"])
-        masks = state.situation_masks.get(context["book"], [[] for _ in range(12)]) if state.situation_masks_enabled else [[] for _ in range(12)]
-        overrides = state.situation_personnel_rows.get(context["book"], [{} for _ in range(12)]) if state.situation_masks_enabled else [{} for _ in range(12)]
-        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows), json_bytes(masks), json_bytes(overrides))
+        masks = policy_rows(state.situation_masks if state.situation_masks_enabled else {}, context["book"], list)
+        overrides = policy_rows(state.situation_personnel_rows if state.situation_masks_enabled else {}, context["book"], dict)
+        weights = policy_rows(state.situation_formation_weights if state.situation_masks_enabled else {}, context["book"], dict)
+        key = (digest(book), digest(state.master), tendency, side, json_bytes(rows), json_bytes(masks), json_bytes(overrides), json_bytes(weights))
         if key in self.cache:
             self.cache.move_to_end(key)
             return self.cache[key]
@@ -898,6 +929,8 @@ class PlayCallingService:
                 kwargs = {"exclusions": excluded} if excluded else {}
                 if overrides[situation_key(situation)]:
                     kwargs["personnel_rows"] = overrides[situation_key(situation)]
+                if weights[situation_key(situation)]:
+                    kwargs["formation_multipliers"] = weights[situation_key(situation)]
                 call = model.predict_offense(book, state.master, tendency / 100, situation, seeds=256, **kwargs)
             else:
                 call = model.predict_defense(book, state.master, values["offense_category_row"], values["yards_to_goal"], seeds=256)
@@ -912,13 +945,15 @@ class PlayCallingService:
         model, state = self.backend.model, context["state"]
         book = state.books[context["book"]]
         if side == "offense":
-            from mod_editor.core.apf2k8_situation_mask import situation_key
-            overrides = state.situation_personnel_rows.get(context["book"], [{} for _ in range(12)]) if state.situation_masks_enabled else [{} for _ in range(12)]
-            masks = state.situation_masks.get(context["book"], [[] for _ in range(12)]) if state.situation_masks_enabled else [[] for _ in range(12)]
-            return [{"name": bucket.name, "note": bucket.note + (" Preview assumes the matching v2 situation patch is installed and enabled. Gameplay UNWITNESSED." if state.situation_masks_enabled else ""),
+            overrides = policy_rows(state.situation_personnel_rows if state.situation_masks_enabled else {}, context["book"], dict)
+            masks = policy_rows(state.situation_masks if state.situation_masks_enabled else {}, context["book"], list)
+            weights = policy_rows(state.situation_formation_weights if state.situation_masks_enabled else {}, context["book"], dict)
+            from mod_editor.core.apf2k8_situation_catalog import mapping_note, bucket_key
+            return [{"name": bucket.name, "note": mapping_note(bucket) + " " + bucket.note + (" Preview assumes the matching situation patch is installed and enabled. Gameplay UNWITNESSED." if state.situation_masks_enabled else ""),
                      "row": model.requested_offense_row(bucket.situation()),
                      "candidates": model.situation_candidates(book, state.master, bucket.situation(),
-                         personnel_rows=overrides[situation_key(bucket.situation())], exclusions=masks[situation_key(bucket.situation())])}
+                         personnel_rows=overrides[bucket_key(bucket)], exclusions=masks[bucket_key(bucket)],
+                         formation_multipliers=weights[bucket_key(bucket)])}
                     for bucket in BUCKETS]
         return [{"name": f"Opposing personnel row {row}",
                  "note": "Defense responds to the opposing personnel; membership edits apply throughout this book.",

@@ -197,6 +197,13 @@ class PackExtentResolverTests(unittest.TestCase):
             mock.patch.object(mod_build, "_tools_module", tools),
             mock.patch.object(mod_build, "_xbe_bytes", lambda _p, **_kw: b"XBEH"),
             mock.patch.object(mod_build, "inspect", lambda _p, **_kw: {"stubbed": True}),
+            # This directory-address fixture has random pack bytes, not PLAY
+            # books. The scoring gate has its own real/synthetic archive tests.
+            mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}),
+            # Keep the output at its original sectors to isolate the schedule
+            # writer. Compaction's separate tests prove the final file move.
+            mock.patch("mod_editor.core.xdvdfs_compact.finish_private",
+                       return_value={"output_bytes": self.image.stat().st_size}),
             mock.patch.object(mod_build, "PACK0_SIZE", PACK0_SIZE),
             mock.patch.object(mod_build.tt, "write_copy", write_copy),
         ):

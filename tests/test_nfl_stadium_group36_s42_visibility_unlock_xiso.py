@@ -22,6 +22,9 @@ BUILD = ROOT / "build/nfl2k5-stadium-group36-geometry-xiso-20260713"
 class NflGroup36S42VisibilityUnlockXisoTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (XBE,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Retail NFL executable missing: " + ", ".join(missing))
         cls.source_xbe = XBE.read_bytes()
 
     def test_exact_table_mapping_and_complete_difference_contract(self) -> None:

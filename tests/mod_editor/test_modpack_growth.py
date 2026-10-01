@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
+import zlib
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / 'tests'), str(ROOT / 'tests/mod_editor')]
@@ -251,15 +252,16 @@ class ChainedGrowthTests(unittest.TestCase):
 
 class LegacyPackTests(unittest.TestCase):
     def test_frozen_beta60_and_beta61_basic_and_advanced_packs(self):
-        from nfl2k5_depth_chart_rows_test import fixture, prepare
-        from mod_editor.core import nfl2k5_depth_chart_rows as rows
         fixtures = ROOT / 'tests/fixtures/modpack_legacy'
         receipts = json.loads((fixtures / 'receipts.json').read_text())
         with tempfile.TemporaryDirectory() as temp, patch.object(
                 storage, 'RETAIL_CONTENT_SHA256', m._sha256(bytes(storage.RETAIL_SIZE))):
             root = Path(temp).resolve()
-            retail = fixture()
-            special = bytes(rows.apply(prepare(retail))[0])
+            # Freeze the original synthetic inputs as well as the old packs.
+            # Live patch fixtures gain new sites; they cannot reconstruct a
+            # historical base or expected result without changing its hash.
+            retail = zlib.decompress((fixtures / 'advanced-retail.xbe.zlib').read_bytes())
+            special = zlib.decompress((fixtures / 'advanced-special.xbe.zlib').read_bytes())
             for receipt in receipts:
                 with self.subTest(pack=receipt['file']):
                     beta, preset = receipt['file'].removesuffix('.2k5patch').split('-')[1:]
@@ -267,8 +269,9 @@ class LegacyPackTests(unittest.TestCase):
                     base.write_bytes(build_xdvdfs({'default.xbe': retail if preset == 'advanced' else b'XBEH'+bytes(100),
                                                   'next.bin': b'neighbour'}, tail_pad=19))
                     shutil.copyfile(base, expected)
+                    if preset == 'advanced':
+                        write_file(expected, 'default.xbe', special)
                     with expected.open('r+b') as f:
-                        if preset == 'advanced': storage.write_image_xbe(f.fileno(), special)
                         m._pwrite_all(f.fileno(), f'beta-{beta} {preset}'.encode(), 123, 'fixture marker')
                     pack = fixtures / receipt['file']
                     self.assertEqual(m.hash_file(pack), receipt['pack_sha256'])

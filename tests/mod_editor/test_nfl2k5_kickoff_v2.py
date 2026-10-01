@@ -533,6 +533,8 @@ class V2Tests(unittest.TestCase):
         if not archive_path.is_dir(): self.skipTest('private extracted PLAY archive required')
         forms = {}
         total = 0
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(archive_path)
         with alignment.recode.OuterImage(archive_path) as archive:
             for book, refs in alignment._load(archive):
                 parsed = alignment.parse_playbook_resource(archive.read_entry(book.entry_index))

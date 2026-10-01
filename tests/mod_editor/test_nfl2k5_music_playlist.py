@@ -176,7 +176,7 @@ class Machine:
             self.write(at + 0x4c, 22050)
             for i in range(count + 1):
                 self.write(at + 0x58 + 4 * i, i * 720)
-        self.queued, self.calls, self.writes = [], [], []
+        self.queued, self.calls, self.writes, self.switches = [], [], [], []
         self.rng = 0x10203040
         self.stub_addresses = {playlist.SYMBOLS[k]: k for k in (
             'retail_rng', 'resource_lookup', 'bind_bank', 'stop_stream', 'bind_volume',
@@ -226,6 +226,9 @@ class Machine:
             self.queued.append((self.field(40), bytes(uc.mem_read(ptr, 0x3d4)), self.field(48)))
             self._return()
         else:
+            if name == 'game_music_switch':
+                # 1C4210 only stores ECX at AB16E4: the crowd controller's loop flag.
+                self.switches.append(uc.reg_read(UC_X86_REG_ECX))
             self._return()
 
     def run(self, label, *, ecx=0, edx=0, arg=None, args=()):
@@ -253,6 +256,39 @@ class Machine:
 
     def complete(self):
         return self.run('completion', ecx=0, edx=self.field(48))
+
+
+def retail_game_mode(payload, userlist):
+    """Retail F6510(4) on the unpatched executable: its (callee, ECX) calls in order.
+
+    Only 2804C0 (the music context) and 1C4210 (the crowd loop flag) are stubs.
+    """
+    uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
+    uc.mem_map(0x10000, 0x1600000)
+    image = XbeImage(payload)
+    for sec in image.sections:
+        if sec.raw_size:
+            uc.mem_write(sec.start, payload[sec.raw:sec.raw + sec.raw_size])
+    uc.mem_map(Machine.STACK, 0x20000)
+    uc.mem_write(0xB9E2A4, struct.pack('<I', userlist))
+    stubs, calls = {0x2804C0: 'context', 0x1C4210: 'game_music_switch'}, []
+
+    def hook(uc, at, size, _):
+        if at == Machine.STOP:
+            uc.emu_stop()
+        elif at in stubs:
+            calls.append((stubs[at], uc.reg_read(UC_X86_REG_ECX)))
+            sp = uc.reg_read(UC_X86_REG_ESP)
+            uc.reg_write(UC_X86_REG_EIP, struct.unpack('<I', uc.mem_read(sp, 4))[0])
+            uc.reg_write(UC_X86_REG_ESP, sp + 4)
+    uc.hook_add(u.UC_HOOK_CODE, hook)
+    sp = Machine.STACK + 0xf000
+    uc.mem_write(sp, struct.pack('<I', Machine.STOP))
+    uc.reg_write(UC_X86_REG_ESP, sp)
+    uc.reg_write(UC_X86_REG_ECX, 4)
+    uc.emu_start(0xF6510, Machine.STOP + 1, timeout=200000, count=1000)
+    assert uc.reg_read(UC_X86_REG_EIP) == Machine.STOP and uc.reg_read(UC_X86_REG_ESP) == sp + 4
+    return calls, struct.unpack('<I', uc.mem_read(0xB9E290, 4))[0]
 
 
 @unittest.skipUnless(XBE.is_file() and u is not None, 'USA retail XBE or Unicorn is absent; bounded native proof unavailable')
@@ -395,6 +431,7 @@ class InstructionTests(unittest.TestCase):
         vm = self.machine(2)
         vm.run(0xF6510, ecx=1)
         first, cursor = vm.field(40), vm.field(8)
+        vm.write(0xB9E2A4, 1)  # retail Crib Music "Crib/Menus/Game": the list plays in game
         for mode in (3, 4, 1):
             vm.run(0xF6510, ecx=mode)
             self.assertEqual(vm.field(40), first)
@@ -413,6 +450,46 @@ class InstructionTests(unittest.TestCase):
         before = bytes(vm.uc.mem_read(vm.state, 512))
         vm.run(0xF6510, ecx=5)
         self.assertEqual(bytes(vm.uc.mem_read(vm.state, 512)), before)
+
+    def test_game_mode_keeps_the_retail_crib_music_choice_and_the_crowd_loop(self):
+        # u6 2026-09-27: F6510(4) always passed 0 to 1C4210, so AB16E4 stayed clear,
+        # 1C3A70 never acquired the cwdloop stream and 1C3C02 skipped the precheer
+        # and boo voices at every venue. The retail F6578 choice decides again:
+        # retail passes 1 unless B9E2A4 (Crib Music "Crib/Menus/Game") is set.
+        for userlist in (0, 1):
+            with self.subTest(in_game_setting=userlist):
+                calls, mode = retail_game_mode(XBE.read_bytes(), userlist)
+                self.assertEqual(mode, 4)
+                retail = [value for name, value in calls if name == 'game_music_switch']
+                self.assertEqual(retail, [0] if userlist else [1])
+                self.assertEqual(calls[0 if userlist else 1][0], 'game_music_switch')
+                vm = self.machine(2)
+                vm.run(0xF6510, ecx=1)
+                first, cursor = vm.field(40), vm.field(8)
+                vm.write(0xB9E2A4, userlist)
+                vm.run(0xF6510, ecx=4)
+                self.assertEqual(vm.switches, retail)
+                self.assertEqual(vm.read(0xB9E290), 4)
+                self.assertEqual((vm.field(40), vm.field(8)), (first, cursor))
+                self.assertEqual(len(vm.queued), 1)
+                if userlist:
+                    # The in-game list continues, as retail's UserList does.
+                    self.assertEqual((vm.field(20), vm.field(28)), (1, 1))
+                    vm.run('frame')
+                    self.assertEqual(len(vm.queued), 1)
+                    continue
+                # Default: the background stops for the game, as retail F659A, and
+                # nothing in game restarts it (a late completion, the frame hook).
+                self.assertEqual((vm.field(20), vm.field(28), vm.field(36)), (0, 0, 1))
+                vm.complete()
+                vm.run('frame')
+                self.assertEqual(len(vm.queued), 1)
+                # Back in the menus the interrupted song restarts at the same position.
+                vm.run(0xF6510, ecx=1)
+                self.assertEqual(len(vm.queued), 2)
+                self.assertEqual(vm.queued[-1][0], first)
+                self.assertEqual(vm.field(8), cursor)
+                self.assertEqual(vm.switches, [1])
 
 
 if __name__ == '__main__':

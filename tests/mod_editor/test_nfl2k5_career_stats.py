@@ -226,6 +226,8 @@ RETAIL = Path('/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)')
 @unittest.skipUnless((RETAIL / 'vc_53450030/0').is_file(), 'private retail NFL 2K5 extraction is absent')
 class RetailCareerTests(unittest.TestCase):
     def test_full_retail_codec_csv_and_history_pass(self):
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         with rr._outer_image()(RETAIL) as archive:
             item = rr._entry(archive)
             body = archive.read(item.virtual_offset, item.size)[32:]

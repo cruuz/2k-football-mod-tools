@@ -1,0 +1,46 @@
+[
+  {
+    "aspect": "4:3",
+    "state": "NYG_LAR_q1",
+    "reference": "frame_000120.png",
+    "reference_bounds": [
+      437,
+      942,
+      1478,
+      1052
+    ]
+  },
+  {
+    "aspect": "4:3",
+    "state": "NYG_LAR_q4",
+    "reference": "frame_000620.png",
+    "reference_bounds": [
+      437,
+      942,
+      1478,
+      1052
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "state": "NYG_LAR_q1",
+    "reference": "frame_000120.png",
+    "reference_bounds": [
+      437,
+      942,
+      1478,
+      1052
+    ]
+  },
+  {
+    "aspect": "16:9",
+    "state": "NYG_LAR_q4",
+    "reference": "frame_000620.png",
+    "reference_bounds": [
+      437,
+      942,
+      1478,
+      1052
+    ]
+  }
+]

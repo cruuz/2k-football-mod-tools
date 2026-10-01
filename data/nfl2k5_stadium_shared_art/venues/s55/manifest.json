@@ -1,0 +1,127 @@
+{
+  "items": [
+    {
+      "file": "banner_corp.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banner_corp_4x.png",
+      "master_sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "material": "banner_corp",
+      "rects": [
+        [
+          5,
+          2,
+          123,
+          61
+        ],
+        [
+          5,
+          66,
+          123,
+          125
+        ],
+        [
+          131,
+          67,
+          190,
+          126
+        ],
+        [
+          195,
+          67,
+          254,
+          126
+        ],
+        [
+          131,
+          131,
+          190,
+          190
+        ],
+        [
+          195,
+          131,
+          254,
+          190
+        ],
+        [
+          5,
+          194,
+          123,
+          253
+        ],
+        [
+          195,
+          195,
+          254,
+          254
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "224ce9a1461cf36253d05e60a6810e2872b6e57cd56c93967561f9af6d8d08a2"
+    },
+    {
+      "file": "banners55.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banners55_4x.png",
+      "master_sha256": "84d2d3c1c69781c537374d7414d3726dafad80c4cbee786c4d2c516802b4a78b",
+      "material": "banners55",
+      "rects": [
+        [
+          132,
+          30,
+          254,
+          61
+        ],
+        [
+          2,
+          130,
+          125,
+          188
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "cd6687f67153d88ba702502e08ec22aafbe0fc47faaf1990585ce3b2b9e86de8",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "930b6fb0b8ba6241ea3d617e8f3f4bf3f5a78db383637b216317141ccfa08a7b"
+    },
+    {
+      "file": "banner_home_player.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banner_home_player_4x.png",
+      "master_sha256": "e5aacf88bd62811243cc1e64ff845c758c1612df6f37faed608372b1df6fe37c",
+      "material": "banner_home_player",
+      "rects": [
+        [
+          128,
+          64,
+          256,
+          128
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "1018c5b5e1cb6e6af8e666069fc2d81a14e17152dd9aa0075927f324b4001603",
+      "size": [
+        256,
+        128
+      ],
+      "source_rgba_sha256": "8f457a9b842d34cf2b846c6aca7f11cef3f6479536dcf97ded459ed0e0fc969a"
+    }
+  ],
+  "schema": "metlife_team_art/v1",
+  "team": "s55",
+  "venue_prefix": "s55"
+}

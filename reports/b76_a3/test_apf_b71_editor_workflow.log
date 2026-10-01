@@ -1,0 +1,18 @@
+test_resource_identity_hashes_only_changed_spans_and_invalidates_replacements (tests.mod_editor.test_apf_b71_editor_workflow.SourceIdentityTests.test_resource_identity_hashes_only_changed_spans_and_invalidates_replacements) ... ok
+test_blocked_donor_keeps_dependent_addition_pending (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_blocked_donor_keeps_dependent_addition_pending) ... ok
+test_changed_source_invalidates_ledger_and_never_reuses_stale_review (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_changed_source_invalidates_ledger_and_never_reuses_stale_review) ... ok
+test_confirm_calls_existing_review_with_identical_inputs_for_every_control (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_confirm_calls_existing_review_with_identical_inputs_for_every_control) ... ok
+test_failed_atomic_write_preserves_ledger_and_undo_then_retry_and_save_reopen (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_failed_atomic_write_preserves_ledger_and_undo_then_retry_and_save_reopen) ... ok
+test_ledger_tamper_even_with_preserved_size_and_mtime_is_refused (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_ledger_tamper_even_with_preserved_size_and_mtime_is_refused) ... ok
+test_master_interaction_rechecks_final_coverage (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_master_interaction_rechecks_final_coverage) ... ok
+test_refused_retirement_keeps_its_run_share_pending (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_refused_retirement_keeps_its_run_share_pending) ... ok
+test_removed_formation_references_block_in_both_orders_clean_set_is_one_undo (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_removed_formation_references_block_in_both_orders_clean_set_is_one_undo) ... ok
+test_reports_all_independent_writer_errors_without_mutating (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_reports_all_independent_writer_errors_without_mutating) ... ok
+test_source_change_revalidates_only_rows_consuming_the_changed_book (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_source_change_revalidates_only_rows_consuming_the_changed_book) ... ok
+test_two_individually_valid_removals_cannot_empty_personnel_together (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_two_individually_valid_removals_cannot_empty_personnel_together) ... ok
+test_warm_63_edits_never_reload_or_replay_prior_rows (tests.mod_editor.test_apf_b71_editor_workflow.WorkflowTests.test_warm_63_edits_never_reload_or_replay_prior_rows) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.436s
+
+OK

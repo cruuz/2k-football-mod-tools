@@ -96,7 +96,7 @@ def with_read_order(chain: list, order: "tuple[int, ...] | list[int]", *, allow_
 #: All 5,013 observed retail defensive links use group 3; it also appears
 #: in tutorial menus. Do not label defensive group 3 as tutorial-only.
 AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
-    ("Inherit from the formation", None),
+    ("Default: the ordinary list (group 3)", None),
     ("Audible 1 (group 0)", 0),
     ("Audible 2 (group 1)", 1),
     ("Audible 3 (group 2)", 2),
@@ -1548,7 +1548,7 @@ class FinalizePage(QWizardPage):
         layout.addLayout(row)
         self.hint = QLabel(
             "QB read order: experimental values; receiver-number mapping is not confirmed in-game. "
-            "Audible slot: choose a group, or keep Inherit from the formation."
+            "Audible slot: choose a group, or keep the default (the ordinary list, group 3)."
         )
         self.hint.setWordWrap(True)
         layout.addWidget(self.hint)
@@ -1763,7 +1763,7 @@ class FinalizePage(QWizardPage):
         from mod_editor.core import nfl2k5_playbook_pack as pk
         try:
             pack = self._option_pack()
-            check = pk.check_pack(pack, self.wiz.book, self.wiz.body)
+            check = pk.check_pack(pack, self.wiz.book, self.wiz.body, xbe=self.wiz.host.source_path)
             if not check.ok:
                 raise ValueError("; ".join(check.errors))
             self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
@@ -1807,7 +1807,7 @@ class FinalizePage(QWizardPage):
         from mod_editor.core import nfl2k5_playbook_pack as pk
         try:
             pack = self._defense_pack()
-            report = pk.check_pack(pack, self.wiz.book, self.wiz.body)
+            report = pk.check_pack(pack, self.wiz.book, self.wiz.body, xbe=self.wiz.host.source_path)
             self.apply.setEnabled(report.ok)
             totals = report.totals
             self.status.setText(f"{lib.DEFENSE_EVIDENCE}. Cloned nodes {totals['cloned_nodes']}; "

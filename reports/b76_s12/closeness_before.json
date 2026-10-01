@@ -1,0 +1,2040 @@
+{
+  "schema": "b76-s12-closeness/v1",
+  "state": {
+    "away": "NYG",
+    "home": "LAR",
+    "away_score": 6,
+    "home_score": 21,
+    "clock": 829,
+    "quarter": 4,
+    "play_clock": 39,
+    "down": 1,
+    "distance": 10,
+    "possession": "home",
+    "away_timeouts": 3,
+    "home_timeouts": 2,
+    "broadcast": "monday_night"
+  },
+  "levels": [
+    "Far: the element reads as a different design at player size.",
+    "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+    "Near: a visible but small difference, under a tenth of the element.",
+    "Close: differences are at or below the two-player-pixel visibility floor.",
+    "Indistinguishable within the measurement method."
+  ],
+  "classes": [
+    "colour_wrong",
+    "too_large",
+    "too_small",
+    "misplaced",
+    "missing_element",
+    "extra_element",
+    "edge_softness",
+    "matches"
+  ],
+  "cost_usd": 0.035775,
+  "calls": 26,
+  "ranked": [
+    {
+      "element": "away_wing_falloff",
+      "measurements": {
+        "element": "away_wing_falloff",
+        "broadcast_peak_signal": 205.68,
+        "our_peak_signal": 106.56,
+        "broadcast_decay_px": 338.25,
+        "our_decay_px": 67.73,
+        "broadcast_peak_rgb": [
+          104.0,
+          122.0,
+          194.0
+        ],
+        "our_peak_rgb": [
+          9.0,
+          26.0,
+          99.0
+        ],
+        "broadcast_fall_to_25_px": 19,
+        "our_fall_to_25_px": 130
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_small",
+          "confidence": 0.4,
+          "probabilities": {
+            "misplaced": 0.02,
+            "missing_element": 0.01,
+            "colour_wrong": 0.21,
+            "too_large": 0.03,
+            "matches": 0.0,
+            "too_small": 0.47,
+            "extra_element": 0.01,
+            "edge_softness": 0.25
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.03,
+          "confidence": 0.98,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.98,
+            "1": 0.02,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.46
+        }
+      },
+      "defect": "too_small",
+      "defect_confidence": 0.4,
+      "closeness_level": 0.03,
+      "closeness_confidence": 0.98,
+      "worth_changing": 0.46,
+      "rank": 1
+    },
+    {
+      "element": "home_wing_falloff",
+      "measurements": {
+        "element": "home_wing_falloff",
+        "broadcast_peak_signal": 231.4,
+        "our_peak_signal": 154.96,
+        "broadcast_decay_px": 173.84,
+        "our_decay_px": 67.55,
+        "broadcast_peak_rgb": [
+          77.0,
+          108.0,
+          206.0
+        ],
+        "our_peak_rgb": [
+          47.0,
+          93.0,
+          66.0
+        ],
+        "broadcast_fall_to_25_px": 21,
+        "our_fall_to_25_px": 51
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "edge_softness",
+          "confidence": 0.24,
+          "probabilities": {
+            "colour_wrong": 0.32,
+            "missing_element": 0.0,
+            "matches": 0.0,
+            "edge_softness": 0.34,
+            "extra_element": 0.0,
+            "too_small": 0.3,
+            "too_large": 0.03,
+            "misplaced": 0.01
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.04,
+          "confidence": 0.97,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.96,
+            "1": 0.04,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.44
+        }
+      },
+      "defect": "edge_softness",
+      "defect_confidence": 0.24,
+      "closeness_level": 0.04,
+      "closeness_confidence": 0.97,
+      "worth_changing": 0.44,
+      "rank": 2
+    },
+    {
+      "element": "rim_bottom_colour_rgb",
+      "measurements": {
+        "element": "rim_bottom_colour_rgb",
+        "broadcast_rgb": [
+          45.0,
+          45.0,
+          46.0
+        ],
+        "our_rgb": [
+          50.0,
+          58.0,
+          81.0
+        ],
+        "rgb_delta": [
+          5.0,
+          13.0,
+          35.0
+        ],
+        "max_channel_delta": 35.0
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.99,
+          "probabilities": {
+            "colour_wrong": 0.99,
+            "missing_element": 0.0,
+            "edge_softness": 0.0,
+            "matches": 0.0,
+            "too_small": 0.0,
+            "too_large": 0.01,
+            "misplaced": 0.0,
+            "extra_element": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.32,
+          "confidence": 0.73,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.71,
+            "1": 0.27,
+            "2": 0.02,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.62
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.99,
+      "closeness_level": 0.32,
+      "closeness_confidence": 0.73,
+      "worth_changing": 0.62,
+      "rank": 3
+    },
+    {
+      "element": "home_logo_mark_colour",
+      "measurements": {
+        "element": "home_logo_mark_colour",
+        "our_gold_pixels": 0,
+        "broadcast_gold_pixels": 9102,
+        "broadcast_gold_rgb": [
+          253.0,
+          212.0,
+          57.0
+        ],
+        "our_gold_rgb": null,
+        "our_blue_pixels": 10887,
+        "broadcast_blue_pixels": 4429,
+        "broadcast_blue_rgb": [
+          44.0,
+          87.0,
+          178.0
+        ],
+        "our_blue_rgb": [
+          2.0,
+          53.0,
+          146.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.62,
+          "probabilities": {
+            "too_small": 0.06,
+            "colour_wrong": 0.66,
+            "missing_element": 0.16,
+            "too_large": 0.08,
+            "edge_softness": 0.0,
+            "extra_element": 0.02,
+            "matches": 0.01,
+            "misplaced": 0.01
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.33,
+          "confidence": 0.72,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.76,
+            "1": 0.19,
+            "2": 0.02,
+            "3": 0.02,
+            "4": 0.01
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.49
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.62,
+      "closeness_level": 0.33,
+      "closeness_confidence": 0.72,
+      "worth_changing": 0.49,
+      "rank": 4
+    },
+    {
+      "element": "rim_top_colour_rgb",
+      "measurements": {
+        "element": "rim_top_colour_rgb",
+        "broadcast_rgb": [
+          35.0,
+          44.0,
+          82.0
+        ],
+        "our_rgb": [
+          35.0,
+          38.0,
+          47.0
+        ],
+        "rgb_delta": [
+          0.0,
+          -6.0,
+          -35.0
+        ],
+        "max_channel_delta": 35.0
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.99,
+          "probabilities": {
+            "extra_element": 0.0,
+            "misplaced": 0.0,
+            "too_small": 0.01,
+            "matches": 0.0,
+            "too_large": 0.0,
+            "colour_wrong": 0.99,
+            "edge_softness": 0.0,
+            "missing_element": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.35,
+          "confidence": 0.71,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.66,
+            "1": 0.33,
+            "2": 0.01,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.65
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.99,
+      "closeness_level": 0.35,
+      "closeness_confidence": 0.71,
+      "worth_changing": 0.65,
+      "rank": 5
+    },
+    {
+      "element": "away_logo_mark_colour",
+      "measurements": {
+        "element": "away_logo_mark_colour",
+        "our_light_pixels": 0,
+        "broadcast_light_pixels": 8393,
+        "broadcast_light_rgb": [
+          247.0,
+          247.0,
+          246.0
+        ],
+        "our_light_rgb": null,
+        "our_red_pixels": 0,
+        "broadcast_red_pixels": 3846,
+        "broadcast_red_rgb": [
+          155.0,
+          64.5,
+          78.0
+        ],
+        "our_red_rgb": null
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "missing_element",
+          "confidence": 0.87,
+          "probabilities": {
+            "misplaced": 0.0,
+            "edge_softness": 0.0,
+            "matches": 0.01,
+            "too_small": 0.04,
+            "colour_wrong": 0.05,
+            "extra_element": 0.0,
+            "too_large": 0.0,
+            "missing_element": 0.9
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.4,
+          "confidence": 0.67,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.85,
+            "1": 0.05,
+            "2": 0.01,
+            "3": 0.04,
+            "4": 0.05
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.42
+        }
+      },
+      "defect": "missing_element",
+      "defect_confidence": 0.87,
+      "closeness_level": 0.4,
+      "closeness_confidence": 0.67,
+      "worth_changing": 0.42,
+      "rank": 6
+    },
+    {
+      "element": "home_logo",
+      "measurements": {
+        "element": "home_logo",
+        "broadcast_box": [
+          1284,
+          946,
+          1462,
+          1048
+        ],
+        "our_box": null,
+        "broadcast_size": [
+          178,
+          102
+        ],
+        "our_size": null,
+        "size_delta_px": null,
+        "position_delta_px": null
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "missing_element",
+          "confidence": 0.96,
+          "probabilities": {
+            "too_small": 0.0,
+            "colour_wrong": 0.0,
+            "extra_element": 0.01,
+            "misplaced": 0.0,
+            "missing_element": 0.97,
+            "matches": 0.02,
+            "edge_softness": 0.0,
+            "too_large": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.57,
+          "confidence": 0.53,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.82,
+            "1": 0.04,
+            "2": 0.0,
+            "3": 0.02,
+            "4": 0.12
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.36
+        }
+      },
+      "defect": "missing_element",
+      "defect_confidence": 0.96,
+      "closeness_level": 0.57,
+      "closeness_confidence": 0.53,
+      "worth_changing": 0.36,
+      "rank": 7
+    },
+    {
+      "element": "away_logo",
+      "measurements": {
+        "element": "away_logo",
+        "broadcast_box": [
+          451,
+          946,
+          636,
+          1048
+        ],
+        "our_box": null,
+        "broadcast_size": [
+          185,
+          102
+        ],
+        "our_size": null,
+        "size_delta_px": null,
+        "position_delta_px": null
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "missing_element",
+          "confidence": 0.97,
+          "probabilities": {
+            "matches": 0.01,
+            "extra_element": 0.01,
+            "colour_wrong": 0.0,
+            "misplaced": 0.0,
+            "too_large": 0.0,
+            "missing_element": 0.98,
+            "too_small": 0.0,
+            "edge_softness": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.58,
+          "confidence": 0.52,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.81,
+            "1": 0.04,
+            "2": 0.01,
+            "3": 0.02,
+            "4": 0.12
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.4
+        }
+      },
+      "defect": "missing_element",
+      "defect_confidence": 0.97,
+      "closeness_level": 0.58,
+      "closeness_confidence": 0.52,
+      "worth_changing": 0.4,
+      "rank": 8
+    },
+    {
+      "element": "plate_bottom_rgb",
+      "measurements": {
+        "element": "plate_bottom_rgb",
+        "broadcast_rgb": [
+          102.0,
+          110.0,
+          144.0
+        ],
+        "our_rgb": [
+          121.5,
+          145.0,
+          189.5
+        ],
+        "rgb_delta": [
+          19.5,
+          35.0,
+          45.5
+        ],
+        "max_channel_delta": 45.5
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.98,
+          "probabilities": {
+            "missing_element": 0.0,
+            "extra_element": 0.0,
+            "edge_softness": 0.0,
+            "colour_wrong": 0.99,
+            "misplaced": 0.0,
+            "too_large": 0.01,
+            "matches": 0.0,
+            "too_small": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.6,
+          "confidence": 0.61,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.44,
+            "1": 0.54,
+            "2": 0.02,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.53
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.98,
+      "closeness_level": 0.6,
+      "closeness_confidence": 0.61,
+      "worth_changing": 0.53,
+      "rank": 9
+    },
+    {
+      "element": "quarter",
+      "measurements": {
+        "element": "quarter",
+        "broadcast_box": [
+          858,
+          1011,
+          882,
+          1028
+        ],
+        "our_box": [
+          846,
+          1008,
+          894,
+          1036
+        ],
+        "broadcast_size": [
+          24,
+          17
+        ],
+        "our_size": [
+          48,
+          28
+        ],
+        "size_delta_px": [
+          24.0,
+          11.0
+        ],
+        "position_delta_px": [
+          -12.0,
+          -3.0,
+          12.0,
+          8.0
+        ],
+        "size_delta_player_px": [
+          14.22,
+          6.52
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.94,
+          "probabilities": {
+            "colour_wrong": 0.0,
+            "edge_softness": 0.0,
+            "too_small": 0.0,
+            "too_large": 0.95,
+            "extra_element": 0.0,
+            "misplaced": 0.05,
+            "matches": 0.0,
+            "missing_element": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.86,
+          "confidence": 0.68,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.26,
+            "1": 0.64,
+            "2": 0.07,
+            "3": 0.02,
+            "4": 0.01
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.53
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.94,
+      "closeness_level": 0.86,
+      "closeness_confidence": 0.68,
+      "worth_changing": 0.53,
+      "rank": 10
+    },
+    {
+      "element": "plate_top_rgb",
+      "measurements": {
+        "element": "plate_top_rgb",
+        "broadcast_rgb": [
+          26.0,
+          56.0,
+          145.0
+        ],
+        "our_rgb": [
+          2.0,
+          52.0,
+          140.0
+        ],
+        "rgb_delta": [
+          -24.0,
+          -4.0,
+          -5.0
+        ],
+        "max_channel_delta": 24.0
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.97,
+          "probabilities": {
+            "misplaced": 0.0,
+            "too_large": 0.0,
+            "too_small": 0.02,
+            "colour_wrong": 0.98,
+            "matches": 0.0,
+            "extra_element": 0.0,
+            "missing_element": 0.0,
+            "edge_softness": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.87,
+          "confidence": 0.73,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.22,
+            "1": 0.69,
+            "2": 0.09,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.59
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.97,
+      "closeness_level": 0.87,
+      "closeness_confidence": 0.73,
+      "worth_changing": 0.59,
+      "rank": 11
+    },
+    {
+      "element": "home_timeouts",
+      "measurements": {
+        "element": "home_timeouts",
+        "broadcast_box": [
+          1120,
+          1033,
+          1197,
+          1039
+        ],
+        "our_box": [
+          1122,
+          1032,
+          1166,
+          1038
+        ],
+        "broadcast_size": [
+          77,
+          6
+        ],
+        "our_size": [
+          44,
+          6
+        ],
+        "size_delta_px": [
+          -33.0,
+          0.0
+        ],
+        "position_delta_px": [
+          2.0,
+          -1.0,
+          -31.0,
+          -1.0
+        ],
+        "size_delta_player_px": [
+          -19.56,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_small",
+          "confidence": 0.73,
+          "probabilities": {
+            "misplaced": 0.22,
+            "too_large": 0.0,
+            "extra_element": 0.0,
+            "too_small": 0.78,
+            "matches": 0.0,
+            "edge_softness": 0.0,
+            "colour_wrong": 0.0,
+            "missing_element": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 0.9,
+          "confidence": 0.84,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.15,
+            "1": 0.8200000000000001,
+            "2": 0.03,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.53
+        }
+      },
+      "defect": "too_small",
+      "defect_confidence": 0.73,
+      "closeness_level": 0.9,
+      "closeness_confidence": 0.84,
+      "worth_changing": 0.53,
+      "rank": 12
+    },
+    {
+      "element": "rim_bottom",
+      "measurements": {
+        "element": "rim_bottom",
+        "broadcast_box": [
+          1215,
+          1049,
+          1245,
+          1051
+        ],
+        "our_box": [
+          1215,
+          1050,
+          1245,
+          1056
+        ],
+        "broadcast_size": [
+          30,
+          2
+        ],
+        "our_size": [
+          30,
+          6
+        ],
+        "size_delta_px": [
+          0.0,
+          4.0
+        ],
+        "position_delta_px": [
+          0.0,
+          1.0,
+          0.0,
+          5.0
+        ],
+        "size_delta_player_px": [
+          0.0,
+          2.37
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.78,
+          "probabilities": {
+            "edge_softness": 0.0,
+            "misplaced": 0.18,
+            "too_large": 0.81,
+            "colour_wrong": 0.0,
+            "extra_element": 0.0,
+            "matches": 0.01,
+            "missing_element": 0.0,
+            "too_small": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 0.82,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.1,
+            "1": 0.82,
+            "2": 0.04,
+            "3": 0.03,
+            "4": 0.01
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.5
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.78,
+      "closeness_level": 1.0,
+      "closeness_confidence": 0.82,
+      "worth_changing": 0.5,
+      "rank": 13
+    },
+    {
+      "element": "home_score",
+      "measurements": {
+        "element": "home_score",
+        "broadcast_box": [
+          1134,
+          965,
+          1183,
+          1020
+        ],
+        "our_box": [
+          1117,
+          965,
+          1194,
+          1020
+        ],
+        "broadcast_size": [
+          49,
+          55
+        ],
+        "our_size": [
+          77,
+          55
+        ],
+        "size_delta_px": [
+          28.0,
+          0.0
+        ],
+        "position_delta_px": [
+          -17.0,
+          0.0,
+          11.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          16.6,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.7,
+          "probabilities": {
+            "misplaced": 0.25,
+            "too_small": 0.0,
+            "extra_element": 0.0,
+            "matches": 0.0,
+            "colour_wrong": 0.0,
+            "too_large": 0.75,
+            "edge_softness": 0.0,
+            "missing_element": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 1.03,
+          "confidence": 0.84,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.08,
+            "1": 0.82,
+            "2": 0.09,
+            "3": 0.01,
+            "4": 0.0
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.55
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.7,
+      "closeness_level": 1.03,
+      "closeness_confidence": 0.84,
+      "worth_changing": 0.55,
+      "rank": 14
+    },
+    {
+      "element": "housing_rail",
+      "measurements": {
+        "element": "housing_rail",
+        "broadcast_box": [
+          841,
+          1040,
+          1078,
+          1046
+        ],
+        "our_box": [
+          820,
+          1040,
+          1100,
+          1048
+        ],
+        "broadcast_size": [
+          237,
+          6
+        ],
+        "our_size": [
+          280,
+          8
+        ],
+        "size_delta_px": [
+          43.0,
+          2.0
+        ],
+        "position_delta_px": [
+          -21.0,
+          0.0,
+          22.0,
+          2.0
+        ],
+        "size_delta_player_px": [
+          25.49,
+          1.19
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.63,
+          "probabilities": {
+            "edge_softness": 0.0,
+            "missing_element": 0.0,
+            "misplaced": 0.27,
+            "extra_element": 0.01,
+            "too_large": 0.68,
+            "matches": 0.04,
+            "colour_wrong": 0.0,
+            "too_small": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 1.73,
+          "confidence": 0.67,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.23,
+            "2": 0.67,
+            "3": 0.04,
+            "4": 0.01
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.53
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.63,
+      "closeness_level": 1.73,
+      "closeness_confidence": 0.67,
+      "worth_changing": 0.53,
+      "rank": 15
+    },
+    {
+      "element": "play_clock",
+      "measurements": {
+        "element": "play_clock",
+        "broadcast_box": [
+          1035,
+          1004,
+          1076,
+          1036
+        ],
+        "our_box": [
+          1029,
+          1006,
+          1076,
+          1036
+        ],
+        "broadcast_size": [
+          41,
+          32
+        ],
+        "our_size": [
+          47,
+          30
+        ],
+        "size_delta_px": [
+          6.0,
+          -2.0
+        ],
+        "position_delta_px": [
+          -6.0,
+          2.0,
+          0.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          3.56,
+          -1.19
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.44,
+          "probabilities": {
+            "colour_wrong": 0.0,
+            "too_large": 0.51,
+            "extra_element": 0.01,
+            "missing_element": 0.0,
+            "edge_softness": 0.0,
+            "too_small": 0.01,
+            "matches": 0.13,
+            "misplaced": 0.34
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 1.94,
+          "confidence": 0.71,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.19,
+            "2": 0.69,
+            "3": 0.07,
+            "4": 0.04
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.55
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.44,
+      "closeness_level": 1.94,
+      "closeness_confidence": 0.71,
+      "worth_changing": 0.55,
+      "rank": 16
+    },
+    {
+      "element": "plate",
+      "measurements": {
+        "element": "plate",
+        "broadcast_box": [
+          826,
+          950,
+          1095,
+          985
+        ],
+        "our_box": [
+          830,
+          950,
+          1086,
+          984
+        ],
+        "broadcast_size": [
+          269,
+          35
+        ],
+        "our_size": [
+          256,
+          34
+        ],
+        "size_delta_px": [
+          -13.0,
+          -1.0
+        ],
+        "position_delta_px": [
+          4.0,
+          0.0,
+          -9.0,
+          -1.0
+        ],
+        "size_delta_player_px": [
+          -7.71,
+          -0.59
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_small",
+          "confidence": 0.4,
+          "probabilities": {
+            "too_large": 0.0,
+            "edge_softness": 0.0,
+            "too_small": 0.49,
+            "misplaced": 0.45,
+            "missing_element": 0.0,
+            "extra_element": 0.0,
+            "colour_wrong": 0.0,
+            "matches": 0.06
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 0.88,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.07,
+            "2": 0.87,
+            "3": 0.04,
+            "4": 0.02
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.51
+        }
+      },
+      "defect": "too_small",
+      "defect_confidence": 0.4,
+      "closeness_level": 2.0,
+      "closeness_confidence": 0.88,
+      "worth_changing": 0.51,
+      "rank": 17
+    },
+    {
+      "element": "bar",
+      "measurements": {
+        "element": "bar",
+        "broadcast_box": [
+          434,
+          942,
+          1488,
+          1058
+        ],
+        "our_box": [
+          438,
+          942,
+          1479,
+          1051
+        ],
+        "broadcast_size": [
+          1054,
+          116
+        ],
+        "our_size": [
+          1041,
+          109
+        ],
+        "size_delta_px": [
+          -13.0,
+          -7.0
+        ],
+        "position_delta_px": [
+          4.0,
+          0.0,
+          -9.0,
+          -7.0
+        ],
+        "size_delta_player_px": [
+          -7.71,
+          -4.15
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_small",
+          "confidence": 0.58,
+          "probabilities": {
+            "colour_wrong": 0.0,
+            "too_large": 0.01,
+            "extra_element": 0.0,
+            "missing_element": 0.0,
+            "edge_softness": 0.0,
+            "too_small": 0.64,
+            "matches": 0.01,
+            "misplaced": 0.34
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.08,
+          "confidence": 0.83,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.04,
+            "2": 0.84,
+            "3": 0.07,
+            "4": 0.04
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.57
+        }
+      },
+      "defect": "too_small",
+      "defect_confidence": 0.58,
+      "closeness_level": 2.08,
+      "closeness_confidence": 0.83,
+      "worth_changing": 0.57,
+      "rank": 18
+    },
+    {
+      "element": "capsule_surface_rgb",
+      "measurements": {
+        "element": "capsule_surface_rgb",
+        "broadcast_rgb": [
+          246.0,
+          246.0,
+          248.0
+        ],
+        "our_rgb": [
+          242.0,
+          242.0,
+          242.0
+        ],
+        "rgb_delta": [
+          -4.0,
+          -4.0,
+          -6.0
+        ],
+        "max_channel_delta": 6.0
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "colour_wrong",
+          "confidence": 0.95,
+          "probabilities": {
+            "matches": 0.03,
+            "extra_element": 0.0,
+            "colour_wrong": 0.96,
+            "misplaced": 0.0,
+            "too_large": 0.0,
+            "too_small": 0.01,
+            "missing_element": 0.0,
+            "edge_softness": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.18,
+          "confidence": 0.62,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.1,
+            "2": 0.61,
+            "3": 0.23,
+            "4": 0.04
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.47
+        }
+      },
+      "defect": "colour_wrong",
+      "defect_confidence": 0.95,
+      "closeness_level": 2.18,
+      "closeness_confidence": 0.62,
+      "worth_changing": 0.47,
+      "rank": 19
+    },
+    {
+      "element": "watermark",
+      "measurements": {
+        "element": "watermark",
+        "broadcast_box": [
+          1657,
+          39,
+          1866,
+          63
+        ],
+        "broadcast_opacity": 0.6802,
+        "our_box": [
+          1655,
+          35,
+          1869,
+          64
+        ],
+        "our_opacity": 0.72
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "too_large",
+          "confidence": 0.28,
+          "probabilities": {
+            "colour_wrong": 0.01,
+            "missing_element": 0.0,
+            "matches": 0.32,
+            "edge_softness": 0.03,
+            "extra_element": 0.01,
+            "too_small": 0.0,
+            "too_large": 0.37,
+            "misplaced": 0.26
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.4,
+          "confidence": 0.44,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.13,
+            "2": 0.45,
+            "3": 0.3,
+            "4": 0.12
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.41
+        }
+      },
+      "defect": "too_large",
+      "defect_confidence": 0.28,
+      "closeness_level": 2.4,
+      "closeness_confidence": 0.44,
+      "worth_changing": 0.41,
+      "rank": 20
+    },
+    {
+      "element": "clock",
+      "measurements": {
+        "element": "clock",
+        "broadcast_box": [
+          913,
+          1008,
+          1008,
+          1033
+        ],
+        "our_box": [
+          914,
+          1006,
+          1006,
+          1033
+        ],
+        "broadcast_size": [
+          95,
+          25
+        ],
+        "our_size": [
+          92,
+          27
+        ],
+        "size_delta_px": [
+          -3.0,
+          2.0
+        ],
+        "position_delta_px": [
+          1.0,
+          -2.0,
+          -2.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          -1.78,
+          1.19
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 0.33,
+          "probabilities": {
+            "too_small": 0.17,
+            "colour_wrong": 0.0,
+            "missing_element": 0.0,
+            "edge_softness": 0.0,
+            "too_large": 0.03,
+            "extra_element": 0.0,
+            "matches": 0.42,
+            "misplaced": 0.38
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.47,
+          "confidence": 0.5,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.06,
+            "2": 0.5,
+            "3": 0.34,
+            "4": 0.1
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.46
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 0.33,
+      "closeness_level": 2.47,
+      "closeness_confidence": 0.5,
+      "worth_changing": 0.46,
+      "rank": 21
+    },
+    {
+      "element": "away_score",
+      "measurements": {
+        "element": "away_score",
+        "broadcast_box": [
+          731,
+          965,
+          781,
+          1020
+        ],
+        "our_box": [
+          732,
+          965,
+          780,
+          1020
+        ],
+        "broadcast_size": [
+          50,
+          55
+        ],
+        "our_size": [
+          48,
+          55
+        ],
+        "size_delta_px": [
+          -2.0,
+          0.0
+        ],
+        "position_delta_px": [
+          1.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          -1.19,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 0.72,
+          "probabilities": {
+            "missing_element": 0.0,
+            "colour_wrong": 0.0,
+            "too_small": 0.13,
+            "too_large": 0.0,
+            "matches": 0.76,
+            "edge_softness": 0.0,
+            "extra_element": 0.0,
+            "misplaced": 0.11
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.96,
+          "confidence": 0.75,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.01,
+            "2": 0.15,
+            "3": 0.71,
+            "4": 0.13
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.47
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 0.72,
+      "closeness_level": 2.96,
+      "closeness_confidence": 0.75,
+      "worth_changing": 0.47,
+      "rank": 22
+    },
+    {
+      "element": "away_timeouts",
+      "measurements": {
+        "element": "away_timeouts",
+        "broadcast_box": [
+          717,
+          1033,
+          795,
+          1039
+        ],
+        "our_box": [
+          718,
+          1032,
+          794,
+          1038
+        ],
+        "broadcast_size": [
+          78,
+          6
+        ],
+        "our_size": [
+          76,
+          6
+        ],
+        "size_delta_px": [
+          -2.0,
+          0.0
+        ],
+        "position_delta_px": [
+          1.0,
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "size_delta_player_px": [
+          -1.19,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 0.48,
+          "probabilities": {
+            "edge_softness": 0.0,
+            "missing_element": 0.0,
+            "too_large": 0.0,
+            "colour_wrong": 0.0,
+            "too_small": 0.27,
+            "extra_element": 0.0,
+            "misplaced": 0.16,
+            "matches": 0.56
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 2.99,
+          "confidence": 0.8,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.01,
+            "2": 0.09,
+            "3": 0.79,
+            "4": 0.11
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.46
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 0.48,
+      "closeness_level": 2.99,
+      "closeness_confidence": 0.8,
+      "worth_changing": 0.46,
+      "rank": 23
+    },
+    {
+      "element": "body_rgb",
+      "measurements": {
+        "element": "body_rgb",
+        "broadcast_rgb": [
+          38.0,
+          38.0,
+          38.0
+        ],
+        "our_rgb": [
+          36.0,
+          37.0,
+          39.0
+        ],
+        "rgb_delta": [
+          -2.0,
+          -1.0,
+          1.0
+        ],
+        "max_channel_delta": 2.0
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 0.79,
+          "probabilities": {
+            "missing_element": 0.0,
+            "colour_wrong": 0.18,
+            "too_small": 0.0,
+            "too_large": 0.0,
+            "matches": 0.8200000000000001,
+            "edge_softness": 0.0,
+            "extra_element": 0.0,
+            "misplaced": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 3.17,
+          "confidence": 0.74,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.01,
+            "2": 0.05,
+            "3": 0.7,
+            "4": 0.24
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.41
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 0.79,
+      "closeness_level": 3.17,
+      "closeness_confidence": 0.74,
+      "worth_changing": 0.41,
+      "rank": 24
+    },
+    {
+      "element": "capsule",
+      "measurements": {
+        "element": "capsule",
+        "broadcast_box": [
+          839,
+          1000,
+          1080,
+          1039
+        ],
+        "our_box": [
+          840,
+          1000,
+          1081,
+          1039
+        ],
+        "broadcast_size": [
+          241,
+          39
+        ],
+        "our_size": [
+          241,
+          39
+        ],
+        "size_delta_px": [
+          0.0,
+          0.0
+        ],
+        "position_delta_px": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          0.0,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 0.89,
+          "probabilities": {
+            "misplaced": 0.09,
+            "too_small": 0.0,
+            "extra_element": 0.0,
+            "matches": 0.91,
+            "colour_wrong": 0.0,
+            "too_large": 0.0,
+            "missing_element": 0.0,
+            "edge_softness": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 3.22,
+          "confidence": 0.79,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.01,
+            "3": 0.75,
+            "4": 0.24
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.29
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 0.89,
+      "closeness_level": 3.22,
+      "closeness_confidence": 0.79,
+      "worth_changing": 0.29,
+      "rank": 25
+    },
+    {
+      "element": "rim_top",
+      "measurements": {
+        "element": "rim_top",
+        "broadcast_box": [
+          1215,
+          941,
+          1245,
+          948
+        ],
+        "our_box": [
+          1215,
+          941,
+          1245,
+          948
+        ],
+        "broadcast_size": [
+          30,
+          7
+        ],
+        "our_size": [
+          30,
+          7
+        ],
+        "size_delta_px": [
+          0.0,
+          0.0
+        ],
+        "position_delta_px": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "size_delta_player_px": [
+          0.0,
+          0.0
+        ]
+      },
+      "answers": {
+        "defect": {
+          "type": "choice",
+          "choice": "matches",
+          "confidence": 1.0,
+          "probabilities": {
+            "matches": 1.0,
+            "missing_element": 0.0,
+            "colour_wrong": 0.0,
+            "extra_element": 0.0,
+            "too_large": 0.0,
+            "edge_softness": 0.0,
+            "misplaced": 0.0,
+            "too_small": 0.0
+          }
+        },
+        "closeness": {
+          "type": "score",
+          "score": 3.99,
+          "confidence": 0.99,
+          "legend": {
+            "0": "Far: the element reads as a different design at player size.",
+            "1": "Off: one dimension or the colour is wrong by more than a tenth of the element.",
+            "2": "Near: a visible but small difference, under a tenth of the element.",
+            "3": "Close: differences are at or below the two-player-pixel visibility floor.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.01,
+            "4": 0.99
+          }
+        },
+        "worth_changing": {
+          "type": "noul",
+          "noul": 0.13
+        }
+      },
+      "defect": "matches",
+      "defect_confidence": 1.0,
+      "closeness_level": 3.99,
+      "closeness_confidence": 0.99,
+      "worth_changing": 0.13,
+      "rank": 26
+    }
+  ],
+  "method": "Both sides measured by reports/b76_s12/harvest.py. Jev receives text only; all arithmetic is in Python."
+}

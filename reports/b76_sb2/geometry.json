@@ -1,0 +1,1324 @@
+{
+  "classification": "PROVED OFFLINE",
+  "coordinates": "half-open 1920x1080; thresholds include antialiasing/compression, not mathematical vector edges",
+  "bar": {
+    "left_rail_edge_cluster": [
+      434,
+      442
+    ],
+    "right_rail_edge_cluster": [
+      1478,
+      1488
+    ],
+    "top_rim_edge_cluster": [
+      941,
+      950
+    ],
+    "bottom_edge_cluster": [
+      1052,
+      1055
+    ],
+    "evidence": "details.json pooled RGB derivative peaks; no single threshold fully describes the beveled edge"
+  },
+  "plate_slices": {
+    "PHI": [
+      {
+        "y": 948,
+        "span": [
+          816,
+          1102
+        ]
+      },
+      {
+        "y": 951,
+        "span": [
+          828,
+          1092
+        ]
+      },
+      {
+        "y": 954,
+        "span": [
+          832,
+          1088
+        ]
+      },
+      {
+        "y": 967,
+        "span": [
+          836,
+          1084
+        ]
+      },
+      {
+        "y": 977,
+        "span": [
+          838,
+          1084
+        ]
+      },
+      {
+        "y": 981,
+        "span": [
+          838,
+          1082
+        ]
+      },
+      {
+        "y": 984,
+        "span": null
+      }
+    ],
+    "CHI": [
+      {
+        "y": 948,
+        "span": [
+          814,
+          1110
+        ]
+      },
+      {
+        "y": 951,
+        "span": [
+          826,
+          1094
+        ]
+      },
+      {
+        "y": 954,
+        "span": [
+          832,
+          1088
+        ]
+      },
+      {
+        "y": 967,
+        "span": [
+          836,
+          1084
+        ]
+      },
+      {
+        "y": 977,
+        "span": [
+          836,
+          1084
+        ]
+      },
+      {
+        "y": 981,
+        "span": [
+          838,
+          1083
+        ]
+      },
+      {
+        "y": 984,
+        "span": [
+          848,
+          1074
+        ]
+      }
+    ],
+    "FLAG": [
+      {
+        "y": 948,
+        "span": [
+          810,
+          1110
+        ]
+      },
+      {
+        "y": 951,
+        "span": [
+          826,
+          1104
+        ]
+      },
+      {
+        "y": 954,
+        "span": [
+          830,
+          1090
+        ]
+      },
+      {
+        "y": 967,
+        "span": [
+          836,
+          1086
+        ]
+      },
+      {
+        "y": 977,
+        "span": [
+          836,
+          1084
+        ]
+      },
+      {
+        "y": 981,
+        "span": [
+          838,
+          1084
+        ]
+      },
+      {
+        "y": 984,
+        "span": [
+          840,
+          1080
+        ]
+      }
+    ],
+    "ESPN": [
+      {
+        "y": 948,
+        "span": [
+          825,
+          1094
+        ]
+      },
+      {
+        "y": 951,
+        "span": [
+          831,
+          1089
+        ]
+      },
+      {
+        "y": 954,
+        "span": [
+          810,
+          1110
+        ]
+      },
+      {
+        "y": 967,
+        "span": [
+          810,
+          1110
+        ]
+      },
+      {
+        "y": 977,
+        "span": [
+          810,
+          1110
+        ]
+      },
+      {
+        "y": 981,
+        "span": [
+          810,
+          1110
+        ]
+      },
+      {
+        "y": 984,
+        "span": [
+          810,
+          1110
+        ]
+      }
+    ]
+  },
+  "cells": {
+    "white": {
+      "bin": 69,
+      "box": [
+        839,
+        999,
+        1081,
+        1039
+      ],
+      "interior_rgb": [
+        249.0,
+        249.0,
+        246.0
+      ]
+    },
+    "red": {
+      "bin": 70,
+      "box": [
+        1021,
+        999,
+        1082,
+        1040
+      ],
+      "interior_rgb": [
+        240.0,
+        0.0,
+        51.0
+      ]
+    },
+    "flag": {
+      "bin": 245,
+      "box": [
+        826,
+        947,
+        1095,
+        984
+      ],
+      "interior_rgb": [
+        206.0,
+        198.0,
+        0.0
+      ]
+    }
+  },
+  "logo_visible_ink": {
+    "PHI": {
+      "box": [
+        462,
+        946,
+        635,
+        1047
+      ],
+      "method": "neutral ink >140; y946:1050; record overlay excluded; a lower bound on full silhouette"
+    },
+    "CHI": {
+      "box": [
+        1304,
+        950,
+        1438,
+        1048
+      ],
+      "method": "neutral ink >140; y946:1050; record overlay excluded; a lower bound on full silhouette"
+    }
+  },
+  "all_labels": [
+    {
+      "plate": "CHI",
+      "label": "1st & 10",
+      "count": 120,
+      "sample_bin": 407,
+      "ink": {
+        "box": [
+          901,
+          955,
+          1018,
+          978
+        ],
+        "pixels": 1076
+      },
+      "plate_rgb": [
+        143.0,
+        51.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "1st & GOAL",
+      "count": 18,
+      "sample_bin": 434,
+      "ink": {
+        "box": [
+          876,
+          955,
+          1044,
+          978
+        ],
+        "pixels": 1512
+      },
+      "plate_rgb": [
+        153.0,
+        55.0,
+        28.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 1",
+      "count": 8,
+      "sample_bin": 548,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1015,
+          978
+        ],
+        "pixels": 983
+      },
+      "plate_rgb": [
+        138.0,
+        50.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 11",
+      "count": 7,
+      "sample_bin": 873,
+      "ink": {
+        "box": [
+          898,
+          955,
+          1022,
+          978
+        ],
+        "pixels": 1124
+      },
+      "plate_rgb": [
+        142.0,
+        52.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 12",
+      "count": 15,
+      "sample_bin": 231,
+      "ink": {
+        "box": [
+          896,
+          955,
+          1024,
+          978
+        ],
+        "pixels": 1170
+      },
+      "plate_rgb": [
+        145.0,
+        52.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 5",
+      "count": 12,
+      "sample_bin": 612,
+      "ink": {
+        "box": [
+          903,
+          955,
+          1017,
+          978
+        ],
+        "pixels": 1069
+      },
+      "plate_rgb": [
+        140.0,
+        51.0,
+        27.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 6",
+      "count": 9,
+      "sample_bin": 34,
+      "ink": {
+        "box": [
+          902,
+          955,
+          1017,
+          978
+        ],
+        "pixels": 1080
+      },
+      "plate_rgb": [
+        139.0,
+        52.0,
+        24.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & 7",
+      "count": 10,
+      "sample_bin": 703,
+      "ink": {
+        "box": [
+          904,
+          955,
+          1016,
+          978
+        ],
+        "pixels": 973
+      },
+      "plate_rgb": [
+        139.0,
+        50.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd & GOAL",
+      "count": 18,
+      "sample_bin": 757,
+      "ink": {
+        "box": [
+          869,
+          955,
+          1051,
+          978
+        ],
+        "pixels": 1667
+      },
+      "plate_rgb": [
+        150.0,
+        55.0,
+        30.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "2nd Down",
+      "count": 12,
+      "sample_bin": 59,
+      "ink": {
+        "box": [
+          886,
+          955,
+          1033,
+          978
+        ],
+        "pixels": 1357
+      },
+      "plate_rgb": [
+        152.0,
+        54.0,
+        28.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 1",
+      "count": 7,
+      "sample_bin": 63,
+      "ink": {
+        "box": [
+          908,
+          955,
+          1012,
+          978
+        ],
+        "pixels": 927
+      },
+      "plate_rgb": [
+        136.0,
+        50.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 10",
+      "count": 9,
+      "sample_bin": 420,
+      "ink": {
+        "box": [
+          898,
+          955,
+          1021,
+          978
+        ],
+        "pixels": 1170
+      },
+      "plate_rgb": [
+        143.0,
+        52.0,
+        26.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 12",
+      "count": 9,
+      "sample_bin": 651,
+      "ink": {
+        "box": [
+          899,
+          955,
+          1020,
+          978
+        ],
+        "pixels": 1097
+      },
+      "plate_rgb": [
+        142.0,
+        52.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 2",
+      "count": 11,
+      "sample_bin": 98,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1013,
+          978
+        ],
+        "pixels": 979
+      },
+      "plate_rgb": [
+        139.0,
+        50.0,
+        26.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 3",
+      "count": 17,
+      "sample_bin": 847,
+      "ink": {
+        "box": [
+          906,
+          955,
+          1013,
+          978
+        ],
+        "pixels": 952
+      },
+      "plate_rgb": [
+        137.0,
+        51.0,
+        24.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 5",
+      "count": 8,
+      "sample_bin": 567,
+      "ink": {
+        "box": [
+          906,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 992
+      },
+      "plate_rgb": [
+        139.0,
+        51.0,
+        26.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 6",
+      "count": 25,
+      "sample_bin": 237,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 1006
+      },
+      "plate_rgb": [
+        137.0,
+        51.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & 9",
+      "count": 10,
+      "sample_bin": 714,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 1007
+      },
+      "plate_rgb": [
+        137.0,
+        51.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd & GOAL",
+      "count": 23,
+      "sample_bin": 446,
+      "ink": {
+        "box": [
+          872,
+          955,
+          1048,
+          978
+        ],
+        "pixels": 1599
+      },
+      "plate_rgb": [
+        154.0,
+        56.0,
+        28.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "3rd Down",
+      "count": 3,
+      "sample_bin": 878,
+      "ink": {
+        "box": [
+          890,
+          955,
+          1030,
+          978
+        ],
+        "pixels": 1284
+      },
+      "plate_rgb": [
+        151.0,
+        53.0,
+        28.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & 1",
+      "count": 14,
+      "sample_bin": 76,
+      "ink": {
+        "box": [
+          907,
+          955,
+          1013,
+          978
+        ],
+        "pixels": 960
+      },
+      "plate_rgb": [
+        138.0,
+        50.0,
+        26.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & 12",
+      "count": 5,
+      "sample_bin": 658,
+      "ink": {
+        "box": [
+          898,
+          955,
+          1022,
+          978
+        ],
+        "pixels": 1144
+      },
+      "plate_rgb": [
+        142.0,
+        52.0,
+        24.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & 2",
+      "count": 6,
+      "sample_bin": 726,
+      "ink": {
+        "box": [
+          904,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 1002
+      },
+      "plate_rgb": [
+        139.0,
+        51.0,
+        24.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & 5",
+      "count": 10,
+      "sample_bin": 576,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1015,
+          978
+        ],
+        "pixels": 1031
+      },
+      "plate_rgb": [
+        141.0,
+        51.0,
+        25.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & 6",
+      "count": 5,
+      "sample_bin": 185,
+      "ink": {
+        "box": [
+          904,
+          955,
+          1015,
+          978
+        ],
+        "pixels": 1050
+      },
+      "plate_rgb": [
+        139.0,
+        50.0,
+        24.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th & GOAL",
+      "count": 11,
+      "sample_bin": 299,
+      "ink": {
+        "box": [
+          871,
+          955,
+          1048,
+          978
+        ],
+        "pixels": 1657
+      },
+      "plate_rgb": [
+        156.0,
+        56.0,
+        30.0
+      ]
+    },
+    {
+      "plate": "CHI",
+      "label": "4th Down",
+      "count": 5,
+      "sample_bin": 722,
+      "ink": {
+        "box": [
+          888,
+          955,
+          1031,
+          978
+        ],
+        "pixels": 1343
+      },
+      "plate_rgb": [
+        150.0,
+        53.0,
+        27.0
+      ]
+    },
+    {
+      "plate": "ESPN",
+      "label": "ESPN",
+      "count": 81,
+      "sample_bin": 518,
+      "ink": {
+        "box": [
+          911,
+          955,
+          1010,
+          979
+        ],
+        "pixels": 1466
+      },
+      "plate_rgb": [
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    {
+      "plate": "FLAG",
+      "label": "FLAG",
+      "count": 22,
+      "sample_bin": 333,
+      "ink": {
+        "box": [
+          920,
+          954,
+          1000,
+          977
+        ],
+        "pixels": 810
+      },
+      "plate_rgb": [
+        198.0,
+        191.0,
+        0.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "1st & 10",
+      "count": 103,
+      "sample_bin": 468,
+      "ink": {
+        "box": [
+          901,
+          955,
+          1018,
+          978
+        ],
+        "pixels": 1070
+      },
+      "plate_rgb": [
+        23.0,
+        77.0,
+        86.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "1st & 11",
+      "count": 6,
+      "sample_bin": 307,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1015,
+          978
+        ],
+        "pixels": 956
+      },
+      "plate_rgb": [
+        24.0,
+        75.0,
+        84.5
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "1st & GOAL",
+      "count": 11,
+      "sample_bin": 502,
+      "ink": {
+        "box": [
+          876,
+          955,
+          1044,
+          978
+        ],
+        "pixels": 1475
+      },
+      "plate_rgb": [
+        25.0,
+        84.0,
+        94.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & 15",
+      "count": 10,
+      "sample_bin": 810,
+      "ink": {
+        "box": [
+          896,
+          955,
+          1024,
+          978
+        ],
+        "pixels": 1199
+      },
+      "plate_rgb": [
+        24.0,
+        79.0,
+        88.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & 20",
+      "count": 10,
+      "sample_bin": 211,
+      "ink": {
+        "box": [
+          892,
+          955,
+          1027,
+          978
+        ],
+        "pixels": 1253
+      },
+      "plate_rgb": [
+        24.0,
+        80.0,
+        89.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & 4",
+      "count": 20,
+      "sample_bin": 362,
+      "ink": {
+        "box": [
+          902,
+          955,
+          1018,
+          978
+        ],
+        "pixels": 1053
+      },
+      "plate_rgb": [
+        23.0,
+        77.0,
+        84.5
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & 5",
+      "count": 8,
+      "sample_bin": 473,
+      "ink": {
+        "box": [
+          903,
+          955,
+          1017,
+          978
+        ],
+        "pixels": 1068
+      },
+      "plate_rgb": [
+        23.0,
+        76.0,
+        86.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & 6",
+      "count": 7,
+      "sample_bin": 136,
+      "ink": {
+        "box": [
+          902,
+          955,
+          1017,
+          978
+        ],
+        "pixels": 1066
+      },
+      "plate_rgb": [
+        24.0,
+        77.0,
+        87.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "2nd & GOAL",
+      "count": 16,
+      "sample_bin": 510,
+      "ink": {
+        "box": [
+          869,
+          955,
+          1050,
+          978
+        ],
+        "pixels": 1653
+      },
+      "plate_rgb": [
+        26.0,
+        83.0,
+        87.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 1",
+      "count": 18,
+      "sample_bin": 320,
+      "ink": {
+        "box": [
+          908,
+          955,
+          1012,
+          978
+        ],
+        "pixels": 911
+      },
+      "plate_rgb": [
+        23.0,
+        75.0,
+        84.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 12",
+      "count": 18,
+      "sample_bin": 635,
+      "ink": {
+        "box": [
+          899,
+          955,
+          1021,
+          978
+        ],
+        "pixels": 1087
+      },
+      "plate_rgb": [
+        22.0,
+        78.0,
+        86.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 16",
+      "count": 10,
+      "sample_bin": 148,
+      "ink": {
+        "box": [
+          899,
+          955,
+          1021,
+          978
+        ],
+        "pixels": 1125
+      },
+      "plate_rgb": [
+        23.0,
+        78.0,
+        88.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 5",
+      "count": 7,
+      "sample_bin": 531,
+      "ink": {
+        "box": [
+          906,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 982
+      },
+      "plate_rgb": [
+        23.0,
+        76.0,
+        83.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 6",
+      "count": 3,
+      "sample_bin": 141,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 987
+      },
+      "plate_rgb": [
+        23.0,
+        76.0,
+        83.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & 9",
+      "count": 7,
+      "sample_bin": 677,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1014,
+          978
+        ],
+        "pixels": 997
+      },
+      "plate_rgb": [
+        22.0,
+        76.0,
+        84.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd & GOAL",
+      "count": 9,
+      "sample_bin": 383,
+      "ink": {
+        "box": [
+          872,
+          955,
+          1048,
+          978
+        ],
+        "pixels": 1589
+      },
+      "plate_rgb": [
+        24.0,
+        84.0,
+        88.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "3rd Down",
+      "count": 3,
+      "sample_bin": 817,
+      "ink": {
+        "box": [
+          890,
+          955,
+          1030,
+          978
+        ],
+        "pixels": 1263
+      },
+      "plate_rgb": [
+        26.0,
+        82.0,
+        90.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "4th & 12",
+      "count": 1,
+      "sample_bin": 594,
+      "ink": {
+        "box": [
+          898,
+          955,
+          1022,
+          978
+        ],
+        "pixels": 1145
+      },
+      "plate_rgb": [
+        25.0,
+        78.0,
+        87.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "4th & 22",
+      "count": 14,
+      "sample_bin": 826,
+      "ink": {
+        "box": [
+          895,
+          955,
+          1024,
+          978
+        ],
+        "pixels": 1198
+      },
+      "plate_rgb": [
+        23.0,
+        79.0,
+        88.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "4th & 5",
+      "count": 7,
+      "sample_bin": 686,
+      "ink": {
+        "box": [
+          905,
+          955,
+          1015,
+          978
+        ],
+        "pixels": 1027
+      },
+      "plate_rgb": [
+        23.0,
+        77.0,
+        85.0
+      ]
+    },
+    {
+      "plate": "PHI",
+      "label": "4th Down",
+      "count": 5,
+      "sample_bin": 645,
+      "ink": {
+        "box": [
+          888,
+          955,
+          1030,
+          978
+        ],
+        "pixels": 1324
+      },
+      "plate_rgb": [
+        25.0,
+        82.0,
+        91.0
+      ]
+    }
+  ],
+  "espn_720_crosscheck": {
+    "bins": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "plate_rgb": [
+      141.0,
+      53.0,
+      24.5
+    ],
+    "wing": {
+      "PHI": [
+        42.0,
+        120.75,
+        134.0
+      ],
+      "CHI": [
+        216.0,
+        81.0,
+        45.5
+      ]
+    },
+    "method": "720p source inserted at its crop origin, scaled 1.5x with bilinear filter; no full-HD edge claim"
+  }
+}

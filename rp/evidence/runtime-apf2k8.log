@@ -1,0 +1,24 @@
+APF2K8_MOD_STUDIO_RUNTIME_PASS modules=163 capabilities=74 universal=private_source_not_provided uniforms=private_source_not_provided uniform_inventory=private_source_not_provided audio_query_lifecycle=applied_token_debounce_guarded audio_shortlist_clear=one_level_ordered_restore audio_preview_lifecycle=request_owned_success_failure audio_preview_cancellation=request_owned_process_group_cancel audio_waveform_cancellation=request_owned_process_group_cancel audio_add_all_matching=applied_query_atomic_256 audio_session_teardown=cancel_drain_before_close_source audio_replacement_confirmation=fully_validated_read_only_preview_then_explicit_apply audio_replacement_token=exact_member_result_source_session_project_revision audio_replacement_noop=cancel_unchanged audio_replacement_lifecycle=worker_drained_before_confirmation audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio audio_mutation_lifecycle=submission_to_worker_idle retail_source_required=false
+	Command being timed: "/usr/bin/python3 /tmp/b76-rp-apf2k8-jstutchu/stage/packaging/check_apf2k8_mod_studio_runtime.py"
+	User time (seconds): 10.54
+	System time (seconds): 0.75
+	Percent of CPU this job got: 96%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.69
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 167904
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 7
+	Minor (reclaiming a frame) page faults: 189856
+	Voluntary context switches: 1697
+	Involuntary context switches: 52
+	Swaps: 0
+	File system inputs: 1688
+	File system outputs: 44848
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

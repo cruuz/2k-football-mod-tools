@@ -1,0 +1,1443 @@
+{
+  "classification": "PROVED OFFLINE",
+  "runtime_status": "UNWITNESSED",
+  "master_instructions": 7189487,
+  "cases": [
+    {
+      "profile": "base",
+      "receipt": {
+        "schema": "apf2k8_situation_mask/v3",
+        "classification": "EXPERIMENTAL",
+        "runtime_status": "UNWITNESSED",
+        "profile": "base",
+        "image_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+        "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08; key 12 = phase 3 ordinary two-point offense",
+        "policies": {},
+        "personnel_rows": {},
+        "data_sha256": "208dec6e1e1d621510a9209241861970e0bb4f83587ebb9a5467aec714c5fcd5",
+        "formation_weights": {
+          "O-ManBlock": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+              "14": 4.0
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        },
+        "hooks": [
+          [
+            2223419800,
+            2228282112
+          ],
+          [
+            2223412928,
+            2228283464
+          ],
+          [
+            2223419536,
+            2228284716
+          ]
+        ],
+        "code": {
+          "instructions": 815,
+          "branches": 140,
+          "sha256": "8bc1d6ffae725ba80afd0134f8a8f84a7cd6deb6f7ca40dfb364e4596c2a00bf"
+        },
+        "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+        "limits": "Ordinary automatic offense in scrimmage phase 4 and ordinary two-point offense in phase 3; cached specials, explicit play/formation paths and special personnel rows bypass the policy.",
+        "weight_formula": "f32(native formation lottery weight * multiplier); category lottery unchanged; empty exclusion fallback retains original weights",
+        "revert": "Remove installed patch and restart Xenia; no game image or book bytes are changed. Set multiplier to 1 and reinstall to remove an individual override."
+      },
+      "audit": {
+        "profile": "base",
+        "sections": {
+          ".rdata": [
+            2181039104,
+            38648148,
+            38648320,
+            1073741888
+          ],
+          ".pdata": [
+            2219687424,
+            147776,
+            147968,
+            1073741888
+          ],
+          ".string_": [
+            2219835392,
+            1230811,
+            1230848,
+            1073741888
+          ],
+          ".text": [
+            2221080576,
+            7180364,
+            7180800,
+            1610612768
+          ],
+          ".data": [
+            2228289536,
+            6055148,
+            2065408,
+            3221225536
+          ],
+          ".XBMOVIE": [
+            2234344960,
+            12,
+            512,
+            3221225536
+          ],
+          ".idata": [
+            2234384384,
+            1506,
+            1536,
+            3221225536
+          ],
+          ".XBLD": [
+            2234449920,
+            176,
+            512,
+            1107296320
+          ],
+          ".reloc": [
+            2234450432,
+            955408,
+            955904,
+            1107296320
+          ]
+        },
+        "ranges": [
+          [
+            2221066752,
+            2221080576,
+            ".string_"
+          ],
+          [
+            2228282112,
+            2228285440,
+            ".text"
+          ],
+          [
+            2234344704,
+            2234344768,
+            ".data"
+          ]
+        ],
+        "direct_branch_references": 0,
+        "executable_literal_references": 0,
+        "lis_displacement_references": 0,
+        "untyped_word_collisions": [
+          [
+            2184339788,
+            2234344751
+          ],
+          [
+            2185178756,
+            2228283435
+          ],
+          [
+            2186514340,
+            2221072175
+          ],
+          [
+            2186774260,
+            2228284696
+          ],
+          [
+            2191336924,
+            2228285270
+          ],
+          [
+            2192162388,
+            2228283990
+          ],
+          [
+            2193777428,
+            2221077260
+          ],
+          [
+            2197304804,
+            2228283697
+          ],
+          [
+            2197336604,
+            2228284313
+          ],
+          [
+            2197919868,
+            2221070792
+          ],
+          [
+            2204067108,
+            2221077211
+          ],
+          [
+            2204525524,
+            2228282795
+          ],
+          [
+            2204988380,
+            2228285185
+          ],
+          [
+            2206627004,
+            2228282883
+          ],
+          [
+            2207452340,
+            2228284587
+          ],
+          [
+            2208253284,
+            2221073511
+          ],
+          [
+            2209837868,
+            2228284666
+          ],
+          [
+            2211911180,
+            2221074404
+          ],
+          [
+            2213077724,
+            2228285181
+          ]
+        ],
+        "relocation_status": "Opaque XEX section; not claimed as decoded PE relocation blocks",
+        "relocation_sha256": "bddad5b3594e7fb1d08c269f63e7f7fa519a89694bdd3787cd260d02c950c6f9",
+        "computed_address_limit": "No claim about arbitrary computed addresses; owned ranges are mapped section padding beyond declared content."
+      },
+      "patched_sha256": "b206eeadd5c429a0e78a416f49d239de26a45355508d37137320a0b5387e9c0a",
+      "exact_revert_sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+    },
+    {
+      "profile": "tu_1_1",
+      "receipt": {
+        "schema": "apf2k8_situation_mask/v3",
+        "classification": "EXPERIMENTAL",
+        "runtime_status": "UNWITNESSED",
+        "profile": "tu_1_1",
+        "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+        "key": "actual down 1..4 x absolute f32 longitudinal distance <=182.88 / <=640.08 / >640.08; key 12 = phase 3 ordinary two-point offense",
+        "policies": {},
+        "personnel_rows": {},
+        "data_sha256": "208dec6e1e1d621510a9209241861970e0bb4f83587ebb9a5467aec714c5fcd5",
+        "formation_weights": {
+          "O-ManBlock": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+              "14": 4.0
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        },
+        "hooks": [
+          [
+            2223423128,
+            2228282112
+          ],
+          [
+            2223416256,
+            2228283464
+          ],
+          [
+            2223422864,
+            2228284716
+          ]
+        ],
+        "code": {
+          "instructions": 815,
+          "branches": 140,
+          "sha256": "1393f050c5db7be6b772ba16fc740a805778f111afb4515df18b345e9c78abf4"
+        },
+        "fallback": "An empty filtered draw uses the original complete draw; last-draw receipts at 0x852D6500 and 0x852D6518",
+        "limits": "Ordinary automatic offense in scrimmage phase 4 and ordinary two-point offense in phase 3; cached specials, explicit play/formation paths and special personnel rows bypass the policy.",
+        "weight_formula": "f32(native formation lottery weight * multiplier); category lottery unchanged; empty exclusion fallback retains original weights",
+        "revert": "Remove installed patch and restart Xenia; no game image or book bytes are changed. Set multiplier to 1 and reinstall to remove an individual override."
+      },
+      "audit": {
+        "profile": "tu_1_1",
+        "sections": {
+          ".rdata": [
+            2181039104,
+            38648180,
+            38648320,
+            1073741888
+          ],
+          ".pdata": [
+            2219687424,
+            147840,
+            147968,
+            1073741888
+          ],
+          ".string_": [
+            2219835392,
+            1230851,
+            1231360,
+            1073741888
+          ],
+          ".text": [
+            2221080576,
+            7184412,
+            7184896,
+            1610612768
+          ],
+          ".data": [
+            2228289536,
+            6055148,
+            2065408,
+            3221225536
+          ],
+          ".XBMOVIE": [
+            2234344960,
+            12,
+            512,
+            3221225536
+          ],
+          ".idata": [
+            2234384384,
+            1506,
+            1536,
+            3221225536
+          ],
+          ".XBLD": [
+            2234449920,
+            176,
+            512,
+            1107296320
+          ],
+          ".reloc": [
+            2234450432,
+            955464,
+            955904,
+            1107296320
+          ]
+        },
+        "ranges": [
+          [
+            2221066752,
+            2221080576,
+            ".string_"
+          ],
+          [
+            2228282112,
+            2228285440,
+            ".text"
+          ],
+          [
+            2234344704,
+            2234344768,
+            ".data"
+          ]
+        ],
+        "direct_branch_references": 0,
+        "executable_literal_references": 0,
+        "lis_displacement_references": 0,
+        "untyped_word_collisions": [
+          [
+            2184339820,
+            2234344751
+          ],
+          [
+            2185178788,
+            2228283435
+          ],
+          [
+            2186514372,
+            2221072175
+          ],
+          [
+            2186774292,
+            2228284696
+          ],
+          [
+            2191336956,
+            2228285270
+          ],
+          [
+            2192162420,
+            2228283990
+          ],
+          [
+            2193777460,
+            2221077260
+          ],
+          [
+            2197304836,
+            2228283697
+          ],
+          [
+            2197336636,
+            2228284313
+          ],
+          [
+            2197919900,
+            2221070792
+          ],
+          [
+            2204067140,
+            2221077211
+          ],
+          [
+            2204525556,
+            2228282795
+          ],
+          [
+            2204988412,
+            2228285185
+          ],
+          [
+            2206627036,
+            2228282883
+          ],
+          [
+            2207452372,
+            2228284587
+          ],
+          [
+            2208253316,
+            2221073511
+          ],
+          [
+            2209837900,
+            2228284666
+          ],
+          [
+            2211911212,
+            2221074404
+          ],
+          [
+            2213077756,
+            2228285181
+          ]
+        ],
+        "relocation_status": "Opaque XEX section; not claimed as decoded PE relocation blocks",
+        "relocation_sha256": "af7afe2a3f637a29aabc4e9143aa7875933e49b767f8fae051c3eb25384578e6",
+        "computed_address_limit": "No claim about arbitrary computed addresses; owned ranges are mapped section padding beyond declared content."
+      },
+      "patched_sha256": "5c9f8c5e68f549cb7844c7811c41be2c4fc28f52c8c5c2b81661dfb229e783e5",
+      "exact_revert_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457"
+    },
+    {
+      "profile": "base",
+      "phase": 3,
+      "try_vector": [
+        [
+          14,
+          2.0
+        ],
+        [
+          24,
+          0.5
+        ]
+      ],
+      "category_vector": [
+        [
+          0,
+          0.10000000149011612
+        ],
+        [
+          1,
+          0.10000000149011612
+        ],
+        [
+          3,
+          0.03500000014901161
+        ],
+        [
+          6,
+          0.5
+        ],
+        [
+          26,
+          0.10000000149011612
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "phase": 4,
+      "try_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          0.5
+        ],
+        [
+          24,
+          0.5
+        ]
+      ],
+      "category_vector": [
+        [
+          0,
+          0.10000000149011612
+        ],
+        [
+          1,
+          0.10000000149011612
+        ],
+        [
+          3,
+          0.03500000014901161
+        ],
+        [
+          6,
+          0.25
+        ],
+        [
+          26,
+          0.10000000149011612
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "full_try_category": 1,
+      "full_try_formation": 27,
+      "key": 12,
+      "instructions": 278552
+    },
+    {
+      "profile": "tu_1_1",
+      "phase": 3,
+      "try_vector": [
+        [
+          14,
+          2.0
+        ],
+        [
+          24,
+          0.5
+        ]
+      ],
+      "category_vector": [
+        [
+          0,
+          0.10000000149011612
+        ],
+        [
+          1,
+          0.10000000149011612
+        ],
+        [
+          3,
+          0.03500000014901161
+        ],
+        [
+          6,
+          0.5
+        ],
+        [
+          26,
+          0.10000000149011612
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "phase": 4,
+      "try_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          0.5
+        ],
+        [
+          24,
+          0.5
+        ]
+      ],
+      "category_vector": [
+        [
+          0,
+          0.10000000149011612
+        ],
+        [
+          1,
+          0.10000000149011612
+        ],
+        [
+          3,
+          0.03500000014901161
+        ],
+        [
+          6,
+          0.25
+        ],
+        [
+          26,
+          0.10000000149011612
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "full_try_category": 1,
+      "full_try_formation": 27,
+      "key": 12,
+      "instructions": 278552
+    },
+    {
+      "profile": "base",
+      "down": 3,
+      "yards": 8,
+      "native_weights_before": [
+        [
+          2,
+          2.0
+        ],
+        [
+          14,
+          2.0
+        ],
+        [
+          24,
+          2.0
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          2.0
+        ],
+        [
+          14,
+          8.0
+        ],
+        [
+          24,
+          2.0
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 16,
+        "14": 64,
+        "24": 16
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": false,
+      "full_cpu_formation_counts": [
+        {
+          "2": 8,
+          "14": 8,
+          "24": 8
+        },
+        {
+          "2": 4,
+          "14": 16,
+          "24": 4
+        }
+      ],
+      "instructions": [
+        9298998,
+        9865067
+      ]
+    },
+    {
+      "profile": "base",
+      "down": 1,
+      "yards": 10,
+      "native_weights_before": [
+        [
+          2,
+          1.0
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          1.0
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          1.0
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          1.0
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": true,
+      "full_cpu_formation_counts": [
+        {
+          "9": 1,
+          "5": 1,
+          "0": 2,
+          "1": 4,
+          "12": 4,
+          "13": 4,
+          "22": 2,
+          "24": 6
+        },
+        {
+          "9": 1,
+          "5": 1,
+          "0": 2,
+          "1": 4,
+          "12": 4,
+          "13": 4,
+          "22": 2,
+          "24": 6
+        }
+      ],
+      "instructions": [
+        8886642,
+        8976080
+      ]
+    },
+    {
+      "profile": "base",
+      "down": 3,
+      "yards": 5,
+      "native_weights_before": [
+        [
+          2,
+          1.2000000476837158
+        ],
+        [
+          14,
+          1.2000000476837158
+        ],
+        [
+          24,
+          1.2000000476837158
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          1.2000000476837158
+        ],
+        [
+          14,
+          1.2000000476837158
+        ],
+        [
+          24,
+          1.2000000476837158
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": true,
+      "full_cpu_formation_counts": [
+        {
+          "0": 4,
+          "1": 3,
+          "12": 4,
+          "14": 5,
+          "24": 8
+        },
+        {
+          "0": 4,
+          "1": 3,
+          "12": 4,
+          "14": 5,
+          "24": 8
+        }
+      ],
+      "instructions": [
+        9045612,
+        9133146
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "down": 3,
+      "yards": 8,
+      "native_weights_before": [
+        [
+          2,
+          2.0
+        ],
+        [
+          14,
+          2.0
+        ],
+        [
+          24,
+          2.0
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          2.0
+        ],
+        [
+          14,
+          8.0
+        ],
+        [
+          24,
+          2.0
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 16,
+        "14": 64,
+        "24": 16
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": false,
+      "full_cpu_formation_counts": [
+        {
+          "2": 8,
+          "14": 8,
+          "24": 8
+        },
+        {
+          "2": 4,
+          "14": 16,
+          "24": 4
+        }
+      ],
+      "instructions": [
+        9298998,
+        9865067
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "down": 1,
+      "yards": 10,
+      "native_weights_before": [
+        [
+          2,
+          1.0
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          1.0
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          1.0
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          1.0
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": true,
+      "full_cpu_formation_counts": [
+        {
+          "9": 1,
+          "5": 1,
+          "0": 2,
+          "1": 4,
+          "12": 4,
+          "13": 4,
+          "22": 2,
+          "24": 6
+        },
+        {
+          "9": 1,
+          "5": 1,
+          "0": 2,
+          "1": 4,
+          "12": 4,
+          "13": 4,
+          "22": 2,
+          "24": 6
+        }
+      ],
+      "instructions": [
+        8886642,
+        8976080
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "down": 3,
+      "yards": 5,
+      "native_weights_before": [
+        [
+          2,
+          1.2000000476837158
+        ],
+        [
+          14,
+          1.2000000476837158
+        ],
+        [
+          24,
+          1.2000000476837158
+        ]
+      ],
+      "native_weights_after": [
+        [
+          2,
+          1.2000000476837158
+        ],
+        [
+          14,
+          1.2000000476837158
+        ],
+        [
+          24,
+          1.2000000476837158
+        ]
+      ],
+      "formation_selector_draws": 96,
+      "counts_before": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "counts_after": {
+        "2": 32,
+        "14": 32,
+        "24": 32
+      },
+      "full_cpu_calls": 24,
+      "full_cpu_equal": true,
+      "full_cpu_formation_counts": [
+        {
+          "0": 4,
+          "1": 3,
+          "12": 4,
+          "14": 5,
+          "24": 8
+        },
+        {
+          "0": 4,
+          "1": 3,
+          "12": 4,
+          "14": 5,
+          "24": 8
+        }
+      ],
+      "instructions": [
+        9045612,
+        9133146
+      ]
+    }
+  ],
+  "all_scrimmage_keys": [
+    {
+      "profile": "base",
+      "key": 0,
+      "formation_vector": [
+        [
+          2,
+          0.13750000298023224
+        ],
+        [
+          14,
+          0.2750000059604645
+        ],
+        [
+          24,
+          2.200000047683716
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 1,
+      "formation_vector": [
+        [
+          2,
+          0.1875
+        ],
+        [
+          14,
+          0.375
+        ],
+        [
+          24,
+          3.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 2,
+      "formation_vector": [
+        [
+          2,
+          0.22499999403953552
+        ],
+        [
+          14,
+          0.44999998807907104
+        ],
+        [
+          24,
+          3.5999999046325684
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 3,
+      "formation_vector": [
+        [
+          2,
+          0.13750000298023224
+        ],
+        [
+          14,
+          0.2750000059604645
+        ],
+        [
+          24,
+          2.200000047683716
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 4,
+      "formation_vector": [
+        [
+          2,
+          0.1875
+        ],
+        [
+          14,
+          0.375
+        ],
+        [
+          24,
+          3.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 5,
+      "formation_vector": [
+        [
+          2,
+          0.22499999403953552
+        ],
+        [
+          14,
+          0.44999998807907104
+        ],
+        [
+          24,
+          3.5999999046325684
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 6,
+      "formation_vector": [
+        [
+          2,
+          0.125
+        ],
+        [
+          14,
+          0.25
+        ],
+        [
+          24,
+          2.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 7,
+      "formation_vector": [
+        [
+          2,
+          0.30000001192092896
+        ],
+        [
+          14,
+          0.6000000238418579
+        ],
+        [
+          24,
+          4.800000190734863
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 8,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 9,
+      "formation_vector": [
+        [
+          2,
+          0.125
+        ],
+        [
+          14,
+          0.25
+        ],
+        [
+          24,
+          2.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 10,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    },
+    {
+      "profile": "base",
+      "key": 11,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 0,
+      "formation_vector": [
+        [
+          2,
+          0.13750000298023224
+        ],
+        [
+          14,
+          0.2750000059604645
+        ],
+        [
+          24,
+          2.200000047683716
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 1,
+      "formation_vector": [
+        [
+          2,
+          0.1875
+        ],
+        [
+          14,
+          0.375
+        ],
+        [
+          24,
+          3.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 2,
+      "formation_vector": [
+        [
+          2,
+          0.22499999403953552
+        ],
+        [
+          14,
+          0.44999998807907104
+        ],
+        [
+          24,
+          3.5999999046325684
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 3,
+      "formation_vector": [
+        [
+          2,
+          0.13750000298023224
+        ],
+        [
+          14,
+          0.2750000059604645
+        ],
+        [
+          24,
+          2.200000047683716
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 4,
+      "formation_vector": [
+        [
+          2,
+          0.1875
+        ],
+        [
+          14,
+          0.375
+        ],
+        [
+          24,
+          3.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 5,
+      "formation_vector": [
+        [
+          2,
+          0.22499999403953552
+        ],
+        [
+          14,
+          0.44999998807907104
+        ],
+        [
+          24,
+          3.5999999046325684
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 6,
+      "formation_vector": [
+        [
+          2,
+          0.125
+        ],
+        [
+          14,
+          0.25
+        ],
+        [
+          24,
+          2.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 7,
+      "formation_vector": [
+        [
+          2,
+          0.30000001192092896
+        ],
+        [
+          14,
+          0.6000000238418579
+        ],
+        [
+          24,
+          4.800000190734863
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 8,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 9,
+      "formation_vector": [
+        [
+          2,
+          0.125
+        ],
+        [
+          14,
+          0.25
+        ],
+        [
+          24,
+          2.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 10,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    },
+    {
+      "profile": "tu_1_1",
+      "key": 11,
+      "formation_vector": [
+        [
+          2,
+          0.5
+        ],
+        [
+          14,
+          1.0
+        ],
+        [
+          24,
+          8.0
+        ]
+      ]
+    }
+  ]
+}

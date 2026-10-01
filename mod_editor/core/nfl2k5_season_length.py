@@ -1,7 +1,7 @@
 """Franchise season year, postseason calendar and 18-week season length for ESPN NFL 2K5 (executable patch).
 
 Everything below was read from the retail ``default.xbe`` (sha256 73105b17...) with Ghidra and capstone;
-nothing has been witnessed in xemu yet.  Three independent groups, each with ``status``/``apply``:
+nothing has been witnessed in xemu yet. Independent groups have ``status``/``apply``:
 
 ``year`` -- the franchise calendar year is ``2004 + season index`` at five code sites (the sixth,
   the preseason generator's ``add al,4``, went away with the ``preseason`` group's in-place rewrite of
@@ -12,15 +12,22 @@ nothing has been witnessed in xemu yet.  Three independent groups, each with ``s
   franchise), so the base moves with the year (2026: 102..104 -> 02..04), and the player card's
   DOB line (FUN_00145d20, "%d/%d/%d" with the raw two-digit year) is rewritten in place to print a
   four-digit year (two-digit years up to ``year + 4 - 2000`` are 2000s).  There is no age
-  arithmetic anywhere in the executable: the roster spreadsheet shows HT/WT/YRS PRO/COLLEGE and
+  arithmetic in these card/creation paths: the roster spreadsheet shows HT/WT/YRS PRO/COLLEGE and
   the card shows DOB, so the 2004 roster's players keep their 2004 birth dates until the roster
-  changes.  Four ``imm32``
+  changes. Four ``imm32``
   sites format the year for the UI (FUN_00247ac0 ``add eax,0x7d4`` -> the "%d" year string,
   cb_001c1830 and FUN_0024c480 date lines ``lea edx,[eax+ecx+0x7d4]`` (+1 for months before June),
   FUN_0021b5f0 season history ``add edx,0x7d4``) and two ``imm8`` sites seed the schedule generators'
   two-digit year (``add al,4`` in the regular-season generator FUN_002bf270 at 0x2BF5C0 and in the
   preseason generator FUN_002bec20 at 0x2BEF6A: Thanksgiving of ``2000 + 4 + season`` anchors every
   generated calendar).  ``apply(year=2026)`` writes 2026 / 26 to all six.
+
+``created_player_dates`` -- the shared Create Player initializer and Birth Year controls:
+  January 1, year minus 22, and year minus 45 through year minus 18. The editor uses a seven-bit
+  year-minus-1900 value (104 for 2004), not just year modulo 100. MyCareer keeps its next-season
+  draft default and defers to these controls when this complete policy is installed. This group
+  ships with the season option but is not a calendar-engine dependency: standalone MyCareer
+  owns three legacy upper-limit edits, which must not make the calendar year group foreign.
 
 ``calendar`` -- the twelve postseason kickoff records live in ``.data`` at 0xACD6C8 (8 bytes each:
   ``[0][home][away][month][day][0][hour12][minute]``; the season-start routine FUN_002a7e50 copies them
@@ -31,7 +38,8 @@ nothing has been witnessed in xemu yet.  Three independent groups, each with ``s
   January and can be edited by hand.  The Super Bowl venue selector FUN_001332b0 picks the neutral
   stadium by season index through a five-entry jump table at 0x133354 (s40 Jacksonville, s42 Detroit,
   s43 Miami, s41 Glendale, s44 Los Angeles, then s45); the preset points season 0 at the Los Angeles
-  entry (Super Bowl LXI is at SoFi Stadium).
+  entry as the original geographic stand-in for SoFi. When the SoFi model is installed, the builder keeps
+  season 0 at s40, where that model supplies the neutral LXI field. Without SoFi the s44 default stays.
 
 ``season_length`` -- the schedule grid is 22 rows x 17 slots (``.data`` 0xE57C40, FUN_000c4f10).  Retail
   uses rows 0-16 for the 17 regular-season weeks and 17-21 for Wild Card, Divisional, Conference,
@@ -87,6 +95,7 @@ POSTSEASON_RECORDS = 12
 SB_VENUE_TABLE_VA = 0x00133354
 SB_VENUE_CASES = {"s40_jacksonville": 0x001332C5, "s42_detroit": 0x001332CC, "s43_miami": 0x001332D3,
                   "s41_glendale": 0x001332DA, "s44_los_angeles": 0x001332E1}
+SOFI_SB_VENUE = "s40_jacksonville"  # key describes the retail slot, not the installed building
 
 
 class SeasonLengthError(ValueError):
@@ -214,6 +223,46 @@ def year_sites(year: int) -> tuple[Site, ...]:
              f"FUN_00145d20 rewritten: player-card DOB prints a four-digit year (two-digit <= {dob_pivot(year)} -> 2000s)"),
     ]
     return tuple(sites)
+
+
+CAP_YEAR_MASK = 0x0FE00000
+CAP_SHARED_YEAR_LABELS = frozenset(("cap_year_up_limit", "cap_year_down_wrap_clear", "cap_year_down_wrap_set"))
+
+
+def created_player_date_sites(year: int) -> tuple[Site, ...]:
+    """Pinned native instructions; no cave, save migration, or live-season dependency.
+
+    CAP is also entered outside a Franchise, where the live season index can be stale.
+    Use the same build year as the season owner. MyCareer's draft route already adjusts
+    its default by one year. The creation range is fixed to the disc's starting season.
+    """
+    low, default, high = year - 1945, year - 1922, year - 1918
+    _require(2000 <= year <= 2045 and 0 <= low < default < high <= 127,
+             "Create Player years must fit year-minus-1900 in seven bits (year 2000..2045)")
+    def instruction(label, va, before, after, note):
+        return Site(label, va, bytes.fromhex(before), after, note)
+    clear = bytes.fromhex("81e1") + _u32(~CAP_YEAR_MASK & 0xFFFFFFFF)
+    return (
+        instruction("cap_default_birth", 0xC0ADC, "81c90010e109",
+                    b"\x81\xc9" + _u32((default << 21) | 0x11000),
+                    "FUN_000c0a80: zeroed new record receives January 1, starting year minus 22"),
+        instruction("cap_year_up_limit", 0x343D3A, "80fa54", b"\x80\xfa" + bytes([high]),
+                    "Birth Year next: wrap after starting year minus 18"),
+        instruction("cap_year_up_wrap_clear", 0x343D42, "81e1ffffdff6", clear,
+                    "Birth Year next wrap: clear only the seven year bits"),
+        instruction("cap_year_up_wrap_set", 0x343D48, "81c90000c006", b"\x81\xc9" + _u32(low << 21),
+                    "Birth Year next wrap: starting year minus 45"),
+        instruction("cap_year_down_limit", 0x343D8A, "80fa36", b"\x80\xfa" + bytes([low]),
+                    "Birth Year previous: wrap below starting year minus 45"),
+        instruction("cap_year_down_wrap_clear", 0x343D92, "81e1ffff9ffa", clear,
+                    "Birth Year previous wrap: clear only the seven year bits"),
+        instruction("cap_year_down_wrap_set", 0x343D98, "81c90000800a", b"\x81\xc9" + _u32(high << 21),
+                    "Birth Year previous wrap: starting year minus 18"),
+        instruction("cap_year_display_pivot", 0x346B56, "83f804", b"\x83\xf8" + bytes([year - 2000]),
+                    "Birth Year display: recognize normalized 2000s through the starting year"),
+        instruction("cap_birth_leap_2000", 0x34318D, "85d2740a", bytes.fromhex("85d29090"),
+                    "CAP month length: allow Feb 29 in 2000; the supported range has no non-leap century"),
+    )
 
 
 # -- calendar -------------------------------------------------------------------------------------
@@ -431,8 +480,11 @@ _MISSED_ROW_SITES: tuple[Site, ...] = (
 )
 WEEK_SITES = WEEK_SITES + _MISSED_ROW_SITES
 
-GROUPS = ("year", "calendar", "season_length", "playoffs_14", "preseason")
-XBE_GROUPS = ("year", "calendar", "season_length")   # the groups that live in this module
+# The calendar repairs its own dependencies at either supported epoch. It must
+# neither require nor install the optional creation policy over legacy MyCareer.
+CALENDAR_GROUPS = ("year", "calendar", "season_length", "playoffs_14", "preseason")
+GROUPS = ("year", "created_player_dates", *CALENDAR_GROUPS[1:])
+XBE_GROUPS = ("year", "created_player_dates", "calendar", "season_length")
 
 
 def _header_size(payload: bytes) -> int:
@@ -457,6 +509,8 @@ def group_sites(group: str, *, year: int = DEFAULT_YEAR,
         calendar14 = p14.CALENDAR_2026_14
     if group == "year":
         return year_sites(year)
+    if group == "created_player_dates":
+        return created_player_date_sites(year)
     if group == "calendar":
         return calendar_sites(calendar, super_bowl_venue)
     if group == "season_length":
@@ -482,8 +536,14 @@ def group_status(payload: bytes, group: str, **kwargs) -> str:
         if engine.MAGIC in payload:
             payload = engine.predecessor(payload)
         sections = _sections(payload)
-        states = {_site_state(payload, s, sections) for s in group_sites(group, **kwargs)
-                  if s.retail != s.patched}
+        if group == "calendar" and "super_bowl_venue" not in kwargs:
+            kwargs["super_bowl_venue"] = read_super_bowl_venue(payload)
+        states = set()
+        for site in group_sites(group, **kwargs):
+            state = _site_state(payload, site, sections)
+            # An unchanged s40 entry still has to match its expected bytes.
+            if site.retail != site.patched or state == "foreign":
+                states.add(state)
     except (SeasonLengthError, ValueError, struct.error):
         return "foreign"
     if states == {"retail"}:
@@ -491,6 +551,38 @@ def group_status(payload: bytes, group: str, **kwargs) -> str:
     if states == {"applied"}:
         return "applied"
     return "foreign"
+
+
+def read_super_bowl_venue(payload: bytes) -> str | None:
+    """Read the season-zero slot; recognize the two supported default build routes only."""
+    try:
+        off = _offset(payload, SB_VENUE_TABLE_VA, _sections(payload))
+        got = payload[off:off + 4]
+        return next((key for key in (SOFI_SB_VENUE, "s44_los_angeles")
+                     if got == _u32(SB_VENUE_CASES[key])), None)
+    except (SeasonLengthError, ValueError, struct.error):
+        return None
+
+
+def route_sofi_super_bowl(payload: bytes) -> tuple[bytes, dict]:
+    """Keep SoFi's neutral s40 route, including an already patched s44 calendar.
+
+    The builder calls this only when installing SoFi. No later table entry, selector
+    instruction or schedule byte changes. Unknown season-zero targets refuse.
+    """
+    previous = read_super_bowl_venue(payload)
+    _require(previous is not None, "foreign Super Bowl season-zero route")
+    receipt = dict(venue="s40", previous=previous[:3], va=f"0x{SB_VENUE_TABLE_VA:08x}", size=4)
+    if previous == SOFI_SB_VENUE:
+        return payload, dict(receipt, already_applied=True)
+    sections = _sections(payload)
+    off = _offset(payload, SB_VENUE_TABLE_VA, sections)
+    buf = bytearray(payload)
+    buf[off:off + 4] = _u32(SB_VENUE_CASES[SOFI_SB_VENUE])
+    section = _section_for_offset(sections, off)
+    at = section.header_offset + 36
+    buf[at:at + 20] = section_digest(bytes(buf), section)
+    return bytes(buf), dict(receipt, already_applied=False)
 
 
 def read_year(payload: bytes) -> int | None:
@@ -513,6 +605,8 @@ def read_year(payload: bytes) -> int | None:
 def status(payload: bytes, **kwargs) -> dict[str, object]:
     year = read_year(payload)
     report: dict[str, object] = {"year": read_year(payload)}
+    venue = read_super_bowl_venue(payload)
+    report["super_bowl_venue"] = venue[:3] if venue else None
     for group in GROUPS:
         report[group] = group_status(payload, group, **kwargs)
     if report["year"] == "foreign" and year not in (None, RETAIL_YEAR):
@@ -576,10 +670,10 @@ def site_table(**kwargs) -> list[dict[str, object]]:
     return rows
 
 
-__all__ = ["CALENDAR_2026", "DEFAULT_YEAR", "DOB_FORMATTER_VA", "GROUPS", "XBE_GROUPS", "GRID_ROWS", "GRID_SLOTS", "GRID_VA",
+__all__ = ["CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR", "DOB_FORMATTER_VA", "GROUPS", "XBE_GROUPS", "GRID_ROWS", "GRID_SLOTS", "GRID_VA",
            "POSTSEASON_LABELS", "POSTSEASON_TABLE_VA", "RETAIL_POSTSEASON", "RETAIL_YEAR", "SB_VENUE_CASES",
            "SB_VENUE_TABLE_VA", "SEASON_WEEKS_VA", "STAGE_TABLE_VA", "SeasonLengthError", "Site", "WEEK_SITES",
-           "apply", "calendar_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
+           "apply", "calendar_sites", "created_player_date_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
            "dob_formatter_bytes", "dob_pivot", "read_year", "rookie_birth_base", "site_table", "status", "year_sites"]
 
 

@@ -1,0 +1,47 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "kickoff_extra_owners": {
+    "eligibility": [
+      "nfl2k5_anniversary_kickoff: declared edit: kickoff_eligibility",
+      "nfl2k5_anniversary_kickoff: observed byte diff",
+      "nfl2k5_anniversary_kickoff: observed byte diff"
+    ],
+    "separation": [
+      "nfl2k5_anniversary_kickoff: declared edit: kickoff_separation",
+      "nfl2k5_anniversary_kickoff: observed byte diff",
+      "nfl2k5_anniversary_kickoff: observed byte diff"
+    ],
+    "ready": [
+      "nfl2k5_anniversary_kickoff: declared edit: kickoff_ready",
+      "nfl2k5_anniversary_kickoff: observed byte diff",
+      "nfl2k5_anniversary_kickoff: observed byte diff"
+    ],
+    "head_pose": [
+      "nfl2k5_anniversary_kickoff: declared edit: kickoff_head_pose",
+      "nfl2k5_anniversary_kickoff: observed byte diff",
+      "nfl2k5_anniversary_kickoff: observed byte diff"
+    ],
+    "block_tick": [
+      "nfl2k5_anniversary_kickoff: declared edit: kickoff_block_tick",
+      "nfl2k5_anniversary_kickoff: observed byte diff",
+      "nfl2k5_anniversary_kickoff: observed byte diff"
+    ]
+  },
+  "practice_squad_extra_owners": [
+    {
+      "start": "0x3d161f",
+      "end": "0x3d162a",
+      "detail": "nfl2k5_franchise_economy: declared edit: site"
+    },
+    {
+      "start": "0x3d161f",
+      "end": "0x3d162a",
+      "detail": "nfl2k5_franchise_economy: observed byte diff"
+    },
+    {
+      "start": "0x3d161f",
+      "end": "0x3d162a",
+      "detail": "nfl2k5_roster_fill_composition: shared roster-fill continuation"
+    }
+  ]
+}

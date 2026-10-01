@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import unittest
 
 try:
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication, QLabel
     from mod_editor.apf_studio.charge_abilities_qt import ChargeAbilitiesDialog
 except ImportError:
     QApplication = None
@@ -28,6 +28,9 @@ class ChargeQtTests(unittest.TestCase):
             settings.configure(exe)
             facade = SimpleNamespace(build_options=ApfBuildOptions(), launcher=XeniaLauncher(settings, root / "data"))
             dialog = ChargeAbilitiesDialog(facade)
+            text = " ".join(label.text() for label in dialog.findChildren(QLabel))
+            for phrase in ("Revision 3", "Finesse", "spin and juke", "Power", "stiff arm and shoulder charge", "medal stars"):
+                self.assertIn(phrase, text)
             self.assertFalse(dialog.build_enabled.isChecked())
             self.assertFalse(dialog.enabled.isChecked())
             self.assertFalse(dialog.install_button.isEnabled())
@@ -35,6 +38,8 @@ class ChargeQtTests(unittest.TestCase):
             self.assertTrue(facade.build_options.charge_abilities)
             dialog.enabled.setChecked(True)
             dialog.install()
+            from mod_editor.core.apf2k8_charge_abilities import parse_payload, FILENAME
+            self.assertEqual(parse_payload((settings.patches_folder / FILENAME).read_bytes()).revision, 3)
             self.assertTrue(facade.launcher.pass_fetch_status(kind="charge_abilities")["enabled"])
             reopened = ChargeAbilitiesDialog(facade)
             self.assertTrue(reopened.build_enabled.isChecked())

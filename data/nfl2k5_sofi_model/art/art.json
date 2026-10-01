@@ -1,0 +1,294 @@
+{
+ "schema": "nfl2k5_sofi_model_art/v1",
+ "art": {
+  "field/s23_endzone_L": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "1bb6a8b54adb82350f51d53134649a8fe7420dd84b351e11d001d03d608866d8"
+  },
+  "field/s23_endzone_M": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "2c481ac082565441831456224dc09d80a2e82a2ec326de47f12479169d34c49f"
+  },
+  "field/s23_endzone_R": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "6e53f3475bdf7a25ac7c3f2b14b3e07e16b2a46c8ce0b220bf4ee377c382d2ec"
+  },
+  "field/s23_midfield": {
+   "size": [
+    256,
+    256
+   ],
+   "sha256": "5345d3c2b587e10ceec6aebb351c00542af7c2db9c576cd3c3f6dc4771c6fa05",
+   "quad_m": [
+    9.1871,
+    12.7874
+   ]
+  },
+  "field/s24_endzone_L": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "d24a5af9d35b02b165749ae5e5e4cbf894a57bfb2c591924a62ce7158e4df7e5"
+  },
+  "field/s24_endzone_M": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "8c98fd777729a8cf3dff4156c0ce75168ed2434e01ea6b1c876ad219805d9da4"
+  },
+  "field/s24_endzone_R": {
+   "size": [
+    256,
+    128
+   ],
+   "sha256": "dbc8a7741cb27b9eef0df2cedb570db3a11462e9118a58c9e989337e223860af"
+  },
+  "field/s24_midfield": {
+   "size": [
+    256,
+    256
+   ],
+   "sha256": "a0e6fd8061e52d50a0535115a911060d01a4cd4dc1fe6b81467bd7379c37e1cd",
+   "quad_m": [
+    5.8336,
+    13.2129
+   ]
+  },
+  "field/s40_midfield": {
+   "size": [
+    256,
+    256
+   ],
+   "sha256": "5154e530a6aebec11eeba19acc0f565e79426ff20acea2a689abab4af50ad82c",
+   "quad_m": [
+    10.2194,
+    13.0897
+   ]
+  },
+  "field/s40_shield": {
+   "size": [
+    256,
+    256
+   ],
+   "sha256": "eabb1af494579bb567b4e16272f85787b9fb5828d4c1e173b68d07805f4aae81",
+   "quad_m": [
+    6.8129,
+    4.9508
+   ]
+  },
+  "sf_seat": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "68678116857c3224b90565c64cad06c835077f126f70790690f2349141ff4801"
+  },
+  "sf_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "75a6f1c439ec6a5457456275f2bd21f1ebdb52154ee490f38f41e88d54a6dbb6"
+  },
+  "LIGHT_sf_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "19740accb0fa3f4965466c9720051656bd800bfc14b0aff4f4490faf3d6ebf7d"
+  },
+  "LIGHT_sf_facade": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "98aeb17883989a8f89251731b16a1010806aa315332b70378da29ece70e0f26b"
+  },
+  "LIGHT_sf_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "e6172d301e39a49d0658ec9534cbdc3a727ae403fda15169cfb2ab6682ce5e05"
+  },
+  "sf_etfe_under_d": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "2fd0afc7c7f6039b0a0bbf73cba769479f661328b828d05d4ba93826278717cc"
+  },
+  "sf_etfe_under_n": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "43e559cc41affc9135444be9180027d029b78b6dd8972c7612fdb3130a786e13"
+  },
+  "sf_etfe_top_d": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "dcf311d23f2989db41e0c5d43feb784f786860bb2b934f0fa8cce46c8837e4e1"
+  },
+  "sf_etfe_top_n": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "c975598ccc8f3644bb1a8015d51f6658ae11fb9cb6cb87fafd73f2560b8f608e"
+  },
+  "sf_alu": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "b866394b2235b6d908b902609749d2b74ce7b25bfd32227dcb22f3487a29fb3e"
+  },
+  "sf_white": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "ccf884fd625a3bf6e35032c89c69a6a428a6645c95acb1460bdd3087718de2a3"
+  },
+  "LIGHT_sf_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "88a3a8718fdeb0ceb34d9b2d148550900ebf90caafe6c880cf41c80d7b756ebe"
+  },
+  "sf_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "244423918789673a0ba18b1e300d007a5bb01d08afd8148eef61e3cb0be567ca"
+  },
+  "sf_letters": {
+   "size": [
+    512,
+    64
+   ],
+   "sha256": "504ef990bb2cda51a1be61142e1d8e4676f47c2aa5faa6081c6c5fd51ebc3b49"
+  },
+  "sf_letters_screen": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "9d7c49eb03ea736a253d9db6e179a99c69b5ae3828ae2e8c42d18f0008debac5"
+  },
+  "sf_plaza": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "ed1919dad8d2243e672e8b63225801ef0d1be4f9d1804d2a5c13768f41119f3f"
+  },
+  "sf_ground": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "d68c6604c8a872f5e59baaef889b1aab6e161da529ed0dddd85c857c5035e7ed"
+  },
+  "sf_water": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d07185b3f42586d774dd760451a162d738a638c7c14b5b1a992827aadb330fb8"
+  },
+  "sf_sky_d": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "1d112b7f0f011d9ca82d8898d334dc37a778bc55f94a65a4188803a74ebe8b66"
+  },
+  "sf_sky_a": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "b01ae6300600218d191159a6229500436c71a78aef4e9d821041a5eb06b4bdf7"
+  },
+  "sf_sky_n": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "47734b7fb1a8f90d26812fc6532d3f91fc38f5b5d33bbaedbb1ca9c4cb38b7c0"
+  },
+  "sf_sky_o": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "75263974331c54404dd1da40d51eeaeb3abb3aa9cb443f5c9559432a0237c072"
+  },
+  "sf_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "9b5ae83a95cb07e3f7a0fa8d10ece643f3a5ed757a323abc8349effa6269191d"
+  },
+  "LIGHT_sf_ribbon_s23": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "c1e457a4413e0b02422241055172f39e5e6db62a34fb0b6b49ca6b812a40452e"
+  },
+  "LIGHT_sf_screen_s23": {
+   "size": [
+    512,
+    64
+   ],
+   "sha256": "d62e189b46d999c0c8f946a465234e1e970c061507d997265abd008f6bdd5ad8"
+  },
+  "LIGHT_sf_ribbon_s24": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "5fbc99d57da30d85a3995c1dec180e9aa1d79a08f7f41093248bb11de3110de0"
+  },
+  "LIGHT_sf_screen_s24": {
+   "size": [
+    512,
+    64
+   ],
+   "sha256": "52a6768dfbae7127f4945b28555b7dab0e3260fb80b1ad8347c42d3bf2122fae"
+  },
+  "LIGHT_sf_ribbon_s40": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "93f87e6151d98d02971d8ca20dcabc85134a50ca23e948aafc96ea8e8586adad"
+  },
+  "LIGHT_sf_screen_s40": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "3698dae6024e7246df88a78c6f6b152004eb011fb768b24f3674126f0834cd51"
+  }
+ }
+}

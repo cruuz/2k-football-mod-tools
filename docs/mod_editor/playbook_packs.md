@@ -61,6 +61,18 @@ plays that were already listed in that formation, the new plays land in the new
 formation's menu with no new link and no growth at all. That is exactly how the
 shipped seed pack is built.
 
+The writer enforces the "no new link" part. A formation lists a play once: when a
+pack play's formation already lists the play it replaces, that one menu link is
+kept. A second link to the same play makes the game's list of that formation's
+plays endless, so picking the formation hangs the game at the play call (found
+from Noah's Practice recording of 2026-09-23; betas 59 to 75 wrote that second
+link for every Modern Gun Core play). A play that is new to the formation takes
+the next empty slot in group 3, the ordinary list. Groups 0-2 are the three
+audible slots and hold one play each in every retail formation: a play you give
+`link_group` 0-2 takes that slot, and the play that held it moves to group 3.
+The dry compile, and every Build, refuses a book whose menus list a play twice,
+repeat a group 0-2 slot or leave a play after an empty slot.
+
 ---
 
 ## Authoring a pack in the studio
@@ -245,7 +257,7 @@ commentary swap; a curated official one would go into EXPERIMENTAL first.
       "play_flags": 25614,
       "replace_index": 160, "replace_name": "Strong Split Sweep",
       "link_formation": "gun-trips-rt",    // a pack formation id, or an existing index
-      "link_group": null,                  // 0-3: the three audible slots
+      "link_group": null,                  // 0-3; null = group 3, the ordinary list (0-2 hold one play each)
       "assignments": [ [[opcode, [operands…]], …], …11 ]   // null keeps the donor's chain
   }]
 }

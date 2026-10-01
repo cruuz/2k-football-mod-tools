@@ -74,6 +74,7 @@ from .nfl2k5_playbook_inspector import (
 SCHEMA = "nfl2k5_playbook_pack/v1"
 DEFENSE_SCHEMA = "nfl2k5_playbook_pack/v2"
 OPTION_SCHEMA = "nfl2k5_playbook_pack/v3"
+OFFENSE_SCHEMA = "nfl2k5_playbook_pack/v4"
 PACK_EXTENSION = ".2k5book"
 MAX_PACK_BYTES = 8 << 20             # a recipe is text; 8 MiB is far past any real book
 MAX_CUSTOM_NAME_CHARS = 40
@@ -453,9 +454,10 @@ class PlaybookPack:
     formations: tuple[PackFormation, ...]
     plays: tuple[PackPlay, ...]
     schema: str = SCHEMA
+    menus: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
     def to_json(self) -> dict[str, Any]:
-        return {
+        document = {
             "schema": self.schema,
             "book": self.book.to_json(),
             "base": self.base.to_json(),
@@ -463,6 +465,9 @@ class PlaybookPack:
             "formations": [f.to_json() for f in self.formations],
             "plays": [p.to_json() for p in self.plays],
         }
+        if self.schema == OFFENSE_SCHEMA:
+            document["menus"] = {key: list(plays) for key, plays in self.menus}
+        return document
 
     def dumps(self) -> str:
         """Pretty JSON with the numeric leaves kept on one line.
@@ -642,11 +647,11 @@ def book_fingerprint(resource_or_body: bytes) -> str:
 def pack_from_json(document: object) -> PlaybookPack:
     if not isinstance(document, Mapping):
         raise PlaybookPackError("A playbook pack must be a JSON object.")
-    extra = set(document) - {"schema", "book", "base", "budget", "formations", "plays"}
+    extra = set(document) - {"schema", "book", "base", "budget", "formations", "plays", "menus"}
     if extra:
         raise PlaybookPackError(f"The pack has unsupported top-level fields {sorted(extra)}.")
     schema = document.get("schema")
-    if schema not in (SCHEMA, DEFENSE_SCHEMA, OPTION_SCHEMA):
+    if schema not in (SCHEMA, DEFENSE_SCHEMA, OPTION_SCHEMA, OFFENSE_SCHEMA):
         raise PlaybookPackError(
             f"This file declares schema {schema!r}; this studio reads {SCHEMA!r}."
         )
@@ -694,13 +699,23 @@ def pack_from_json(document: object) -> PlaybookPack:
     pack_book = PackBook.from_json(document.get("book"))
     if schema == SCHEMA and any(t != ALL_TEAMS and t not in TEAM_BOOKS for t in pack_book.targets):
         raise PlaybookPackError("Utility book targets require defense schema v2")
-    return PlaybookPack(
+    menus = document.get("menus", {})
+    if not isinstance(menus, Mapping) or (menus and schema != OFFENSE_SCHEMA):
+        raise PlaybookPackError("Complete offense menus require schema v4")
+    if any(not isinstance(v, list) or any(not isinstance(p, str) for p in v) for v in menus.values()):
+        raise PlaybookPackError("Every offense menu must be a list of play IDs")
+    result = PlaybookPack(
         pack_book,
         PackBase.from_json(document.get("base")),
         formations,
         plays,
         schema,
+        tuple((str(k), tuple(v)) for k, v in menus.items()),
     )
+    if schema == OFFENSE_SCHEMA:
+        from .nfl2k5_complete_offense import validate_structure
+        validate_structure(result)
+    return result
 
 
 def loads_pack(text: str) -> PlaybookPack:
@@ -823,6 +838,12 @@ def budget_totals(pack: PlaybookPack, book: Nfl2k5Playbook | None = None) -> dic
     added_f = sum(1 for f in pack.formations if f.replace_index is None)
     added_p = sum(1 for p in pack.plays if p.replace_index is None)
     added_nodes = sum(p.node_count for p in pack.plays)
+    if pack.schema == OFFENSE_SCHEMA:
+        # PROVED OFFLINE: only the authored portion can be counted without the
+        # retained source. The v4 compiler proves the complete compacted budget.
+        unique = {b"".join(n.to_bytes() for n in codec.encode_chain(c, []))
+                  for p in pack.plays for c in p.assignments if c}
+        nodes, added_nodes = 0, sum(len(c) // NODE_SIZE for c in unique)
     return {
         "formations": formations + added_f, "formations_before": formations,
         "plays": plays + added_p, "plays_before": plays,
@@ -846,6 +867,7 @@ def check_pack(
     *,
     resource: bytes | None = None,
     asset_id: str = "pack-check",
+    xbe=None,
 ) -> PackCheck:
     """Run the seven checks in order.  Steps 1-6 need no game data; step 7 runs
     only when ``resource`` (a full 0x20 + 0x13390 PLAY resource) is supplied."""
@@ -894,7 +916,7 @@ def check_pack(
         errors.append(f"{totals['formations']} formations exceeds the {FORMATION_CAPACITY} the engine holds")
     if totals["plays"] > PLAY_CAPACITY:
         errors.append(f"{totals['plays']} plays exceeds the {PLAY_CAPACITY} the engine holds")
-    if body is not None:
+    if body is not None and pack.schema != OFFENSE_SCHEMA:
         import struct
         used_names = struct.unpack_from('<I', body, 0x1083C)[0] * 2
         totals['name_pool_free_bytes'] = BODY_SIZE - STRING_BASE - used_names
@@ -902,6 +924,8 @@ def check_pack(
             errors.append("The custom names exceed the remaining name pool bytes")
     if totals["nodes"] > NODE_CAPACITY:
         errors.append(f"{totals['nodes']} nodes exceeds the {NODE_CAPACITY} the node pool holds")
+    if pack.schema == OFFENSE_SCHEMA:
+        notes.append("Authored unique nodes only; complete retained-pool budget requires the compile stage")
     if totals["net_play_growth"] or totals["net_formation_growth"]:
         notes.append(
             "this pack grows the book — eight retail books are already at the 270-play cap, "
@@ -1123,7 +1147,7 @@ def check_pack(
     else:
         errors, notes = [], []
         try:
-            compiled = apply_pack_to_resource(resource, pack, asset_id=asset_id)
+            compiled = apply_pack_to_resource(resource, pack, asset_id=asset_id, xbe=xbe)
         except Exception as exc:  # noqa: BLE001 - every failure is reported, never raised
             errors.append(str(exc))
         else:
@@ -1132,6 +1156,12 @@ def check_pack(
                 f"compiled and reparsed: {report['new_formation_count']} formations, "
                 f"{report['new_play_count']} plays, {report['new_node_count']} nodes, "
                 f"{compiled.changed_byte_count:,} bytes changed"
+            )
+            # The writer refuses a book whose play menus the game cannot walk to the end (a play listed twice
+            # in one formation hangs the play call); say so, and how many links reused an existing slot.
+            notes.append(
+                "play menus: every formation's play list ends (no play listed twice, groups 0-2 once each); "
+                f"{report.get('reused_links', 0)} of the pack's menu links reuse a slot the formation already had"
             )
             totals = {**totals, "compiled_formations": report["new_formation_count"],
                       "compiled_plays": report["new_play_count"],
@@ -1200,6 +1230,8 @@ def pack_requests(
     Appended formations/plays land in pack order, which is the order the writer
     assigns new indices in, so a play's ``link_formation`` resolves exactly."""
 
+    if pack.schema == OFFENSE_SCHEMA:
+        raise PlaybookPackError("Complete offense packs use Build playbook_packs; staging individual rows loses their menus")
     formation_rows = [f.request_mapping(asset_id) for f in pack.formations]
     play_rows = [p.request_mapping(asset_id) for p in pack.plays]
     link_rows: list[dict[str, Any]] = []
@@ -1233,10 +1265,15 @@ def pack_requests(
     return formation_rows, play_rows, link_rows
 
 
-def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str = "pack-apply"):
+def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str = "pack-apply", xbe=None):
     """Compile one pack against one raw PLAY resource (wrapper + body)."""
 
     from .nfl2k5_formation_play_writer import compile_formation_play_creations
+
+    if pack.schema == OFFENSE_SCHEMA:
+        from .nfl2k5_complete_offense import compile_offense
+        compiled = compile_offense(resource, pack, asset_id=asset_id)
+        return _score_compiled(compiled, xbe)
 
     if len(resource) != RESOURCE_SIZE:
         raise PlaybookPackError(
@@ -1256,7 +1293,13 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
         if pack.formations or any(p.replace_index is None for p in pack.plays):
             raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     formation_rows, play_rows, link_rows = pack_requests(pack, asset_id, book)
-    return compile_formation_play_creations(resource, formation_rows, play_rows, link_rows)
+    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe)
+
+
+def _score_compiled(compiled, xbe):
+    from .nfl2k5_play_scoring import require_safe
+    compiled.report['native_scoring'] = require_safe(compiled.replacement, xbe)
+    return compiled
 
 
 FINAL_INTENT_REPORT_SCHEMA = "nfl2k5_final_play_intent_compilation/v1"
@@ -1443,6 +1486,8 @@ def retarget_pack(
     donor supplies the header family the validator checks, so it cannot be a bare
     index), and the header flags are re-stamped from it."""
 
+    if pack.schema == OFFENSE_SCHEMA:
+        raise PlaybookPackError("Complete offense source fingerprint/team changed; regenerate and review this team's recipe")
     if any(p.option_intent for p in pack.plays):
         return retarget_option_pack(pack, team, book, body)
     if any(p.play_type == "defense" for p in pack.plays):
@@ -1846,6 +1891,8 @@ def install_plan(
         rows.append(PlanRow(p.id, "Play", p.custom_name, replaces, status, detail))
 
     blocked: list[str] = []
+    if pack.schema == OFFENSE_SCHEMA:
+        blocked.append("Install this complete offense through Build playbook_packs; individual staged edits omit its menus")
     unresolved = [r for r in resolutions if r.how == "unresolved"]
     for r in unresolved:
         blocked.append(f"{r.kind} “{r.entry_id}”: {r.detail}")
@@ -1881,6 +1928,7 @@ def preview_pack(
     body: bytes,
     *,
     resource: bytes | None = None,
+    xbe=None,
     staged_formation_targets: Iterable[int] = (),
     staged_play_targets: Iterable[int] = (),
 ) -> PackPreview:
@@ -1892,7 +1940,7 @@ def preview_pack(
     if team != pack.book.team or book_fingerprint(body) != pack.base.book_fingerprint:
         use, resolutions = retarget_pack(pack, team, book, body)
         retargeted = True
-    check = check_pack(use, book, body, resource=resource, asset_id=f"book:{team}")
+    check = check_pack(use, book, body, resource=resource, asset_id=f"book:{team}", xbe=xbe)
     plan = install_plan(
         use, book, body, team=team,
         staged_formation_targets=staged_formation_targets,
@@ -1922,6 +1970,7 @@ def apply_packs_to_archive(
     progress: Callable[[str], None] | None = None,
     book_entries: Mapping[str, int] | None = None,
     collector: list | None = None,
+    xbe=None,
 ) -> dict[str, Any]:
     """Install loaded packs into an open, writable ``vc_53450030`` archive.
 
@@ -1957,7 +2006,10 @@ def apply_packs_to_archive(
             resolved: tuple[Resolution, ...] = ()
             if team != pack.book.team or book_fingerprint(body) != pack.base.book_fingerprint:
                 use, resolved = retarget_pack(pack, team, book, body)
-            compiled = apply_pack_to_resource(before, use, asset_id=f"book:{team}")
+            if xbe is None and hasattr(archive, 'path'):
+                from .nfl2k5_play_scoring import executable_bytes
+                xbe = executable_bytes(archive.path)
+            compiled = apply_pack_to_resource(before, use, asset_id=f"book:{team}", xbe=xbe)
             if compiled.replacement[:RESOURCE_HEADER_SIZE] != before[:RESOURCE_HEADER_SIZE]:
                 raise PlaybookPackError(f"{team}: the PLAY resource wrapper changed")
             pending[index] = compiled.replacement
@@ -2046,8 +2098,13 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
     flags = play.play_flags if play.play_flags is not None else play.donor.flags
     if flags is None or (flags >> 6) & 7 != 1:
         raise PlaybookPackError("Defense must retain a defensive header")
-    if play.donor.flags != flags or not (play.donor.signature or '').startswith('defense/v1:'):
-        raise PlaybookPackError("Defense needs its exact donor header and versioned shape signature")
+    # PROVED OFFLINE: retail 0x203F20 reads bits 9-11 as the CPU score band.
+    # Custom defenses may tune only that field. Family, compatibility and every
+    # other donor flag remain exact; preset recipes retain their whole header.
+    cpu_score_mask = 0xE00 if not play.preset_recipe else 0
+    if (play.donor.flags is None or (play.donor.flags ^ flags) & ~cpu_score_mask or
+            not (play.donor.signature or '').startswith('defense/v1:')):
+        raise PlaybookPackError("Defense needs its donor header outside the CPU score band and a versioned shape signature")
     if play.component not in ('front', 'coverage', 'full') or not play.defense_formation:
         raise PlaybookPackError("Defense needs a formation and component kind")
     for chain in play.assignments:
@@ -2063,6 +2120,8 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
         raise PlaybookPackError("Defense donor is outside this book")
     if lib.defense_signature(body, play.donor.index) != play.donor.signature:
         raise PlaybookPackError("Defense donor signature changed")
+    if book.plays[play.donor.index].flags_or_id != play.donor.flags:
+        raise PlaybookPackError("Defense donor header changed")
     fi = next((f.index for f in book.formations if f.name == play.defense_formation), None)
     if fi is None:
         raise PlaybookPackError("Defense formation is missing")

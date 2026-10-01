@@ -1,0 +1,1019 @@
+{
+ "schema": "nfl2k5_team_colours_2026/v1",
+ "experimental": true,
+ "witnessed": false,
+ "table": {
+  "va": "0x4E7FE0",
+  "stride": 28,
+  "entries": 80,
+  "fields": {
+   "+0": "asset code string pointer (kept)",
+   "+4": "float scale of the menu background colour",
+   "+8": "primary (ARGB)",
+   "+0xC": "secondary",
+   "+0x10": "u16: menu background uses the secondary",
+   "+0x12": "u16: 0x68EB0 returns the secondary (the darker slot)",
+   "+0x14": "accent",
+   "+0x18": "translucent background"
+  },
+  "readers": [
+   "0x68D70 primary",
+   "0x68DC0 secondary",
+   "0x68E10 accent",
+   "0x68E60 background",
+   "0x68EB0/0x68F10 darker/lighter",
+   "0x6B5B0 menu background (0x6BF70 Menubackground)"
+  ]
+ },
+ "palette": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (2026 Record and Fact Book, NFL.com club logo files)",
+ "rules": "Slots take the 2026 primary and secondary (pure black written as retail's near-black 0x101010), except that a bright primary (brightest channel above 160) with a clearly darker secondary (by 40) swaps into the secondary slot, so the in-game scorebar (scorebar v3 reads the direct primary for its panel) keeps a dark panel: Falcons, Panthers, Bengals, Broncos, Saints, Raiders, Buccaneers. +0x12 = the secondary is darker. The menu background is the primary, or the secondary when the primary is white, silver or grey (or after a dark-primary swap), at retail's brightness band (black x4.5, dark lifted to lum 45 at most x1.75, light darkened to lum 105); a swap flips +0x10 and +0x12, so every menu getter returns the same colour. Accent: equal to a slot follows the slot; otherwise the nearest-hue 2026 colour at the retail luminance. Background +0x18: retail neutrals kept, else the nearest-hue 2026 colour, never brighter than retail.",
+ "rows": [
+  {
+   "entry": 0,
+   "code": "00",
+   "team": "Arizona Cardinals",
+   "source": "Cardinal Red #97233F / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF911041",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF911041",
+    "background": "C0404040"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF97233F",
+    "secondary": "FF101010",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF97233F",
+    "background": "C0404040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 1,
+   "code": "01",
+   "team": "Atlanta Falcons",
+   "source": "Red #A71930 / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 4.5,
+    "primary": "FF101010",
+    "secondary": "FFB51441",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFB51441",
+    "background": "C0202040"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF101010",
+    "secondary": "FFA71930",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FF101010",
+    "background": "C0202040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 2,
+   "code": "02",
+   "team": "Baltimore Ravens",
+   "source": "Purple #24135F / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF31145C",
+    "secondary": "FF101010",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF481890",
+    "background": "C0202020"
+   },
+   "written": {
+    "scale": 1.6,
+    "primary": "FF24135F",
+    "secondary": "FF101010",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF371D91",
+    "background": "C0202020"
+   },
+   "rules": {
+    "accent": "nearest hue #24135F",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 3,
+   "code": "03",
+   "team": "Buffalo Bills",
+   "source": "Royal Blue #00338D / Red #C60C30 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF122F40",
+    "secondary": "FFA71340",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FFA71340",
+    "background": "C0122F40"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF00338D",
+    "secondary": "FFC60C30",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFC60C30",
+    "background": "C000274D"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #00274D"
+   }
+  },
+  {
+   "entry": 4,
+   "code": "04",
+   "team": "Carolina Panthers",
+   "source": "Panther Blue #0085CF / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF1590C3",
+    "secondary": "FF03031B",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF1590C3",
+    "background": "C0202040"
+   },
+   "written": {
+    "scale": 0.95,
+    "primary": "FF101010",
+    "secondary": "FF0085CF",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FF0085CF",
+    "background": "C0202040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 5,
+   "code": "05",
+   "team": "Chicago Bears",
+   "source": "Navy Blue #0B162A / Orange #E64100 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.2000000476837158,
+    "primary": "FF072347",
+    "secondary": "FFD85A2E",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFD85A2E",
+    "background": "C0072347"
+   },
+   "written": {
+    "scale": 1.75,
+    "primary": "FF0B162A",
+    "secondary": "FFE64100",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE64100",
+    "background": "C00B162A"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #0B162A"
+   }
+  },
+  {
+   "entry": 6,
+   "code": "06",
+   "team": "Cincinnati Bengals",
+   "source": "Orange #FB4F14 / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.699999988079071,
+    "primary": "FF03031B",
+    "secondary": "FFE64E1E",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FFE64E1E",
+    "background": "C0202040"
+   },
+   "written": {
+    "scale": 0.95,
+    "primary": "FF101010",
+    "secondary": "FFFB4F14",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FF101010",
+    "background": "C0202040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 7,
+   "code": "07",
+   "team": "Dallas Cowboys",
+   "source": "Blue #002244 / Royal Blue #003594 (nfl_logo_svg, teamcolorcodes)",
+   "retail": {
+    "scale": 0.6000000238418579,
+    "primary": "FF2E4399",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF2E4399",
+    "background": "C0404040"
+   },
+   "written": {
+    "scale": 1.55,
+    "primary": "FF002244",
+    "secondary": "FF003594",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF002244",
+    "background": "C0404040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 8,
+   "code": "08",
+   "team": "Denver Broncos",
+   "source": "Sunset Orange #FC4C02 / Midnight Navy #0A2343 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF0A2F5C",
+    "secondary": "FFE64E1E",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE64E1E",
+    "background": "C00A2F5C"
+   },
+   "written": {
+    "scale": 0.95,
+    "primary": "FF0A2343",
+    "secondary": "FFFC4C02",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FF0A2343",
+    "background": "C00A2343"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #0A2343",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 9,
+   "code": "09",
+   "team": "Detroit Lions",
+   "source": "Honolulu Blue #0076B6 / Silver #B0B7BC (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.800000011920929,
+    "primary": "FF506CB8",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF506CB8",
+    "background": "C0304C98"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF0076B6",
+    "secondary": "FFB0B7BC",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF0076B6",
+    "background": "C0005B8D"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #0076B6"
+   }
+  },
+  {
+   "entry": 10,
+   "code": "10",
+   "team": "Green Bay Packers",
+   "source": "Dark Green #203731 / Gold #FFB612 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.8999999761581421,
+    "primary": "FF006419",
+    "secondary": "FFE0B02A",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF725715",
+    "background": "C007331A"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF203731",
+    "secondary": "FFFFB612",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF795609",
+    "background": "C01A2C27"
+   },
+   "rules": {
+    "accent": "nearest hue #FFB612",
+    "background": "nearest hue #203731"
+   }
+  },
+  {
+   "entry": 11,
+   "code": "11",
+   "team": "Indianapolis Colts",
+   "source": "Speed Blue #013369 / White #FFFFFF (team_first_party, team_first_party)",
+   "retail": {
+    "scale": 0.800000011920929,
+    "primary": "FFFFFFFF",
+    "secondary": "FF252A96",
+    "flag10": 1,
+    "flag12": 1,
+    "accent": "FF252A96",
+    "background": "C0252A96"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF013369",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFFFFFFF",
+    "background": "C0013369"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #013369"
+   }
+  },
+  {
+   "entry": 12,
+   "code": "12",
+   "team": "Jacksonville Jaguars",
+   "source": "Teal #006778 / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF0C586D",
+    "secondary": "FF03031B",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF0C586D",
+    "background": "C0202040"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF006778",
+    "secondary": "FF101010",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF006778",
+    "background": "C0202040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 13,
+   "code": "13",
+   "team": "Kansas City Chiefs",
+   "source": "Red #E31837 / Gold #FFB612 (nfl_logo_svg, wikipedia)",
+   "retail": {
+    "scale": 0.800000011920929,
+    "primary": "FFBE1642",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFBE1642",
+    "background": "C0404040"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FFE31837",
+    "secondary": "FFFFB612",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE31837",
+    "background": "C0404040"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 14,
+   "code": "14",
+   "team": "Miami Dolphins",
+   "source": "Aqua #008E97 / Orange #FC4C02 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.2999999523162842,
+    "primary": "FF0A5F60",
+    "secondary": "FFE64E1E",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE64E1E",
+    "background": "C00A5F60"
+   },
+   "written": {
+    "scale": 0.95,
+    "primary": "FF008E97",
+    "secondary": "FFFC4C02",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FFFC4C02",
+    "background": "C0006167"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #008E97"
+   }
+  },
+  {
+   "entry": 15,
+   "code": "15",
+   "team": "Minnesota Vikings",
+   "source": "Purple #4F2683 / Gold #FFC62F (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.5,
+    "primary": "FF422259",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF422259",
+    "background": "C0422259"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF4F2683",
+    "secondary": "FFFFC62F",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF4F2683",
+    "background": "C042206E"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #4F2683"
+   }
+  },
+  {
+   "entry": 16,
+   "code": "16",
+   "team": "New England Patriots",
+   "source": "Nautical Blue #002244 / Red #C60C30 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.75,
+    "primary": "FF072343",
+    "secondary": "FFBE1642",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFBE1642",
+    "background": "C0072343"
+   },
+   "written": {
+    "scale": 1.55,
+    "primary": "FF002244",
+    "secondary": "FFC60C30",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFC60C30",
+    "background": "C0002244"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #002244"
+   }
+  },
+  {
+   "entry": 17,
+   "code": "17",
+   "team": "New Orleans Saints",
+   "source": "Old Gold #D3BC8D / Black #000000 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.6000000238418579,
+    "primary": "FFCBBA92",
+    "secondary": "FF000000",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FFCBBA92",
+    "background": "C0303030"
+   },
+   "written": {
+    "scale": 0.55,
+    "primary": "FF101010",
+    "secondary": "FFD3BC8D",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FFD3BC8D",
+    "background": "C0303030"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 18,
+   "code": "18",
+   "team": "New York Giants",
+   "source": "Blue #0B2265 / Red #A71930 (teamcolorcodes, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF191C5C",
+    "secondary": "FFB8344A",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFB8344A",
+    "background": "C0191C5C"
+   },
+   "written": {
+    "scale": 1.35,
+    "primary": "FF0B2265",
+    "secondary": "FFA71930",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFA71930",
+    "background": "C00A205F"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #0B2265"
+   }
+  },
+  {
+   "entry": 19,
+   "code": "19",
+   "team": "New York Jets",
+   "source": "Legacy Green #115740 / Legacy White #FFFFFF (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.2000000476837158,
+    "primary": "FF253F36",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF507070",
+    "background": "C0253F36"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF115740",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF507070",
+    "background": "C0253F36"
+   },
+   "rules": {
+    "accent": "neutral kept",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 20,
+   "code": "20",
+   "team": "Las Vegas Raiders",
+   "source": "Silver #C8C7C7 / Black #000000 (nfl_logo_svg, wikipedia)",
+   "retail": {
+    "scale": 4.5,
+    "primary": "FF101010",
+    "secondary": "FFD1D2D3",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF404040",
+    "background": "C0202040"
+   },
+   "written": {
+    "scale": 4.5,
+    "primary": "FF101010",
+    "secondary": "FFC8C7C7",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF404040",
+    "background": "C0202040"
+   },
+   "rules": {
+    "accent": "neutral kept",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 21,
+   "code": "21",
+   "team": "Philadelphia Eagles",
+   "source": "Midnight Green #004851 / Silver #A2AAAD (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.399999976158142,
+    "primary": "FF08464C",
+    "secondary": "FFA7AFB1",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF088080",
+    "background": "C008464C"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF004851",
+    "secondary": "FFA2AAAD",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF008191",
+    "background": "C0004851"
+   },
+   "rules": {
+    "accent": "nearest hue #004851",
+    "background": "nearest hue #004851"
+   }
+  },
+  {
+   "entry": 22,
+   "code": "22",
+   "team": "Pittsburgh Steelers",
+   "source": "Black #000000 / Gold #FFB612 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 4.5,
+    "primary": "FF101010",
+    "secondary": "FFE5AF2A",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE5AF2A",
+    "background": "C003031B"
+   },
+   "written": {
+    "scale": 4.5,
+    "primary": "FF101010",
+    "secondary": "FFFFB612",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFFFB612",
+    "background": "C003031B"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 23,
+   "code": "23",
+   "team": "Los Angeles Rams",
+   "source": "Rams Royal #003594 / Sol #FFD100 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF071F44",
+    "secondary": "FF95825E",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF95825E",
+    "background": "C0071F44"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF003594",
+    "secondary": "FFFFD100",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFFFD100",
+    "background": "C0001F57"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #003594"
+   }
+  },
+  {
+   "entry": 24,
+   "code": "24",
+   "team": "Los Angeles Chargers",
+   "source": "Powder Blue #0080C6 / Sunshine Gold #FFC20E (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.5,
+    "primary": "FF072343",
+    "secondary": "FFE5AE19",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE5AE19",
+    "background": "C0072343"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF0080C6",
+    "secondary": "FFFFC20E",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFFFC20E",
+    "background": "C0001532"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #001532"
+   }
+  },
+  {
+   "entry": 25,
+   "code": "25",
+   "team": "San Francisco 49ers",
+   "source": "49ers Red #AA0000 / 49ers Gold #B3995D (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.8999999761581421,
+    "primary": "FF93334F",
+    "secondary": "FFC9AC8C",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF93334F",
+    "background": "C0581828"
+   },
+   "written": {
+    "scale": 1.25,
+    "primary": "FFAA0000",
+    "secondary": "FFB3995D",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFAA0000",
+    "background": "C0AA0000"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #AA0000"
+   }
+  },
+  {
+   "entry": 26,
+   "code": "26",
+   "team": "Seattle Seahawks",
+   "source": "College Navy #002244 / Action Green #69BE28 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF355877",
+    "secondary": "FF061638",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF355877",
+    "background": "C0061638"
+   },
+   "written": {
+    "scale": 1.55,
+    "primary": "FF002244",
+    "secondary": "FF69BE28",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF002244",
+    "background": "C0001831"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #002244"
+   }
+  },
+  {
+   "entry": 27,
+   "code": "27",
+   "team": "Tampa Bay Buccaneers",
+   "source": "Buccaneer Red #A71930 / Pewter #322F2B (nfl_logo_svg, wikipedia)",
+   "retail": {
+    "scale": 0.800000011920929,
+    "primary": "FFA12943",
+    "secondary": "FF666056",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FFA12943",
+    "background": "C0363026"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF322F2B",
+    "secondary": "FFA71930",
+    "flag10": 1,
+    "flag12": 0,
+    "accent": "FFA71930",
+    "background": "C0363026"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept",
+    "slots": "dark colour in the primary slot (scorebar panel); +0x10/+0x12 flipped, menus unchanged"
+   }
+  },
+  {
+   "entry": 28,
+   "code": "28",
+   "team": "Tennessee Titans",
+   "source": "Titans Blue #4495D2 / Red #D50A0A (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.8999999761581421,
+    "primary": "FF6894D7",
+    "secondary": "FF071F44",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF6894D7",
+    "background": "C0071F44"
+   },
+   "written": {
+    "scale": 0.75,
+    "primary": "FF4495D2",
+    "secondary": "FFD50A0A",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FF4495D2",
+    "background": "C00B1F39"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #0C2340"
+   }
+  },
+  {
+   "entry": 29,
+   "code": "29",
+   "team": "Washington Commanders",
+   "source": "Burgundy #5A1414 / Gold #FFB612 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF86364A",
+    "secondary": "FFE5AE19",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFE5AE19",
+    "background": "C086364A"
+   },
+   "written": {
+    "scale": 1.3,
+    "primary": "FF5A1414",
+    "secondary": "FFFFB612",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFFFB612",
+    "background": "C05A1414"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #5A1414"
+   }
+  },
+  {
+   "entry": 30,
+   "code": "30",
+   "team": "Cleveland Browns",
+   "source": "Brown #311D00 / Orange #FF3C00 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 0.699999988079071,
+    "primary": "FFE64E1E",
+    "secondary": "FF3D2A2D",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FFE64E1E",
+    "background": "C03D2A2D"
+   },
+   "written": {
+    "scale": 1.45,
+    "primary": "FF311D00",
+    "secondary": "FFFF3C00",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF311D00",
+    "background": "C03D2A2D"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 31,
+   "code": "31",
+   "team": "NFL",
+   "source": "NFL shield (2008) and conference marks (2010), NFL.com colours",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF173376",
+    "secondary": "FFCB1718",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFCB1718",
+    "background": "C0173376"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF013369",
+    "secondary": "FFD50A0A",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFD50A0A",
+    "background": "C0013369"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #013369"
+   }
+  },
+  {
+   "entry": 33,
+   "code": "34",
+   "team": "AFC",
+   "source": "NFL shield (2008) and conference marks (2010), NFL.com colours",
+   "retail": {
+    "scale": 0.800000011920929,
+    "primary": "FFCB1718",
+    "secondary": "FF000000",
+    "flag10": 0,
+    "flag12": 1,
+    "accent": "FFCB1718",
+    "background": "C0303030"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FFD50A0A",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFD50A0A",
+    "background": "C0303030"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "neutral kept"
+   }
+  },
+  {
+   "entry": 34,
+   "code": "35",
+   "team": "NFC",
+   "source": "NFL shield (2008) and conference marks (2010), NFL.com colours",
+   "retail": {
+    "scale": 1.0,
+    "primary": "FF173376",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF173376",
+    "background": "C0173376"
+   },
+   "written": {
+    "scale": 1.0,
+    "primary": "FF013369",
+    "secondary": "FFFFFFFF",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FF013369",
+    "background": "C0013369"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #013369"
+   }
+  },
+  {
+   "entry": 36,
+   "code": "37",
+   "team": "Houston Texans",
+   "source": "Deep Steel Blue #021018 / Battle Red #EB0028 (nfl_logo_svg, nfl_logo_svg)",
+   "retail": {
+    "scale": 1.5,
+    "primary": "FF061638",
+    "secondary": "FFAB253C",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFAB253C",
+    "background": "C0061638"
+   },
+   "written": {
+    "scale": 4.5,
+    "primary": "FF021018",
+    "secondary": "FFEB0028",
+    "flag10": 0,
+    "flag12": 0,
+    "accent": "FFEB0028",
+    "background": "C0021018"
+   },
+   "rules": {
+    "accent": "equal slot",
+    "background": "nearest hue #021018"
+   }
+  }
+ ]
+}

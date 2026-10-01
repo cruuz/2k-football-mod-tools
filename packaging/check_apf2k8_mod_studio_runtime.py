@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.99"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.101"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -1390,7 +1390,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 177
+        len(registry.capabilities) == 207
         and len(registry.for_game(core_model.GameId.APF2K8)) == 74,
         "shared/APF capability registry counts changed",
     )

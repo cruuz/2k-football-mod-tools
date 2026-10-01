@@ -1,0 +1,11 @@
+test_canonical_toml_rejects_foreign_and_duplicate_writes (tests.mod_editor.test_apf_b71_situation_mask.DataTests.test_canonical_toml_rejects_foreign_and_duplicate_writes) ... ok
+test_exact_data_roundtrip_and_independent_bits (tests.mod_editor.test_apf_b71_situation_mask.DataTests.test_exact_data_roundtrip_and_independent_bits) ... ok
+test_exact_key_boundaries_sign_and_no_aliases (tests.mod_editor.test_apf_b71_situation_mask.DataTests.test_exact_key_boundaries_sign_and_no_aliases) ... ok
+test_leaf_decode_ownership_and_pass_fetch_composition (tests.mod_editor.test_apf_b71_situation_mask.DataTests.test_leaf_decode_ownership_and_pass_fetch_composition) ... ok
+test_refuse_bad_data_names_versions_padding_and_specials (tests.mod_editor.test_apf_b71_situation_mask.DataTests.test_refuse_bad_data_names_versions_padding_and_specials) ... ok
+test_masks_default_off_stage_replay_undo_and_export (tests.mod_editor.test_apf_b71_situation_mask.ProjectTests.test_masks_default_off_stage_replay_undo_and_export) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.566s
+
+OK

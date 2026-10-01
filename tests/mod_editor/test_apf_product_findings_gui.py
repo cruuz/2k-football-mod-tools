@@ -7,7 +7,6 @@ import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5 import sip  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QTabWidget  # noqa: E402
 
 from mod_editor.apf_studio.gui import (  # noqa: E402
@@ -75,9 +74,11 @@ class ApfProductFindingsGuiTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.application.quit()
-        sip.delete(cls.application)
-        cls.application = None
+        # QApplication is shared by every GUI test in this process. Deleting
+        # a borrowed instance invalidates other widgets and Qt global state.
+        # Drain each test's deferred widget deletions while it stays alive.
+        from PyQt5.QtCore import QCoreApplication, QEvent
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
     def test_gameplay_page_replaces_the_empty_asset_browser_with_38_rows(self) -> None:
         page = InspectorCategoryPage(

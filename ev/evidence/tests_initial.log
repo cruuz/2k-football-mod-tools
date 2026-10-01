@@ -1,0 +1,75 @@
+PROVED OFFLINE False e1321300cc321300d3321300da321300e1321300 ['s44', 's42', 's43', 's41', 's44'] s45
+PROVED OFFLINE True c5321300cc321300d3321300da321300e1321300 ['s40', 's42', 's43', 's41', 's44'] s45
+test_registry_pins_event_policy_and_table (tests.mod_editor.test_nfl2k5_event_fields.FieldContract.test_registry_pins_event_policy_and_table) ... ok
+test_variant_missing_material_and_size_changes_refuse (tests.mod_editor.test_nfl2k5_event_fields.FieldContract.test_variant_missing_material_and_size_changes_refuse) ... ok
+test_build_routes_and_later_rotation_with_calendar_overlay (tests.mod_editor.test_nfl2k5_event_fields.Routing.test_build_routes_and_later_rotation_with_calendar_overlay) ... ok
+test_foreign_route_refuses_even_for_noop_s40_calendar_site (tests.mod_editor.test_nfl2k5_event_fields.Routing.test_foreign_route_refuses_even_for_noop_s40_calendar_site) ... ok
+test_migrate_existing_calendar_overlay_and_preserve_other_bytes (tests.mod_editor.test_nfl2k5_event_fields.Routing.test_migrate_existing_calendar_overlay_and_preserve_other_bytes) ... ok
+test_off_is_exact_legacy_default_and_reapplication_is_idempotent (tests.mod_editor.test_nfl2k5_event_fields.Routing.test_off_is_exact_legacy_default_and_reapplication_is_idempotent) ... ok
+test_event_variants_are_complete_and_independent_of_optional_league_marks (tests.mod_editor.test_nfl2k5_stadium_shared_art.Catalog.test_event_variants_are_complete_and_independent_of_optional_league_marks) ... ok
+test_only_two_home_residual_atlases_are_authored (tests.mod_editor.test_nfl2k5_stadium_shared_art.Catalog.test_only_two_home_residual_atlases_are_authored) ... ok
+test_pinned_sponsor_items_only_and_excluded_venues_absent (tests.mod_editor.test_nfl2k5_stadium_shared_art.Catalog.test_pinned_sponsor_items_only_and_excluded_venues_absent) ... ok
+test_release_catalog_and_allowlist_cover_dependencies (tests.mod_editor.test_nfl2k5_stadium_shared_art.Catalog.test_release_catalog_and_allowlist_cover_dependencies) ... ok
+test_special_slots_have_only_approved_event_fields_and_no_league_mark_targets (tests.mod_editor.test_nfl2k5_stadium_shared_art.Catalog.test_special_slots_have_only_approved_event_fields_and_no_league_mark_targets) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 12.497s
+
+OK
+test_every_site_is_retail_on_the_real_executable (__main__.RetailXbeSmokeTests.test_every_site_is_retail_on_the_real_executable) ... ok
+test_calendar_records_are_well_formed (__main__.SiteTableTests.test_calendar_records_are_well_formed) ... ok
+test_dob_formatter_calls_land_where_retail_did (__main__.SiteTableTests.test_dob_formatter_calls_land_where_retail_did) ... ok
+test_grid_row_bounds (__main__.SiteTableTests.test_grid_row_bounds) ... ok
+test_sites_do_not_overlap_and_keep_their_size (__main__.SiteTableTests.test_sites_do_not_overlap_and_keep_their_size) ... ok
+test_year_sites_encode_the_requested_year (__main__.SiteTableTests.test_year_sites_encode_the_requested_year) ... ok
+test_foreign_bytes_are_refused (__main__.SyntheticXbeTests.test_foreign_bytes_are_refused) ... ok
+test_full_apply_round_trip (__main__.SyntheticXbeTests.test_full_apply_round_trip) ... ok
+test_retail_status (__main__.SyntheticXbeTests.test_retail_status) ... ok
+test_year_only_apply (__main__.SyntheticXbeTests.test_year_only_apply) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.414s
+
+OK
+test_assembly_reproduces_committed_code (tests.mod_editor.test_nfl2k5_calendar_engine.PureTests.test_assembly_reproduces_committed_code) ... ERROR
+test_foreign_input_and_unsupported_base_refuse (tests.mod_editor.test_nfl2k5_calendar_engine.PureTests.test_foreign_input_and_unsupported_base_refuse) ... ok
+test_tables_are_gregorian_and_fit_exact_budget (tests.mod_editor.test_nfl2k5_calendar_engine.PureTests.test_tables_are_gregorian_and_fit_exact_budget) ... ok
+test_every_partial_hook_and_table_refused_even_with_resealed_digest (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_every_partial_hook_and_table_refused_even_with_resealed_digest) ... ok
+test_idempotence_exact_receipt_and_dependencies (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_idempotence_exact_receipt_and_dependencies) ... ok
+test_incomplete_request_union_refuses (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_incomplete_request_union_refuses) ... ok
+test_lifecycle_and_shared_formats_are_preserved (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_lifecycle_and_shared_formats_are_preserved) ... ok
+test_manifest_recorder_covers_complete_hooks_and_allocations (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_manifest_recorder_covers_complete_hooks_and_allocations) ... ok
+test_retail_2004_auto_dependencies_and_year_status (tests.mod_editor.test_nfl2k5_calendar_engine.RetailTests.test_retail_2004_auto_dependencies_and_year_status) ... ok
+test_cli_receipt_replay_and_existing_output_refusal (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.CliTests.test_cli_receipt_replay_and_existing_output_refusal) ... ok
+test_malformed_and_oversize_inputs_refuse_before_output (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.CliTests.test_malformed_and_oversize_inputs_refuse_before_output) ... ok
+test_module_help_is_a_real_cli (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.CliTests.test_module_help_is_a_real_cli) ... ok
+test_write_failure_closes_then_removes_only_the_new_copy (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.CliTests.test_write_failure_closes_then_removes_only_the_new_copy) ... ok
+test_calendar_row_passes_real_validator_file_check_mode (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.HandoffTests.test_calendar_row_passes_real_validator_file_check_mode) ... ERROR
+test_candidate_registry_schema_and_product_catalog (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.HandoffTests.test_candidate_registry_schema_and_product_catalog) ... ok
+
+======================================================================
+ERROR: test_assembly_reproduces_committed_code (tests.mod_editor.test_nfl2k5_calendar_engine.PureTests.test_assembly_reproduces_committed_code)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_calendar_engine.py", line 54, in test_assembly_reproduces_committed_code
+    from _gnu_elf32_as import gnu_elf32_as
+ModuleNotFoundError: No module named '_gnu_elf32_as'
+
+======================================================================
+ERROR: test_calendar_row_passes_real_validator_file_check_mode (tests.mod_editor.test_nfl2k5_calendar_engine_delivery.HandoffTests.test_calendar_row_passes_real_validator_file_check_mode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/media/noah/Storage/.b76-research/ev/work/tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py", line 72, in test_calendar_row_passes_real_validator_file_check_mode
+    registry.validate_data(data, check_files=True)
+  File "/media/noah/Storage/.b76-research/ev/work/mod_editor/capabilities/validate_registry.py", line 216, in validate_data
+    _local_path(evidence_path, f"{where}.evidence[{evidence_index}]")
+  File "/media/noah/Storage/.b76-research/ev/work/mod_editor/capabilities/validate_registry.py", line 129, in _local_path
+    _require(path.is_file(), f"{where}: missing local file {path_text}")
+  File "/media/noah/Storage/.b76-research/ev/work/mod_editor/capabilities/validate_registry.py", line 107, in _require
+    raise RegistryError(message)
+mod_editor.capabilities.validate_registry.RegistryError: capabilities[0].evidence[0]: missing local file ASTRA_CALENDAR_ENGINE_REPORT.md
+
+----------------------------------------------------------------------
+Ran 15 tests in 17.982s
+
+FAILED (errors=2)

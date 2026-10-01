@@ -121,30 +121,34 @@ class ApfStadiumStaticPositionPatchTest(unittest.TestCase):
             verifier.validate_iff_header_preservation(source, bytes(descriptor))
 
     def test_writer_refuses_symlink_game_recipe_parent_and_existing_destination(self) -> None:
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory_name:
-            directory = Path(directory_name)
+        with tempfile.TemporaryDirectory() as directory_name:
+            directory = Path(directory_name).resolve()
+            game = directory / "source"
+            game.mkdir()
+            recipe = directory / "source-recipe.json"
+            recipe.write_text("{}", encoding="utf-8", newline="\n")
             game_link = directory / "game_link"
-            game_link.symlink_to(GAME_DIR, target_is_directory=True)
+            game_link.symlink_to(game, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "game directory"):
-                writer.write_output(game_link, SAMPLE_RECIPE, directory / "out1")
+                writer.write_output(game_link, recipe, directory / "out1")
             ancestor_link = directory / "ancestor_link"
-            ancestor_link.symlink_to(GAME_DIR.parent, target_is_directory=True)
+            ancestor_link.symlink_to(game.parent, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "contains a symlink"):
-                writer.write_output(ancestor_link / GAME_DIR.name, SAMPLE_RECIPE, directory / "out_ancestor")
+                writer.write_output(ancestor_link / game.name, recipe, directory / "out_ancestor")
             recipe_link = directory / "recipe_link.json"
-            recipe_link.symlink_to(SAMPLE_RECIPE)
+            recipe_link.symlink_to(recipe)
             with self.assertRaisesRegex(writer.PatchError, "recipe"):
-                writer.write_output(GAME_DIR, recipe_link, directory / "out2")
+                writer.write_output(game, recipe_link, directory / "out2")
             parent_link = directory / "parent_link"
             real_parent = directory / "real_parent"
             real_parent.mkdir()
             parent_link.symlink_to(real_parent, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "parent"):
-                writer.write_output(GAME_DIR, SAMPLE_RECIPE, parent_link / "out3")
+                writer.write_output(game, recipe, parent_link / "out3")
             existing = directory / "existing"
             existing.mkdir()
             with self.assertRaisesRegex(writer.PatchError, "existing"):
-                writer.write_output(GAME_DIR, SAMPLE_RECIPE, existing)
+                writer.write_output(game, recipe, existing)
 
     @unittest.skipUnless((GAME_DIR / "1A").is_file(), "retail APF fixture unavailable")
     def test_independent_verifier_rejects_output_source_hardlink_alias_before_hashing(self) -> None:

@@ -215,7 +215,28 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [302, 10, 8, 9, 8, 9]  # b75: + the Edit Player elbow-pad option patch.
+            [344, 10, 8, 9, 8, 9]  # dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            # b76-pk3: + the file-pack reader/writer imported by modpack.
+            # b76-sd2: + the finite lineup iterator and final disc-extent guard.
+            # b76-e2p3: + the historic moment venue names.
+            # b76 p1: + the GAMEDATA presentation inventory (typed p8:346 marks).
+            # b76-z2: + the xemu display-list stability fix.
+            # b76-h1: + historic teams in Quick Game and its generated code.
+            # b76-m1: + 25 more Anniversary moments, its generated code and the One-pool reclassify it reuses.
+            # b76-vb3: + the 25th Anniversary kickoff gate and the two readers of the disc's retail special-teams
+            # data it imports (the core return-play module and the kickoff alignment tool).
+            # b76-k1: + 128 MB memory (K128) and the roster block in the extra heap.
+            # b76-vb3 E1: + the kickoff return blocking rule the gate carries.
+            # b76-vb3 D2: + the 4:3 widescreen menus owner.
+            # b76-u3 A: + the 2026 team names module (the scorebug guard recognizes its colour rows).
+            # b76-hm: + Modern helmets (the Guardian collection and the historic rosters read its states).
+            # DESIGN: fc adds the guarded economy owner and its original generated code.
+            # b76-pb (ig): + the complete-offense compiler, the authored-screen D pins and the native play-scoring gate.
+            # b76-fc3 (ig): + the roster-fill composition module the economy and the practice squad share.
+            # b76-pf P1: + the team-logo swap owner (the field swap's eighth pair).
+            # b76 G (ig): pc + the play-call layout the scorebug runtime imports; ed2 + the roster snapshot reader and the
+            # save writer it imports; fr + the franchise history owner and the career-stats module it imports; ed1 + the
+            # project manifest budget/recovery reader the project archive imports.
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -286,7 +307,19 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
-                "data/nfl2k5_modern_color_pins.json": "df09f36fb57a7a05570a469f1232bf97381b69c759e89ebfddb0522a94b3bd01",
+                "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
+                "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",
+                "data/nfl2k5_era_rules.json": "3f472221be7a43f6215ad1761f1dc134c5764729ef400386b9ef2d14e95690f9",
+                "data/nfl2k5_stock_books.json": "87d779bb2be3c4b20b901c4afa0a620bb4b0aae29ef833bc4440a38c396417fd",
+                "data/nfl2k5_modern_color_pins.json": "cf61e48211eba21152501bee6b20666f24663b0d18cfc0d2b2975dd8c45afacf",
+                "data/nfl2k5_modern_helmets/geometry.json":
+                    "b0916265e0b40baa031a6088b5759ff99022ea902e2269236d7d32918e02322d",
+                "data/nfl2k5_modern_helmets/pins.json":
+                    "a79d99a94629a3837a3ae68f3bf2557c374aa7300992b364851962bf61253c57",
+                "data/nfl2k5_presentation_standalone.json":
+                    "69e6589ffbdda17fc3a5f3b9201ffc206bd0c347e54596b38a88cfeb1d454f36",
+                "data/nfl2k5_official_marks_catalog.json":  # mk2
+                    "36f83b0ef43441c834c7abc17834d70b426e704d4cc8c9b77044d2b685698cf3",
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
                     "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
                 "mod_editor/data/nfl2k5_equipment_chain_pins.v1.json":

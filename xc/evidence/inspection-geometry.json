@@ -1,0 +1,164 @@
+{
+  "source": {
+    "image_size": 8012931072,
+    "files": {
+      "update.xbe": {
+        "offset": 69632,
+        "at_retail_offset": true
+      },
+      "default.xbe": {
+        "offset": 5883691008,
+        "at_retail_offset": false
+      },
+      "dashupdate.xbe": {
+        "offset": 14344192,
+        "at_retail_offset": true
+      },
+      "vc_53450030/9": {
+        "offset": 72767488,
+        "at_retail_offset": true
+      },
+      "vc_53450030/5": {
+        "offset": 707708928,
+        "at_retail_offset": true
+      },
+      "vc_53450030/3": {
+        "offset": 6319216640,
+        "at_retail_offset": false
+      },
+      "vc_53450030/1": {
+        "offset": 1331189760,
+        "at_retail_offset": true
+      },
+      "vc_53450030/0": {
+        "offset": 7818858496,
+        "at_retail_offset": false
+      },
+      "vc_53450030/2": {
+        "offset": 1631188992,
+        "at_retail_offset": false
+      },
+      "vc_53450030/4": {
+        "offset": 1940441088,
+        "at_retail_offset": false
+      },
+      "vc_53450030/7": {
+        "offset": 2253619200,
+        "at_retail_offset": false
+      },
+      "vc_53450030/6": {
+        "offset": 2572816384,
+        "at_retail_offset": false
+      },
+      "vc_53450030/8": {
+        "offset": 3031048192,
+        "at_retail_offset": false
+      },
+      "vc_53450030/D": {
+        "offset": 3960418304,
+        "at_retail_offset": false
+      },
+      "vc_53450030/B": {
+        "offset": 6953203712,
+        "at_retail_offset": false
+      },
+      "vc_53450030/A": {
+        "offset": 6642903040,
+        "at_retail_offset": false
+      },
+      "vc_53450030/C": {
+        "offset": 5038096384,
+        "at_retail_offset": false
+      },
+      "vc_53450030/E": {
+        "offset": 5353228288,
+        "at_retail_offset": false
+      },
+      "vc_53450030/F": {
+        "offset": 7710914560,
+        "at_retail_offset": false
+      }
+    }
+  },
+  "compact": {
+    "image_size": 5924454400,
+    "files": {
+      "update.xbe": {
+        "offset": 71680,
+        "at_retail_offset": false
+      },
+      "default.xbe": {
+        "offset": 2398208,
+        "at_retail_offset": false
+      },
+      "dashupdate.xbe": {
+        "offset": 14698496,
+        "at_retail_offset": false
+      },
+      "vc_53450030/9": {
+        "offset": 73119744,
+        "at_retail_offset": false
+      },
+      "vc_53450030/5": {
+        "offset": 708061184,
+        "at_retail_offset": false
+      },
+      "vc_53450030/3": {
+        "offset": 1016033280,
+        "at_retail_offset": false
+      },
+      "vc_53450030/1": {
+        "offset": 1339719680,
+        "at_retail_offset": false
+      },
+      "vc_53450030/0": {
+        "offset": 1639718912,
+        "at_retail_offset": false
+      },
+      "vc_53450030/2": {
+        "offset": 1833791488,
+        "at_retail_offset": false
+      },
+      "vc_53450030/4": {
+        "offset": 2143043584,
+        "at_retail_offset": false
+      },
+      "vc_53450030/7": {
+        "offset": 2456221696,
+        "at_retail_offset": false
+      },
+      "vc_53450030/6": {
+        "offset": 2775418880,
+        "at_retail_offset": false
+      },
+      "vc_53450030/8": {
+        "offset": 3233650688,
+        "at_retail_offset": false
+      },
+      "vc_53450030/D": {
+        "offset": 4163020800,
+        "at_retail_offset": false
+      },
+      "vc_53450030/B": {
+        "offset": 4472156160,
+        "at_retail_offset": false
+      },
+      "vc_53450030/A": {
+        "offset": 4930416640,
+        "at_retail_offset": false
+      },
+      "vc_53450030/C": {
+        "offset": 5240717312,
+        "at_retail_offset": false
+      },
+      "vc_53450030/E": {
+        "offset": 5555849216,
+        "at_retail_offset": false
+      },
+      "vc_53450030/F": {
+        "offset": 5857662976,
+        "at_retail_offset": false
+      }
+    }
+  }
+}

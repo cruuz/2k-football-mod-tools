@@ -735,7 +735,12 @@ class ScorebugReferenceWrites(unittest.TestCase):
                     self.assertEqual((section.name,section.flags),(".string_",0x26))
                     self.assertEqual(section,XbeImage(retail).section(va,len(old)))
                     self.assertFalse(image.runtime_writable(va,len(new)))
-                    self.assertEqual(new,old.replace(b'\x0a\x00',b'\x20\x00'))
+                    # Beta 76 N6 abbreviates the field-goal label so the
+                    # native FONT4 text fits its info row (b325ef3f). Pin the
+                    # exact 32-byte replacement, including its zero padding.
+                    expected = ("%d yd FG\0".encode("utf-16le") + bytes(14)
+                                if va == 0xe6c4c4 else old.replace(b'\x0a\x00', b'\x20\x00'))
+                    self.assertEqual(new, expected)
                     self.assertEqual(len(old),len(new))
                 else:
                     self.assertTrue(image.runtime_writable(va,len(new)),label)

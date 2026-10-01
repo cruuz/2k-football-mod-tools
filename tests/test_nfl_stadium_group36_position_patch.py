@@ -115,9 +115,9 @@ class Group36PositionPatchTests(unittest.TestCase):
         self.assertGreaterEqual(verifier.minimum_overlap_scratch(stream, len(stream), 6), 0)
 
     def test_writer_rejects_symlinked_output_parent_before_source_access(self) -> None:
-        recipe = ROOT / "reports/asset_samples/nfl_scne/stadium_group36_zero_recipe.json"
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            recipe = self.write(root, self.base)
             real = root / "real"
             real.mkdir()
             linked = root / "linked"

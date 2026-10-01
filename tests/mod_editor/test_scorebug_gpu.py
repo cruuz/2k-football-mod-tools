@@ -134,8 +134,14 @@ class NativeTests(unittest.TestCase):
                         for q in compiled.quads:
                             tint=q.get('tint','none')
                             if tint=='none':continue
-                            role='rim' if 'rim' in tint else 'plate' if tint=='possessing team' else 'wing'
                             word=m.get(capture['body']+0x2d20+q['vertex']*10)
+                            if tint=='play clock cell':
+                                # b76 sb: the play-clock cell is white, ESPN red (213,0,54) at 5 seconds and under; the
+                                # standard preview state's play clock reads 4.
+                                from mod_editor.core import nfl2k5_scorebug_sprite as sprite
+                                red=sprite.STANDARD_STATE['play_clock']<=5
+                                self.assertEqual(word,0xffdd0038 if red else 0xffffffff,(name,wide,possession,q['name']));continue
+                            role='rim' if 'rim' in tint else 'plate' if tint=='possessing team' else 'wing'
                             self.assertEqual(word,0xff000000|int(t[role][1:],16),(name,wide,possession,q['name']))
             finally:m.close()
 

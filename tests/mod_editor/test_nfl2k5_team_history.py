@@ -342,6 +342,8 @@ class ShippedDataTests(unittest.TestCase):
 class RetailRosterTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with th._outer_image()(RETAIL_EXTRACTION) as archive:
             entry = th._entry(archive)
             cls.resource = archive.read(entry.virtual_offset, entry.size)
@@ -453,6 +455,8 @@ class RetailRosterTests(unittest.TestCase):
         import dataclasses
 
         self.assertEqual(rr.status(RETAIL_EXTRACTION)["status"], "retail")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with th._outer_image()(RETAIL_EXTRACTION) as archive:
             main = rr.load_resources(archive, historic=False)[0]
         patched_main = dataclasses.replace(main, body=self.patched) if dataclasses.is_dataclass(main) else None
@@ -533,6 +537,8 @@ class UnicornGetterTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.patched_xbe, _r = tc.apply(RETAIL_XBE.read_bytes())
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with th._outer_image()(RETAIL_EXTRACTION) as archive:
             entry = th._entry(archive)
             body = archive.read(entry.virtual_offset, entry.size)[th.RESOURCE_HEADER_SIZE:]

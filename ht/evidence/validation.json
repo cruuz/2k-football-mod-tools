@@ -1,0 +1,75 @@
+{
+  "label": "PROVED OFFLINE",
+  "logs": [
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/focused-tests.log",
+      "sha256": "2b4a5c8d5cae076d33ed18195952ef9c7c01e06f45edbeb20e935c41bea93b98",
+      "tail": [
+        ".............................. [ 33%]",
+        ".............s.............................................         [100%]",
+        "88 passed, 1 skipped, 119 subtests passed in 396.96s (0:06:36)"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/roster-tests.log",
+      "sha256": "7085c0d49e2d6cd43f7e104662fbb58f7cd4cb1b867844f73918b01782b6c5c8",
+      "tail": [
+        ".................                                                        [100%]",
+        "17 passed in 1.82s"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/m2-source-test.log",
+      "sha256": "07c77643defcad1e5661ddff9b1a3b11fcd58052a7a0acd2bfbc362595a0e7aa",
+      "tail": [
+        "test_every_name_number_and_college_has_exact_supplied_source_provenance (tests.mod_editor.test_nfl2k5_espn25_rosters.DatasetTests.test_every_name_number_and_college_has_exact_supplied_source_provenance) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 1 test in 1.192s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/registry-tests.log",
+      "sha256": "d15f1ebb099057d796c3d1493b32b477c38d28100ab99ae7f65a4292002e402b",
+      "tail": [
+        "........................             [100%]",
+        "24 passed, 36 subtests passed in 2.30s"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/gui-integrity-tests.log",
+      "sha256": "746b8cec86cafa89e983e2db80acd38a92eac7692bfee89883b58aacaf7b3e85",
+      "tail": [
+        "........................                                        [100%]",
+        "24 passed, 9 subtests passed in 14.95s"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/cave-tests.log",
+      "sha256": "63b38d84af3525a3dd2fda6440f7e244577c5f4c4283398c642708d8691029a3",
+      "tail": [
+        "................................                                      [100%]",
+        "32 passed, 3 subtests passed in 419.72s (0:06:59)"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/diagnostic-preflight.log",
+      "sha256": "d0f339b638123ba30e43201d4e3335ff7af7cbb14bd8328ac20d8c1e9f3c94ae",
+      "tail": [
+        "[17:07:08] stack /home/noah/2k-worktrees/b76-x2 at eb11b3d7b2df; preset softdrink_experimental; project league_project_k2_v52_frozen.json; roster edits league_roster_edits_candB_nofc.json",
+        "[17:19:31] preflight OK in 744 s"
+      ]
+    },
+    {
+      "path": "/media/noah/Storage/.b76-research/ht/astra-build/evidence/requested-build.log",
+      "sha256": "a9c35eb823258972d6d0bbcc020433f836ffec314cf12b7b478e979ac09a4f54",
+      "tail": [
+        "[17:41:29] stack /home/noah/2k-worktrees/b76-x2 at eb11b3d7b2df; preset softdrink_experimental; project league_project_k2_v52_frozen.json; roster edits league_roster_edits_candB_nofc.json",
+        "[17:41:29] validate_plan: Historic season rosters: 702 unresolved slots across 75 teams; see ht/HT_REPORT.md and the per-player manifest. No disc was changed."
+      ]
+    }
+  ],
+  "note": "The source suite was expanded to 17 passing tests after the combined 88-test run. Its skipped old-path provenance test passed separately against the hash-identical ht inputs. Counts overlap and should not be summed."
+}

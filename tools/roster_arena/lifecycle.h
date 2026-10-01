@@ -8,8 +8,9 @@ static NOINLINE u32 available_count(void) {
     if(!r || U32(r,0)>8000 || U32(r,0x18)>128 || U32(r,0x38)>8000) return 0;
     zero(used,1000); t=(u8 *)U32(r,0x1c);
     for(i=0;i<U32(r,0x18);i++,t+=500) {
+        if(!franchise_team(i,t)) continue;     /* display teams own nobody (see owner()) */
         n=reserve_count(t); if(n<0) return 0;
-        j=(i<32 || U32(t,0x128)==2 || U32(t,0x128)==4)?0:B(t,ACTIVE);
+        j=0;
         for(;j<B(t,ACTIVE)+(u32)n;j++) {
             id=index_of((u8 *)slot(t,j)); if(id==EMPTY) return 0;
             used[id/8]|=1U<<(id%8);
@@ -120,11 +121,15 @@ void FC arena_stage(u8 *away,u8 *home) {
         B(t,ACTIVE)=n; B(t,RSV_VERSION)=B(t,RSV_COUNT)=B(t,RSV_MAGIC)=0;
     }
 }
+/* The extra created teams carry identities 250 and 251 (nfl2k5_roster_arena.CREATED_IDS): the retail historic
+ * teams use 100..170, and the earlier 100/101 were the 1975 Cardinals' and the 1980 Falcons' numbers. */
+#define CREATED_ID_3 250
+#define CREATED_ID_4 251
 u32 FC arena_created(u8 *t) {
     u32 id=U16(t,0x118); u8 *b=block(),*r=ROOT;
     if(id==90 || id==91) return 0;
     if(b && (U32(b,28)&255)==2 && U32(r,0x18)==54 &&
-       ((id==100 && (u32)t==U32(r,0x1c)+52*500) ||
-        (id==101 && (u32)t==U32(r,0x1c)+53*500))) return 0;
+       ((id==CREATED_ID_3 && (u32)t==U32(r,0x1c)+52*500) ||
+        (id==CREATED_ID_4 && (u32)t==U32(r,0x1c)+53*500))) return 0;
     return 1;
 }

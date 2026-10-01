@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import pathlib
 import sys
 import tempfile
@@ -28,6 +29,9 @@ from mod_editor.core import nfl2k5_playbook_pack as pk  # noqa: E402
 
 YD = codec.YD_CM
 EXTRACT = pathlib.Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)")
+# pb phase 5: the native PLAY scoring gate compiles against the retail executable; the product callers pass it,
+# these direct library calls get it from the stand-alone tools' variable (never overriding one already set).
+os.environ.setdefault("NFL2K5_SCORING_XBE", str(EXTRACT))
 SEED = ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"
 #: one real retail offensive pass header (ATL play 141 "TE Y Outs"); a constant, not data.
 PASS_HEADER = 0x0000640E
@@ -445,6 +449,8 @@ class RetailPackTests(unittest.TestCase):
         import nfl2k5_playbook_position_recode as recode
 
         cls.recode = recode
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(EXTRACT)
         with recode.OuterImage(EXTRACT) as archive:
             cls.books = {
                 team: archive.read_entry(recode.BOOK_ENTRIES[team])

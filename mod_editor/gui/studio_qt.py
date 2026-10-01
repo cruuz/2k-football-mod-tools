@@ -7742,7 +7742,7 @@ class StudioMainWindow(QMainWindow):
                 self._active_project_path = identity.path
                 self._active_project_identity = identity
                 self._set_status(_result_message(result, "Project loaded."))
-                self._workspace_dirty = False
+                self._workspace_dirty = bool(getattr(result, 'project_migrated', False))
                 if self.workspace_store is not None:
                     try:
                         self.workspace_store.record_project(source)
@@ -8323,9 +8323,10 @@ class StudioMainWindow(QMainWindow):
                 if panel is not None and hasattr(panel, "reading_failed"):
                     panel.reading_failed(message)
 
+        marks_pack = self._build_panel.official_marks_pack_field.text().strip() if self._build_panel is not None else ""
         def inspect_source(progress):
             from mod_editor.core.studio_inspection import inspect_source
-            state = inspect_source(source)
+            state = inspect_source(source, marks_pack=marks_pack)
             if state.get("container") == "xiso" and state.get("music_library") == "available":
                 from mod_editor.core import nfl2k5_music_banks
                 try:
@@ -8790,13 +8791,17 @@ class StudioMainWindow(QMainWindow):
                 layout.insertWidget(position, panel.equipment_refit_choice)
                 layout.insertWidget(position + 1, panel.equipment_refit_button)
             selected = panel.equipment_refit_choice.currentData()
-            panel.equipment_refit_choice.clear()
-            for row in refits:
-                panel.equipment_refit_choice.addItem(
-                    f"{row['set_selector']} / {row['asset_id'].rsplit(':', 1)[-1]}", row['asset_id'])
-            index = panel.equipment_refit_choice.findData(selected)
-            if index >= 0:
-                panel.equipment_refit_choice.setCurrentIndex(index)
+            blocked = panel.equipment_refit_choice.blockSignals(True)
+            try:
+                panel.equipment_refit_choice.clear()
+                for row in refits:
+                    panel.equipment_refit_choice.addItem(
+                        f"{row['set_selector']} / {row['asset_id'].rsplit(':', 1)[-1]}", row['asset_id'])
+                index = panel.equipment_refit_choice.findData(selected)
+                if index >= 0:
+                    panel.equipment_refit_choice.setCurrentIndex(index)
+            finally:
+                panel.equipment_refit_choice.blockSignals(blocked)
             panel.equipment_refit_choice.setVisible(bool(refits))
             panel.equipment_refit_button.setVisible(bool(refits))
             panel.equipment_refit_button.setEnabled(bool(refits) and not self._blocking
@@ -9141,12 +9146,12 @@ class StudioMainWindow(QMainWindow):
             getter = getattr(self.facade, "project_build_settings", None)
             settings = getter() if callable(getter) and getattr(self.facade, "source_ready", False) else {}
             panel.set_position_pools(bool(settings.get("position_pools")
-                or (self._source_state or {}).get("position_pools") == "applied"))
+                or (self._source_state or {}).get("position_pools") in ("applied", "needs_fix")))
             return
 
         def enabled():
             return (build.position_pools_check.isChecked()
-                    or (getattr(build, "_state", None) or {}).get("position_pools") == "applied")
+                    or (getattr(build, "_state", None) or {}).get("position_pools") in ("applied", "needs_fix"))
 
         panel.position_pools_enabled = enabled
         panel.set_position_pools(enabled())
@@ -9247,6 +9252,17 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
         self._build_panel.built.connect(self._on_build_tab_built)
         self._share_panel.disc_written.connect(self._register_external_disc)
+        def customize_softdrink(recipe):
+            try:
+                self._build_panel.load_softdrink_sources(recipe)
+                tabs.setCurrentWidget(self._build_panel)
+                # Recheck a disc opened before its external marks were extracted.
+                source = getattr(self, "_last_prefilled_source", None)
+                if source is not None:
+                    self._prefill_panels_from_source(source)
+            except (ValueError, OSError) as exc:
+                self._share_panel._apply_failed(str(exc))
+        self._share_panel.customization_ready.connect(customize_softdrink)
         if roster_editor is not None:
             roster_editor.disc_written.connect(self._register_external_disc)
         models_panel = getattr(self, "_models_panel", None)
@@ -9359,15 +9375,20 @@ class StudioMainWindow(QMainWindow):
                 "or build a disc with them first and save the Anniversary plan again against that disc.")
 
     def _gameplay_build_changed(self, *_args):
-        if self._restoring_music_playlist or not getattr(self.facade, "source_ready", False):
+        if (self._restoring_music_playlist or getattr(self, "_saving_build_settings", False)
+                or not getattr(self.facade, "source_ready", False)):
             return
+        self._saving_build_settings = True
         try:
-            self._capture_music_build_settings()
-        except (ValueError, OSError) as exc:
-            self.statusBar().showMessage(f"Build choices could not be saved: {exc}", 8000)
-            return
-        self._mark_workspace_changed()
-        self._refresh_edit_state()
+            try:
+                self._capture_music_build_settings()
+            except (ValueError, OSError) as exc:
+                self.statusBar().showMessage(f"Build choices could not be saved: {exc}", 8000)
+                return
+            # This also refreshes the UI. Its programmatic signals must not save again.
+            self._mark_workspace_changed()
+        finally:
+            self._saving_build_settings = False
 
     def _connect_star_players(self) -> None:
         """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.

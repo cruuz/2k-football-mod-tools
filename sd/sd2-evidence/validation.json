@@ -1,0 +1,21 @@
+{
+  "classification": "PROVED OFFLINE",
+  "sha256": {
+    "sd/lab/sd2_lab.py": "c96adcbe7e7d213118ef5bf16498aad3ba0f3e0ea4261988a6d5ca9932b91f8e",
+    "sd/lab/fatigue.py": "3ff7435d39300e3a92a24770c4527e1d91953fd808621b5366ebceb3dc62631d",
+    "sd/lab/sd2_gdb.py": "1bfdf8eeed102d8790b01579114b49a3bf71fde3ab611a7acbfe7e66e7266f50",
+    "sd/lab/sd2_cpu.sh": "8e2652e40f90761af11efa7b8a8737b55c23740910a3a7b75c9f798442c63d0f",
+    "sd/replay_sd2.py": "0d9afb8ad72a8ecc887b3d69fa2615c7bf1d05dccc07af6adb7152a4180fa450",
+    "mod_editor/core/nfl2k5_lineup_iterator.py": "b8b0c21ca736d411fb1288a6f4cddd5c84929b1c57962c455756e51f1eae7c0c",
+    "mod_editor/core/nfl2k5_disc_extents.py": "2a1c1fe06a67139bcac469fd2cbc3cced1f523bac96b226094a296793bce3625"
+  },
+  "ram_patch_equals_production": true,
+  "report_summary_lines": 15,
+  "xemu_launched": false,
+  "disc_writes": false,
+  "full_builds": 0,
+  "process_pools": 0,
+  "shared_head": "9de333712be81d919359131c2ecb2bd3185ac18a",
+  "storage_job_bytes": 7296727,
+  "nvme_available_bytes": 114295742464
+}

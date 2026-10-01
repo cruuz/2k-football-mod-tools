@@ -1,0 +1,486 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "images": [
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s05/texscore02_fence.png",
+      "sha256": "f916c6c8fb2fb41af3a6b80d0a1cc69f10a8ee7d4d935012eb7229410d232f44"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s05/texscore02_fence_4x.png",
+      "sha256": "731680ba3bb54430047b5108178be85d881621a654a20a2ea739316a2345de42"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s06/signsA1.png",
+      "sha256": "adb5dfa580032fe38ea8ca8db4abe7c192b0524f91204b7afbf13fa2958f19db"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s06/signsA1_4x.png",
+      "sha256": "0ff2a68fe81053e6a5fc38a603fcff5b59209878b3b9f0ed78c0ec334fd98848"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/ad_bb01.png",
+      "sha256": "ccf64df12aef5c275afe86bbbacb9e53500ba7238c37613970452d9ebee58da6"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/ad_bb01_4x.png",
+      "sha256": "e493518da4504ea9accc487e2356e0cdb3cdb0475b13140c14ca91c7247d05c1"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/exit01.png",
+      "sha256": "28c04bdb302649e1a18af6651ef0dbfec0fcfaaf5fbdd30ba744908272473b85"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s31/exit01_4x.png",
+      "sha256": "460047f33c7919e9d2133818033eea64e9d7a04cecd63a62a2b5090db4874bc0"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_away_team.png",
+      "sha256": "a18f813fe914a264d2879215635fe2de4f6826effcf1ffe14c118fe195f1e9c9"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_away_team_4x.png",
+      "sha256": "eb9f9d6d8182f2f097907e770b474ae82328961c6fc007b7492685f416e00ecf"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_player.png",
+      "sha256": "1d5d83cc481736ed3e1fba2e987e17f53b5e981c23d133d647584498c03ae54e"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_player_4x.png",
+      "sha256": "5e83b645276afbc607b08025ee77b7b5980f7a9bd27d7cfcecb7c75bcf11097a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_team.png",
+      "sha256": "a18f813fe914a264d2879215635fe2de4f6826effcf1ffe14c118fe195f1e9c9"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/banner_home_team_4x.png",
+      "sha256": "eb9f9d6d8182f2f097907e770b474ae82328961c6fc007b7492685f416e00ecf"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign01.png",
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign01_4x.png",
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign02.png",
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign02_4x.png",
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign03.png",
+      "sha256": "db1f484eb8820597405cf8f3f97020bfd8186e5eda72ddea7771057b82b8f8ff"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s36/sign03_4x.png",
+      "sha256": "b7206efe40332c97ebbc65ac96365e24bf6507996f1c9f732a465bed117dbeed"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/ad_bb01.png",
+      "sha256": "ccf64df12aef5c275afe86bbbacb9e53500ba7238c37613970452d9ebee58da6"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/ad_bb01_4x.png",
+      "sha256": "e493518da4504ea9accc487e2356e0cdb3cdb0475b13140c14ca91c7247d05c1"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/exit01.png",
+      "sha256": "28c04bdb302649e1a18af6651ef0dbfec0fcfaaf5fbdd30ba744908272473b85"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s39/exit01_4x.png",
+      "sha256": "460047f33c7919e9d2133818033eea64e9d7a04cecd63a62a2b5090db4874bc0"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s41/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s41/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s41/lambert28.png",
+      "sha256": "64ad65125847bb084d96274a73c7759ba0455bb05b4d802623ba0c941b03ab07"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s41/lambert28_4x.png",
+      "sha256": "4b9d9ab2d3644662ea70e600712deed7ef2737abbe9e812d48f575689dc36cd8"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/sign01.png",
+      "sha256": "0fbd40dcc69421d8e2f18092273aa551dd4cf8004ec64101a4913f55f58e1208"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/sign01_4x.png",
+      "sha256": "70afc3ad1217edee8f6b25fd32eed3ac889823934a86f0949cba3dd2aba63bf0"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/sign03.png",
+      "sha256": "4f28516168332cd203d97d5619e228083db4afb9d350645e3aa49bb39e2dbf46"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s42/sign03_4x.png",
+      "sha256": "f10602d927c807d4d1d46577e53c4468ca0ef4c0e4c3efe4444f941547e616b4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/midwall01.png",
+      "sha256": "7445cd3ff18f45a9778f79b6112da52447ca4f990495c9bfe446a851027ef564"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/midwall01_4x.png",
+      "sha256": "c62fc8c4c8c24f5c5c4c792039bc5df7a0b56bdffc2f84b96ae81768385ccc39"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/sign02.png",
+      "sha256": "dc6e511fb71bda15a83d3a238390b37df7b7e6efb6fb1fe1904d4ca61fbfd2eb"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s43/sign02_4x.png",
+      "sha256": "6e30347c6848977c3832b89477074014317aeb0eb03956b94e9b1c1229c60f3e"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s44/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s44/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s44/sign03.png",
+      "sha256": "4f28516168332cd203d97d5619e228083db4afb9d350645e3aa49bb39e2dbf46"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s44/sign03_4x.png",
+      "sha256": "f10602d927c807d4d1d46577e53c4468ca0ef4c0e4c3efe4444f941547e616b4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/panthers_score01.png",
+      "sha256": "10272c3687c84af9c6621723d4a14465f29c45447ddb5c6b4511bb60dd94b620"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/panthers_score01_4x.png",
+      "sha256": "83e8f9874503f72fea2efc977cfb692642ef459300c29988faefc001d0f086a1"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/sign01.png",
+      "sha256": "3a34df142be5cc5ff66c936b500f6995ad18933510d408a74b28e12801a35db4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/sign01_4x.png",
+      "sha256": "33ce9cda55e860109cbed71e27bb9509fa73cfed28a86f9ac1d688e8a9fb082b"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/sign02.png",
+      "sha256": "a399950e372c15a410d5776cc13866cb5122cd79506e3cc7102695869395c61a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/sign02_4x.png",
+      "sha256": "c248ba9bee9e6c113a7e265e3c37587e0e4446e1e1ece8e07c2ae42ca7c3ec5d"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/wall03.png",
+      "sha256": "665df8d4b112f4e25a73ff613d78c5d5ec271b9bdee515f44103c07fe958cb19"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s45/wall03_4x.png",
+      "sha256": "0f2790347cba75114e2506fe9a705254cd0925fe8360a12376fe7f04d8ba1e3a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign01.png",
+      "sha256": "3674ebb2d982c30cbdd75b645bf7ce3be6294c99c3648a0bd64c3fecb6cb4898"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign01_4x.png",
+      "sha256": "ad7a633b9e99561909a25a681a2a8f9c83d38c63713f5aaf0e6479a14982e8be"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign02.png",
+      "sha256": "71b5464c65a6d7f8e4e523e3c6a9276e1bef9cb8423e8c6a4ded6a26a53f8350"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign02_4x.png",
+      "sha256": "2dc754d44aa58584fed1b64d67b531f123c16e7029d821c0b4b76a774bcaa357"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign03.png",
+      "sha256": "6478a407edfa25baaa16845d6665ff0d3d669709fffdd6a60dc47e6829389a9f"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s48/sign03_4x.png",
+      "sha256": "a9826b40be07f95ebd42bf2dc60afd24fc37c3133d77d457b231807a08f79a17"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/adv01.png",
+      "sha256": "b1fbcfb08111b1363e4dafe783c62a3858890c215b316864776c11e09f28d7b7"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/adv01_4x.png",
+      "sha256": "6a8cd83abc04cee115bbf5d4c3cbb70218e144211357e2c38986a2a032b34068"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/adv02.png",
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/adv02_4x.png",
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s50/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/adv01.png",
+      "sha256": "b1fbcfb08111b1363e4dafe783c62a3858890c215b316864776c11e09f28d7b7"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/adv01_4x.png",
+      "sha256": "6a8cd83abc04cee115bbf5d4c3cbb70218e144211357e2c38986a2a032b34068"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/adv02.png",
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/adv02_4x.png",
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s51/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign01.png",
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign01_4x.png",
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign02.png",
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign02_4x.png",
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign03.png",
+      "sha256": "6ecb761bf9b48dee23ad42a424a200cd423c1697079d3c4c4e9ad95222a0e63e"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s52/sign03_4x.png",
+      "sha256": "2760bcb99d0f498b4639539ece83d2d80043e73050470ccb94caed4b33b7c03d"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s53/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s53/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner02.png",
+      "sha256": "1bd353af0efa89ef4cd8cb20193fb53babb86a770026d9ba6cc51593363dff39"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s53/corp_temp_adbanner02_4x.png",
+      "sha256": "d1c204f9f86aa2e39703cc046e8303ed3c2cb8ff64b56c0f0dbccc8747dae4ff"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_signsA1.png",
+      "sha256": "ffc7401940e4d5e598f943340cc289a7b132ad539e7d4ddea5ace6e8bd37c04e"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s54/LIGHT_signsA1_4x.png",
+      "sha256": "f1e447b2370f5b7d90e0e9bb2c26cda45d939f684c6e5af783445a79b4f93e75"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s54/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s54/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s55/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s55/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s55/banners55.png",
+      "sha256": "cd6687f67153d88ba702502e08ec22aafbe0fc47faaf1990585ce3b2b9e86de8"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s55/banners55_4x.png",
+      "sha256": "84d2d3c1c69781c537374d7414d3726dafad80c4cbee786c4d2c516802b4a78b"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s56/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s56/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/adv01.png",
+      "sha256": "684edb3dec34e7882b93ddae569036b271a0abb9a625c2e1e74d9a15ef6ab931"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/adv01_4x.png",
+      "sha256": "a35981a074fbd22274c7ced087d35a3057c4a011b29ec9b2fff18cbe57d3ab74"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/adv02.png",
+      "sha256": "7029dc25d4cf92ca01a257fe263662f486964b0e93ffdedff46a7e9bd61e12f6"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/adv02_4x.png",
+      "sha256": "3cd8f970fce7d4c2a2f768a91f81579942a83753d808ab72b7e4c6a75d4c1e54"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s57/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign01.png",
+      "sha256": "97a2b0e03d732702a2965669f8417175ca992408467fbc66b335977a0c485acc"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign01_4x.png",
+      "sha256": "fac7c94ba8df1297d29f207b2e72c080e5fb6e8bee5606ff943615da2473267a"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign02.png",
+      "sha256": "fb0deadbbe2059c4818a2432fd0c41d70584dd0d756ec5c6aef34107d4fecc7c"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign02_4x.png",
+      "sha256": "eb99c66d71d0e2d9502ad484f2c5ae1dc5705a1e8579e911507dadea3800c44b"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign03.png",
+      "sha256": "6ecb761bf9b48dee23ad42a424a200cd423c1697079d3c4c4e9ad95222a0e63e"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s58/sign03_4x.png",
+      "sha256": "2760bcb99d0f498b4639539ece83d2d80043e73050470ccb94caed4b33b7c03d"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s59/banner_corp.png",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s59/banner_corp_4x.png",
+      "sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner02.png",
+      "sha256": "c8b861a869a09f710d77c97670111a51aec827620edc448a1b5af2ad21bc227f"
+    },
+    {
+      "path": "data/nfl2k5_stadium_shared_art/venues/s59/corp_temp_adbanner02_4x.png",
+      "sha256": "a7a3e06ce32aa632414235de9497d2c208d5985c614cd718e9714f4e4e26b0c9"
+    }
+  ],
+  "count": 120
+}

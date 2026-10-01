@@ -1,0 +1,173 @@
+{
+  "classification": "PROVED OFFLINE",
+  "rows": [
+    {
+      "name": "player_pair",
+      "bin": 188,
+      "white_ink": {
+        "box": [
+          520,
+          905,
+          1382,
+          941
+        ],
+        "pixels": 3745
+      },
+      "background_dark_pixels": 18444,
+      "left_body_rgb": [
+        23.0,
+        27.0,
+        26.0
+      ],
+      "right_body_rgb": [
+        25.0,
+        21.0,
+        19.0
+      ]
+    },
+    {
+      "name": "current_drive",
+      "bin": 372,
+      "white_ink": {
+        "box": [
+          623,
+          908,
+          1297,
+          932
+        ],
+        "pixels": 5154
+      },
+      "background_dark_pixels": 14319,
+      "left_body_rgb": [
+        16.0,
+        105.0,
+        115.0
+      ],
+      "right_body_rgb": [
+        3.0,
+        12.5,
+        9.0
+      ]
+    },
+    {
+      "name": "29_yard_attempt",
+      "bin": 452,
+      "white_ink": {
+        "box": [
+          1177,
+          913,
+          1404,
+          931
+        ],
+        "pixels": 1741
+      },
+      "background_dark_pixels": 9799,
+      "left_body_rgb": [
+        100.0,
+        105.0,
+        52.0
+      ],
+      "right_body_rgb": [
+        23.0,
+        22.0,
+        17.0
+      ]
+    },
+    {
+      "name": "48_yard_attempt",
+      "bin": 575,
+      "white_ink": {
+        "box": [
+          1177,
+          913,
+          1405,
+          931
+        ],
+        "pixels": 1725
+      },
+      "background_dark_pixels": 11018,
+      "left_body_rgb": [
+        97.0,
+        100.0,
+        51.0
+      ],
+      "right_body_rgb": [
+        22.0,
+        21.0,
+        18.0
+      ]
+    },
+    {
+      "name": "eagles_third_downs",
+      "bin": 582,
+      "white_ink": {
+        "box": [
+          632,
+          897,
+          1288,
+          936
+        ],
+        "pixels": 4758
+      },
+      "background_dark_pixels": 16046,
+      "left_body_rgb": [
+        17.0,
+        105.0,
+        115.0
+      ],
+      "right_body_rgb": [
+        2.0,
+        13.0,
+        8.0
+      ]
+    },
+    {
+      "name": "tj_edwards",
+      "bin": 701,
+      "white_ink": {
+        "box": [
+          661,
+          908,
+          1264,
+          933
+        ],
+        "pixels": 4043
+      },
+      "background_dark_pixels": 8750,
+      "left_body_rgb": [
+        184.0,
+        64.0,
+        17.0
+      ],
+      "right_body_rgb": [
+        13.5,
+        10.0,
+        2.0
+      ]
+    },
+    {
+      "name": "bears_third_downs",
+      "bin": 733,
+      "white_ink": {
+        "box": [
+          441,
+          908,
+          1283,
+          940
+        ],
+        "pixels": 4506
+      },
+      "background_dark_pixels": 10255,
+      "left_body_rgb": [
+        183.0,
+        64.0,
+        16.0
+      ],
+      "right_body_rgb": [
+        18.0,
+        11.0,
+        2.0
+      ]
+    }
+  ]
+}

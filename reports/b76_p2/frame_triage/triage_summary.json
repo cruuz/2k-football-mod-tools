@@ -1,0 +1,88 @@
+{
+ "schema": "b76_p2_frame_triage/v1",
+ "frames": {
+  "mnf_highlights": 764,
+  "obs_recording": 3129,
+  "sampling": "mnf every 30th frame of the 764 s highlights; obs 2 per second of the 26:04 recording"
+ },
+ "jev": {
+  "recipe": "frame_triage/jev_triage.py (jevlib batch, one choice + one noul per frame)",
+  "calls": 3893,
+  "cost_usd": 0.1354,
+  "routed": {
+   "studio_or_desk": 23,
+   "bumper_or_break": 106,
+   "other": 84,
+   "stat_or_lower_third": 1162,
+   "live_play_or_replay_footage": 2190,
+   "sideline_or_crowd": 288,
+   "score_board_or_card": 12,
+   "replay_transition_emblem": 16,
+   "commercial_or_app_screen": 12
+  }
+ },
+ "code_features": "frame_triage/features.py (scorebug NCC, colour shares, flat share, watermark NCC, p1 OCR words), stinger_all.py (colour shield template over scales), band_all.py (MNF band template)",
+ "eye_read": {
+  "replay_transition": {
+   "clean_source": true,
+   "frames": [
+    "mnf 87",
+    "mnf 96",
+    "obs 326/327",
+    "obs 359/360",
+    "obs 415/416",
+    "obs 448/449",
+    "obs 680/681",
+    "obs 719",
+    "obs 1251",
+    "obs 1574",
+    "obs 1670",
+    "obs 1702",
+    "obs 2349/2350",
+    "obs 2391/2392",
+    "obs 2466",
+    "obs 2537/2538",
+    "obs 2554"
+   ],
+   "dense": "30 fps frames of the mnf 87 stinger from the same highlights video (84.5 s to 88 s)",
+   "jev_routed_true": 12,
+   "jev_routed_false": 4,
+   "note": "Jev's 4 false routes were postgame interview frames (obs 2758-2761)"
+  },
+  "bumpers": {
+   "clean_source": true,
+   "frames": [
+    "obs 830 (MNF bumper wall)",
+    "obs 1847/1848 (emblem close-up to break)",
+    "obs 3099-3126 (ESPN NFL open)",
+    "mnf 9-12 (Monday Night Kickoff banner)"
+   ]
+  },
+  "boards": {
+   "clean_source": true,
+   "frames": [
+    "obs 1864-1868 (corner score box)",
+    "obs 3012-3016 (NEXT WEEK ON MNF)",
+    "obs 3003-3008 (postgame strip)",
+    "obs 2587 (schedule board)",
+    "mnf 290-299 (the bar)"
+   ],
+   "note": "no end-of-quarter or halftime card in either set"
+  },
+  "coin_toss": {
+   "clean_source": false,
+   "note": "no coin toss in either set (the supplementary Broncos-Chiefs 2026 Week 1 full broadcast has none on air either)"
+  },
+  "studio_desk": {
+   "clean_source": false,
+   "note": "no studio or desk in either set; Jev's 23 studio routes read by eye were game and postgame frames. The Broncos-Chiefs broadcast has an Allstate-branded halftime field desk, not the SportsCenter set or the coach's desk"
+  },
+  "player_card_shield": {
+   "clean_source": true,
+   "frames": [
+    "the stinger's flat NFL shield: mnf 87, obs 327, 681, 2350, 2538"
+   ]
+  }
+ },
+ "journal": "frame_triage/jev_journal_compact.jsonl (per frame: route, confidence, top three, features); the full request/answer journal stays in the session scratchpad"
+}

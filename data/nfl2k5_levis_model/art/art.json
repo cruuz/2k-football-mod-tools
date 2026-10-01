@@ -1,0 +1,264 @@
+{
+ "schema": "nfl2k5_levis_model_art/v1",
+ "art": {
+  "lv_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "67fb6253460be0c179e57452d9dd1bc7ba86c9f51e2479690fad037cc3a23c28"
+  },
+  "lv_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "f2655a2321051782d76960a82fb9f4b999fd6f1bad83bfbf2dad06d75cbe5dc1"
+  },
+  "lv_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "0e0592a63d6877af0c5cda0cb8ab47f3dc374cad3f603a46036f6089ca890f02"
+  },
+  "lv_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "lv_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "4376c92bd1b9d82af7a33386d7457f6ddafc8c5829f424520db00d6e3a2d517b"
+  },
+  "LIGHT_lv_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "879963470123cf3f750fccfe608cab25f13fbea298d9230837a8e373572dbe4e"
+  },
+  "LIGHT_lv_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_lv_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "lv_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "lv_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "lv_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "b9678283c5b4c260e44b9e3c94b709662c972b2e3406aacb148fe7204a076331"
+  },
+  "LIGHT_lv_suites": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "18c85ec14722a3c0d428d4d3babe448a0cd93843fc9a802406fd9f3ef424d2ec"
+  },
+  "LIGHT_lv_press": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "12ed07ad863e97035ede462d32c8a4f0027022f65dfefd94d1fb1a316232e20d"
+  },
+  "lv_balcony": {
+   "size": [
+    64,
+    16
+   ],
+   "sha256": "22bbb97dae7bf986f20ea91415cb4f31e4762bd73ccb4fc7aa63c4d559b73d56"
+  },
+  "lv_white": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "d114121147678c4878c0cb29f6ed465b503aba502130b6b7a4bb4af22f9e7165"
+  },
+  "lv_solar": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "332dc2a467eaa21629555a20a8cabf8bec84ec00545d06776bc487aeadfdf0a4"
+  },
+  "lv_green": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "4f50a35301c7fc3b175960358502e63c525e7aa90b8b91ae184a1aa173a89b74"
+  },
+  "lv_roof_under": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "242f4dae0e78cc85f811706e1770a37529c656e50754f0d038e0de87f97c1b96"
+  },
+  "lv_truss": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "401cfc0cd91839467b29662480e283626f4c6cc156bf99ae4f8496fb19643bb6"
+  },
+  "lv_frame": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "1291328cffcf87031677c294a53125008281dfec24212ec399d28a80f34a6e19"
+  },
+  "lv_steel": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "f73c425943c216a541bd0211e745e2c14e04c7d67300bac5889a6e7f3e72fbda"
+  },
+  "LIGHT_lv_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_lv_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "7b521bc39d1bfac00a1e3999120343607201a7d5881b5addd63cd03299bcafe3"
+  },
+  "lv_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "1a81729e56a2222607a2fbcaafc4f66b7722ef8da319854ed6f386f80f143dd1"
+  },
+  "lv_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "65a3360481c3f37b6129cca37b41a8a12cf2d99e00091cc604631c80c3081fbc"
+  },
+  "LIGHT_lv_curtain": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "3a71595928bbc122c1d0225458ba31a3f913b0254f1c7af1a6eb496641949e6c"
+  },
+  "lv_banner": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "dbea5b996f4f61ade6fca3e92bc7b7db67c57025f0cb59738c41ff4e6af40a4f"
+  },
+  "LIGHT_lv_base": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "fbd6c08582d55ed1ac94d27ce6665fb2c2fd01807b8c04096e06de92269fb650"
+  },
+  "lv_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "lv_ground": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "1df0c905cd24a081284f678078c99b354e03b2087ee7db47e8f9a81037ec80f6"
+  },
+  "lv_asphalt": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "92d33c54818a27536e6c9a2159bc259618908e96ea7b09092946209ab9b402f5"
+  },
+  "lv_road": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "55271dd22fe20ab9f3927d3081937a4fa342332a9e7208b66d023b56f42c5e63"
+  },
+  "lv_building": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "ed8ca18ed255e31596ea9639eb7b6d8a65124a3b9b76826ff300ad6e78597bc9"
+  },
+  "lv_water": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "18bcd0aa373d079d1b2630b3773deb85c2e308ec57af4347cf45a66a7c189dfb"
+  },
+  "lv_hills": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "381cbb1990af475b70579770560ecefc57225042a044b20820c98ad9ecfbe2ab"
+  },
+  "field/lv_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "a189d0cd80796a178cb3e7df924fb550a974e8819bc56cca1fee085034a255f1"
+  },
+  "field/lv_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "6fb33e62f6a602e24b33054125523c063956211d06cb787eb1d899d34fe47e08"
+  }
+ }
+}

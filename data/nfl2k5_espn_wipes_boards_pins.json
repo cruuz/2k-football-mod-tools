@@ -1,0 +1,463 @@
+{
+ "schema": "nfl2k5_espn_wipes_boards_pins/v1",
+ "art": {
+  "electricity_background1.png": "bf6ce08b7984c6f8f3eb8433971fd2fc57fe016f955dd9f3002c5b512da58728",
+  "electricity_lightning.png": "e507ed06af1eb1084cd6f8279016a39f55a89e363a82c48f3c386f8795859b7c",
+  "helmetbumper_monitor.png": "ae0f8ff4d887ef03d13e7df6c30c86cb78181e19a8f903b869ee0cae15ba48b8",
+  "helmetbumper_monitorcolors.png": "6dc50fe6b99a2295a2050454b4307ccb895cb81f0e2378c4415db469e8616093",
+  "playercard_znfl_shield.png": "4a648238b2dce79330f90cb35763eb88a9a455a8432b4b1b5a6a12d41cc89eb6",
+  "redflashy_logo1.png": "614848219efb1c6a690dfa09a75363bff2a93f964cf40245f27c59b8ac793387",
+  "replay_wipe_logo_glow.png": "83057112c49b33af53241d75911549e69b7c422bff7bf079a0a49a1ac90dcaee",
+  "replay_wipe_pattern_flash.png": "c701acfa10bd7d493d94c76befc867cae88535b17176b637b64f6655fac93a85",
+  "replay_wipe_rays.png": "0619aa13dc160b207ff6dcc9454380a1e17d7fe7a3c61db5b6153fc81dc78c3d",
+  "replay_wipe_streaks.png": "6783a862edf988bb254d695a7b4a432ee3f4d8dc83d1e7392b42ab3687ac98db",
+  "scoreboard_backboard01.png": "abf8786f8640fa4dc3d1fa8a9543e490de896df2209c555e892ae569f668cac6",
+  "scoreboard_dot.png": "482ee81d99aa4517c01f5ab6c79297f83efbedb0a7bce6c3bf4f24e656f0f447",
+  "scoreboard_sign01.png": "61e7d9f95da2b0f6000e5a72f54353e029d9c6242aa159045759f6ae354c9e26",
+  "scoreboard_sign02.png": "686e47834680f10eaf6c3931f32bd7913c7d1519f2162efedf66db2a23c591d5"
+ },
+ "resources": [
+  {
+   "name": "replay_wipe",
+   "scene": "replay_wipe",
+   "kind": "MRKS",
+   "raw": true,
+   "outer_index": 3114,
+   "outer_name_id": 2776222290,
+   "outer_size": 744960,
+   "chunk_index": 1,
+   "chunk_offset": 124160,
+   "span_size": 124064,
+   "pack_name": "4",
+   "pack_offset": 31341824,
+   "system_bytes": 77824,
+   "video_bytes": 46208,
+   "scratch": 0,
+   "retail_sha256": "2f77f4e186006086631727ed1b9dddb8160f3a4143ad1199e6e22c7091aea8de",
+   "textures": [
+    {
+     "texture_index": 0,
+     "png": "replay_wipe_pattern_flash.png",
+     "materials": [
+      "pattern_flash"
+     ],
+     "width": 32,
+     "height": 32,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 77824,
+     "decoded_palette_offset": 78848,
+     "allocation_bytes": 2048,
+     "retail_allocation_sha256": "2b909e2adee8a2a3e24b14625bcdccd0c478ddc1a56f0b1bd12d6ab4763a840b",
+     "applied_allocation_sha256": "6ffaa88e11c833b9a455e6035ba28f34b87f7a1544bf49c1b5c48371121c0477",
+     "png_sha256": "c701acfa10bd7d493d94c76befc867cae88535b17176b637b64f6655fac93a85",
+     "palette_entries": 90,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 1,
+     "png": "replay_wipe_streaks.png",
+     "materials": [
+      "z_ESPN01_flash",
+      "a_white_streak01",
+      "b_yellow_streak01",
+      "z_ESPN02_flash",
+      "foreground_streaks"
+     ],
+     "width": 8,
+     "height": 8,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 79872,
+     "decoded_palette_offset": 79936,
+     "allocation_bytes": 1088,
+     "retail_allocation_sha256": "91c4648c084144495ca290c57cd8434fa9e0a6b6a2ac4a319b161bf4706f09d3",
+     "applied_allocation_sha256": "8473379c6ae2d2fd3e9f9acd4a8c74d13c8ec7008a52858e96d29a67079e5f15",
+     "png_sha256": "6783a862edf988bb254d695a7b4a432ee3f4d8dc83d1e7392b42ab3687ac98db",
+     "palette_entries": 4,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 2,
+     "png": "replay_wipe_logo_glow.png",
+     "materials": [
+      "logo_glow_a",
+      "logo_glow_b",
+      "logo_glow_c"
+     ],
+     "width": 128,
+     "height": 64,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 81024,
+     "decoded_palette_offset": 89216,
+     "allocation_bytes": 9216,
+     "retail_allocation_sha256": "fef9090c9803668d1b725707c70bf237378713fad7f04a33d75b19a9a1cd767a",
+     "applied_allocation_sha256": "2e9d2d976041d6e2bf272a413553c4be07ad26cf1b24eda0d07e11c4d009ecf7",
+     "png_sha256": "83057112c49b33af53241d75911549e69b7c422bff7bf079a0a49a1ac90dcaee",
+     "palette_entries": 57,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 3,
+     "png": "replay_wipe_rays.png",
+     "materials": [
+      "cruve_rays",
+      "top_rays",
+      "crescent01",
+      "crescent02",
+      "crescent03"
+     ],
+     "width": 256,
+     "height": 128,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 90240,
+     "decoded_palette_offset": 123008,
+     "allocation_bytes": 33792,
+     "retail_allocation_sha256": "f09a0a02d1b4be3999e07449c67bd19a9c64b7fc28a0478b9a0b31deec0df870",
+     "applied_allocation_sha256": "571092aff342628140dd398ea0d62f79fbe7ce42532de5812f6269eab43b29df",
+     "png_sha256": "0619aa13dc160b207ff6dcc9454380a1e17d7fe7a3c61db5b6153fc81dc78c3d",
+     "palette_entries": 18,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "b8ff808dd25eeb52fd935c354cf6e376aa96980808e2773dc67ddfc1d3e917fc"
+  },
+  {
+   "name": "fullscreen_WipeElectricity",
+   "scene": "fullscreen_WipeElectricity",
+   "kind": "MRKS",
+   "raw": true,
+   "outer_index": 3114,
+   "outer_name_id": 2776222290,
+   "outer_size": 744960,
+   "chunk_index": 3,
+   "chunk_offset": 372480,
+   "span_size": 103200,
+   "pack_name": "4",
+   "pack_offset": 31590144,
+   "system_bytes": 80640,
+   "video_bytes": 22528,
+   "scratch": 0,
+   "retail_sha256": "bcf95e87bfbeaf15123480dde587f62ed25c727e13d181b1bb6507be3875f924",
+   "textures": [
+    {
+     "texture_index": 0,
+     "png": "electricity_background1.png",
+     "materials": [
+      "background1"
+     ],
+     "width": 64,
+     "height": 64,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 80640,
+     "decoded_palette_offset": 84736,
+     "allocation_bytes": 5120,
+     "retail_allocation_sha256": "0ad302d5bb6822702a241cab379ac040e976ea5bb6f78f195cd9a6771835e5f8",
+     "applied_allocation_sha256": "343506230e27f7a96baa7c280e86b0ac8234107bde157b46befdabdb63b3ffd5",
+     "png_sha256": "bf6ce08b7984c6f8f3eb8433971fd2fc57fe016f955dd9f3002c5b512da58728",
+     "palette_entries": 60,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 1,
+     "png": "electricity_lightning.png",
+     "materials": [
+      "lightning2",
+      "lightning1"
+     ],
+     "width": 128,
+     "height": 128,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 85760,
+     "decoded_palette_offset": 102144,
+     "allocation_bytes": 17408,
+     "retail_allocation_sha256": "130851fa560c911967d370aee9233f51d3c722f0c12a33a44cb815f15e5af74e",
+     "applied_allocation_sha256": "54f6d85f59947608ee461d53616d97f556835bd2474110b356cd8381f3467a22",
+     "png_sha256": "e507ed06af1eb1084cd6f8279016a39f55a89e363a82c48f3c386f8795859b7c",
+     "palette_entries": 66,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "41571d630cc0eb61ac9e195d90bc72d78a29e4f60ad24ea8f060845dd1b7faf3"
+  },
+  {
+   "name": "fullscreen_WipeRedFlashy",
+   "scene": "fullscreen_WipeRedFlashy",
+   "kind": "MRKS",
+   "raw": true,
+   "outer_index": 3114,
+   "outer_name_id": 2776222290,
+   "outer_size": 744960,
+   "chunk_index": 4,
+   "chunk_offset": 496640,
+   "span_size": 90272,
+   "pack_name": "4",
+   "pack_offset": 31714304,
+   "system_bytes": 23680,
+   "video_bytes": 66560,
+   "scratch": 0,
+   "retail_sha256": "a1dbcfa42444ce32eed38f63798a9225c6ac19a4a7159acfa4dde2ecd3754959",
+   "textures": [
+    {
+     "texture_index": 0,
+     "png": "redflashy_logo1.png",
+     "materials": [
+      "logo1"
+     ],
+     "width": 256,
+     "height": 256,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 23680,
+     "decoded_palette_offset": 89216,
+     "allocation_bytes": 66560,
+     "retail_allocation_sha256": "cef98b19bf8a620810d785b0a33b6f0c5a48a376fe4119bb43cc89871cb1d24c",
+     "applied_allocation_sha256": "2110c9cfad574fca5edba0e23051bd75fe3873037607be579e20cd2bd41659c4",
+     "png_sha256": "614848219efb1c6a690dfa09a75363bff2a93f964cf40245f27c59b8ac793387",
+     "palette_entries": 110,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "997ea11059c2240ac7ecef4d57ecd23ee5b98ccdd07da7b8cfc08361c762ecbb"
+  },
+  {
+   "name": "scoreboard",
+   "scene": "scoreboard",
+   "kind": "SCNE",
+   "raw": false,
+   "outer_index": 347,
+   "outer_name_id": 876131246,
+   "outer_size": 90640,
+   "chunk_index": 5,
+   "chunk_offset": 28336,
+   "span_size": 29872,
+   "pack_name": "0",
+   "pack_offset": 112901808,
+   "system_bytes": 9088,
+   "video_bytes": 45056,
+   "scratch": 16,
+   "retail_sha256": "6870716399096589c5713f592fd69ee6e78c32e04c80a007d11c292449b34710",
+   "textures": [
+    {
+     "texture_index": 0,
+     "png": "scoreboard_sign02.png",
+     "materials": [
+      "sign02"
+     ],
+     "width": 128,
+     "height": 128,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 9088,
+     "decoded_palette_offset": 25472,
+     "allocation_bytes": 17408,
+     "retail_allocation_sha256": "47bfb9838c4c5ba42b6a0dba571b536e6ae35b83cfaf4ed8305bed3c748bd5a0",
+     "applied_allocation_sha256": "2cab8c0372149fc96999130f404e4b10b4249c6c3f8204ad9a021b1ded5db169",
+     "png_sha256": "686e47834680f10eaf6c3931f32bd7913c7d1519f2162efedf66db2a23c591d5",
+     "palette_entries": 200,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 1,
+     "png": "scoreboard_dot.png",
+     "materials": [
+      "dot"
+     ],
+     "width": 64,
+     "height": 64,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 26496,
+     "decoded_palette_offset": 30592,
+     "allocation_bytes": 5120,
+     "retail_allocation_sha256": "02c8696715270e21325efc9d327d904cae07c5c54b2b180e13db83d610d6e5db",
+     "applied_allocation_sha256": "020d56554dfb196cc43cbd67ecebc4bb5d867921db55c71a3f8f0f7a50f6e38a",
+     "png_sha256": "482ee81d99aa4517c01f5ab6c79297f83efbedb0a7bce6c3bf4f24e656f0f447",
+     "palette_entries": 2,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 2,
+     "png": "scoreboard_sign01.png",
+     "materials": [
+      "sign01"
+     ],
+     "width": 128,
+     "height": 128,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 31616,
+     "decoded_palette_offset": 48000,
+     "allocation_bytes": 17408,
+     "retail_allocation_sha256": "3641b94934559675887f25e98ed8414fd74db1e2a684aaa76b17ea54f4e18af1",
+     "applied_allocation_sha256": "52bf0cb3f08c69e1419a3aca907894185f6d79975c3b9f5cd09bf2f6908d0ebe",
+     "png_sha256": "61e7d9f95da2b0f6000e5a72f54353e029d9c6242aa159045759f6ae354c9e26",
+     "palette_entries": 53,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 3,
+     "png": "scoreboard_backboard01.png",
+     "materials": [
+      "backboard01"
+     ],
+     "width": 64,
+     "height": 64,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 49024,
+     "decoded_palette_offset": 53120,
+     "allocation_bytes": 5120,
+     "retail_allocation_sha256": "867ce73d5605e653f2019765a6e8f5f29750415bb7696f1d048e0587a0e83158",
+     "applied_allocation_sha256": "2b105d435dd795f136d855c83573d5c289f54b76404f85b0563c608b4cfb65b8",
+     "png_sha256": "abf8786f8640fa4dc3d1fa8a9543e490de896df2209c555e892ae569f668cac6",
+     "palette_entries": 13,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "e5417407ca4fbb18a4184e24bc47893c8456389b2d130996c105bafa64dc2fc1",
+   "fill": {
+    "retail_consumed": 29831,
+    "encoded_bytes": 29831,
+    "zero_gap_bytes": 0,
+    "minimum_scratch": 0,
+    "opaque_tail_size": 9,
+    "encoder": "greedy"
+   }
+  },
+  {
+   "name": "helmetbumper",
+   "scene": "helmetbumper",
+   "kind": "SCNE",
+   "raw": false,
+   "outer_index": 18,
+   "outer_name_id": 3159126182,
+   "outer_size": 444000,
+   "chunk_index": 11,
+   "chunk_offset": 344112,
+   "span_size": 79344,
+   "pack_name": "0",
+   "pack_offset": 11186224,
+   "system_bytes": 6016,
+   "video_bytes": 133120,
+   "scratch": 96,
+   "retail_sha256": "17c2069326d984a9f08e70445eb494133fe7015c16eed75e48e5081089e71c1b",
+   "textures": [
+    {
+     "texture_index": 0,
+     "png": "helmetbumper_monitor.png",
+     "materials": [
+      "monitor"
+     ],
+     "width": 256,
+     "height": 256,
+     "mip_levels": 6,
+     "decoded_pixel_offset": 6016,
+     "decoded_palette_offset": 93376,
+     "allocation_bytes": 88384,
+     "retail_allocation_sha256": "eb1374fcac631f119518512da46fa215f65f0a1a344cfc4bd6b2a0e9dfbc862e",
+     "applied_allocation_sha256": "9e13fb7977f8dae5bef9bba93a85d055af34a3787db31bdbc06b7622b464c8aa",
+     "png_sha256": "ae0f8ff4d887ef03d13e7df6c30c86cb78181e19a8f903b869ee0cae15ba48b8",
+     "palette_entries": 256,
+     "base_rgba_exact": true
+    },
+    {
+     "texture_index": 1,
+     "png": "helmetbumper_monitorcolors.png",
+     "materials": [
+      "monitorcolors"
+     ],
+     "width": 256,
+     "height": 128,
+     "mip_levels": 5,
+     "decoded_pixel_offset": 94464,
+     "decoded_palette_offset": 138112,
+     "allocation_bytes": 44672,
+     "retail_allocation_sha256": "25e2477c811daa2b09b5570b9e6feae0a836b71c3a489ce6396daddeee51a29d",
+     "applied_allocation_sha256": "d2c2ce082d09e980e3c51a4de1a269ef345f3af4092aa42da589dd09ddf61846",
+     "png_sha256": "6dc50fe6b99a2295a2050454b4307ccb895cb81f0e2378c4415db469e8616093",
+     "palette_entries": 28,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "dcc90dda27f68d8edca785a58d4cc04225688f52fbe0ec622530badb77af7ce1",
+   "fill": {
+    "retail_consumed": 79297,
+    "encoded_bytes": 79297,
+    "zero_gap_bytes": 0,
+    "minimum_scratch": 5,
+    "opaque_tail_size": 15,
+    "encoder": "greedy"
+   }
+  },
+  {
+   "name": "playercard",
+   "scene": "playercard",
+   "kind": "SCNE",
+   "raw": false,
+   "outer_index": 3,
+   "outer_name_id": 2397695725,
+   "outer_size": 2387424,
+   "chunk_index": 57,
+   "chunk_offset": 298288,
+   "span_size": 11568,
+   "pack_name": "0",
+   "pack_offset": 1150256,
+   "system_bytes": 17792,
+   "video_bytes": 15360,
+   "scratch": 112,
+   "retail_sha256": "3c8b3815415e82c9db000593cb258f71d175fd31b6901461cde85b2475f547c3",
+   "textures": [
+    {
+     "texture_index": 1,
+     "png": "playercard_znfl_shield.png",
+     "materials": [
+      "znfl_shield"
+     ],
+     "width": 64,
+     "height": 64,
+     "mip_levels": 1,
+     "decoded_pixel_offset": 22912,
+     "decoded_palette_offset": 27008,
+     "allocation_bytes": 5120,
+     "retail_allocation_sha256": "af49fb009cb1755fdb9a5f9d82cfe5c13df64c9e78790606f336def7ee309ae2",
+     "applied_allocation_sha256": "6f9f50490d7494b50358986cf9dc07fb0c8f35779864b7eb665630afbd99fb79",
+     "png_sha256": "4a648238b2dce79330f90cb35763eb88a9a455a8432b4b1b5a6a12d41cc89eb6",
+     "palette_entries": 172,
+     "base_rgba_exact": true
+    }
+   ],
+   "applied_sha256": "e5ec8898ec0705c6b3bc962b3e313a5f71e12281a81dc345b10aac12447a7eb3",
+   "fill": {
+    "retail_consumed": 11524,
+    "encoded_bytes": 11524,
+    "zero_gap_bytes": 0,
+    "minimum_scratch": 100,
+    "opaque_tail_size": 12,
+    "encoder": "greedy"
+   }
+  }
+ ],
+ "refused": [
+  "bermanintro",
+  "coach_desk",
+  "commish01",
+  "enf_logo_wipe",
+  "fullscreen_PlayerOfTheGame_transition",
+  "fullscreen_WipeRedName",
+  "logo_coin_wipe",
+  "media1-3, ticker, glowball, orange_cursor, power_meter, player_photo_a, playerinfopanel, gamecast_2, playcallframe_coachpick, intro",
+  "menus (main_menu, Menubackground, team select, sega logo, sc_logo)",
+  "overlay_wipe",
+  "playercard zframe_trim, zplayers_logo",
+  "propsgamecoin",
+  "replay_wipe ESPN01/ESPN02 letters",
+  "sc_intro",
+  "sc_studio",
+  "snf_logo_wipe"
+ ],
+ "runtime_witnessed": false,
+ "official_marks_pack": {
+  "schema": "nfl2k5_official_marks/v1",
+  "files": [
+   "data/nfl2k5_espn_wipes_boards/redflashy_logo1.png",
+   "data/nfl2k5_espn_wipes_boards/replay_wipe_logo_glow.png",
+   "data/nfl2k5_espn_wipes_boards/scoreboard_sign01.png",
+   "data/nfl2k5_espn_wipes_boards/scoreboard_sign02.png",
+   "playercard_znfl_shield.png"
+  ]
+ }
+}

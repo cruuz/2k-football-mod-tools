@@ -1,0 +1,420 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          30,
+          30,
+          34
+        ],
+        "depth": 0.1,
+        "material": "roof01"
+      },
+      "inset": 0.3,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -15.0,
+          -89.9
+        ],
+        [
+          15.0,
+          -89.9
+        ]
+      ],
+      "width": 28.986,
+      "y": [
+        9.6,
+        17.921
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.25,
+        "colour": [
+          30,
+          30,
+          34
+        ],
+        "depth": 0.1,
+        "material": "roof01"
+      },
+      "inset": 0.3,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -15.0,
+          89.9
+        ],
+        [
+          15.0,
+          89.9
+        ]
+      ],
+      "width": 28.986,
+      "y": [
+        9.6,
+        17.921
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -23.3,
+          -13.9
+        ],
+        "y": [
+          9.5,
+          17.9
+        ],
+        "z_abs": [
+          89.9,
+          91.4
+        ]
+      },
+      "materials": [
+        "ad_bb01",
+        "ad_bb02"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          13.9,
+          23.3
+        ],
+        "y": [
+          9.5,
+          17.9
+        ],
+        "z_abs": [
+          89.9,
+          91.4
+        ]
+      },
+      "materials": [
+        "ad_bb01",
+        "ad_bb02"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -14.0,
+          14.0
+        ],
+        "y": [
+          9.5,
+          17.9
+        ],
+        "z_abs": [
+          89.9,
+          90.0
+        ]
+      },
+      "materials": [
+        "LIGHT_ad_bb01",
+        "ad_bb01",
+        "ad_bb02"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group46"
+    },
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group58"
+    }
+  ],
+  "env": null,
+  "help": "the 2023 end-zone boards, 95.1 x 27.3 ft",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_n",
+    "jumboMarkerCShape": "bk_board_s"
+  },
+  "name": "Northwest Stadium",
+  "panels": [
+    {
+      "name": "bk_band_sides",
+      "parts": [
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -23.22,
+              17.86,
+              -89.93
+            ],
+            [
+              -13.93,
+              17.86,
+              -89.93
+            ],
+            [
+              -13.93,
+              9.57,
+              -89.93
+            ],
+            [
+              -23.22,
+              9.57,
+              -89.93
+            ]
+          ],
+          "toward": [
+            0.0,
+            13.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -23.22,
+              17.86,
+              -89.93
+            ],
+            [
+              -23.22,
+              17.86,
+              -91.39
+            ],
+            [
+              -23.22,
+              9.57,
+              -91.39
+            ],
+            [
+              -23.22,
+              9.57,
+              -89.93
+            ]
+          ],
+          "toward": [
+            -40.0,
+            13.0,
+            -90.66
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              23.22,
+              17.86,
+              -89.93
+            ],
+            [
+              13.93,
+              17.86,
+              -89.93
+            ],
+            [
+              13.93,
+              9.57,
+              -89.93
+            ],
+            [
+              23.22,
+              9.57,
+              -89.93
+            ]
+          ],
+          "toward": [
+            0.0,
+            13.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              23.22,
+              17.86,
+              -89.93
+            ],
+            [
+              23.22,
+              17.86,
+              -91.39
+            ],
+            [
+              23.22,
+              9.57,
+              -91.39
+            ],
+            [
+              23.22,
+              9.57,
+              -89.93
+            ]
+          ],
+          "toward": [
+            40.0,
+            13.0,
+            -90.66
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -23.22,
+              17.86,
+              89.93
+            ],
+            [
+              -13.93,
+              17.86,
+              89.93
+            ],
+            [
+              -13.93,
+              9.57,
+              89.93
+            ],
+            [
+              -23.22,
+              9.57,
+              89.93
+            ]
+          ],
+          "toward": [
+            0.0,
+            13.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              -23.22,
+              17.86,
+              89.93
+            ],
+            [
+              -23.22,
+              17.86,
+              91.39
+            ],
+            [
+              -23.22,
+              9.57,
+              91.39
+            ],
+            [
+              -23.22,
+              9.57,
+              89.93
+            ]
+          ],
+          "toward": [
+            -40.0,
+            13.0,
+            90.66
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              23.22,
+              17.86,
+              89.93
+            ],
+            [
+              13.93,
+              17.86,
+              89.93
+            ],
+            [
+              13.93,
+              9.57,
+              89.93
+            ],
+            [
+              23.22,
+              9.57,
+              89.93
+            ]
+          ],
+          "toward": [
+            0.0,
+            13.0,
+            0.0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour_from": "cement03",
+          "material": "cement03",
+          "quad": [
+            [
+              23.22,
+              17.86,
+              89.93
+            ],
+            [
+              23.22,
+              17.86,
+              91.39
+            ],
+            [
+              23.22,
+              9.57,
+              91.39
+            ],
+            [
+              23.22,
+              9.57,
+              89.93
+            ]
+          ],
+          "toward": [
+            40.0,
+            13.0,
+            90.66
+          ],
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Anthony James Partners (owner's representative), 'Washington Commanders, Northwest Stadium': '(2) Endzone Primary LED Displays: High definition, 8mm LED Display measuring 95.1'W x 27.3'H'; '(4) Game in Progress LED Ribbon Displays: (2 per endzone flanking the main display) ... 31.2'W x 4.4'H'; '(2) Sideline Ribbon Displays ... 3.6'H x 655'W'; the displays debuted 30 July 2023.",
+    "Commons photos of the 9 November 2025 game (the 251109 set) show each end board in the end stands' fascia, NORTHWEST STADIUM over it, between the flanking panels.",
+    "The retail s29 scene (PROVED OFFLINE): each end's fascia band (ad_bb01, x +-23.2, y 9.6 to 17.9, z +-89.9 to 91.4) carries a 9.3 x 7.9 m feed quad (group46 at -z, group58 at +z) beside a lit ad panel; the band is the new board's height (8.3 m), so the boards stand in it, centred, at z +-89.6.",
+    "DESIGN: the frames are dark (roof01 at a dark vertex colour). The 2004 flanking panels beside each board (the band's outer face quads and its end returns, ad_bb01 and ad_bb02: Gatorade, ESPN, ESPN VIDEOGAMES with the flag, ESPN THE MAGAZINE and Reebok) belonged to the housing the 2023 board replaced, so they are cut and the band there is closed in the stand's own fascia material (cement03, the burgundy the band's ends and the end wall carry, at its retail colour), so it recedes like the rest of the end wall; the dark frame stays the board's thin border (main, 2026-09-28).",
+    "Known difference (main, 2026-09-28): the four 31.2 x 4.4 ft Game in Progress ribbons are not placed. The 2025 photos (g026) put them on the club fascia above each board, two flanking the play clock (the retail band at y 29.3 to 30.7), where u4's 2026 venue art already carries plain Commanders type that stands in for them (as Cleveland's sideline ribbons are left out). The sideline ribbons and the upper deck's removed rows also wait.",
+    "The retail band's panels behind each new board (PROVED OFFLINE, st3's coverage sweep with st5's covered_venue_art: group46's ad_bb01 and LIGHT_ad_bb01, group58's ad_bb01, LIGHT_ad_bb01 and ad_bb02, on the band's front plane at z +-89.93, x -13.93 to 13.93, 0.3 m behind the board's face) belonged to the 2004 scoreboard housing, so they are cut too (main's rule, 2026-09-28: a venue-art panel of a replaced housing is cut, not left behind a new surface); the band's top cap stays."
+  ],
+  "team": "WAS",
+  "venue": "s29"
+}

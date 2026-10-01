@@ -1,0 +1,246 @@
+{
+ "registration": {
+  "mnf/frames/frame_000087.png": {
+   "match": 1.0,
+   "scale": 1.0,
+   "ecc": 1.0,
+   "warp": [
+    [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ]
+   ]
+  },
+  "obs/frames/frame_000327.png": {
+   "match": 0.9627,
+   "scale": 0.83,
+   "ecc": 0.8683,
+   "warp": [
+    [
+     0.83128,
+     -0.00129,
+     162.40588
+    ],
+    [
+     -0.00113,
+     0.83411,
+     89.73993
+    ]
+   ]
+  },
+  "obs/frames/frame_000681.png": {
+   "match": 0.9649,
+   "scale": 0.83,
+   "ecc": 0.879,
+   "warp": [
+    [
+     0.83104,
+     -0.00019,
+     162.13713
+    ],
+    [
+     0.00099,
+     0.83316,
+     88.18231
+    ]
+   ]
+  },
+  "obs/frames/frame_002350.png": {
+   "match": 0.966,
+   "scale": 0.75,
+   "ecc": 0.6737,
+   "warp": [
+    [
+     0.75322,
+     8e-05,
+     236.40056
+    ],
+    [
+     -0.00015,
+     0.75408,
+     131.09081
+    ]
+   ]
+  },
+  "obs/frames/frame_002538.png": {
+   "match": 0.9703,
+   "scale": 0.94,
+   "ecc": 0.9914,
+   "warp": [
+    [
+     0.93637,
+     -0.00034,
+     60.9482
+    ],
+    [
+     7e-05,
+     0.93593,
+     35.07683
+    ]
+   ]
+  }
+ },
+ "stinger_frames": [
+  "mnf/frame_000087",
+  "obs/frame_000327",
+  "obs/frame_000681",
+  "obs/frame_002350",
+  "obs/frame_002538"
+ ],
+ "regions": {
+  "espn": [
+   760,
+   250,
+   1170,
+   370
+  ],
+  "nfl": [
+   875,
+   620,
+   1045,
+   835
+  ],
+  "ecc": [
+   700,
+   240,
+   1220,
+   820
+  ]
+ },
+ "wrap": {
+  "triangles": [
+   {
+    "pos": [
+     [
+      -70.419,
+      7.371
+     ],
+     [
+      -70.419,
+      44.921
+     ],
+     [
+      -137.554,
+      44.921
+     ]
+    ],
+    "uv": [
+     [
+      0.9585,
+      0.9677
+     ],
+     [
+      0.9585,
+      -0.998
+     ],
+     [
+      -0.998,
+      -0.998
+     ]
+    ]
+   },
+   {
+    "pos": [
+     [
+      -3.116,
+      19.858
+     ],
+     [
+      -70.419,
+      57.512
+     ],
+     [
+      -70.419,
+      19.858
+     ]
+    ],
+    "uv": [
+     [
+      0.998,
+      0.998
+     ],
+     [
+      -0.9636,
+      -0.9728
+     ],
+     [
+      -0.9636,
+      0.998
+     ]
+    ]
+   }
+  ],
+  "ellipse": {
+   "centre": [
+    -70.62,
+    32.329
+   ],
+   "semi_axes": [
+    37.921,
+    11.992
+   ],
+   "bbox": [
+    -108.62,
+    20.45,
+    -32.62,
+    44.32
+   ]
+  }
+ },
+ "shield_espn": {
+  "silhouette_aspect": 3.9972,
+  "letter_redness_level": 167.0,
+  "colour_rgb": [
+   191,
+   13,
+   19
+  ],
+  "alpha_levels": 32,
+  "display_width_units": 56.574,
+  "display_height_units": 14.154,
+  "display_width_max_units": 60.186,
+  "margin": 0.94,
+  "forward_check": {
+   "iou_at_half_coverage": 0.975,
+   "mean_abs_alpha_error": 0.07,
+   "intended_coverage_outside_triangles": 0.0
+  },
+  "png_sha256": "b89b5f4df374bc23b78f9b284ff4d12cf412e2a89820fe2afa8c3589204fde54",
+  "unique_rgba": 32
+ },
+ "nfl_chiclet": {
+  "shield_box_px": [
+   22,
+   24,
+   148,
+   193
+  ],
+  "shield_size_px": [
+   127,
+   170
+  ],
+  "footprint": [
+   9,
+   2,
+   55,
+   63
+  ],
+  "downsample": 2.702,
+  "plate_navy": [
+   39,
+   82,
+   123
+  ],
+  "rim_luma": 201.3,
+  "background_luma": 10.2,
+  "palette_colours": 48,
+  "png_sha256": "06062f839ceffaccc1b17a35c7a7105c541a72576431be89829bf859122af14f",
+  "unique_rgba": 48
+ }
+}

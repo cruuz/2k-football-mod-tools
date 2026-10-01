@@ -11,10 +11,10 @@
         "#B3995D",
         "#FFFFFF"
       ],
-      "wing": "#C44C4C",
+      "wing": "#FF2323",
       "rim": "#C44C4C",
       "plate": "#C44C4C",
-      "wash": "#C44C4C",
+      "wash": "#FF2323",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -218,6 +218,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#FF2323",
+          "parent": "#AA0000",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.8066,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -253,7 +263,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#AA0000",
+        "sourced": "#C44C4C"
+      }
     },
     "CHI": {
       "slot": 1,
@@ -264,15 +280,15 @@
         "#E64100",
         "#FFFFFF"
       ],
-      "wing": "#545C6A",
-      "rim": "#545C6A",
-      "plate": "#545C6A",
-      "wash": "#545C6A",
+      "wing": "#FB6930",
+      "rim": "#AC3100",
+      "plate": "#AC3100",
+      "wash": "#FB6930",
       "logo_fit": {
-        "fill_x": 0.92,
+        "fill_x": 1.14,
         "height": 1.0,
         "zoom": 0.976,
-        "shift_x": 0.0,
+        "shift_x": 0.046875,
         "shift_y": 0.0
       },
       "review_required": false,
@@ -471,6 +487,17 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#FB6930",
+          "parent": "#E64100",
+          "variant": "broadcast_measured",
+          "contrast_white": 2.9309,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing",
+            "measurement": "reports/b76_sb2/fit.json"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -506,7 +533,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#E64100",
+        "sourced": "#AC3100"
+      }
     },
     "CIN": {
       "slot": 2,
@@ -517,10 +550,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#BC3B0F",
+      "wing": "#E75E2F",
       "rim": "#BC3B0F",
       "plate": "#BC3B0F",
-      "wash": "#BC3B0F",
+      "wash": "#E75E2F",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -724,6 +757,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#E75E2F",
+          "parent": "#FB4F14",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.4769,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -759,7 +802,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#FB4F14",
+        "sourced": "#BC3B0F"
+      }
     },
     "BUF": {
       "slot": 3,
@@ -771,10 +820,10 @@
         "#FFFFFF",
         "#00274D"
       ],
-      "wing": "#00338D",
+      "wing": "#2373FF",
       "rim": "#00338D",
       "plate": "#00338D",
-      "wash": "#00338D",
+      "wash": "#2373FF",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -1043,6 +1092,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#2373FF",
+          "parent": "#00338D",
+          "variant": "broadcast_fitted",
+          "contrast_white": 4.2273,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -1088,7 +1147,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#00338D",
+        "sourced": "#00338D"
+      }
     },
     "DEN": {
       "slot": 4,
@@ -1099,10 +1164,10 @@
         "#0A2343",
         "#FFFFFF"
       ],
-      "wing": "#1E69C9",
+      "wing": "#458AF5",
       "rim": "#1E69C9",
       "plate": "#1E69C9",
-      "wash": "#1E69C9",
+      "wash": "#458AF5",
       "logo_fit": {
         "fill_x": 0.86,
         "height": 1.0,
@@ -1318,6 +1383,16 @@
             "white_label": "pass",
             "signature": true
           }
+        },
+        "broadcast_display": {
+          "hex": "#458AF5",
+          "parent": "#0A2343",
+          "variant": "broadcast_measured",
+          "contrast_white": 3.3833,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -1353,7 +1428,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#0A2343",
+        "sourced": "#1E69C9"
+      }
     },
     "CLE": {
       "slot": 5,
@@ -1364,10 +1445,10 @@
         "#FF3C00",
         "#FFFFFF"
       ],
-      "wing": "#6F614C",
+      "wing": "#C47E18",
       "rim": "#6F614C",
       "plate": "#6F614C",
-      "wash": "#6F614C",
+      "wash": "#C47E18",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -1571,6 +1652,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#C47E18",
+          "parent": "#311D00",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.3099,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -1606,7 +1697,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#311D00",
+        "sourced": "#6F614C"
+      }
     },
     "TB": {
       "slot": 6,
@@ -1619,10 +1716,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#A71930",
+      "wing": "#F6415F",
       "rim": "#A71930",
       "plate": "#A71930",
-      "wash": "#A71930",
+      "wash": "#F6415F",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -1956,6 +2053,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#F6415F",
+          "parent": "#A71930",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.5959,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -2011,7 +2118,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#A71930",
+        "sourced": "#A71930"
+      }
     },
     "ARI": {
       "slot": 7,
@@ -2022,10 +2135,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#97233F",
+      "wing": "#EB4F74",
       "rim": "#4C1220",
       "plate": "#97233F",
-      "wash": "#97233F",
+      "wash": "#EB4F74",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -2229,6 +2342,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#EB4F74",
+          "parent": "#97233F",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.5575,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -2264,7 +2387,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#97233F",
+        "sourced": "#97233F"
+      }
     },
     "LAC": {
       "slot": 8,
@@ -2276,10 +2405,10 @@
         "#FFFFFF",
         "#001532"
       ],
-      "wing": "#006094",
+      "wing": "#1D98DC",
       "rim": "#006094",
       "plate": "#006094",
-      "wash": "#006094",
+      "wash": "#1D98DC",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -2548,6 +2677,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#1D98DC",
+          "parent": "#0080C6",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1929,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -2593,7 +2732,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#0080C6",
+        "sourced": "#006094"
+      }
     },
     "KC": {
       "slot": 9,
@@ -2604,10 +2749,10 @@
         "#FFB612",
         "#FFFFFF"
       ],
-      "wing": "#E31837",
+      "wing": "#FF2866",
       "rim": "#E31837",
       "plate": "#E31837",
-      "wash": "#E31837",
+      "wash": "#FF2866",
       "logo_fit": {
         "fill_x": 0.9,
         "height": 1.0,
@@ -2811,6 +2956,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#FF2866",
+          "parent": "#E31837",
+          "variant": "broadcast_measured",
+          "contrast_white": 3.6538,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -2846,7 +3001,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#E31837",
+        "sourced": "#E31837"
+      }
     },
     "IND": {
       "slot": 10,
@@ -2858,10 +3019,10 @@
         "#A5ACAF",
         "#1D252C"
       ],
-      "wing": "#013369",
+      "wing": "#258EFF",
       "rim": "#013369",
       "plate": "#013369",
-      "wash": "#013369",
+      "wash": "#258EFF",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -3130,6 +3291,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#258EFF",
+          "parent": "#013369",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2854,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -3175,7 +3346,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#013369",
+        "sourced": "#013369"
+      }
     },
     "DAL": {
       "slot": 11,
@@ -3188,10 +3365,10 @@
         "#7F9695",
         "#FFFFFF"
       ],
-      "wing": "#264360",
+      "wing": "#2390FC",
       "rim": "#264360",
       "plate": "#264360",
-      "wash": "#264360",
+      "wash": "#2390FC",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -3525,6 +3702,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#2390FC",
+          "parent": "#002244",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2475,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -3580,7 +3767,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#002244",
+        "sourced": "#264360"
+      }
     },
     "MIA": {
       "slot": 12,
@@ -3591,10 +3784,10 @@
         "#FC4C02",
         "#FFFFFF"
       ],
-      "wing": "#006A71",
+      "wing": "#14A2AB",
       "rim": "#006A71",
       "plate": "#006A71",
-      "wash": "#006A71",
+      "wash": "#14A2AB",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -3798,6 +3991,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#14A2AB",
+          "parent": "#008E97",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.0946,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -3833,7 +4036,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#008E97",
+        "sourced": "#006A71"
+      }
     },
     "PHI": {
       "slot": 13,
@@ -3845,15 +4054,15 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#26636B",
+      "wing": "#1FB0C4",
       "rim": "#26636B",
       "plate": "#26636B",
-      "wash": "#26636B",
+      "wash": "#1FB0C4",
       "logo_fit": {
-        "fill_x": 0.92,
+        "fill_x": 1.02,
         "height": 1.0,
         "zoom": 0.976,
-        "shift_x": 0.0,
+        "shift_x": -0.015625,
         "shift_y": 0.0
       },
       "review_required": false,
@@ -4117,6 +4326,17 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#1FB0C4",
+          "parent": "#004851",
+          "variant": "broadcast_measured",
+          "contrast_white": 2.6037,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing",
+            "measurement": "reports/b76_sb2/fit.json"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -4162,7 +4382,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#004851",
+        "sourced": "#26636B"
+      }
     },
     "ATL": {
       "slot": 14,
@@ -4174,10 +4400,10 @@
         "#A5ACAF",
         "#FFFFFF"
       ],
-      "wing": "#B43C4F",
+      "wing": "#F6415F",
       "rim": "#B43C4F",
       "plate": "#B43C4F",
-      "wash": "#B43C4F",
+      "wash": "#F6415F",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -4446,6 +4672,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#F6415F",
+          "parent": "#A71930",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.5959,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -4491,7 +4727,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#A71930",
+        "sourced": "#B43C4F"
+      }
     },
     "NYG": {
       "slot": 15,
@@ -4502,15 +4744,15 @@
         "#A71930",
         "#FFFFFF"
       ],
-      "wing": "#0B2265",
+      "wing": "#3567FF",
       "rim": "#0B2265",
       "plate": "#0B2265",
-      "wash": "#0B2265",
+      "wash": "#3567FF",
       "logo_fit": {
-        "fill_x": 0.92,
+        "fill_x": 1.14,
         "height": 1.0,
-        "zoom": 0.976,
-        "shift_x": 0.0,
+        "zoom": 0.953,
+        "shift_x": -0.0156,
         "shift_y": 0.0
       },
       "review_required": true,
@@ -4709,6 +4951,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#3567FF",
+          "parent": "#0B2265",
+          "variant": "broadcast_measured",
+          "contrast_white": 4.6302,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -4744,7 +4996,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#0B2265",
+        "sourced": "#0B2265"
+      }
     },
     "JAX": {
       "slot": 16,
@@ -4757,10 +5015,10 @@
         "#9F792C",
         "#FFFFFF"
       ],
-      "wing": "#267E8C",
+      "wing": "#16A0B7",
       "rim": "#267E8C",
       "plate": "#267E8C",
-      "wash": "#267E8C",
+      "wash": "#16A0B7",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -5094,6 +5352,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#16A0B7",
+          "parent": "#006778",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1129,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -5149,7 +5417,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#006778",
+        "sourced": "#267E8C"
+      }
     },
     "NYJ": {
       "slot": 17,
@@ -5160,10 +5434,10 @@
         "#FFFFFF",
         "#000000"
       ],
-      "wing": "#35705D",
+      "wing": "#30A67F",
       "rim": "#35705D",
       "plate": "#35705D",
-      "wash": "#35705D",
+      "wash": "#30A67F",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -5367,6 +5641,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#30A67F",
+          "parent": "#115740",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.0494,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -5402,7 +5686,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#115740",
+        "sourced": "#35705D"
+      }
     },
     "DET": {
       "slot": 18,
@@ -5414,10 +5704,10 @@
         "#FFFFFF",
         "#000000"
       ],
-      "wing": "#0076B6",
+      "wing": "#1D99DC",
       "rim": "#0076B6",
       "plate": "#0076B6",
-      "wash": "#0076B6",
+      "wash": "#1D99DC",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -5686,6 +5976,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#1D99DC",
+          "parent": "#0076B6",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1616,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -5731,7 +6031,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#0076B6",
+        "sourced": "#0076B6"
+      }
     },
     "GB": {
       "slot": 19,
@@ -5742,10 +6048,10 @@
         "#FFB612",
         "#FFFFFF"
       ],
-      "wing": "#203731",
+      "wing": "#629D8D",
       "rim": "#63736F",
       "plate": "#63736F",
-      "wash": "#203731",
+      "wash": "#629D8D",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -5949,6 +6255,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#629D8D",
+          "parent": "#203731",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1219,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -5984,7 +6300,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#203731",
+        "sourced": "#203731"
+      }
     },
     "CAR": {
       "slot": 20,
@@ -5995,10 +6317,10 @@
         "#000000",
         "#B2B4BB"
       ],
-      "wing": "#00649B",
+      "wing": "#1D98DD",
       "rim": "#00649B",
       "plate": "#00649B",
-      "wash": "#00649B",
+      "wash": "#1D98DD",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -6202,6 +6524,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#1D98DD",
+          "parent": "#0085CF",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1878,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -6237,7 +6569,13 @@
           "dispute_severity": "noticeable"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#0085CF",
+        "sourced": "#00649B"
+      }
     },
     "NE": {
       "slot": 21,
@@ -6249,10 +6587,10 @@
         "#B0B7BC",
         "#FFFFFF"
       ],
-      "wing": "#264360",
+      "wing": "#2390FC",
       "rim": "#264360",
       "plate": "#264360",
-      "wash": "#264360",
+      "wash": "#2390FC",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -6521,6 +6859,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#2390FC",
+          "parent": "#002244",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2475,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -6566,7 +6914,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#002244",
+        "sourced": "#264360"
+      }
     },
     "LV": {
       "slot": 22,
@@ -6577,10 +6931,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#646464",
+      "wing": "#FFFFFF",
       "rim": "#646464",
       "plate": "#646464",
-      "wash": "#646464",
+      "wash": "#FFFFFF",
       "logo_fit": {
         "fill_x": 1.0,
         "height": 1.0,
@@ -6784,6 +7138,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#FFFFFF",
+          "parent": "#C8C7C7",
+          "variant": "broadcast_measured",
+          "contrast_white": 1.0,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -6819,7 +7183,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#C8C7C7",
+        "sourced": "#646464"
+      }
     },
     "LAR": {
       "slot": 23,
@@ -6830,15 +7200,15 @@
         "#FFD100",
         "#FFFFFF"
       ],
-      "wing": "#003594",
+      "wing": "#317BFF",
       "rim": "#003594",
       "plate": "#003594",
-      "wash": "#003594",
+      "wash": "#317BFF",
       "logo_fit": {
-        "fill_x": 0.92,
+        "fill_x": 1.1,
         "height": 1.0,
-        "zoom": 0.976,
-        "shift_x": 0.0,
+        "zoom": 0.953,
+        "shift_x": 0.0469,
         "shift_y": 0.0
       },
       "review_required": true,
@@ -7037,6 +7407,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#317BFF",
+          "parent": "#003594",
+          "variant": "broadcast_measured",
+          "contrast_white": 3.8833,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -7072,7 +7452,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#003594",
+        "sourced": "#003594"
+      }
     },
     "BAL": {
       "slot": 24,
@@ -7084,10 +7470,10 @@
         "#9A7611",
         "#FFFFFF"
       ],
-      "wing": "#665A8F",
+      "wing": "#774FFF",
       "rim": "#665A8F",
       "plate": "#665A8F",
-      "wash": "#665A8F",
+      "wash": "#774FFF",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -7356,6 +7742,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#774FFF",
+          "parent": "#24135F",
+          "variant": "broadcast_fitted",
+          "contrast_white": 4.8312,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -7401,7 +7797,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#24135F",
+        "sourced": "#665A8F"
+      }
     },
     "WAS": {
       "slot": 25,
@@ -7413,10 +7815,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#8C5A5A",
+      "wing": "#F04F4F",
       "rim": "#8C5A5A",
       "plate": "#8C5A5A",
-      "wash": "#8C5A5A",
+      "wash": "#F04F4F",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -7685,6 +8087,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#F04F4F",
+          "parent": "#5A1414",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.5375,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -7730,7 +8142,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#5A1414",
+        "sourced": "#8C5A5A"
+      }
     },
     "NO": {
       "slot": 26,
@@ -7741,10 +8159,10 @@
         "#000000",
         "#FFFFFF"
       ],
-      "wing": "#6A5E46",
+      "wing": "#9D8D6E",
       "rim": "#6A5E46",
       "plate": "#6A5E46",
-      "wash": "#6A5E46",
+      "wash": "#9D8D6E",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -7948,6 +8366,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#9D8D6E",
+          "parent": "#D3BC8D",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2464,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -7983,7 +8411,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#D3BC8D",
+        "sourced": "#6A5E46"
+      }
     },
     "SEA": {
       "slot": 27,
@@ -7995,10 +8429,10 @@
         "#A5ACAF",
         "#FFFFFF"
       ],
-      "wing": "#4C647C",
+      "wing": "#2390FC",
       "rim": "#4C647C",
       "plate": "#4C647C",
-      "wash": "#4C647C",
+      "wash": "#2390FC",
       "logo_fit": {
         "fill_x": 1.02,
         "height": 1.0,
@@ -8267,6 +8701,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#2390FC",
+          "parent": "#002244",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2475,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -8312,7 +8756,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#002244",
+        "sourced": "#4C647C"
+      }
     },
     "PIT": {
       "slot": 28,
@@ -8323,10 +8773,10 @@
         "#FFB612",
         "#FFFFFF"
       ],
-      "wing": "#805B09",
+      "wing": "#B48721",
       "rim": "#805B09",
       "plate": "#805B09",
-      "wash": "#805B09",
+      "wash": "#B48721",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -8530,6 +8980,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#B48721",
+          "parent": "#FFB612",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.2669,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -8565,7 +9025,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#FFB612",
+        "sourced": "#805B09"
+      }
     },
     "HOU": {
       "slot": 29,
@@ -8577,10 +9043,10 @@
         "#FFFFFF",
         "#0080C6"
       ],
-      "wing": "#EB0028",
+      "wing": "#FF1554",
       "rim": "#EB0028",
       "plate": "#EB0028",
-      "wash": "#EB0028",
+      "wash": "#FF1554",
       "logo_fit": {
         "fill_x": 1.04,
         "height": 1.0,
@@ -8849,6 +9315,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#FF1554",
+          "parent": "#EB0028",
+          "variant": "broadcast_measured",
+          "contrast_white": 3.827,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -8894,7 +9370,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "measured",
+        "parent": "#EB0028",
+        "sourced": "#EB0028"
+      }
     },
     "TEN": {
       "slot": 30,
@@ -8906,10 +9388,10 @@
         "#FFFFFF",
         "#0C2340"
       ],
-      "wing": "#33709E",
+      "wing": "#5296C9",
       "rim": "#33709E",
       "plate": "#33709E",
-      "wash": "#33709E",
+      "wash": "#5296C9",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -9178,6 +9660,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#5296C9",
+          "parent": "#4495D2",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.1989,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -9223,7 +9715,13 @@
           "dispute_severity": "noticeable"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#4495D2",
+        "sourced": "#33709E"
+      }
     },
     "MIN": {
       "slot": 31,
@@ -9234,10 +9732,10 @@
         "#FFC62F",
         "#FFFFFF"
       ],
-      "wing": "#4F2683",
+      "wing": "#A863FF",
       "rim": "#281342",
       "plate": "#281342",
-      "wash": "#4F2683",
+      "wash": "#A863FF",
       "logo_fit": {
         "fill_x": 0.92,
         "height": 1.0,
@@ -9441,6 +9939,16 @@
             "plate_separation": "unknown_until_paired",
             "signature": false
           }
+        },
+        "broadcast_display": {
+          "hex": "#A863FF",
+          "parent": "#4F2683",
+          "variant": "broadcast_fitted",
+          "contrast_white": 3.5631,
+          "facts": {
+            "role": "wing and wash only",
+            "label": "no label is drawn over the wing"
+          }
         }
       },
       "palette_source_sha256": "e10e27efc9168506cad0c5b0a2558fa3959e8a0e353ca06894e2baa11dbbcee4",
@@ -9476,7 +9984,13 @@
           "dispute_severity": "none"
         }
       ],
-      "kind": 0
+      "kind": 0,
+      "display": {
+        "class": "broadcast",
+        "source": "fitted",
+        "parent": "#4F2683",
+        "sourced": "#4F2683"
+      }
     },
     "USER1": {
       "slot": 32,
@@ -12707,5 +13221,13 @@
     }
   ],
   "custom_rule": "Use the configured team primary and secondary with the same variant/contrast gate. Until supplied, neutral charcoal/silver. Never borrow another team hue.",
-  "limitation": "Extra slots have independent code/kind tint binding and neutral logos when no NFL asset exists."
+  "limitation": "Extra slots have independent code/kind tint binding and neutral logos when no NFL asset exists.",
+  "display_layer": {
+    "file": "broadcast_display.json",
+    "roles": [
+      "wing",
+      "wash"
+    ],
+    "rule": "Wing and wash carry the broadcast display shade; rim and plate keep the sourced accents."
+  }
 }

@@ -1,0 +1,5930 @@
+{
+ "schema": "b76-s12-author-steps/v1",
+ "metric": "reports/b76_s12/player_scale.py: s10/s11 feature occupancy residual, mean player px over NYG-LAR q1 and q4, both aspects (lower is better)",
+ "guard": "reports/b72_s11/player_scale.py unchanged on its two recorded reference frames (DEN at KC s_00724.jpg, LV at HOU frame_005000.jpg; sha256 match). Those broadcasts were not re-harvested this pass.",
+ "rule": "A step is kept when its targeted s12 features fall and no other s12 feature rises by more than 2 player px (the metric's own visibility floor; P8 atlas re-quantization moves unrelated features by 1 to 2 px).",
+ "base": {
+  "state": "beta 75.1 (3dd4087d5)",
+  "s12": {
+   "wing_colour": 2073.5,
+   "logo": 3155.5,
+   "score": 168.25,
+   "down_capsule": 574.5,
+   "housing_rim": 508.0,
+   "pill": 349.25
+  },
+  "s11_guard": {
+   "wing_colour": 1501.0,
+   "logo": 1931.75,
+   "score": 16.75,
+   "down_capsule": 670.25,
+   "housing_rim": 899.5,
+   "pill": 429.5
+  }
+ },
+ "accepted_steps": [
+  "marks",
+  "fits",
+  "wing",
+  "housing",
+  "tray"
+ ],
+ "final": {
+  "s12": {
+   "wing_colour": 1099.75,
+   "logo": 1235.5,
+   "score": 167.5,
+   "down_capsule": 555.0,
+   "housing_rim": 161.5,
+   "pill": 350.5
+  },
+  "s11_guard": {
+   "wing_colour": 1311.25,
+   "logo": 1931.25,
+   "score": 16.75,
+   "down_capsule": 611.25,
+   "housing_rim": 691.75,
+   "pill": 421.75
+  }
+ },
+ "recorded_s11_final": {
+  "logo": 1931.75,
+  "wing_colour": 1502.5,
+  "housing_rim": 899.5,
+  "down_capsule": 669.5,
+  "pill": 431.0,
+  "score": 16.75
+ },
+ "fit_search": {
+  "method": "reports/b76_s12 fit trials: rendered 1920x1080 q4 frame, marks measured with the broadcast ink predicates, record strips excluded",
+  "targets": {
+   "nyg_white": [
+    464,
+    945,
+    631,
+    1048
+   ],
+   "nyg_outer": [
+    462,
+    944,
+    636,
+    1048
+   ],
+   "lar_gold": [
+    1283,
+    944,
+    1462,
+    1048
+   ]
+  },
+  "trials": {
+   "outside_keyline": [
+    {
+     "nyg_white": [
+      469,
+      946,
+      628,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      944,
+      631,
+      1049
+     ],
+     "nyg_white_px": 11008,
+     "nyg_all_px": 14473,
+     "lar_gold": [
+      1281,
+      944,
+      1456,
+      1049
+     ],
+     "lar_gold_px": 8424,
+     "delta": {
+      "nyg_white": [
+       5,
+       1,
+       -3,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       0,
+       -5,
+       1
+      ],
+      "lar_gold": [
+       -2,
+       0,
+       -6,
+       1
+      ]
+     },
+     "nyg": [
+      1.1,
+      -0.015625
+     ],
+     "lar": [
+      1.08,
+      0.03125
+     ]
+    },
+    {
+     "nyg_white": [
+      473,
+      946,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      470,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 10982,
+     "nyg_all_px": 14524,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       9,
+       1,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       8,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.1,
+      0.0
+     ],
+     "lar": [
+      1.08,
+      0.046875
+     ]
+    },
+    {
+     "nyg_white": [
+      465,
+      946,
+      628,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      631,
+      1049
+     ],
+     "nyg_white_px": 11278,
+     "nyg_all_px": 14831,
+     "lar_gold": [
+      1281,
+      944,
+      1456,
+      1049
+     ],
+     "lar_gold_px": 8424,
+     "delta": {
+      "nyg_white": [
+       1,
+       1,
+       -3,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       -5,
+       1
+      ],
+      "lar_gold": [
+       -2,
+       0,
+       -6,
+       1
+      ]
+     },
+     "nyg": [
+      1.12,
+      -0.015625
+     ],
+     "lar": [
+      1.1,
+      0.03125
+     ]
+    },
+    {
+     "nyg_white": [
+      469,
+      946,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 11323,
+     "nyg_all_px": 14891,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       5,
+       1,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.12,
+      0.0
+     ],
+     "lar": [
+      1.1,
+      0.046875
+     ]
+    },
+    {
+     "nyg_white": [
+      465,
+      946,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 11514,
+     "nyg_all_px": 15125,
+     "lar_gold": [
+      1281,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8590,
+     "delta": {
+      "nyg_white": [
+       1,
+       1,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       -2,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.14,
+      -0.015625
+     ],
+     "lar": [
+      1.12,
+      0.03125
+     ]
+    },
+    {
+     "nyg_white": [
+      469,
+      946,
+      635,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      944,
+      639,
+      1049
+     ],
+     "nyg_white_px": 11603,
+     "nyg_all_px": 15257,
+     "lar_gold": [
+      1284,
+      944,
+      1464,
+      1049
+     ],
+     "lar_gold_px": 8613,
+     "delta": {
+      "nyg_white": [
+       5,
+       1,
+       4,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       0,
+       3,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       2,
+       1
+      ]
+     },
+     "nyg": [
+      1.14,
+      0.0
+     ],
+     "lar": [
+      1.12,
+      0.046875
+     ]
+    },
+    {
+     "nyg_white": [
+      465,
+      946,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 11514,
+     "nyg_all_px": 15125,
+     "lar_gold": [
+      1277,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8766,
+     "delta": {
+      "nyg_white": [
+       1,
+       1,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       -6,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.16,
+      -0.015625
+     ],
+     "lar": [
+      1.14,
+      0.03125
+     ]
+    },
+    {
+     "nyg_white": [
+      469,
+      946,
+      635,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      944,
+      639,
+      1049
+     ],
+     "nyg_white_px": 11603,
+     "nyg_all_px": 15257,
+     "lar_gold": [
+      1281,
+      944,
+      1464,
+      1049
+     ],
+     "lar_gold_px": 8766,
+     "delta": {
+      "nyg_white": [
+       5,
+       1,
+       4,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       0,
+       3,
+       1
+      ],
+      "lar_gold": [
+       -2,
+       0,
+       2,
+       1
+      ]
+     },
+     "nyg": [
+      1.16,
+      0.0
+     ],
+     "lar": [
+      1.14,
+      0.046875
+     ]
+    }
+   ],
+   "inside_keyline": [
+    {
+     "nyg_white": [
+      466,
+      947,
+      627,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      943,
+      631,
+      1049
+     ],
+     "nyg_white_px": 9251,
+     "nyg_all_px": 13023,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       2,
+       2,
+       -4,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       -1,
+       -5,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.12,
+      -0.015625
+     ]
+    },
+    {
+     "nyg_white": [
+      469,
+      947,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      943,
+      635,
+      1049
+     ],
+     "nyg_white_px": 9272,
+     "nyg_all_px": 12946,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       5,
+       2,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       -1,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.12,
+      0.0
+     ]
+    },
+    {
+     "nyg_white": [
+      466,
+      946,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 9521,
+     "nyg_all_px": 13287,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       2,
+       1,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.14,
+      -0.015625
+     ]
+    },
+    {
+     "nyg_white": [
+      469,
+      946,
+      635,
+      1046
+     ],
+     "nyg_outer": [
+      466,
+      944,
+      639,
+      1049
+     ],
+     "nyg_white_px": 9462,
+     "nyg_all_px": 13270,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       5,
+       1,
+       4,
+       -2
+      ],
+      "nyg_outer": [
+       4,
+       0,
+       3,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.14,
+      0.0
+     ]
+    },
+    {
+     "nyg_white": [
+      462,
+      947,
+      631,
+      1046
+     ],
+     "nyg_outer": [
+      459,
+      944,
+      635,
+      1049
+     ],
+     "nyg_white_px": 9724,
+     "nyg_all_px": 13506,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       -2,
+       2,
+       0,
+       -2
+      ],
+      "nyg_outer": [
+       -3,
+       0,
+       -1,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.16,
+      -0.015625
+     ]
+    },
+    {
+     "nyg_white": [
+      466,
+      947,
+      635,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      639,
+      1049
+     ],
+     "nyg_white_px": 9666,
+     "nyg_all_px": 13609,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       2,
+       2,
+       4,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       3,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.16,
+      0.0
+     ]
+    },
+    {
+     "nyg_white": [
+      462,
+      947,
+      634,
+      1046
+     ],
+     "nyg_outer": [
+      459,
+      944,
+      639,
+      1049
+     ],
+     "nyg_white_px": 9877,
+     "nyg_all_px": 13840,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       -2,
+       2,
+       3,
+       -2
+      ],
+      "nyg_outer": [
+       -3,
+       0,
+       3,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.18,
+      -0.015625
+     ]
+    },
+    {
+     "nyg_white": [
+      466,
+      947,
+      638,
+      1046
+     ],
+     "nyg_outer": [
+      462,
+      944,
+      642,
+      1049
+     ],
+     "nyg_white_px": 9827,
+     "nyg_all_px": 13857,
+     "lar_gold": [
+      1284,
+      944,
+      1460,
+      1049
+     ],
+     "lar_gold_px": 8426,
+     "delta": {
+      "nyg_white": [
+       2,
+       2,
+       7,
+       -2
+      ],
+      "nyg_outer": [
+       0,
+       0,
+       6,
+       1
+      ],
+      "lar_gold": [
+       1,
+       0,
+       -2,
+       1
+      ]
+     },
+     "nyg": [
+      1.18,
+      0.0
+     ]
+    }
+   ]
+  }
+ },
+ "trials": [
+  {
+   "trial": "marks_outside_only",
+   "steps": null,
+   "params": null,
+   "s12": {
+    "wing_colour": 1631.75,
+    "logo": 2887.0,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 509.0,
+    "pill": 349.25
+   },
+   "s11_guard": null,
+   "decision": "superseded",
+   "note": "Outside keyline, beta 75.1 fits; s12 only. Replaced by the inside keyline."
+  },
+  {
+   "trial": "marks_inside_only",
+   "steps": [
+    "marks"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "tray": {
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ]
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      37,
+      45,
+      70,
+      100,
+      95,
+      35
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22,
+     "rim_bottom": false
+    }
+   },
+   "s12": {
+    "wing_colour": 1795.25,
+    "logo": 2414.5,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 505.0,
+    "pill": 349.25
+   },
+   "s11_guard": {
+    "wing_colour": 1501.0,
+    "logo": 1931.75,
+    "score": 16.75,
+    "down_capsule": 670.25,
+    "housing_rim": 899.5,
+    "pill": 429.5
+   },
+   "decision": "measured",
+   "note": "Marks alone (inside keyline) at the beta 75.1 fits."
+  },
+  {
+   "trial": "marks_fits_outside_keyline",
+   "steps": [
+    "marks",
+    "fits"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "outside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.015625,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.046875,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1498.75,
+    "logo": 1723.0,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 500.5,
+    "pill": 349.25
+   },
+   "s11_guard": null,
+   "decision": "rejected",
+   "note": "Outside keyline at its best fit: logo 1723.0 against 1233.5 for the inside keyline."
+  },
+  {
+   "trial": "marks_fits_inside_keyline",
+   "steps": [
+    "marks",
+    "fits"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.015625,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.046875,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1635.75,
+    "logo": 1233.5,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 503.0,
+    "pill": 349.25
+   },
+   "s11_guard": null,
+   "decision": "accepted",
+   "note": "Inside keyline, NYG fill_x 1.14, LAR fill_x 1.10."
+  },
+  {
+   "trial": "marks_fits_inside_lar_1.12",
+   "steps": [
+    "marks",
+    "fits"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.015625,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.12,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.046875,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1650.5,
+    "logo": 1233.5,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 503.0,
+    "pill": 349.25
+   },
+   "s11_guard": null,
+   "decision": "rejected",
+   "note": "LAR fill_x 1.12: wing +14.75 against 1.10."
+  },
+  {
+   "trial": "marks_fits (with guard)",
+   "steps": [
+    "marks",
+    "fits"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1635.75,
+    "logo": 1233.5,
+    "score": 168.25,
+    "down_capsule": 574.5,
+    "housing_rim": 503.0,
+    "pill": 349.25
+   },
+   "s11_guard": {
+    "wing_colour": 1501.0,
+    "logo": 1931.75,
+    "score": 16.75,
+    "down_capsule": 670.25,
+    "housing_rim": 899.5,
+    "pill": 429.5
+   },
+   "decision": "accepted",
+   "note": "Accepted marks and fits, measured with the s11 guard."
+  },
+  {
+   "trial": "wing_W0_fit",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1145.0,
+    "logo": 1235.5,
+    "score": 170.25,
+    "down_capsule": 574.5,
+    "housing_rim": 502.25,
+    "pill": 350.25
+   },
+   "s11_guard": {
+    "wing_colour": 1454.5,
+    "logo": 1927.0,
+    "score": 15.75,
+    "down_capsule": 670.5,
+    "housing_rim": 914.0,
+    "pill": 431.5
+   },
+   "decision": "rejected",
+   "note": "Joint fit as measured (a2 0.838)."
+  },
+  {
+   "trial": "wing_W1_g07",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 0.7,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1663.0,
+    "logo": 1235.5,
+    "score": 167.25,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 351.0
+   },
+   "s11_guard": {
+    "wing_colour": 1955.5,
+    "logo": 1929.25,
+    "score": 15.75,
+    "down_capsule": 669.0,
+    "housing_rim": 906.0,
+    "pill": 429.0
+   },
+   "decision": "rejected",
+   "note": "Coverage raised to the power 0.7."
+  },
+  {
+   "trial": "wing_W2_g13",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.3,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1304.0,
+    "logo": 1235.5,
+    "score": 169.25,
+    "down_capsule": 575.0,
+    "housing_rim": 501.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1413.75,
+    "logo": 1930.75,
+    "score": 16.75,
+    "down_capsule": 671.0,
+    "housing_rim": 921.5,
+    "pill": 429.25
+   },
+   "decision": "rejected",
+   "note": "Coverage raised to the power 1.3."
+  },
+  {
+   "trial": "wing_W3_a3_075",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 0.75,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1118.0,
+    "logo": 1235.5,
+    "score": 169.5,
+    "down_capsule": 574.0,
+    "housing_rim": 502.0,
+    "pill": 348.75
+   },
+   "s11_guard": {
+    "wing_colour": 1478.5,
+    "logo": 1928.25,
+    "score": 15.75,
+    "down_capsule": 669.75,
+    "housing_rim": 917.5,
+    "pill": 432.0
+   },
+   "decision": "rejected",
+   "note": "Bottom band 0.75."
+  },
+  {
+   "trial": "wing_W4_a2_06",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1101.5,
+    "logo": 1235.5,
+    "score": 169.75,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.25
+   },
+   "s11_guard": {
+    "wing_colour": 1313.25,
+    "logo": 1930.25,
+    "score": 16.75,
+    "down_capsule": 669.25,
+    "housing_rim": 916.0,
+    "pill": 430.25
+   },
+   "decision": "accepted",
+   "note": "Top glow 0.60."
+  },
+  {
+   "trial": "wing_W5_d1_55",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 55,
+     "v1": 0.2879,
+     "a2": 0.8381,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1253.25,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 575.0,
+    "housing_rim": 502.0,
+    "pill": 348.5
+   },
+   "s11_guard": {
+    "wing_colour": 1466.75,
+    "logo": 1929.0,
+    "score": 16.75,
+    "down_capsule": 670.0,
+    "housing_rim": 909.5,
+    "pill": 431.5
+   },
+   "decision": "rejected",
+   "note": "Edge decay 55."
+  },
+  {
+   "trial": "wing_W6_a2_06_a3_075",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 0.75,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1101.5,
+    "logo": 1235.5,
+    "score": 169.5,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.75
+   },
+   "s11_guard": {
+    "wing_colour": 1312.25,
+    "logo": 1930.5,
+    "score": 16.75,
+    "down_capsule": 669.25,
+    "housing_rim": 919.5,
+    "pill": 429.75
+   },
+   "decision": "rejected",
+   "note": "Top 0.60, bottom 0.75."
+  },
+  {
+   "trial": "wing_W7_a2_06_a3_04",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 0.4,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1111.5,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.25
+   },
+   "s11_guard": {
+    "wing_colour": 1303.5,
+    "logo": 1930.5,
+    "score": 16.75,
+    "down_capsule": 669.75,
+    "housing_rim": 920.5,
+    "pill": 430.5
+   },
+   "decision": "rejected",
+   "note": "Top 0.60, bottom 0.40."
+  },
+  {
+   "trial": "wing_W8_a2_05_a3_075",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.5,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 0.75,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1248.5,
+    "logo": 1235.5,
+    "score": 169.5,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1218.25,
+    "logo": 1932.75,
+    "score": 16.75,
+    "down_capsule": 669.5,
+    "housing_rim": 918.25,
+    "pill": 431.0
+   },
+   "decision": "rejected",
+   "note": "Top 0.50, bottom 0.75."
+  },
+  {
+   "trial": "wing_W9_a2_045",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.45,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1325.25,
+    "logo": 1235.5,
+    "score": 169.25,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.75
+   },
+   "s11_guard": {
+    "wing_colour": 1163.5,
+    "logo": 1933.0,
+    "score": 16.75,
+    "down_capsule": 669.75,
+    "housing_rim": 901.0,
+    "pill": 431.75
+   },
+   "decision": "rejected",
+   "note": "Top 0.45."
+  },
+  {
+   "trial": "wing_W10_a2_055",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.55,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1140.5,
+    "logo": 1235.5,
+    "score": 170.25,
+    "down_capsule": 575.0,
+    "housing_rim": 501.0,
+    "pill": 349.75
+   },
+   "s11_guard": {
+    "wing_colour": 1271.0,
+    "logo": 1931.75,
+    "score": 16.75,
+    "down_capsule": 669.75,
+    "housing_rim": 914.75,
+    "pill": 430.25
+   },
+   "decision": "rejected",
+   "note": "Top 0.55."
+  },
+  {
+   "trial": "wing_W11_a2_065",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.65,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1089.0,
+    "logo": 1235.5,
+    "score": 169.5,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.5
+   },
+   "s11_guard": {
+    "wing_colour": 1349.0,
+    "logo": 1930.0,
+    "score": 16.75,
+    "down_capsule": 669.5,
+    "housing_rim": 915.0,
+    "pill": 430.75
+   },
+   "decision": "rejected",
+   "note": "Top 0.65."
+  },
+  {
+   "trial": "wing_W12_a2_06_d2_10",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 10,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1365.25,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 575.0,
+    "housing_rim": 501.0,
+    "pill": 350.25
+   },
+   "s11_guard": {
+    "wing_colour": 1258.5,
+    "logo": 1932.0,
+    "score": 16.75,
+    "down_capsule": 670.0,
+    "housing_rim": 910.75,
+    "pill": 430.0
+   },
+   "decision": "rejected",
+   "note": "Top 0.60 over 10 rows."
+  },
+  {
+   "trial": "wing_W13_a2_06_d2_18",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 18,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      250,
+      255,
+      244,
+      240,
+      240,
+      236,
+      246,
+      214
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      989,
+      1091,
+      1047
+     ],
+     "fill": 24,
+     "ring": 92,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "outline": 10
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1195.25,
+    "logo": 1235.5,
+    "score": 168.5,
+    "down_capsule": 574.0,
+    "housing_rim": 501.0,
+    "pill": 350.25
+   },
+   "s11_guard": {
+    "wing_colour": 1583.25,
+    "logo": 1927.75,
+    "score": 16.75,
+    "down_capsule": 670.5,
+    "housing_rim": 915.0,
+    "pill": 430.0
+   },
+   "decision": "rejected",
+   "note": "Top 0.60 over 18 rows."
+  },
+  {
+   "trial": "wing (accepted default)",
+   "steps": [
+    "marks",
+    "fits",
+    "wing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1101.5,
+    "logo": 1235.5,
+    "score": 169.75,
+    "down_capsule": 574.5,
+    "housing_rim": 501.0,
+    "pill": 349.25
+   },
+   "s11_guard": {
+    "wing_colour": 1313.25,
+    "logo": 1930.25,
+    "score": 16.75,
+    "down_capsule": 669.25,
+    "housing_rim": 916.0,
+    "pill": 430.25
+   },
+   "decision": "accepted",
+   "note": "W4 as the author default: s12 wing 1101.5, s11 wing 1313.25."
+  },
+  {
+   "trial": "plate_brighter",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "plate"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1109.25,
+    "logo": 1235.5,
+    "score": 169.25,
+    "down_capsule": 587.0,
+    "housing_rim": 501.0,
+    "pill": 349.5
+   },
+   "s11_guard": {
+    "wing_colour": 1305.5,
+    "logo": 1930.0,
+    "score": 16.75,
+    "down_capsule": 673.75,
+    "housing_rim": 914.25,
+    "pill": 429.25
+   },
+   "decision": "rejected",
+   "note": "Flatter, brighter plate with a bottom light line: down_capsule +12.5, wing +7.75."
+  },
+  {
+   "trial": "housing",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1099.75,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 572.0,
+    "housing_rim": 160.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1310.0,
+    "logo": 1931.25,
+    "score": 16.75,
+    "down_capsule": 668.25,
+    "housing_rim": 728.5,
+    "pill": 422.0
+   },
+   "decision": "accepted",
+   "note": "Measured ring housing at 829,990,1090,1046: housing_rim 501.0 to 160.0."
+  },
+  {
+   "trial": "plate_lip_body",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "plate",
+    "housing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      12,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      236,
+      221,
+      200,
+      180
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1099.75,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 571.5,
+    "housing_rim": 160.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1309.75,
+    "logo": 1931.25,
+    "score": 16.75,
+    "down_capsule": 671.5,
+    "housing_rim": 726.5,
+    "pill": 422.75
+   },
+   "decision": "rejected",
+   "note": "Lip plus brighter body: s12 down -0.5 but s11 down +3.25."
+  },
+  {
+   "trial": "plate_lip_only",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "plate",
+    "housing"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      253,
+      255,
+      244,
+      238,
+      226,
+      217,
+      198,
+      180
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      9
+     ],
+     "top_values": [
+      60,
+      112,
+      96,
+      58,
+      44,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      102,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      38,
+      60,
+      92,
+      86,
+      40,
+      12
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.85,
+     "rim_decay": 6.0,
+     "rim_tail": 0.35
+    }
+   },
+   "s12": {
+    "wing_colour": 1099.75,
+    "logo": 1235.5,
+    "score": 169.0,
+    "down_capsule": 571.5,
+    "housing_rim": 160.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1309.75,
+    "logo": 1931.25,
+    "score": 16.75,
+    "down_capsule": 666.0,
+    "housing_rim": 728.5,
+    "pill": 421.0
+   },
+   "decision": "rejected",
+   "note": "Lip only: every change within 2.25 player px (quantization noise); the plate stays beta 75.1."
+  },
+  {
+   "trial": "bevel_measured_rows",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      10
+     ],
+     "top_values": [
+      40,
+      36,
+      60,
+      85,
+      80,
+      60,
+      46,
+      38,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      40,
+      48,
+      62,
+      70,
+      58,
+      40
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.75,
+     "rim_decay": 3.0,
+     "rim_start": 2,
+     "rim_tail": 0.6
+    }
+   },
+   "s12": {
+    "wing_colour": 1123.5,
+    "logo": 1233.5,
+    "score": 168.0,
+    "down_capsule": 554.5,
+    "housing_rim": 658.25,
+    "pill": 352.0
+   },
+   "s11_guard": {
+    "wing_colour": 1348.5,
+    "logo": 1929.5,
+    "score": 16.75,
+    "down_capsule": 659.25,
+    "housing_rim": 781.0,
+    "pill": 422.0
+   },
+   "decision": "rejected",
+   "note": "Dark edge row, glow two rows down, neutral bottom: s12 housing_rim 160.0 to 658.25."
+  },
+  {
+   "trial": "bevel_B2",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      45,
+      60,
+      75,
+      62,
+      30
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22
+    }
+   },
+   "s12": {
+    "wing_colour": 1133.5,
+    "logo": 1235.5,
+    "score": 167.75,
+    "down_capsule": 558.0,
+    "housing_rim": 560.25,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1427.5,
+    "logo": 1929.75,
+    "score": 16.75,
+    "down_capsule": 614.75,
+    "housing_rim": 611.0,
+    "pill": 424.5
+   },
+   "decision": "rejected",
+   "note": "s10 top rows, neutral bottom line, top-only glow, tray."
+  },
+  {
+   "trial": "bevel_B3",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      45,
+      60,
+      75,
+      62,
+      30
+     ],
+     "tray": 37,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22
+    }
+   },
+   "s12": {
+    "wing_colour": 1132.25,
+    "logo": 1235.5,
+    "score": 169.25,
+    "down_capsule": 571.5,
+    "housing_rim": 559.25,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1427.0,
+    "logo": 1929.75,
+    "score": 16.75,
+    "down_capsule": 671.75,
+    "housing_rim": 611.25,
+    "pill": 424.5
+   },
+   "decision": "rejected",
+   "note": "As B2 without the tray (isolates the tray: down -13.5 s12, -57 s11)."
+  },
+  {
+   "trial": "bevel_B4",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      104,
+      106,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      37,
+      62,
+      108,
+      25
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22
+    }
+   },
+   "s12": {
+    "wing_colour": 1103.0,
+    "logo": 1235.5,
+    "score": 167.75,
+    "down_capsule": 558.0,
+    "housing_rim": 268.5,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1334.75,
+    "logo": 1932.0,
+    "score": 16.75,
+    "down_capsule": 614.75,
+    "housing_rim": 426.25,
+    "pill": 424.5
+   },
+   "decision": "rejected",
+   "note": "s10 rows, top-only glow, tray."
+  },
+  {
+   "trial": "bevel_B5",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      37,
+      45,
+      70,
+      100,
+      95,
+      35
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22
+    }
+   },
+   "s12": {
+    "wing_colour": 1127.0,
+    "logo": 1235.5,
+    "score": 167.75,
+    "down_capsule": 558.0,
+    "housing_rim": 205.0,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1320.0,
+    "logo": 1932.0,
+    "score": 16.75,
+    "down_capsule": 614.75,
+    "housing_rim": 381.25,
+    "pill": 424.5
+   },
+   "decision": "rejected",
+   "note": "Brighter neutral bottom line, top-only glow, tray: s12 housing +43.5 (record-tab corners), s11 housing -310.5."
+  },
+  {
+   "trial": "bevel_B6",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      40,
+      60,
+      95,
+      120,
+      105,
+      40
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22
+    }
+   },
+   "s12": {
+    "wing_colour": 1117.5,
+    "logo": 1235.5,
+    "score": 167.75,
+    "down_capsule": 555.5,
+    "housing_rim": 678.0,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1316.5,
+    "logo": 1936.0,
+    "score": 16.75,
+    "down_capsule": 615.25,
+    "housing_rim": 858.75,
+    "pill": 423.75
+   },
+   "decision": "rejected",
+   "note": "Brightest neutral bottom line: housing_rim 678.0."
+  },
+  {
+   "trial": "bevel_B7_tray_only",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      106,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      62,
+      108,
+      25
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 2.0,
+     "rim_start": 0,
+     "rim_tail": 0.22,
+     "rim_bottom": true
+    }
+   },
+   "s12": {
+    "wing_colour": 1099.75,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1311.25,
+    "logo": 1931.25,
+    "score": 16.75,
+    "down_capsule": 611.25,
+    "housing_rim": 691.75,
+    "pill": 421.75
+   },
+   "decision": "accepted",
+   "note": "s10 rows and s10 symmetric glow, tray only."
+  },
+  {
+   "trial": "bevel_B8",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8
+     ],
+     "top_values": [
+      50,
+      70,
+      140,
+      120,
+      60,
+      40,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      106,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      62,
+      108,
+      25
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.75,
+     "rim_decay": 3.0,
+     "rim_start": 1,
+     "rim_tail": 0.3,
+     "rim_bottom": true
+    }
+   },
+   "s12": {
+    "wing_colour": 1208.5,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 551.0,
+    "housing_rim": 192.0,
+    "pill": 350.5
+   },
+   "s11_guard": {
+    "wing_colour": 1224.5,
+    "logo": 1929.0,
+    "score": 16.75,
+    "down_capsule": 612.0,
+    "housing_rim": 721.25,
+    "pill": 424.5
+   },
+   "decision": "rejected",
+   "note": "Top line moved down, longer glow."
+  },
+  {
+   "trial": "bevel_B9",
+   "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "bevel"
+   ],
+   "params": {
+    "marks": {
+     "nyg": {
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside"
+     },
+     "lar": {
+      "fill": "#FFD100"
+     }
+    },
+    "fits": {
+     "NYG": {
+      "fill_x": 1.14,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": -0.0156,
+      "shift_y": 0.0
+     },
+     "LAR": {
+      "fill_x": 1.1,
+      "height": 1.0,
+      "zoom": 0.953,
+      "shift_x": 0.0469,
+      "shift_y": 0.0
+     }
+    },
+    "wing": {
+     "a1": 0.8761,
+     "d1": 41.19,
+     "v1": 0.2879,
+     "a2": 0.6,
+     "d2": 13.82,
+     "d3": 461.6,
+     "a3": 1.5,
+     "d4": 2.839,
+     "d5": 83.55,
+     "gamma": 1.0,
+     "floor": 0.0
+    },
+    "plate": {
+     "rows": [
+      0,
+      1,
+      2,
+      3,
+      13,
+      14,
+      15,
+      16
+     ],
+     "values": [
+      240,
+      255,
+      250,
+      248,
+      248,
+      246,
+      255,
+      215
+     ]
+    },
+    "housing": {
+     "box": [
+      829,
+      990,
+      1090,
+      1046
+     ],
+     "ring_width": 3,
+     "dark_width": 3,
+     "ring": 97,
+     "ring_bottom": 70,
+     "ring_side": 50,
+     "inner": 30,
+     "fill": 8
+    },
+    "bevel": {
+     "top_rows": [
+      0,
+      2,
+      4,
+      7
+     ],
+     "top_values": [
+      58,
+      145,
+      74,
+      37
+     ],
+     "bottom_rows": [
+      103,
+      106,
+      108,
+      109
+     ],
+     "bottom_values": [
+      37,
+      62,
+      108,
+      25
+     ],
+     "tray": 24,
+     "tray_inner": [
+      830,
+      1090
+     ],
+     "tray_outer": [
+      760,
+      1160
+     ],
+     "rim_amplitude": 0.68,
+     "rim_decay": 3.0,
+     "rim_start": 0,
+     "rim_tail": 0.35,
+     "rim_bottom": true
+    }
+   },
+   "s12": {
+    "wing_colour": 1166.0,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 556.0,
+    "housing_rim": 161.5,
+    "pill": 352.25
+   },
+   "s11_guard": {
+    "wing_colour": 1228.5,
+    "logo": 1929.25,
+    "score": 16.75,
+    "down_capsule": 611.0,
+    "housing_rim": 761.0,
+    "pill": 425.25
+   },
+   "decision": "rejected",
+   "note": "s10 rows, glow decay 3.0, tail 0.35."
+  }
+ ],
+ "reproduce": "python3 reports/b76_s12/author.py --steps STEPS --params PARAMS.json; python3 reports/b76_s12/evaluate.py; python3 reports/b76_s12/author.py"
+}

@@ -1,0 +1,339 @@
+{
+  "label": "DESIGN",
+  "implemented": false,
+  "ready": false,
+  "catalog": "Independent transient local catalog; do not add rows to the MAX_TEAMS=50 moment table",
+  "rows": [
+    {
+      "franchise": "ARZ",
+      "provisional_identity": 171,
+      "resource": "HTA-ARZ.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.azcardinals.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "ATL",
+      "provisional_identity": 172,
+      "resource": "HTA-ATL.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.atlantafalcons.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "BAL",
+      "provisional_identity": 173,
+      "resource": "HTA-BAL.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.baltimoreravens.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "BUF",
+      "provisional_identity": 224,
+      "resource": "HTA-BUF.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.buffalobills.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "CAR",
+      "provisional_identity": 225,
+      "resource": "HTA-CAR.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.panthers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "CHI",
+      "provisional_identity": 226,
+      "resource": "HTA-CHI.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.chicagobears.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "CIN",
+      "provisional_identity": 227,
+      "resource": "HTA-CIN.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.bengals.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "CLE",
+      "provisional_identity": 228,
+      "resource": "HTA-CLE.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.clevelandbrowns.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "DAL",
+      "provisional_identity": 229,
+      "resource": "HTA-DAL.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.dallascowboys.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "DEN",
+      "provisional_identity": 230,
+      "resource": "HTA-DEN.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.denverbroncos.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "DET",
+      "provisional_identity": 231,
+      "resource": "HTA-DET.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.detroitlions.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "GB",
+      "provisional_identity": 232,
+      "resource": "HTA-GB.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.packers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "HOU",
+      "provisional_identity": 233,
+      "resource": "HTA-HOU.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.houstontexans.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "IND",
+      "provisional_identity": 234,
+      "resource": "HTA-IND.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.colts.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "JAX",
+      "provisional_identity": 235,
+      "resource": "HTA-JAX.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.jaguars.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "KC",
+      "provisional_identity": 236,
+      "resource": "HTA-KC.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.chiefs.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "MIA",
+      "provisional_identity": 237,
+      "resource": "HTA-MIA.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.miamidolphins.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "MIN",
+      "provisional_identity": 238,
+      "resource": "HTA-MIN.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.vikings.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "NE",
+      "provisional_identity": 239,
+      "resource": "HTA-NE.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.patriots.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "NO",
+      "provisional_identity": 240,
+      "resource": "HTA-NO.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.neworleanssaints.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "NYG",
+      "provisional_identity": 241,
+      "resource": "HTA-NYG.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.giants.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "NYJ",
+      "provisional_identity": 242,
+      "resource": "HTA-NYJ.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.newyorkjets.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "OAK",
+      "provisional_identity": 243,
+      "resource": "HTA-OAK.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.raiders.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "PHI",
+      "provisional_identity": 244,
+      "resource": "HTA-PHI.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.philadelphiaeagles.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "PIT",
+      "provisional_identity": 245,
+      "resource": "HTA-PIT.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.steelers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "SD",
+      "provisional_identity": 246,
+      "resource": "HTA-SD.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.chargers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "SEA",
+      "provisional_identity": 247,
+      "resource": "HTA-SEA.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.seahawks.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "SF",
+      "provisional_identity": 248,
+      "resource": "HTA-SF.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.49ers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "STL",
+      "provisional_identity": 249,
+      "resource": "HTA-STL.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.therams.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "TB",
+      "provisional_identity": 252,
+      "resource": "HTA-TB.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.buccaneers.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "TEN",
+      "provisional_identity": 253,
+      "resource": "HTA-TEN.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.tennesseetitans.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    },
+    {
+      "franchise": "WAS",
+      "provisional_identity": 254,
+      "resource": "HTA-WAS.iff",
+      "official_selection_url": null,
+      "official_discovery_url": "https://www.commanders.com/",
+      "roster_authored": false,
+      "representative_seasons_required": true,
+      "equipment": "Per-player representative season; keep classic retail geometry and modern-era equipment distinct"
+    }
+  ],
+  "provisional_capacity": {
+    "descriptors_bytes": 512,
+    "rosters": 32,
+    "players_if_53_each": 1696,
+    "transient_two_sides_players": 106,
+    "existing_spare_pool": 155,
+    "directory_entries_with_m1_styles_e2books_ht_aliases_alltime": 209,
+    "spare_directory_entries_retail": 101,
+    "extra_directory_bytes": 1296
+  },
+  "prerequisite": "Finalize IDs against the integrated e2 allocation registry; prove directory relocation, the all-time picker and filename adapter, player counts/depth charts, owner readback and main live games. Official source discovery and authoring are still missing."
+}

@@ -1,0 +1,9 @@
+{
+  "classification": "PROVED OFFLINE",
+  "allowlist_unique": true,
+  "included": [
+    "mod_editor/core/xdvdfs_compact.py",
+    "tools/xdvdfs_compact.py"
+  ],
+  "files_exist": true
+}

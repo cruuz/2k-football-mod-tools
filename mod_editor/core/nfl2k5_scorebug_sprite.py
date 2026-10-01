@@ -66,9 +66,15 @@ def placed_box(row,widescreen=False):
     if row.get('pin')=='top-right':
         width=box[2]-box[0];right=drawable_right(widescreen)-PIN_MARGIN;box[0],box[2]=right-width,right
     return box
-SOURCES = ('home score', 'away score', 'home timeouts', 'away timeouts', 'quarter', 'clock', 'play clock', 'down and distance')
-TINTS = ('none', 'home team', 'away team', 'possessing team', 'home rim', 'away rim')
-FIELD = struct.Struct('<8I6i')  # source, first vertex, capacity, glyph offset/count, colour, flags, visibility, anchor x/y/z, width, align, advance
+SOURCES = ('home score', 'away score', 'home timeouts', 'away timeouts', 'quarter', 'clock', 'play clock', 'down and distance',
+           # Beta 76 s15: the Franchise records the owner counts at setup, their navy tabs (one token per text
+           # length), and the possession arrow, whose field carries the home position as an alternate anchor.
+           'home record', 'away record', 'home record tab', 'away record tab', 'possession',
+           # Beta 76 sb: ESPN's TIMEOUT tab over the calling team's wing (away at the anchor, home at the alternate).
+           'timeout tab')
+# Beta 76 sb: the play-clock cell is white, ESPN red (213,0,54) at 5 seconds and under.
+TINTS = ('none', 'home team', 'away team', 'possessing team', 'home rim', 'away rim', 'play clock cell')
+FIELD = struct.Struct('<8I6i')  # source, first vertex, capacity, glyph offset/count, colour, flags, visibility, anchor x/y/z, width, align, alternate x (possession: home side)
 GLYPH = struct.Struct('<4H4i8h')  # UTF16 token (up to four units), width/height/advance/raise, four packed UV pairs
 STATIC = struct.Struct('<4I')  # first vertex, tint source, material, optional brand-table offset
 BRAND = struct.Struct('<I16h')  # policy, NFL UVs, MNF UVs
@@ -104,7 +110,8 @@ def load_layout(folder=None):
         require(image.format=='PNG' and image.width<=2048 and image.height<=2048, 'Use a PNG no larger than 2048×2048.')
         image=image.convert('RGBA')
     require(spec.get('atlas') in ([256,512],[512,512]), 'The scorebug atlas must be 256×512 or 512×512.')
-    require(0<len(spec.get('cells',{}))<=256 and 0<len(spec.get('glyph_sets',{}))<=8, 'The scorebug needs bounded cells and glyph sets.')
+    # Beta 76 s15: nine sets (the records, their tabs and the possession chevron joined six); 12 bounds user layouts.
+    require(0<len(spec.get('cells',{}))<=256 and 0<len(spec.get('glyph_sets',{}))<=12, 'The scorebug needs bounded cells and glyph sets.')
     for name,row in spec['cells'].items():
         require(_box(row.get('box'),image.size) and all(type(v)==int for v in row['box']), 'Invalid PNG cell: '+name)
     require(len(spec.get('static',[]))<=24 and len(spec.get('fields',[]))<=16, 'Too many scorebug layers or fields.')
@@ -151,6 +158,12 @@ def load_layout(folder=None):
         require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1–16 quads.')
         require(row['alignment'] in ('left','center','right'), 'Unknown field alignment.')
         require(len(row['anchor'])==2 and all(_number(v) and 0<=v<=limit for v,limit in zip(row['anchor'],(1920,1080))), 'Invalid field anchor.')
+        # Only the possession arrow and the TIMEOUT tab (sb) move between two positions: away at the anchor, home at
+        # the alternate anchor.
+        require(('alt_anchor' in row)==(row['source'] in ('possession','timeout tab')), 'The possession and timeout-tab fields, and only they, need an alternate anchor.')
+        if 'alt_anchor' in row:
+            require(isinstance(row['alt_anchor'],list) and len(row['alt_anchor'])==2 and row['alt_anchor'][1]==row['anchor'][1]
+                    and all(_number(v) and 0<=v<=limit for v,limit in zip(row['alt_anchor'],(1920,1080))), 'Invalid alternate anchor.')
         require(_number(row['size']) and 1<=row['size']<=110, 'Invalid glyph height.')
         require(isinstance(row['colour'],str) and len(row['colour'])==7 and row['colour'][0]=='#', 'Use #RRGGBB for glyph colour.')
         int(row['colour'][1:],16)
@@ -206,7 +219,9 @@ def _allocate_layers(layers, spec):
         factor = row['size']/glyphs['cap_height']
         top = min(-g.get('raise',0)*factor for g in glyphs['glyphs'].values())
         bottom = max((g['size'][1]-g.get('raise',0))*factor for g in glyphs['glyphs'].values())
-        return left,y+top,left+width,y+bottom
+        # An alternate anchor draws the same quads elsewhere; the footprint is the union of both places.
+        right = left+width+(row['alt_anchor'][0]-x if 'alt_anchor' in row else 0)
+        return left,y+top,right,y+bottom
     boxes = [footprint(row) for row in layers]
     overlaps = []
     for at, i in enumerate(ordered):
@@ -356,10 +371,12 @@ def compile_folder(folder=None,widescreen=False,watermark="auto"):
         source=SOURCES.index(row['source']);x,y,z=quantized_position(*row['anchor'],0,widescreen)
         width=round((row['box'][2]-row['box'][0])*scale_x/420*32767)
         align=('left','center','right').index(row['alignment'])
-        flags=int(row.get('strip_zero',False))
-        # Down follows FC360's binding/slide gate, not the pending request.
-        visibility=0xa95a70 if source==6 else 0xa95a20 if source==7 else 0
-        FIELD.pack_into(table,HEADER.size+i*FIELD.size,source,row['vertex'],row['slots'],*glyph_sets[(row['glyph_set'],row['size'])],0xff000000|int(row['colour'][1:],16),flags,visibility,x,y,z,width,align,0)
+        # Bit 0: "04" -> "4" (play clock); bit 1 (sb): "0:54" -> ":54" (game clock), as ESPN prints it.
+        flags=int(row.get('strip_zero',False))|(2 if row.get('strip_minute') else 0)
+        # Down follows FC360's binding/slide gate inside the owner (sb: the ESPN-plate mode draws without it).
+        visibility=0xa95a70 if source==6 else 0
+        alt=quantized_position(*row['alt_anchor'],0,widescreen)[0] if 'alt_anchor' in row else 0
+        FIELD.pack_into(table,HEADER.size+i*FIELD.size,source,row['vertex'],row['slots'],*glyph_sets[(row['glyph_set'],row['size'])],0xff000000|int(row['colour'][1:],16),flags,visibility,x,y,z,width,align,alt)
     for i,row in enumerate(statics):
         brand_offset=0
         if row.get('variant')=='mnf':
@@ -503,8 +520,10 @@ def pack_status(pack,folder=None,widescreen=None,watermark=None):
     try:
         _,added,growth=probe_sizes(folder);grown=len(pack)==scene.PACK_SIZE+growth
         if len(pack) not in (scene.PACK_SIZE,scene.PACK_SIZE+growth):return 'foreign'
-        # The old HUD, including its fonts, remains byte-for-byte retail.
-        if scene.digest(pack[art.HUD_START:art.HUD_START+art.HUD_SIZE])!=art.RUNTIME_PINS['hud_before']:return 'foreign'
+        # The old HUD, including its fonts, remains byte-for-byte retail (b76 c1: apart from the four ESPN
+        # presentation marks, and b76 km the three kick meter scenes, each at its retail or applied pin; see
+        # hud_espn_marks).
+        if hud_espn_marks(pack[art.HUD_START:art.HUD_START+art.HUD_SIZE]) is None:return 'foreign'
         count,reserved,packs=struct.unpack('<3I',pack[:12])
         if count!=4323 or reserved or not 1<=packs<=36:return 'foreign'
         table=bytearray(pack[:outer.HEADER_SIZE+count*12])
@@ -524,6 +543,160 @@ def pack_status(pack,folder=None,widescreen=None,watermark=None):
     except (ValueError,KeyError,IndexError,struct.error,OSError):return 'foreign'
 
 
+# b76 c1: the sprite composes with "ESPN presentation marks (2026)" (nfl2k5_espn_marks). That option rewrites four
+# fixed spans inside this HUD (gamedata.iff chunks 24, 26, 33 and 57) in place and never grows it. The HUD is still
+# the supported base when every byte outside those spans is retail (this SHA-256 of the retail HUD with the four spans
+# cut out, in offset order; no game bytes are distributed) and each span holds its retail or its applied pin from the
+# option's shipped pins. Anything else reads as foreign, as before.
+ESPN_MARKS_PINS = ROOT/'data/nfl2k5_espn_marks_pins.json'
+HUD_OUTSIDE_ESPN_MARKS = 'd098c42d20338e069c88d06dd50d873fccf39861512b524d0d9d04da6d1a8415'
+_SHIPPED_MARKS = []
+
+
+def espn_mark_spans(pins=None):
+    """(size, ((texture, offset, size, retail SHA-256, applied SHA-256), ...)) of the ESPN presentation marks inside
+    the HUD outer, in offset order, from ``pins`` (default: the shipped pins). None when absent or malformed; then only
+    the byte-exact retail HUD is supported."""
+    if pins is None:
+        if not _SHIPPED_MARKS:
+            try:document=json.loads(ESPN_MARKS_PINS.read_text(encoding='utf-8'))
+            except (OSError,ValueError):document=None
+            _SHIPPED_MARKS.append(espn_mark_spans(document) if isinstance(document,dict) else None)
+        return _SHIPPED_MARKS[0]
+    try:
+        outer=pins['outer'];size=outer['size'];hexed=lambda v:isinstance(v,str) and len(v)==64 and set(v)<=set('0123456789abcdef')
+        rows=tuple(sorted(((m['texture'],m['chunk_offset'],m['span_size'],m['retail_sha256'],m['applied_sha256'])
+                           for m in pins['marks']),key=lambda r:r[1]))
+        ok=(pins.get('schema')=='nfl2k5_espn_marks_pins/v1' and (outer['index'],outer['name_id'])==(346,11965036)
+            and type(size) is int and len(rows)==4 and all(type(at) is int and type(n) is int and 0<=at and 0<n
+            and hexed(a) and hexed(b) and a!=b for _,at,n,a,b in rows)
+            and all(p[1]+p[2]<=q[1] for p,q in zip(rows,rows[1:])) and rows[-1][1]+rows[-1][2]<=size)
+        return (size,rows) if ok else None
+    except (KeyError,TypeError,ValueError):return None
+
+
+# b76 km: the 2026 kick meter (nfl2k5_kick_meter_2026) refits three more fixed spans of this HUD in place (chunks 75,
+# 76 and 77: KickArrow, KickMeter, windmeter) and never grows it either. With the shipped pins the HUD is also the
+# supported base when every byte outside the four marks and those three spans is retail (this SHA-256 of the retail
+# HUD with the seven spans cut out, in offset order) and each span holds its retail or applied pin.
+KICK_METER_PINS = ROOT/'data/nfl2k5_kick_meter_2026_pins.json'
+HUD_OUTSIDE_IN_PLACE = '7ece10a15a53c2bf11ffe56506451e928916b4a5b21677b380b1d8f51934881b'
+_SHIPPED_KICK_METER = []
+
+
+def kick_meter_spans(pins=None):
+    """((scene, offset, size, retail SHA-256, applied SHA-256), ...) of the 2026 kick meter inside the HUD outer, in
+    offset order, from ``pins`` (default: the shipped pins). None when absent or malformed."""
+    if pins is None:
+        if not _SHIPPED_KICK_METER:
+            try:document=json.loads(KICK_METER_PINS.read_text(encoding='utf-8'))
+            except (OSError,ValueError):document=None
+            _SHIPPED_KICK_METER.append(kick_meter_spans(document) if isinstance(document,dict) else None)
+        return _SHIPPED_KICK_METER[0]
+    try:
+        outer=pins['outer'];hexed=lambda v:isinstance(v,str) and len(v)==64 and set(v)<=set('0123456789abcdef')
+        rows=tuple(sorted(((r['scene'],r['chunk_offset'],r['span_size'],r['retail_sha256'],r['applied_sha256'])
+                           for r in pins['resources']),key=lambda r:r[1]))
+        ok=(pins.get('schema')=='nfl2k5_kick_meter_2026_pins/v1' and (outer['index'],outer['name_id'])==(346,11965036)
+            and [r[0] for r in rows]==['KickArrow','KickMeter','windmeter'] and all(type(at) is int and type(n) is int
+            and 0<=at and 0<n and hexed(a) and hexed(b) and a!=b for _,at,n,a,b in rows)
+            and all(p[1]+p[2]<=q[1] for p,q in zip(rows,rows[1:])) and rows[-1][1]+rows[-1][2]<=outer['size'])
+        return rows if ok else None
+    except (KeyError,TypeError,ValueError):return None
+
+
+def kick_meter_font_tail(pins=None):
+    """(size, SHA-256) of the 2026 kick meter's wind digits FONT chunk appended to gamedata.iff, from ``pins``
+    (default: the shipped pins), or None."""
+    if pins is None:
+        if not _SHIPPED_KICK_FONT:
+            try:document=json.loads(KICK_METER_PINS.read_text(encoding='utf-8'))
+            except (OSError,ValueError):document=None
+            _SHIPPED_KICK_FONT.append(kick_meter_font_tail(document) if isinstance(document,dict) else None)
+        return _SHIPPED_KICK_FONT[0]
+    try:
+        font=pins['font'];size,digest=font['chunk_size'],font['chunk_sha256']
+        ok=(pins.get('schema')=='nfl2k5_kick_meter_2026_pins/v1' and type(size) is int and 0<size and size%16==0
+            and isinstance(digest,str) and len(digest)==64 and set(digest)<=set('0123456789abcdef'))
+        return (size,digest) if ok else None
+    except (KeyError,TypeError,ValueError):return None
+
+
+_SHIPPED_KICK_FONT = []
+
+
+def _hud_in_place(hud):
+    """The shipped-pins rule with the kick meter: {name: state} for the four marks and the three kick scenes, or None."""
+    marks,kick=espn_mark_spans(),kick_meter_spans()
+    if marks is None or kick is None or len(hud)!=marks[0]:return None
+    rows=sorted(marks[1]+kick,key=lambda r:r[1])
+    if not all(p[1]+p[2]<=q[1] for p,q in zip(rows,rows[1:])):return None
+    digest=hashlib.sha256();cursor=0;states={}
+    for name,at,size,retail,applied in rows:
+        digest.update(hud[cursor:at]);have=hashlib.sha256(hud[at:at+size]).hexdigest()
+        if have not in (retail,applied):return None
+        states[name]='retail' if have==retail else 'applied';cursor=at+size
+    digest.update(hud[cursor:])
+    return states if digest.hexdigest()==HUD_OUTSIDE_IN_PLACE else None
+
+
+def hud_espn_marks(hud,*,pins=None,outside=None,before=None):
+    """{texture: 'retail' | 'applied'} when ``hud`` (the HUD outer's original bytes) is the supported base: the retail
+    HUD with each ESPN presentation mark at its retail or applied pin. None for anything else. ``pins``, ``outside``
+    and ``before`` default to the shipped pins, HUD_OUTSIDE_ESPN_MARKS and RUNTIME_PINS['hud_before']. With all three
+    defaults, a HUD whose 2026 kick meter spans (b76 km) are at their retail or applied pins is supported too; its
+    states then also name KickArrow, KickMeter and windmeter."""
+    states=_hud_marks_only(hud,pins=pins,outside=outside,before=before)
+    if states is None and pins is None and outside is None and before is None:
+        states=_hud_in_place(bytes(hud))
+    return states
+
+
+def _hud_marks_only(hud,*,pins=None,outside=None,before=None):
+    from . import nfl2k5_scorebug_resources as art
+    marks=espn_mark_spans(pins);hud=bytes(hud)
+    outside=HUD_OUTSIDE_ESPN_MARKS if outside is None else outside
+    before=art.RUNTIME_PINS['hud_before'] if before is None else before
+    if hashlib.sha256(hud).hexdigest()==before:
+        return {} if marks is None else {row[0]:'retail' for row in marks[1]}
+    if marks is None or len(hud)!=marks[0]:return None
+    digest=hashlib.sha256();cursor=0;states={}
+    for texture,at,size,retail,applied in marks[1]:
+        digest.update(hud[cursor:at]);have=hashlib.sha256(hud[at:at+size]).hexdigest()
+        if have not in (retail,applied):return None
+        states[texture]='retail' if have==retail else 'applied';cursor=at+size
+    digest.update(hud[cursor:])
+    return states if digest.hexdigest()==outside else None
+
+
+def gamedata_status(read,size,folder=None,widescreen=None,watermark=None):
+    """The sprite's state read from gamedata.iff (outer 346) alone, wherever the archive keeps it now.
+
+    ``read(count, offset)`` reads the outer and ``size`` is its current length. 'retail' for the supported HUD,
+    'applied' when exactly this layout's appended resources follow it, else 'foreign'. pack_status adds the pack-0
+    size and index checks; this form serves readers that resolve the outer through the archive table, such as the
+    ESPN presentation marks and the inspector after another owner has grown pack 0 (the Guardian overlay).
+    b76 km: the 2026 kick meter's wind digits FONT, when it is the outer's last chunk (its exact pinned bytes),
+    is not part of the sprite and is set aside first."""
+    from . import nfl2k5_scorebug_resources as art
+    try:
+        _,added,_=probe_sizes(folder)
+        tail=kick_meter_font_tail()
+        if tail is not None and size>=art.HUD_SIZE+tail[0] and hashlib.sha256(bytes(read(tail[0],size-tail[0]))).hexdigest()==tail[1]:
+            size-=tail[0]
+        if size not in (art.HUD_SIZE,art.HUD_SIZE+added) or hud_espn_marks(read(art.HUD_SIZE,0)) is None:return 'foreign'
+        if size==art.HUD_SIZE:return 'retail'
+        def shifted(count,at):
+            # appendix reads only its retail HUD sources (score_bug, score_buga) by their pack-0 offsets
+            require(at>=art.HUD_START,'Sprite sources lie inside the HUD outer.')
+            return read(count,at-art.HUD_START)
+        view=art.PackView(art.HUD_START+size,shifted);have=bytes(read(added,art.HUD_SIZE))
+        modes=(False,True) if widescreen is None else (bool(widescreen),)
+        marks=WATERMARK_MODES if watermark is None else (watermark,)
+        return 'applied' if any(have==appendix(view,folder,w,m)[0] for w in modes for m in marks) else 'foreign'
+    except (ValueError,KeyError,IndexError,struct.error,OSError):return 'foreign'
+
+
 def compile_collection(pack,folder=None,widescreen=False,watermark="auto"):
     from . import nfl2k5_scorebug_resources as art,nfl2k5_scorebug_assets as assets
     state=pack_status(pack,folder,widescreen,watermark)
@@ -534,13 +707,17 @@ def compile_collection(pack,folder=None,widescreen=False,watermark="auto"):
     parts,growth=assets.grow_pack(read,len(pack),{art.HUD_OUTER_INDEX:[data]})
     result=art.join_views([(source if isinstance(source,bytes) else pack,offset,size) for source,offset,size in parts])
     require(pack_status(result,folder,widescreen,watermark)=='applied','Sprite collection read-back failed.')
-    return result,dict(receipt,resources=receipt['components'],probe='sprite',fonts=[],outer_index=art.HUD_OUTER_INDEX,outer_size_before=art.HUD_SIZE,outer_size_after=art.HUD_SIZE+len(data),status='applied',growth=len(result)-len(pack),sha256_before=art.pack_digest(pack),sha256_after=art.pack_digest(result),runtime_witnessed=False,experimental=True)
+    return result,dict(receipt,resources=receipt['components'],probe='sprite',fonts=[],outer_index=art.HUD_OUTER_INDEX,outer_size_before=art.HUD_SIZE,outer_size_after=art.HUD_SIZE+len(data),status='applied',growth=len(result)-len(pack),sha256_before=art.pack_digest(pack),sha256_after=art.pack_digest(result),hud_espn_marks=hud_espn_marks(pack[art.HUD_START:art.HUD_START+art.HUD_SIZE]),runtime_witnessed=False,experimental=True)
 
 
 STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,
                       away_timeouts=3, home_timeouts=3, quarter=2,
                       clock=273, play_clock=4, down=3, distance=10,
-                      possession='home', event='standard', goal_to_go=False, broadcast='play_now')
+                      possession='home', event='standard', goal_to_go=False, broadcast='play_now',
+                      home_record=None, away_record=None, season='regular', phase=4,
+                      previous_down=None, timeout_called=None)
+SEASONS = ('regular', 'playoffs', 'preseason', 'quick_game', 'tournament')
+PHASES = {0: 'pregame, coin toss or the half', 1: 'safety kick', 2: 'kickoff', 3: 'point after', 4: 'scrimmage'}
 
 
 def normalize_state(state=None):
@@ -555,6 +732,17 @@ def normalize_state(state=None):
     require(state['possession'] in ('home','away'),'Possession must be home or away.')
     require(state['event'] in ('standard','FLAG','FUMBLE','hang time','ball on','score slabs','hidden play clock'),'Unknown retail event state.')
     require(state['broadcast'] in ('play_now','monday_night','sunday_night','monday_afternoon'),'Unknown broadcast slot.')
+    # Franchise records are counted by the owner at setup from a synthetic season (W, L, T per side, 16 games at most).
+    for key in ('home_record','away_record'):
+        record=state[key]
+        require(record is None or (isinstance(record,(list,tuple)) and len(record)==3 and all(type(v)==int and v>=0 for v in record)
+                and sum(record)<=16),'A preview record is null or [wins, losses, ties] with at most 16 games.')
+    require(state['season'] in SEASONS,'Unknown season stage.')
+    require(type(state['phase'])==int and state['phase'] in PHASES,'The play phase is 0 to 4.')
+    # Beta 76 sb: a previous down one lower shows the interim label; a timeout called by one side shows its tab.
+    require(state['previous_down'] is None or (type(state['previous_down'])==int and 1<=state['previous_down']<=4),'The previous down is null or 1 to 4.')
+    require(state['timeout_called'] in (None,'home','away'),'A timeout is called by home, away or nobody.')
+    require(state['timeout_called'] is None or state[state['timeout_called']+'_timeouts']<3,'The side that called a timeout has fewer than three left.')
     return state
 
 
@@ -631,7 +819,10 @@ class NativePreview:
             score_phase=.2 if s['event']=='score slabs' else 0,
             timeouts=(s['home_timeouts'],s['away_timeouts']),quarter=s['quarter'],
             game_seconds=s['clock'],play_seconds=s['play_clock'],down=s['down'],distance_yards=s['distance'],goal_to_go=s['goal_to_go'],
-            broadcast=s['broadcast'],possession=s['possession'],visible_elements=events[s['event']],visibility_state=visibility)
+            broadcast=s['broadcast'],possession=s['possession'],visible_elements=events[s['event']],visibility_state=visibility,
+            records=(None if s['home_record'] is None and s['away_record'] is None else dict(home=s['home_record'],away=s['away_record'])),
+            season=s['season'],phase=s['phase'],trace=capture.setdefault('trace',{}),previous_down=s['previous_down'],
+            previous_timeouts=None if s['timeout_called'] is None else (s['home_timeouts']+(s['timeout_called']=='home'),s['away_timeouts']+(s['timeout_called']=='away')))
         # Retail text remains only for event overlays; the bar callbacks are blank.
         # The down formatter's field query is the same explicit boundary used
         # by the existing text raster audit.

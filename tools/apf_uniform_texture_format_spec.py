@@ -22,7 +22,7 @@ V1_SPEC = ROOT / "reports/specs/apf2k8_uniform_texture_formats.v1.json"
 V2_SPEC = ROOT / "reports/specs/apf2k8_uniform_texture_formats.v2.json"
 DEFAULT_SPEC = V2_SPEC
 V1_SPEC_SIZE = 53829
-V1_SPEC_SHA256 = "80acb6f48408b59d305b3cfac3cfe8b61104bcd189c1fda9ff28e17df7b1c218"
+V1_SPEC_SHA256 = "b465b807200516f2bce44e8b51e490ebd98cc73171a5b7f63ed9a1fb86f9e755"
 
 
 class SpecError(ValueError):

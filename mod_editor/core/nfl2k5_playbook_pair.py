@@ -181,6 +181,19 @@ def _recognize(payload):
         require(image.read(at,len(original_rows)) == original_rows, "foreign native Options rows")
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va,size))
+        if va == 0x1665A0:
+            # The independent resource guard owns the PLAY tail, after our load-mode call.
+            # Normalize only its complete, pinned implementation before checking this window.
+            from . import nfl2k5_resource_load_guard as resource_guard
+            _, at, before, after = next(s for s in resource_guard.SITES if s[0] == "PLAY")
+            if image.read(at,len(after)) == after:
+                count = min(len(before), va+size-at)
+                raw[at-va:at-va+count] = before[:count]
+        if va == 0x628D0:
+            from . import nfl2k5_stock_books as stock
+            if image.read(stock.SITE, len(stock.RETAIL)) != stock.RETAIL:
+                require(stock.status(payload) == "applied", "foreign stock book decision")
+                raw[stock.SITE-va:stock.SITE-va+len(stock.RETAIL)] = stock.RETAIL
         for _, at, before, after in edits:
             if va <= at and at+len(before) <= va+size:
                 require(bytes(raw[at-va:at-va+len(before)]) in (before,after), "foreign pair prerequisite")

@@ -1,0 +1,151 @@
+{
+  "classification": "PROVED OFFLINE",
+  "input_bytes": 8012931072,
+  "output_bytes": 5924454400,
+  "bytes_saved": 2088476672,
+  "order": "nfl2k5-retail",
+  "files": [
+    {
+      "path": "update.xbe",
+      "source_offset": 69632,
+      "offset": 71680,
+      "size": 2326528,
+      "sha256": "44c079ebe031fa2e3a6ee5939dc29cf87fbbdaf3cf4eecf521fe6db6d5d69e1f"
+    },
+    {
+      "path": "default.xbe",
+      "source_offset": 5883691008,
+      "offset": 2398208,
+      "size": 12300288,
+      "sha256": "f69ee7a3c4fb5e7a6eea50fe6ae0ece740a7f4e72efa85df507145dd85f96b44"
+    },
+    {
+      "path": "dashupdate.xbe",
+      "source_offset": 14344192,
+      "offset": 14698496,
+      "size": 58421248,
+      "sha256": "a1903c9b17fecd90c1c97d00b2628d86ada8ec06bee1e4251c29ebf5f2ce2665"
+    },
+    {
+      "path": "vc_53450030/9",
+      "source_offset": 72767488,
+      "offset": 73119744,
+      "size": 634941440,
+      "sha256": "fbea0d36da94af8d95e5110a1008d4b8e0fcf0d179e4a8c09d8eb70ce7c65479"
+    },
+    {
+      "path": "vc_53450030/5",
+      "source_offset": 707708928,
+      "offset": 708061184,
+      "size": 307972096,
+      "sha256": "20d58c635bdccc9c66fae73defeb580fb5280e45a4c9bd4d6f70c4e389d3b811"
+    },
+    {
+      "path": "vc_53450030/3",
+      "source_offset": 6319216640,
+      "offset": 1016033280,
+      "size": 323686400,
+      "sha256": "94667a99d2b7d3387557f78b6d02f16e81adc1207de6150f5de5ec9f49ad6626"
+    },
+    {
+      "path": "vc_53450030/1",
+      "source_offset": 1331189760,
+      "offset": 1339719680,
+      "size": 299999232,
+      "sha256": "3864b522b86b3d523d9eb24df2674312c18e06c102737b8b1d926073f029c3e2"
+    },
+    {
+      "path": "vc_53450030/0",
+      "source_offset": 7818858496,
+      "offset": 1639718912,
+      "size": 194072576,
+      "sha256": "7baaf9445b157acd1c2f7f4c228d17e857f5bbbaa88787b27bb35dbd50f9f8f8"
+    },
+    {
+      "path": "vc_53450030/2",
+      "source_offset": 1631188992,
+      "offset": 1833791488,
+      "size": 309252096,
+      "sha256": "dbcf1f5a4abd8b90dad8f45f391c657c145accf5b73d1cc17d83887269c723a4"
+    },
+    {
+      "path": "vc_53450030/4",
+      "source_offset": 1940441088,
+      "offset": 2143043584,
+      "size": 313178112,
+      "sha256": "b3884ea0cf49022dfbc9fc23140347217564a5d16e2fc761a36acbc962bf36db"
+    },
+    {
+      "path": "vc_53450030/7",
+      "source_offset": 2253619200,
+      "offset": 2456221696,
+      "size": 319197184,
+      "sha256": "e3bc7609dc173bfba9ddcbfc103ae44e140bf159d0d9fd7599cf9a7c2df209c7"
+    },
+    {
+      "path": "vc_53450030/6",
+      "source_offset": 2572816384,
+      "offset": 2775418880,
+      "size": 458231808,
+      "sha256": "6d8f0c24e9997938a48a7f47d6c1c179b013a4ed2d9d4121d76244a0762ec17a"
+    },
+    {
+      "path": "vc_53450030/8",
+      "source_offset": 3031048192,
+      "offset": 3233650688,
+      "size": 929370112,
+      "sha256": "21ff5333e55a44409cde019b1ef97b2d21733f3c11d120fefe45df3533f8c785"
+    },
+    {
+      "path": "vc_53450030/d",
+      "source_offset": 3960418304,
+      "offset": 4163020800,
+      "size": 309135360,
+      "sha256": "bb24aeda628a344ef8977fa2d271d51d80fe5f592ac2ba411fdcf22114797231"
+    },
+    {
+      "path": "vc_53450030/b",
+      "source_offset": 6953203712,
+      "offset": 4472156160,
+      "size": 458260480,
+      "sha256": "77e40e27137294808f5cb50f397c26551f3cc633341aa4a2f951d312bb31c2be"
+    },
+    {
+      "path": "vc_53450030/a",
+      "source_offset": 6642903040,
+      "offset": 4930416640,
+      "size": 310300672,
+      "sha256": "1a8bc4675175b13c0b195a8ab6996681828aa0826e2df19e6cd41b805936dd4e"
+    },
+    {
+      "path": "vc_53450030/c",
+      "source_offset": 5038096384,
+      "offset": 5240717312,
+      "size": 315131904,
+      "sha256": "15d846c92728597ee4eaa0fc1ded3350c69376ddc41d671a09fab6581c2c0c3c"
+    },
+    {
+      "path": "vc_53450030/e",
+      "source_offset": 5353228288,
+      "offset": 5555849216,
+      "size": 301813760,
+      "sha256": "b636170209e2bb2a1ee5ee792b40a2e6659e294c8cceb94fadd80ac6385da620"
+    },
+    {
+      "path": "vc_53450030/f",
+      "source_offset": 7710914560,
+      "offset": 5857662976,
+      "size": 66746368,
+      "sha256": "aabd68c27f67e268adead87c38a8a5a7957eaf36380160250f07f0da5745b3c6"
+    }
+  ],
+  "directory_count": 2,
+  "all_file_hashes_identical": true,
+  "studio_directory_check": true,
+  "runtime_witnessed": false,
+  "studio_receipts_copied": [
+    "candidate-D-compact.xiso.iso.colour-lighting.json",
+    "candidate-D-compact.xiso.iso.venues-2026.json",
+    "candidate-D-compact.xiso.iso.surfaces.json"
+  ]
+}

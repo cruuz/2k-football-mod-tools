@@ -12,6 +12,7 @@ from mod_editor.core import nfl2k5_my_career_mode as mode
 from mod_editor.core import nfl2k5_my_career as legacy
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+from mod_editor.core import nfl2k5_k128 as k128
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 from tests.nfl2k5_allocator_stack import REQUESTS
 from tests.nfl2k5_my_career_fixture import XBE
@@ -34,18 +35,22 @@ class PlanningTests(unittest.TestCase):
             with self.subTest(owners=sorted({r[0] for r in requests})):
                 before = space.plan(old_requests(requests))
                 after = space.plan(requests)
-                current = {(r['owner'], r['kind']): r for r in after['allocations']}
+                # An owner may occupy multiple page tails. Preserve/check each
+                # fragment instead of overwriting the first with the last.
+                current = {(r['owner'], r['kind'], r.get('owner_offset', 0)): r
+                           for r in after['allocations']}
                 for row in before['allocations']:
                     if (row['owner'], row['kind']) == (mode.OWNER, 'code'):
                         continue
-                    if row['owner'] == runtime.OWNER:
+                    if row['owner'] in (runtime.OWNER, k128.OWNER):
                         # Beta 71's sprite scorebug owner outgrew its beta-61 slot and is allocated after the
                         # promoted MyCareer code, so its address follows that size; the allocator gates and the
-                        # manifest pin it. Every other owner still keeps its address.
+                        # manifest pin it. Beta 76's K128 owner (k1) is placed after it and follows the same
+                        # size for the same reason. Every other owner still keeps its address.
                         continue
-                    self.assertEqual(current[row['owner'], row['kind']], row)
-                self.assertEqual(current[mode.OWNER, 'code']['size'], 20480)
-                extra = current[mode.EXTRA_OWNER, 'data']
+                    self.assertEqual(current[row['owner'], row['kind'], row.get('owner_offset', 0)], row)
+                self.assertEqual(current[mode.OWNER, 'code', 0]['size'], 20480)
+                extra = current[mode.EXTRA_OWNER, 'data', 0]
                 self.assertEqual((extra['va'], extra['size']), (mode.EXTRA_VA, 4096))
                 self.assertEqual(before['file_size'], after['file_size'])
                 self.assertEqual(before['regions'], after['regions'])

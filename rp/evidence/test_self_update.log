@@ -1,0 +1,38 @@
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+..This plugin does not support propagateSizeHints()
+.This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+..This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+....................................
+----------------------------------------------------------------------
+Ran 41 tests in 3.087s
+
+OK
+	Command being timed: "/usr/bin/python3 /home/noah/2k-worktrees/b76-h1/tests/mod_editor/test_self_update.py"
+	User time (seconds): 1.81
+	System time (seconds): 0.20
+	Percent of CPU this job got: 61%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.30
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 166708
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 96
+	Minor (reclaiming a frame) page faults: 46559
+	Voluntary context switches: 404
+	Involuntary context switches: 20
+	Swaps: 0
+	File system inputs: 20232
+	File system outputs: 7104
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

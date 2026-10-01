@@ -1,0 +1,11 @@
+{
+  "status": "PROVED OFFLINE",
+  "nvme_free_bytes": 113697210368,
+  "nvme_free_gib": 105.85,
+  "nvme_floor_gib": 100,
+  "scratch_bytes": 4025215,
+  "scratch_limit_bytes": 4294967296,
+  "retail_discs_copied": 0,
+  "xemu_runs": 0,
+  "private_scratch_bytes": 4025215
+}

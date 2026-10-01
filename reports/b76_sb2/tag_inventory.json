@@ -1,0 +1,230 @@
+{
+  "classification": "PROVED OFFLINE",
+  "method": "dark tab and white text predicate, OCR candidates at least 3 seconds apart; OCR is a finding aid, checked examples are in details.json",
+  "rows": [
+    {
+      "bin": 42,
+      "ocr": "\u00bb at _\u2014\u2014 Lae",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 59,
+      "ocr": "OFS 5 2 ee eee",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 173,
+      "ocr": "\u2014\u2014\u2014\u2014\u2014as tl + es",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 183,
+      "ocr": "Pr BRITAIN COVEY i PTORY TAYLOR\n11.3 AVG (9th) # 49.5 AVG (9th)",
+      "sides": [
+        true,
+        true
+      ]
+    },
+    {
+      "bin": 186,
+      "ocr": "PR BRITAIN COVEY i P TORY TAYLOR _\n11.3 AVG (9th) 49.5AVG (9th) >",
+      "sides": [
+        true,
+        true
+      ]
+    },
+    {
+      "bin": 189,
+      "ocr": "PR BRITAIN COVEY ; P TORY TAYLOR\n= 11.3 AVG (9th) ' 49.5 AVG (9th)",
+      "sides": [
+        true,
+        true
+      ]
+    },
+    {
+      "bin": 249,
+      "ocr": "A Rite as 6Cl(<\u2018\u00e9}> _",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 275,
+      "ocr": "> (i - Si * \u2122e",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 333,
+      "ocr": "\u2014 Ft a_i oe",
+      "sides": [
+        true,
+        true
+      ]
+    },
+    {
+      "bin": 372,
+      "ocr": "| EAGLES CURRENT DRIVE) 10 plays } 95 varps } 6:53",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 443,
+      "ocr": "\\ | |Sie Za\u201d. )b. \u00a3a? See",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 452,
+      "ocr": "29-YARD ATTEMPT",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 459,
+      "ocr": "| \u00a3\u00a3 2 ee Od",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 575,
+      "ocr": "| 48-YARD ATTEMPT",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 578,
+      "ocr": "m) LG | al a at -#\u2014-48-YARD ATTEMPT",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 582,
+      "ocr": "EAGLES TONIGHT) 2/5 3rd owns } 5.O ave vos To co",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 657,
+      "ocr": ">\u00bb Vi Zi \u2014 .  \u00a3e\u2014 aa",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 671,
+      "ocr": "yr [rp a | eee",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 693,
+      "ocr": "\u2014 COC OEReS\u2014( eg |",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 698,
+      "ocr": "\u201c L8 7.J. EDWARDS TONIGHT 4 TFL } 3 pau } TINT",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 701,
+      "ocr": "| L8 7.J. EDWARDS TONIGHT ) 1 TFL ) 3 PBU } 1 INT |",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 729,
+      "ocr": "ee ' | \u201cii",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 733,
+      "ocr": "\u2018| _ BEARS TONIGHT) 4/11 3rd DowNs } 5.7 Ava YDs To Go te",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 817,
+      "ocr": ". zz >\ntt we F",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 833,
+      "ocr": "",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 873,
+      "ocr": "a",
+      "sides": [
+        true,
+        false
+      ]
+    },
+    {
+      "bin": 879,
+      "ocr": ", \u201cFe So",
+      "sides": [
+        false,
+        true
+      ]
+    },
+    {
+      "bin": 887,
+      "ocr": "a!\n.\n; '\n\u2014 al J! ll = ee",
+      "sides": [
+        true,
+        false
+      ]
+    }
+  ]
+}

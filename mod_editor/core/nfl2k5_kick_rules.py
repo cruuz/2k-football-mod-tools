@@ -542,16 +542,32 @@ def _site_state(payload: bytes, label: str, off: int, before: bytes, after: byte
 def _site_states(payload: bytes) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     """(spot sites incl. the cave code, field-goal curve sites incl. the cave tables, CPU-range sites)
     -> state; raises on an unreadable image."""
+    from . import nfl2k5_era_rules as era
+    payload = era.underlying_view(payload)
 
     sites = _sites(payload, MODERN_KICKOFF_YARD, MODERN_TOUCHBACK_YARD, MODERN_PAT_YARD, 70, "retail")
     spots: dict[str, str] = {}
     curves: dict[str, str] = {}
     cpu: dict[str, str] = {}
+    views = None
     for site in sites:
         label = site[0]
         group = cpu if label.startswith("cpu_") else curves if label.startswith("fg_") or label == "cave_tables" else spots
-        group[label] = _site_state(payload, *site)
+        state = _site_state(payload, *site)
+        if state == "foreign" and label in GATED_SITE_VAS:
+            # b76-vb3: the 25th Anniversary gate (nfl2k5_anniversary_kickoff) sends the kickoff-spot and touchback
+            # sites through its mode-8 trampolines; read such a site as the bytes this owner wrote there.
+            if views is None:
+                from . import nfl2k5_anniversary_kickoff as anniversary
+                views = anniversary.gate_views(payload)
+            if views.get(GATED_SITE_VAS[label]) == site[3]:
+                state = "applied"
+        group[label] = state
     return spots, curves, cpu
+
+
+# b76-vb3: the sites the 25th Anniversary gate may send through its trampolines (label -> VA).
+GATED_SITE_VAS = {**{label: va for label, va, _const, _kind in KICKOFF_SITES}, "touchback_hook": TOUCHBACK_SITE_VA}
 
 
 STATUS_POWER_ONLY = "power_only"

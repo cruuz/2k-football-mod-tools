@@ -1,0 +1,11 @@
+{
+  "module": "mod_editor/core/nfl2k5_scorebug_resources.py",
+  "moved": {
+    "PROBE_APPEND_PINS.mnf": {
+      "before": "d05dafd984d0f68e9a1d7cf8e7d6d577364049a08f0be7ac332134ca8f1533ac",
+      "after": "30137816688bebb0cc1897a02c7f33551a2e83762685d96f23165f0b06ec412e"
+    }
+  },
+  "unexpected": [],
+  "cause": "data/nfl2k5_scorebug_mnf/logos/nyg.png and lar.png recoloured by reports/b76_s12/author.py"
+}

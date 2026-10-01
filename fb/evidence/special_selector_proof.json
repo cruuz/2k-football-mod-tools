@@ -1,0 +1,119 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "venues": [
+    {
+      "venue": "s31",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s36",
+      "source_bundles_sha256_verified": 9,
+      "targets": 7,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s39",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s41",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s42",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s43",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s44",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s45",
+      "source_bundles_sha256_verified": 9,
+      "targets": 5,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s48",
+      "source_bundles_sha256_verified": 9,
+      "targets": 4,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s50",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s51",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s52",
+      "source_bundles_sha256_verified": 9,
+      "targets": 4,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s53",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s54",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s55",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s56",
+      "source_bundles_sha256_verified": 9,
+      "targets": 1,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s57",
+      "source_bundles_sha256_verified": 9,
+      "targets": 3,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s58",
+      "source_bundles_sha256_verified": 9,
+      "targets": 4,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    },
+    {
+      "venue": "s59",
+      "source_bundles_sha256_verified": 9,
+      "targets": 2,
+      "selector_method": "exact normalized material names or unique identical RGBA, all nine variants"
+    }
+  ]
+}

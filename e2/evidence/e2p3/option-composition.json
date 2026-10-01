@@ -1,0 +1,38 @@
+{
+  "classification": "PROVED OFFLINE",
+  "base": "e7d7aca5",
+  "off_byte_identical": true,
+  "off_sha256": "97e089501a6888df17254fbd312bbf322fcd250a329f3ad774f20d26ca4ddc34",
+  "on_sha256": "aeee6d13cd3e0e245adb15c3f4e713436b942d1ff36ff4ef882444af5aee2b66",
+  "on_status": "applied",
+  "options": {
+    "catch_slider": false,
+    "scheme_labels": true,
+    "practice_squad": true,
+    "franchise_practice": true,
+    "depth_locks": true,
+    "espn25_more_moments": true,
+    "historic_stock_books": true,
+    "historic_teams_quick_game": true
+  },
+  "allocation": {
+    "owner": "nfl2k5_moment_venues",
+    "kind": "code",
+    "size": 2304,
+    "align": 16,
+    "va": 21734080,
+    "raw": 12022464,
+    "owner_offset": 0,
+    "spans": [
+      {
+        "owner": "nfl2k5_moment_venues",
+        "kind": "code",
+        "size": 2304,
+        "align": 16,
+        "va": 21734080,
+        "raw": 12022464,
+        "owner_offset": 0
+      }
+    ]
+  }
+}

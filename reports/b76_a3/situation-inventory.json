@@ -1,0 +1,174 @@
+{
+  "classification": "PROVED OFFLINE",
+  "live_keys": [
+    [
+      0,
+      "1st down: up to 2 yards"
+    ],
+    [
+      1,
+      "1st down: over 2 through 7 yards"
+    ],
+    [
+      2,
+      "1st down: over 7 yards"
+    ],
+    [
+      3,
+      "2nd down: up to 2 yards"
+    ],
+    [
+      4,
+      "2nd down: over 2 through 7 yards"
+    ],
+    [
+      5,
+      "2nd down: over 7 yards"
+    ],
+    [
+      6,
+      "3rd down: up to 2 yards"
+    ],
+    [
+      7,
+      "3rd down: over 2 through 7 yards"
+    ],
+    [
+      8,
+      "3rd down: over 7 yards"
+    ],
+    [
+      9,
+      "4th down: up to 2 yards"
+    ],
+    [
+      10,
+      "4th down: over 2 through 7 yards"
+    ],
+    [
+      11,
+      "4th down: over 7 yards"
+    ],
+    [
+      12,
+      "Two-point try: ordinary offense"
+    ]
+  ],
+  "candidate_view": [
+    {
+      "label": "Openers",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "1st and 10",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2nd and 2-3",
+      "key": 4,
+      "mapping": "Studio sample label; Live situations sample maps to \"2nd down: over 2 through 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2nd and 4-6",
+      "key": 4,
+      "mapping": "Studio sample label; Live situations sample maps to \"2nd down: over 2 through 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2nd and 7-10",
+      "key": 5,
+      "mapping": "Studio sample label; Live situations sample maps to \"2nd down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2nd and 11+",
+      "key": 5,
+      "mapping": "Studio sample label; Live situations sample maps to \"2nd down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "3rd and 2-3",
+      "key": 7,
+      "mapping": "Studio sample label; Live situations sample maps to \"3rd down: over 2 through 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "3rd and 4-6",
+      "key": 7,
+      "mapping": "Studio sample label; Live situations sample maps to \"3rd down: over 2 through 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "3rd and 7-10",
+      "key": 8,
+      "mapping": "Studio sample label; Live situations sample maps to \"3rd down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "3rd and 11+",
+      "key": 8,
+      "mapping": "Studio sample label; Live situations sample maps to \"3rd down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "4th down",
+      "key": 9,
+      "mapping": "Studio sample label; Live situations sample maps to \"4th down: up to 2 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Short yardage",
+      "key": 6,
+      "mapping": "Studio sample label; Live situations sample maps to \"3rd down: up to 2 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Red zone 25-21",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Red zone 20-16",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Red zone 15-11",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Red zone 10 and in",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Goal line",
+      "key": 0,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: up to 2 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2pt",
+      "key": 12,
+      "mapping": "Real game try phase 3. Edit Live situations: Two-point try. This candidate sample is a fourth-down scrimmage proxy, not a prediction of the native kick-versus-two-point decision. The policy applies only after the game requests ordinary offense; kicks retain their special path."
+    },
+    {
+      "label": "Backed-up",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "After negative play",
+      "key": 5,
+      "mapping": "Studio sample label; Live situations sample maps to \"2nd down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "Sudden change",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "4-minute",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    },
+    {
+      "label": "2-minute",
+      "key": 2,
+      "mapping": "Studio sample label; Live situations sample maps to \"1st down: over 7 yards\". No independent stored game row has this name. Other live downs/distances within this coaching label use their corresponding live bucket."
+    }
+  ]
+}

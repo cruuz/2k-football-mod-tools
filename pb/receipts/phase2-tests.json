@@ -1,0 +1,46 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "new_suite": [
+    {
+      "command": "python3 -m pytest -q tests/mod_editor/test_nfl2k5_modern_league.py -k 'not replay_receipts'",
+      "receipt": "league-tests-final.txt",
+      "tests": 10,
+      "subtests": 5490
+    },
+    {
+      "command": "python3 -m pytest -q tests/mod_editor/test_nfl2k5_modern_league.py -k replay_receipts",
+      "receipt": "league-receipt-tests.txt",
+      "tests": 1,
+      "subtests": 32
+    }
+  ],
+  "initial_run": {
+    "receipt": "league-tests-initial.txt",
+    "failed_subtests": 407,
+    "cause": "Test-only distinct-read assertion included single-target native screens; corrected to check mode 5/target 5 and trailing zero fields."
+  },
+  "offline_replay": "league-offline.json",
+  "lab_pack_composition": "lab-composition.json",
+  "shell_syntax": "bash -n pb/lab/pb_lab.sh",
+  "recipes": {
+    "lab_validate_plan": [],
+    "league_validate_plan": []
+  },
+  "existing_regressions": {
+    "command": "python3 -m pytest -q tests/mod_editor/test_nfl2k5_complete_offense.py tests/mod_editor/test_nfl2k5_playbook_pack.py tests/mod_editor/test_nfl2k5_playbook_route_writer.py tests/mod_editor/test_nfl2k5_play_menu_walk.py tests/mod_editor/test_mod_build.py",
+    "receipt": "phase2-regression.txt",
+    "exit_code": 0,
+    "tests": 80,
+    "subtests": 7281,
+    "seconds": 774.64
+  },
+  "diagram_refresh": {
+    "command": "python3 -m pytest -q tests/mod_editor/test_nfl2k5_modern_league.py -k diagram_pages",
+    "receipt": "league-diagram-test.txt",
+    "tests": 1,
+    "deselected": 10,
+    "seconds": 1.66,
+    "reason": "Corrected PHI/TEN featured-player display labels; encoded packs unchanged."
+  }
+}

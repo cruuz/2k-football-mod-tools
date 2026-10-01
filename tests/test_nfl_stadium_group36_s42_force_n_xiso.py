@@ -25,6 +25,9 @@ XBE_PATH = ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe"
 class ForceNTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (XBE_PATH,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Retail NFL executable missing: " + ", ".join(missing))
         cls.retail = XBE_PATH.read_bytes()
         visibility = bytearray(cls.retail)
         visibility[writer.S42_UNLOCK_XBE_OFFSET:

@@ -1,0 +1,1170 @@
+{
+  "schema": "nfl2k5_team_2026/v1",
+  "team": "CIN",
+  "name": "Cincinnati Bengals",
+  "asset_code": "06",
+  "season": 2026,
+  "status": "Phase B job d2, 2026-09-24. SORT: redesigned (the April 2021 set: no side or shoulder panels, new sleeve stripes, no number shadow, no stroke on names, BENGALS on the chest, no TV numbers, tiger-stroke pants; the orange shade changed). Number shapes: the retail Bengals numerals (close to the 2021 rounded block; a traced 2021 font is an open item).",
+  "roster": {
+    "season": 2026,
+    "stats_season": 2025,
+    "statuses": [
+      "ACT"
+    ],
+    "defense": "4-3",
+    "note": "nflverse roster_2026 week 3: 53 active. Base defense from the nflverse 2026 depth charts (pos_grp 'Base 4-3 D' in every snapshot since 2026-09-09).",
+    "head_coach": "Zac Taylor",
+    "depth_since": "2026-09-09",
+    "head_coach_source": "https://www.bengals.com/team/coaches-roster/zac-taylor (Head Coach; 'The 2026 season is his eighth in the position'); confirmed 2026-09-23, matches nflverse games.csv (used only for the career record)"
+  },
+  "faces": {
+    "skin_tone_by_eye": {
+      "Erick All": 2,
+      "Jonathan Allen": 4,
+      "Jordan Battle": 4,
+      "Jacob Bayer": 0,
+      "Swayze Bozeman": 0,
+      "Tahj Brooks": 4,
+      "Chase Brown": 2,
+      "Orlando Brown": 4,
+      "Oren Burks": 4,
+      "Joe Burrow": 0,
+      "Barrett Carter": 3,
+      "Ja'Marr Chase": 4,
+      "Bryan Cook": 3,
+      "Tacario Davis": 3,
+      "Jalen Davis": 4,
+      "Kyle Dugger": 4,
+      "Jack Endries": 0,
+      "Dylan Fairchild": 0,
+      "Joe Flacco": 0,
+      "Javon Foster": 4,
+      "Mike Gesicki": 0,
+      "Tee Higgins": 4,
+      "Daxton Hill": 3,
+      "B.J. Hill": 5,
+      "Myles Hinton": 4,
+      "Cashius Howell": 3,
+      "Juandrago Turner": 3,
+      "Andrei Iosivas": 1,
+      "D.J. Ivey": 4,
+      "Kris Jenkins": 3,
+      "Cedric Johnson": 4,
+      "Demetrius Knight": 4,
+      "PJ Jules": 5,
+      "Ted Karras": 0,
+      "Dexter Lawrence": 4,
+      "Connor Lew": 0,
+      "Boye Mafe": 4,
+      "Evan McPherson": 0,
+      "Dohnte Meyers": 3,
+      "Amarius Mims": 5,
+      "Myles Murphy": 4,
+      "Josh Newton": 4,
+      "Samaje Perine": 3,
+      "Ryan Rehkow": 0,
+      "Dalton Risner": 0,
+      "Jalen Rivers": 4,
+      "Landon Robinson": 2,
+      "Drew Sample": 0,
+      "Tedarrell Slaton": 5,
+      "Shemar Stewart": 4,
+      "William Wagner": 0,
+      "Ke'Shawn Williams": 3,
+      "Colbie Young": 4
+    },
+    "dreads": [
+      "Jordan Battle",
+      "Bryan Cook",
+      "Tacario Davis",
+      "Kyle Dugger",
+      "Cashius Howell",
+      "Demetrius Knight",
+      "PJ Jules",
+      "Boye Mafe",
+      "Dohnte Meyers",
+      "Tedarrell Slaton",
+      "Shemar Stewart"
+    ],
+    "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots on u1's Giants scale (INFERRED); the automatic cheek estimate stays in faces.json as skin_lab. Dreads and twists by eye."
+  },
+  "sources": {
+    "redesign": "https://www.bengals.com/news/bengals-new-stripes-bold-sleek-iconic (2021-04-19)",
+    "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Cincinnati_Bengals_Uniforms_(2024).png (CC BY 4.0)",
+    "games_2026": "https://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=2026 (black over white with black tiger strokes, white over white)",
+    "week1_photos": "https://www.bengals.com/photos/victory-monday-2026-open-in-orange-buccaneers-top-shots (2026-09-13)",
+    "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (CIN, 2026 NFL Record and Fact Book p.56)",
+    "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/CIN.svg",
+    "wordmark": "https://commons.wikimedia.org/wiki/File:Cincinnati_Bengals_wordmark.svg (public domain)",
+    "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  },
+  "palette": {
+    "orange": "#FB4F14",
+    "black": "#000000",
+    "white": "#FFFFFF"
+  },
+  "albedo": {
+    "orange": "#FB4F14",
+    "black": "#000000",
+    "white": "#FFFFFF",
+    "retail_helmet_orange": "#D83000",
+    "retail_card_orange": "#F04000",
+    "retail_atlas_orange": "#D03000",
+    "shield_navy": "#013369",
+    "shield_red": "#D50A0A"
+  },
+  "marks": {
+    "team_logo_full": "club_logo.png",
+    "wm_bengals": "wm_black.png",
+    "wm_cincinnati": "wm_orange.png",
+    "cin_h_sleeve": "cin_h_sleeve.png",
+    "cin_a_sleeve": "cin_a_sleeve.png"
+  },
+  "kits": {
+    "home": {
+      "selector": "06H0",
+      "note": "2026 home (standard): black jersey, white numbers with an orange outline, orange tiger stripes on the sleeves, orange BENGALS on the chest, no TV numbers; white pants with black tiger strokes; black socks; orange helmet with black tiger stripes, black facemask",
+      "torso": {
+        "base_colour": "black",
+        "neck_donor": "06N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "white",
+          "offset": [
+            0,
+            18
+          ]
+        },
+        "decorations": [
+          {
+            "mark": "wm_bengals",
+            "colour": "orange",
+            "at": "chest_logo",
+            "offset": [
+              0,
+              -1.5
+            ],
+            "width": 40
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "black",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "cin_h_sleeve",
+            "center": [
+              64.5,
+              48.5
+            ],
+            "width": 123.0
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [],
+        "swoosh_colour": "black",
+        "decorations": [
+          {
+            "polygon": [
+              [
+                127.5,
+                34.0
+              ],
+              [
+                127.5,
+                25.0
+              ],
+              [
+                157.5,
+                13.0
+              ],
+              [
+                152.5,
+                20.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                66.0
+              ],
+              [
+                127.5,
+                57.0
+              ],
+              [
+                157.5,
+                45.0
+              ],
+              [
+                152.5,
+                52.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                98.0
+              ],
+              [
+                127.5,
+                89.0
+              ],
+              [
+                157.5,
+                77.0
+              ],
+              [
+                152.5,
+                84.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                130.0
+              ],
+              [
+                127.5,
+                121.0
+              ],
+              [
+                157.5,
+                109.0
+              ],
+              [
+                152.5,
+                116.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                162.0
+              ],
+              [
+                127.5,
+                153.0
+              ],
+              [
+                157.5,
+                141.0
+              ],
+              [
+                152.5,
+                148.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                194.0
+              ],
+              [
+                127.5,
+                185.0
+              ],
+              [
+                157.5,
+                173.0
+              ],
+              [
+                152.5,
+                180.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                226.0
+              ],
+              [
+                127.5,
+                217.0
+              ],
+              [
+                157.5,
+                205.0
+              ],
+              [
+                152.5,
+                212.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                34.0
+              ],
+              [
+                384.5,
+                25.0
+              ],
+              [
+                354.5,
+                13.0
+              ],
+              [
+                359.5,
+                20.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                66.0
+              ],
+              [
+                384.5,
+                57.0
+              ],
+              [
+                354.5,
+                45.0
+              ],
+              [
+                359.5,
+                52.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                98.0
+              ],
+              [
+                384.5,
+                89.0
+              ],
+              [
+                354.5,
+                77.0
+              ],
+              [
+                359.5,
+                84.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                130.0
+              ],
+              [
+                384.5,
+                121.0
+              ],
+              [
+                354.5,
+                109.0
+              ],
+              [
+                359.5,
+                116.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                162.0
+              ],
+              [
+                384.5,
+                153.0
+              ],
+              [
+                354.5,
+                141.0
+              ],
+              [
+                359.5,
+                148.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                194.0
+              ],
+              [
+                384.5,
+                185.0
+              ],
+              [
+                354.5,
+                173.0
+              ],
+              [
+                359.5,
+                180.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                226.0
+              ],
+              [
+                384.5,
+                217.0
+              ],
+              [
+                354.5,
+                205.0
+              ],
+              [
+                359.5,
+                212.0
+              ]
+            ],
+            "colour": "black"
+          }
+        ]
+      },
+      "socks": {
+        "colour": "black"
+      },
+      "digits": {
+        "glyph_donor": "06H0",
+        "fill": "white",
+        "outline": "orange",
+        "outline_frac": 0.045
+      },
+      "nameplate": {
+        "glyph_donor": "06H0",
+        "fill": "white"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_orange",
+        "shell": "orange"
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_orange",
+            "to": "orange",
+            "region": "all",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "outer_index": 3660,
+      "splayer": {
+        "torso_donor_outer": 3660,
+        "torso_donor": "06H0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ],
+        "recolour": [
+          {
+            "from": "retail_atlas_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          },
+          {
+            "from": "#F0F0F0",
+            "to": "black",
+            "region": "torso",
+            "tolerance": 0.25
+          }
+        ]
+      }
+    },
+    "away": {
+      "selector": "06A0",
+      "note": "2026 away (standard): white jersey, black numbers with an orange outline, black tiger stripes on the sleeves, orange BENGALS on the chest; white pants with black tiger strokes; black socks; the same helmet",
+      "torso": {
+        "base_colour": "white",
+        "neck_donor": "06N0",
+        "collar_shield": true,
+        "sleeve_swooshes": {
+          "colour": "black",
+          "offset": [
+            0,
+            18
+          ]
+        },
+        "decorations": [
+          {
+            "mark": "wm_bengals",
+            "colour": "orange",
+            "at": "chest_logo",
+            "offset": [
+              0,
+              -1.5
+            ],
+            "width": 40
+          }
+        ]
+      },
+      "sleeve": {
+        "base_colour": "white",
+        "stripes_from": null,
+        "decorations": [
+          {
+            "mark": "cin_a_sleeve",
+            "center": [
+              64.0,
+              63.5
+            ],
+            "width": 128.0
+          }
+        ]
+      },
+      "pants": {
+        "base_colour": "white",
+        "stripe": [],
+        "swoosh_colour": "black",
+        "decorations": [
+          {
+            "polygon": [
+              [
+                127.5,
+                34.0
+              ],
+              [
+                127.5,
+                25.0
+              ],
+              [
+                157.5,
+                13.0
+              ],
+              [
+                152.5,
+                20.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                66.0
+              ],
+              [
+                127.5,
+                57.0
+              ],
+              [
+                157.5,
+                45.0
+              ],
+              [
+                152.5,
+                52.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                98.0
+              ],
+              [
+                127.5,
+                89.0
+              ],
+              [
+                157.5,
+                77.0
+              ],
+              [
+                152.5,
+                84.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                130.0
+              ],
+              [
+                127.5,
+                121.0
+              ],
+              [
+                157.5,
+                109.0
+              ],
+              [
+                152.5,
+                116.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                162.0
+              ],
+              [
+                127.5,
+                153.0
+              ],
+              [
+                157.5,
+                141.0
+              ],
+              [
+                152.5,
+                148.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                194.0
+              ],
+              [
+                127.5,
+                185.0
+              ],
+              [
+                157.5,
+                173.0
+              ],
+              [
+                152.5,
+                180.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                127.5,
+                226.0
+              ],
+              [
+                127.5,
+                217.0
+              ],
+              [
+                157.5,
+                205.0
+              ],
+              [
+                152.5,
+                212.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                34.0
+              ],
+              [
+                384.5,
+                25.0
+              ],
+              [
+                354.5,
+                13.0
+              ],
+              [
+                359.5,
+                20.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                66.0
+              ],
+              [
+                384.5,
+                57.0
+              ],
+              [
+                354.5,
+                45.0
+              ],
+              [
+                359.5,
+                52.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                98.0
+              ],
+              [
+                384.5,
+                89.0
+              ],
+              [
+                354.5,
+                77.0
+              ],
+              [
+                359.5,
+                84.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                130.0
+              ],
+              [
+                384.5,
+                121.0
+              ],
+              [
+                354.5,
+                109.0
+              ],
+              [
+                359.5,
+                116.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                162.0
+              ],
+              [
+                384.5,
+                153.0
+              ],
+              [
+                354.5,
+                141.0
+              ],
+              [
+                359.5,
+                148.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                194.0
+              ],
+              [
+                384.5,
+                185.0
+              ],
+              [
+                354.5,
+                173.0
+              ],
+              [
+                359.5,
+                180.0
+              ]
+            ],
+            "colour": "black"
+          },
+          {
+            "polygon": [
+              [
+                384.5,
+                226.0
+              ],
+              [
+                384.5,
+                217.0
+              ],
+              [
+                354.5,
+                205.0
+              ],
+              [
+                359.5,
+                212.0
+              ]
+            ],
+            "colour": "black"
+          }
+        ],
+        "base_from": "06H0"
+      },
+      "socks": {
+        "colour": "black"
+      },
+      "digits": {
+        "glyph_donor": "06A0",
+        "fill": "black",
+        "outline": "orange",
+        "outline_frac": 0.045
+      },
+      "nameplate": {
+        "glyph_donor": "06A0",
+        "fill": "black"
+      },
+      "helmet": {
+        "shell_from": "retail_helmet_orange",
+        "shell": "orange"
+      },
+      "card": {
+        "recolour": [
+          {
+            "from": "retail_card_orange",
+            "to": "orange",
+            "region": "all",
+            "tolerance": 0.2
+          }
+        ]
+      },
+      "outer_index": 3977,
+      "splayer": {
+        "torso_donor_outer": 3977,
+        "torso_donor": "06A0",
+        "sleeve_from_donor": false,
+        "clear": [
+          [
+            144,
+            1,
+            150,
+            11
+          ],
+          [
+            212,
+            1,
+            224,
+            13
+          ]
+        ],
+        "recolour": [
+          {
+            "from": "retail_atlas_orange",
+            "to": "orange",
+            "region": "helmet",
+            "tolerance": 0.2
+          },
+          {
+            "from": "#E83000",
+            "to": "white",
+            "region": "torso",
+            "tolerance": 0.2
+          }
+        ]
+      }
+    }
+  },
+  "part_intents": {
+    "home": {
+      "torso": "black jersey body with a small orange BENGALS on the chest, NFL shield at the collar, white shoulder swooshes; the light grey patch is the neck opening",
+      "sleeve": "black sleeve with orange curved tiger stripes",
+      "pants": "white pants with short black tiger strokes down the side, black maker mark",
+      "helmet": "orange shell with black tiger stripes, white and grey hardware, flag and shield decals",
+      "digit_jersey": "white numbers with an orange outline",
+      "digit_arm": "white numbers with an orange outline (TV numbers, unused in 2026)",
+      "digit_helmet": "white numbers (unused)",
+      "nameplate": "white letters",
+      "socks00": "solid black",
+      "splayer": "far-away player atlas: white pants, black torso, orange striped helmet, black socks, skin and glove patches",
+      "team-select_unif": "menu render: black jersey with tiger-striped sleeves, white pants, orange striped helmet",
+      "team-select_helm": "menu render: orange helmet with black tiger stripes, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: an orange B with black tiger stripes and a white outline",
+      "chiclet": "a small glossy chip in the team's orange",
+      "flipchip": "the orange and black striped B logo"
+    },
+    "away": {
+      "torso": "white jersey body with a small orange BENGALS on the chest, NFL shield at the collar, black shoulder swooshes; the light grey patch is the neck opening",
+      "sleeve": "white sleeve with black curved tiger stripes",
+      "pants": "white pants with short black tiger strokes down the side, black maker mark",
+      "helmet": "orange shell with black tiger stripes, white and grey hardware, flag and shield decals",
+      "digit_jersey": "black numbers with an orange outline",
+      "digit_arm": "black numbers with an orange outline (TV numbers, unused in 2026)",
+      "digit_helmet": "white numbers (unused)",
+      "nameplate": "black letters",
+      "socks00": "solid black",
+      "splayer": "far-away player atlas: white pants, white torso, orange striped helmet, black socks, skin and glove patches",
+      "team-select_unif": "menu render: white jersey with tiger-striped sleeves, white pants, orange striped helmet",
+      "team-select_helm": "menu render: orange helmet with black tiger stripes, a dark bar and a yellow UI strip below",
+      "logo": "the team's primary logo: an orange B with black tiger stripes and a white outline",
+      "chiclet": "a small glossy chip in the team's orange",
+      "flipchip": "the orange and black striped B logo"
+    },
+    "venue": {
+      "endzone": "orange painted end zone with black tiger stripes and BENGALS in black with a white outline",
+      "center_logo": "the orange and black striped B logo with a white outline",
+      "banner": "cloth fan banners in orange, black and white"
+    }
+  },
+  "venue": {
+    "prefix": "s06",
+    "notes": "Bengals home games at Paycor Stadium (the retail Paul Brown Stadium record s06; one end-zone texture set serves both ends). End zones: the retail orange paint with black tiger stripes is kept (the Bengals' end-zone design) with the 2004 letters replaced by the 2021 BENGALS wordmark in black with a white outline and the 2026 orange (post-step cin_endzone.py). Midfield: the primary striped B logo (s06's midfield texture is 512x256; post-step center_full.py writes it at that size). The retail midfield leaping tiger was a 1997-2003 mark. Fan banner texts are 2026 players and common fan phrases (INFERRED fan content). signsA1 (2004 sponsors and NFL shield, league class) stays retail.",
+    "sources": [
+      "https://www.bengals.com/photos/victory-monday-2026-open-in-orange-buccaneers-top-shots (2026-09-13, Paycor Stadium walls and field)",
+      "https://commons.wikimedia.org/wiki/File:Cincinnati_Bengals_wordmark.svg (public domain, the 2021 wordmark)"
+    ],
+    "endzone": {
+      "paint": "orange",
+      "paint_alpha": 0.95,
+      "marks": []
+    },
+    "center_logo": {
+      "fill_mark": "team_logo_full",
+      "fill": "orange",
+      "width_frac": 0.9
+    },
+    "banners": {
+      "banner_home_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "WHO DEY !",
+                "colour": "black",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 18
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "#9 BURROW",
+                "colour": "orange",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 17
+              }
+            ]
+          }
+        ]
+      },
+      "banner_home_player": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#1 JA'MARR",
+                "colour": "black",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              0,
+              256,
+              64
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "BENGALS\nNATION",
+                "colour": "black",
+                "center": [
+                  192,
+                  31
+                ],
+                "height": 15
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "black",
+            "items": [
+              {
+                "text": "#5 HIGGINS",
+                "colour": "white",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              128,
+              64,
+              256,
+              128
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "#30 CHASE\nBROWN",
+                "colour": "orange",
+                "center": [
+                  192,
+                  96
+                ],
+                "height": 15
+              }
+            ]
+          }
+        ]
+      },
+      "banner_away_team": {
+        "banners": [
+          {
+            "slot": [
+              0,
+              0,
+              128,
+              64
+            ],
+            "bg": "white",
+            "items": [
+              {
+                "text": "GO\nBENGALS",
+                "colour": "orange",
+                "center": [
+                  64,
+                  31
+                ],
+                "height": 16
+              }
+            ]
+          },
+          {
+            "slot": [
+              0,
+              64,
+              128,
+              128
+            ],
+            "bg": "orange",
+            "items": [
+              {
+                "text": "WELCOME TO\nTHE JUNGLE",
+                "colour": "black",
+                "center": [
+                  64,
+                  96
+                ],
+                "height": 14
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "sources_uw": {
+    "sleeve_swoosh_2026": "nike.com's Bengals Game jersey (Black, myles-murphy): the white swoosh sits BELOW the orange tiger stripes on the upper sleeve (road: INFERRED the same)"
+  }
+}

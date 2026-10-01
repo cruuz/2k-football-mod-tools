@@ -59,10 +59,10 @@ REPORT_RESIDUAL_LIMITATION = (
     "runner does not print its success marker."
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
-EXPECTED_CAPABILITIES = 177
-EXPECTED_COVERED_CAPABILITIES = 172
+EXPECTED_CAPABILITIES = 207           # b76-h1: + nfl2k5.menus.historic_teams_quick_game; b76-u2: + modern_metlife; b76-m1: + nfl2k5.espn25.more_moments; b76-k1: + nfl2k5.gameplay.k128_memory; b76-vb3: + nfl2k5.gameplay.kickoff_return_blocking; b76-u4: + modern_venues_2026; b76-u5: + nfl2k5.stadiums_fields.modern_metlife_model; b76-u6: + nfl2k5.stadiums_fields.modern_sofi; b76-st: + nfl2k5.stadiums_fields.modern_highmark; b76-tf: + nfl2k5.stadiums_fields.modern_surfaces, b76-km: + nfl2k5.scorebug_presentation.kick_meter_2026, b76-hm: + nfl2k5.uniforms.modern_helmets; b76-st2: + modern_att, modern_levis, modern_allegiant, modern_mercedes_benz, b76-st3: + modern_usbank, modern_lucas_oil, modern_state_farm, b76-pf: + modern_practice_field, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit
+EXPECTED_COVERED_CAPABILITIES = 202
 EXPECTED_DEFERRED_CAPABILITIES = 5
-EXPECTED_UNIQUE_VALIDATORS = 130
+EXPECTED_UNIQUE_VALIDATORS = 160
 EXPECTED_DEFERRED_IDS = (
     "apf2k8.catching_drops.behavior",
     "apf2k8.franchise_restoration_cross_title.mode",

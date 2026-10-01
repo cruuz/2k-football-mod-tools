@@ -1,0 +1,93 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base_commit": "9ce0787e5605f3e2f8caaa921c970ef42a69595a",
+  "tests": {
+    "focused_passed": 60,
+    "economy_total": 23,
+    "build_gui_provider_passed": 37,
+    "global_registry_classes_blocked": 2,
+    "global_registry_reason": "pre-existing missing U3_TEAM_IDENTITY_2026-09-23.md; outside fc"
+  },
+  "contract_inputs": {
+    "evidence": "PROVED OFFLINE",
+    "json_sha256": "eee20a3664e4c11d17cc4f7e51aa718ddc64b1e5692a1460475d78c51973d038",
+    "parquet_sha256": "0c13b84878e2a2d4aa1845bb5bf94ff2092f8bf646a5e2a570af94e8cb626418",
+    "asset_updated_at": "2026-09-24T12:40:52Z",
+    "json_verified": true,
+    "parquet_verified": true
+  },
+  "source_pins": {
+    "mod_editor/capabilities/registry.v1.json": "e6e5def85f0a665e9fd2fd54d053de726707b5c7f278f93b53ba5203a4418eb0",
+    "mod_editor/core/nfl2k5_franchise_economy.py": "c57d98a458342a0d94a4f9c3120aa3d822cc69541f8d275282a86c1d46610357",
+    "mod_editor/core/nfl2k5_franchise_economy_code.py": "98fed9fb75029e16b335940e6bccd60f5e131eded61cddc22eb4722a0743d13d",
+    "mod_editor/core/providers.py": "7720422e8ce3efb15ba57d153990ea2b570dc6dde363457e9b15329f8e618882",
+    "mod_editor/gui/build_panel_qt.py": "ffcd5815277f2dc9dbd65f87518caa524ac9bc2602eaebbf5ae6415edf6d7028",
+    "packaging/check_2k5_mod_studio_runtime.py": "69589986010342aa15d31388d95d5634f44da99ea3a45d9a19075afbd836a676",
+    "tests/mod_editor/test_franchise_economy.py": "5f5b4698bac1e5d68ef26bd82dcc9171ac0ecaabb422f804e7102103ae0ff714",
+    "tools/franchise_economy/assemble.py": "e1fb1e6b4153b6fed4bd5b50a83c62cc5d7fbf6bddb16ef2a2179ddbf4939c5b",
+    "tools/franchise_economy/contracts.py": "e98a740b3910d91108ef0c3056f68ae342dbe74374942ea327a996c380e2880c",
+    "tools/franchise_economy/import_contracts.py": "e19223bb38bd3ca2e72b8809f3aeeeb4308b22fb9f6da993db1831b478fe4049",
+    "tools/franchise_economy/money_probe.py": "29e529c2cb2b5bde9ba31b49071badafbc57767dc313f0db360583baa9bd531a",
+    "tools/franchise_economy/prepare_lab.py": "c350dd4515db05d17b9477e6c486d2074725feb726c291e6505d81f73fb76022",
+    "tools/franchise_economy/probe.py": "523440f3bbdffe4d27ea8d31753b9d21208422303fca0c7f7dc877d62d3ff959",
+    "tools/franchise_economy/runtime.c": "72b5fe76d3d7f3f4a25b873e33ce8cad038f00b155021ea8a0187cf241a51df1",
+    "tools/franchise_economy/summarize.py": "687a19fc390792fa156e6812a52995fe40b37a45091ba2f9596f84183a0c892b",
+    "data/nfl2k5_franchise_economy.json": "73e7001ef30ea592563358f0d9d96f8f9c017a05a83b231b373e5f48c757f8e6"
+  },
+  "artifacts": {
+    "fc/FC_REPORT.md": "4da27a71198a6eab6b85b9e9baac82a369e4765550919d385ae77f591ab627eb",
+    "fc/data/contract_audit.json": "dc34704beaf7219119f377584a753ae03b74973d09625deee061e7780e98e466",
+    "fc/data/fc_contract_fragment.json": "22762d91998fc073e5af76d8539c6f2df66da735b47f8e4a5a401727979ae97d",
+    "fc/data/identity_review.json": "d25edeffde21b1a4aecf94353ce1c5fdcb221e40c2cafa34348d1f7f9df66d1e",
+    "fc/data/otc_team_caps_2026.json": "f65a555792977327a2d057b19c8e70202640fc0f3b23d316d4eaa6866fde6825",
+    "fc/lab/fc_lab.sh": "318b87396a7bf88ca4aa8537d86b63a3d48a166df8a5e0da2026ae41392323ea",
+    "fc/proof/TEAM_CAP_TABLE.md": "f013e1b5c4e1061dc352153fde3d9476fabc2208d5898a03eb8fb49bb63b4d3e",
+    "fc/proof/contract_match_rates.csv": "56ad015ded142a143f463fcf272a533869ef07054218aa91d1c519ca339400bd",
+    "fc/proof/fit_review.json": "222efd2b04673b4c034a924576580e7adfce9f0efd85801aca4d3da79673ded8",
+    "fc/proof/money_strings.json": "6f5464d986066affe330a791b96670ccbaa7888dd3498ce70d2181207771d652",
+    "fc/proof/money_strings.txt": "de6a5067ef0bd904ca85e9086f750b7b674c72b0589ac57f187ecbbf28893655",
+    "fc/proof/real_rollover.json": "828dcfad04c880a72504f639d7fcecc877a36a64b544238a15665efebfca29ae",
+    "fc/proof/real_rollover_before_signing_fix.json": "fc1dbe7ebbbed0e6725397b210a46ea7126eb6f9aadc5453d8b53b0c05596fbb",
+    "fc/proof/real_rollover_before_renewal_fix.json": "129fae12325c43ac2a0ee19b597ac7e2f52ff989542ede0006caa79df63b4345",
+    "fc/proof/team_cap_comparison.csv": "adabd74bfcb0e4c464c23eae6d16ea772a856f9664bf918ff772153a4ecfdc59",
+    "fc/proof/trade_cases.json": "a3220ec6502ea060a2e20c322e1f8575086391f3dde088b9349dd695dec2bc9e"
+  },
+  "xbe_sha256": "388486abb397d58856157ccb2c61e5fefc06b4a0d3f4f994bf7eede1865025fc",
+  "composed_roster_sha256": "a4036686e6d7400d5def1e9aab15e73b841b67b2bececc7a90c41cde53ac1d34",
+  "native_checks": {
+    "finances_start": {
+      "cap_pass": 32,
+      "native_gate_pass": 32,
+      "teams": 32
+    },
+    "finances_rollover": {
+      "cap_pass": 32,
+      "native_gate_pass": 32,
+      "teams": 32
+    },
+    "finances_after_free_agency": {
+      "cap_pass": 32,
+      "native_gate_pass": 32,
+      "teams": 32
+    }
+  },
+  "resolved_players": 1696,
+  "active_contract_matches": 1695,
+  "observed_schedules": 1437,
+  "modeled_schedules": 259,
+  "formatter_direct_calls": 51,
+  "money_probe_substituted_leaves": [],
+  "contract_replay_log": [],
+  "real_source_native_season_completed": true,
+  "native_financial_gates_proved": true,
+  "release_proof": false,
+  "release_blocker": "DESIGN: five-field cap fits do not preserve original cash/APY, exact future cap schedules or legacy team dead money; native gates alone are not release approval",
+  "lab_executed": false,
+  "transport": {
+    "evidence": "DESIGN",
+    "private_git": ".scratch/fc.git",
+    "bundle": ".scratch/fc-phase2.bundle",
+    "branch": "job/b76-fc",
+    "base": "9ce0787e5605f3e2f8caaa921c970ef42a69595a"
+  }
+}

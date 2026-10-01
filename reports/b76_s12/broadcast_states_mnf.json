@@ -1,0 +1,2601 @@
+{
+  "schema": "scorebug-broadcast-states/v1",
+  "sampling": "every tenth source frame; pilot stratified across that subset",
+  "normal_reference": "frame_000299.png",
+  "states": {
+    "normal": {
+      "representatives": [
+        {
+          "frame": "frame_000297.png",
+          "sha256": "5ec4b193894f2612e0f236c37993b1f289a6ce42a71cb839d0a726eb1bef7736",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 0.0,
+            "clock": -22.29,
+            "quarter": 0.0,
+            "play_clock": 0.0,
+            "down": 0.38,
+            "plate": 0.17,
+            "away_wing": -0.05,
+            "home_wing": 0.42,
+            "away_rim": 5.11,
+            "home_rim": -11.89,
+            "away_timeouts": 1.0,
+            "home_timeouts": 0.0,
+            "network": 8.16
+          }
+        },
+        {
+          "frame": "frame_000298.png",
+          "sha256": "fe44712916ef6f6f81be4b8370c9a9de72f2c54be22eb42014d048b69c14f344",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 0.0,
+            "clock": -14.0,
+            "quarter": 0.0,
+            "play_clock": 0.0,
+            "down": 0.32,
+            "plate": 0.09,
+            "away_wing": 0.71,
+            "home_wing": 0.49,
+            "away_rim": 2.04,
+            "home_rim": -9.54,
+            "away_timeouts": 1.0,
+            "home_timeouts": 0.0,
+            "network": 1.18
+          }
+        },
+        {
+          "frame": "frame_000303.png",
+          "sha256": "e310357d467d1af9f591d687bb699f629a56b2aa1993868e09f6419b239dd130",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -1.57,
+            "clock": -14.0,
+            "quarter": 1.71,
+            "play_clock": 0.86,
+            "down": 0.11,
+            "plate": -0.04,
+            "away_wing": -0.06,
+            "home_wing": -0.14,
+            "away_rim": -0.11,
+            "home_rim": -1.84,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 0.99
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 31
+    },
+    "kickoff": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "first_and_ten": {
+      "representatives": [
+        {
+          "frame": "frame_000344.png",
+          "sha256": "c2e398348bd07371585be7386d72ec9fefdb6ab878fe3ae7f18f5bdb8ebeb237",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -0.43,
+            "clock": -14.0,
+            "quarter": -1.43,
+            "play_clock": 1.72,
+            "down": 0.83,
+            "plate": 0.4,
+            "away_wing": -0.35,
+            "home_wing": -0.11,
+            "away_rim": 1.78,
+            "home_rim": -10.94,
+            "away_timeouts": 0.0,
+            "home_timeouts": -0.43,
+            "network": 1.41
+          }
+        },
+        {
+          "frame": "frame_000347.png",
+          "sha256": "20b079ebd98e41be91a573af74e5bb4de0903987cf58d878615295e636dda343",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -0.43,
+            "clock": -14.0,
+            "quarter": 1.14,
+            "play_clock": 1.0,
+            "down": 0.63,
+            "plate": 0.27,
+            "away_wing": 0.74,
+            "home_wing": -0.21,
+            "away_rim": 0.51,
+            "home_rim": -2.65,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.68,
+            "network": 1.9
+          }
+        },
+        {
+          "frame": "frame_000566.png",
+          "sha256": "63474e56c28c68a701a68cc7b14444e4d9a244bc1d73421bbca33c6ba8c941c9",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 1.0,
+            "clock": -3.0,
+            "quarter": 1.14,
+            "play_clock": 1.36,
+            "down": 0.9,
+            "plate": 0.65,
+            "away_wing": 0.23,
+            "home_wing": -0.16,
+            "away_rim": 1.4,
+            "home_rim": -8.03,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 4.55
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 221
+    },
+    "short_yardage": {
+      "representatives": [
+        {
+          "frame": "frame_000623.png",
+          "sha256": "77d35bfbbe47966a27f39f7b42c623d1e92fb6f5d51f5d902c0f55ef0fb16823",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 2.0,
+            "clock": -32.5,
+            "quarter": 1.43,
+            "play_clock": 1.88,
+            "down": -1.74,
+            "plate": -2.76,
+            "away_wing": -0.22,
+            "home_wing": 0.0,
+            "away_rim": 2.11,
+            "home_rim": 0.22,
+            "away_timeouts": 0.0,
+            "home_timeouts": 1.0,
+            "network": 7.61
+          }
+        },
+        {
+          "frame": "frame_000628.png",
+          "sha256": "6ebaef0b20e9a659382aeeec11a74fd1a30687b287e79a7b28f724bb58e7319c",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 1.44,
+            "clock": -17.71,
+            "quarter": 0.71,
+            "play_clock": 1.0,
+            "down": -1.3,
+            "plate": -0.81,
+            "away_wing": -0.04,
+            "home_wing": -0.93,
+            "away_rim": 2.69,
+            "home_rim": 0.4,
+            "away_timeouts": 0.0,
+            "home_timeouts": 1.0,
+            "network": -5.86
+          }
+        },
+        {
+          "frame": "frame_000626.png",
+          "sha256": "2e2d214335ca6404556f206d13b8f07200fda9d10558e4ddbe6022cec41b2679",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": 1.43,
+            "clock": -39.21,
+            "quarter": 0.56,
+            "play_clock": 1.0,
+            "down": -0.97,
+            "plate": -0.68,
+            "away_wing": -0.21,
+            "home_wing": -0.74,
+            "away_rim": 2.92,
+            "home_rim": -0.79,
+            "away_timeouts": 0.0,
+            "home_timeouts": 1.0,
+            "network": 8.18
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 22
+    },
+    "third_and_long": {
+      "representatives": [
+        {
+          "frame": "frame_000454.png",
+          "sha256": "c6cf36e72b12cbfca01ec250200db4f2ca8cef0f35c84e8b4c922f4e7cde6959",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -4.56,
+            "clock": -29.57,
+            "quarter": 0.71,
+            "play_clock": 0.72,
+            "down": -4.05,
+            "plate": -3.52,
+            "away_wing": -0.5,
+            "home_wing": -0.06,
+            "away_rim": 25.52,
+            "home_rim": -36.35,
+            "away_timeouts": 0.0,
+            "home_timeouts": 0.0,
+            "network": 11.15
+          }
+        },
+        {
+          "frame": "frame_000453.png",
+          "sha256": "4d867697854804206a373b0ff7711410e199119aea79f43d1874c9ed024d92c1",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -4.0,
+            "clock": -20.39,
+            "quarter": 0.71,
+            "play_clock": 0.72,
+            "down": -3.77,
+            "plate": -3.49,
+            "away_wing": 0.51,
+            "home_wing": 0.34,
+            "away_rim": 27.46,
+            "home_rim": -35.96,
+            "away_timeouts": 0.0,
+            "home_timeouts": 1.0,
+            "network": 26.01
+          }
+        },
+        {
+          "frame": "frame_000039.png",
+          "sha256": "dde9e647ea43efa299d390f5bed5a0426a988fefd10140a4e25c6d5347601f12",
+          "median_luma_delta_from_normal": {
+            "away_score": 0.0,
+            "home_score": -7.0,
+            "clock": -31.25,
+            "quarter": 1.0,
+            "play_clock": 1.01,
+            "down": -5.27,
+            "plate": -5.15,
+            "away_wing": 0.02,
+            "home_wing": -0.41,
+            "away_rim": 25.74,
+            "home_rim": -36.5,
+            "away_timeouts": 0.0,
+            "home_timeouts": 1.0,
+            "network": 17.58
+          }
+        }
+      ],
+      "game_reproducible": true,
+      "observed": true,
+      "count": 39
+    },
+    "fourth_down": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "red_zone": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "goal_to_go": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "touchdown_banner": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "field_goal_banner": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "flag": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "timeout": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "two_minute": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "replay_or_network_bug": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    },
+    "end_of_quarter": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "absent": {
+      "representatives": [],
+      "game_reproducible": true,
+      "observed": false
+    },
+    "other": {
+      "representatives": [],
+      "game_reproducible": false,
+      "observed": false
+    }
+  },
+  "rejected": [
+    {
+      "frame": "frame_000001.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000002.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000003.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000004.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000005.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000006.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000007.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000008.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000009.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000010.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000011.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000012.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000017.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000018.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000021.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000034.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000035.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000036.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000037.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000038.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000040.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000041.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000042.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000043.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000044.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000045.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000046.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000047.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000048.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000049.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000050.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000051.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000052.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000053.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000054.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000055.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000056.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000057.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000058.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000059.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000060.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000061.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000062.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000063.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000064.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000065.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000066.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000067.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000068.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000069.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000070.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000071.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000072.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000073.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000074.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000075.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000076.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000087.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000088.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000089.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000090.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000091.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000092.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000093.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000094.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000095.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000107.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000108.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000109.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000110.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000111.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000112.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000113.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000114.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000121.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000122.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000123.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000124.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000125.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000126.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000127.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000128.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000129.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000130.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000131.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000132.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000133.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000134.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000150.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000151.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000152.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000153.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000154.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000155.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000157.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000159.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000160.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000161.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000162.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000163.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000164.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000165.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000166.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000167.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000168.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000169.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000170.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000171.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000172.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000173.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000174.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000175.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000176.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000177.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000178.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000179.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000180.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000181.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000182.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000183.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000184.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000185.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000186.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000187.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000188.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000189.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000190.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000191.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000192.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000193.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000194.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000195.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000196.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000197.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000198.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000199.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000200.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000201.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000202.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000203.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000204.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000205.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000206.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000207.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000209.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000210.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000211.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000212.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000213.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000214.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000215.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000217.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000218.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000219.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000220.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000221.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000222.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000238.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000239.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000240.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000241.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000242.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000243.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000244.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000245.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000246.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000247.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000248.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000249.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000250.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000251.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000252.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000253.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000254.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000255.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000256.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000257.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000258.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000259.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000260.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000261.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000262.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000263.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000264.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000265.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000266.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000267.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000268.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000270.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000277.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000278.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000279.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000280.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000281.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000282.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000283.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000284.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000285.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000286.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000287.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000288.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000289.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000290.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000291.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000305.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000306.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000307.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000308.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000309.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000327.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000328.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000329.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000330.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000333.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000334.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000335.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000336.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000337.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000338.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000348.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000349.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000350.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000351.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000352.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000353.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000354.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000355.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000356.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000357.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000358.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000359.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000360.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000361.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000366.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000367.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000369.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000370.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000371.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000372.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000373.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000374.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000375.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000376.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000377.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000378.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000379.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000380.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000381.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000382.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000383.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000384.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000385.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000386.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000402.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000403.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000404.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000405.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000406.png",
+      "state": "first_and_ten",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000414.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000415.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000416.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000417.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000418.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000420.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000421.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000423.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000424.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000425.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000426.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000427.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000428.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000429.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000430.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000431.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000432.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000434.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000435.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000436.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000437.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000438.png",
+      "state": "flag",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000448.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000449.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000450.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000451.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000456.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000457.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000461.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000462.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000463.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000464.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000467.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000468.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000469.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000470.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000471.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000510.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000511.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000512.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000513.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000514.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000515.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000516.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000517.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000518.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000519.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000520.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000521.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000522.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000523.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000524.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000526.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000527.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000528.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000529.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000530.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000531.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000536.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000537.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000538.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000539.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000540.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000541.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000542.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000543.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000544.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000545.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000546.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000547.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000548.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000549.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000550.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000551.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000552.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000553.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000554.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000555.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000556.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000558.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000559.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000560.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000562.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000563.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000571.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000572.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000573.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000574.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000575.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000576.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000577.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000578.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000579.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000580.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000581.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000585.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000586.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000587.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000589.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000590.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000591.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000592.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000593.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000594.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000595.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000596.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000597.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000598.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000599.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000600.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000608.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000609.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000611.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000612.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000613.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000615.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000616.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000617.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000622.png",
+      "state": "short_yardage",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000644.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000645.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000646.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000647.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000648.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000649.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000650.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000651.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000652.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000653.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000654.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000655.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000656.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000657.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000658.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000659.png",
+      "state": "normal",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000660.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000661.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000662.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000663.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000664.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000665.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000666.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000667.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000668.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000669.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000670.png",
+      "state": "goal_to_go",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000671.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000672.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000673.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000674.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000675.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000676.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000677.png",
+      "state": "absent",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000685.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000710.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000712.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000715.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000716.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000717.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000718.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000719.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000720.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000721.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000722.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000723.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000724.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000725.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000726.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000727.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000728.png",
+      "state": "flag",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000729.png",
+      "state": "flag",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000741.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000743.png",
+      "state": "third_and_long",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000745.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000746.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000747.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000748.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000749.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000750.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000751.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000752.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000753.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000754.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000755.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000756.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000757.png",
+      "state": "fourth_down",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000758.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000759.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000760.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000761.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000762.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000763.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    },
+    {
+      "frame": "frame_000764.png",
+      "state": "other",
+      "reason": "confidence_or_clean_gate"
+    }
+  ],
+  "limitations": [
+    "State reproducibility describes retail predicates, not authored event banners.",
+    "Uncertain frames are retained for review, not assigned invented labels."
+  ]
+}

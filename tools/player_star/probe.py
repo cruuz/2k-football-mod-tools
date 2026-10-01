@@ -174,8 +174,8 @@ def evidence_records(original, body, source, extent):
                           'retail_models': vm.models, 'star_strips': strips,
                           'shared_material_unchanged': material_before == bytes(vm.uc.mem_read(vm.u32(ps.MATERIAL_VA), 128))}
     submitted = results['fixed']['star_strips']
-    if [row['diffuse'] for row in submitted] != ['0xff101010', '0xffffffff']*len(selected):
-        raise AssertionError('a tagged runtime record failed to submit its dark/white star pair')
+    if [row['diffuse'] for row in submitted] != ['0xffffffff', '0xffffc040']*len(selected):
+        raise AssertionError('a tagged runtime record failed to submit its white-rim/gold star pair')
     if any(row['vertex_count'] != 22 or not row['closed'] for row in submitted):
         raise AssertionError('a star strip is incomplete')
     if [row['entity'] for row in submitted] != [hex(e) for e in entities[:len(selected)] for _ in range(2)]:
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     print(json.dumps({'source_status': result['execution']['source']['status'],
                       'fixed_status': result['execution']['fixed']['status'],
                       'players': [p['name'] for p in result['tagged_players']],
-                      'filled_stars': sum(row['diffuse'] == '0xffffffff'
+                      'gold_stars': sum(row['diffuse'] == '0xffffc040'
                                            for row in result['execution']['fixed']['star_strips']),
-                      'contrast_backings': sum(row['diffuse'] == '0xff101010'
+                      'white_rims': sum(row['diffuse'] == '0xffffffff'
                                                for row in result['execution']['fixed']['star_strips']),
                       'proof': str(args.json), 'copy': result.get('copy')}, indent=2))

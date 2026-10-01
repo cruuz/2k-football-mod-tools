@@ -36,6 +36,10 @@ FIELDS = {"temperature_f": (0x28, -60, 130),
           "precipitation_pct": (0x44, 0, 100),
           "wind_mph": (0x60, 0, 60)}
 SHAPE_SHA256 = "ab4df547810a558fd3563b6bf4187b88a03b02111437b35a1f37e726a68cf85f"
+# b76-u6: the same rows with the Chargers row (s24) and the first Super Bowl row (s40, Super Bowl LXI) roofed and on
+# turf, as SoFi Stadium writes them (nfl2k5_sofi_venue); the Rams row (s23) is roofed and on turf in retail. Only those
+# words differ from the retail shape.
+SOFI_SHAPE_SHA256 = "a4cfb9327f9ad9a3ecccf22d24ea9841467f040778e5dfe89cad2292b7a9ae49"
 
 
 class WeatherError(ValueError):
@@ -99,7 +103,7 @@ def inspect_resource(data):
             "Unsupported stadium table; expected 82 complete USA stadium rows")
     geometry = b"".join(data[o+24:o+40]+data[o+124:o+128]
                         for o in range(at, at+COUNT*STRIDE, STRIDE))
-    require(sha(geometry) == SHAPE_SHA256,
+    require(sha(geometry) in (SHAPE_SHA256, SOFI_SHAPE_SHA256),
             "Stadium roof, identity or record layout changed; reopen the supported source")
     rows = []
     for index in range(count):

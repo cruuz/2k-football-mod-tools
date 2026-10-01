@@ -104,6 +104,8 @@ class ApfNode17TopologyPatchTests(unittest.TestCase):
             writer._draw_semantics(bytes(system))
 
     def test_corpus_and_normative_spec_are_canonical_and_complete(self) -> None:
+        if not CORPUS.is_file():
+            self.skipTest(f"private APF topology corpus absent: {CORPUS}")
         corpus = json.loads(CORPUS.read_bytes())
         spec = json.loads(SPEC.read_bytes())
         self.assertEqual(CORPUS.read_bytes(), spec_tool.canonical(corpus))
@@ -150,20 +152,24 @@ class ApfNode17TopologyPatchTests(unittest.TestCase):
             self.assertEqual(writer.sha256_bytes(entry), writer.container.OUTER_SHA256)
 
     def test_writer_refuses_symlink_inputs_and_existing_output_before_mutation(self) -> None:
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory_name:
-            directory = Path(directory_name)
+        with tempfile.TemporaryDirectory() as directory_name:
+            directory = Path(directory_name).resolve()
+            game = directory / "source"
+            game.mkdir()
+            recipe = directory / "source-recipe.json"
+            recipe.write_text("{}", encoding="utf-8", newline="\n")
             game_link = directory / "game"
-            game_link.symlink_to(GAME_DIR, target_is_directory=True)
+            game_link.symlink_to(game, target_is_directory=True)
             with self.assertRaisesRegex(writer.PatchError, "game directory"):
-                writer.write_output(game_link, SAMPLE, directory / "out1")
+                writer.write_output(game_link, recipe, directory / "out1")
             recipe_link = directory / "recipe.json"
-            recipe_link.symlink_to(SAMPLE)
+            recipe_link.symlink_to(recipe)
             with self.assertRaisesRegex(writer.PatchError, "recipe"):
-                writer.write_output(GAME_DIR, recipe_link, directory / "out2")
+                writer.write_output(game, recipe_link, directory / "out2")
             existing = directory / "existing"
             existing.mkdir()
             with self.assertRaisesRegex(writer.PatchError, "existing"):
-                writer.write_output(GAME_DIR, SAMPLE, existing)
+                writer.write_output(game, recipe, existing)
 
     def test_verification_artifact_refuses_inside_output_and_existing_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory_name:

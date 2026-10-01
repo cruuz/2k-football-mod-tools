@@ -124,6 +124,8 @@ class WriterTests(unittest.TestCase):
         if not (XBE.parent / "vc_53450030/0").is_file():
             self.skipTest("private USA roster archive is absent")
         # The descriptor-backed reader loads only this 594 KB resource.
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
         with history._outer_image()(XBE.parent) as archive:
             entry = history._entry(archive)
             self.assertEqual(entry.size, history.RESOURCE_SIZE)

@@ -33,6 +33,8 @@ HAVE_CAPSTONE = importlib.util.find_spec("capstone") is not None
 def _rost_body() -> bytes:
     from nfl2k5_playbook_position_recode import OuterImage
 
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(GAME)
     with OuterImage(GAME) as archive:
         entry = archive.entries[pt.ROST_OUTER_INDEX]
         resource = archive.read(entry.virtual_offset, entry.size)
@@ -270,3 +272,47 @@ class StarColumnTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipUnless(PACKS.is_dir(), "retail extraction not present")
+class ProposedStarListTests(unittest.TestCase):
+    """vb3 D4 (Noah, video 2 [6:17]): "Obviously, Michael Vick should have that as well".
+
+    The video disc's tags are the 17 abilities X-Factors (one per position). The proposal
+    reports/vb3_d4/player_tags_ovr90.json stars every active club player whose in-game overall is 90+."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        import json
+        sys.path.insert(0, str(REPO / "reports" / "vb3_d4"))
+        import stars
+        cls.stars = stars
+        cls.saved = json.loads((REPO / "reports/vb3_d4/player_tags_ovr90.json").read_text(encoding="utf-8"))
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(GAME)
+        cls.document = stars.document_for(GAME)
+        cls.body = _rost_body()
+
+    def test_the_list_is_the_rule_on_the_retail_roster(self) -> None:
+        rows = self.stars.rows(self.document, min_overall=90)
+        self.assertEqual(rows, self.saved["players"])
+        self.assertEqual(self.saved["player_tags"], sorted((row["tag"] for row in rows), key=int))
+        self.assertEqual(self.saved["count"], len(rows))
+        # The rule itself, as a later roster pass (the 2026 rosters) calls it on any roster document.
+        self.assertEqual(pt.STAR_MIN_OVERALL, 90)
+        self.assertEqual(pt.star_rule_tags(self.document, lineman=True), self.saved["player_tags"])
+        self.assertEqual(len(pt.star_rule_tags(self.document)), 118)        # retail linemen, no lineman rating
+        self.assertEqual(len(pt.star_rule_tags(self.document, min_overall=100)), 4)   # Harrison, Moss, Owens, Holt
+
+    def test_vick_and_the_obvious_stars_carry_it_and_every_tag_resolves(self) -> None:
+        names = {row["name"]: row for row in self.saved["players"]}
+        for name in ("Michael Vick", "Peyton Manning", "LaDainian Tomlinson", "Randy Moss", "Terrell Owens",
+                     "Ray Lewis", "Brian Urlacher", "Champ Bailey", "Edward Reed", "Tony Gonzalez"):
+            self.assertIn(name, names)
+        self.assertEqual(names["Michael Vick"]["overall"], 90)
+        self.assertNotIn("T.J. Duckett", names)          # the recipe's HB X-Factor rates 80 in the game
+        out, receipt = pt.apply_body(self.body, self.saved["player_tags"])
+        self.assertEqual(receipt["tagged"], len(self.saved["player_tags"]))
+        self.assertEqual(receipt["log"], [])
+        tagged = {p.display for p in pt.parse_body(out).tagged}
+        self.assertEqual(len(tagged), self.saved["count"])

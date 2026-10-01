@@ -1,0 +1,25 @@
+..FF...
+======================================================================
+FAIL: test_every_buildplan_field_has_a_binding_on_the_page (__main__.BuildPlanCoverageTests.test_every_buildplan_field_has_a_binding_on_the_page)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-h1/tests/mod_editor/test_ux_build_plan_coverage_qt.py", line 95, in test_every_buildplan_field_has_a_binding_on_the_page
+    self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
+AssertionError: Items in the first set but not the second:
+'espn25_named_previews'
+'historic_stock_books'
+'espn25_era_rules'
+'official_marks_pack' : BuildPlan fields with no control on the Build tab
+
+======================================================================
+FAIL: test_every_check_box_keeps_a_short_caption (__main__.BuildPlanCoverageTests.test_every_check_box_keeps_a_short_caption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/noah/2k-worktrees/b76-h1/tests/mod_editor/test_ux_build_plan_coverage_qt.py", line 177, in test_every_check_box_keeps_a_short_caption
+    self.assertLessEqual(len(box.text()), 60, box.text())
+AssertionError: 92 not less than or equal to 60 : EverBank Stadium: the 2026 construction (on: the season as it stands; off: the 2025 stadium)
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.780s
+
+FAILED (failures=2)

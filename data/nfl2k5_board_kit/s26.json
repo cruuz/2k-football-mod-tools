@@ -1,0 +1,112 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.35,
+        "colour": [
+          60,
+          60,
+          64
+        ],
+        "depth": 0.12,
+        "material": "lambert15"
+      },
+      "inset": 0.05,
+      "name": "bk_board_ne",
+      "path": [
+        [
+          45.162,
+          128.26
+        ],
+        [
+          65.168,
+          120.28
+        ]
+      ],
+      "structure": {
+        "colour": [
+          60,
+          60,
+          64
+        ],
+        "depth": 1.5,
+        "material": "lambert66"
+      },
+      "width": 21.44,
+      "y": [
+        33.9,
+        46.062
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.35,
+        "colour": [
+          60,
+          60,
+          64
+        ],
+        "depth": 0.12,
+        "material": "lambert15"
+      },
+      "inset": 0.05,
+      "name": "bk_board_nw",
+      "path": [
+        [
+          -65.445,
+          120.16
+        ],
+        [
+          -45.495,
+          128.28
+        ]
+      ],
+      "structure": {
+        "colour": [
+          60,
+          60,
+          64
+        ],
+        "depth": 1.5,
+        "material": "lambert66"
+      },
+      "width": 21.44,
+      "y": [
+        33.9,
+        46.062
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "lambert73",
+        "lambert74"
+      ],
+      "shape": "group330"
+    },
+    {
+      "materials": [
+        "lambert73",
+        "lambert74"
+      ],
+      "shape": "group331"
+    }
+  ],
+  "env": null,
+  "help": "the 2022 north-end boards, 70.34 x 39.9 ft",
+  "markers": {},
+  "name": "Lumen Field",
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Seattle Seahawks, 'Lumen Field Celebrates 20 Years With New Stadium Enhancements' (2022-07-20, https://www.seahawks.com/news/lumen-field-celebrates-20-years-with-new-stadium-enhancements): two new north-end video boards, Mitsubishi Diamond Vision, 39.90 ft high by 70.34 ft wide, more than double the old north-end boards.",
+    "Wikipedia, Lumen Field (2022 renovations): 'the replacement of a pair of video display boards at the north end of the stadium with Diamond Vision boards from Mitsubishi Electric that were more than double the size of the pre-existing ones'; the U-shape opens to the north, where a 13-story tower carries the vertical scoreboard over the Hawks' Nest.",
+    "The retail s26 scene (PROVED OFFLINE): +z is the real north end (the tower, group464, over the Hawks' Nest). The pre-existing pair are the stats boards of group330 (x+) and group331 (x-): lambert73 quads 13.5 m wide and 12.9 m tall (bottom 34.4 m, top 47.4 m) on the north corner structures (top 33.7 m), each square to the field diagonally, over a lambert74 base strip (y 31.1 to 34.5). Both go.",
+    "Commons photos (2023: r007 toward the north end, r009 from the south-east) show the two landscape boards at the north corners, flanking the tower (reference only).",
+    "DESIGN: no pose was solved (the 2023 frames are soccer set-ups under a wide lens), so each new board stands on its corner structure's roof (33.55 m) at the roof's field edge, centred on it and square to the structure's front face (the retail face from (+-45.94 to +-46.55, 127.9) to (+-64.39, 120.59), 19.9 m), its frame's foot on the roof and its 1.5 m body over the roof, at the published 70.34 x 39.9 ft, so it reads as mounted on the corner towers the photos show; frames and bodies in lambert15 at a dark colour. The old pair stood 2.7 m further forward on the lower roof (31.0 m) on their base strips. The tower keeps its retail vertical board and the south end its low screen; the 2026 venue art puts LUMEN FIELD on the tower's name band.",
+    "The jumbotron markers stay on the retail screens (the tower's vertical board and the south end's low screen), which the kit keeps.",
+    "DESIGN (main, 2026-09-29): the boards' bodies and backs take lambert66, a plain retail material, at their dark colour (a solid panel from behind); the frame's material stays on the thin border only."
+  ],
+  "team": "SEA",
+  "venue": "s26"
+}

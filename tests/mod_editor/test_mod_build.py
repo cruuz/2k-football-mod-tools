@@ -194,7 +194,14 @@ class PresetTests(unittest.TestCase):
                     playbook_packs=(str(ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"),),
                 ))
 
-    def test_playbook_pack_step_lands_in_the_receipt(self) -> None:
+    @mock.patch("mod_editor.core.nfl2k5_disc_extents.validate_image", side_effect=lambda target: {"fixture": True})
+    @mock.patch("mod_editor.core.xdvdfs_compact.finish_private",
+                side_effect=lambda target, **_: {"output_bytes": Path(target).stat().st_size})
+    def test_playbook_pack_step_lands_in_the_receipt(self, _compact, _extents) -> None:
+        # ig: sd2's final extent gate reads the image's XDVDFS tree; this fixture has none (real extent checks live in
+        # test_nfl2k5_disc_extents and test_xdvdfs_compact_extent_guard).
+        # This routing fixture pretends a bare XBE is a disc. Real compact
+        # directory and payload checks live in test_xdvdfs_compact.
         from mod_editor.core import nfl2k5_playbook_pack as packs
 
         seed = ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"
@@ -227,9 +234,21 @@ class PresetTests(unittest.TestCase):
             finally:
                 mod_build.tt.is_disc_image = pretend_image
 
+        real_check_menus = mod_build._check_playbook_menus
+        real_check_scoring = mod_build._check_playbook_scoring
+        menu_checks: list[str] = []
+
+        def fake_check_menus(target, progress):
+            # The real gate opens the image's PLAY books; this test's target is a synthetic XBE that only
+            # pretends to be a disc image, so record the call and answer like a clean one-book image.
+            menu_checks.append(str(target))
+            return {"books": 1, "problems": 0}
+
         packs.apply_packs_to_image = fake_apply
         mod_build.tt.is_disc_image = pretend_image
         mod_build.inspect = inspect_for_real
+        mod_build._check_playbook_menus = fake_check_menus
+        mod_build._check_playbook_scoring = lambda target, progress: {"books": 1, "faults": 0, "status": "applied"}
         try:
             with tempfile.TemporaryDirectory() as tmp:
                 source = Path(tmp) / "default.xbe"
@@ -244,6 +263,12 @@ class PresetTests(unittest.TestCase):
             packs.apply_packs_to_image = real_apply
             mod_build.tt.is_disc_image = real_is_image
             mod_build.inspect = real_inspect
+            mod_build._check_playbook_menus = real_check_menus
+            mod_build._check_playbook_scoring = real_check_scoring
+        # vb2's play-menu gate runs once, after the last playbook writer, and lands in the receipt.
+        self.assertEqual(len(menu_checks), 1)
+        self.assertEqual(receipt["playbook_menus"], {"books": 1, "problems": 0})
+        self.assertEqual(receipt["playbook_scoring"], {"books": 1, "faults": 0, "status": "applied"})
         step = next(s for s in receipt["steps"] if s["step"] == "playbook_packs")
         self.assertEqual(step["status"], "applied")
         self.assertEqual(len(step["packs"]), 1)

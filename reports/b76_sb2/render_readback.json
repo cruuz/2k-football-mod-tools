@@ -1,0 +1,2566 @@
+{
+  "classification": "PROVED OFFLINE",
+  "renders": {
+    "before_chi_interim_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 887,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": 1,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          867,
+          950,
+          1050,
+          980
+        ],
+        "pixels": 2507
+      }
+    },
+    "before_chi_first10_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 781,
+        "play_clock": 38,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          885,
+          950,
+          1035,
+          980
+        ],
+        "pixels": 1797
+      }
+    },
+    "before_phi_first10_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 519,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          885,
+          950,
+          1034,
+          980
+        ],
+        "pixels": 1560
+      }
+    },
+    "before_fourth1_white6_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 654,
+        "play_clock": 6,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          892,
+          950,
+          1026,
+          980
+        ],
+        "pixels": 1603
+      }
+    },
+    "before_fourth1_red5_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 653,
+        "play_clock": 5,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          892,
+          950,
+          1026,
+          980
+        ],
+        "pixels": 1603
+      }
+    },
+    "before_third16_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 417,
+        "play_clock": 17,
+        "down": 3,
+        "distance": 16,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          883,
+          950,
+          1037,
+          980
+        ],
+        "pixels": 1718
+      }
+    },
+    "before_flag_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 895,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "FLAG",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          915,
+          956,
+          1003,
+          979
+        ],
+        "pixels": 785
+      }
+    },
+    "before_chi_goal_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 880,
+        "play_clock": 31,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          846,
+          950,
+          1073,
+          980
+        ],
+        "pixels": 2904
+      }
+    },
+    "before_phi_goal_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 10,
+        "away_timeouts": 0,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 0,
+        "play_clock": 30,
+        "down": 2,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          846,
+          950,
+          1073,
+          980
+        ],
+        "pixels": 2470
+      }
+    },
+    "before_player_tags_ESPN_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 119,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "hang time",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1007,
+          979
+        ],
+        "pixels": 1198
+      }
+    },
+    "before_post_punt_ESPN_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 113,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "ball on",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1007,
+          979
+        ],
+        "pixels": 1198
+      }
+    },
+    "before_red2_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 7,
+        "home_score": 10,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 3,
+        "clock": 818,
+        "play_clock": 2,
+        "down": 3,
+        "distance": 5,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          892,
+          950,
+          1026,
+          980
+        ],
+        "pixels": 1487
+      }
+    },
+    "before_under_minute_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 5,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 12,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff545c6a",
+        "away_wing": "0xff15a1b2",
+        "home_wing": "0xff568cee",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          879,
+          950,
+          1038,
+          980
+        ],
+        "pixels": 2100
+      }
+    },
+    "after_chi_interim_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 887,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": 1,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          886,
+          955,
+          1031,
+          979
+        ],
+        "pixels": 1306
+      },
+      "broadcast": {
+        "bin": 28,
+        "label_ink": {
+          "box": [
+            886,
+            955,
+            1033,
+            978
+          ],
+          "pixels": 1345
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            152.0,
+            55.0,
+            27.0
+          ],
+          "chevrons": {
+            "away": 38.05714285714286,
+            "home": 221.87142857142857
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              119.0,
+              134.0
+            ],
+            "CHI": [
+              221.5,
+              80.0,
+              43.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_chi_first10_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 781,
+        "play_clock": 38,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          901,
+          955,
+          1019,
+          979
+        ],
+        "pixels": 791
+      },
+      "broadcast": {
+        "bin": 41,
+        "label_ink": {
+          "box": [
+            901,
+            955,
+            1018,
+            978
+          ],
+          "pixels": 1055
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            142.0,
+            51.0,
+            26.0
+          ],
+          "chevrons": {
+            "away": 36.804761904761904,
+            "home": 222.6968253968254
+          },
+          "wing": {
+            "PHI": [
+              40.0,
+              119.0,
+              129.0
+            ],
+            "CHI": [
+              219.0,
+              79.0,
+              44.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_phi_first10_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 519,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          900,
+          955,
+          1019,
+          979
+        ],
+        "pixels": 958
+      },
+      "broadcast": {
+        "bin": 113,
+        "label_ink": {
+          "box": [
+            901,
+            955,
+            1018,
+            978
+          ],
+          "pixels": 1077
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "PHI",
+          "plate_rgb": [
+            23.0,
+            77.0,
+            86.0
+          ],
+          "chevrons": {
+            "away": 213.3031746031746,
+            "home": 38.52857142857143
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              120.0,
+              134.0
+            ],
+            "CHI": [
+              215.0,
+              82.0,
+              45.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_fourth1_white6_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 654,
+        "play_clock": 6,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          906,
+          955,
+          1012,
+          979
+        ],
+        "pixels": 818
+      },
+      "broadcast": {
+        "bin": 69,
+        "label_ink": {
+          "box": [
+            907,
+            955,
+            1013,
+            978
+          ],
+          "pixels": 964
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            137.0,
+            50.0,
+            25.0
+          ],
+          "chevrons": {
+            "away": 36.67142857142857,
+            "home": 221.8
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              119.0,
+              132.0
+            ],
+            "CHI": [
+              218.0,
+              80.0,
+              45.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_fourth1_red5_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 653,
+        "play_clock": 5,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          906,
+          955,
+          1012,
+          979
+        ],
+        "pixels": 818
+      },
+      "broadcast": {
+        "bin": 70,
+        "label_ink": {
+          "box": [
+            907,
+            955,
+            1013,
+            978
+          ],
+          "pixels": 965
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            137.0,
+            50.0,
+            25.0
+          ],
+          "chevrons": {
+            "away": 36.766666666666666,
+            "home": 221.6015873015873
+          },
+          "wing": {
+            "PHI": [
+              40.0,
+              119.0,
+              134.0
+            ],
+            "CHI": [
+              218.5,
+              80.0,
+              47.0
+            ]
+          },
+          "red": true
+        }
+      }
+    },
+    "after_third16_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 417,
+        "play_clock": 17,
+        "down": 3,
+        "distance": 16,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          898,
+          955,
+          1020,
+          979
+        ],
+        "pixels": 1137
+      },
+      "broadcast": {
+        "bin": 144,
+        "label_ink": {
+          "box": [
+            898,
+            955,
+            1021,
+            978
+          ],
+          "pixels": 1127
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "PHI",
+          "plate_rgb": [
+            23.0,
+            78.0,
+            87.0
+          ],
+          "chevrons": {
+            "away": 214.74603174603175,
+            "home": 38.54920634920635
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              121.0,
+              134.0
+            ],
+            "CHI": [
+              218.0,
+              79.0,
+              46.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_flag_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 895,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "FLAG",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          915,
+          956,
+          1003,
+          979
+        ],
+        "pixels": 785
+      },
+      "broadcast": {
+        "bin": 245,
+        "label_ink": {
+          "box": [
+            920,
+            954,
+            1000,
+            977
+          ],
+          "pixels": 818
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "FLAG",
+          "plate_rgb": [
+            200.0,
+            191.0,
+            0.0
+          ],
+          "chevrons": {
+            "away": 38.407936507936505,
+            "home": 222.73492063492063
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              120.5,
+              137.0
+            ],
+            "CHI": [
+              224.5,
+              81.0,
+              48.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_chi_goal_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 880,
+        "play_clock": 31,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          868,
+          955,
+          1049,
+          979
+        ],
+        "pixels": 1464
+      },
+      "broadcast": {
+        "bin": 270,
+        "label_ink": {
+          "box": [
+            869,
+            955,
+            1051,
+            978
+          ],
+          "pixels": 1673
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            152.0,
+            55.0,
+            30.0
+          ],
+          "chevrons": {
+            "away": 37.48253968253968,
+            "home": 222.13809523809525
+          },
+          "wing": {
+            "PHI": [
+              38.0,
+              119.0,
+              128.0
+            ],
+            "CHI": [
+              219.0,
+              80.0,
+              45.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_phi_goal_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 10,
+        "away_timeouts": 0,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 0,
+        "play_clock": 30,
+        "down": 2,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          868,
+          955,
+          1050,
+          979
+        ],
+        "pixels": 1669
+      },
+      "broadcast": {
+        "bin": 510,
+        "label_ink": {
+          "box": [
+            869,
+            955,
+            1050,
+            978
+          ],
+          "pixels": 1653
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "PHI",
+          "plate_rgb": [
+            26.0,
+            83.0,
+            87.0
+          ],
+          "chevrons": {
+            "away": 213.9126984126984,
+            "home": 39.3
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              119.0,
+              132.0
+            ],
+            "CHI": [
+              219.0,
+              80.0,
+              46.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_player_tags_ESPN_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 119,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "hang time",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1007,
+          979
+        ],
+        "pixels": 1202
+      },
+      "broadcast": {
+        "bin": 188,
+        "label_ink": {
+          "box": [
+            911,
+            955,
+            1010,
+            979
+          ],
+          "pixels": 1458
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "ESPN",
+          "plate_rgb": [
+            20.0,
+            20.0,
+            21.0
+          ],
+          "chevrons": {
+            "away": 38.096825396825395,
+            "home": 222.07301587301586
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              120.0,
+              136.0
+            ],
+            "CHI": [
+              219.0,
+              80.0,
+              45.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_post_punt_ESPN_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 113,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "ball on",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1007,
+          979
+        ],
+        "pixels": 1202
+      },
+      "broadcast": {
+        "bin": 194,
+        "label_ink": {
+          "box": [
+            911,
+            955,
+            1010,
+            979
+          ],
+          "pixels": 1464
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "ESPN",
+          "plate_rgb": [
+            20.0,
+            20.0,
+            20.0
+          ],
+          "chevrons": {
+            "away": 37.15238095238095,
+            "home": 222.33333333333334
+          },
+          "wing": {
+            "PHI": [
+              39.0,
+              119.0,
+              133.0
+            ],
+            "CHI": [
+              221.0,
+              79.0,
+              46.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_red2_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 7,
+        "home_score": 10,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 3,
+        "clock": 818,
+        "play_clock": 2,
+        "down": 3,
+        "distance": 5,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          907,
+          955,
+          1013,
+          979
+        ],
+        "pixels": 971
+      },
+      "broadcast": {
+        "bin": 530,
+        "label_ink": {
+          "box": [
+            906,
+            955,
+            1014,
+            978
+          ],
+          "pixels": 985
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "PHI",
+          "plate_rgb": [
+            22.0,
+            76.0,
+            84.0
+          ],
+          "chevrons": {
+            "away": 214.18412698412698,
+            "home": 39.147619047619045
+          },
+          "wing": {
+            "PHI": [
+              40.0,
+              119.0,
+              131.0
+            ],
+            "CHI": [
+              218.0,
+              81.0,
+              45.0
+            ]
+          },
+          "red": true
+        }
+      }
+    },
+    "after_under_minute_169": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 5,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 12,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          895,
+          955,
+          1023,
+          979
+        ],
+        "pixels": 1021
+      },
+      "broadcast": {
+        "bin": 230,
+        "label_ink": {
+          "box": [
+            896,
+            955,
+            1024,
+            978
+          ],
+          "pixels": 1170
+        },
+        "measure": {
+          "present": true,
+          "plate_kind": "CHI",
+          "plate_rgb": [
+            144.0,
+            52.0,
+            25.0
+          ],
+          "chevrons": {
+            "away": 37.217460317460315,
+            "home": 221.17619047619047
+          },
+          "wing": {
+            "PHI": [
+              38.0,
+              118.0,
+              131.0
+            ],
+            "CHI": [
+              221.0,
+              79.0,
+              45.0
+            ]
+          },
+          "red": false
+        }
+      }
+    },
+    "after_chi_interim_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 887,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": 1,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          886,
+          955,
+          1032,
+          979
+        ],
+        "pixels": 1309
+      }
+    },
+    "after_chi_first10_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 781,
+        "play_clock": 38,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          900,
+          955,
+          1018,
+          979
+        ],
+        "pixels": 789
+      }
+    },
+    "after_phi_first10_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 519,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          900,
+          955,
+          1018,
+          979
+        ],
+        "pixels": 978
+      }
+    },
+    "after_fourth1_white6_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 654,
+        "play_clock": 6,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          906,
+          955,
+          1012,
+          979
+        ],
+        "pixels": 824
+      }
+    },
+    "after_fourth1_red5_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 0,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 653,
+        "play_clock": 5,
+        "down": 4,
+        "distance": 1,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          906,
+          955,
+          1012,
+          979
+        ],
+        "pixels": 824
+      }
+    },
+    "after_third16_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 417,
+        "play_clock": 17,
+        "down": 3,
+        "distance": 16,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          898,
+          955,
+          1021,
+          979
+        ],
+        "pixels": 1131
+      }
+    },
+    "after_flag_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 895,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "FLAG",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          915,
+          955,
+          1003,
+          979
+        ],
+        "pixels": 786
+      }
+    },
+    "after_chi_goal_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 880,
+        "play_clock": 31,
+        "down": 2,
+        "distance": 10,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          868,
+          955,
+          1050,
+          979
+        ],
+        "pixels": 1485
+      }
+    },
+    "after_phi_goal_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 10,
+        "away_timeouts": 0,
+        "home_timeouts": 3,
+        "quarter": 2,
+        "clock": 0,
+        "play_clock": 30,
+        "down": 2,
+        "distance": 10,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": true,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          868,
+          955,
+          1050,
+          979
+        ],
+        "pixels": 1662
+      }
+    },
+    "after_player_tags_ESPN_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 119,
+        "play_clock": 40,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "hang time",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1008,
+          979
+        ],
+        "pixels": 1191
+      }
+    },
+    "after_post_punt_ESPN_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 113,
+        "play_clock": 25,
+        "down": 1,
+        "distance": 10,
+        "possession": "home",
+        "event": "ball on",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff181719",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          910,
+          957,
+          1008,
+          979
+        ],
+        "pixels": 1191
+      }
+    },
+    "after_red2_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 7,
+        "home_score": 10,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 3,
+        "clock": 818,
+        "play_clock": 2,
+        "down": 3,
+        "distance": 5,
+        "possession": "away",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xff26636b",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffdd0038",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          906,
+          955,
+          1013,
+          979
+        ],
+        "pixels": 1001
+      }
+    },
+    "after_under_minute_43": {
+      "state": {
+        "away": "PHI",
+        "home": "CHI",
+        "away_score": 0,
+        "home_score": 7,
+        "away_timeouts": 3,
+        "home_timeouts": 3,
+        "quarter": 1,
+        "clock": 5,
+        "play_clock": 40,
+        "down": 2,
+        "distance": 12,
+        "possession": "home",
+        "event": "standard",
+        "goal_to_go": false,
+        "broadcast": "monday_night",
+        "home_record": [
+          1,
+          1,
+          0
+        ],
+        "away_record": [
+          2,
+          0,
+          0
+        ],
+        "season": "regular",
+        "phase": 4,
+        "previous_down": null,
+        "timeout_called": null
+      },
+      "colours": {
+        "plate": "0xffac3100",
+        "away_wing": "0xff1fb0c4",
+        "home_wing": "0xfffb6930",
+        "red": "0xffffffff",
+        "away_logo": "0xffffffff",
+        "home_logo": "0xffffffff"
+      },
+      "appended_bytes": 327904,
+      "runtime_witnessed": false,
+      "calibration_passed": false,
+      "label_ink": {
+        "box": [
+          895,
+          955,
+          1023,
+          979
+        ],
+        "pixels": 1014
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "nfl2k5_board_kit/v1",
+  "venue": "s37",
+  "name": "Reliant Stadium",
+  "team": "HOU",
+  "help": "the 2013 boards, 277 x 52 ft",
+  "sources": [
+    "Wikipedia, NRG Stadium (fetched 2026-09-28): 'In December 2012, it was announced that ... the stadium's end zone displays would be replaced with the largest digital displays in any professional sports venue ... The video screens were revealed August 16, 2013'.",
+    "KHOU, 20 December 2012, 'HCSCC approves new LED scoreboards for Reliant Stadium' (archived 2013): 'The new additions will be more than 52 feet tall and 277 feet wide.'",
+    "The retail s37 scene (PROVED OFFLINE): each end-zone scoreboard spans x -42.5 to 42.5 at z +-96.9, y 45.5 to 55.5 (the panels texscore01 and texscore02 round a 21 x 6.5 m feed quad in group474), the stadium_name sign above it (y 56 to 59), tunnelcover01 behind; the game's clock digits sit on it at y 53.5 to 55 (group474); the roof (dome01) is drawn closed over the field, and every retail intro camera is inside the bowl.",
+    "The retail s37 scene (PROVED OFFLINE): sunlight01, the light shafts in front of the old boards (y 53 to 62, z +-80 to +-98), would lie across the new boards' top third; they are cut with the old boards.",
+    "The stale-name audit (Astra, sn/SN_REPORT.md, 2026-09-28): the afternoon, rain and snow bundles (ar, as, dr, ds, nr, ns) draw the old scoreboard's 'Reliant Stadium' header with a material of their own (temp_stadium_name_s37_stadium_name, shape temp_stadium_name_s37_group687: x +-13, y 56 to 59, z +-96.9), behind the 2013 boards; it belongs to the old board housing, so the kit cuts it with stadium_name."
+  ],
+  "env": null,
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group474"
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -44.0,
+          44.0
+        ],
+        "y": [
+          44.8,
+          62.0
+        ],
+        "z_abs": [
+          95.0,
+          98.6
+        ]
+      },
+      "materials": [
+        "texscore01",
+        "texscore02",
+        "stadium_name",
+        "tunnelcover01",
+        "temp_stadium_name_s37_stadium_name"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -45.0,
+          45.0
+        ],
+        "y": [
+          52.0,
+          63.0
+        ],
+        "z_abs": [
+          79.0,
+          99.0
+        ]
+      },
+      "materials": [
+        "sunlight01"
+      ]
+    }
+  ],
+  "move": [
+    {
+      "materials": [
+        "digit_clock_1",
+        "digit_clock_2",
+        "digit_clock_3",
+        "digit_clock_4",
+        "digit_colen"
+      ],
+      "min_abs_z": 90.0,
+      "shape": "group474",
+      "toward_field": 0.7
+    }
+  ],
+  "boards": [
+    {
+      "frame": {
+        "border": 0.5,
+        "depth": 0.12,
+        "material": "beam01"
+      },
+      "inset": 0.35,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -42.215,
+          96.9
+        ],
+        [
+          42.215,
+          96.9
+        ]
+      ],
+      "width": 84.43,
+      "y": [
+        45.5,
+        61.35
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.5,
+        "depth": 0.12,
+        "material": "beam01"
+      },
+      "inset": 0.35,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -42.215,
+          -96.9
+        ],
+        [
+          42.215,
+          -96.9
+        ]
+      ],
+      "width": 84.43,
+      "y": [
+        45.5,
+        61.35
+      ]
+    }
+  ],
+  "markers": {
+    "jumboMarkerAShape": "bk_board_s",
+    "jumboMarkerCShape": "bk_board_n"
+  }
+}

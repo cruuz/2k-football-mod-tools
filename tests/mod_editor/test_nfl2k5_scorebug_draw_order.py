@@ -29,9 +29,9 @@ class AllocationTests(unittest.TestCase):
     self.assertEqual(next(q for q in c.quads if q['name']==role)['material'],material)
  def test_full_label_batch_moves_plate_and_repairs_a_material_cycle(self):
   spec,image=sprite.load_layout()
-  # Fourteen glyph slots leave only one free quad in batch 7; request two plates.
+  # b76 s15: fifteen glyph slots (down, both records, a timeout state) fill batch 7; request the plate there.
   for r in spec['static']:
-   if r['name'] in ('plate','pointer'):r['material']=7
+   if r['name']=='plate':r['material']=7
   # Wing between body and capsule creates a cycle if both retain batch 3.
   wing=next(r for r in spec['static'] if r['name']=='away_wing')
   wing['box']=[837,990,1083,1045]
@@ -40,7 +40,7 @@ class AllocationTests(unittest.TestCase):
    p=Path(directory);image.save(p/'template.png');(p/'layout.json').write_text(json.dumps(spec))
    c=sprite.compile_folder(p);self.assert_order(c)
   self.assertTrue(all(q['material']==7 for q in c.quads if q['name'].startswith('down:')))
-  self.assertTrue(any(q['material']!=7 for q in c.quads if q['name'] in ('plate','pointer')))
+  self.assertTrue(any(q['material']!=7 for q in c.quads if q['name']=='plate'))
  def test_legacy_depth_convention_preserves_visual_layering(self):
   spec,image=sprite.load_layout();del spec['layer_order']
   for group in ('static','fields','events','brand'):
@@ -55,6 +55,9 @@ class AllocationTests(unittest.TestCase):
   spec,image=sprite.load_layout()
   clock=next(r for r in spec['fields'] if r['name']=='play_clock')
   clock['anchor']=[950,955];clock['z']=-16
+  # b76 sb: the TIMEOUT tab fills the last atlas quad; this custom layout adds an ordering edge, so it drops the tab
+  # to leave the allocator a choice. The test is about overlap order, not the quad budget.
+  spec['fields']=[r for r in spec['fields'] if r['name']!='timeout_tab']
   with tempfile.TemporaryDirectory() as directory:
    p=Path(directory);image.save(p/'template.png');(p/'layout.json').write_text(json.dumps(spec))
    c=sprite.compile_folder(p)

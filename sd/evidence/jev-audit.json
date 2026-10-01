@@ -1,0 +1,13 @@
+{
+  "classification": "PROVED OFFLINE",
+  "purpose": "Advisory evidence-label and unsupported-witness audit, not proof of native behavior.",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "MCP tool call requires approval, but approval policy is never"
+      }
+    ],
+    "isError": true
+  }
+}

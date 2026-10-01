@@ -1,0 +1,2722 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "atlas": {
+    "down": {
+      "cell_width": 64,
+      "interior": [
+        1,
+        63
+      ],
+      "interior_texels": 62
+    },
+    "strip": {
+      "cell_width": 64,
+      "interior": [
+        1,
+        63
+      ],
+      "interior_texels": 62
+    }
+  },
+  "rows": [
+    {
+      "case": "goal",
+      "text": "2nd & Goal",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        280.0,
+        410.0,
+        358.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "image": "before-43-goal.png",
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "inches",
+      "text": "4th & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        273.0,
+        410.0,
+        366.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "image": "before-43-inches.png",
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "widest-down",
+      "text": "2nd & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        271.0,
+        410.0,
+        367.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "flag",
+      "text": "FLAG",
+      "callback": "0xfbe90",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        301.0,
+        410.0,
+        340.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "fumble",
+      "text": "FUMBLE",
+      "callback": "0xfbea0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        292.0,
+        410.0,
+        350.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "midfield",
+      "text": "Ball at Midfield",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        265.0,
+        410.0,
+        376.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "image": "before-43-midfield.png",
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "ball-on",
+      "text": "Ball on GB 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        273.0,
+        409.0,
+        368.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "hangtime",
+      "text": "Hangtime: 0.0",
+      "callback": "0xfbe60",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        269.0,
+        410.0,
+        371.0,
+        425.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "field-goal",
+      "text": "116 Yard Attempt",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        255.0,
+        410.0,
+        387.0,
+        424.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "image": "before-43-field-goal.png",
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "overtime",
+      "text": "Overtime",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        284.0,
+        410.0,
+        354.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "wide-ball-name",
+      "text": "Ball on WAS 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        265.0,
+        409.0,
+        377.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-0",
+      "text": "Pregame",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        286.0,
+        410.0,
+        351.0,
+        425.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-1",
+      "text": "Safety Kick",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        275.0,
+        410.0,
+        364.0,
+        425.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-2",
+      "text": "Kickoff",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        291.0,
+        410.0,
+        347.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-3",
+      "text": "Point After",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        277.0,
+        410.0,
+        362.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-5",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-6",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-7",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-8",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-9",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "goal-caps",
+      "text": "2nd & GOAL",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        275.0,
+        410.0,
+        362.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "inches-caps",
+      "text": "4th & INCHES",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        270.0,
+        410.0,
+        368.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "timeout-probe",
+      "text": "TIMEOUT",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        285.0,
+        410.0,
+        353.0,
+        422.0
+      ],
+      "down": [
+        267.9949951171875,
+        408.825439453125,
+        371.9974365234375,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": false,
+      "down_interior_width": 100.75236511230469,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "goal",
+      "text": "2nd & Goal",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        286.25,
+        410.0,
+        352.0625,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "image": "before-169-goal.png",
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "inches",
+      "text": "4th & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        280.34375,
+        410.0,
+        358.8125,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "image": "before-169-inches.png",
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "widest-down",
+      "text": "2nd & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        278.65625,
+        410.0,
+        359.65625,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "flag",
+      "text": "FLAG",
+      "callback": "0xfbe90",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        303.96875,
+        410.0,
+        336.875,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "fumble",
+      "text": "FUMBLE",
+      "callback": "0xfbea0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        296.375,
+        410.0,
+        345.3125,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "midfield",
+      "text": "Ball at Midfield",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        273.59375,
+        410.0,
+        367.25,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "image": "before-169-midfield.png",
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "ball-on",
+      "text": "Ball on GB 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        280.34375,
+        409.0,
+        360.5,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "hangtime",
+      "text": "Hangtime: 0.0",
+      "callback": "0xfbe60",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        276.96875,
+        410.0,
+        363.03125,
+        425.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "field-goal",
+      "text": "116 Yard Attempt",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        265.15625,
+        410.0,
+        376.53125,
+        424.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "image": "before-169-field-goal.png",
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "overtime",
+      "text": "Overtime",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        289.625,
+        410.0,
+        348.6875,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "wide-ball-name",
+      "text": "Ball on WAS 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        273.59375,
+        409.0,
+        368.09375,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-0",
+      "text": "Pregame",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        291.3125,
+        410.0,
+        346.15625,
+        425.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-1",
+      "text": "Safety Kick",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        282.03125,
+        410.0,
+        357.125,
+        425.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-2",
+      "text": "Kickoff",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        295.53125,
+        410.0,
+        342.78125,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-3",
+      "text": "Point After",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        283.71875,
+        410.0,
+        355.4375,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-5",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-6",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-7",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-8",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-9",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "goal-caps",
+      "text": "2nd & GOAL",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        282.03125,
+        410.0,
+        355.4375,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "inches-caps",
+      "text": "4th & INCHES",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        277.8125,
+        410.0,
+        360.5,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "timeout-probe",
+      "text": "TIMEOUT",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        290.46875,
+        410.0,
+        347.84375,
+        422.0
+      ],
+      "down": [
+        276.12077713012695,
+        408.825439453125,
+        363.8728370666504,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": true,
+      "wide": true,
+      "down_interior_width": 85.00980806350708,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "goal",
+      "text": "2nd & Goal",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        280.0,
+        410.0,
+        358.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "image": "after-43-goal.png",
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "inches",
+      "text": "4th & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        273.0,
+        410.0,
+        366.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "image": "after-43-inches.png",
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "widest-down",
+      "text": "2nd & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        271.0,
+        410.0,
+        367.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "flag",
+      "text": "FLAG",
+      "callback": "0xfbe90",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        300.0,
+        410.0,
+        339.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "fumble",
+      "text": "FUMBLE",
+      "callback": "0xfbea0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        291.0,
+        410.0,
+        349.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "midfield",
+      "text": "Ball at Midfield",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        264.0,
+        410.0,
+        375.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "image": "after-43-midfield.png",
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "ball-on",
+      "text": "Ball on GB 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        272.0,
+        409.0,
+        367.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "hangtime",
+      "text": "Hangtime: 0.0",
+      "callback": "0xfbe60",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        268.0,
+        410.0,
+        370.0,
+        425.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "field-goal",
+      "text": "116 yd FG",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        285.0,
+        410.0,
+        356.0,
+        425.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "image": "after-43-field-goal.png",
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "overtime",
+      "text": "Overtime",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        284.0,
+        410.0,
+        354.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "wide-ball-name",
+      "text": "Ball on WAS 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        264.0,
+        409.0,
+        376.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-0",
+      "text": "Pregame",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        286.0,
+        410.0,
+        351.0,
+        425.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-1",
+      "text": "Safety Kick",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        275.0,
+        410.0,
+        364.0,
+        425.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-2",
+      "text": "Kickoff",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        291.0,
+        410.0,
+        347.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-3",
+      "text": "Point After",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        277.0,
+        410.0,
+        362.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-5",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-6",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-7",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-8",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "phase-9",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "goal-caps",
+      "text": "2nd & GOAL",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        275.0,
+        410.0,
+        362.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "inches-caps",
+      "text": "4th & INCHES",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        270.0,
+        410.0,
+        368.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "timeout-probe",
+      "text": "TIMEOUT",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        285.0,
+        410.0,
+        353.0,
+        422.0
+      ],
+      "down": [
+        263.9959716796875,
+        408.825439453125,
+        375.99658584594727,
+        425.4239501953125
+      ],
+      "clock": [
+        263.9959716796875,
+        427.5003662109375,
+        375.99658584594727,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": false,
+      "down_interior_width": 108.50059497356415,
+      "clock_interior_width": 108.50059497356415
+    },
+    {
+      "case": "goal",
+      "text": "2nd & Goal",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        286.25,
+        410.0,
+        352.0625,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "image": "after-169-goal.png",
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "inches",
+      "text": "4th & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        280.34375,
+        410.0,
+        358.8125,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "image": "after-169-inches.png",
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "widest-down",
+      "text": "2nd & Inches",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        278.65625,
+        410.0,
+        359.65625,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "flag",
+      "text": "FLAG",
+      "callback": "0xfbe90",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        303.125,
+        410.0,
+        336.03125,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "fumble",
+      "text": "FUMBLE",
+      "callback": "0xfbea0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        295.53125,
+        410.0,
+        344.46875,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "midfield",
+      "text": "Ball at Midfield",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        272.75,
+        410.0,
+        366.40625,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "image": "after-169-midfield.png",
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "ball-on",
+      "text": "Ball on GB 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        279.5,
+        409.0,
+        359.65625,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "hangtime",
+      "text": "Hangtime: 0.0",
+      "callback": "0xfbe60",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        276.125,
+        410.0,
+        362.1875,
+        425.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "field-goal",
+      "text": "116 yd FG",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        290.46875,
+        410.0,
+        350.375,
+        425.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "image": "after-169-field-goal.png",
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "overtime",
+      "text": "Overtime",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        289.625,
+        410.0,
+        348.6875,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "wide-ball-name",
+      "text": "Ball on WAS 49",
+      "callback": "0xfbeb0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        272.75,
+        409.0,
+        367.25,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-0",
+      "text": "Pregame",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        291.3125,
+        410.0,
+        346.15625,
+        425.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-1",
+      "text": "Safety Kick",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        282.03125,
+        410.0,
+        357.125,
+        425.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-2",
+      "text": "Kickoff",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        295.53125,
+        410.0,
+        342.78125,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-3",
+      "text": "Point After",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        283.71875,
+        410.0,
+        355.4375,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-5",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-6",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-7",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-8",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "phase-9",
+      "text": "",
+      "callback": null,
+      "font": null,
+      "align": null,
+      "glyph_box": null,
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": false,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "goal-caps",
+      "text": "2nd & GOAL",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        282.03125,
+        410.0,
+        355.4375,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "inches-caps",
+      "text": "4th & INCHES",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        277.8125,
+        410.0,
+        360.5,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    },
+    {
+      "case": "timeout-probe",
+      "text": "TIMEOUT",
+      "callback": "0xfc7d0",
+      "font": "font4",
+      "align": 3,
+      "glyph_box": [
+        290.46875,
+        410.0,
+        347.84375,
+        422.0
+      ],
+      "down": [
+        272.7466011047363,
+        408.825439453125,
+        367.247119307518,
+        425.4239501953125
+      ],
+      "clock": [
+        272.7466011047363,
+        427.5003662109375,
+        367.247119307518,
+        449.482177734375
+      ],
+      "glyph_probe": true,
+      "before": false,
+      "wide": true,
+      "down_interior_width": 91.54737700894475,
+      "clock_interior_width": 91.54737700894475
+    }
+  ],
+  "timeouts": [
+    {
+      "home": 0,
+      "away": 3,
+      "raster_sha256": "d050c8303fbe64480b06ae19962e8f7bb54bba245964b84a69d0a042765bfcba"
+    },
+    {
+      "home": 1,
+      "away": 2,
+      "raster_sha256": "d050c8303fbe64480b06ae19962e8f7bb54bba245964b84a69d0a042765bfcba"
+    },
+    {
+      "home": 2,
+      "away": 1,
+      "raster_sha256": "d050c8303fbe64480b06ae19962e8f7bb54bba245964b84a69d0a042765bfcba"
+    },
+    {
+      "home": 3,
+      "away": 0,
+      "raster_sha256": "d050c8303fbe64480b06ae19962e8f7bb54bba245964b84a69d0a042765bfcba"
+    }
+  ],
+  "limitation": "Native CPU and software raster only. glyph_probe rows inject the requested text at the native glyph boundary."
+}

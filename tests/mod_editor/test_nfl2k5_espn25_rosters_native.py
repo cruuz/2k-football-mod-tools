@@ -34,6 +34,8 @@ class NativeTests(unittest.TestCase):
         if e.sha(e.read_bounded(RETAIL / "default.xbe", 16 * 1024**2)) != XBE_SHA256:
             raise unittest.SkipTest("retail USA XBE evidence pin differs")
         cls.manifest, cls.sheets = e.dataset()
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL)
         before = e.read_resources(RETAIL)
         if e.status(before) != "retail":
             raise unittest.SkipTest("retail USA ROST evidence pins differ")

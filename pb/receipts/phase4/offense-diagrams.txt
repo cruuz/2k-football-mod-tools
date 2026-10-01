@@ -1,0 +1,2 @@
+DESIGN: 32 SVG pages; 32-page PDF; 192 representative play diagrams
+{"status": "DESIGN", "plays": 148, "pdf_pages": 25, "concepts": {"Inside Zone": 12, "Counter": 9, "TE Seam": 17, "Levels": 7, "Flood": 8, "TE Drag": 18, "Outside Zone": 12, "Downhill": 8, "Y Cross": 6, "Drive": 6, "RB Slip": 6, "End Around": 7, "Dagger": 5, "Stick": 9, "Mesh": 10, "PA Boot": 8}}

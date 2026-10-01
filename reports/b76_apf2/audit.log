@@ -1,0 +1,14 @@
+{
+  "classification": "PROVED OFFLINE",
+  "profiles": [
+    "base",
+    "tu_1_1"
+  ],
+  "patch_sha256": [
+    "a607ccee84b9882f485b2093e0df23ee1292eea624a4f1daf51d31167d7356bd",
+    "d06802db9be43acbbe4102bff4c1d97efb091fbcdac6411f16c61b6558fa9e2e"
+  ],
+  "legacy_comparisons": 8,
+  "apply_revert": "PASS",
+  "independently_matched_hooks": 16
+}

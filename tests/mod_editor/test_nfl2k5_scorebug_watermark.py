@@ -17,7 +17,7 @@ class ContractTests(unittest.TestCase):
   tables=[]
   for mode in s.WATERMARK_MODES:
    c=s.compile_folder(watermark=mode);tables.append(c.table)
-   self.assertEqual(len(c.quads),47)
+   self.assertEqual(len(c.quads),50)  # b76 sb: + the TIMEOUT tab
    self.assertEqual(sum(q.get('brand',False) for q in c.quads),1)
    brand=next(q for q in c.quads if q.get('brand'));self.assertEqual(brand['initial_cell'],'espn_mnf' if mode=='mnf' else 'espn_nfl')
    self.assertEqual(brand['initial_colour'],0 if mode=='off' else 0xffffffff)
@@ -141,5 +141,36 @@ class NativeTests(unittest.TestCase):
  def test_retail_and_calendar_site_at_both_aspects(self):
   for extended in (False,True):
    for wide in (False,True):self.assertTrue(exercise(self.preview,wide,extended))
+
+class LogoSlabTests(unittest.TestCase):
+ """vb3 (2026-09-23): the ESPN logo is whole, not cut off at the top.
+
+ Noah [v1 0:46, v2 9:48]: "the ESPN logo in the top right's cut off". The ESPN logo cuts each letter with a thin
+ line; the measurement kept only pieces 10 px tall or more and dropped the 7-8 px top slabs, so the watermark's
+ "espn" started five cell rows below the MNF/NFL letters. reports/vb3_d1/rewatermark.py re-measured both masks with
+ the slabs kept (and first reproduced the old masks byte for byte with the old rule)."""
+ def test_the_measurement_keeps_the_three_top_slabs_in_both_broadcasts(self):
+  receipt=json.loads((ROOT/'reports/vb3_d1/rewatermark.json').read_text(encoding='utf-8'))
+  for tag in ('mnf','nfl'):
+   row=receipt[tag]
+   self.assertTrue(row['retail_rule_reproduces_shipped_mask'],tag)
+   self.assertTrue(all(c['kept'] for c in row['components']),tag)
+   slabs=[c for c in row['components'] if c['box'][3]<10]
+   self.assertEqual(len(slabs),3,tag)
+   letters=[c for c in row['components'] if c['box'][3]>=10]
+   for slab in slabs:
+    x,y,w,h=slab['box']
+    self.assertTrue(any(x<l['box'][0]+l['box'][2] and l['box'][0]<x+w and 0<=l['box'][1]-(y+h)<=4 for l in letters),(tag,slab))
+ def test_espn_letters_start_on_the_same_row_as_the_mark_beside_them(self):
+  from PIL import Image
+  folder=ROOT/'data/nfl2k5_scorebug_sprite'
+  spec=json.loads((folder/'layout.json').read_text(encoding='utf-8'))
+  with Image.open(folder/'template.png') as sheet:sheet=sheet.convert('RGBA')
+  for row in spec['brand']:
+   cell=sheet.crop(spec['cells'][row['cell']]['box'])
+   def first(columns):
+    return next(y for y in range(cell.height) if any(cell.getpixel((x,y))[3]>128 for x in columns))
+   # The left 30 columns hold "espn"; the right 25 hold NFL or MNF. Before the fix "espn" started 4-5 rows lower.
+   self.assertLessEqual(abs(first(range(30))-first(range(cell.width-25,cell.width))),1,row['cell'])
 
 if __name__=='__main__':unittest.main()

@@ -354,7 +354,16 @@ shared_start:
     jmp enqueue
 
 /* The five audited F6510 modes: 0 stop/show, 1 menus, 2 loading,
- * 3 Crib, 4 game. Mode 2 retains the retail loadm path. */
+ * 3 Crib, 4 game. Mode 2 retains the retail loadm path. Mode 4 retains
+ * the retail F6578 choice, keyed on the retail Crib Music setting: B9E2A4
+ * is set by F6420 while E601CC is 2 ("Crib/Menus/Game"). With it, the
+ * shared list plays in game and 1C4210(0) turns the crowd loop off, as
+ * retail F6583 does for its UserList. Without it (the default), the
+ * background stops (retail F659A, context 0) and 1C4210(1) turns the
+ * crowd loop on (F659F). The crowd controller 1C3A70 acquires the cwdloop
+ * stream only while AB16E4 is set, and at 1C3C02 it skips the precheer
+ * and boo voices when it has no stream: always passing 0 here silenced
+ * both at every venue (u6, 2026-09-27). */
 mode:
     cmp ecx, 4
     ja mode_return
@@ -369,6 +378,14 @@ mode:
     cmp esi, 4
     jne mode_play
     xor ecx, ecx
+    cmp DWORD PTR [0xb9e2a4], ecx
+    jne mode_game_music
+    call context
+    mov ecx, 1
+    call game_music_switch
+    pop esi
+    ret
+mode_game_music:
     call game_music_switch
 mode_play:
     mov ecx, 0xe6c0c0

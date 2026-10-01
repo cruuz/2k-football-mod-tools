@@ -86,7 +86,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             self.assertIn(key, fields, key)
         bound = set(boxes) | set(NOT_A_CONTROL) | {
             "max_deep_yards", "arc", "player_tags", "team_history", "career_stats", "prospect_names",
-            "roster_edits", "commentary", "playbook_packs", "name", "author", "notes",
+            "roster_edits", "commentary", "playbook_packs", "name", "author", "notes", "official_marks_pack",
             "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
             "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
             "modern_color_settings",  # the Colour & lighting page (strength and the 55 controls) beside the modern colour check box

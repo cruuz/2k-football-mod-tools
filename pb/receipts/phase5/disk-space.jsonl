@@ -1,0 +1,8 @@
+{"status": "PROVED OFFLINE", "time": 1790343771.5673802, "nvme_free": 112135512064, "storage_free": 37577879552}
+{"utc": "2026-09-25T13:58:10.010268+00:00", "nvme_free_bytes": 112119898112, "storage_free_bytes": 25328525312}
+{"utc": "2026-09-25T14:15:49.477744+00:00", "nvme_free_bytes": 112083247104, "storage_free_bytes": 25221185536}
+{"utc": "2026-09-25T14:40:17.967463+00:00", "nvme_free_bytes": 112057634816, "storage_free_bytes": 23550799872}
+{"utc": "2026-09-25T14:46:55.123764+00:00", "nvme_free_bytes": 112054382592, "storage_free_bytes": 23329718272}
+{"utc": "2026-09-25T14:59:21.640988+00:00", "nvme_free_bytes": 112048291840, "storage_free_bytes": 23490011136}
+{"utc": "2026-09-25T15:06:56.733018+00:00", "nvme_free_bytes": 112041394176, "storage_free_bytes": 23517061120}
+{"utc": "2026-09-25T15:10:03.815692+00:00", "nvme_free_bytes": 112035262464, "storage_free_bytes": 30992465920}

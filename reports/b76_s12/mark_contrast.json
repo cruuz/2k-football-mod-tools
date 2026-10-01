@@ -1,0 +1,358 @@
+{
+ "method": "Opaque mark texels (alpha > 128) against the team wing tint, WCAG relative luminance contrast",
+ "note": "Survey only. No mark other than NYG and LAR was changed; the others need broadcast evidence first.",
+ "rows": [
+  {
+   "team": "NYJ",
+   "wing": "#35705D",
+   "mark_median_rgb": [
+    0,
+    86,
+    60
+   ],
+   "median_contrast": 1.51,
+   "share_at_least_3_to_1": 0.0
+  },
+  {
+   "team": "CHI",
+   "wing": "#545C6A",
+   "mark_median_rgb": [
+    127,
+    44,
+    28
+   ],
+   "median_contrast": 2.04,
+   "share_at_least_3_to_1": 0.114
+  },
+  {
+   "team": "TB",
+   "wing": "#A71930",
+   "mark_median_rgb": [
+    174,
+    20,
+    45
+   ],
+   "median_contrast": 1.47,
+   "share_at_least_3_to_1": 0.143
+  },
+  {
+   "team": "ARI",
+   "wing": "#97233F",
+   "mark_median_rgb": [
+    174,
+    30,
+    61
+   ],
+   "median_contrast": 2.26,
+   "share_at_least_3_to_1": 0.204
+  },
+  {
+   "team": "DET",
+   "wing": "#0076B6",
+   "mark_median_rgb": [
+    25,
+    129,
+    187
+   ],
+   "median_contrast": 1.18,
+   "share_at_least_3_to_1": 0.227
+  },
+  {
+   "team": "DAL",
+   "wing": "#264360",
+   "mark_median_rgb": [
+    2,
+    31,
+    69
+   ],
+   "median_contrast": 1.71,
+   "share_at_least_3_to_1": 0.233
+  },
+  {
+   "team": "IND",
+   "wing": "#013369",
+   "mark_median_rgb": [
+    2,
+    49,
+    108
+   ],
+   "median_contrast": 1.1,
+   "share_at_least_3_to_1": 0.284
+  },
+  {
+   "team": "WAS",
+   "wing": "#8C5A5A",
+   "mark_median_rgb": [
+    108,
+    15,
+    12
+   ],
+   "median_contrast": 2.25,
+   "share_at_least_3_to_1": 0.292
+  },
+  {
+   "team": "BUF",
+   "wing": "#00338D",
+   "mark_median_rgb": [
+    70,
+    49,
+    145
+   ],
+   "median_contrast": 2.12,
+   "share_at_least_3_to_1": 0.308
+  },
+  {
+   "team": "CLE",
+   "wing": "#6F614C",
+   "mark_median_rgb": [
+    252,
+    60,
+    13
+   ],
+   "median_contrast": 1.67,
+   "share_at_least_3_to_1": 0.312
+  },
+  {
+   "team": "TEN",
+   "wing": "#33709E",
+   "mark_median_rgb": [
+    163,
+    149,
+    210
+   ],
+   "median_contrast": 1.66,
+   "share_at_least_3_to_1": 0.343
+  },
+  {
+   "team": "SF",
+   "wing": "#C44C4C",
+   "mark_median_rgb": [
+    196,
+    22,
+    18
+   ],
+   "median_contrast": 1.95,
+   "share_at_least_3_to_1": 0.407
+  },
+  {
+   "team": "NE",
+   "wing": "#264360",
+   "mark_median_rgb": [
+    146,
+    82,
+    110
+   ],
+   "median_contrast": 2.14,
+   "share_at_least_3_to_1": 0.421
+  },
+  {
+   "team": "SEA",
+   "wing": "#4C647C",
+   "mark_median_rgb": [
+    159,
+    170,
+    175
+   ],
+   "median_contrast": 2.9,
+   "share_at_least_3_to_1": 0.458
+  },
+  {
+   "team": "BAL",
+   "wing": "#665A8F",
+   "mark_median_rgb": [
+    135,
+    108,
+    92
+   ],
+   "median_contrast": 2.92,
+   "share_at_least_3_to_1": 0.468
+  },
+  {
+   "team": "MIA",
+   "wing": "#006A71",
+   "mark_median_rgb": [
+    252,
+    166,
+    164
+   ],
+   "median_contrast": 2.7,
+   "share_at_least_3_to_1": 0.475
+  },
+  {
+   "team": "JAX",
+   "wing": "#267E8C",
+   "mark_median_rgb": [
+    122,
+    103,
+    21
+   ],
+   "median_contrast": 2.79,
+   "share_at_least_3_to_1": 0.48
+  },
+  {
+   "team": "CIN",
+   "wing": "#BC3B0F",
+   "mark_median_rgb": [
+    255,
+    78,
+    2
+   ],
+   "median_contrast": 3.08,
+   "share_at_least_3_to_1": 0.509
+  },
+  {
+   "team": "GB",
+   "wing": "#203731",
+   "mark_median_rgb": [
+    172,
+    166,
+    66
+   ],
+   "median_contrast": 5.2,
+   "share_at_least_3_to_1": 0.544
+  },
+  {
+   "team": "PHI",
+   "wing": "#26636B",
+   "mark_median_rgb": [
+    141,
+    157,
+    163
+   ],
+   "median_contrast": 3.08,
+   "share_at_least_3_to_1": 0.559
+  },
+  {
+   "team": "PIT",
+   "wing": "#805B09",
+   "mark_median_rgb": [
+    247,
+    203,
+    197
+   ],
+   "median_contrast": 3.98,
+   "share_at_least_3_to_1": 0.575
+  },
+  {
+   "team": "MIN",
+   "wing": "#4F2683",
+   "mark_median_rgb": [
+    179,
+    156,
+    62
+   ],
+   "median_contrast": 4.12,
+   "share_at_least_3_to_1": 0.578
+  },
+  {
+   "team": "DEN",
+   "wing": "#1E69C9",
+   "mark_median_rgb": [
+    209,
+    101,
+    125
+   ],
+   "median_contrast": 3.2,
+   "share_at_least_3_to_1": 0.598
+  },
+  {
+   "team": "ATL",
+   "wing": "#B43C4F",
+   "mark_median_rgb": [
+    143,
+    83,
+    83
+   ],
+   "median_contrast": 3.53,
+   "share_at_least_3_to_1": 0.601
+  },
+  {
+   "team": "LAC",
+   "wing": "#006094",
+   "mark_median_rgb": [
+    202,
+    194,
+    193
+   ],
+   "median_contrast": 4.08,
+   "share_at_least_3_to_1": 0.633
+  },
+  {
+   "team": "CAR",
+   "wing": "#00649B",
+   "mark_median_rgb": [
+    0,
+    1,
+    2
+   ],
+   "median_contrast": 3.28,
+   "share_at_least_3_to_1": 0.638
+  },
+  {
+   "team": "KC",
+   "wing": "#E31837",
+   "mark_median_rgb": [
+    251,
+    221,
+    221
+   ],
+   "median_contrast": 4.45,
+   "share_at_least_3_to_1": 0.661
+  },
+  {
+   "team": "NO",
+   "wing": "#6A5E46",
+   "mark_median_rgb": [
+    134,
+    126,
+    113
+   ],
+   "median_contrast": 3.3,
+   "share_at_least_3_to_1": 0.667
+  },
+  {
+   "team": "HOU",
+   "wing": "#EB0028",
+   "mark_median_rgb": [
+    110,
+    8,
+    31
+   ],
+   "median_contrast": 4.39,
+   "share_at_least_3_to_1": 0.725
+  },
+  {
+   "team": "LV",
+   "wing": "#646464",
+   "mark_median_rgb": [
+    35,
+    36,
+    36
+   ],
+   "median_contrast": 3.55,
+   "share_at_least_3_to_1": 0.785
+  },
+  {
+   "team": "NYG",
+   "wing": "#0B2265",
+   "mark_median_rgb": [
+    254,
+    253,
+    253
+   ],
+   "median_contrast": 14.45,
+   "share_at_least_3_to_1": 0.832
+  },
+  {
+   "team": "LAR",
+   "wing": "#003594",
+   "mark_median_rgb": [
+    255,
+    209,
+    0
+   ],
+   "median_contrast": 7.42,
+   "share_at_least_3_to_1": 1.0
+  }
+ ]
+}

@@ -1,0 +1,180 @@
+
+ADDRESS 0x80020524
+80020524: push ebp
+80020525: mov ebp, esp
+80020527: cmp dword ptr [ebp + 8], -2
+8002052b: jne 0x80020562
+8002052d: cmp dword ptr [ebp + 0xc], 0x80010e0c
+80020534: je 0x80020543
+80020536: cmp dword ptr [ebp + 0xc], 0
+8002053a: je 0x80020543
+8002053c: mov eax, 0xc0000024
+80020541: jmp 0x80020591
+80020543: mov edx, dword ptr [0x80035c04]
+80020549: lea eax, [edx - 0x10]
+8002054c: mov dword ptr [ebp + 0xc], eax
+8002054f: mov eax, 1
+80020554: mov ecx, dword ptr [ebp + 0xc]
+80020557: xadd dword ptr [ecx], eax
+8002055a: inc eax
+8002055b: mov eax, dword ptr [ebp + 0x10]
+8002055e: mov dword ptr [eax], edx
+80020560: jmp 0x80020588
+80020562: push dword ptr [ebp + 8]
+80020565: call 0x80021579
+8002056a: test eax, eax
+8002056c: je 0x8002058c
+8002056e: mov ecx, dword ptr [ebp + 0xc]
+80020571: cmp ecx, dword ptr [eax - 8]
+80020574: je 0x80020583
+80020576: test ecx, ecx
+80020578: je 0x80020583
+8002057a: mov ecx, eax
+8002057c: call 0x80020491
+80020581: jmp 0x8002053c
+80020583: mov ecx, dword ptr [ebp + 0x10]
+80020586: mov dword ptr [ecx], eax
+80020588: xor eax, eax
+8002058a: jmp 0x80020597
+8002058c: mov eax, 0xc0000008
+80020591: mov ecx, dword ptr [ebp + 0x10]
+80020594: and dword ptr [ecx], 0
+80020597: pop ebp
+80020598: ret 0xc
+8002059b: push ebp
+8002059c: mov ebp, esp
+8002059e: push esi
+8002059f: push edi
+800205a0: lea eax, [ebp + 0x10]
+800205a3: push eax
+800205a4: push dword ptr [ebp + 0x10]
+800205a7: mov eax, dword ptr [ebp + 8]
+800205aa: push dword ptr [ebp + 0xc]
+800205ad: push dword ptr [eax + 8]
+800205b0: push dword ptr [eax + 4]
+800205b3: push dword ptr [eax]
+800205b5: call 0x800209f0
+800205ba: mov edi, eax
+800205bc: test edi, edi
+800205be: jl 0x800205ed
+800205c0: push ebx
+800205c1: call 0x80014348
+800205c6: push dword ptr [ebp + 0x10]
+800205c9: mov bl, al
+800205cb: call 0x80021528
+800205d0: mov cl, bl
+800205d2: mov esi, eax
+800205d4: call 0x80014368
+800205d9: test esi, esi
+800205db: pop ebx
+800205dc: jne 0x800205ef
+800205de: mov ecx, dword ptr [ebp + 0x10]
+800205e1: call 0x80020491
+800205e6: mov edi, 0xc000009a
+800205eb: jmp 0x800205ef
+800205ed: xor esi, esi
+800205ef: mov eax, dword ptr [ebp + 0x14]
+800205f2: mov dword ptr [eax], esi
+800205f4: mov eax, edi
+800205f6: pop edi
+800205f7: pop esi
+800205f8: pop ebp
+800205f9: ret 0x10
+800205fc: push esi
+800205fd: mov esi, dword ptr [esp + 8]
+80020601: add esi, -0x20
+80020604: push edi
+80020605: mov edi, dword ptr [esi + 4]
+80020608: cmp edi, dword ptr [0x8003abac]
+8002060e: jne 0x8002064a
+80020610: cmp word ptr [esi + 8], 2
+80020615: jne 0x8002064a
+80020617: mov eax, dword ptr [esi + 0xc]
+8002061a: cmp byte ptr [eax + 1], 0x3a
+8002061e: jne 0x8002064a
+80020620: mov al, byte ptr [eax]
+80020622: cmp al, 0x61
+80020624: jl 0x80020637
+80020626: cmp al, 0x7a
+80020628: jg 0x80020637
+8002062a: movsx eax, al
+8002062d: and dword ptr [eax*4 - 0x7ffc5584], 0
+80020635: jmp 0x8002064a
+80020637: cmp al, 0x41
+80020639: jl 0x8002064a
+8002063b: cmp al, 0x5a
+8002063d: jg 0x8002064a
+8002063f: movsx eax, al
+80020642: and dword ptr [eax*4 - 0x7ffc5504], 0
+8002064a: lea ecx, [esi + 8]
+8002064d: call 0x80020912
+80020652: lea ecx, [edi + eax*4]
+80020655: mov eax, dword ptr [ecx]
+80020657: cmp eax, esi
+80020659: je 0x80020667
+8002065b: mov edx, eax
+8002065d: mov eax, dword ptr [eax]
+8002065f: cmp eax, esi
+80020661: jne 0x8002065b
+80020663: test edx, edx
+80020665: jne 0x8002066d
+80020667: mov eax, dword ptr [eax]
+80020669: mov dword ptr [ecx], eax
+8002066b: jmp 0x80020671
+8002066d: mov eax, dword ptr [eax]
+8002066f: mov dword ptr [edx], eax
+80020671: mov cl, byte ptr [esp + 0x10]
+80020675: and dword ptr [esi], 0
+80020678: and dword ptr [esi + 4], 0
+8002067c: call 0x80014368
+80020681: mov ecx, edi
+80020683: call 0x80020491
+80020688: mov ecx, dword ptr [esp + 0xc]
+8002068c: call 0x80020491
+80020691: pop edi
+80020692: pop esi
+80020693: ret 8
+80020696: push ebp
+80020697: mov ebp, esp
+80020699: push ecx
+8002069a: push esi
+8002069b: call 0x80014348
+800206a0: push dword ptr [ebp + 8]
+800206a3: mov byte ptr [ebp - 4], al
+800206a6: call 0x800215f6
+800206ab: mov esi, eax
+800206ad: test esi, esi
+800206af: je 0x8002070c
+800206b1: push edi
+800206b2: mov edi, dword ptr [esi - 0xc]
+800206b5: lea eax, [edi - 1]
+800206b8: mov dword ptr [esi - 0xc], eax
+800206bb: mov eax, dword ptr [esi - 8]
+800206be: cmp dword ptr [eax + 8], 0
+800206c2: je 0x800206dc
+800206c4: mov cl, byte ptr [ebp - 4]
+800206c7: call 0x80014368
+800206cc: mov eax, dword ptr [esi - 8]
+800206cf: push edi
+800206d0: push esi
+800206d1: call dword ptr [eax + 8]
+800206d4: call 0x80014348
+800206d9: mov byte ptr [ebp - 4], al
+800206dc: cmp dword ptr [esi - 0xc], 0
+800206e0: pop edi
+800206e1: jne 0x800206f9
+800206e3: mov eax, dword ptr [esi - 4]
+800206e6: test al, 4
+800206e8: je 0x800206f9
+800206ea: test al, 2
+800206ec: jne 0x800206f9
+800206ee: push dword ptr [ebp - 4]
+800206f1: push esi
+
+DATA 0x8003b118
+8003b118: 65752e72 091b84fb 75da38e9 80ff9363  b'r.ue\xfb\x84\x1b\t\xe98\xdauc\x93\xff\x80'
+SECTION (b'.text\x00\x00\x00', 153136, 704, 153152, 704)
+SECTION (b'.data\x00\x00\x00', 21964, 153856, 21984, 153856)
+SECTION (b'STICKY\x00\x00', 6544, 175840, 6560, 175840)
+SECTION (b'IDEXPRDT', 264, 182784, 288, 182784)
+SECTION (b'INIT\x00\x00\x00\x00', 453082, 183072, 453088, 183072)

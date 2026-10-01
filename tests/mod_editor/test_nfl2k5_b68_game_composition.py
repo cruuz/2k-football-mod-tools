@@ -50,6 +50,8 @@ class CompositionTests(unittest.TestCase):
         with PACK.open('rb') as stream:
             source = art.PackView.from_fd(stream.fileno(), 0, PACK.stat().st_size)
             pack, receipt = art.compile_runtime_collection(source)
+            from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+            require_nfl_retail_packs(PACK.parents[1])
             fonts = read_fonts(PACK)
             for name, (payload, _plan) in self.builds.items():
                 with self.subTest(build=name):

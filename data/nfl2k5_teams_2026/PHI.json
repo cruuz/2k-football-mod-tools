@@ -1,0 +1,665 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "PHI",
+ "name": "Philadelphia Eagles",
+ "asset_code": "21",
+ "season": 2026,
+ "sources_uw": {"sleeve_logo_2026": "the Eagles' 2026 sleeve (Eagles at Bears 2026-09-28, NFL highlights frame nfl_045, DeVonta Smith's right sleeve; nike.com's 2026 white and midnight green Game jerseys): the official eagle head in its own colours on the side of the upper sleeve, under the swoosh and a little behind it, facing forward on both arms; on the game's short sleeve it is drawn at 52 px (u1's squashed sleeve copy keeps its true proportion on the posed arm), below the swoosh"},
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Nick Sirianni",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 52 active, one filled from the practice squad. 3-4 base (Vic Fangio)."
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "A.J. Epenesa": 2,
+   "Andrew Mukuba": 4,
+   "Andy Dalton": 0,
+   "Arnold Ebiketie": 5,
+   "Braden Mann": 0,
+   "Britain Covey": 0,
+   "Byron Young": 4,
+   "Cam Jurgens": 0,
+   "Cole Payton": 0,
+   "Cooper DeJean": 0,
+   "Dallas Goedert": 0,
+   "Darius Cooper": 4,
+   "DeVonta Smith": 3,
+   "Dontayvion Wicks": 3,
+   "Drew Kendall": 0,
+   "E.J. Jenkins": 3,
+   "Elijah Moore": 3,
+   "Fred Johnson": 3,
+   "Jake Elliott": 0,
+   "Jalen Carter": 3,
+   "Jalen Hurts": 3,
+   "Jalyx Hunt": 3,
+   "Jeremiah Trotter": 3,
+   "Jihaad Campbell": 3,
+   "Johnny Mundt": 0,
+   "Jonathan Greenard": 4,
+   "Jonathan Jones": 3,
+   "Jordan Davis": 5,
+   "Jordan Mailata": 2,
+   "Kelee Ringo": 4,
+   "Lane Johnson": 0,
+   "Mac McWilliams": 4,
+   "Makai Lemon": 2,
+   "Marcus Epps": 2,
+   "Markel Bell": 4,
+   "Marquise Brown": 4,
+   "Micah Morris": 5,
+   "Michael Carter": 3,
+   "Moro Ojomo": 5,
+   "Nolan Smith": 3,
+   "Quinyon Mitchell": 3,
+   "Riq Woolen": 4,
+   "Rocco Underwood": 0,
+   "Saquon Barkley": 3,
+   "Smael Mondon": 4,
+   "Tank Bigsby": 4,
+   "Tanner McKee": 0,
+   "Ty Robinson": 0,
+   "Tyler Steen": 3,
+   "Will Shipley": 0,
+   "Willie Lampkin": 3,
+   "Zach Ertz": 0,
+   "Zack Baun": 0
+  },
+  "dreads": [
+   "Jalen Carter",
+   "Jalyx Hunt",
+   "Makai Lemon",
+   "Riq Woolen",
+   "Smael Mondon",
+   "E.J. Jenkins",
+   "Tyler Steen"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), by eye from the official 2026 headshots on a labelled sheet (INFERRED, +/-1 possible). Dreads and twists by eye."
+ },
+ "status": "Phase B (job d5, 2026-09-23). Sort: KEPT its 2004 look (midnight green and white sets unchanged in design since 2003), with 2026 details: the Nike collar (a wider black V band), the bigger EAGLES chest wordmark in white with a black outline (a 2026 change), white pants on both sides, white socks. Colours sourced; albedo INFERRED from 2026 photos and the retail shades.",
+ "sources": {
+  "uniform_rotation": "https://www.philadelphiaeagles.com/news/eagles-announce-kelly-green-and-black-uniform-games-2026-season-giants-seahawks-texans",
+  "wordmark_change": "https://www.si.com/nfl/eagles/onsi/eagles-make-subtle-change-to-uniforms-for-2026-season-what-exactly-did-they-alter-on-their-jerseys-01kp624gnty0",
+  "week2_all_white": "https://athlonsports.com/nfl/philadelphia-eagles/what-uniforms-are-the-philadelphia-eagles-wearing-in-week-2-vs-titans",
+  "photos_week1": "https://www.philadelphiaeagles.com/photos/best-of-week-1-photo-gallery-commanders-vs-eagles (2026-09-13, midnight green at home, white pants)",
+  "photos_week2": "https://www.philadelphiaeagles.com/photos/best-of-week-2-photo-gallery-eagles-at-titans (2026-09-20, white jersey and white pants)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (PHI: Midnight Green #004851, Silver #A2AAAD, Black, White)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg",
+  "chest_wordmark": "rendered in AgencyFB Black Wide (closest installed face to the squared 2026 chest lettering; the Commons wordmarks are the stylized end-zone and 2022 italic marks, not the chest letters): INFERRED",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status; 52 active, filled to 53 from the practice squad",
+  "defense": "Vic Fangio 3-4 (DC since 2024)"
+ },
+ "palette": {
+  "midnight_green": "#004851",
+  "silver": "#A2AAAD",
+  "black": "#000000",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "midnight_green": "#004851",
+  "silver": "#A2AAAD",
+  "black": "#000000",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "gray": "#A5ACAF",
+  "ez_green": "#0A4A51",
+  "wm_green": "#004851",
+  "banner_green": "#004851",
+  "banner_black": "#101010"
+ },
+ "marks": {
+  "eagle": "eagle_full.png",
+  "eagles_chest_fill": "eagles_chest_fill.png",
+  "eagles_chest_outline": "eagles_chest_outline.png",
+  "sleeve_bands": "sleeve_bands.png",
+  "eagle_sleeve": "eagle_sleeve.png",
+  "ez_wm_sil": "ez_wm_sil.png",
+  "ez_wm_g": "ez_wm_g.png",
+  "ez_wm_s": "ez_wm_s.png",
+  "ez_wm_w": "ez_wm_w.png",
+  "eagle_sil": "eagle_sil_mask.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "21H0",
+   "outer_index": 3783,
+   "note": "2026 home: midnight green jersey, white numbers with a black outline, black V collar band, EAGLES chest wordmark in white with a black outline, eagle logo on the shoulders and a black cuff band, white pants with a black-silver-midnight green stripe, white socks, midnight green helmet with silver-white wings.",
+   "torso": {
+    "base_colour": "midnight_green",
+    "neck_donor": "21H6",
+    "collar_trim": [
+     {
+      "colour": "black",
+      "width": 8
+     }
+    ],
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "eagles_chest_outline",
+      "colour": "black",
+      "center": [
+       162,
+       96
+      ],
+      "width": 44
+     },
+     {
+      "mark": "eagles_chest_fill",
+      "colour": "white",
+      "center": [
+       162,
+       96
+      ],
+      "width": 44
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "midnight_green",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_bands",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     },
+     {
+      "mark": "eagle_sleeve",
+      "center": [
+       61.5,
+       27.5
+      ],
+      "width": 52,
+      "mirror": true
+     },
+     {
+      "mark": "eagle_sleeve",
+      "center": [
+       65.5,
+       91.5
+      ],
+      "width": 52,
+      "mirror": false
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "black",
+      14
+     ],
+     [
+      "silver",
+      2
+     ],
+     [
+      "midnight_green",
+      9
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "21H0",
+    "fill": "white",
+    "outline": "black",
+    "outline_frac": 0.04
+   },
+   "nameplate": {
+    "glyph_donor": "21H0",
+    "fill": "white",
+    "outline": "black",
+    "outline_frac": 0.042
+   },
+   "helmet_digits": {
+    "glyph_donor": "21H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "midnight_green",
+    "shell_from": "#00414A",
+    "recolour": []
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor_outer": 3783,
+    "torso_donor": "21H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#105963",
+      "to": "#0F5A62",
+      "region": "helmet"
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "21A0",
+   "outer_index": 4100,
+   "note": "2026 road: white jersey, midnight green numbers with a black outline, black V collar band, EAGLES wordmark white with a black outline, eagle logo on the shoulders and a black cuff band, white pants (week 2 at Tennessee) with the black-silver-midnight green stripe, white socks.",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "21A6",
+    "collar_trim": [
+     {
+      "colour": "black",
+      "width": 8
+     }
+    ],
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "black"
+    },
+    "decorations": [
+     {
+      "mark": "eagles_chest_outline",
+      "colour": "black",
+      "center": [
+       162,
+       96
+      ],
+      "width": 44
+     },
+     {
+      "mark": "eagles_chest_fill",
+      "colour": "white",
+      "center": [
+       162,
+       96
+      ],
+      "width": 44
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_bands",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     },
+     {
+      "mark": "eagle_sleeve",
+      "center": [
+       61.5,
+       27.5
+      ],
+      "width": 52,
+      "mirror": true
+     },
+     {
+      "mark": "eagle_sleeve",
+      "center": [
+       65.5,
+       91.5
+      ],
+      "width": 52,
+      "mirror": false
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "black",
+      14
+     ],
+     [
+      "silver",
+      2
+     ],
+     [
+      "midnight_green",
+      9
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "21A0",
+    "fill": "midnight_green",
+    "outline": "black",
+    "outline_frac": 0.04
+   },
+   "nameplate": {
+    "glyph_donor": "21A0",
+    "fill": "midnight_green",
+    "outline": "black",
+    "outline_frac": 0.042
+   },
+   "helmet_digits": {
+    "glyph_donor": "21A0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "midnight_green",
+    "shell_from": "#00414A",
+    "recolour": []
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor_outer": 4100,
+    "torso_donor": "21A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#105963",
+      "to": "#0F5A62",
+      "region": "helmet"
+     },
+     {
+      "from": "#00434D",
+      "to": "white",
+      "region": "pants",
+      "tolerance": 0.3
+     }
+    ]
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "midnight green jersey body, black V collar band, EAGLES wordmark white with black outline under the collar, NFL shield at the collar, white maker marks; the light grey patch is the neck opening",
+   "sleeve": "midnight green with the eagle head logo (white, silver, black) and a black cuff band",
+   "pants": "white with a black-silver-midnight green side stripe and a black maker mark",
+   "helmet": "midnight green shell with silver and white wings outlined in black, white and grey hardware",
+   "digit_jersey": "white numbers with a black outline",
+   "digit_arm": "white numbers with a black outline",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "white letters with a black outline",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants with dark stripe, midnight green torso, green helmet with wings, white socks, skin and glove patches",
+   "team-select_unif": "menu render: midnight green jersey with white numbers, white pants, green helmet with wings, dark shading",
+   "team-select_helm": "menu render: midnight green helmet with silver wings, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, black V collar band, EAGLES wordmark white with black outline under the collar, NFL shield at the collar, black maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with the eagle head logo and a black cuff band",
+   "pants": "white with a black-silver-midnight green side stripe and a black maker mark",
+   "helmet": "midnight green shell with silver and white wings outlined in black, white and grey hardware",
+   "digit_jersey": "midnight green numbers with a black outline",
+   "digit_arm": "midnight green numbers with a black outline",
+   "digit_helmet": "plain white numbers",
+   "nameplate": "midnight green letters with a black outline",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants with dark stripe, white torso, green helmet with wings, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with green numbers, pants, green helmet with wings, dark shading",
+   "team-select_helm": "menu render: midnight green helmet with silver wings, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "midnight green painted end zone with the EAGLES wordmark in white with black and silver trim and a green arch",
+   "center_logo": "the eagle head logo in white, silver, black and midnight green",
+   "banner": "cloth fan banners: white or midnight green with green, black or white text",
+   "poster": "a wall poster: four Eagles players in midnight green jerseys on a midnight green background with white names"
+  }
+ },
+ "venue": {
+  "prefix": "s21",
+  "notes": "Lincoln Financial Field (kept, U_BRIEF). 2026 end zones: midnight green paint with the classic EAGLES wordmark (white letters, black and silver trim, green arch) as in the week 1 2026 photos; the retail NFL shield and NFC logo beside it are dropped (INFERRED). Midfield: the eagle head (official SVG, full colour, a manual item). Both end zones share one texture in s21. The 2004 player poster becomes a 2026 poster (Hurts, Barkley, Smith, Carter from their official headshots, a manual item). wall02 (the eagle logo, unchanged since 1996) and wall03 (philadelphiaeagles.com tickets, still valid) stay retail; cover01 keeps its pre-2008 NFL shield until an NFL shield master exists (open).",
+  "sources": [
+   "https://www.philadelphiaeagles.com/photos/best-of-week-1-photo-gallery-commanders-vs-eagles",
+   "https://commons.wikimedia.org/wiki/File:Philadelphia_Eagles_wordmark.svg (public domain)"
+  ],
+  "endzone": {
+   "paint": "ez_green",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "ez_wm_sil",
+     "colour": "black",
+     "center": [
+      384,
+      62
+     ],
+     "height": 84,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_wm_g",
+     "colour": "wm_green",
+     "center": [
+      384,
+      62
+     ],
+     "height": 84,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_wm_s",
+     "colour": "silver",
+     "center": [
+      384,
+      62
+     ],
+     "height": 84,
+     "stretch": 1.12
+    },
+    {
+     "mark": "ez_wm_w",
+     "colour": "white",
+     "center": [
+      384,
+      62
+     ],
+     "height": 84,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "eagle_sil",
+   "outline": "black",
+   "fill_mark": "eagle_sil",
+   "fill": "midnight_green",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GO\nBIRDS",
+        "colour": "banner_green",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "text": "FLY EAGLES\nFLY",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#1 JALEN\nHURTS",
+        "colour": "banner_green",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "banner_green",
+      "items": [
+       {
+        "text": "SAQUON\n#26",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "E-A-G-L-E-S\nEAGLES!",
+        "colour": "banner_black",
+        "center": [
+         64,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#6 DEVONTA\nSMITH",
+        "colour": "banner_green",
+        "center": [
+         192,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#98 CARTER\nSACK CITY",
+        "colour": "banner_green",
+        "center": [
+         64,
+         31
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "BIRD\nGANG",
+        "colour": "banner_black",
+        "center": [
+         64,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

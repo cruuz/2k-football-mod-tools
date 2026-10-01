@@ -436,6 +436,8 @@ class WiringTests(unittest.TestCase):
 class RetailPoolTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with pn._rost._outer_image()(RETAIL_EXTRACTION) as archive:
             entry = pn._rost._entry(archive)
             cls.resource = archive.read(entry.virtual_offset, entry.size)
@@ -496,6 +498,8 @@ class RetailPoolTests(unittest.TestCase):
         # reclassify: hashes the header and the player records; the name pool is outside both, so the two
         # passes commute (its edits leave our digest alone, ours leaves its digest alone)
         self.assertEqual(rr.status(RETAIL_EXTRACTION)["status"], "retail")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
         with pn._rost._outer_image()(RETAIL_EXTRACTION) as archive:
             main = rr.load_resources(archive, historic=False)[0]
         if dataclasses.is_dataclass(main):

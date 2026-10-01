@@ -1,0 +1,27 @@
+CHARGE_TABLE base [{"tier": 0, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 0, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 0, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 0, "abilities": ["club"], "before_after": [1.0, 2.0]}, {"tier": 2, "abilities": [], "before_after": [2.0, 1.0]}, {"tier": 2, "abilities": ["finesse"], "before_after": [2.0, 2.0]}, {"tier": 2, "abilities": ["ankle_breaker"], "before_after": [2.0, 2.0]}, {"tier": 2, "abilities": ["club"], "before_after": [2.0, 2.0]}, {"tier": 4, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 4, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 4, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 4, "abilities": ["club"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 6, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": ["club"], "before_after": [1.0, 2.0]}]
+CHARGE_TABLE tu_1_1 [{"tier": 0, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 0, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 0, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 0, "abilities": ["club"], "before_after": [1.0, 2.0]}, {"tier": 2, "abilities": [], "before_after": [2.0, 1.0]}, {"tier": 2, "abilities": ["finesse"], "before_after": [2.0, 2.0]}, {"tier": 2, "abilities": ["ankle_breaker"], "before_after": [2.0, 2.0]}, {"tier": 2, "abilities": ["club"], "before_after": [2.0, 2.0]}, {"tier": 4, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 4, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 4, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 4, "abilities": ["club"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": [], "before_after": [1.0, 1.0]}, {"tier": 6, "abilities": ["finesse"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": ["ankle_breaker"], "before_after": [1.0, 2.0]}, {"tier": 6, "abilities": ["club"], "before_after": [1.0, 2.0]}]
+.
+1 passed in 6.46s
+	Command being timed: "/usr/bin/python3 -m pytest -q -s -p no:cacheprovider tests/mod_editor/test_apf_charge_abilities_native.py::ChargeNativeTests::test_retail_and_patched_full_charge_state_machine"
+	User time (seconds): 5.78
+	System time (seconds): 1.13
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.90
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 642420
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 336411
+	Voluntary context switches: 70
+	Involuntary context switches: 97
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 105672
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

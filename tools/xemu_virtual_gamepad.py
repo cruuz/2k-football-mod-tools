@@ -103,7 +103,9 @@ with UInput(
     version=0x0114,
     bustype=ecodes.BUS_USB,
 ) as controller:
-    deadline = time.monotonic() + 3.0
+    # b76 (2026-09-23): 3 s was too short under load; udev (rule reloads, uaccess ACLs) twice took longer and a lab run
+    # ended before xemu started. 20 s stays inside the driver's READY gate (xemu_playbook_create_runtime, 30 s).
+    deadline = time.monotonic() + 20.0
     device = controller.device
     while device is None and time.monotonic() < deadline:
         time.sleep(0.05)

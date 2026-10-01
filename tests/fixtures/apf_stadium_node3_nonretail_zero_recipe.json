@@ -1,0 +1,159 @@
+{
+    "catalog": {
+        "schema": "apf2k8_stadium_static_position_target_catalog/v1",
+        "sha256": "c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469",
+        "size_bytes": 456898
+    },
+    "claim_flags": {
+        "changed_topology_proved": false,
+        "emulator_runtime_visibility_proved": false,
+        "material_or_uv_authoring_proved": false,
+        "production_mesh_importer_proved": false,
+        "rigid_attachment_proved": false,
+        "same_count_position_only": true,
+        "skin_authoring_proved": false,
+        "xbox_360_hardware_proved": false
+    },
+    "coordinate_space": "serialized_scne_object_space",
+    "game": {
+        "platform": "Xbox 360",
+        "title": "All-Pro Football 2K8"
+    },
+    "operation": "replace_catalog_target_exact_same_count_position0",
+    "position_type": {
+        "component": "IEEE754_BINARY32",
+        "serialized_byte_order": "big-endian",
+        "shape": "FLOAT3"
+    },
+    "positions": [
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0
+        ]
+    ],
+    "schema": "apf2k8_scne_catalog_position_recipe/v2",
+    "source_contract": {
+        "index_pack": "0A",
+        "index_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+        "physical_pack": "1A",
+        "physical_pack_sha256": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb"
+    },
+    "target_id": "outer14.inner8.node3",
+    "vertex_order": "retail_stream_order"
+}

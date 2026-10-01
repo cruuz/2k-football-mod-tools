@@ -1,0 +1,14 @@
+{
+  "status": "PROVED OFFLINE",
+  "session": "/media/noah/Storage/.b76-research/pb/astra-build/phase5.44bDdZ",
+  "build_exit": 0,
+  "disc_removed": true,
+  "remaining_disc_or_executable_payloads": [],
+  "source_recipe_unchanged": true,
+  "source_recipe_sha256": "391483b16ec764e2382764df65424f034cbee6a22347ab1bb28fdec533c06e8e",
+  "nvme_min_observed_free_bytes": 112035262464,
+  "free_space_sample_count": 8,
+  "utc": "2026-09-25T15:10:03.815692+00:00",
+  "nvme_free_bytes": 112035262464,
+  "storage_free_bytes": 30992465920
+}

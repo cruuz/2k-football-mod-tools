@@ -1,0 +1,117 @@
+{
+  "files": {
+    "detail_blade_bermuda.png": {
+      "detail": "blade_bermuda",
+      "kind": "detail",
+      "size": [
+        512,
+        384
+      ]
+    },
+    "detail_blade_bermuda_tile.png": {
+      "detail": "blade_bermuda",
+      "kind": "detail_tile",
+      "size": [
+        192,
+        96
+      ]
+    },
+    "detail_blade_bluegrass.png": {
+      "detail": "blade_bluegrass",
+      "kind": "detail",
+      "size": [
+        512,
+        384
+      ]
+    },
+    "detail_blade_bluegrass_tile.png": {
+      "detail": "blade_bluegrass",
+      "kind": "detail_tile",
+      "size": [
+        192,
+        96
+      ]
+    },
+    "detail_fibre.png": {
+      "detail": "fibre",
+      "kind": "detail",
+      "size": [
+        512,
+        384
+      ]
+    },
+    "detail_fibre_tile.png": {
+      "detail": "fibre",
+      "kind": "detail_tile",
+      "size": [
+        192,
+        96
+      ]
+    },
+    "detail_helix.png": {
+      "detail": "helix",
+      "kind": "detail",
+      "size": [
+        512,
+        384
+      ]
+    },
+    "detail_helix_tile.png": {
+      "detail": "helix",
+      "kind": "detail_tile",
+      "size": [
+        192,
+        96
+      ]
+    },
+    "pattern_grass_bermuda.png": {
+      "kind": "pattern",
+      "look": "grass_bermuda",
+      "size": [
+        128,
+        320
+      ]
+    },
+    "pattern_grass_bluegrass.png": {
+      "kind": "pattern",
+      "look": "grass_bluegrass",
+      "size": [
+        128,
+        320
+      ]
+    },
+    "pattern_grass_checker.png": {
+      "kind": "pattern",
+      "look": "grass_checker",
+      "size": [
+        128,
+        320
+      ]
+    },
+    "pattern_synthetic_fieldturf.png": {
+      "kind": "pattern",
+      "look": "synthetic_fieldturf",
+      "size": [
+        128,
+        320
+      ]
+    },
+    "pattern_synthetic_helix.png": {
+      "kind": "pattern",
+      "look": "synthetic_helix",
+      "size": [
+        128,
+        320
+      ]
+    },
+    "pattern_synthetic_vivid.png": {
+      "kind": "pattern",
+      "look": "synthetic_vivid",
+      "size": [
+        128,
+        320
+      ]
+    }
+  },
+  "schema": "nfl2k5_modern_surfaces_art/v1"
+}

@@ -1,0 +1,1811 @@
+{
+  "status": "PROVED OFFLINE",
+  "runtime_witness": false,
+  "recipe_sha256": "54de0fda070ca2b031022ffbb6a480ddd8fdd4f46b63355e39698f00318536f3",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "install": {
+    "status": "applied",
+    "packs": [
+      {
+        "pack": "data/playbooks/softdrink_giants_modern.2k5book",
+        "name": "NFL 2K28 Giants Modern",
+        "author": "SOFTDRINK / Astra",
+        "version": "0.1.0",
+        "license": "CC0-1.0",
+        "authored_on": "NYG",
+        "book_fingerprint": "8851c3093c51496b440b3cc3f833983b2c2014a6ede57e14fd0c1299e435f6ae",
+        "formations": 26,
+        "plays": 148,
+        "books": [
+          {
+            "team": "NYG",
+            "outer_index": 329,
+            "retargeted": false,
+            "retargeted_entries": 0,
+            "formations": 43,
+            "plays": 269,
+            "nodes": 1438,
+            "changed_bytes": 24389
+          }
+        ]
+      }
+    ]
+  },
+  "compile": {
+    "schema": "nfl2k5_complete_offense/v1",
+    "status": "PROVED OFFLINE",
+    "asset_id": "book:NYG",
+    "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+    "replacement_sha256": "86598ce68609cace419ca2db94359d4566f49b9b16494e5327a53e0d0f961a1c",
+    "new_formation_count": 43,
+    "new_play_count": 269,
+    "new_node_count": 1438,
+    "replaced_formations": 26,
+    "replaced_plays": 148,
+    "retained_plays": 121,
+    "menus": 26,
+    "name_pool_bytes": 7512,
+    "pool_strategy": "exact chain/string interning; stable indices",
+    "runtime_witness": false
+  },
+  "build_menu_gate": {
+    "books": 37,
+    "problems": 0
+  },
+  "native_functions": [
+    "0xE1320",
+    "0xE1360",
+    "0xACCE0"
+  ],
+  "native_scope": "Retail instructions under Unicorn; menu UI calls stubbed; no gameplay",
+  "formations": 43,
+  "pages": 116,
+  "menu_entries": 327,
+  "unique_plays": 269,
+  "walks": [
+    {
+      "formation": 0,
+      "name": "Gun Trips R",
+      "ended": true,
+      "plays": [
+        59,
+        60,
+        61,
+        62,
+        63,
+        64
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            59,
+            60,
+            61
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            62,
+            63,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 1,
+      "name": "Gun Trips L",
+      "ended": true,
+      "plays": [
+        65,
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            65,
+            66,
+            67
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            68,
+            69,
+            70
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 2,
+      "name": "Gun Bunch R",
+      "ended": true,
+      "plays": [
+        71,
+        72,
+        73,
+        74,
+        75,
+        76
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            71,
+            72,
+            73
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            74,
+            75,
+            76
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 3,
+      "name": "Gun Bunch L",
+      "ended": true,
+      "plays": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            77,
+            78,
+            79
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            80,
+            81,
+            82
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 4,
+      "name": "Gun Empty R",
+      "ended": true,
+      "plays": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            83,
+            84,
+            85
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            86,
+            87,
+            88
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 5,
+      "name": "Gun Empty L",
+      "ended": true,
+      "plays": [
+        89,
+        90,
+        91,
+        92,
+        93,
+        94
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            89,
+            90,
+            91
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            92,
+            93,
+            94
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 6,
+      "name": "Singleback Ace R",
+      "ended": true,
+      "plays": [
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            95,
+            96,
+            97
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            98,
+            99,
+            100
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 7,
+      "name": "Singleback Ace L",
+      "ended": true,
+      "plays": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        106
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            101,
+            102,
+            103
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            104,
+            105,
+            106
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 8,
+      "name": "Ace Wing R",
+      "ended": true,
+      "plays": [
+        107,
+        108,
+        109,
+        110,
+        111,
+        112
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            107,
+            108,
+            109
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            110,
+            111,
+            112
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 9,
+      "name": "Ace Wing L",
+      "ended": true,
+      "plays": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            113,
+            114,
+            115
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            116,
+            117,
+            118
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 10,
+      "name": "Pistol Ace R",
+      "ended": true,
+      "plays": [
+        119,
+        120,
+        121,
+        122,
+        123,
+        124
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            119,
+            120,
+            121
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            122,
+            123,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 11,
+      "name": "Pistol Ace L",
+      "ended": true,
+      "plays": [
+        125,
+        126,
+        127,
+        128,
+        129,
+        130
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            125,
+            126,
+            127
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            128,
+            129,
+            130
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 12,
+      "name": "Gun Doubles R",
+      "ended": true,
+      "plays": [
+        131,
+        132,
+        133,
+        134,
+        135,
+        136
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            131,
+            132,
+            133
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            134,
+            135,
+            136
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 13,
+      "name": "Gun Doubles L",
+      "ended": true,
+      "plays": [
+        137,
+        138,
+        139,
+        140,
+        141,
+        142
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            137,
+            138,
+            139
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            140,
+            141,
+            142
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 14,
+      "name": "Gun Y Trips R",
+      "ended": true,
+      "plays": [
+        143,
+        144,
+        145,
+        146,
+        147,
+        148
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            143,
+            144,
+            145
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            146,
+            147,
+            148
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 15,
+      "name": "Gun Y Trips L",
+      "ended": true,
+      "plays": [
+        149,
+        150,
+        151,
+        152,
+        153,
+        154
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            149,
+            150,
+            151
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            152,
+            153,
+            154
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 16,
+      "name": "Gun Wing R",
+      "ended": true,
+      "plays": [
+        155,
+        156,
+        157,
+        158,
+        159,
+        160
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            155,
+            156,
+            157
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            158,
+            159,
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 17,
+      "name": "Gun Wing L",
+      "ended": true,
+      "plays": [
+        161,
+        162,
+        163,
+        164,
+        165,
+        166
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            161,
+            162,
+            163
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            164,
+            165,
+            166
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 18,
+      "name": "Ace Bunch R",
+      "ended": true,
+      "plays": [
+        167,
+        168,
+        169,
+        170,
+        171
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            167,
+            168,
+            169
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            170,
+            171
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 19,
+      "name": "Ace Bunch L",
+      "ended": true,
+      "plays": [
+        172,
+        173,
+        174,
+        175,
+        176
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            172,
+            173,
+            174
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            175,
+            176
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 20,
+      "name": "Pistol Wing R",
+      "ended": true,
+      "plays": [
+        177,
+        178,
+        179,
+        180,
+        181
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            177,
+            178,
+            179
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            180,
+            181
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 21,
+      "name": "Pistol Wing L",
+      "ended": true,
+      "plays": [
+        182,
+        183,
+        184,
+        203,
+        204
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            182,
+            183,
+            184
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            203,
+            204
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 22,
+      "name": "UC Tight R",
+      "ended": true,
+      "plays": [
+        205,
+        206,
+        207,
+        208,
+        209
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            205,
+            206,
+            207
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            208,
+            209
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 23,
+      "name": "UC Tight L",
+      "ended": true,
+      "plays": [
+        210,
+        211,
+        212,
+        213,
+        220
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            210,
+            211,
+            212
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            213,
+            220
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 24,
+      "name": "Pistol Strong R",
+      "ended": true,
+      "plays": [
+        221,
+        222,
+        223,
+        224,
+        225
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            221,
+            222,
+            223
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            224,
+            225
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 25,
+      "name": "Pistol Strong L",
+      "ended": true,
+      "plays": [
+        226,
+        227,
+        228,
+        229,
+        230
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            226,
+            227,
+            228
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            229,
+            230
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 26,
+      "name": "4-3",
+      "ended": true,
+      "plays": [
+        3,
+        0,
+        4,
+        5,
+        6,
+        1,
+        7,
+        2,
+        23,
+        14,
+        22,
+        20,
+        10,
+        21,
+        35,
+        33,
+        34,
+        19,
+        9,
+        18,
+        17,
+        8,
+        16,
+        12,
+        11,
+        13,
+        58,
+        15,
+        57
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            3,
+            0,
+            4
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            5,
+            6,
+            1
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            7,
+            2,
+            23
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            14,
+            22,
+            20
+          ]
+        },
+        {
+          "page": 4,
+          "returned": true,
+          "plays": [
+            10,
+            21,
+            35
+          ]
+        },
+        {
+          "page": 5,
+          "returned": true,
+          "plays": [
+            33,
+            34,
+            19
+          ]
+        },
+        {
+          "page": 6,
+          "returned": true,
+          "plays": [
+            9,
+            18,
+            17
+          ]
+        },
+        {
+          "page": 7,
+          "returned": true,
+          "plays": [
+            8,
+            16,
+            12
+          ]
+        },
+        {
+          "page": 8,
+          "returned": true,
+          "plays": [
+            11,
+            13,
+            58
+          ]
+        },
+        {
+          "page": 9,
+          "returned": true,
+          "plays": [
+            15,
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 27,
+      "name": "Nickel",
+      "ended": true,
+      "plays": [
+        3,
+        0,
+        4,
+        5,
+        6,
+        1,
+        7,
+        2,
+        19,
+        10,
+        18,
+        23,
+        14,
+        30,
+        24,
+        33,
+        28,
+        31,
+        9,
+        29,
+        27,
+        32,
+        8,
+        26,
+        17,
+        11,
+        12,
+        13,
+        25,
+        58,
+        15,
+        57
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            3,
+            0,
+            4
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            5,
+            6,
+            1
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            7,
+            2,
+            19
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            10,
+            18,
+            23
+          ]
+        },
+        {
+          "page": 4,
+          "returned": true,
+          "plays": [
+            14,
+            30,
+            24
+          ]
+        },
+        {
+          "page": 5,
+          "returned": true,
+          "plays": [
+            33,
+            28,
+            31
+          ]
+        },
+        {
+          "page": 6,
+          "returned": true,
+          "plays": [
+            9,
+            29,
+            27
+          ]
+        },
+        {
+          "page": 7,
+          "returned": true,
+          "plays": [
+            32,
+            8,
+            26
+          ]
+        },
+        {
+          "page": 8,
+          "returned": true,
+          "plays": [
+            17,
+            11,
+            12
+          ]
+        },
+        {
+          "page": 9,
+          "returned": true,
+          "plays": [
+            13,
+            25,
+            58
+          ]
+        },
+        {
+          "page": 10,
+          "returned": true,
+          "plays": [
+            15,
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 28,
+      "name": "Dime",
+      "ended": true,
+      "plays": [
+        3,
+        0,
+        4,
+        5,
+        6,
+        1,
+        2,
+        7,
+        38,
+        10,
+        32,
+        23,
+        14,
+        18,
+        35,
+        33,
+        36,
+        40,
+        28,
+        39,
+        19,
+        27,
+        17,
+        12,
+        37,
+        13,
+        58,
+        15,
+        57
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            3,
+            0,
+            4
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            5,
+            6,
+            1
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            2,
+            7,
+            38
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            10,
+            32,
+            23
+          ]
+        },
+        {
+          "page": 4,
+          "returned": true,
+          "plays": [
+            14,
+            18,
+            35
+          ]
+        },
+        {
+          "page": 5,
+          "returned": true,
+          "plays": [
+            33,
+            36,
+            40
+          ]
+        },
+        {
+          "page": 6,
+          "returned": true,
+          "plays": [
+            28,
+            39,
+            19
+          ]
+        },
+        {
+          "page": 7,
+          "returned": true,
+          "plays": [
+            27,
+            17,
+            12
+          ]
+        },
+        {
+          "page": 8,
+          "returned": true,
+          "plays": [
+            37,
+            13,
+            58
+          ]
+        },
+        {
+          "page": 9,
+          "returned": true,
+          "plays": [
+            15,
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 29,
+      "name": "Bear",
+      "ended": true,
+      "plays": [
+        3,
+        0,
+        4,
+        1,
+        5,
+        6,
+        2,
+        7,
+        215,
+        219,
+        214,
+        217,
+        216,
+        218,
+        195,
+        191,
+        193,
+        199,
+        188,
+        194,
+        189,
+        198,
+        202,
+        190,
+        200,
+        201,
+        196,
+        192,
+        197
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            3,
+            0,
+            4
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            2,
+            7,
+            215
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            219,
+            214,
+            217
+          ]
+        },
+        {
+          "page": 4,
+          "returned": true,
+          "plays": [
+            216,
+            218,
+            195
+          ]
+        },
+        {
+          "page": 5,
+          "returned": true,
+          "plays": [
+            191,
+            193,
+            199
+          ]
+        },
+        {
+          "page": 6,
+          "returned": true,
+          "plays": [
+            188,
+            194,
+            189
+          ]
+        },
+        {
+          "page": 7,
+          "returned": true,
+          "plays": [
+            198,
+            202,
+            190
+          ]
+        },
+        {
+          "page": 8,
+          "returned": true,
+          "plays": [
+            200,
+            201,
+            196
+          ]
+        },
+        {
+          "page": 9,
+          "returned": true,
+          "plays": [
+            192,
+            197
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 30,
+      "name": "Goalline",
+      "ended": true,
+      "plays": [
+        45,
+        48,
+        44,
+        43,
+        46,
+        47,
+        42,
+        41,
+        56,
+        52,
+        49,
+        54,
+        55,
+        185,
+        53,
+        50,
+        51,
+        186,
+        187
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            45,
+            48,
+            44
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            43,
+            46,
+            47
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            42,
+            41,
+            56
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            52,
+            49,
+            54
+          ]
+        },
+        {
+          "page": 4,
+          "returned": true,
+          "plays": [
+            55,
+            185,
+            53
+          ]
+        },
+        {
+          "page": 5,
+          "returned": true,
+          "plays": [
+            50,
+            51,
+            186
+          ]
+        },
+        {
+          "page": 6,
+          "returned": true,
+          "plays": [
+            187
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 31,
+      "name": "Prevent",
+      "ended": true,
+      "plays": [
+        261,
+        259,
+        257,
+        260,
+        258,
+        262,
+        255,
+        253,
+        254,
+        264,
+        256,
+        263
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            261,
+            259,
+            257
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            260,
+            258,
+            262
+          ]
+        },
+        {
+          "page": 2,
+          "returned": true,
+          "plays": [
+            255,
+            253,
+            254
+          ]
+        },
+        {
+          "page": 3,
+          "returned": true,
+          "plays": [
+            264,
+            256,
+            263
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 32,
+      "name": "Hail Mary",
+      "ended": true,
+      "plays": [
+        251,
+        250,
+        252
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            251,
+            250,
+            252
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 33,
+      "name": "Clock",
+      "ended": true,
+      "plays": [
+        239,
+        238
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            239,
+            238
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 34,
+      "name": "Kick Return",
+      "ended": true,
+      "plays": [
+        265,
+        232,
+        266
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            265,
+            232,
+            266
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 35,
+      "name": "Onside Kick Return",
+      "ended": true,
+      "plays": [
+        247
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            247
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 36,
+      "name": "Kickoff",
+      "ended": true,
+      "plays": [
+        240,
+        231,
+        241
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            240,
+            231,
+            241
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 37,
+      "name": "Onside Kickoff",
+      "ended": true,
+      "plays": [
+        237
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            237
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 38,
+      "name": "Punt Return",
+      "ended": true,
+      "plays": [
+        267,
+        234,
+        268,
+        249,
+        246
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            267,
+            234,
+            268
+          ]
+        },
+        {
+          "page": 1,
+          "returned": true,
+          "plays": [
+            249,
+            246
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 39,
+      "name": "Block Field Goal",
+      "ended": true,
+      "plays": [
+        248,
+        236
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            248,
+            236
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 40,
+      "name": "Punt",
+      "ended": true,
+      "plays": [
+        244,
+        233,
+        245
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            244,
+            233,
+            245
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 41,
+      "name": "Field Goal",
+      "ended": true,
+      "plays": [
+        242,
+        235,
+        243
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            242,
+            235,
+            243
+          ]
+        }
+      ]
+    },
+    {
+      "formation": 42,
+      "name": "Safety Kick",
+      "ended": true,
+      "plays": [
+        240,
+        231,
+        241
+      ],
+      "pages": [
+        {
+          "page": 0,
+          "returned": true,
+          "plays": [
+            240,
+            231,
+            241
+          ]
+        }
+      ]
+    }
+  ],
+  "composition": {
+    "position_recode_accepted": true,
+    "depth_roles_accepted": true,
+    "changed_defensive_groups": 22,
+    "depth_roles_changed_bytes": 10,
+    "native_replay_passed": true
+  }
+}

@@ -1,0 +1,564 @@
+{
+  "classification": "PROVED OFFLINE",
+  "states": {
+    "momentum": "applied",
+    "momentum_settings": {
+      "status": "applied",
+      "momentum": 50,
+      "momentum_contact": true,
+      "momentum_collisions": true,
+      "momentum_collision_level": 50,
+      "model_version": 2,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "momentum_contact": "applied",
+    "momentum_collisions": "applied",
+    "camera": "applied",
+    "read_option_runtime": "retail",
+    "read_option_runtime_settings": null,
+    "screen_hooks": "applied",
+    "screen_hooks_settings": {
+      "model_version": 1,
+      "line_hold_floor_seconds": 0.8,
+      "default_qb_timer_seconds": 0.6,
+      "explicit_qb_delays_preserved": true,
+      "data_bytes": 0,
+      "experimental": true,
+      "runtime_witnessed": false,
+      "experiment_order": 2
+    },
+    "coverage_trail": "applied",
+    "franchise_edit_player": "applied",
+    "cpu_money_downs": "applied",
+    "cpu_money_downs_settings": {
+      "level": "modern",
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "accelerated_clock": "applied",
+    "accelerated_clock_settings": {
+      "status": "applied",
+      "enabled": true,
+      "minimum_seconds": 20,
+      "option_source": "build_time",
+      "runtime_witnessed": false
+    },
+    "coin_defer": "applied",
+    "coin_defer_settings": {
+      "status": "applied",
+      "settings": {},
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time",
+      "human_defer": false,
+      "cpu_defer_rate": [
+        15,
+        17
+      ],
+      "source": "https://www.reddit.com/r/nfl/comments/198fkwh/2023_regular_season_coin_toss_data/"
+    },
+    "decided_clock": "applied",
+    "decided_clock_settings": {
+      "status": "applied",
+      "settings": {
+        "margin": 17,
+        "seconds": 60
+      },
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time"
+    },
+    "cpu_scrambles": "applied",
+    "cpu_scrambles_settings": {
+      "status": "applied",
+      "settings": {},
+      "experimental": true,
+      "runtime_witnessed": false,
+      "option_source": "build_time",
+      "retail_factor": 0.25,
+      "modern_factor": 0.5,
+      "nfl_average_calibrated": false
+    },
+    "weekly_prep": "applied",
+    "weekly_prep_cpu": "applied",
+    "weekly_prep_remember": "applied",
+    "weekly_prep_settings": {
+      "status": "applied",
+      "cpu": true,
+      "remember": true
+    },
+    "playbook_pair": "retail",
+    "deep_zone_facing": "applied",
+    "deep_zone_bail": "applied",
+    "deep_zone_settings": {
+      "status": "applied",
+      "facing": true,
+      "bail": true,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "guardian_overlay": "retail",
+    "guardian_overlay_settings": {
+      "status": "retail",
+      "guardian_everyone_practice": true,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "franchise_2026_rules": "unavailable",
+    "franchise_2026_kernel": "retail",
+    "franchise_2026_runtime_enforced": false,
+    "senior_bowl": "retail",
+    "senior_bowl_native_available": false,
+    "my_career": "applied",
+    "crib_reclaim": "applied",
+    "franchise_autosave": "applied",
+    "historic_teams_quick_game": "applied",
+    "espn25_more_moments": "applied",
+    "historic_stock_books": "applied",
+    "espn25_era_rules": "applied",
+    "anniversary_kickoff": "applied",
+    "widescreen_menus": "applied",
+    "kickoff_return_blocking": "retail",
+    "k128_memory": "retail",
+    "k128_settings": {
+      "status": "retail",
+      "k128": false,
+      "roster_heap": false,
+      "early": false,
+      "require_128": false
+    },
+    "k128_roster_heap": "retail",
+    "k128_early": "retail",
+    "position_pools": "applied",
+    "position_pool_filters": "retail",
+    "modern_naming": "applied",
+    "roster_arena_growth": "retail",
+    "roster_arena_settings": {
+      "status": "retail",
+      "reserves_16": false,
+      "created_teams_extra": 0
+    },
+    "reserves_16": "retail",
+    "created_teams_extra": "retail",
+    "defensive_try": "applied",
+    "zone_drop_cap": "applied",
+    "all_stadiums": "applied",
+    "coverage_slider": "applied",
+    "scramble_tuning": "applied",
+    "flatter_deep_ball": "retail",
+    "chop_block_toggle": "applied",
+    "chop_block_evidence": {
+      "status": "applied",
+      "experimental": true,
+      "runtime_witnessed": false,
+      "retail_toggle_ignored": true,
+      "detector_present": true,
+      "case_entry_va": "0xb1598",
+      "clipping_entry_va": "0xb1594",
+      "retail_shared_target_va": "0xb14ee",
+      "toggle_va": "0xe60064",
+      "detector_va": "0xb2900",
+      "practice_disables_all_penalties": true,
+      "truth_table": [
+        {
+          "chop_toggle": 0,
+          "clipping": 0.0,
+          "retail_enabled": false,
+          "patch_enabled": false
+        },
+        {
+          "chop_toggle": 0,
+          "clipping": 0.5,
+          "retail_enabled": true,
+          "patch_enabled": false
+        },
+        {
+          "chop_toggle": 1,
+          "clipping": 0.0,
+          "retail_enabled": false,
+          "patch_enabled": true
+        },
+        {
+          "chop_toggle": 1,
+          "clipping": 0.5,
+          "retail_enabled": true,
+          "patch_enabled": true
+        }
+      ]
+    },
+    "music_shuffle": "applied",
+    "music_shuffle_state": {
+      "status": "applied",
+      "records": [
+        [
+          "femusic",
+          0
+        ],
+        [
+          "femusic",
+          1
+        ],
+        [
+          "femusic",
+          2
+        ],
+        [
+          "femusic",
+          3
+        ],
+        [
+          "femusic",
+          4
+        ],
+        [
+          "femusic",
+          5
+        ],
+        [
+          "femusic",
+          6
+        ],
+        [
+          "cribmusic",
+          0
+        ],
+        [
+          "cribmusic",
+          1
+        ],
+        [
+          "cribmusic",
+          2
+        ],
+        [
+          "cribmusic",
+          3
+        ],
+        [
+          "cribmusic",
+          4
+        ],
+        [
+          "cribmusic",
+          5
+        ],
+        [
+          "cribmusic",
+          6
+        ],
+        [
+          "cribmusic",
+          7
+        ],
+        [
+          "cribmusic",
+          8
+        ],
+        [
+          "cribmusic",
+          9
+        ],
+        [
+          "cribmusic",
+          10
+        ],
+        [
+          "cribmusic",
+          11
+        ],
+        [
+          "cribmusic",
+          12
+        ],
+        [
+          "cribmusic",
+          13
+        ],
+        [
+          "cribmusic",
+          14
+        ],
+        [
+          "cribmusic",
+          15
+        ],
+        [
+          "cribmusic",
+          16
+        ],
+        [
+          "cribmusic",
+          17
+        ],
+        [
+          "cribmusic",
+          18
+        ],
+        [
+          "cribmusic",
+          19
+        ],
+        [
+          "cribmusic",
+          20
+        ],
+        [
+          "cribmusic",
+          21
+        ],
+        [
+          "cribmusic",
+          22
+        ],
+        [
+          "cribmusic",
+          23
+        ],
+        [
+          "cribmusic",
+          24
+        ],
+        [
+          "cribmusic",
+          25
+        ],
+        [
+          "cribmusic",
+          26
+        ],
+        [
+          "cribmusic",
+          27
+        ],
+        [
+          "cribmusic",
+          28
+        ],
+        [
+          "cribmusic",
+          29
+        ],
+        [
+          "cribmusic",
+          30
+        ],
+        [
+          "cribmusic",
+          31
+        ],
+        [
+          "cribmusic",
+          32
+        ],
+        [
+          "cribmusic",
+          33
+        ],
+        [
+          "cribmusic",
+          34
+        ],
+        [
+          "cribmusic",
+          35
+        ],
+        [
+          "cribmusic",
+          36
+        ],
+        [
+          "cribmusic",
+          37
+        ],
+        [
+          "cribmusic",
+          38
+        ],
+        [
+          "cribmusic",
+          39
+        ],
+        [
+          "cribmusic",
+          40
+        ],
+        [
+          "cribmusic",
+          41
+        ],
+        [
+          "cribmusic",
+          42
+        ],
+        [
+          "cribmusic",
+          43
+        ],
+        [
+          "cribmusic",
+          44
+        ],
+        [
+          "cribmusic",
+          45
+        ],
+        [
+          "cribmusic",
+          46
+        ],
+        [
+          "cribmusic",
+          47
+        ],
+        [
+          "cribmusic",
+          48
+        ],
+        [
+          "cribmusic",
+          49
+        ],
+        [
+          "cribmusic",
+          50
+        ],
+        [
+          "cribmusic",
+          51
+        ],
+        [
+          "cribmusic",
+          52
+        ],
+        [
+          "cribmusic",
+          53
+        ],
+        [
+          "cribmusic",
+          54
+        ],
+        [
+          "cribmusic",
+          55
+        ],
+        [
+          "cribmusic",
+          56
+        ],
+        [
+          "cribmusic",
+          57
+        ],
+        [
+          "cribmusic",
+          58
+        ]
+      ],
+      "enabled": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "experimental": true,
+      "runtime_witnessed": false,
+      "position_policy": "Keep the song and shuffle position between menus, Crib, draft and game background. Pause and replay screens keep music playing. Stadium clip previews pause and resume it. Loading, halftime, wrap-up and jukebox previews stop the background song; it restarts on return. One selected song repeats; zero stops.",
+      "all_modes_proved": true,
+      "context_proof_scope": "24 named native routes, bounded with rendering and streaming stubs; gameplay unwitnessed"
+    },
+    "practice_squad_screen": "applied",
+    "abilities": "applied",
+    "abilities_settings": {
+      "status": "applied",
+      "abilities_off_week": null,
+      "lock_right_stick": true,
+      "lock_special_moves": true,
+      "lock_speedster": true,
+      "model_version": 2,
+      "experimental": true,
+      "runtime_witnessed": false
+    },
+    "qb_spy": "applied",
+    "calendar_engine": "applied",
+    "zone_drop_settings": {
+      "status": "applied",
+      "cap": 0.8399999737739563
+    }
+  },
+  "route": {
+    "mode_va": 15073152,
+    "required_mode": 8,
+    "ordinal_va": 12523608,
+    "count": 50,
+    "profiles_va": 22055392,
+    "stride": 32,
+    "season_offset": 20,
+    "season_bytes": 2,
+    "super_bowl_offset": 28,
+    "super_bowl_bytes": 4
+  }
+}

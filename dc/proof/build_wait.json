@@ -1,0 +1,25 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "as_of": "2026-09-28 14:13:52 UTC",
+  "status": "full_build_queued_for_space",
+  "full_build_completed": false,
+  "disc_exists": false,
+  "storage_free_bytes": 23422316544,
+  "storage_required_bytes": 32212254720,
+  "nvme_free_bytes": 113835253760,
+  "nvme_floor_bytes": 107374182400,
+  "wait_seconds": 6301,
+  "task_storage_usage_du": "6.1 MiB",
+  "ready_marker_present": true,
+  "frozen_sources_unchanged": true,
+  "launcher": "/home/noah/2k-worktrees/b76-m2/dc/build_full.py",
+  "live_receipt": "/media/noah/Storage/.b76-research/dc/astra-build/build_execution.json",
+  "external_prerequisite": "DESIGN: main frees at least 9 GiB on Storage; this job cannot reclaim that amount within its writable Storage directory.",
+  "remaining_work": [
+    "FULL C recipe build",
+    "Native proof using final disc XBE and roster",
+    "Native lineup proof using final disc PLAY resources",
+    "Delete verified task disc",
+    "Update report and verified bundle with final build evidence"
+  ]
+}

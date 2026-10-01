@@ -1,0 +1,1384 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "DET",
+ "name": "Detroit Lions",
+ "asset_code": "09",
+ "season": 2026,
+ "status": "Phase B job d6 (2026-09-23). Sort: REDESIGNED (the April 2024 set: no black, new block numbers trimmed in silver, new sleeve stripes, DETROIT on the road chest, blue-white-blue helmet stripe, Honolulu blue facemask, the 2017 lion). Colours sourced; kit albedo INFERRED. Number glyphs: the retail silver-trimmed block glyphs (09H1, 09A2) recoloured; the 2024 font's clipped corners are not traced (open item).",
+ "sources": {
+  "kit_rules": "https://en.wikipedia.org/w/index.php?title=Detroit_Lions&action=raw (Logos and uniforms: April 18, 2024 set; all-blue and all-white mainly worn)",
+  "uniform_diagram": "https://en.wikipedia.org/wiki/Special:FilePath/Detroit_Lions_Uniforms_(2026).png (CC BY-SA)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (DET: Honolulu Blue #0076B6, Silver #B0B7BC, White; 2026 NFL Record and Fact Book p.172)",
+  "home_photos": "https://www.detroitlions.com/photos/lions-vs-saints-week-1-photos (all blue; Ford Field end zones and walls; 2026-09-13)",
+  "road_photos": "https://www.detroitlions.com/photos/lions-at-bills-week-2-photos (all white, DETROIT chest; 2026-09-20)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/DET.svg",
+  "wordmark_vector": "https://en.wikipedia.org/wiki/Special:FilePath/Detroit_Lions_wordmark.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "blue": "#0076B6",
+  "silver": "#B0B7BC",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "blue": "#0076B6",
+  "silver": "#B0B7BC",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_blue": "#0076B6",
+  "banner_blue": "#0076B6",
+  "r_helmet_silver": "#A2A9AD",
+  "r_helmet_blue": "#24409D",
+  "r_card_blue": "#1F46AD",
+  "r_card_black": "#13182A",
+  "r_card_blue_away": "#0A2B85",
+  "r_atlas_blue": "#274EB5",
+  "r_atlas_sleeve": "#1C3884",
+  "r_atlas_silver": "#9FA2A5"
+ },
+ "marks": {
+  "lion_full": "lion_full.png",
+  "lions_wordmark": "lions_wordmark_mask.png",
+  "detroit": "detroit_chest_mask.png",
+  "ford_field": "ford_field_mask.png",
+  "rect": "rect_mask.png",
+  "lion_layer_silhouette": "lion_layer_silhouette.png",
+  "lion_layer_blue": "lion_layer_blue.png",
+  "lion_layer_white": "lion_layer_white.png",
+  "lion_layer_silver": "lion_layer_silver.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "09H0",
+   "note": "2026 home (One Pride): Honolulu blue jersey, white block numbers trimmed in silver, two silver sleeve stripes with white borders, solid Honolulu blue pants and socks (the all-blue look worn at home in 2024 to 2026)",
+   "torso": {
+    "base_colour": "blue",
+    "neck_donor": "09NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "blue",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        12.76,
+        36
+       ],
+       [
+        122.0,
+        36
+       ],
+       [
+        122.0,
+        37.3
+       ],
+       [
+        13.18,
+        37.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        13.18,
+        37.3
+       ],
+       [
+        122.0,
+        37.3
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        15.32,
+        44
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        15.32,
+        44
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        122.0,
+        45.3
+       ],
+       [
+        15.74,
+        45.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        16.28,
+        47
+       ],
+       [
+        122.0,
+        47
+       ],
+       [
+        122.0,
+        48.3
+       ],
+       [
+        16.7,
+        48.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        16.7,
+        48.3
+       ],
+       [
+        122.0,
+        48.3
+       ],
+       [
+        122.0,
+        55
+       ],
+       [
+        18.84,
+        55
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        18.84,
+        55
+       ],
+       [
+        122.0,
+        55
+       ],
+       [
+        122.0,
+        56.3
+       ],
+       [
+        19.26,
+        56.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        115.24,
+        100
+       ],
+       [
+        6.0,
+        100
+       ],
+       [
+        6.0,
+        101.3
+       ],
+       [
+        114.82,
+        101.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        114.82,
+        101.3
+       ],
+       [
+        6.0,
+        101.3
+       ],
+       [
+        6.0,
+        108
+       ],
+       [
+        112.68,
+        108
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        112.68,
+        108
+       ],
+       [
+        6.0,
+        108
+       ],
+       [
+        6.0,
+        109.3
+       ],
+       [
+        112.26,
+        109.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        111.72,
+        111
+       ],
+       [
+        6.0,
+        111
+       ],
+       [
+        6.0,
+        112.3
+       ],
+       [
+        111.3,
+        112.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        111.3,
+        112.3
+       ],
+       [
+        6.0,
+        112.3
+       ],
+       [
+        6.0,
+        119
+       ],
+       [
+        109.16,
+        119
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        109.16,
+        119
+       ],
+       [
+        6.0,
+        119
+       ],
+       [
+        6.0,
+        120.3
+       ],
+       [
+        108.74,
+        120.3
+       ]
+      ],
+      "colour": "white"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "blue",
+    "stripe": [],
+    "swoosh_colour": "white",
+    "base_from": "09A2"
+   },
+   "socks": {
+    "colour": "blue"
+   },
+   "digits": {
+    "glyph_donor": "09H1",
+    "fill": "white",
+    "outline": "silver",
+    "outline_frac": 0.04
+   },
+   "nameplate": {
+    "glyph_donor": "09H5",
+    "fill": "white"
+   },
+   "helmet_digits": {
+    "glyph_donor": "09H5",
+    "fill": "blue"
+   },
+   "helmet": {
+    "shell": "silver",
+    "shell_from": "r_helmet_silver",
+    "stripe": "blue",
+    "recolour": [
+     {
+      "from": "r_helmet_blue",
+      "to": "blue",
+      "tolerance": 0.2
+     }
+    ],
+    "decorations": [
+     {
+      "rect": [
+       146.5,
+       0,
+       149,
+       232
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       176,
+       0,
+       178.5,
+       232
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       149,
+       0,
+       156,
+       232
+      ],
+      "colour": "blue"
+     },
+     {
+      "rect": [
+       156,
+       0,
+       168,
+       232
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       168,
+       0,
+       176,
+       232
+      ],
+      "colour": "blue"
+     }
+    ],
+    "decal": {
+     "mark": "lion_full",
+     "scale": 1.0,
+     "erase": "box"
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_blue",
+      "to": "blue",
+      "region": "jersey",
+      "tolerance": 0.22
+     },
+     {
+      "from": "r_card_black",
+      "to": "silver",
+      "region": "jersey",
+      "tolerance": 0.1
+     }
+    ],
+    "logo": {
+     "mark": "lion_full",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 3685,
+   "splayer": {
+    "torso_donor_outer": 3685,
+    "torso_donor": "09H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_blue",
+      "to": "blue",
+      "region": "torso",
+      "tolerance": 0.22
+     },
+     {
+      "from": "r_atlas_sleeve",
+      "to": "blue",
+      "region": "sleeve",
+      "tolerance": 0.22
+     },
+     {
+      "from": "r_atlas_silver",
+      "to": "silver",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ],
+    "logo": {
+     "mark": "lion_full",
+     "scale": 1.0
+    }
+   },
+   "unif_color": {
+    "facemask": "#0076B6",
+    "turtleneck": "#0076B6"
+   }
+  },
+  "away": {
+   "selector": "09A0",
+   "note": "2026 road (the 313): white jersey, Honolulu blue block numbers trimmed in silver, DETROIT on the chest, two blue sleeve stripes trimmed in silver, solid white pants and socks",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "09NK",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "blue"
+    },
+    "decorations": [
+     {
+      "mark": "detroit",
+      "colour": "blue",
+      "center": [
+       161,
+       90.5
+      ],
+      "width": 40
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "polygon": [
+       [
+        12.76,
+        36
+       ],
+       [
+        122.0,
+        36
+       ],
+       [
+        122.0,
+        37.3
+       ],
+       [
+        13.18,
+        37.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        13.18,
+        37.3
+       ],
+       [
+        122.0,
+        37.3
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        15.32,
+        44
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        15.32,
+        44
+       ],
+       [
+        122.0,
+        44
+       ],
+       [
+        122.0,
+        45.3
+       ],
+       [
+        15.74,
+        45.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        16.28,
+        47
+       ],
+       [
+        122.0,
+        47
+       ],
+       [
+        122.0,
+        48.3
+       ],
+       [
+        16.7,
+        48.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        16.7,
+        48.3
+       ],
+       [
+        122.0,
+        48.3
+       ],
+       [
+        122.0,
+        55
+       ],
+       [
+        18.84,
+        55
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        18.84,
+        55
+       ],
+       [
+        122.0,
+        55
+       ],
+       [
+        122.0,
+        56.3
+       ],
+       [
+        19.26,
+        56.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        115.24,
+        100
+       ],
+       [
+        6.0,
+        100
+       ],
+       [
+        6.0,
+        101.3
+       ],
+       [
+        114.82,
+        101.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        114.82,
+        101.3
+       ],
+       [
+        6.0,
+        101.3
+       ],
+       [
+        6.0,
+        108
+       ],
+       [
+        112.68,
+        108
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        112.68,
+        108
+       ],
+       [
+        6.0,
+        108
+       ],
+       [
+        6.0,
+        109.3
+       ],
+       [
+        112.26,
+        109.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        111.72,
+        111
+       ],
+       [
+        6.0,
+        111
+       ],
+       [
+        6.0,
+        112.3
+       ],
+       [
+        111.3,
+        112.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        111.3,
+        112.3
+       ],
+       [
+        6.0,
+        112.3
+       ],
+       [
+        6.0,
+        119
+       ],
+       [
+        109.16,
+        119
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        109.16,
+        119
+       ],
+       [
+        6.0,
+        119
+       ],
+       [
+        6.0,
+        120.3
+       ],
+       [
+        108.74,
+        120.3
+       ]
+      ],
+      "colour": "silver"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [],
+    "swoosh_colour": "blue",
+    "base_from": "09A5"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "09A2",
+    "fill": "blue",
+    "outline": "silver",
+    "outline_frac": 0.04
+   },
+   "nameplate": {
+    "glyph_donor": "09A5",
+    "fill": "blue"
+   },
+   "helmet_digits": {
+    "glyph_donor": "09H5",
+    "fill": "blue"
+   },
+   "helmet": {
+    "shell": "silver",
+    "shell_from": "r_helmet_silver",
+    "stripe": "blue",
+    "recolour": [
+     {
+      "from": "r_helmet_blue",
+      "to": "blue",
+      "tolerance": 0.2
+     }
+    ],
+    "decorations": [
+     {
+      "rect": [
+       146.5,
+       0,
+       149,
+       232
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       176,
+       0,
+       178.5,
+       232
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       149,
+       0,
+       156,
+       232
+      ],
+      "colour": "blue"
+     },
+     {
+      "rect": [
+       156,
+       0,
+       168,
+       232
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       168,
+       0,
+       176,
+       232
+      ],
+      "colour": "blue"
+     }
+    ],
+    "decal": {
+     "mark": "lion_full",
+     "scale": 1.0,
+     "erase": "box"
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "r_card_blue_away",
+      "to": "blue",
+      "region": "jersey",
+      "tolerance": 0.2,
+      "cards": [
+       "unif_256"
+      ]
+     },
+     {
+      "from": "r_card_black",
+      "to": "silver",
+      "region": "jersey",
+      "tolerance": 0.1
+     }
+    ],
+    "logo": {
+     "mark": "lion_full",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 4002,
+   "splayer": {
+    "torso_donor_outer": 4002,
+    "torso_donor": "09A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "r_atlas_sleeve",
+      "to": "blue",
+      "region": "sleeve",
+      "tolerance": 0.22
+     },
+     {
+      "from": "r_atlas_silver",
+      "to": "silver",
+      "region": "helmet",
+      "tolerance": 0.25
+     }
+    ],
+    "logo": {
+     "mark": "lion_full",
+     "scale": 1.0
+    }
+   },
+   "unif_color": {
+    "facemask": "#0076B6",
+    "turtleneck": "#0076B6"
+   }
+  }
+ },
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "4-3",
+  "head_coach": "Dan Campbell",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 week 3: 52 active, filled to 53 from the practice squad (Devin Cochran). ESPN depth chart slots (LDE/RDE, WLB/MLB/SLB) show a 4-3 base. Head coach from detroitlions.com/team/coaches-roster/dan-campbell."
+ },
+ "part_intents": {
+  "home": {
+   "torso": "Honolulu blue jersey body, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "Honolulu blue with two silver stripes bordered in white near the cuff",
+   "pants": "solid Honolulu blue with a white maker mark",
+   "helmet": "silver shell, blue leaping lion with white and silver outline, blue-white-blue centre stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "white block numbers trimmed in silver",
+   "digit_arm": "white numbers trimmed in silver",
+   "digit_helmet": "plain blue numbers",
+   "nameplate": "white letters",
+   "socks00": "solid Honolulu blue",
+   "splayer": "far-away player atlas: blue pants, blue torso, silver helmet, blue socks, skin and glove patches",
+   "team-select_unif": "menu render: blue jersey with a white number, silver pants, silver helmet with the blue lion, dark shading",
+   "team-select_helm": "menu render: silver helmet with the blue lion, dark facemask, a dark bar and yellow UI strip below",
+   "logo": "the blue leaping lion on transparency",
+   "flipchip": "the blue leaping lion on transparency, for the coin toss chip",
+   "chiclet": "a glossy Honolulu blue square"
+  },
+  "away": {
+   "torso": "white jersey body, blue DETROIT on the chest, small NFL shield at the collar, blue maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white with two Honolulu blue stripes trimmed in silver near the cuff",
+   "pants": "solid white with a blue maker mark",
+   "helmet": "silver shell, blue leaping lion with white and silver outline, blue-white-blue centre stripe, white and grey hardware, flag and shield decals",
+   "digit_jersey": "Honolulu blue block numbers trimmed in silver",
+   "digit_arm": "blue numbers trimmed in silver",
+   "digit_helmet": "plain blue numbers",
+   "nameplate": "blue letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants, white torso, silver helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a blue number, silver pants, silver helmet with the blue lion, grey and dark shading",
+   "team-select_helm": "menu render: silver helmet with the blue lion, dark facemask, a dark bar and yellow UI strip below",
+   "logo": "the blue leaping lion on transparency",
+   "flipchip": "the blue leaping lion on transparency, for the coin toss chip",
+   "chiclet": "a glossy Honolulu blue square"
+  },
+  "venue": {
+   "endzone": "Honolulu blue painted end zone with white LIONS lettering",
+   "center_logo": "the blue leaping lion outlined in white and silver",
+   "banner": "cloth fan banners in Honolulu blue, silver and white",
+   "sign": "stadium signs: the lion, FORD FIELD and LIONS lettering"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Jared Goff": 0,
+   "Amon-Ra St. Brown": 2,
+   "Jahmyr Gibbs": 4,
+   "Sam LaPorta": 0,
+   "Aidan Hutchinson": 0,
+   "D.J. Reed": 5,
+   "Derrick Barnes": 4,
+   "Alim McNeill": 4,
+   "Chuck Clark": 4,
+   "Thomas Harper": 5,
+   "Penei Sewell": 2,
+   "Tate Ratledge": 0,
+   "Juice Scruggs": 3,
+   "Jake Bates": 0,
+   "Jack Fox": 0,
+   "Joshua Dobbs": 3,
+   "Jameson Williams": 5,
+   "Sione Vaki": 2,
+   "Brock Wright": 0,
+   "Tyler Lacy": 4,
+   "Keith Abney": 4,
+   "Jack Campbell": 0,
+   "Tyleik Williams": 4,
+   "Bishop Fitzgerald": 5,
+   "Larry Borom": 3,
+   "Christian Mahogany": 2,
+   "Hogan Hatten": 0,
+   "Isaac TeSlaa": 0,
+   "Jacob Saylors": 3,
+   "Tyler Conklin": 1,
+   "D.J. Wonnum": 4,
+   "Rock Ya-Sin": 4,
+   "Devin White": 5,
+   "Levi Onwuzurike": 5,
+   "Devin Cochran": 2,
+   "Ben Bartch": 0,
+   "Tom Kennedy": 0,
+   "Jackson Meeks": 4,
+   "Derrick Moore": 4,
+   "Roger McCreary": 4,
+   "Malcolm Rodriguez": 1,
+   "Mekhi Wingo": 4,
+   "Blake Miller": 0,
+   "Miles Frazier": 4,
+   "Tay Martin": 4,
+   "Eric O'Neill": 2,
+   "Christian Izien": 4,
+   "Jimmy Rolder": 0,
+   "Skyler Gill-Howard": 4,
+   "Trevor Nowaske": 0,
+   "Khalil Dorsey": 3,
+   "Ahmed Hassanein": 2,
+   "Ennis Rakestraw": 5
+  },
+  "dreads": [
+   "Jahmyr Gibbs",
+   "Alim McNeill",
+   "Thomas Harper",
+   "Keith Abney",
+   "Bishop Fitzgerald",
+   "Tay Martin",
+   "Ennis Rakestraw"
+  ],
+  "hair_by_eye": {
+   "Jared Goff": "#9A7A58",
+   "Sam LaPorta": "#4A3424",
+   "Aidan Hutchinson": "#8A6440"
+  },
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED). Dreads by eye (long locs). Hair by eye for Goff, LaPorta and Hutchinson."
+ },
+ "venue": {
+  "prefix": "s09",
+  "notes": "Ford Field (s09; one end-zone texture serves both ends). End zones: Honolulu blue paint with white LIONS (the official wordmark) as in the 2026 week 1 photos (the other 2026 end zone says DETROIT; one texture holds one word: INFERRED choice). Midfield: the lion in full colour by hand. Signs: sign02_sign04 lion box, FORD FIELD and LIONS cut-outs redrawn; cover01 LIONS. Fan banners: 2026 content.",
+  "sources": [
+   "https://www.detroitlions.com/photos/lions-vs-saints-week-1-photos (blue end zones, white lettering, blue wall pads)"
+  ],
+  "endzone": {
+   "paint": "field_blue",
+   "paint_alpha": 0.95,
+   "marks": [
+    {
+     "mark": "lions_wordmark",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 78,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "outline_mark": "lion_layer_silhouette",
+   "outline": "white",
+   "fill_mark": "lion_layer_blue",
+   "fill": "blue",
+   "width_frac": 0.95
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "text": "ONE\nPRIDE",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 19
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "WELCOME TO\nTHE DEN",
+        "colour": "banner_blue",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "text": "#16\nGOFF",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "lion_layer_silhouette",
+        "colour": "silver",
+        "center": [
+         192,
+         31
+        ],
+        "width": 70
+       },
+       {
+        "mark": "lion_layer_white",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "width": 70
+       },
+       {
+        "mark": "lion_layer_blue",
+        "colour": "blue",
+        "center": [
+         192,
+         31
+        ],
+        "width": 70
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "silver",
+      "items": [
+       {
+        "text": "#14 ST. BROWN\n#0 GIBBS",
+        "colour": "banner_blue",
+        "center": [
+         64,
+         96
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "text": "#97\nHUTCHINSON",
+        "colour": "white",
+        "center": [
+         192,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "text": "DETROIT VS\nEVERYBODY",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "lions_wordmark",
+        "colour": "banner_blue",
+        "center": [
+         64,
+         96
+        ],
+        "width": 104
+       }
+      ]
+     }
+    ]
+   },
+   "cover01": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       64
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "mark": "lions_wordmark",
+        "colour": "white",
+        "center": [
+         32,
+         32
+        ],
+        "width": 56
+       }
+      ]
+     }
+    ]
+   },
+   "sign02_sign04": {
+    "alpha": "items",
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       84,
+       86
+      ],
+      "bg": "banner_blue",
+      "items": [
+       {
+        "mark": "rect",
+        "colour": "blue",
+        "center": [
+         42,
+         43
+        ],
+        "width": 84
+       },
+       {
+        "mark": "lion_layer_silhouette",
+        "colour": "white",
+        "center": [
+         42,
+         43
+        ],
+        "width": 72
+       },
+       {
+        "mark": "lion_layer_blue",
+        "colour": "blue",
+        "center": [
+         42,
+         43
+        ],
+        "width": 72
+       }
+      ]
+     },
+     {
+      "slot": [
+       112,
+       86,
+       222,
+       170
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "rect",
+        "colour": "white",
+        "center": [
+         167,
+         128
+        ],
+        "width": 110
+       },
+       {
+        "mark": "lion_layer_silhouette",
+        "colour": "silver",
+        "center": [
+         167,
+         128
+        ],
+        "width": 96
+       },
+       {
+        "mark": "lion_layer_white",
+        "colour": "white",
+        "center": [
+         167,
+         128
+        ],
+        "width": 96
+       },
+       {
+        "mark": "lion_layer_blue",
+        "colour": "blue",
+        "center": [
+         167,
+         128
+        ],
+        "width": 96
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       172,
+       110,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "ford_field",
+        "colour": "blue",
+        "center": [
+         55,
+         214
+        ],
+        "width": 100
+       }
+      ]
+     },
+     {
+      "slot": [
+       112,
+       172,
+       222,
+       256
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "lions_wordmark",
+        "colour": "blue",
+        "center": [
+         167,
+         214
+        ],
+        "width": 104
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

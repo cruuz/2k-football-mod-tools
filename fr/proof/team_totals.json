@@ -1,0 +1,290 @@
+[
+  {
+    "team": "SF",
+    "players": 53,
+    "payroll": 205900000,
+    "cap": 301200000,
+    "room": 95300000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "CHI",
+    "players": 53,
+    "payroll": 246976000,
+    "cap": 301200000,
+    "room": 54224000,
+    "within_cap": true,
+    "observed": 44
+  },
+  {
+    "team": "CIN",
+    "players": 53,
+    "payroll": 288812000,
+    "cap": 301200000,
+    "room": 12388000,
+    "within_cap": true,
+    "observed": 46
+  },
+  {
+    "team": "BUF",
+    "players": 53,
+    "payroll": 241672000,
+    "cap": 301200000,
+    "room": 59528000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "DEN",
+    "players": 53,
+    "payroll": 276720000,
+    "cap": 301200000,
+    "room": 24480000,
+    "within_cap": true,
+    "observed": 49
+  },
+  {
+    "team": "CLE",
+    "players": 53,
+    "payroll": 185888000,
+    "cap": 301200000,
+    "room": 115312000,
+    "within_cap": true,
+    "observed": 43
+  },
+  {
+    "team": "TB",
+    "players": 53,
+    "payroll": 276700000,
+    "cap": 301200000,
+    "room": 24500000,
+    "within_cap": true,
+    "observed": 44
+  },
+  {
+    "team": "ARZ",
+    "players": 53,
+    "payroll": 212684000,
+    "cap": 301200000,
+    "room": 88516000,
+    "within_cap": true,
+    "observed": 47
+  },
+  {
+    "team": "SD",
+    "players": 53,
+    "payroll": 253484000,
+    "cap": 301200000,
+    "room": 47716000,
+    "within_cap": true,
+    "observed": 43
+  },
+  {
+    "team": "KC",
+    "players": 53,
+    "payroll": 273700000,
+    "cap": 301200000,
+    "room": 27500000,
+    "within_cap": true,
+    "observed": 41
+  },
+  {
+    "team": "IND",
+    "players": 53,
+    "payroll": 250052000,
+    "cap": 301200000,
+    "room": 51148000,
+    "within_cap": true,
+    "observed": 43
+  },
+  {
+    "team": "DAL",
+    "players": 53,
+    "payroll": 244264000,
+    "cap": 301200000,
+    "room": 56936000,
+    "within_cap": true,
+    "observed": 47
+  },
+  {
+    "team": "MIA",
+    "players": 53,
+    "payroll": 103096000,
+    "cap": 301200000,
+    "room": 198104000,
+    "within_cap": true,
+    "observed": 41
+  },
+  {
+    "team": "PHI",
+    "players": 53,
+    "payroll": 208056000,
+    "cap": 301200000,
+    "room": 93144000,
+    "within_cap": true,
+    "observed": 48
+  },
+  {
+    "team": "ATL",
+    "players": 53,
+    "payroll": 192564000,
+    "cap": 301200000,
+    "room": 108636000,
+    "within_cap": true,
+    "observed": 46
+  },
+  {
+    "team": "NYG",
+    "players": 53,
+    "payroll": 207108000,
+    "cap": 301200000,
+    "room": 94092000,
+    "within_cap": true,
+    "observed": 44
+  },
+  {
+    "team": "JAX",
+    "players": 53,
+    "payroll": 228672000,
+    "cap": 301200000,
+    "room": 72528000,
+    "within_cap": true,
+    "observed": 44
+  },
+  {
+    "team": "NYJ",
+    "players": 53,
+    "payroll": 182424000,
+    "cap": 301200000,
+    "room": 118776000,
+    "within_cap": true,
+    "observed": 48
+  },
+  {
+    "team": "DET",
+    "players": 53,
+    "payroll": 228344000,
+    "cap": 301200000,
+    "room": 72856000,
+    "within_cap": true,
+    "observed": 46
+  },
+  {
+    "team": "GB",
+    "players": 53,
+    "payroll": 210204000,
+    "cap": 301200000,
+    "room": 90996000,
+    "within_cap": true,
+    "observed": 47
+  },
+  {
+    "team": "CAR",
+    "players": 53,
+    "payroll": 225140000,
+    "cap": 301200000,
+    "room": 76060000,
+    "within_cap": true,
+    "observed": 43
+  },
+  {
+    "team": "NE",
+    "players": 53,
+    "payroll": 246296000,
+    "cap": 301200000,
+    "room": 54904000,
+    "within_cap": true,
+    "observed": 42
+  },
+  {
+    "team": "OAK",
+    "players": 53,
+    "payroll": 237388000,
+    "cap": 301200000,
+    "room": 63812000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "STL",
+    "players": 53,
+    "payroll": 281940000,
+    "cap": 301200000,
+    "room": 19260000,
+    "within_cap": true,
+    "observed": 49
+  },
+  {
+    "team": "BAL",
+    "players": 53,
+    "payroll": 279536000,
+    "cap": 301200000,
+    "room": 21664000,
+    "within_cap": true,
+    "observed": 44
+  },
+  {
+    "team": "WAS",
+    "players": 53,
+    "payroll": 252428000,
+    "cap": 301200000,
+    "room": 48772000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "NO",
+    "players": 53,
+    "payroll": 168900000,
+    "cap": 301200000,
+    "room": 132300000,
+    "within_cap": true,
+    "observed": 46
+  },
+  {
+    "team": "SEA",
+    "players": 53,
+    "payroll": 283268000,
+    "cap": 301200000,
+    "room": 17932000,
+    "within_cap": true,
+    "observed": 49
+  },
+  {
+    "team": "PIT",
+    "players": 53,
+    "payroll": 275044000,
+    "cap": 301200000,
+    "room": 26156000,
+    "within_cap": true,
+    "observed": 42
+  },
+  {
+    "team": "HOU",
+    "players": 53,
+    "payroll": 200916000,
+    "cap": 301200000,
+    "room": 100284000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "TEN",
+    "players": 53,
+    "payroll": 264540000,
+    "cap": 301200000,
+    "room": 36660000,
+    "within_cap": true,
+    "observed": 45
+  },
+  {
+    "team": "MIN",
+    "players": 53,
+    "payroll": 243200000,
+    "cap": 301200000,
+    "room": 58000000,
+    "within_cap": true,
+    "observed": 43
+  }
+]

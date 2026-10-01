@@ -54,6 +54,9 @@ class UniformSharingLookupTests(unittest.TestCase):
         self.assertFalse(value["public_gui_dealias_writer_available"])
 
     def test_apf_pants_asset_lookup_sanitizes_shared_owners(self) -> None:
+        missing = [str(path) for path in (DEFAULT_PANTS_REPORT,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF uniform layout reports missing: " + ", ".join(missing))
         value = inspect_apf_pants_sharing(13)
         self.assertEqual(value["team_bank_use_count"], 34)
         self.assertEqual({row["bank"] for row in value["team_bank_uses"]}, {0, 1})
@@ -65,6 +68,9 @@ class UniformSharingLookupTests(unittest.TestCase):
         self.assertEqual(unused["team_bank_uses"], [])
 
     def test_apf_helmet_asset_lookup_sanitizes_channels_and_shared_owners(self) -> None:
+        missing = [str(path) for path in (DEFAULT_HELMET_REPORT,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF uniform layout reports missing: " + ", ".join(missing))
         value = inspect_apf_helmet_sharing(16)
         self.assertEqual(value["team_bank_use_count"], 34)
         self.assertEqual({row["bank"] for row in value["team_bank_uses"]}, {0, 1})
@@ -81,6 +87,9 @@ class UniformSharingLookupTests(unittest.TestCase):
         self.assertEqual(inspect_apf_helmet_sharing(23)["team_bank_uses"], [])
 
     def test_apf_shoulder_asset_lookup_sanitizes_shared_owners(self) -> None:
+        missing = [str(path) for path in (DEFAULT_SHOULDER_REPORT,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF uniform layout reports missing: " + ", ".join(missing))
         value = inspect_apf_shoulder_sharing(8)
         self.assertEqual(value["team_bank_use_count"], 36)
         self.assertEqual({row["bank"] for row in value["team_bank_uses"]}, {0, 1})
@@ -106,6 +115,9 @@ class UniformSharingLookupTests(unittest.TestCase):
                 inspect_apf_shoulder_sharing(asset)  # type: ignore[arg-type]
 
     def test_symlink_and_tampered_reports_are_refused(self) -> None:
+        missing = [str(path) for path in (DEFAULT_REPORT, DEFAULT_PANTS_REPORT, DEFAULT_HELMET_REPORT, DEFAULT_SHOULDER_REPORT) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF uniform layout reports missing: " + ", ".join(missing))
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             linked = root / "linked.json"

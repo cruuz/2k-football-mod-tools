@@ -1,0 +1,539 @@
+{
+  "catalog": "packaging/nfl2k5_scorebug_template_pngs.json",
+  "checker": "packaging/check_2k5_mod_studio_release.py",
+  "rows": [
+    {
+      "path": "data/nfl2k5_scorebug_sprite/template.png",
+      "before": {
+        "height": 512,
+        "sha256": "577e1362986d02d7ca40ceb8c5ff70095b7f7c426319e19728de75cc7565099a",
+        "size": 22301,
+        "width": 1536
+      },
+      "after": {
+        "height": 512,
+        "sha256": "577e1362986d02d7ca40ceb8c5ff70095b7f7c426319e19728de75cc7565099a",
+        "size": 22301,
+        "width": 1536
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ari.png",
+      "before": {
+        "height": 64,
+        "sha256": "98340d9f962b6b9b82f305768c700fc5423aee755886abfd18b7da3b76aeff81",
+        "size": 5076,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "98340d9f962b6b9b82f305768c700fc5423aee755886abfd18b7da3b76aeff81",
+        "size": 5076,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/atl.png",
+      "before": {
+        "height": 64,
+        "sha256": "8a3f939fbe6a3e137ed6fae12283203e1e3e0febd0763f6ab0d92dd84d799e98",
+        "size": 6259,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "8a3f939fbe6a3e137ed6fae12283203e1e3e0febd0763f6ab0d92dd84d799e98",
+        "size": 6259,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/bal.png",
+      "before": {
+        "height": 64,
+        "sha256": "c81a544e52b45c0e9853d1d0250d8142229b1f3c74eff409478cf8beb6efe1ff",
+        "size": 3970,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "c81a544e52b45c0e9853d1d0250d8142229b1f3c74eff409478cf8beb6efe1ff",
+        "size": 3970,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/buf.png",
+      "before": {
+        "height": 64,
+        "sha256": "53a67a14dc2351e88c22745105ea742ca6ebc49d5e41ecd2f67d0c0db26299a1",
+        "size": 4319,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "53a67a14dc2351e88c22745105ea742ca6ebc49d5e41ecd2f67d0c0db26299a1",
+        "size": 4319,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/car.png",
+      "before": {
+        "height": 64,
+        "sha256": "2353697661c7dc2b118aa6bc056722540d7099ba2c94135981c4d37920f735c6",
+        "size": 3178,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "2353697661c7dc2b118aa6bc056722540d7099ba2c94135981c4d37920f735c6",
+        "size": 3178,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/chi.png",
+      "before": {
+        "height": 64,
+        "sha256": "de13ce77f15a3aa2886065817db8281bf94f09cd2fb422f65fae4470f6905aca",
+        "size": 8269,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "de13ce77f15a3aa2886065817db8281bf94f09cd2fb422f65fae4470f6905aca",
+        "size": 8269,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/cin.png",
+      "before": {
+        "height": 64,
+        "sha256": "b7d435e303762eec0955cf393d67ffdcb1f366e162bb28783de6b187445cf14a",
+        "size": 4013,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "b7d435e303762eec0955cf393d67ffdcb1f366e162bb28783de6b187445cf14a",
+        "size": 4013,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/cle.png",
+      "before": {
+        "height": 64,
+        "sha256": "88b292b45210a411b97e0425dd9e38891847ec439879a28fd0a8f0dde7a99225",
+        "size": 5967,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "88b292b45210a411b97e0425dd9e38891847ec439879a28fd0a8f0dde7a99225",
+        "size": 5967,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/dal.png",
+      "before": {
+        "height": 64,
+        "sha256": "ad06ddb6d287ae7e42a9a0a0ce6d37ef1a90269b0e2853d06c0d0401ded65dc5",
+        "size": 3716,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "ad06ddb6d287ae7e42a9a0a0ce6d37ef1a90269b0e2853d06c0d0401ded65dc5",
+        "size": 3716,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/den.png",
+      "before": {
+        "height": 64,
+        "sha256": "e96da6fee457ab2671c282143a8e5e98d7bdbd34bb79224e8e4ff746df0571d9",
+        "size": 4068,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "e96da6fee457ab2671c282143a8e5e98d7bdbd34bb79224e8e4ff746df0571d9",
+        "size": 4068,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/det.png",
+      "before": {
+        "height": 64,
+        "sha256": "0fc5ae3f560595dd7dd8ceaacd9d8d142fe70b9a20738faad3ad3c9de5463e3c",
+        "size": 5386,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "0fc5ae3f560595dd7dd8ceaacd9d8d142fe70b9a20738faad3ad3c9de5463e3c",
+        "size": 5386,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/gb.png",
+      "before": {
+        "height": 64,
+        "sha256": "5694def26bc90c348ea5743c08999080ced5f625efafbf862cf3affbed9e0ab0",
+        "size": 4586,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "5694def26bc90c348ea5743c08999080ced5f625efafbf862cf3affbed9e0ab0",
+        "size": 4586,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/hou.png",
+      "before": {
+        "height": 64,
+        "sha256": "37f10269cb23401a945ff5dc06982af918b32302f7c81565857bdbd864dcec86",
+        "size": 4451,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "37f10269cb23401a945ff5dc06982af918b32302f7c81565857bdbd864dcec86",
+        "size": 4451,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ind.png",
+      "before": {
+        "height": 64,
+        "sha256": "6eee30d6c39d52676319a4772c4d8ad94df84d748dbb10ad58671b5e67310276",
+        "size": 2223,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "6eee30d6c39d52676319a4772c4d8ad94df84d748dbb10ad58671b5e67310276",
+        "size": 2223,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/jax.png",
+      "before": {
+        "height": 64,
+        "sha256": "dfd47e6d7bd1cf26804a7a7bad88ed7d7f36fa0660cb56edbeb89e9219343ffb",
+        "size": 6098,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "e4d282a253e3278f7c9cf63cd51bae0da1a87ef0173055f79f9a7225192e9f01",
+        "size": 6140,
+        "width": 64
+      },
+      "changed": true
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/kc.png",
+      "before": {
+        "height": 64,
+        "sha256": "9b21f1910368ddadabb1f51260367fa68e0a689d6dde818a4047bd785da5d2df",
+        "size": 4661,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "9b21f1910368ddadabb1f51260367fa68e0a689d6dde818a4047bd785da5d2df",
+        "size": 4661,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lac.png",
+      "before": {
+        "height": 64,
+        "sha256": "7bbacd983b6e3b6fe927cc8a63b4128a6843a87bae36bb456b8c31dd69efe327",
+        "size": 2888,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "7bbacd983b6e3b6fe927cc8a63b4128a6843a87bae36bb456b8c31dd69efe327",
+        "size": 2888,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lar.png",
+      "before": {
+        "height": 64,
+        "sha256": "ff5a826d2e071f6022647b7c5b34386b4e8375292544c6c5563e568e5cb86b40",
+        "size": 2187,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "ff5a826d2e071f6022647b7c5b34386b4e8375292544c6c5563e568e5cb86b40",
+        "size": 2187,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/lv.png",
+      "before": {
+        "height": 64,
+        "sha256": "db2716f33d4e4d6ebe0dc4d9167e897408655c43855ec5e63f1e2f4cd3438c11",
+        "size": 6433,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "db2716f33d4e4d6ebe0dc4d9167e897408655c43855ec5e63f1e2f4cd3438c11",
+        "size": 6433,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/mia.png",
+      "before": {
+        "height": 64,
+        "sha256": "d71d99dae086dccd3e623721f1531527bfc4d7e85b7a32823a306fe582e6b444",
+        "size": 5325,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "d71d99dae086dccd3e623721f1531527bfc4d7e85b7a32823a306fe582e6b444",
+        "size": 5325,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/min.png",
+      "before": {
+        "height": 64,
+        "sha256": "bcd9d55666c60b33e2b5f967893c48e2e4c11dc048f9da5a6df7d423de5dd499",
+        "size": 6278,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "bcd9d55666c60b33e2b5f967893c48e2e4c11dc048f9da5a6df7d423de5dd499",
+        "size": 6278,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ne.png",
+      "before": {
+        "height": 64,
+        "sha256": "bae2432fbe1cc31df4aad6ef9e2a700e24aec8b2b6f48cd390d0fb069d48385c",
+        "size": 3155,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "bae2432fbe1cc31df4aad6ef9e2a700e24aec8b2b6f48cd390d0fb069d48385c",
+        "size": 3155,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/no.png",
+      "before": {
+        "height": 64,
+        "sha256": "a837e8e770cd39c6372799fa6e80828c1ff78a3b51d720891de1a5fa76ecb378",
+        "size": 5576,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "2b73d5a03322d6cad675e3925fda88e760c526719887adcfcdee60028100bd5d",
+        "size": 5277,
+        "width": 64
+      },
+      "changed": true
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/nyg.png",
+      "before": {
+        "height": 64,
+        "sha256": "d4f52a376dc396df8befc6def3db36b9f3e0f8945f9058ad463d8d539be9c718",
+        "size": 1939,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "d4f52a376dc396df8befc6def3db36b9f3e0f8945f9058ad463d8d539be9c718",
+        "size": 1939,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/nyj.png",
+      "before": {
+        "height": 64,
+        "sha256": "36515a25b4c2c7fb9f6221dd0dab3a38596e5b6bb83385df4710da1f2650deb2",
+        "size": 1140,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "36515a25b4c2c7fb9f6221dd0dab3a38596e5b6bb83385df4710da1f2650deb2",
+        "size": 1140,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/phi.png",
+      "before": {
+        "height": 64,
+        "sha256": "02afc83aea87b4cf2b8e4de119e0000005adf0f4d86f1004e4603e1a734fa948",
+        "size": 5260,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "02afc83aea87b4cf2b8e4de119e0000005adf0f4d86f1004e4603e1a734fa948",
+        "size": 5260,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/pit.png",
+      "before": {
+        "height": 64,
+        "sha256": "4a9f03f9e54f3fdac8811794700d1324b985dc9f5ed67f52f77066643b93b6d0",
+        "size": 6865,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "4a9f03f9e54f3fdac8811794700d1324b985dc9f5ed67f52f77066643b93b6d0",
+        "size": 6865,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/sea.png",
+      "before": {
+        "height": 64,
+        "sha256": "204422fdd52f676c8bdfe82b460875f4e0cc824d8b90eafbeb3245a28d11ef7a",
+        "size": 3112,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "204422fdd52f676c8bdfe82b460875f4e0cc824d8b90eafbeb3245a28d11ef7a",
+        "size": 3112,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/sf.png",
+      "before": {
+        "height": 64,
+        "sha256": "5dd6fea203c6b6a864d4f1cc3b20f6d43fe67e3dc8dc0abb33197da2d80f939b",
+        "size": 5238,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "5dd6fea203c6b6a864d4f1cc3b20f6d43fe67e3dc8dc0abb33197da2d80f939b",
+        "size": 5238,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/tb.png",
+      "before": {
+        "height": 64,
+        "sha256": "83053423c891c0b4049a64c53ca16d5f29f147c05e6d49001db3a7c4b79c0627",
+        "size": 6483,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "83053423c891c0b4049a64c53ca16d5f29f147c05e6d49001db3a7c4b79c0627",
+        "size": 6483,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/ten.png",
+      "before": {
+        "height": 64,
+        "sha256": "f4470852e0967853a5effd943235405b13f30019705bb2acdb2d9ad33fed3844",
+        "size": 6654,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "f4470852e0967853a5effd943235405b13f30019705bb2acdb2d9ad33fed3844",
+        "size": 6654,
+        "width": 64
+      },
+      "changed": false
+    },
+    {
+      "path": "data/nfl2k5_scorebug_mnf/logos/wsh.png",
+      "before": {
+        "height": 64,
+        "sha256": "8f06fbbc8cd9ca6cd740bff637c8e0d47a12c39c66688f1a7a18f3727ba4beeb",
+        "size": 3482,
+        "width": 64
+      },
+      "after": {
+        "height": 64,
+        "sha256": "8f06fbbc8cd9ca6cd740bff637c8e0d47a12c39c66688f1a7a18f3727ba4beeb",
+        "size": 3482,
+        "width": 64
+      },
+      "changed": false
+    }
+  ],
+  "catalog_sha256_before": "37d6635ef871582c40d5ec0ab13f5d1638fd1c3d08cba5cbafa9b90db6d956da",
+  "catalog_sha256": "76b93ba4e160a16637eda17feef7a659faed69a9474e04438c583acfaa0103c2",
+  "other_rows_untouched": 113,
+  "sealed": true,
+  "note": "Two runs this pass: 0e323171 to 37d6635e (template, nyj, dal, ind), then 37d6635e to 76b93ba4 (no, jax). The receipt records the last run."
+}

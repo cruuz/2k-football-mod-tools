@@ -1,0 +1,295 @@
+REFS 0xb09584 ['0x42fc2', '0x432c2', '0x43af9', '0x440aa']
+REFS 0xb09550 ['0x43a07', '0x43aa0']
+REFS 0xb09570 ['0x43792', '0x43cc1', '0x43cca']
+REFS 0xb09590 ['0x430e1', '0x4363d', '0x43644', '0x43656', '0x43851', '0x43862']
+
+ADDRESS 0x4cd80
+0004cd80: sub esp, 0x40
+0004cd83: push ebx
+0004cd84: push ebp
+0004cd85: push esi
+0004cd86: push edi
+0004cd87: mov esi, ecx
+0004cd89: mov edi, eax
+0004cd8b: mov ecx, edi
+0004cd8d: mov edx, esi
+0004cd8f: call 0x4ba40
+0004cd94: mov ebx, dword ptr [esp + 0x58]
+0004cd98: mov ebp, eax
+0004cd9a: test ebp, ebp
+0004cd9c: je 0x4cda7
+0004cd9e: cmp dword ptr [ebp + 8], ebx
+0004cda1: je 0x4ce9b
+0004cda7: mov ecx, esi
+0004cda9: call 0x3a770
+0004cdae: test eax, eax
+0004cdb0: je 0x4cdbf
+0004cdb2: mov eax, dword ptr [0xa7d358]
+0004cdb7: or eax, dword ptr [0xa7d35c]
+0004cdbd: jne 0x4ce03
+0004cdbf: test ebp, ebp
+0004cdc1: jne 0x4cdd3
+0004cdc3: mov ecx, dword ptr [esp + 0x54]
+0004cdc7: push ecx
+0004cdc8: push edi
+0004cdc9: push esi
+0004cdca: call 0x4cd10
+0004cdcf: mov ebp, eax
+0004cdd1: jmp 0x4cde8
+0004cdd3: mov eax, ebp
+0004cdd5: call 0x4cca0
+0004cdda: mov dword ptr [ebp + 0x10], 0xffffffff
+0004cde1: mov dword ptr [ebp + 8], 0
+0004cde8: cmp ebx, 2
+0004cdeb: lea ecx, [esp + 0x10]
+0004cdef: jne 0x4ce0f
+0004cdf1: mov eax, dword ptr [ebp + 0xc]
+0004cdf4: lea edx, [ebp + 0x24]
+0004cdf7: push edx
+0004cdf8: push 1
+0004cdfa: call 0x4b990
+0004cdff: test eax, eax
+0004ce01: jne 0x4ce21
+0004ce03: pop edi
+0004ce04: pop esi
+0004ce05: pop ebp
+0004ce06: xor eax, eax
+0004ce08: pop ebx
+0004ce09: add esp, 0x40
+0004ce0c: ret 8
+0004ce0f: lea eax, [ebp + 0x24]
+0004ce12: push eax
+0004ce13: mov eax, dword ptr [ebp + 0xc]
+0004ce16: push 0
+0004ce18: call 0x4b990
+0004ce1d: test eax, eax
+0004ce1f: je 0x4ce03
+0004ce21: push ebx
+0004ce22: mov ebx, dword ptr [ebp + 0xc]
+0004ce25: lea esi, [esp + 0x58]
+0004ce29: lea edi, [esp + 0x14]
+0004ce2d: call 0x4aea0
+0004ce32: test eax, eax
+0004ce34: je 0x4ce03
+0004ce36: mov ecx, dword ptr [esp + 0x54]
+0004ce3a: mov edx, dword ptr [esp + 0x58]
+0004ce3e: mov dword ptr [ebp + 0x10], ecx
+0004ce41: mov ecx, dword ptr [ebp]
+0004ce44: mov dword ptr [ebp + 8], edx
+0004ce47: mov edx, dword ptr [ebp + 4]
+0004ce4a: xor eax, eax
+0004ce4c: mov dword ptr [ebp + 0x18], eax
+0004ce4f: mov dword ptr [ebp + 0x1c], eax
+0004ce52: mov dword ptr [ecx + 4], edx
+0004ce55: mov ecx, dword ptr [ebp + 4]
+0004ce58: mov edx, dword ptr [ebp]
+0004ce5b: mov dword ptr [ecx], edx
+0004ce5d: mov dword ptr [ebp + 4], eax
+0004ce60: mov dword ptr [ebp], eax
+0004ce63: mov eax, dword ptr [0xa7a244]
+0004ce68: mov ecx, dword ptr [eax]
+0004ce6a: mov dword ptr [ebp], ecx
+0004ce6d: mov edx, dword ptr [0xa7a244]
+0004ce73: mov eax, ecx
+0004ce75: mov dword ptr [ebp + 4], edx
+0004ce78: mov dword ptr [eax + 4], ebp
+0004ce7b: mov ecx, dword ptr [ebp + 4]
+0004ce7e: mov dword ptr [ecx], ebp
+0004ce80: mov ecx, dword ptr [ebp + 0xc]
+0004ce83: call 0x3a770
+0004ce88: test eax, eax
+0004ce8a: je 0x4ce9b
+0004ce8c: mov esi, ebp
+0004ce8e: call 0x4b2a0
+0004ce93: test eax, eax
+0004ce95: je 0x4ce03
+0004ce9b: pop edi
+0004ce9c: pop esi
+0004ce9d: mov eax, ebp
+0004ce9f: pop ebp
+0004cea0: pop ebx
+0004cea1: add esp, 0x40
+0004cea4: ret 8
+0004cea7: nop
+0004cea8: nop
+0004cea9: nop
+0004ceaa: nop
+0004ceab: nop
+0004ceac: nop
+0004cead: nop
+0004ceae: nop
+0004ceaf: nop
+0004ceb0: push ebx
+0004ceb1: push esi
+0004ceb2: mov esi, dword ptr [0xa7a244]
+0004ceb8: push edi
+0004ceb9: xor edi, edi
+0004cebb: xor ebx, ebx
+0004cebd: cmp esi, 0xa7a240
+0004cec3: je 0x4cf28
+0004cec5: mov eax, dword ptr [esp + 0x10]
+0004cec9: cmp dword ptr [esi + 0xc], eax
+0004cecc: jne 0x4cf1d
+0004cece: mov eax, dword ptr [esi + 8]
+0004ced1: cmp eax, edi
+0004ced3: je 0x4cf1d
+0004ced5: cmp eax, 2
+0004ced8: jne 0x4cedf
+0004ceda: mov ebx, 1
+0004cedf: mov eax, esi
+0004cee1: call 0x4cca0
+0004cee6: mov ecx, dword ptr [esi]
+0004cee8: mov edx, dword ptr [esi + 4]
+0004ceeb: mov dword ptr [esi + 0x10], 0xffffffff
+0004cef2: mov dword ptr [esi + 8], edi
+0004cef5: mov dword ptr [ecx + 4], edx
+0004cef8: mov eax, dword ptr [esi + 4]
+0004cefb: mov ecx, dword ptr [esi]
+0004cefd: mov dword ptr [eax], ecx
+0004ceff: mov dword ptr [esi + 4], edi
+0004cf02: mov dword ptr [esi], edi
+0004cf04: mov edx, dword ptr [0xa7a240]
+0004cf0a: mov dword ptr [esi + 4], 0xa7a240
+0004cf11: mov dword ptr [esi], edx
+0004cf13: mov eax, edx
+0004cf15: mov dword ptr [eax + 4], esi
+0004cf18: mov ecx, dword ptr [esi + 4]
+0004cf1b: mov dword ptr [ecx], esi
+0004cf1d: mov esi, dword ptr [esi + 4]
+0004cf20: cmp esi, 0xa7a240
+0004cf26: jne 0x4cec5
+0004cf28: pop edi
+0004cf29: pop esi
+0004cf2a: mov eax, ebx
+0004cf2c: pop ebx
+0004cf2d: ret 4
+
+ADDRESS 0x4b910
+0004b910: mov eax, dword ptr [0xa7a238]
+0004b915: push eax
+0004b916: call 0x16dda
+0004b91b: ret
+0004b91c: nop
+0004b91d: nop
+0004b91e: nop
+0004b91f: nop
+0004b920: push 0
+0004b922: call 0x16ebf
+0004b927: int3
+0004b928: nop
+0004b929: nop
+0004b92a: nop
+0004b92b: nop
+0004b92c: nop
+0004b92d: nop
+0004b92e: nop
+0004b92f: nop
+0004b930: mov eax, dword ptr [0xa7a238]
+0004b935: push eax
+0004b936: call 0x16e00
+0004b93b: ret
+0004b93c: nop
+0004b93d: nop
+0004b93e: nop
+0004b93f: nop
+0004b940: ret
+0004b941: nop
+0004b942: nop
+0004b943: nop
+0004b944: nop
+0004b945: nop
+0004b946: nop
+0004b947: nop
+0004b948: nop
+0004b949: nop
+0004b94a: nop
+0004b94b: nop
+0004b94c: nop
+0004b94d: nop
+0004b94e: nop
+0004b94f: nop
+0004b950: jmp 0x37810
+0004b955: nop
+0004b956: nop
+0004b957: nop
+0004b958: nop
+0004b959: nop
+0004b95a: nop
+0004b95b: nop
+0004b95c: nop
+0004b95d: nop
+0004b95e: nop
+0004b95f: nop
+
+ADDRESS 0xe83f0
+000e83f0: sti
+000e83f1: sbb ecx, dword ptr [edi]
+000e83f3: mov gs, word ptr [esi - 1]
+
+DATA 0xa7a240
+00a7a240: 00a7c700 00a7ca00 00000000 00000000  b'\x00\xc7\xa7\x00\x00\xca\xa7\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a250: ffffffff 00000000 00000000 00000000  b'\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a260: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a270: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a280: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a290: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2a0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2b0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2c0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2d0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2e0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00a7a2f0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+
+DATA 0xb09500
+00b09500: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09510: 00000000 00000000 00000000 00000002  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00'
+00b09520: 00000001 00000001 00000000 00000000  b'\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09530: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09540: 00000000 81f2a0c0 00000000 00000000  b'\x00\x00\x00\x00\xc0\xa0\xf2\x81\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09550: 4b4e4241 00001ac0 00000000 00000000  b'ABNK\xc0\x1a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09560: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09570: 00000001 007c9b5b 00b33d80 00bd9088  b'\x01\x00\x00\x00[\x9b|\x00\x80=\xb3\x00\x88\x90\xbd\x00'
+00b09580: 00bd909c 00000001 00000000 00000001  b'\x9c\x90\xbd\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00'
+00b09590: 00000000 00000000 00018180 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x80\x81\x01\x00\x00\x00\x00\x00'
+00b095a0: 00018180 00000000 00000000 00a77788  b'\x80\x81\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x88w\xa7\x00'
+00b095b0: 00004060 81999b80 00000000 00000a61  b'`@\x00\x00\x80\x9b\x99\x81\x00\x00\x00\x00a\n\x00\x00'
+00b095c0: 00000000 0cde5aeb 00730065 00310032  b'\x00\x00\x00\x00\xebZ\xde\x0ce\x00s\x002\x001\x00'
+00b095d0: 005f0037 00610066 00720069 0069002e  b'7\x00_\x00f\x00a\x00i\x00r\x00.\x00i\x00'
+00b095e0: 00660066 00000000 00000000 00000000  b'f\x00f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b095f0: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09600: 00000000 00000000 00000000 00000000  b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+00b09610: 00000000 00000000 0000000f 0000000f  b'\x00\x00\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x0f\x00\x00\x00'
+
+DATA 0xd0046900
+d0046900: 00000202 8001a431 00000017 00000202  b'\x02\x02\x00\x001\xa4\x01\x80\x17\x00\x00\x00\x02\x02\x00\x00'
+d0046910: 8001a431 00000017 19d00000 d0046948  b'1\xa4\x01\x80\x17\x00\x00\x00\x00\x00\xd0\x19Hi\x04\xd0'
+d0046920: 004e177a 80000d04 00000000 00000000  b'z\x17N\x00\x04\r\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00'
+d0046930: 00dfb3c0 00000009 8001aeac 00000202  b'\xc0\xb3\xdf\x00\t\x00\x00\x00\xac\xae\x01\x80\x02\x02\x00\x00'
+d0046940: 8001a431 00000000 19d00000 d0046978  b'1\xa4\x01\x80\x00\x00\x00\x00\x00\x00\xd0\x19xi\x04\xd0'
+d0046950: 00000202 8001a431 00000000 19d00000  b'\x02\x02\x00\x001\xa4\x01\x80\x00\x00\x00\x00\x00\x00\xd0\x19'
+d0046960: d004698c 004e177a 80000d04 00000000  b'\x8ci\x04\xd0z\x17N\x00\x04\r\x00\x80\x00\x00\x00\x00'
+d0046970: 00000000 00dfb3c0 00000009 8001aeac  b'\x00\x00\x00\x00\xc0\xb3\xdf\x00\t\x00\x00\x00\xac\xae\x01\x80'
+d0046980: 00dfb3c0 800008c4 00000000 00000046  b'\xc0\xb3\xdf\x00\xc4\x08\x00\x80\x00\x00\x00\x00F\x00\x00\x00'
+d0046990: 00000020 80030e84 00000019 ffffffff  b' \x00\x00\x00\x84\x0e\x03\x80\x19\x00\x00\x00\xff\xff\xff\xff'
+d00469a0: 00000202 8001a431 00000000 00000202  b'\x02\x02\x00\x001\xa4\x01\x80\x00\x00\x00\x00\x02\x02\x00\x00'
+d00469b0: 8001a431 00000000 19d00000 d00469e8  b'1\xa4\x01\x80\x00\x00\x00\x00\x00\x00\xd0\x19\xe8i\x04\xd0'
+d00469c0: 004e177a 80000d04 00000000 00000000  b'z\x17N\x00\x04\r\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00'
+d00469d0: 00dfb3c0 00000000 ffffffff d00469e8  b'\xc0\xb3\xdf\x00\x00\x00\x00\x00\xff\xff\xff\xff\xe8i\x04\xd0'
+d00469e0: 80030e84 00000000 80018dae 80030e84  b'\x84\x0e\x03\x80\x00\x00\x00\x00\xae\x8d\x01\x80\x84\x0e\x03\x80'
+d00469f0: 00000000 00000020 00000000 00000012  b'\x00\x00\x00\x00 \x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00'
+d0046a00: 00000001 00000000 00000012 00000002  b'\x01\x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00\x02\x00\x00\x00'
+d0046a10: ffffffff 00000012 000e7690 00000002  b'\xff\xff\xff\xff\x12\x00\x00\x00\x90v\x0e\x00\x02\x00\x00\x00'
+d0046a20: 00000005 00b336f4 0000000e 000e8658  b'\x05\x00\x00\x00\xf46\xb3\x00\x0e\x00\x00\x00X\x86\x0e\x00'
+d0046a30: 00000000 0000000d 00000003 0000000b  b'\x00\x00\x00\x00\r\x00\x00\x00\x03\x00\x00\x00\x0b\x00\x00\x00'
+d0046a40: 00b31624 00000006 00000000 0000000e  b'$\x16\xb3\x00\x06\x00\x00\x00\x00\x00\x00\x00\x0e\x00\x00\x00'
+d0046a50: 00b336f4 00000005 00000000 00000012  b'\xf46\xb3\x00\x05\x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00'
+d0046a60: 0000000d 0000c000 00000000 00000001  b'\r\x00\x00\x00\x00\xc0\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00'
+d0046a70: 00000001 00b31624 001894b8 00000000  b'\x01\x00\x00\x00$\x16\xb3\x00\xb8\x94\x18\x00\x00\x00\x00\x00'
+d0046a80: 00000001 00b31624 00b7f40c 00000006  b'\x01\x00\x00\x00$\x16\xb3\x00\x0c\xf4\xb7\x00\x06\x00\x00\x00'
+d0046a90: 00000001 00e5fc20 00b336f4 89792bf7  b'\x01\x00\x00\x00 \xfc\xe5\x00\xf46\xb3\x00\xf7+y\x89'
+d0046aa0: 00000000 00b7f40c 0018a74a 00000000  b'\x00\x00\x00\x00\x0c\xf4\xb7\x00J\xa7\x18\x00\x00\x00\x00\x00'
+d0046ab0: 00000000 00000001 00000001 d0046b0c  b'\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x0ck\x04\xd0'
+d0046ac0: 00b7f40c 00e5fc20 d0046bc0 00000001  b'\x0c\xf4\xb7\x00 \xfc\xe5\x00\xc0k\x04\xd0\x01\x00\x00\x00'
+d0046ad0: 00b3ef60 00b7f40c 00e5fc20 00b75a40  b'`\xef\xb3\x00\x0c\xf4\xb7\x00 \xfc\xe5\x00@Z\xb7\x00'
+d0046ae0: 00b3f5f0 00b3f5a0 00b3f550 00b3f500  b'\xf0\xf5\xb3\x00\xa0\xf5\xb3\x00P\xf5\xb3\x00\x00\xf5\xb3\x00'
+d0046af0: 00b3f4b0 00b3f460 00b3f410 00b3f3c0  b'\xb0\xf4\xb3\x00`\xf4\xb3\x00\x10\xf4\xb3\x00\xc0\xf3\xb3\x00'

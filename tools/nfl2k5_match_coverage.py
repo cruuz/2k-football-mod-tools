@@ -245,10 +245,10 @@ def main(argv=None):
             raw = archive.read_entry(BOOK_ENTRIES[args.team])
         book = inspector.parse_playbook_resource(raw, asset_id='book:' + args.team)
         pack = match.match_coverage_pack(book, raw[32:], args.team)
-        check = packs.check_pack(pack, resource=raw)
+        check = packs.check_pack(pack, resource=raw, xbe=args.image)
         if not check.ok:
             parser.error(check.text())
-        compiled = packs.apply_pack_to_resource(raw, pack)
+        compiled = packs.apply_pack_to_resource(raw, pack, xbe=args.image)
         packs.save_pack(pack, args.output)
         result = dict(schema='nfl2k5_match_coverage_pack_receipt/v1', team=args.team,
             evidence=match.EVIDENCE, check=check.to_json(), compiler=compiled.report,

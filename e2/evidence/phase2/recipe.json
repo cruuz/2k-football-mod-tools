@@ -1,0 +1,37 @@
+{
+  "classification": "PROVED OFFLINE",
+  "source_recipe_sha256": "eb3f3b68de97e276f5498493b257467879412020f439952f3a366393492d3970",
+  "copy_sha256": "8729ee7bb2304441f892f4db4d5a8572370a9b7afa4edf06ce16acd57901b15f",
+  "changes": {
+    "historic_stock_books": true,
+    "espn25_more_moments": true,
+    "espn25_named_previews": true,
+    "espn25_era_rules": true
+  },
+  "pending_consumed": false,
+  "frozen_inputs": {
+    "project": {
+      "path": "/media/noah/Storage/.b76-research/main/freeze/candB/league_project_k2_v52_frozen.json",
+      "sha256": "4874ffcacb27b783fe799685ee1f7b6ac19d1698497cd91c9f885d123ae1936b"
+    },
+    "roster_edits": {
+      "path": "/media/noah/Storage/.b76-research/main/freeze/candB/league_roster_edits_candB_nofc.json",
+      "sha256": "f2e991dc1f6ecdb22be017cfbf248456fb001d959c1233e438e9ba147a38cf6f",
+      "inputs": {
+        "base": {
+          "path": "/media/noah/Storage/.b76-research/main/freeze/league_roster_edits_u7_names.json",
+          "sha256": "0b7ff8aacb5f71d1f29a8727d1af2e8b056d1a26bb4b2a687778620721ffe8c2"
+        },
+        "r1": {
+          "path": "/media/noah/Storage/.b76-research/r1/deliver/v2.4/r1_ratings_v2.4_fragment.json",
+          "sha256": "754409ee5c2f4241e39c3c97f24e10b668365afafeec6cecc5bba7a35a49d0fb"
+        },
+        "hm": {
+          "path": "/media/noah/Storage/.b76-research/hm/league/league_equipment_hm.json",
+          "sha256": "e4bcd88f8bcac920e25d642953962303b650e977450a89e50d6ab17926850619"
+        }
+      }
+    }
+  },
+  "build_driver_sha256": "5b7002bb178fb9556442848e1ad8d6b9f2ec8c27c35f3041da459c8e69593345"
+}

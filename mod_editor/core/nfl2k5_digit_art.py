@@ -138,6 +138,16 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
         raise ValidationError("Digit preparation needs matching canvases and a supported registration.")
     source = measure(image)
     reference = measure(retail)
+    if not image.convert("RGBA").getchannel("A").getbbox():
+        # A deliberately blank cell: every texel of the supplied art is fully transparent (a kit without sleeve or
+        # helmet numbers, such as the 2020+ Chargers' sleeves). Art whose faint alpha the cleanup removes is still
+        # refused below.
+        blank = Image.new("RGBA", retail.size, (0, 0, 0, 0))
+        return blank, {
+            "registration": {"mode": mode, "source": source, "retail": reference, "chosen_box": None,
+                             "destination_box": None, "scale": 1.0, "result": measure(blank), "blank": True},
+            "cleanup": {"applied": False, "blank": True},
+        }
     image, cleanup = collapse_colours(bind_alpha(image.convert("RGBA")))
     tones = two_tone_colours(image)
     image = flatten_regions(image, tones)

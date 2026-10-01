@@ -14,6 +14,8 @@ from mod_editor.gui.ux_text import plain_error
 
 from collections.abc import Callable
 from pathlib import Path
+import time
+import threading
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -27,11 +29,12 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QProgressBar,
     QVBoxLayout,
     QWidget,
 )
 
-from mod_editor.core import mod_build, modpack
+from mod_editor.core import mod_build, modpack, platform_compat
 from mod_editor.gui.ux_text import XEMU_LINE, Details
 from mod_editor.gui.task_delivery import bound
 
@@ -53,7 +56,7 @@ def _human(count: int) -> str:
 class _Signals(QObject):
     finished = pyqtSignal(object)
     failed = pyqtSignal(str)
-    progress = pyqtSignal(str, int, int)
+    progress = pyqtSignal(str, object, object)  # disc byte counts exceed signed 32-bit Qt ints
 
 
 class _Task(QRunnable):
@@ -61,10 +64,19 @@ class _Task(QRunnable):
         super().__init__()
         self.signals = _Signals()
         self._operation = operation
+        self.cancelled = threading.Event()
 
     def run(self) -> None:
         try:
-            self.signals.finished.emit(self._operation(self.signals.progress.emit))
+            last = ["", 0.0]
+            def progress(stage, done, total):
+                if self.cancelled.is_set():
+                    raise modpack.ModpackError("Cancelled. The source is unchanged; incomplete output was removed.")
+                now = time.monotonic()
+                if stage != last[0] or now - last[1] >= 0.1 or done == total:
+                    self.signals.progress.emit(stage, done, total)
+                    last[:] = [stage, now]
+            self.signals.finished.emit(self._operation(progress))
         except Exception as exc:  # noqa: BLE001
             self.signals.failed.emit(plain_error(exc))
 
@@ -73,6 +85,7 @@ class SharePanel(QWidget):
     """Create and apply ``.2k5patch`` files (disc images only, always on copies)."""
 
     disc_written = pyqtSignal(str)   # a disc copy Apply wrote and verified (Play latest can start it)
+    customization_ready = pyqtSignal(dict)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -87,6 +100,8 @@ class SharePanel(QWidget):
         self.last_check: dict | None = None
         self.last_apply: dict | None = None
         self._build_pair_owned = False     # a finished Build owns base/patched; the open disc must not replace them
+        self._progress_stage = None
+        self._progress_started = 0.0
         self._followed_source = ""         # the last open disc the install form followed
         self._build()
 
@@ -213,6 +228,13 @@ class SharePanel(QWidget):
 
         apply_box = QGroupBox("Install a friend's mod")
         apply_layout = QVBoxLayout(apply_box)
+        self.install_softdrink_button = QPushButton("Install SOFTDRINK 2K28")
+        self.install_softdrink_button.setToolTip("Choose your clean Xbox ISO and the finished pack, then save a playable XISO.")
+        self.install_softdrink_button.clicked.connect(self.install_softdrink)
+        apply_layout.addWidget(self.install_softdrink_button)
+        self.customize_softdrink_button = QPushButton("Customize SOFTDRINK 2K28…")
+        self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
+        apply_layout.addWidget(self.customize_softdrink_button)
         self.pack_field, self.pack_button = self._path_row(apply_layout, "Mod file (.2k5patch)", self._choose_pack)
         self.pack_summary = QLabel("Choose a .2k5patch file to see what it does.")
         self.pack_summary.setWordWrap(True)
@@ -247,6 +269,14 @@ class SharePanel(QWidget):
 
         self.progress_label = QLabel("")
         layout.addWidget(self.progress_label)
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.hide()
+        layout.addWidget(self.progress_bar)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
+        self.cancel_button.hide()
+        layout.addWidget(self.cancel_button)
         layout.addStretch(1)
 
     def _path_row(self, parent: QVBoxLayout, label: str, chooser: Callable[[], None]) -> tuple[QLineEdit, QPushButton]:
@@ -274,6 +304,8 @@ class SharePanel(QWidget):
 
     # ------------------------------------------------------------------ state
     def _refresh(self) -> None:
+        self.install_softdrink_button.setEnabled(not self.busy)
+        self.customize_softdrink_button.setEnabled(not self.busy)
         if self.busy:
             for button in (self.export_button, self.check_button, self.apply_button):
                 button.setEnabled(False)
@@ -323,7 +355,7 @@ class SharePanel(QWidget):
         self.check_status.setText("")
         try:
             self._pack = modpack.load(path)
-        except modpack.ModpackError as exc:
+        except (modpack.ModpackError, OSError) as exc:
             self._pack = None
             self.pack_summary.setText(f"Couldn't open this mod file: {exc}")
             self._refresh()
@@ -333,6 +365,10 @@ class SharePanel(QWidget):
 
     @staticmethod
     def summarize(info: dict) -> str:
+        if info.get("format") == 3:
+            return (f"{info['name']}: {len(info['files'])} verified game files. "
+                    f"Pack {_human(info['pack_bytes'])}. Accepts clean USA Xbox dumps with different file order or a video partition. "
+                    f"Sources: {_human(info['assets_bytes'])}. Extract sources to customize with the full builder.")
         base = info["base"]
         lines = [f"{info['name']}  v{info['version'] or '-'}  by {info['author'] or 'unknown'}"]
         if info["description"]:
@@ -428,6 +464,77 @@ class SharePanel(QWidget):
             if self._pack is not None:
                 self.start_check()
 
+    def install_softdrink(self) -> None:
+        """One action: choose source, pack and destination; verification is part of apply."""
+        if self.busy:
+            return
+        source, _ = QFileDialog.getOpenFileName(self, "Choose your clean ESPN NFL 2K5 USA Xbox image", "", IMAGE_FILTER)
+        if not source:
+            return
+        pack_path, _ = QFileDialog.getOpenFileName(self, "Choose the SOFTDRINK 2K28 pack", "", PACK_FILTER)
+        if not pack_path:
+            return
+        self.load_pack(Path(pack_path))
+        if self._pack is None:
+            return
+        if self._pack.manifest.raw.get("format") != 3:
+            self._notify("error", "Choose a file pack", "This installer needs the SOFTDRINK format-3 pack. Older packs use the controls below.")
+            return
+        target, _ = QFileDialog.getSaveFileName(self, "Save SOFTDRINK 2K28", str(Path(source).with_name("SOFTDRINK 2K28.xiso.iso")), IMAGE_FILTER)
+        if not target:
+            return
+        self.source_field.setText(source)
+        self.target_field.setText(target)
+        self.start_file_install()
+
+    def start_file_install(self) -> None:
+        if self._pack is None or self._pack.manifest.raw.get("format") != 3:
+            return
+        pack = self._pack
+        source, target = (platform_compat.io_path(self.source_field.text()),
+                          platform_compat.io_path(self.target_field.text()))
+        if any(platform_compat.paths_alias(target, p) for p in (source, pack.path)):
+            self._apply_failed("Output must be a different file from every input.")
+            return
+        overwrite = target.exists()
+        if overwrite and not self._confirm("Replace existing output?", f"Replace {target} with the verified installation?"):
+            return
+        self.apply_status.setText("Checking clean game files before installation…")
+        self._start(lambda progress: modpack.apply(pack, source, target, overwrite=overwrite, progress=progress),
+                    self._apply_done, self._apply_failed)
+
+    def customize_softdrink(self) -> None:
+        if self.busy:
+            return
+        path, _ = QFileDialog.getOpenFileName(self, "Choose the SOFTDRINK pack", "", PACK_FILTER)
+        if not path:
+            return
+        self.load_pack(Path(path))
+        if self._pack is None or self._pack.manifest.raw.get("format") != 3:
+            return
+        pack = self._pack
+        folder = QFileDialog.getExistingDirectory(self, "Choose a new folder for editable SOFTDRINK sources")
+        if not folder:
+            return
+        bundle = None
+        if pack.manifest.recipe.get("sources_bundle"):
+            bundle, _ = QFileDialog.getOpenFileName(self, "Choose this pack's optional sources file", "", "SOFTDRINK sources (*.2k5sources);;All files (*)")
+            if not bundle:
+                return
+        def operation(progress):
+            from mod_editor.core import modpack_sources
+            progress("Extracting editable sources", 0, 0)
+            if bundle:
+                recipe = modpack_sources.extract_bundle(bundle, folder, pack.manifest.recipe["sources_bundle"])
+            else:
+                modpack.extract_assets(pack, folder)
+                recipe = pack.manifest.recipe
+            return modpack_sources.materialize(recipe, folder)
+        def done(recipe):
+            self.customization_ready.emit(recipe)
+            self.apply_status.setText("Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation.")
+        self._start(operation, done, self._apply_failed)
+
     def describe_source(self) -> str:
         """Name the disc image in the source field (also used by tests)."""
 
@@ -457,6 +564,9 @@ class SharePanel(QWidget):
         if self.busy:
             return
         self.busy = True
+        self._progress_stage = None
+        self.progress_bar.show()
+        self.cancel_button.show()
         self._refresh()
         task = _Task(operation)
         task.signals.progress.connect(self._on_progress)
@@ -465,6 +575,8 @@ class SharePanel(QWidget):
             self.busy = False
             self._task = None
             self.progress_label.setText("")
+            self.progress_bar.hide()
+            self.cancel_button.hide()
             done(result)
             self._refresh()
 
@@ -472,6 +584,8 @@ class SharePanel(QWidget):
             self.busy = False
             self._task = None
             self.progress_label.setText("")
+            self.progress_bar.hide()
+            self.cancel_button.hide()
             failed(message)
             self._refresh()
 
@@ -481,8 +595,15 @@ class SharePanel(QWidget):
         self._pool.start(task)
 
     def _on_progress(self, stage: str, done: int, total: int) -> None:
+        now = time.monotonic()
+        if stage != self._progress_stage:
+            self._progress_stage, self._progress_started = stage, now
         if total:
-            self.progress_label.setText(f"{stage}: {done * 100 // total}%")
+            elapsed = now - self._progress_started
+            eta = (total - done) * elapsed / done if done > 0 and elapsed > 1 else None
+            remaining = f"; about {max(0, round(eta))} s left in this step" if eta is not None else "; estimating time left"
+            self.progress_label.setText(f"{stage}: {done * 100 // total}%{remaining}")
+            self.progress_bar.setValue(min(100, done * 100 // total))
         else:
             self.progress_label.setText(f"{stage}…")
 
@@ -558,12 +679,15 @@ class SharePanel(QWidget):
         self._refresh()
 
     def start_apply(self) -> None:
+        if self._pack is not None and self._pack.manifest.raw.get("format") == 3:
+            self.start_file_install()
+            return
         if self._pack is None or self._check_state != "ready":
             return
         pack = self._pack
         source = Path(self.source_field.text())
         target = Path(self.target_field.text())
-        if target.exists() and target.resolve() == source.resolve():
+        if platform_compat.paths_alias(target, source):
             self._notify("error", "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         overwrite = target.exists()
@@ -587,6 +711,7 @@ class SharePanel(QWidget):
         self.last_apply = receipt
         target = receipt["target"]
         result = ("byte-identical to the author's patched image" if target["matches_author_result"]
+                  else "every game file verified against the finished disc" if target.get("all_game_files_verified")
                   else "every run verified; the rest of the file is your own base"
                   if target["matches_author_result"] is False else "every run verified")
         self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}.")

@@ -16,3 +16,7 @@
 # would put a released hash at the mercy of a guess.
 *.png binary
 *.ico binary
+
+# Frozen synthetic compatibility bytes must keep their exact archive hashes.
+tests/fixtures/modpack_legacy/*.2k5patch binary
+tests/fixtures/modpack_legacy/*.zlib binary

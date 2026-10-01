@@ -1,0 +1,784 @@
+{
+ "schema": "nfl2k5_modern_metlife_rules/v1",
+ "palette_kinds": {
+  "seat_charcoal": {
+   "kind": "grey_ramp",
+   "scale": 1.45,
+   "tint": [
+    0.97,
+    1.0,
+    1.05
+   ],
+   "hue": [
+    -40,
+    60
+   ],
+   "min_sat": 0.12,
+   "neutral_scale": 1.0,
+   "neutralize": 0.6,
+   "max": 230
+  },
+  "steel_silver": {
+   "kind": "neutral",
+   "amount": 0.75,
+   "gain": 1.12,
+   "lift": 6.0,
+   "tint": [
+    0.97,
+    1.0,
+    1.04
+   ]
+  },
+  "structure_neutral": {
+   "kind": "neutral",
+   "amount": 0.55,
+   "gain": 1.0,
+   "lift": 0.0,
+   "tint": [
+    0.98,
+    1.0,
+    1.03
+   ]
+  },
+  "glass_cool": {
+   "kind": "neutral",
+   "amount": 0.35,
+   "gain": 0.92,
+   "lift": 0.0,
+   "tint": [
+    0.92,
+    1.0,
+    1.12
+   ]
+  }
+ },
+ "palette_rules": [
+  {
+   "scene": "stadium",
+   "material": "seat01",
+   "rule": "seat_charcoal"
+  },
+  {
+   "scene": "stadium",
+   "material": "seat02",
+   "rule": "seat_charcoal"
+  },
+  {
+   "scene": "stadium",
+   "material": "seat03",
+   "rule": "seat_charcoal"
+  },
+  {
+   "scene": "stadium",
+   "material": "roof01",
+   "rule": "steel_silver"
+  },
+  {
+   "scene": "stadium",
+   "material": "cement01",
+   "rule": "structure_neutral"
+  },
+  {
+   "scene": "stadium",
+   "material": "lite02",
+   "rule": "steel_silver"
+  },
+  {
+   "scene": "stadium",
+   "material": "suite01",
+   "aliases": [
+    "LIGHT_suite01"
+   ],
+   "rule": "glass_cool"
+  },
+  {
+   "scene": "stadium",
+   "material": "suite02",
+   "aliases": [
+    "LIGHT_suite02"
+   ],
+   "rule": "glass_cool"
+  },
+  {
+   "scene": "stadium",
+   "material": "suite03",
+   "aliases": [
+    "LIGHT_suite03"
+   ],
+   "rule": "glass_cool"
+  },
+  {
+   "scene": "stadium",
+   "material": "suite04",
+   "aliases": [
+    "LIGHT_suite04"
+   ],
+   "rule": "glass_cool"
+  }
+ ],
+ "patches": [
+  {
+   "scene": "stadium",
+   "material": "banner01",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner01.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner02",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner02.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner04",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner04.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "ad_bb02",
+   "aliases": [
+    "LIGHT_ad_bb02"
+   ],
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/ad_bb02.png",
+   "rects": [
+    [
+     0,
+     0,
+     256,
+     167
+    ],
+    [
+     0,
+     167,
+     211,
+     256
+    ]
+   ]
+  },
+  {
+   "scene": "stadium",
+   "material": "ad_bb01",
+   "aliases": [
+    "LIGHT_ad_bb01"
+   ],
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/ad_bb01.png",
+   "rects": [
+    [
+     0,
+     0,
+     256,
+     112
+    ],
+    [
+     97,
+     152,
+     207,
+     224
+    ],
+    [
+     0,
+     224,
+     207,
+     256
+    ],
+    [
+     226,
+     112,
+     256,
+     256
+    ]
+   ]
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_corp",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner_corp.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner01",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner01.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner02",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner02.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner04",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner04.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "ad_bb02",
+   "aliases": [
+    "LIGHT_ad_bb02"
+   ],
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/ad_bb02.png",
+   "rects": [
+    [
+     0,
+     0,
+     256,
+     167
+    ],
+    [
+     0,
+     167,
+     211,
+     256
+    ]
+   ]
+  },
+  {
+   "scene": "stadium",
+   "material": "ad_bb01",
+   "aliases": [
+    "LIGHT_ad_bb01"
+   ],
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/ad_bb01.png",
+   "rects": [
+    [
+     0,
+     0,
+     256,
+     112
+    ],
+    [
+     97,
+     152,
+     207,
+     224
+    ],
+    [
+     0,
+     224,
+     207,
+     256
+    ],
+    [
+     226,
+     112,
+     256,
+     256
+    ]
+   ]
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_corp",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner_corp.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "wall01",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/wall01.png",
+   "snow_drift": true
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_away_team",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner_away_team.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "wall01",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/wall01.png",
+   "rects": [
+    [
+     0,
+     0,
+     256,
+     128
+    ]
+   ],
+   "snow_drift": true
+  },
+  {
+   "scene": "stadium",
+   "material": "wall04",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/wall04.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_home_team",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner_home_team.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_home_player",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner_home_player.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_away_team",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/stadium/banner_away_team.png"
+  },
+  {
+   "scene": "field",
+   "material": "center_logo",
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/field/center_logo.png"
+  },
+  {
+   "scene": "field",
+   "material": "center_logo",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/field/center_logo.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_home_team",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner_home_team.png"
+  },
+  {
+   "scene": "stadium",
+   "material": "banner_home_player",
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/stadium/banner_home_player.png"
+  }
+ ],
+ "overlays": [
+  {
+   "scene": "field",
+   "material": "endzone_N_L",
+   "aliases": [
+    "endzone_S_L"
+   ],
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/field/endzone_N_L.png"
+  },
+  {
+   "scene": "field",
+   "material": "endzone_N_M",
+   "aliases": [
+    "endzone_S_M"
+   ],
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/field/endzone_N_M.png"
+  },
+  {
+   "scene": "field",
+   "material": "endzone_N_R",
+   "aliases": [
+    "endzone_S_R"
+   ],
+   "venues": [
+    "s19"
+   ],
+   "art": "art/s19/field/endzone_N_R.png"
+  },
+  {
+   "scene": "field",
+   "material": "endzone_N_L",
+   "aliases": [
+    "endzone_S_L"
+   ],
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/field/endzone_N_L.png"
+  },
+  {
+   "scene": "field",
+   "material": "endzone_N_M",
+   "aliases": [
+    "endzone_S_M"
+   ],
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/field/endzone_N_M.png"
+  },
+  {
+   "scene": "field",
+   "material": "endzone_N_R",
+   "aliases": [
+    "endzone_S_R"
+   ],
+   "venues": [
+    "s18"
+   ],
+   "art": "art/s18/field/endzone_N_R.png"
+  }
+ ],
+ "geometry": [
+  {
+   "scene": "stadium",
+   "shape": "group41",
+   "mode": "collapse",
+   "note": "press box north half and its lamp bank"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group43",
+   "mode": "collapse",
+   "note": "press box south half and its lamp bank"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group44",
+   "mode": "collapse",
+   "note": "press box centre"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group40",
+   "mode": "collapse",
+   "note": "light tower, north-west corner"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group42",
+   "mode": "collapse",
+   "note": "light tower, south-west corner"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group45",
+   "mode": "collapse",
+   "note": "light tower, north-east corner"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group50",
+   "mode": "collapse",
+   "note": "light tower, south-east corner"
+  },
+  {
+   "scene": "stadium",
+   "shape": "group47",
+   "mode": "collapse",
+   "note": "lamp bank, east rim north"
+  },
+  {
+   "scene": "stadium",
+   "shape": "s19_8",
+   "mode": "collapse",
+   "note": "lamp bank, east rim south"
+  },
+  {
+   "scene": "field",
+   "material": "center_logo",
+   "venues": [
+    "s19"
+   ],
+   "mode": "quad",
+   "retail_half_extent_m": [
+    4.233,
+    4.576
+   ],
+   "half_extent_m": [
+    4.234,
+    6.949
+   ],
+   "note": "the Jets' midfield oval at its painted size (x across, z along)"
+  },
+  {
+   "scene": "field",
+   "material": "center_logo",
+   "venues": [
+    "s18"
+   ],
+   "mode": "quad",
+   "retail_half_extent_m": [
+    4.233,
+    4.576
+   ],
+   "half_extent_m": [
+    7.59,
+    7.681
+   ],
+   "note": "the midfield helmet at its painted size (x across, z along)"
+  }
+ ],
+ "markers": [
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape1",
+   "retail_sha256": [
+    "f49a7bb91a0cd44e120c235a08b48ec7da10623c4bb4a7115b4eb5be0cf44a3b"
+   ],
+   "position_m": [
+    80.95,
+    59.8,
+    -93.45
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape2",
+   "retail_sha256": [
+    "5fb9e12dbaae015c1a0d196d3d5efd43cae9ba425a46f8c2264722fd8434b6f6"
+   ],
+   "position_m": [
+    90.5,
+    59.8,
+    -74.65
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape3",
+   "retail_sha256": [
+    "4983ba5353cff328d3648866f90bcfbb0e0abb12e975c1ae6254b50d0515ba8b"
+   ],
+   "position_m": [
+    94.86,
+    59.8,
+    -56.41
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape4",
+   "retail_sha256": [
+    "fb6d7caddc09f018035ea1b5d14eb8a5d4c73f0eacd3d53fc9977935d856b54c"
+   ],
+   "position_m": [
+    97.58,
+    59.8,
+    -36.55
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape5",
+   "retail_sha256": [
+    "916893d6a2b02f826064453c1aef785ab70968438e5cb3a7d79572cd630cf264"
+   ],
+   "position_m": [
+    97.59,
+    59.8,
+    36.41
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape6",
+   "retail_sha256": [
+    "cda10384e0d097a68fbcc9ea4d8acddefe762b5ed84ce5461d05c8c487db5f03"
+   ],
+   "position_m": [
+    94.89,
+    59.8,
+    56.18
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape7",
+   "retail_sha256": [
+    "7faf28af099ed5e14ea2def57b9385f61df393a5a46ffd6c8921110e6ec8751c"
+   ],
+   "position_m": [
+    90.54,
+    59.8,
+    74.47
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape8",
+   "retail_sha256": [
+    "bd722470a21a4ab85fc743cc3b3deb95ec0b1867562884f5c97e19980452dc99"
+   ],
+   "position_m": [
+    80.98,
+    59.8,
+    93.41
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape9",
+   "retail_sha256": [
+    "f1b827af307e9f4b09afb85c711eb6fbd09d4e87176686d698de84be6b1409fe"
+   ],
+   "position_m": [
+    -82.56,
+    59.8,
+    90.8
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape10",
+   "retail_sha256": [
+    "f8e597938e040af622043f65517f12dd6c36460ebae912976d98dfdbc12bec6e"
+   ],
+   "position_m": [
+    -96.54,
+    59.8,
+    45.76
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape11",
+   "retail_sha256": [
+    "03fdb1bb797719f708660ed0a64a6f867ecbab7f2de8e6479c6b99f32d6c9bf2"
+   ],
+   "position_m": [
+    -97.91,
+    59.8,
+    33.08
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape12",
+   "retail_sha256": [
+    "041c6b1b64f86a487bc4ea768bb2b5dfd323ff4c14f45368334478bce124677f"
+   ],
+   "position_m": [
+    -97.88,
+    59.8,
+    -33.32
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape13",
+   "retail_sha256": [
+    "90c838b7431d862adbf9d508bb49fc6dd9428941ce7a82eeb0ff1b0587bf86d2"
+   ],
+   "position_m": [
+    -96.5,
+    59.8,
+    -46.01
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_lightShape14",
+   "retail_sha256": [
+    "8caa09249dbbe221b2cba82f7c6487dd22a96112b96aa5fa6c77515e253124c3"
+   ],
+   "position_m": [
+    -82.61,
+    59.8,
+    -90.72
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_flare1Shape",
+   "retail_sha256": [
+    "4c45f627560fb6ae50b84b06d44a7db383768adc01624853b921a46e692df4e9"
+   ],
+   "position_m": [
+    90.5,
+    59.8,
+    -74.62
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_flare2Shape",
+   "retail_sha256": [
+    "8ecd63f32dc4e2aa040b0afa7e64d0c176500f8443e634c346162ebe5fe95cad"
+   ],
+   "position_m": [
+    90.53,
+    59.8,
+    74.52
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_flareShape3",
+   "retail_sha256": [
+    "30205edd512721522251102b6876ad347cd457dc0e491676216a6766cd28f392"
+   ],
+   "position_m": [
+    -97.29,
+    59.8,
+    39.66
+   ]
+  },
+  {
+   "scene": "stadium",
+   "marker": "marker_flareShape4",
+   "retail_sha256": [
+    "4e863c9282d3aedf1a2a27f6a94b671f41f4fc6f677f4f2730d806d1079248ea"
+   ],
+   "position_m": [
+    -97.3,
+    59.8,
+    -39.54
+   ]
+  }
+ ],
+ "notes": "Authored by tools/nfl2k5_modern_metlife_art.py; see docs/modern_metlife/README.md"
+}

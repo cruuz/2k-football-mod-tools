@@ -1,0 +1,31 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "base_head": "9de333712be81d919359131c2ecb2bd3185ac18a",
+  "files": {
+    "mod_editor/core/nfl2k5_roster_records.py": "384565c66b5c86d67211a8c30ec639161e46a769f0f70952cae56de9c9b2b293",
+    "mod_editor/core/providers.py": "4e1d97e0caba5dbaf0ddaffce5a2936522680d0cfdc32e390f94293345f3478a",
+    "dc/import_depth.py": "0c89a39aa00ee6a3d41f8e503f753dd1aec2d53ea88fb640bb877ad2f0f93409",
+    "dc/native_probe.py": "6c26b1d4e97faa8b75f2012c4b37005d1d100e06d650feb2f5be0745fe7eca05",
+    "dc/lineup_probe.py": "d9c31e80dd48349ec11aa7b3e335441777331be8d7de4c471884d5aa6dfe5a92",
+    "dc/build_full.py": "6e3f0b6bf147d44d3aaf2a61aa3a58e0f141890c1ff46de80f225ac62532ffee",
+    "dc/finish_build.py": "99203a8e5fd0ae241288ba783767f431f6c2abbd093f1eca4e8f08c7da119c75",
+    "dc/test_depth_import.py": "78b2837f5ff27bf9e54de63f93efdc426f208996b46eb0cf7cbd0408e2db0c15"
+  },
+  "native_probe_log": "PROVED OFFLINE: native load and 32-team picks passed\nPROVED OFFLINE: sort 1, all 224 specialist picks retained\nPROVED OFFLINE: sort 2, all 224 specialist picks retained\nPROVED OFFLINE: sort 3, all 224 specialist picks retained\n",
+  "lineup_probe_log": "PROVED OFFLINE: 288 full native special-teams lineups across 32 clubs\n",
+  "source": "/media/noah/Storage/.b76-research/dc/astra-build/league_roster_edits_candC_dc.json",
+  "source_sha256": "35d855af3921c42f93e4c525a2868a2294fbd6e5cc717eaf9f6b141a43ea8e2c",
+  "amendments": [
+    {
+      "evidence": "DESIGN",
+      "file": "dc/build_full.py",
+      "before": "38dcffa3633529099e62a478277af846626c587602d348799801da106f82a20e",
+      "after": "6e3f0b6bf147d44d3aaf2a61aa3a58e0f141890c1ff46de80f225ac62532ffee",
+      "reason": "Honor existing C recipe build/lab lock through a read-only descriptor; recheck space floors after acquisition."
+    }
+  ],
+  "shared_lock_check": {
+    "evidence": "PROVED OFFLINE",
+    "result": "read-only exclusive acquisition and release succeeded"
+  }
+}

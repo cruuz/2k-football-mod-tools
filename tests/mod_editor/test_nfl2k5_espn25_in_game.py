@@ -25,17 +25,24 @@ except ImportError as exc:
 
 
 class PublicationTests(unittest.TestCase):
-    def test_unresolved_freeze_blocks_every_build_entry_before_io_or_compilation(self):
-        self.assertIn("Wide Right", e.BUILD_BLOCK_REASON)
-        with patch.object(e, "_compile_resources", side_effect=AssertionError("must not compile")), \
-                patch.object(e, "read_resources", side_effect=AssertionError("must not read")):
-            for call in (lambda: e.apply({}), lambda: e.apply_resources({}),
-                         lambda: e.apply_to_image("absent.iso"), lambda: e.preflight_image("absent.iso"),
-                         lambda: e.build_image("absent.iso", "also-absent.iso")):
-                with self.subTest(entry=call), self.assertRaisesRegex(e.Espn25RostersError, "Wide Right"):
+    def test_root_caused_freeze_lifts_the_build_hold(self):
+        # e1, 2026-09-23: the freeze was the practice squad's import guard meeting C2300's stale pointers after a
+        # moment's exit event. The repair rides with every practice squad build and with this option, so the hold
+        # is lifted. The option stays EXPERIMENTAL and off in every preset.
+        self.assertEqual(e.BUILD_BLOCK_REASON, "")
+        e.require_build_ready()
+        self.assertNotIn("unresolved loading freeze", e.HELP_TEXT)
+        self.assertIn("EXPERIMENTAL / UNWITNESSED", e.HELP_TEXT)
+        self.assertFalse(e.DEFAULT_ENABLED)
+        # Without the hold, an incomplete resource set refuses on its own identity before compiling.
+        with patch.object(e, "compile_resource", side_effect=AssertionError("must not compile")):
+            for call in (lambda: e.apply({}), lambda: e.apply_resources({})):
+                with self.subTest(entry=call), self.assertRaisesRegex(e.Espn25RostersError, "missing, mixed or foreign"):
                     call()
 
-    def test_actual_build_plan_refuses_bn_style_and_full_experimental_before_copy(self):
+    def test_actual_build_plan_reaches_the_resource_preflight_for_bn_style_and_full_experimental(self):
+        # Both plans now validate (no hold, no One-pool conflict) and stop at the resource preflight, which refuses
+        # the synthetic source's missing resources before anything is copied.
         from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tuning
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebar
         with tempfile.TemporaryDirectory() as folder:
@@ -51,8 +58,9 @@ class PublicationTests(unittest.TestCase):
                     patch.object(tuning, "write_copy", side_effect=AssertionError("must not copy")), \
                     patch.object(build.shutil, "copyfile", side_effect=AssertionError("must not copy")), \
                     patch.object(e, "read_resources", return_value={}):
-                for plan, message in ((bn, "Wide Right"), (full, "retail position layout")):
-                    with self.subTest(configuration=message), self.assertRaisesRegex(ValueError, message):
+                for label, plan in (("bn style", bn), ("full Experimental with One-pool positions", full)):
+                    with self.subTest(configuration=label), \
+                            self.assertRaisesRegex(ValueError, "missing, mixed or foreign resources"):
                         build.build(plan)
             self.assertFalse(target.exists())
             self.assertEqual(source.read_bytes(), b"synthetic preflight boundary")

@@ -286,7 +286,7 @@ def formation_weights(book, master, category_id, situation, *, run_share=.5, urg
     return _bounded_candidates((r.formation_index, formation_weight(r, master, situation, urgency=urgency, run_share=run_share)) for r in records)
 
 
-def situation_candidates(book, master, situation, *, requested_row=None, personnel_rows=None, exclusions=()):
+def situation_candidates(book, master, situation, *, requested_row=None, personnel_rows=None, exclusions=(), formation_multipliers=None):
     """Structural candidates, including low/zero weights, before RNG truncation.
 
     These are cold ordinary-selector inputs, not guaranteed full-game calls.
@@ -306,12 +306,16 @@ def situation_candidates(book, master, situation, *, requested_row=None, personn
         _, formation_fallback = filter_formations(formation_weights(book, master, category, situation), exclusions)
         for record in formation_candidate_records(book, master, category):
             c = categories[category]
+            retail_formation = formation_weight(record, master, situation)
+            multiplier = (formation_multipliers or {}).get(str(record.formation_index), 1.) if not formation_fallback else 1.
             result.append({**term, "formation": record.formation_index, "category": category,
                            "active": category in allowed_ids and (record.formation_index not in excluded_ids or formation_fallback),
                            "fallback": category in allowed_ids and (category_fallback or formation_fallback),
                            "personnel": c.name, "tight_ends": c.tight_ends,
                            "category_weight": category_weight,
-                           "formation_weight": formation_weight(record, master, situation),
+                           "formation_retail_weight": retail_formation,
+                           "formation_multiplier": multiplier,
+                           "formation_weight": f32(retail_formation * multiplier),
                            "primary": record.category_index == category})
     return result
 
@@ -532,7 +536,7 @@ def defense_play_weights(book, master, formation_id, first=None, *, lineup_featu
                                 for p in candidates), integer)
 
 
-def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256, exclusions=(), personnel_rows=None) -> CallDistribution:
+def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situation: Situation, *, seeds: int = 256, exclusions=(), personnel_rows=None, formation_multipliers=None) -> CallDistribution:
     _int(seeds, 1, 65536, 'Seeds')
     if not isinstance(book, bytes):
         raise PlaycallError('Book must be immutable decoded SPLB bytes')
@@ -564,6 +568,8 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
             cache[key] = formation_weights(book, master, cat, situation, run_share=run)
         candidates, fallback = filter_formations(cache[key], exclusions) if exclusions else (cache[key], False)
         fallbacks["formation"] += fallback
+        if formation_multipliers and not fallback:
+            candidates = tuple((f, f32(w * formation_multipliers.get(str(f), 1.))) for f, w in candidates)
         form = draw(candidates, rng.random())
         if form is None:
             continue
@@ -577,8 +583,10 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
     def rows(counter, base, stride):
         return [(i, _name(master, base + i * stride), n / seeds) for i, n in sorted(counter.items(), key=lambda x: (-x[1], x[0]))]
     notes = DEFAULT_NOTES + tuple(f'{c.name} carries no tight end' for c in category_table(master) if c.id in counters[0] and c.tight_ends == 0)
+    if formation_multipliers:
+        notes += ("Formation weight = retail weight x this book/situation multiplier. Requires the matching v3 patch; gameplay UNWITNESSED.",)
     if personnel_rows:
-        notes += ("Per-book personnel-row override preview assumes the matching v2 situation patch is installed and enabled. Gameplay UNWITNESSED.",)
+        notes += ("Per-book personnel-row override preview assumes the matching situation patch is installed and enabled. Gameplay UNWITNESSED.",)
     if exclusions:
         notes += (f"Situation mask preview: {fallbacks['category']} category and {fallbacks['formation']} formation empty-draw fallbacks in {seeds} calls; each fallback retains the complete original draw.",)
     stored = {e.play_index for r in _records(book) for e in r.entries}

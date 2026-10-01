@@ -1,0 +1,4041 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "checks": [
+    {
+      "bundle": "s31dd.iff",
+      "before_sha256": "e7be512996d9549de0626ca01f1d65baccfb7964f5e44daebfd34d281716a14d",
+      "after_sha256": "37611e101bf2906bc7ecea4eefaa102b6192c6bc2a1746db36850ba18dccd3be",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 252160,
+          "retail": "df76b897615791a80cf6b49eb8801e55838e177e73961c3f548df3e839f4a6d7",
+          "applied": "5b38ae77acf92e88e8401500f0f29d4e35b3b3cc8dc4de86a55a12edb72370e9",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31dr.iff",
+      "before_sha256": "5f8090493af6e4443f31134b5e738447da88b3cfde0893d7f71d87cc08982b27",
+      "after_sha256": "2ded07b92ee1bc5b887970d6c7852967811fc7eccd936d8e2890aaaa822b7c9e",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "ddda7eecdc2ddb19614f3f51ae04570146168b0e0118da9c00140bbae7850c5e",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 1,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 243776,
+          "retail": "21b15b69ca391ed3bb644f76085fa4cb1786838d148bd445e65bedebe1396db8",
+          "applied": "21bf843d3882df4e0cc4e2952ea2dde6ec76a51380c1668c67c6510b3d2f5fa4",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31ds.iff",
+      "before_sha256": "02d47fe15ca9e8d4cf7ccc9f99ef5fb1aa28598502d1148b4ed0f7cb80528fca",
+      "after_sha256": "a46635952bae3cceb99c46ace56fbae82d9ff817462795e3fc4686e4bebf2b92",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        287744,
+        376128
+      ],
+      "allocation_sha256": "72d388767eb8f90906851e7cee2e07672345cc7b95f96f48eeceaea560b63ac5",
+      "other_decoded_bytes_unchanged": 435136,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 2,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 193600,
+          "retail": "6bd0e8a713809d13e874d6fd5e08999e8d58749f06e83a6565a6cd1a56fe080e",
+          "applied": "75fd5b3e17b7f97bc6f38377fbe6dab003ac3bd78b67fb89a1faf50ddda35a1e",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31ad.iff",
+      "before_sha256": "274dddd4ef4986175c62dd19b01cc2e69f007be58c90aee9c395df6353ea00ae",
+      "after_sha256": "425b64b675876340b5d7548ae5df24a45d22b2ce52cd2668f423778605f790e8",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 252256,
+          "retail": "0a992c0498b881a1e20eeb64b0ae261e4b49965f34b1b45241330162e022f0f1",
+          "applied": "32681d47cc19180eaa339ded89e41c881e6c7b651367342aed0c62c835656798",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31ar.iff",
+      "before_sha256": "965acecc0af8b6afff21fcfc90cbdcb37c32ceb804a6ce8484aea5b3890417f0",
+      "after_sha256": "9d900ca769ca3c1755d29b0d8b7b32cacfd13635de8e57ffbc9da9f0a23721b9",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "ddda7eecdc2ddb19614f3f51ae04570146168b0e0118da9c00140bbae7850c5e",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 1,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 243872,
+          "retail": "7058a2c418040f498170ec4f7e7670964bc9ae04e3a7026585fa27ec0f55a754",
+          "applied": "bdf1c430051a41758dc5b65a3f2fb27d24dd2ae6c8ecc21e2c89722117647332",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31as.iff",
+      "before_sha256": "ad854aed2a5fde637589dc93e490aa692be212d58c8ae2d0cc0daeb387194b2e",
+      "after_sha256": "0da5b32a67169fd6158fe86c332e60e55595c7cef81a3335dff8e387eda998a0",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        287744,
+        376128
+      ],
+      "allocation_sha256": "72d388767eb8f90906851e7cee2e07672345cc7b95f96f48eeceaea560b63ac5",
+      "other_decoded_bytes_unchanged": 435136,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 2,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 193664,
+          "retail": "c59e3498373bc13806d9305ce1cea0f9d6cd283d8b90361f179e40111a9b1744",
+          "applied": "fedcee4b4a952a455548df4bdfe69e56f7845f0fc2bcde606900de70bf2fbc21",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31nd.iff",
+      "before_sha256": "3fcb268399cc3f1d9c6a6840fce7a8757b549e11e9c914e1d371d2894777142c",
+      "after_sha256": "4a64802b1aaede8543e9a025c73a852adc6e30a4bd9b6bd57d3e509e2f47c47f",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 252176,
+          "retail": "339add2fcefaad434feeaec2bc81a652cae40ebb11db48efb08380a56fe3be96",
+          "applied": "1259ba53de6006b346b5673d4cbc975f0be26ccbdd35df1fe890689ea6e0ee5e",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31nr.iff",
+      "before_sha256": "14757070512cbf33b9923d2f184c9745c792278a392d8b3df6c65d7f6db01282",
+      "after_sha256": "6f68958301a260c6720d6adef89b3d16b88a9b2df1a91120f088539b8991c338",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        290688,
+        379072
+      ],
+      "allocation_sha256": "ddda7eecdc2ddb19614f3f51ae04570146168b0e0118da9c00140bbae7850c5e",
+      "other_decoded_bytes_unchanged": 454464,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 1,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 243792,
+          "retail": "a10ff143f1416f587d42038d0cb7d9786efb66c5da2af86af6ad7741f5e03b78",
+          "applied": "2a96a2d3cc2da86b4dd63dee1d506eaa50dde7cd0e559316b14c6465e827d9d7",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s31ns.iff",
+      "before_sha256": "b6beda78e92ac3c7bdca5f7f82e6ae2306b91c2392327aa29b07a8144f0fc5ad",
+      "after_sha256": "c85c28e5dd8cdf791716cf2d540da85848cd0a0bcd0bff0a3a76ef16549f9153",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        287744,
+        376128
+      ],
+      "allocation_sha256": "72d388767eb8f90906851e7cee2e07672345cc7b95f96f48eeceaea560b63ac5",
+      "other_decoded_bytes_unchanged": 435136,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 2,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 193600,
+          "retail": "5f54f9cd2750c8ce9a0d2d3cb6dad82fcd71a3629ca243eec048a11ed8718212",
+          "applied": "ce53ddd7d131c4bf463faef6a082226d344e9285c25504c32017778696f6573a",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39dd.iff",
+      "before_sha256": "6668bcb4c78bbd9b715210438534e831ce18b46596322a8b38a464ed46bd4e42",
+      "after_sha256": "3ff7df7aa587ef5abd67de4a44e0fe6efc267f1417b4dcd257df43009c3536c3",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 264880,
+          "retail": "4356650d6004bac83dd5f16653b6f71ada3e30daef8255ee81e3a2e7135c0e8d",
+          "applied": "da0f1cbeb900239413c65028bf4a440d6073fd271d1dc4945a8abac8eeb04f6a",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39dr.iff",
+      "before_sha256": "6079c71e52253cf2b6d3e48b106c5669aa23d468afe29c50df3381d0772629e4",
+      "after_sha256": "1d47fdc406b638d8ac7fbfcad3b12812c579facaf34a59b903e4463d57d6364c",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "a6738fae3868db4536cc08da0fed75952bde4f35a2e9664a01a5599019ed8cde",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 3,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 255200,
+          "retail": "1c85ac08f7ef159f03ebe85b7b5034a1a20c47ff68f701b68aec4996435e0dd6",
+          "applied": "688cd210876897faf849c7b098cd53b0d8298ef1881d6a821fbebd7d4d49257e",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39ds.iff",
+      "before_sha256": "694cfa7fd73ce50d5af7d39190bee516afc0b46d67d92d3b8817fae7e8cf297b",
+      "after_sha256": "335dd37dcb28fb55b8b07fad9946dd63090d4710e1fbd93953e83760fd196c2b",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        326656,
+        415040
+      ],
+      "allocation_sha256": "d1637f2c33fed2921551505c9aca3a3b81cb6a1d1699c3ec5f9533e363ca6cfd",
+      "other_decoded_bytes_unchanged": 474048,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 4,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 206560,
+          "retail": "1ab9ebd17aefcc17a06bf039d2675faea817d81233af2ff6ed50e1cd502df691",
+          "applied": "0851af955a502ea3c8eec56ad3fe50f50b618a9973165ed8a31e30ef0101ddb9",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39ad.iff",
+      "before_sha256": "a2e4e59e24e7048fab2212ff57802393e5e203403747ad843953082eb613c9f6",
+      "after_sha256": "b1cd2240ea8dc0c67426630cd0134bf054dc54e137410d8be3978c2d9c2583b2",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 264960,
+          "retail": "8667e549d85490b9bb8b0e3069cf0cba54591b187ca94e86cf60e736e558829f",
+          "applied": "d70880129c779378dcbc2ccb7b6651b553ad0b39f07fe9fdb6777db8814345d1",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39ar.iff",
+      "before_sha256": "bf1c937107417f101143646ddda449843bf35e30896e63a1f9d005f3e47aa638",
+      "after_sha256": "a502d8b267fd315edacce4dde984ef7c7533c7ba834836f811279adf36ad3f80",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "a6738fae3868db4536cc08da0fed75952bde4f35a2e9664a01a5599019ed8cde",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 3,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 255280,
+          "retail": "c17348aa16d3919f86022ed1d0d417e6661978bad216dd426ea16cf2931775e2",
+          "applied": "af5b29ff36629127f2d20d4e8df00fe93749daa8e1065883217e89950c041174",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39as.iff",
+      "before_sha256": "846c56e93c027e371e2f80543dc26079a3fbcf77f387ffa4640c73968f08ed4d",
+      "after_sha256": "eb45fcf68a9be40e439a85fb05ecdd04e46f4353036d5d14747473c81ae8ad3b",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        326656,
+        415040
+      ],
+      "allocation_sha256": "d1637f2c33fed2921551505c9aca3a3b81cb6a1d1699c3ec5f9533e363ca6cfd",
+      "other_decoded_bytes_unchanged": 474048,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 4,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 206608,
+          "retail": "a67067bf1d4b327b3757d261adc2783e429117fba487205c06c0d9347cc770ab",
+          "applied": "8973fbb2084a2f273219b281a36fe6d0e0b77b372111146ca228d785f4ba0776",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39nd.iff",
+      "before_sha256": "25bc2502eaec8e098a19c49b399cf0843034f402b306b31ed9eeb2635f02b782",
+      "after_sha256": "5602165bf20b0f535782afab19bc98fc197e8ea7af2c25dcea41d27b9087e1dc",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "5738f4e839878c16190feda1ec3ae0ff3361dca9d4c523b2a044a1a87d352566",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 0,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 264880,
+          "retail": "d546d2aa8e15dc4ddc10142aafc3ff92cccc0395e823efb3252c27c146ed72bd",
+          "applied": "c43a9bed5aef0bbd088293e6de05be2395ae646b0666cae595bbcd26e3f7971c",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39nr.iff",
+      "before_sha256": "31c489afac48e02fd21a4fa105f5079dbabb3926668897cbfa4e44f1b2bd27aa",
+      "after_sha256": "6521bc2548f0a8217d501eed968b22222e01679997da5bc092f14d64657b40fa",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        329600,
+        417984
+      ],
+      "allocation_sha256": "a6738fae3868db4536cc08da0fed75952bde4f35a2e9664a01a5599019ed8cde",
+      "other_decoded_bytes_unchanged": 493376,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 3,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 255200,
+          "retail": "6f244787312b7c07829de5f7b9b3d85ae9ae00c6de57312ef17df7ec534bd711",
+          "applied": "2823bf1da36024fb3b4e28807469d81540ed915bd173080869a4c1cc3c05cfb2",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s39ns.iff",
+      "before_sha256": "5a44e68c417ecef8204a190c7213b5aa454894728e9690f51d377654156fa062",
+      "after_sha256": "8a57c0e7f79fc88dca2f8486ea09ce952457de794a907a369fcb6be2eea641e2",
+      "material": "center_logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 6,
+      "allocation": [
+        326656,
+        415040
+      ],
+      "allocation_sha256": "d1637f2c33fed2921551505c9aca3a3b81cb6a1d1699c3ec5f9533e363ca6cfd",
+      "other_decoded_bytes_unchanged": 474048,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 4,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 206544,
+          "retail": "d9aa96a6ed9652658c94b354f2111f1327a31151100ccc571109af885e2306d1",
+          "applied": "835599c347e3c0db53320eb4f2195952b309cfa44374c82aaf628a9a9edb1d9f",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "center_logo",
+                "texture": 6,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "center_logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41dd.iff",
+      "before_sha256": "0bb6bd3a8e9270b1345d2ffda6a6fedf83d6b7953df7420879ea3ad546cde4cd",
+      "after_sha256": "1566b591af8a79adcb5126a082ca09aaa7384b9045e3241641fd4be4dbcfdebc",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 121712,
+          "retail": "ddc23b1028754245e9fc4da735d781df1e5ea7ec3b1510f7c625568950d6e2cd",
+          "applied": "c6195f6f9cdb31926fe66ddbd7dfbe4dd501aeefdddfcee135df75bcfb57f5ab",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41dr.iff",
+      "before_sha256": "587118bd16a8782e88923f993c3d5e8c574f4df43b50403ff84068765b46b30a",
+      "after_sha256": "241ce1fbd4b589c6320881b13f94b668f409f8d7d7d80cdc4dc8852187549b08",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "cee4d80864736f5d4b4c4bf572913f179d06f39d8fb182b35bed0a9e440b086c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 6,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122160,
+          "retail": "fc1f2d408d7027b6a57ad4fd37c66ed7c735c5a6d62afd7f14f7bf69cdb8aed2",
+          "applied": "6d001dd8d119f3d01f05064655cc26c6a947bee1595ce776a42455648d6c9ff4",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41ds.iff",
+      "before_sha256": "3d65df161013278c4b8c4aa58576749a5f505552d764d8449e46949e4275da8c",
+      "after_sha256": "e2b195d2c89461da31ae41c423cfb717816624b474a0160a6584707ce8453bb4",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "bc02b1008c5d60e088b35bda85979fa9518ae099ec0fc2fe0778b6f01ea426a3",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 7,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 97088,
+          "retail": "43d92998cf0504456f16bd60194db867706ce97e7669e06c676baa066d2ead41",
+          "applied": "62664755f0784e39f0130cec80e9962c040fd8792373c4e1e78dead90b27f4c6",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41ad.iff",
+      "before_sha256": "108f0ae7e7004fce16dccf70a243ab00c89bd4e9e6474002b20cc972ccd305fd",
+      "after_sha256": "73cc1113d9e77393faef0265401796450689205de798b6bb8481ba008e6c4320",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 121792,
+          "retail": "06da30820a24c249f605013645a0e5a9ef04920d7d1fc817d6bb1e215034eb50",
+          "applied": "004873eaf852f133050018ab10a0f52bead50c1b7fdba6042552076fcad4425c",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41ar.iff",
+      "before_sha256": "09a597bf673b04220bf7157ef1b8f38944e1a903a18ab7dd1877efb897c40a0f",
+      "after_sha256": "8d711c7c1f1eafaca6a5b8260978b9b664d21260f345cafbb73947cd38f74239",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "cee4d80864736f5d4b4c4bf572913f179d06f39d8fb182b35bed0a9e440b086c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 6,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122240,
+          "retail": "92cf35b1990950bc89115bd008c746691853a957950e92b72c5808ea465b074b",
+          "applied": "0f7297bd90bd28d73c47aa90c710fd92c82a6631841ed23022ca7acfdb33c6f0",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41as.iff",
+      "before_sha256": "6443a5b650288c0089f0f75bfef501ba45de9bb69ce22dac399b3a1c5e871603",
+      "after_sha256": "a373ba7064aa6e7bace614472fd007e1b6e2a24b075b3f9549dfacb67f22b9b8",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "bc02b1008c5d60e088b35bda85979fa9518ae099ec0fc2fe0778b6f01ea426a3",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 7,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 97152,
+          "retail": "9685de5314303c2a36770a6e29aa040bed1cb6538984a9d63f80f4553e47def8",
+          "applied": "69f5c562550fbde10000303c3da3be9412bb90cb2ad423ee7167fdfd655c7437",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41nd.iff",
+      "before_sha256": "120c1504bf684cc83b6830381a84233d703f25c961152a848ede9653f4a6f8aa",
+      "after_sha256": "8c4427e0d0dc60c36229f17a8273307133d106ac5ce6f5b2f4c8f884ff7e31d2",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 121728,
+          "retail": "a1e8f23914516c358539675b21b975fae7a5fbbe261898dafd15d1423fb9ee4f",
+          "applied": "4a11563cdd8c91ed40e3c262d74b95a5e2acc95d7423919f788c53b026ee6e99",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41nr.iff",
+      "before_sha256": "b5464ba4e5f3fcbc9cb23c565158b98d7c6f06e6fb01f16579e3103e1e4acbcc",
+      "after_sha256": "abe1220510b04a9c1b546d9e768e303c9fc80db99d96622d5710563f98b7c40b",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "cee4d80864736f5d4b4c4bf572913f179d06f39d8fb182b35bed0a9e440b086c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 6,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122176,
+          "retail": "00aef8d7c942a1517a00f42e3d750a83309fa114d059822618b0d0d7bb569f84",
+          "applied": "37861f24cdcac6cf3e6d5252aa9bc8b9da3e7a7f4435f8a7ed07e04965ebcec7",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s41ns.iff",
+      "before_sha256": "c98f5c7cdb0c54bf6945c4e8945112a286593de3b35fab23ca426357665bad41",
+      "after_sha256": "d6d76cabd59d82a81c2999a8b9345050d1393d38d185f5576281e1f76b00ae9b",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "bc02b1008c5d60e088b35bda85979fa9518ae099ec0fc2fe0778b6f01ea426a3",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 7,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 97088,
+          "retail": "aef44c182572522a642cf07e72024a0296fe086168fca26104bc801dd056d01a",
+          "applied": "aa6ece281aab6ebe75ffecaa27208a607fa51f9f569527c65066265c1419bc90",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42dd.iff",
+      "before_sha256": "d458304793dd9bc441b769184e46a7a7728bd137dd85dfc5541b78a316465990",
+      "after_sha256": "2954994c4aad5b1a28f4f454f127e64ee6bc6c881787c3afd0d6beebf6b6b41a",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116704,
+          "retail": "8a583ff9ce7a2254521f123d9e9c0d6e80b10f077f962f661e027601289ae4e2",
+          "applied": "21d24036fdb0cf0fe1cc52223574d9496312aaeb027a961a4d2f7d1e947fbd9c",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42dr.iff",
+      "before_sha256": "8b43b0231aea60e782af0d8a99dbc21fab5ad49cae1e8d3c75bd2df6378f516f",
+      "after_sha256": "1a59d5323c6de018c7c564dd3a0c3e1b6a6d5c8cbd8dafc49b92c42458755d3c",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116704,
+          "retail": "833d6a9fe43f4b1f09bee5bc3035347962bcb708d5588d2a230e968e61cc17e1",
+          "applied": "38b11d15b321f5d8c6ba434e548a0652f2c12246a317a0743cc072f36885899b",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42ds.iff",
+      "before_sha256": "f3a1dc123cdc159ee98891f21d6ceb95181b819d9f96e52a1c5134516bb9fe98",
+      "after_sha256": "77a657cc399dcc758fdd9460db52468f6db33610849a476f525493d0806a72de",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        146560,
+        234944
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 264512,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119680,
+          "retail": "3947c132ebd6d963230dcdc5e8f505959e37f2fdd2bdb79dc8a588b098f43106",
+          "applied": "e43def278886eac5ecb9ce4d9e6713a0b52348f712a06bc8604816b5546b3458",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42ad.iff",
+      "before_sha256": "a435ec4d2e7db06c2e1804c77c5361a9fbef10494c7b3ed4afb3cfc7a62b8a09",
+      "after_sha256": "5e25fff49bcd181047bd2cbd9dbd21fe6cfb44001f099d01a345b02556d954cf",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116720,
+          "retail": "e8462a1737702b38e07b4e696961ce2335bcbd5a890eb8449ceb71fd7a641ccb",
+          "applied": "b34ff34197c273c3ea10eed67e9c726574715e6cbcad7d60938aebab9f1543aa",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42ar.iff",
+      "before_sha256": "67ec4e22d52ee92fd036b01c7544c54e689285560c0c2a95cee745d8ddedc2ca",
+      "after_sha256": "7fe5c5e69c9c8d7c33f85e0620319122a414af2f8232da466a38afbc6af7b109",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116720,
+          "retail": "587134593189bdeeb44bd237b3d8d6faa128b2fd78c9a0c39b6c6db054b096b2",
+          "applied": "43381ba810caf7cc39bee3cf9a4f52439e9381bcd485b3e40ff50b3ba7377df5",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42as.iff",
+      "before_sha256": "06404747e353f43f0e8b712753b66b51ae04333bd4f04f1d5f6cf898b11872d4",
+      "after_sha256": "1831d01255128f3e7b29c1b8a4c5ffb81eaa916998470e241744ac9e5b3fe655",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        146560,
+        234944
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 264512,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119680,
+          "retail": "35aa849a1dc83a6ab7e480a09995fef13df562030f120625c061fecdb38c8153",
+          "applied": "69ca93b3ba0ae5e1e014d09ada59387e7b1fb1f73602ac7570babc846e005670",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42nd.iff",
+      "before_sha256": "3b2a505e2f0cab433fbe74c5211e4b370112e4e70a2ad45f1fa39a59af9a92cd",
+      "after_sha256": "8b9733c5613e2897849c43e2ea51eaf8eedb54ea00698a3aa23c8a45390ea49f",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116720,
+          "retail": "e8462a1737702b38e07b4e696961ce2335bcbd5a890eb8449ceb71fd7a641ccb",
+          "applied": "b34ff34197c273c3ea10eed67e9c726574715e6cbcad7d60938aebab9f1543aa",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42nr.iff",
+      "before_sha256": "3243a96d75fc9a8ff48a56530fb9855dc2d857e3672cdb6b2015a4b42212aa57",
+      "after_sha256": "685ca26aff1b2055456df40efec0727baba3d77dff5e80f18de0c645d0ace314",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        149120,
+        237504
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 267072,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 116720,
+          "retail": "587134593189bdeeb44bd237b3d8d6faa128b2fd78c9a0c39b6c6db054b096b2",
+          "applied": "43381ba810caf7cc39bee3cf9a4f52439e9381bcd485b3e40ff50b3ba7377df5",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s42ns.iff",
+      "before_sha256": "40cb68210fa1b54edb239fbd8b24eca830ce4a1ed58b584d20fdb49157ba33ed",
+      "after_sha256": "e4f260d9226c95bb4120f4254967a922de968998ea734a37bafa22dd6729281d",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 1,
+      "allocation": [
+        146560,
+        234944
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 264512,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119680,
+          "retail": "35aa849a1dc83a6ab7e480a09995fef13df562030f120625c061fecdb38c8153",
+          "applied": "69ca93b3ba0ae5e1e014d09ada59387e7b1fb1f73602ac7570babc846e005670",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 1,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43dd.iff",
+      "before_sha256": "cf87677a1de3e074a37f91592f7f1699dbb3fdb1af8420d55e3332885704ee34",
+      "after_sha256": "0e0f11b4e5f4124c32a3078464f70da90e116f170d59b943c4d35d79be7991e3",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131568,
+          "retail": "3f662f445675eeaa4d686058fd8b34053ea851b16ed21ee8bb1c148bc0264fa4",
+          "applied": "c96305e2d831a73eb16ab64833d1dacf114428ba25a82e3fe20b83a738dcb34f",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43dr.iff",
+      "before_sha256": "682d904c4eb300e349f146c80fa4137120dc0aab0ac5247ea330d5a2e7d67589",
+      "after_sha256": "6339684e8f5943231321fb1f05b55438215ecfffefb7da5fd100c782db3af854",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "778c68dbce8d33294ddfd2248aa8253a5bf6c6401900d1c68ab8941c73619575",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 8,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131184,
+          "retail": "2db3a8af0ed890423df9623e85eef4ffb8cb6d7a226815aa2b6b973a3f5dc684",
+          "applied": "d16a83382fe922e43eed9f9876eee205179b1b3e6e0d518c5975faefe2992de0",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43ds.iff",
+      "before_sha256": "ae87b134a456a71277662426db5ae3fde01f7177c6db9056661a21d98aa41395",
+      "after_sha256": "b161876459e295f3fe1c5346e2717319f01ae5fa498ee51eae11c919d25c12b9",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "fad11472403ef30af20b82e4389b99f6a8f9faa6e8c1cf6c14aa9f84d1afb973",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 9,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 106752,
+          "retail": "1b97e15f9609559f8dd29a32255f2df9c93ed3afa474eaaf110cd50609b4f8ed",
+          "applied": "895af903d3b3f4bedb98ba727989a5068800ccea7bc8d2d4fbe59239590ba3f9",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43ad.iff",
+      "before_sha256": "11b47a277ea6260fa11e1db0261e6f32f14ff3ef84aa8c48f7f195792b9eb3a1",
+      "after_sha256": "968aafb63925d8b7ead56b7b0ee9308f39a8c09c31ad6fee723eff24883ad577",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131648,
+          "retail": "4dfaf73cfdf55babaa79db529c12cda7fc3d141e2732fa8979c4d1c2379bc007",
+          "applied": "af9ae2f1252bac6cb7fe8e81ec116cfba2cf8002931b1ec14cb79edd758f4dde",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43ar.iff",
+      "before_sha256": "6a3894f2e4eda6bc258f5db8e79f7fc3b0feef5ba9f8b79ee5ca563b346056a3",
+      "after_sha256": "87fe1a0d5627f8f3c87809f69c08fc92091d8c00f2952585333436f277629a11",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "778c68dbce8d33294ddfd2248aa8253a5bf6c6401900d1c68ab8941c73619575",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 8,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131264,
+          "retail": "5beb81362c8f507376117a511f755349145331b703f3c5fbe7125cfa92d6f9b7",
+          "applied": "bb1da658a12b4f94e9c7891fde83b115c4e4f50fc951c66006373668541db702",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43as.iff",
+      "before_sha256": "891e4190c7c2434851a91769a321ea72e7979f21368ca5149c39d3142b4797f7",
+      "after_sha256": "294f512517729f0c4a87d874487b6fca80901276ac54c57c8bb8895c684d58fb",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "fad11472403ef30af20b82e4389b99f6a8f9faa6e8c1cf6c14aa9f84d1afb973",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 9,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 106800,
+          "retail": "72c4a14d2eff3c9a697d59d8c6897eef4ea7ff21c58f4289e091ca69bf253120",
+          "applied": "69ed5029df9e5406b1f579cd657a9141d8fb20a8d3fc14a15be3dcf7393bfc29",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43nd.iff",
+      "before_sha256": "0ecc31fd53a18f796a7cd02f752045bf2de2b188dbfe19a88aabab7e7053edaa",
+      "after_sha256": "ec0b81f52a3d353650ff3b83b60bb914ced997951006f88713d8001e23107467",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131568,
+          "retail": "bb1f57cfca2a9d2e49792919edca3cf2b3b6bbf12f3aa5dec3bf10dc8bcad221",
+          "applied": "852e54d97e1e1baccfb8db45215efb5c1cc7502a7a9de59eb8ce1658f695f4a2",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43nr.iff",
+      "before_sha256": "6a1fe9f57a557d54d524cf79d461d0903c34de39e6331653c78d6d395baa58fd",
+      "after_sha256": "eaa7b8d7465e2d1ad3de19122ff7539cbf255033fbd629ea8fc7bc8af2940c2f",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "778c68dbce8d33294ddfd2248aa8253a5bf6c6401900d1c68ab8941c73619575",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 8,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 131184,
+          "retail": "1f4bc18099d9ca35b0f1755e82016da58f4a775f69ced0ba16add4de2319fcab",
+          "applied": "d6a96b4d4c48ce04e7322294ffbc7a3ced445f388cf8d09b83d5dd07fc96b117",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s43ns.iff",
+      "before_sha256": "41a729d8a75cd2a269d705c381b2b896f8fad26e25825a71dc66b1df8cee8ddb",
+      "after_sha256": "11a65393c0c2d25258a3506b6c96d98093c58689518fe303fcf0138ab4ce9866",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "fad11472403ef30af20b82e4389b99f6a8f9faa6e8c1cf6c14aa9f84d1afb973",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 9,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 106752,
+          "retail": "a258a24630c62262b8354682d3cca4dd4ee51088606f558e6ff95efdf6c535bd",
+          "applied": "90173a03540bdd54f9fbb0f5e5c99ff3cca09f17b798be5cf2f2ddebd1ef43cc",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44dd.iff",
+      "before_sha256": "e01afdbb2a2d176d46867dee1a5956c917ceb94982c9bbf31d2ca56070532350",
+      "after_sha256": "ddbe885c7f50d74472f4b679cae34c11ba8bb515479df15ccb840a65462e775c",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 120752,
+          "retail": "37f1fe45e80262dd742a85bbbaf3121f4a5ce77b3fef6822880839c65ca88c52",
+          "applied": "cc391ba978085eb3874d155d237f9afbd7835a5fbd56bcc2f3e3fbfc4bfa53f5",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44dr.iff",
+      "before_sha256": "4b1ca3d19df7041d5643b1a0a4d81a7f211c58c6ba3420433447f47831e4b0a4",
+      "after_sha256": "8c9686853b0cb3ef5ed1a4ba36f069e4cb53564fcd3d187b56c22a6acc2a74f6",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "4ba150ef54fb83a6b4a3902c4486a6def6c1c0cb11c2e0be9aaeccc6b49a5903",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 10,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 124384,
+          "retail": "8971226afb941b9a258a26f257c587d016255273e2c0338eb89f79765ad40114",
+          "applied": "6369fa7621f080d4ab2a27d2c6864a0ab0cdd6190aee8eb4772705d8a31db992",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44ds.iff",
+      "before_sha256": "4f57bdb6ebf29cfa4f68190cde0bd4e938afd4e0a8d49221f11adb824816d1dd",
+      "after_sha256": "152380a52912ef369d3832f35a8369d947702843d4ef438fb4459d4c718bcc2d",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "8b8fc315d7f15747b06be495038329db1001dd92146d145e4dd8ff4c688336eb",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 11,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 99280,
+          "retail": "a7f850ee93144dd4c7893078365d49d524789a3ac5cea9c2e4f5ac1bb0852695",
+          "applied": "ef8fe7980bde1d9583265aca30129d3cea80b20764e35e7cbee9ae9fe3c14671",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44ad.iff",
+      "before_sha256": "8f82075938dfe122a5772e1748d7892b1e6d7cd976ebf917bb20d3f36a162ba5",
+      "after_sha256": "c7791520a92f14f6ce9d98ca8882e18b46aa66e9d041e77fb516bb89ea4aa4ee",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 120832,
+          "retail": "44be15d96774528e16f2c4876440397f973a53134007954256b11a84edb11dd0",
+          "applied": "8468b289fd92431a19bf11321b24864af307d5089cc6ee09d2463c629a973c3d",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44ar.iff",
+      "before_sha256": "d428c7e6bdf465f34569f45dc5da3139a9cae166e29a7cd30ebdb3c0a45b3aee",
+      "after_sha256": "ce33112de5b34ec5d6c18d5cb5d1b2fd62df575ebbeda1aae67b94a97d91fcb3",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "4ba150ef54fb83a6b4a3902c4486a6def6c1c0cb11c2e0be9aaeccc6b49a5903",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 10,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 124464,
+          "retail": "7bb3acb5db8ac8688f53444492c71bdb52cb3c5d176dc51f66337d3b456277c3",
+          "applied": "91cb1c362d1b9568dc1904c62fad1adff98c36968b5228b6d0c0f382854c5f22",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44as.iff",
+      "before_sha256": "de6e63b44bd42f4e8833c01e3c966a3e42cb3a6c06d09c9da6f5b663128027e5",
+      "after_sha256": "9cad2dbfd533c039019392a7b41128f8ccfb334fa1ef7e936eb06ddcc4222688",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "8b8fc315d7f15747b06be495038329db1001dd92146d145e4dd8ff4c688336eb",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 11,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 99328,
+          "retail": "6feb2fa2b6bac0c667d5c0b61989c6042d177a3e9a82ce64edb3df0bbf55e8fb",
+          "applied": "7de5ef11c146cc3dfe426ad73ae97165fd47ac9db3fb0c5c7593793716b33142",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44nd.iff",
+      "before_sha256": "cd505217f25080145d201e118f0c0ca8a71bbb7bc074925f6e3478583cef87c9",
+      "after_sha256": "a3fd4b89b963e20534b59b9c9fb0ec303f9d90157a40fa99aa37d77567cb6157",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 120752,
+          "retail": "a71beaa4218acabaf6d80ad219417c45b9cd2190bf871fa4b6ea9cf94c4fdefd",
+          "applied": "5aec44fcec177a91f0ee0a12fc21b7e528188a5e6c7b331fbbf3377363c70007",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44nr.iff",
+      "before_sha256": "247499badd693c5828889e0e0d251c35655b13c450f4d069644206b1bcb818f4",
+      "after_sha256": "36b0924e7787825162d9fd93a92ad82ab31bc7b02c4f613ed8c06ab7c420fd04",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "4ba150ef54fb83a6b4a3902c4486a6def6c1c0cb11c2e0be9aaeccc6b49a5903",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 10,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 124400,
+          "retail": "09ca1ca9507060ee04f12085f0d96cc537f4230fc5d85e357687c3343daf1d8d",
+          "applied": "fd8b8b136e9aaa1d508048705323b7d723a2baf81f458a55e7de5d903097c4ba",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s44ns.iff",
+      "before_sha256": "9714e9edb838b62fc43fbee7fc0ba5f66e0a2ee247d20ad616a4871b7b3f6c86",
+      "after_sha256": "4ec67b8e4078edeb46d7361cd6b744959ea8cc8b83899af464cdde0a7641091f",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "8b8fc315d7f15747b06be495038329db1001dd92146d145e4dd8ff4c688336eb",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 11,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 99280,
+          "retail": "fb42de6cc54683314cf0522779a5eed4197871741fe7868c5e2b0c956813713d",
+          "applied": "9db186e8c056095102c6d4074825b38c39cfce491ce29e7c53e196cd12cbc053",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 255
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45dd.iff",
+      "before_sha256": "8378ef016a3cfefb59990c93d5a234077452546fe856b7c29f8e989cb33fa4fe",
+      "after_sha256": "4700d3e13b1b131c4ac5e58e3f13b9c16937e667cac995b357c8ed7811e304df",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119552,
+          "retail": "abb5f8af2fa9bbed7ce85a9a335306dcfbab018ca6f3d4668530835c2890605d",
+          "applied": "f5463396d92bdabb1c2d0036df5731a80c7f16969122879d2c8cfa0228825620",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45dr.iff",
+      "before_sha256": "033a3fd26ab3bee08f18333ceb6f974f85f79dc42c9a92af4c5b2839b051a2f5",
+      "after_sha256": "195fe794e047c1a29d7cb73e786582fa7ce9f410451c079d48f65f281c631dee",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122816,
+          "retail": "7b4b5f2213704160224851899735d93fc43a211bb5876441b723d51f373ac857",
+          "applied": "1f53ea55b15a9989cb40a0fef54f082dd5cd850bcd806e50eb49c086e059f30b",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45ds.iff",
+      "before_sha256": "ae514a99c40a3017344739dd3144bf92ef556a830b40ccbb3c0d57c0041c330b",
+      "after_sha256": "631c48fdc640122340124ad730d4eaaabe747d088f6f816c4308fdff7565d4be",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 100576,
+          "retail": "28fac72de3330e63cadffa6b64bf52b8bd87cf85b7a85aaff629255c5a270cfc",
+          "applied": "ef56e7f42fea2ec3164095a99c428848b1700172b7a618397308320960d209dc",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45ad.iff",
+      "before_sha256": "8e09ffd497c4012501208ba5d9970fd2a8f2cc3e5af45822d5068fea028b8751",
+      "after_sha256": "4ca9066642a9d63916de43f72b24bc17c3b073efb4f4a61c77be9a359263bb2a",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119632,
+          "retail": "b287116e318b4c76dc0f19a8fc71479bdde7279be9c3bc9b89f3ec0ef4093543",
+          "applied": "8f50b1a7fb167063139ab14b6abeb178f26b80c994a2ff101a45a70c3f341172",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45ar.iff",
+      "before_sha256": "06b56fc1caf082026f6183a366c9499b928d48198c95e358a810d2974b74095c",
+      "after_sha256": "5b08694b136912ad7cbe506088318251ded5d934c9cb0f38e4b5678c912cd460",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122896,
+          "retail": "89cf1fe035bf2886606b23fd58f7de4c362baa99af041974007183622490ea98",
+          "applied": "9bd825ce102b542826bf96c246145d02e53afb7583f78b105bce96a057b9a319",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45as.iff",
+      "before_sha256": "91dba433d9bee7828aa5ededc9db2db943fdf77ecd3d3dd40cb16069192190d1",
+      "after_sha256": "82ce2e451b764a9d6b57f5d20f68e34ce2f9d6aef0fd6b1a68822646635fc524",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 100640,
+          "retail": "250984b87fb127367a032942af5c777821c63903d2e87ceff0fc06161454b6b7",
+          "applied": "b328210a35f54f11b193addd6343a686c1717154b295a87aa6ff6b4a091083d4",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45nd.iff",
+      "before_sha256": "c90ae74d800a5bc92e3dd0a404d08479475964692a4381b316b3f18606231bc1",
+      "after_sha256": "9625320e20a489486a0b3373bad62288445992e7c8e8d49dc7aa34964dbb031e",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "2a8bdbbf4021d03326fce62b99f4b8d95b75039188094f8337bcc331b273d63c",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 5,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 119568,
+          "retail": "1ff5a3df03821530e197711d93868a1f85aed3b325c7cf3dcaddbf58e7303168",
+          "applied": "8a0d3acf1148b1a5f478685101ab2b86b5883865f186b4e5ddce9c7d01ce9e7d",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45nr.iff",
+      "before_sha256": "e39acc2e7ace96ad5dc7536a5612d56ffec4f646571a2ab23ce2d10f421185bd",
+      "after_sha256": "1ec1151829b2e28f50bd4e66e163e6875ee29e42a9b82ffebf65a954f7fd8074",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        161024,
+        249408
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 278976,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 122816,
+          "retail": "e349d9a09bb2caeebed7002555447817f98baf0dcb27943ea89234535b5f2709",
+          "applied": "7dfae349b704c82682aaad122f1c3113c3cf1cb289bc1c19f57ab424bf8c3297",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    },
+    {
+      "bundle": "s45ns.iff",
+      "before_sha256": "49b6e7584e933190d14ca80bf00131cbe3e9b62eb54c213928e41b9bba8b949a",
+      "after_sha256": "70725ca44547958bead3924fdfe6b8f01f3dcf219b893b9c6192ba0f994955e2",
+      "material": "logo",
+      "format": "P8",
+      "size": [
+        256,
+        256
+      ],
+      "texture": 2,
+      "allocation": [
+        158464,
+        246848
+      ],
+      "allocation_sha256": "d090ae9e06b9334613660008caaa2b3d574fff208d3e588600121d7eeba05424",
+      "other_decoded_bytes_unchanged": 260032,
+      "geometry_unchanged": true,
+      "other_bundle_bytes_and_wrapper_unchanged": true,
+      "compressed_readback": true,
+      "status": "venues",
+      "tamper_status": "foreign",
+      "ocr_index": 12,
+      "edits": [
+        {
+          "kind": "field",
+          "offset": 0,
+          "size": 100576,
+          "retail": "f1428bc1d063fdc7b445785a4b2681efe6c4db2fef516f6aeb299dd4b90249cd",
+          "applied": "28a6c332de59a28829fb994303f046e36432410ef1a89ae61e391a7518d27733",
+          "detail": {
+            "scene": "field",
+            "textures": [
+              {
+                "key": "logo",
+                "texture": 2,
+                "size": [
+                  256,
+                  256
+                ],
+                "items": [
+                  {
+                    "key": "logo",
+                    "source": "shared_art",
+                    "layer": "full",
+                    "mark": null
+                  }
+                ],
+                "palette_entries": 256
+              }
+            ],
+            "skipped": [],
+            "palette_cap": 256,
+            "refit": true,
+            "fit_attempts": [],
+            "encoder": "greedy",
+            "fill": "trailing-full",
+            "padding_bytes": 1,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          }
+        }
+      ]
+    }
+  ],
+  "unique_ocr": 13,
+  "peak_rss_kib": 210212,
+  "ocr_implementation": "/media/noah/Storage/.b76-research/sn/audit_stadium_names.py",
+  "ocr_sha256": "3aa8a9215a90fa47798d2b4d905127d74afbb4de29f5b4c628b3a76b1a485ebd"
+}

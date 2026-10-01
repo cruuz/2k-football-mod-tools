@@ -1,0 +1,689 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "ARI",
+ "abbreviation_2026": "ARI",
+ "name": "Arizona Cardinals",
+ "asset_code": "00",
+ "season": 2026,
+ "status": "Phase B job d8 (2026-09-23). Colours sourced (team_colors_official_2026.json); silver trims and albedo INFERRED from the 2023 unveil and 2026 week 1 photos.",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "defense_note": "The club's base is a 3-4 (Gannon, DC Nick Rallis). ESPN's 2026 chart lists LDE, LDT, RDT, RDE and WLB, MLB, SLB; with the 3-4 mapping the linebackers at end (Sweat, Burch) and the SLBs (Collins, Browning) are EDGE and the DL ends (Stills, Robinson) are interior, which matches their real roles; the WLBs (Gibbens, Sharar) also map to EDGE (INFERRED minor error: they are off-ball backers).",
+  "roster_abbreviation": "ARZ",
+  "head_coach": "Mike LaFleur",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status): 53 active.",
+  "head_coach_source": "https://www.azcardinals.com/team/coaches-roster/mike-lafleur (Head Coach; hired 2026-02-01: https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026). nflverse games.csv still lists Jonathan Gannon for 2026 (stale)."
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Andrew Wingard": 0,
+   "Blake Gillikin": 0,
+   "Carson Beck": 0,
+   "Casey Kreiter": 0,
+   "Chad Ryland": 0,
+   "Cody Simon": 2,
+   "Dadrion Taylor-Demerson": 3,
+   "Dante Stills": 3,
+   "Eku Leota": 1,
+   "Elijah Wilkinson": 3,
+   "Hayden Conner": 0,
+   "Hjalte Froholdt": 0,
+   "Hunter Long": 0,
+   "Isaac Seumalo": 1,
+   "Isaiah Adams": 2,
+   "Jack Gibbens": 0,
+   "Jordan Burch": 4,
+   "Josh Fryar": 0,
+   "Karson Sharar": 0,
+   "Kendrick Bourne": 3,
+   "Michael Wilson": 2,
+   "Reggie Virgil": 3,
+   "Roy Lopez": 1,
+   "Simi Fehoko": 1,
+   "Trey McBride": 0,
+   "Tyler Allgeier": 2,
+   "Wydett Williams": 3,
+   "Zaven Collins": 2,
+   "Baron Browning": 3,
+   "Elijah Higgins": 3,
+   "Gardner Minshew": 0,
+   "Jacoby Brissett": 3,
+   "Walter Nolen": 3,
+   "Will Johnson": 3,
+   "Andrew Billings": 4,
+   "Budda Baker": 4,
+   "Darius Robinson": 4,
+   "Devin Duvernay": 3,
+   "Garrett Williams": 4,
+   "Jalen Brooks": 3,
+   "Jayden Williams": 4,
+   "Josh Sweat": 4,
+   "Kalen King": 3,
+   "Marvin Harrison": 3,
+   "Max Melton": 4,
+   "Paris Johnson": 3,
+   "Denzel Burke": 4,
+   "Jon Gaines": 3,
+   "Mack Wilson": 4,
+   "Bam Knight": 4,
+   "Jeremiyah Love": 4,
+   "Kei'Trel Clark": 4,
+   "L.J. Collier": 4
+  },
+  "dreads": [
+   "Baron Browning",
+   "Darius Robinson",
+   "Marvin Harrison",
+   "Max Melton",
+   "Reggie Virgil",
+   "Walter Nolen",
+   "Kei'Trel Clark"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots against the Giants pilot's calibration (INFERRED); the automatic cheek estimate reads studio-lit darker skin as light, so it is kept only as skin_lab in faces.json. Dreads (locs, long twists) by eye. Hair colours set by eye where the automatic sample read the backdrop between locs or a shadow (first contact sheet, 2026-09-23).",
+  "hair_by_eye": {
+   "Darius Robinson": "#3A2A20",
+   "Jacoby Brissett": "#2B2420",
+   "Trey McBride": "#9A7E58"
+  }
+ },
+ "sources": {
+  "kit_rules": "https://www.azcardinals.com/news/arizona-cardinals-uniform-schedule-for-2026 (white-on-white 7, red-on-red 7, black 2, Rivalries 1)",
+  "uniform_design": "https://news.sportslogos.net/2023/04/20/arizona-cardinals-unveil-new-uniforms/football/ and https://www.espn.com/nfl/story/_/id/36249983/arizona-cardinals-new-uniforms-2023 (monochrome sets; ARIZONA across the red jersey; numbers outlined in silver; CARDINALS on a silver sleeve stripe between two red stripes; white helmet with silver flakes and a silver facemask; same number font as 2005)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (ARI: Cardinal Red #97233F, Black, White; Yellow #FFB612 beak only)",
+  "road_photos": "https://www.chargers.com/photos/2026-game-action-photos-week-1-cardinals (2026-09-13: white jersey, white pants with red-silver-red stripe, white socks)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg",
+  "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Arizona_Cardinals_wordmark.svg (PD-textlogo)",
+  "head_coach": "https://www.azcardinals.com/team/coaches-roster/mike-lafleur",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "red": "#97233F",
+  "black": "#000000",
+  "white": "#FFFFFF",
+  "yellow": "#FFB612"
+ },
+ "albedo": {
+  "jersey_red": "#A0233F",
+  "red": "#97233F",
+  "black": "#111111",
+  "white": "#FFFFFF",
+  "silver": "#A9AEB3",
+  "helmet_white": "#F2F3F5",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_red": "#97233F",
+  "banner_red": "#A0233F",
+  "retail_helmet_white": "#F0F1F4",
+  "retail_red": "#A2003D",
+  "retail_splayer_red": "#880033",
+  "retail_card_red": "#7E011F",
+  "retail_card_helmet_white": "#CEDAD8",
+  "yellow": "#FFB612"
+ },
+ "marks": {
+  "club_logo": "club_logo_full.png",
+  "chest_wordmark": "wordmark_line1_arizona.png",
+  "sleeve_wordmark": "wordmark_line2_cardinals.png",
+  "wordmark_full": "wordmark_full.png",
+  "logo_L0_black": "logo_L0_black.png",
+  "logo_L1_red": "logo_L1_red.png",
+  "logo_L2_yellow": "logo_L2_yellow.png",
+  "logo_L3_white": "logo_L3_white.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "00H0",
+   "outer_index": 3613,
+   "note": "2026 red-on-red: cardinal red jersey with a white ARIZONA across the chest, white numbers outlined in silver (2005 font), red pants, red socks, white helmet with silver flakes and a silver facemask",
+   "torso": {
+    "base_colour": "jersey_red",
+    "neck_donor": "00H0",
+    "collar_shield": true,
+    "chest_mark": {
+     "mark": "chest_wordmark",
+     "colour": "white",
+     "center": [
+      161,
+      89.5
+     ],
+     "width": 60
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_red",
+    "stripes_from": null
+   },
+   "pants": {
+    "base_colour": "jersey_red",
+    "base_from": "00A0",
+    "stripe": [],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "jersey_red"
+   },
+   "digits": {
+    "glyph_donor": "37H0",
+    "fill": "white",
+    "outline": "silver",
+    "outline_frac": 0.028
+   },
+   "helmet_digits": {
+    "glyph_donor": "37H0",
+    "fill": "jersey_red"
+   },
+   "nameplate": {
+    "glyph_donor": "00H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_card_red",
+      "to": "jersey_red",
+      "region": "jersey"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.1
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3613,
+    "torso_donor": "00H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "torso"
+     },
+     {
+      "from": "retail_splayer_red",
+      "to": "jersey_red",
+      "region": "sleeve"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "00A0",
+   "outer_index": 3930,
+   "note": "2026 white-on-white: white jersey, red numbers outlined in black, sleeves with a silver CARDINALS stripe between two red stripes, white pants with a red-silver-red stripe, white socks, white helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "00H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "jersey_red"
+    }
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       0,
+       38,
+       128,
+       40.5
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       40.5,
+       128,
+       48.5
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       0,
+       48.5,
+       128,
+       51
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "mark": "sleeve_wordmark",
+      "colour": "black",
+      "center": [
+       64,
+       44.5
+      ],
+      "width": 30
+     },
+     {
+      "rect": [
+       0,
+       102,
+       128,
+       104.5
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       104.5,
+       128,
+       112.5
+      ],
+      "colour": "silver"
+     },
+     {
+      "rect": [
+       0,
+       112.5,
+       128,
+       115
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "mark": "sleeve_wordmark",
+      "colour": "black",
+      "center": [
+       64,
+       108.5
+      ],
+      "width": 30
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "jersey_red",
+      2
+     ],
+     [
+      "silver",
+      4
+     ],
+     [
+      "jersey_red",
+      2
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "white"
+   },
+   "digits": {
+    "glyph_donor": "37H0",
+    "fill": "jersey_red",
+    "outline": "black",
+    "outline_frac": 0.028
+   },
+   "helmet_digits": {
+    "glyph_donor": "37H0",
+    "fill": "jersey_red"
+   },
+   "nameplate": {
+    "glyph_donor": "00H0",
+    "fill": "jersey_red"
+   },
+   "helmet": {
+    "shell": "helmet_white",
+    "shell_from": "retail_helmet_white",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.1
+    }
+   },
+   "splayer": {
+    "torso_donor_outer": 3930,
+    "torso_donor": "00A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_splayer_red",
+      "to": "white",
+      "region": "pants"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "cardinal red jersey body, white ARIZONA across the chest, NFL shield at the collar; the light grey patch is the neck opening",
+   "sleeve": "plain cardinal red",
+   "pants": "plain cardinal red, white maker mark",
+   "helmet": "white shell with silver flake, the cardinal head logo (red, black, yellow beak), grey and white hardware, flag and shield decals",
+   "digit_jersey": "white numbers outlined in silver",
+   "digit_arm": "white numbers outlined in silver",
+   "digit_helmet": "red numbers",
+   "nameplate": "white letters",
+   "socks00": "solid cardinal red",
+   "splayer": "far-away player atlas: red pants, red torso, white helmet, red socks, skin and glove patches",
+   "team-select_unif": "menu render: red jersey with a white number, white helmet with the cardinal head, dark shading",
+   "team-select_helm": "menu render: white helmet with the cardinal head, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the cardinal head logo: red, black, white outline, yellow beak",
+   "flipchip": "the cardinal head logo on the coin toss chip",
+   "chiclet": "a glossy square in cardinal red"
+  },
+  "away": {
+   "torso": "white jersey body, NFL shield at the collar, red maker marks; the light grey patch is the neck opening",
+   "sleeve": "white with a silver stripe carrying a black CARDINALS wordmark between two thin red stripes",
+   "pants": "white with a thin red-silver-red side stripe, black maker mark",
+   "helmet": "white shell with silver flake, the cardinal head logo (red, black, yellow beak), grey and white hardware, flag and shield decals",
+   "digit_jersey": "red numbers outlined in black",
+   "digit_arm": "red numbers outlined in black",
+   "digit_helmet": "red numbers",
+   "nameplate": "red letters",
+   "socks00": "solid white",
+   "splayer": "far-away player atlas: white pants, white torso, white helmet, white socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a red number, white helmet, grey and dark shading",
+   "team-select_helm": "menu render: white helmet with the cardinal head, grey facemask, a dark bar and yellow UI strip below",
+   "logo": "the cardinal head logo: red, black, white outline, yellow beak",
+   "flipchip": "the cardinal head logo on the coin toss chip",
+   "chiclet": "a glossy square in cardinal red"
+  },
+  "venue": {
+   "endzone": "cardinal red painted end zone with white CARDINALS or ARIZONA letters",
+   "center_logo": "the cardinal head logo",
+   "banner": "cloth fan banners in red, white and black",
+   "wall": "cardinal red wall panels"
+  }
+ },
+ "venue": {
+  "prefix": "s00",
+  "notes": "Cardinals home games stay at the retail Arizona venue. End zones: cardinal red paint with the white CARDINALS (north) and ARIZONA (south) wordmarks, the retail layout in the 2026 look (INFERRED from 2026 week 2 photos of State Farm Stadium's red end zone). This venue has no midfield texture (u4 is scoping a native fix); the centre logo is authored for it. Wall panels 2026 red; fan banners with 2026 players.",
+  "sources": [
+   "https://www.seahawks.com/photos/photos-frame-by-frame-look-at-jsn-s-82-yard-touchdown-vs-cardinals (State Farm Stadium end zone and wall pads, 2026-09-20)"
+  ],
+  "endzone": {
+   "paint": "field_red",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "sleeve_wordmark",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 54,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_red",
+   "paint_alpha": 0.92,
+   "marks": [
+    {
+     "mark": "chest_wordmark",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 60,
+     "stretch": 1.12
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "mark": "logo_L0_black",
+        "colour": "black",
+        "center": [
+         64,
+         32
+        ],
+        "width": 64
+       },
+       {
+        "mark": "logo_L1_red",
+        "colour": "red",
+        "center": [
+         64,
+         32
+        ],
+        "width": 64
+       },
+       {
+        "mark": "logo_L2_yellow",
+        "colour": "yellow",
+        "center": [
+         64,
+         32
+        ],
+        "width": 64
+       },
+       {
+        "mark": "logo_L3_white",
+        "colour": "white",
+        "center": [
+         64,
+         32
+        ],
+        "width": 64
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "text": "BIRD\nGANG",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 17
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "McBRIDE\n#85",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "text": "MHJ\n#18",
+        "colour": "white",
+        "center": [
+         192,
+         31
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "BUDDA\n#3",
+        "colour": "white",
+        "center": [
+         64,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "SWEAT\n#10",
+        "colour": "jersey_red",
+        "center": [
+         192,
+         96
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "jersey_red",
+      "items": [
+       {
+        "text": "RED SEA\nRISING",
+        "colour": "white",
+        "center": [
+         64,
+         31
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "PROTECT\nTHE NEST",
+        "colour": "jersey_red",
+        "center": [
+         64,
+         96
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "wallA1": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       64
+      ],
+      "bg": "jersey_red",
+      "items": []
+     }
+    ]
+   }
+  }
+ }
+}

@@ -18,6 +18,8 @@ import hashlib
 import struct
 from typing import Any
 
+from .nfl2k5_screen_authored_pins import COMPLETE_OFFENSE_D_PINS
+
 from .errors import ValidationError
 from . import nfl2k5_play_codec as codec
 from .nfl2k5_formation_play_writer import (
@@ -399,7 +401,13 @@ def inspect(payload: bytes, level: str = DEFAULT_LEVEL) -> dict[str, Any]:
         outer, hashes = pin
         signature = _signature(book)
         expected = hashes[LEVELS.index(level) + 1]
-        if signature == expected:
+        # PROVED OFFLINE: the shipped complete offenses pre-author D's values.
+        # Match their entire declared-screen signature, never a name prefix or
+        # an empty screen inventory. All other custom/different-level data refuses.
+        authored_d = signature == COMPLETE_OFFENSE_D_PINS.get(identity)
+        if authored_d and level == 'D':
+            state = 'applied'
+        elif signature == expected:
             state = "applied"
         elif signature == hashes[0]:
             state = "retail"
@@ -416,7 +424,10 @@ def inspect(payload: bytes, level: str = DEFAULT_LEVEL) -> dict[str, Any]:
         capacity_ok = need <= remaining and not any(payload[start:start + need * NODE_SIZE])
         return {"status": state, "level": level, "book": book.book_name,
                 "outer_index": outer, "plays": rows, "nodes_added": need,
-                "has_effect": hashes[0] != expected,
+                # DESIGN: no pending transition for a pre-timed authored book.
+                # Retail utility books may still need D in the same archive.
+                "has_effect": not authored_d and hashes[0] != expected,
+                "authored_level": 'D' if authored_d else None,
                 "node_count": book.node_count, "remaining_nodes": remaining,
                 "capacity_ok": capacity_ok, "experimental": True, "witnessed": False}
     except (ValidationError, ValueError, IndexError, struct.error) as exc:
@@ -504,9 +515,23 @@ def apply(payload: bytes, level: str = DEFAULT_LEVEL) -> tuple[bytes, dict[str, 
 
 def _archive_books(archive: Any) -> list[tuple[Any, bytes]]:
     entries = list(archive.entries_with_head(b"PLAY"))
-    if len(entries) != 37 or {e.index for e in entries} != set(range(307, 344)):
+    modern = [entry for entry in entries if 307 <= entry.index < 344]
+    if len(modern) != 37 or {e.index for e in modern} != set(range(307, 344)):
         raise ValidationError("Screen timing needs all 37 retail PLAY entries (307 through 343).")
-    return [(entry, archive.read_entry(entry.index)) for entry in sorted(entries, key=lambda e: e.index)]
+    extra = [entry for entry in entries if not 307 <= entry.index < 344]
+    if extra:
+        # Historic aliases deliberately keep stock screen timing. Accept only
+        # the complete pinned bank, then exclude it from this owner's reads/writes.
+        from . import nfl2k5_stock_books as stock
+        pins = {row['alias_name_id']: row for row in stock.aliases()}
+        if (len(extra) != len(pins) or {entry.name_id for entry in extra} != set(pins)
+                or any(entry.size != pins[entry.name_id]['bytes'] for entry in extra)):
+            raise ValidationError("Screen timing found an unknown or incomplete extra PLAY bank.")
+        digests = {entry.name_id: hashlib.sha256(archive.read_entry(entry.index)).hexdigest() for entry in extra}
+        if not any(all(digests[key] == row[profile] for key, row in pins.items())
+                   for profile in ('source_sha256', 'one_pool_sha256')):
+            raise ValidationError("Screen timing found modified or mixed historic stock books.")
+    return [(entry, archive.read_entry(entry.index)) for entry in sorted(modern, key=lambda e: e.index)]
 
 
 def _aggregate(rows: list[dict]) -> str:

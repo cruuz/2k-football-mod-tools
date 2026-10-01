@@ -63,6 +63,30 @@ class RetailTests(unittest.TestCase):
             with self.subTest(address=hex(row["address"])),self.assertRaisesRegex(ValueError,"Foreign .* consumer"):
                 pack.validate_consumer_xbe(bytes(bad),tuple(texture.BY_KEY))
 
+    def test_consumer_ranges_accept_exactly_the_k128_arena_hook(self):
+        # b76-k1: K128's late hook sits inside the pinned arena init (0x326E0); its exact install passes, with or
+        # without the roster heap, and the same bytes without the rest of K128, or any other change, still refuse.
+        from mod_editor.core import nfl2k5_k128 as k128
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        self.assertFalse(pack.validate_consumer_xbe(self.xbe,tuple(texture.BY_KEY))["k128_hook_accepted"])
+        for roster_heap in (False,True):
+            with self.subTest(roster_heap=roster_heap):
+                patched,receipt = k128.apply(self.xbe,roster_heap=roster_heap)
+                result = pack.validate_consumer_xbe(patched,tuple(texture.BY_KEY))
+                self.assertTrue(result["k128_hook_accepted"])
+                self.assertIn(0x326E0,[row["address"] for row in result["ranges"]])
+                hook = rdata.offset_of(patched,k128.HOOK2_VA)
+                self.assertEqual(patched[hook:hook+10],k128.hook2_bytes(int(receipt["code_va"],16)))
+                bad = bytearray(patched)
+                bad[hook-1] ^= 1          # the byte before the hook, inside the pinned range
+                with self.assertRaisesRegex(ValueError,"Foreign memory consumer at 0x000326e0"):
+                    pack.validate_consumer_xbe(bytes(bad),tuple(texture.BY_KEY))
+        alone = bytearray(self.xbe)       # the hook bytes without the rest of K128
+        at = rdata.offset_of(self.xbe,k128.HOOK2_VA)
+        alone[at:at+10] = k128.hook2_bytes(0x14EF1C0)
+        with self.assertRaisesRegex(ValueError,"Foreign memory consumer at 0x000326e0"):
+            pack.validate_consumer_xbe(bytes(alone),tuple(texture.BY_KEY))
+
     def test_native_and_2x_mips_descriptor_isolation_and_replay(self):
         enlarged,receipt = pack.apply(self.resources,self.folder)
         self.assertEqual(receipt["memory"]["selected_video_bytes"],718336)

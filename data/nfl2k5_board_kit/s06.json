@@ -1,0 +1,146 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          20,
+          20,
+          22
+        ],
+        "depth": 0.12,
+        "material": "concreteFloor1"
+      },
+      "inset": 1.0,
+      "name": "bk_board_nw",
+      "path": [
+        [
+          20.724,
+          104.737
+        ],
+        [
+          58.576,
+          90.963
+        ]
+      ],
+      "structure": {
+        "colour": [
+          20,
+          20,
+          22
+        ],
+        "depth": 0.86,
+        "material": "concreteFloor1"
+      },
+      "width": 39.624,
+      "y": [
+        32.464,
+        43.436
+      ]
+    },
+    {
+      "frame": {
+        "border": 0.2,
+        "colour": [
+          20,
+          20,
+          22
+        ],
+        "depth": 0.12,
+        "material": "concreteFloor1"
+      },
+      "inset": 0.45,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -23.6,
+          -101.6
+        ],
+        [
+          23.0,
+          -101.6
+        ]
+      ],
+      "structure": {
+        "colour": [
+          20,
+          20,
+          22
+        ],
+        "depth": 0.31,
+        "material": "concreteFloor1"
+      },
+      "width": 39.624,
+      "y": [
+        21.027,
+        32.0
+      ]
+    }
+  ],
+  "cut": [
+    {
+      "box": {
+        "x": [
+          -24.0,
+          24.0
+        ],
+        "y": [
+          20.5,
+          34.5
+        ],
+        "z": [
+          -101.5,
+          -101.0
+        ]
+      },
+      "materials": [
+        "signsA1"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          24.0,
+          50.0
+        ],
+        "y": [
+          28.5,
+          45.0
+        ],
+        "z": [
+          93.0,
+          103.0
+        ]
+      },
+      "materials": [
+        "signsA1"
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group378"
+    }
+  ],
+  "env": null,
+  "help": "the 2015 boards, 130 x 36 ft",
+  "markers": {
+    "jumboMarkerB": "bk_board_s",
+    "jumboMarkerDShape": "bk_board_nw"
+  },
+  "name": "Paycor Stadium",
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Cincinnati Bengals (bengals.com, 2015-08-13, 'Bengals will Unveil Dramatic Stadium Improvements Tomorrow Night vs. Giants'): 'The main video boards are more than twice the size of the previous boards, measuring 130-by-36 feet.' Its sideline LED boards ('stretch the entire length of the sidelines') have no published size and are not built.",
+    "Wikipedia, Paycor Stadium (fetched 2026-09-25, st/renov/CIN.txt): 'The scoreboards and ribbons were later upgraded after the 2014 off-season to larger HD models'; the new, larger videoboard of the renovation is planned from 2027, so 2026 keeps the 2015 boards.",
+    "The retail s06 cityscape (PROVED OFFLINE): its lit city (LIGHT_city1 and LIGHT_city2, up to 122 m) stands at -x and +z, where downtown lies north-east of the stadium; so +z is north and +x west (the frame of PIT and CLE).",
+    "The retail s06 scene (PROVED OFFLINE): the south board is a 24.0 x 8.2 m feed quad (group378, jumbo_tron) on a housing over the south stands (group377: its front at z -101.6 from x -23.6 to 23.0, y 22.1 to 32.2, on two legs, with sponsor panels in signsA1, the control-room windows above it from 32.2 to 34.5 m and a canopy); the north-west corner board is a 22.2 x 8.9 m feed quad in a frame box (group378) on a housing angled toward the field (group496: a 39.5 m front from (21.1, 104.6) to (58.2, 91.1), y 31.5 to 44.1, with signsA1 panels). The play clocks (group378) stay at the goal posts.",
+    "Commons 'Paul Brown Stadium interior 2017.jpg' (2017-06-16): the south board on its two legs under the control room, the Roebling bridge behind it. Commons 'Bengals Super Bowl pep rally' (2022-02-07; 51868868462 and 51870150619): the north-west corner board on its housing under a canopy, beside the west stand.",
+    "DESIGN: the south board centred on its housing (x -20.11 to 19.51), 0.45 m in front of it, its frame's top at the control-room windows' sill (32.2 m); the north-west board across its housing's whole front (39.6 m), 1.0 m in front of it (the old feed's frame box stays inside the new board's body), centred on the old feed's height (32.46 to 43.44 m). The housings' sponsor panels (signsA1: the old boards' housings, which the rule lets the kit remove) are cut. Frames and bodies are the plain retail floor concrete (concreteFloor1) at a dark grey, with no stretched texture on the backs. The team's stripe panels and the sponsor headers the photos show are not built."
+  ],
+  "team": "CIN",
+  "venue": "s06"
+}

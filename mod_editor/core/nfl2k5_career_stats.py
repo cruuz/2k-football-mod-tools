@@ -1,7 +1,8 @@
 """Lossless, transactional career-stat import for the version-17 disc ROST.
 
-No network, XBE edits, or source-file writes. Run after reclassification and
-team_history. Only verified direct counters are writable; unknown, deleted,
+No network, XBE edits, or source-file writes. Run after identity edits and
+before TEAM imports that need newly created games slots. Only verified direct
+counters are writable; unknown, deleted,
 postseason and folded words remain lossless. A source-missing cell is not zero.
 
 Retail evidence: 0x320430 -> 0xCB240 -> 0xCAD50 -> 0x14EF20;
@@ -246,7 +247,7 @@ def export_csv(body: bytes, *, base_year: int = 2004) -> str:
             word = Word(raw)
             field = BY_ID.get(word.field)
             season = base_year - (count - word.slot)
-            if field is None or word.deleted or word.folded or not 1900 <= season <= min(2004, base_year - 1):
+            if field is None or word.deleted or word.folded or not 1900 <= season <= base_year - 1:
                 continue
             key = (word.slot, word.phase, field.id)
             occurrence = occurrences.get(key, 0)
@@ -307,8 +308,8 @@ def apply_body(body: bytes, rows: Iterable[Row], *, base_year: int = 2004,
         _require(row.stat not in DERIVED, f'{row.stat} is derived; import the underlying counters/distance buckets')
         _require(row.stat in BY_NAME, f'unknown/unproved stat: {row.stat}')
         _require(row.phase in ('regular', 'postseason'), 'phase must be regular or postseason')
-        _require(type(row.season) is int and 1900 <= row.season <= min(2004, base_year - 1),
-                 'season must be completed, <=2004, and consistent with base_year')
+        _require(type(row.season) is int and 1900 <= row.season <= base_year - 1,
+                 'season must be completed and consistent with base_year')
         _require(bool(row.source.strip()) and re.fullmatch('[0-9a-f]{64}', row.source_sha256) is not None,
                  'each source row needs provenance and a lowercase SHA-256')
         if row.value is None:
@@ -426,7 +427,7 @@ def load_rows(csv_path) -> tuple[list[Row], dict[str, object]]:
 def apply(path, csv_path, *, base_year: int = 2004, reserved_tail_words: int = 0, progress=None) -> dict[str, object]:
     """Import a career-stats CSV into the main roster of the disc image (or pack folder) at ``path`` -- a COPY.
 
-    Runs on the disc's version-17 resource, after the team-history pass when that is on (both rebuild the
+    Runs on the disc's version-17 resource, after identity edits and before TEAM imports (both rebuild the
     stat pool and the ``+0x2C`` pointers; this one only changes the counters the CSV names and refuses to
     grow past the pool or into a caller-reserved tail).  Not idempotent by design: re-applying the same CSV
     is a no-op (every counter already holds its value), a different CSV changes exactly the rows it names.

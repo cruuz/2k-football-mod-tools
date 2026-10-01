@@ -1,0 +1,9 @@
+{
+  "status": "PROVED OFFLINE",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.8.0-139-generic-x86_64-with-glibc2.39",
+  "unicorn": "2.1.4",
+  "capstone": "5.0.7",
+  "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "note": "No game executable or disc payload is bundled."
+}

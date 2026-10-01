@@ -4,6 +4,15 @@ Beta 71 revision 10 selects the sprite engine for an appended SPR5 scene.
 The PNG/JSON compiler supplies every quad and glyph; production resources
 contain no appended FONT. Historical resource probes retain their ABI fallback.
 The larger RX owner is promoted by the allocator; all mutable state remains RW.
+Beta 76 revision 11 adds the Franchise team records (counted once at setup with
+the retail per-week counters, regular-season rows only), their tabs, the
+possession arrow and the used-timeout states; CODE_SIZE 4096 -> 4608 for them.
+Beta 76 sb revision 12 draws the 2026 ESPN bar's remaining states: the black ESPN
+wordmark plate with no down (kick and point-after phases, pregame, the half, the
+overtime toss, and in place of the hang-time, ball-on and FUMBLE plates), the
+interim "3rd Down" label, ":54" under a minute, HALFTIME, the TIMEOUT tab and the
+red play clock at 5 seconds and under; CODE_SIZE 4608 -> 5376 for them, and the
+update now hands the frame time FC9C0 receives to the engine.
 
 Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
@@ -15,18 +24,46 @@ import struct
 from . import nfl2k5_xbe_space as space
 from . import nfl2k5_scorebug_fonts as fonts  # noqa: F401 - the historical beta 61 emitter test runs old code in this namespace
 from . import nfl2k5_scorebug_ingame as scene
+from . import nfl2k5_playcall_layout as playcall_layout
 from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 4096, 128
+CODE_SIZE, DATA_SIZE = 5376, 128  # beta 76 s15: +512 for records, tabs, arrow; sb: +768 for the broadcast states; the owner is placed last in the scale-out RX pool
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
-REVISION = 10
+# Beta 76 sb B1 (play calling): the per-frame hide in FUN_0008bea0 calls the owner, which keeps the bar while the
+# retail play-call bar's mode is on; the two retail play-call bar draws take their own "mode off" exits. Build with
+# NFL2K5_SCOREBUG_PLAYCALL=retail to keep retail play calling (the retail top bar, our bar hidden).
+PLAYCALL_HOOK = ("sprite_playcall_hide", 0x8BEA0, bytes.fromhex("e80b080700"))
+PLAYCALL_EDITS = ((0x8C465, bytes.fromhex("0f8417050000"), bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)"),
+                  (0x8CA18, bytes.fromhex("0f8421050000"), bytes.fromhex("e92205000090"), "sb play-call bar off (0x8CA00)"))
+
+
+def playcall():
+    """True unless the build asks for retail play calling (NFL2K5_SCOREBUG_PLAYCALL=retail)."""
+    import os
+    return os.environ.get("NFL2K5_SCOREBUG_PLAYCALL", "sprite") != "retail"
+
+
+def hooks():
+    """Setup/update plus sprite play-call visibility and layout initialization."""
+    rows = dict(HOOKS)
+    if playcall():
+        rows[PLAYCALL_HOOK[0]] = PLAYCALL_HOOK[1:]
+        rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
+    return rows
+REVISION = 13  # pc: play-call roots, cards and preview above the bar; existing RX capacity
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
+# The sprite engine's State (tools/scorebug_sprite/runtime.c) uses 120 of the 128 bytes:
+# ten words of scene/logo/colour state, the kick-phase capture (40, 44), the two
+# cached UTF-16 records at 48 (home) and 72 (away), 12 units each, and (sb) the last
+# down (96), the interim and TIMEOUT-tab timers (100, 108; float bits), the packed
+# timeouts left (104), the tab side (112) and the red play-clock flag (116). The legacy map
+# above only applies to the historical resource probes, which never run with it.
 SCENE, POPULATED, MATERIALS, PLATE, TEXTURES = 0, 4, 8, 16, 20
 SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 32, 40, 48, 52, 56, 60, 64
 HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
@@ -373,15 +410,20 @@ def code_for(code_va, data_va):
         if name == 'update': a.b('ff742404')
         a.call(native)
         _save(a)
+        # sb: the update also passes FC9C0's frame time ([EBP+0x28] after _save) to the engine's timers.
+        if name == 'update': a.b('ff7528')
         a.b('68'+_u(data_va))
         a.call(engine_va + engine.LABELS['sprite_'+name])
-        a.b('83c404')
+        a.b('83c408' if name == 'update' else '83c404')
         _restore(a)
         a.b('c3' if name=='setup' else 'c20400')
         a.label(name+'_legacy'); a.b('58 9d')
         a.b('e9'+struct.pack('<i', labels[name]-(start+sum(a._size(i) for i in a.items))-5).hex())
     dispatch=a.assemble()
     result=legacy+bytes(content)+dispatch
+    if playcall():
+        labels[playcall_layout.HOOK_NAME] = code_va + len(result)
+        result += playcall_layout.code_for(code_va + len(result))
     if len(result)>CODE_SIZE:
         raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
     labels.update({name:start+offset for name,offset in a.labels.items()})
@@ -398,7 +440,7 @@ def sites(payload):
 
 
 def hook_bytes(name, labels):
-    va, original = HOOKS[name]
+    va, original = hooks()[name]
     return b"\xe8" + struct.pack("<i", labels[name] - va - 5)
 
 
@@ -409,6 +451,9 @@ def override_edits():
     rows = [(va, static.get(va), struct.pack("<I", value), "mnf text record") for va, value in STATIC_OVERRIDES.items()]
     for va, (old, new) in LITERALS.items():
         rows.append((va, (old + "\0").encode("utf-16le"), (new + "\0").encode("utf-16le"), "mnf literal"))
+    if playcall():
+        rows.extend(PLAYCALL_EDITS)
+        rows.extend(playcall_layout.edits())
     return rows
 
 
@@ -436,7 +481,7 @@ def status(payload):
         ss = space.status(payload)
         if ss == "foreign" or scene.xbe_status(payload) == "foreign" or not _abi_valid(payload):
             return "foreign"
-        expected = {name: original for name, (_, original) in HOOKS.items()}
+        expected = {name: original for name, (_, original) in hooks().items()}
         code_state = "retail"
         if ss == "applied" and any(a["owner"] == OWNER for a in space.layout(payload)["allocations"]):
             code, data = sites(payload)
@@ -444,12 +489,19 @@ def status(payload):
             have = payload[code["raw"]:code["raw"] + CODE_SIZE]
             if have == content:
                 code_state = "applied"
-                expected = {n: hook_bytes(n, labels) for n in HOOKS}
+                expected = {n: hook_bytes(n, labels) for n in hooks()}
             elif have != b"\xcc" * CODE_SIZE:
                 return "foreign"
-        for name, (va, _) in HOOKS.items():
+        for name, (va, _) in hooks().items():
             off = scene.layout.sbpos.va_to_off(payload, va)
             if payload[off:off + 5] != expected[name]:
+                return "foreign"
+        if not playcall_layout.valid(payload, applied=code_state == "applied" and playcall()):
+            return "foreign"
+        if not playcall():
+            va, old = playcall_layout.HOOK
+            off = scene.layout.sbpos.va_to_off(payload, va)
+            if payload[off:off + len(old)] != old:
                 return "foreign"
         if code_state == "applied" and scene.xbe_status(payload, scorebug_folder=None) != "applied":
             return "foreign"
@@ -458,6 +510,12 @@ def status(payload):
                 off = scene.layout.sbpos.va_to_off(payload, va)
                 if payload[off:off + len(new)] != new:
                     return "foreign"
+            if not playcall():
+                # A retail-play-calling build keeps all three B1 sites retail; a B1 build reads as foreign here.
+                for va, old in [PLAYCALL_HOOK[1:]] + [(va, old) for va, old, _new, _ in PLAYCALL_EDITS]:
+                    off = scene.layout.sbpos.va_to_off(payload, va)
+                    if payload[off:off + len(old)] != old:
+                        return "foreign"
         return code_state
     except (ValueError, KeyError, IndexError, struct.error, SystemExit):
         return "foreign"
@@ -479,7 +537,7 @@ def apply(payload):
     installed, ir = space.install_code(prepared, OWNER, content)
     buf = bytearray(installed)
     edits = []
-    for name, (va, original) in HOOKS.items():
+    for name, (va, original) in hooks().items():
         off = scene.layout.sbpos.va_to_off(installed, va)
         after = hook_bytes(name, labels)
         buf[off:off + 5] = after

@@ -1,0 +1,47 @@
+{
+  "classification": "PROVED OFFLINE",
+  "current_presets": {
+    "softdrink_basic": false,
+    "softdrink_advanced": true,
+    "softdrink_experimental": true
+  },
+  "tags": {
+    "beta-54": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    },
+    "beta-61": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    },
+    "beta-65": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    },
+    "beta-70": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    },
+    "beta-74": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    },
+    "beta-75": {
+      "softdrink_basic": false,
+      "softdrink_advanced": true,
+      "softdrink_experimental": true
+    }
+  },
+  "export_names": {
+    "basic": "SOFTDRINK-patch-basic-v0.9.2k5patch",
+    "advanced": "SOFTDRINK-patch-advanced-v1.2.2k5patch",
+    "experimental": "SOFTDRINK-patch-experimental-v0.5.2k5patch"
+  },
+  "published_asset_hashes_verified": false,
+  "fixture_warning": "The only committed .2k5patch files are explicitly synthetic beta-60/61 test fixtures, not public release artifacts."
+}

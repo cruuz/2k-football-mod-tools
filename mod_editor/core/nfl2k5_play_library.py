@@ -417,7 +417,7 @@ def qb_keeper_chain(dx_yd: float, dy_yd: float, shotgun: bool) -> Chain:
 
 
 def carrier_chain(lane: int, path: tuple[int, float, float, int] | None, follow_slot: int | None = None, take_kind: int = 0) -> Chain:
-    """lane 0-15 aim lane; path = (mode, dx_yd, dy_yd, a) or None; follow_slot for lead-follow runs."""
+    """lane is a handoff hole 0..8; path = (mode, dx_yd, dy_yd, a) or None."""
     chain: Chain = [start(3), (0x16, [take_kind, 0.0, lane])]
     if follow_slot is not None:
         chain.append((0x15, [2, -0.3 * YD, 0.0, 0, 15, follow_slot, 1]))
@@ -436,7 +436,7 @@ def reverse_first_back(lane: int, wr_slot: int) -> Chain:
 
 
 def reverse_receiver(side: int) -> Chain:
-    return [start(3), (0x16, [0, 0.1, 8]), (0x15, [0, -10 * YD * side, -5 * YD, 2, 15, 0, 0])]
+    return [start(3), (0x16, [0, 0.1, handoff_hole_for_x(-10 * YD * side)]), (0x15, [0, -10 * YD * side, -5 * YD, 2, 15, 0, 0])]
 
 
 # ---------------------------------------------------------------------------
@@ -662,9 +662,12 @@ def build_chains(spec: PlaySpec, scheme: str | None = None) -> list[Chain]:
     run = spec.play_type in ("run", "sneak", "keeper", "reverse")
     sch = RUN_SCHEMES.get(scheme or "", {})
     dir_sign = {"left": -1, "middle": 0, "right": 1}[spec.run_direction]
-    lane = 8
+    lane = 0
     if sch.get("lane"):
-        lane = sch["lane"][{-1: 1, 0: 0, 1: 2}[dir_sign]]
+        # Scheme geometry retains its rush-lane coordinates; convert at the
+        # handoff boundary rather than feeding that different enum to 0x16.
+        rush_lane = sch["lane"][{-1: 1, 0: 0, 1: 2}[dir_sign]]
+        lane = handoff_hole_for_x(codec.LANE_TABLE_CM[rush_lane])
     fb_slot = next((s for s in range(11) if kinds[s] == FB), None)
     direct = spec.direct_snap and spec.carrier_slot is not None and run
     snap_target = spec.carrier_slot if direct else qb_slot
@@ -859,15 +862,20 @@ def lane_for_x(x_cm: float) -> int:
     return min(range(len(codec.LANE_TABLE_CM)), key=lambda i: abs(codec.LANE_TABLE_CM[i] - x_cm))
 
 
+def handoff_hole_for_x(x_cm: float) -> int:
+    """Nearest native take-handoff hole, with 0 centered and 1..8 mirrored."""
+    return min(range(9), key=lambda i: abs(codec.HANDOFF_HOLE_CM[i] - x_cm))
+
+
 def drawn_run_path(points_cm: Sequence[tuple[float, float]], side: int) -> tuple[int, tuple[int, float, float, int], str]:
-    """A hand-drawn ball-carrier path → (aim lane, run-path operand, description)."""
+    """A hand-drawn ball-carrier path → (handoff hole, run-path operand, description)."""
     pts = [(float(x), float(z)) for x, z in points_cm]
     if len(pts) < 2:
         raise ValueError("draw the path from the ball carrier first")
     x0, z0 = pts[0]
     xe, ze = pts[-1]
     cross = next(((x, z) for (x, z) in pts if z >= 0), (xe, ze))
-    lane = lane_for_x(cross[0])
+    lane = handoff_hole_for_x(cross[0])
     dx_yd = (xe - x0) * side / YD
     dz_yd = (ze - z0) / YD
     where = "left" if xe < x0 - YD else ("right" if xe > x0 + YD else "straight ahead")
@@ -1044,7 +1052,7 @@ __all__ = [
     "offense_formations", "offense_plays", "play_chains", "suggest_formations_to_replace",
     "suggest_plays_to_replace", "validate_chains", "category_positions",
     "PersonnelPlan", "SKILL_CHOICES", "SKILL_SLOTS", "ranked_codes", "resolve_personnel", "donor_for_personnel",
-    "is_offense_category", "back_count", "quantize_drawn_route", "drawn_run_path", "lane_for_x",
+    "is_offense_category", "back_count", "quantize_drawn_route", "drawn_run_path", "lane_for_x", "handoff_hole_for_x",
 ]
 
 

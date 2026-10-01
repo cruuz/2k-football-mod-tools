@@ -46,6 +46,8 @@ class ScreenMachine(unittest.TestCase):
         from mod_editor.core import nfl2k5_team_history as th
         if not (XBE.parent / "vc_53450030" / "0").is_file():
             raise unittest.SkipTest("private extracted ROST archive is absent")
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(XBE.parent)
         with th._outer_image()(XBE.parent) as archive:
             entry = th._entry(archive)
             cls.body = archive.read(entry.virtual_offset, entry.size)[th.RESOURCE_HEADER_SIZE:]
@@ -75,7 +77,7 @@ class ScreenMachine(unittest.TestCase):
         self.call(0xC0500, ecx=self.root)
         self.team = self.word(self.root + 0x1C)
         self.other = self.team + 500
-        self.put(0xE576A0, 1)
+        self.put(0xE576A0, 2)       # league mode: 2 = Franchise (1 is Tournament)
         self.put(0xE576A4, 7)
         self.uc.mem_write(0xE421E0, bytes(160 * 4))
         self.uc.mem_write(0xE5775C, bytes(34 * 4))

@@ -1,0 +1,534 @@
+{
+  "schema": "b76-s14-closeness/v1",
+  "tag": "before",
+  "levels": [
+    "Far: the element reads as a different colour at player size.",
+    "Off: clearly darker, lighter or of another hue than the broadcast.",
+    "Near: a visible but small difference.",
+    "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+    "Indistinguishable within the measurement method."
+  ],
+  "classes": [
+    "too_dark",
+    "too_light",
+    "wrong_hue",
+    "too_saturated",
+    "too_grey",
+    "gradient_shape",
+    "matches"
+  ],
+  "wings": [
+    {
+      "element": "NYG_wing_colour",
+      "side": "away",
+      "our_tint": "#0B2265",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          50.2,
+          96.7,
+          245.0
+        ],
+        [
+          47.4,
+          77.8,
+          189.0
+        ],
+        [
+          46.4,
+          71.0,
+          167.0
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          14.3,
+          33.5,
+          92.2
+        ],
+        [
+          19.1,
+          34.1,
+          80.3
+        ],
+        [
+          21.0,
+          34.2,
+          75.7
+        ]
+      ],
+      "mean_abs_rgb_difference": 65.0,
+      "max_row_rgb_difference": 159.1,
+      "player_bar_width_px": 617,
+      "closeness": 0.33,
+      "closeness_confidence": 0.72,
+      "defect": "too_dark",
+      "visible": 0.79,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 0.33,
+          "confidence": 0.72,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.6799999999999999,
+            "1": 0.3,
+            "2": 0.01,
+            "3": 0.01,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.87,
+          "probabilities": {
+            "too_saturated": 0.01,
+            "too_light": 0.01,
+            "too_grey": 0.01,
+            "wrong_hue": 0.01,
+            "too_dark": 0.89,
+            "gradient_shape": 0.07,
+            "matches": 0.0
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.79
+        }
+      }
+    },
+    {
+      "element": "LAR_wing_colour",
+      "side": "home",
+      "our_tint": "#003594",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          48.0,
+          115.3,
+          248.2
+        ],
+        [
+          41.0,
+          89.5,
+          208.9
+        ],
+        [
+          43.2,
+          81.3,
+          185.6
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          5.6,
+          50.7,
+          131.9
+        ],
+        [
+          11.9,
+          47.6,
+          111.7
+        ],
+        [
+          13.3,
+          45.6,
+          104.2
+        ]
+      ],
+      "mean_abs_rgb_difference": 59.8,
+      "max_row_rgb_difference": 127.5,
+      "player_bar_width_px": 617,
+      "closeness": 0.46,
+      "closeness_confidence": 0.62,
+      "defect": "too_dark",
+      "visible": 0.79,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 0.46,
+          "confidence": 0.62,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.5599999999999999,
+            "1": 0.42,
+            "2": 0.01,
+            "3": 0.01,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.89,
+          "probabilities": {
+            "gradient_shape": 0.05,
+            "too_light": 0.01,
+            "too_dark": 0.91,
+            "wrong_hue": 0.01,
+            "matches": 0.0,
+            "too_grey": 0.01,
+            "too_saturated": 0.01
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.79
+        }
+      }
+    },
+    {
+      "element": "DEN_wing_colour",
+      "side": "away",
+      "our_tint": "#1E69C9",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          65.7,
+          129.7,
+          223.8
+        ],
+        [
+          57.3,
+          98.5,
+          168.3
+        ],
+        [
+          54.8,
+          89.4,
+          150.6
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          30.7,
+          95.0,
+          178.9
+        ],
+        [
+          32.1,
+          82.5,
+          148.3
+        ],
+        [
+          32.5,
+          77.6,
+          136.3
+        ]
+      ],
+      "mean_abs_rgb_difference": 24.8,
+      "max_row_rgb_difference": 50.8,
+      "player_bar_width_px": 617,
+      "closeness": 1.01,
+      "closeness_confidence": 0.73,
+      "defect": "too_dark",
+      "visible": 0.72,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 1.01,
+          "confidence": 0.73,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.16,
+            "1": 0.71,
+            "2": 0.1,
+            "3": 0.03,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.84,
+          "probabilities": {
+            "matches": 0.0,
+            "too_grey": 0.02,
+            "too_saturated": 0.01,
+            "too_light": 0.02,
+            "wrong_hue": 0.01,
+            "too_dark": 0.87,
+            "gradient_shape": 0.07
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.72
+        }
+      }
+    },
+    {
+      "element": "KC_wing_colour",
+      "side": "home",
+      "our_tint": "#E31837",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          235.8,
+          44.0,
+          92.8
+        ],
+        [
+          216.1,
+          34.1,
+          79.5
+        ],
+        [
+          194.8,
+          35.7,
+          73.8
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          199.5,
+          25.9,
+          52.5
+        ],
+        [
+          164.6,
+          28.2,
+          49.1
+        ],
+        [
+          150.7,
+          29.2,
+          47.8
+        ]
+      ],
+      "mean_abs_rgb_difference": 28.8,
+      "max_row_rgb_difference": 71.9,
+      "player_bar_width_px": 617,
+      "closeness": 0.81,
+      "closeness_confidence": 0.72,
+      "defect": "too_dark",
+      "visible": 0.75,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 0.81,
+          "confidence": 0.72,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.26,
+            "1": 0.68,
+            "2": 0.04,
+            "3": 0.02,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.53,
+          "probabilities": {
+            "too_grey": 0.1,
+            "wrong_hue": 0.17,
+            "too_dark": 0.6,
+            "matches": 0.0,
+            "gradient_shape": 0.08,
+            "too_saturated": 0.04,
+            "too_light": 0.01
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.75
+        }
+      }
+    },
+    {
+      "element": "LV_wing_colour",
+      "side": "away",
+      "our_tint": "#646464",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          230.1,
+          231.0,
+          230.2
+        ],
+        [
+          181.6,
+          182.5,
+          181.4
+        ],
+        [
+          163.4,
+          164.1,
+          163.1
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          91.2,
+          90.6,
+          91.4
+        ],
+        [
+          79.6,
+          79.0,
+          79.6
+        ],
+        [
+          74.9,
+          74.4,
+          75.0
+        ]
+      ],
+      "mean_abs_rgb_difference": 109.9,
+      "max_row_rgb_difference": 152.6,
+      "player_bar_width_px": 617,
+      "closeness": 0.31,
+      "closeness_confidence": 0.74,
+      "defect": "too_dark",
+      "visible": 0.74,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 0.31,
+          "confidence": 0.74,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.72,
+            "1": 0.28,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.98,
+          "probabilities": {
+            "matches": 0.0,
+            "wrong_hue": 0.0,
+            "too_saturated": 0.0,
+            "too_light": 0.0,
+            "too_grey": 0.01,
+            "too_dark": 0.98,
+            "gradient_shape": 0.01
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.74
+        }
+      }
+    },
+    {
+      "element": "HOU_wing_colour",
+      "side": "home",
+      "our_tint": "#EB0028",
+      "broadcast_rgb_top_middle_bottom": [
+        [
+          243.5,
+          28.0,
+          77.4
+        ],
+        [
+          219.8,
+          19.5,
+          66.0
+        ],
+        [
+          199.4,
+          26.4,
+          63.8
+        ]
+      ],
+      "our_rgb_top_middle_bottom": [
+        [
+          206.5,
+          5.6,
+          39.5
+        ],
+        [
+          169.9,
+          12.2,
+          39.0
+        ],
+        [
+          155.4,
+          14.8,
+          39.0
+        ]
+      ],
+      "mean_abs_rgb_difference": 29.2,
+      "max_row_rgb_difference": 89.3,
+      "player_bar_width_px": 617,
+      "closeness": 0.77,
+      "closeness_confidence": 0.72,
+      "defect": "too_dark",
+      "visible": 0.78,
+      "answers": {
+        "closeness": {
+          "type": "score",
+          "score": 0.77,
+          "confidence": 0.72,
+          "legend": {
+            "0": "Far: the element reads as a different colour at player size.",
+            "1": "Off: clearly darker, lighter or of another hue than the broadcast.",
+            "2": "Near: a visible but small difference.",
+            "3": "Close: differences at or below what a viewer notices at the 617-pixel player bar.",
+            "4": "Indistinguishable within the measurement method."
+          },
+          "probabilities": {
+            "0": 0.29,
+            "1": 0.67,
+            "2": 0.03,
+            "3": 0.01,
+            "4": 0.0
+          }
+        },
+        "defect": {
+          "type": "choice",
+          "choice": "too_dark",
+          "confidence": 0.6,
+          "probabilities": {
+            "too_light": 0.01,
+            "too_grey": 0.05,
+            "wrong_hue": 0.16,
+            "too_saturated": 0.05,
+            "matches": 0.0,
+            "too_dark": 0.66,
+            "gradient_shape": 0.07
+          }
+        },
+        "visible": {
+          "type": "noul",
+          "noul": 0.78
+        }
+      }
+    }
+  ],
+  "method": "1. Wing colour, per measured team (NYG, LAR, DEN, KC, LV, HOU): the broadcast's per-row wing colour just inside\n   the bar end (reports/b76_s14/broadcast_colours.json) against the same rows of our own render of that matchup,\n   measured by the same code (the outer 12 columns of our bar, rows 948 to 1020: top, middle and bottom thirds and\n   the mean colour difference). Jev gets these numbers as text and returns a closeness level (0 far to 4\n   indistinguishable), a defect class and whether a change would be visible at the 617-pixel player bar.\n2. With ``--rubric``, the s12 per-element rubric (reports/b76_s12/closeness.py rows_for, unchanged) for the\n   Giants at Rams state against the s12 harvest, for the whole bar.",
+  "cost_usd": 0.000182
+}

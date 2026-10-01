@@ -1,0 +1,642 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "NO",
+ "name": "New Orleans Saints",
+ "asset_code": "17",
+ "season": 2026,
+ "status": "Phase B job d7 (NFC South), 2026-09-23. KEPT its 2004 look (no new uniform for 2026): lighter 2026 old gold, Nike marks, black pants home and road as worn in weeks 1 and 2. Colours sourced; albedo INFERRED from 2026 photos.",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Kellen Moore",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status). Base defense from the nflverse depth charts since 2026-09-09: 'Base 3-4 D'."
+ },
+ "sources": {
+  "kit_rules": "https://www.colorwaysports.com/stories/saints-uniform-schedule-2026 (no new uniform for 2026; gold helmet base; captains pick pants)",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=New_Orleans_Saints&action=raw",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:New_Orleans_Saints_Uniforms_(2025).png (CC BY-SA)",
+  "road_photos": "https://www.neworleanssaints.com/photos/2026-nfl-week-1-detroit-lions-vs-new-orleans-saints-photos-game-action (white jersey, black pants)",
+  "black_photos": "https://www.neworleanssaints.com/photos/2026-nfl-week-2-baltimore-ravens-vs-new-orleans-saints-photos-game-action (black jersey, black pants, 60th-season patch)",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (NO, 2026 NFL Record and Fact Book p.196)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/NO.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "gold": "#D3BC8D",
+  "black": "#000000",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "gold": "#D3BC8D",
+  "helmet_gold": "#CDB582",
+  "retail_gold": "#B79650",
+  "black": "#0A0A0A",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "logo_gold": "#D3BC8D",
+  "ez_black": "#101010"
+ },
+ "marks": {
+  "club_logo": "club_logo.png",
+  "trims_17H0_torso": "trims_17H0_torso.png",
+  "trims_17A0_torso": "trims_17A0_torso.png",
+  "trims_17H0_sleeve": "trims_17H0_sleeve.png",
+  "trims_17A0_sleeve": "trims_17A0_sleeve.png",
+  "pants_fleurs": "pants_fleurs.png",
+  "logo_silhouette": "logo_silhouette.png",
+  "logo_black": "logo_black.png",
+  "logo_gold": "logo_gold.png",
+  "logo_white": "logo_white.png",
+  "saints_fill": "saints_fill.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "17H0",
+   "note": "2026 home: black jersey with the gold collar, gold numbers outlined in white, gold fleur-de-lis on the sleeves, black pants with the gold hip fleur-de-lis, black socks, old-gold helmet with the black fleur-de-lis and black-white-black stripe",
+   "torso": {
+    "base_colour": "black",
+    "neck_donor": "17H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "trims_17H0_torso",
+      "center": [
+       276.0,
+       40.125
+      ],
+      "width": 296.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_17H0_sleeve",
+      "center": [
+       64.0,
+       55.0
+      ],
+      "width": 36.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "black",
+    "stripe": [],
+    "swoosh_colour": "white",
+    "decorations": [
+     {
+      "mark": "pants_fleurs",
+      "center": [
+       254.5,
+       41.5
+      ],
+      "width": 251.5
+     }
+    ]
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "17H0",
+    "fill": "gold",
+    "outline": "white",
+    "outline_frac": 0.022
+   },
+   "helmet_digits": {
+    "glyph_donor": "17H0",
+    "fill": "gold"
+   },
+   "nameplate": {
+    "glyph_donor": "17H0",
+    "fill": "gold"
+   },
+   "helmet": {
+    "shell_from": "retail_gold",
+    "shell": "helmet_gold"
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_gold",
+      "to": "helmet_gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 3753,
+   "splayer": {
+    "torso_donor_outer": 3753,
+    "torso_donor": "17H0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_gold",
+      "to": "helmet_gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "17A0",
+   "note": "2026 road: white jersey with the black collar, black numbers outlined in gold, black fleur-de-lis on the sleeves, black pants with the gold hip fleur-de-lis, black socks, old-gold helmet",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "17H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "black"
+    },
+    "decorations": [
+     {
+      "mark": "trims_17A0_torso",
+      "center": [
+       276.0,
+       40.125
+      ],
+      "width": 296.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_17A0_sleeve",
+      "center": [
+       64.0,
+       55.0
+      ],
+      "width": 38.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "black",
+    "stripe": [],
+    "swoosh_colour": "white",
+    "decorations": [
+     {
+      "mark": "pants_fleurs",
+      "center": [
+       254.5,
+       41.5
+      ],
+      "width": 251.5
+     }
+    ]
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "17A0",
+    "fill": "black",
+    "outline": "gold",
+    "outline_frac": 0.022
+   },
+   "helmet_digits": {
+    "glyph_donor": "17A0",
+    "fill": "gold"
+   },
+   "nameplate": {
+    "glyph_donor": "17A0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "retail_gold",
+    "shell": "helmet_gold"
+   },
+   "card": {
+    "recolour": [
+     {
+      "from": "retail_gold",
+      "to": "helmet_gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   },
+   "outer_index": 4070,
+   "splayer": {
+    "torso_donor_outer": 4070,
+    "torso_donor": "17A0",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_gold",
+      "to": "helmet_gold",
+      "region": "all",
+      "tolerance": 0.2
+     }
+    ]
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "black jersey body, old-gold collar ring, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "black sleeve with the gold fleur-de-lis",
+   "pants": "black with the gold fleur-de-lis on the hips, white maker mark",
+   "helmet": "old-gold shell with the black and white fleur-de-lis, black-white-black center stripe, flag and shield decals",
+   "digit_jersey": "old-gold numbers with a white outline",
+   "digit_arm": "old-gold numbers with a white outline",
+   "digit_helmet": "old-gold numbers",
+   "nameplate": "old-gold letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: black pants, black torso, gold helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: black jersey with a gold number, black pants, gold helmet with the fleur-de-lis, dark shading",
+   "team-select_helm": "menu render: gold helmet with the black fleur-de-lis, black facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, black collar ring, small NFL shield at the collar, black maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with the black fleur-de-lis",
+   "pants": "black with the gold fleur-de-lis on the hips, white maker mark",
+   "helmet": "old-gold shell with the black and white fleur-de-lis, black-white-black center stripe, flag and shield decals",
+   "digit_jersey": "black numbers with a gold outline",
+   "digit_arm": "black numbers with a gold outline",
+   "digit_helmet": "old-gold numbers",
+   "nameplate": "black letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: black pants, white torso, gold helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a black number, black pants, gold helmet with the fleur-de-lis, grey shading",
+   "team-select_helm": "menu render: gold helmet with the black fleur-de-lis, black facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "team end zone art: black paint with SAINTS in the current wordmark in old gold, and the fleur-de-lis at both ends in place of the 2004 helmet (INFERRED: the preseason 2026 photos show the black wall wraps and the gold SAINTS wordmark, not the end zone paint)",
+   "center_logo": "the full-colour club logo at midfield",
+   "banner": "cloth fan banners in team colours with 2026 player names and chants"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Tyler Shough": 0,
+   "Travis Etienne": 4,
+   "Juwan Johnson": 5,
+   "Carl Granderson": 4,
+   "Kool-Aid McKinstry": 4,
+   "Kaden Elliss": 0,
+   "Colby Wooden": 4,
+   "Julian Blackmon": 4,
+   "Justin Reid": 4,
+   "Taliese Fuaga": 2,
+   "David Edwards": 0,
+   "Erik McCoy": 4,
+   "Daniel Carlson": 0,
+   "Ryan Wright": 0,
+   "Spencer Rattler": 0,
+   "Devaughn Vele": 3,
+   "Alvin Kamara": 4,
+   "Noah Fant": 3,
+   "Chase Young": 4,
+   "Quincy Riley": 4,
+   "Cameron Jordan": 4,
+   "Vernon Broughton": 4,
+   "Kelvin Banks": 5,
+   "Cesar Ruiz": 4,
+   "Zach Wilson": 0,
+   "Barion Brown": 4,
+   "Kendre Miller": 4,
+   "Oscar Delp": 0,
+   "Anfernee Jennings": 4,
+   "Jonas Sanker": 2,
+   "Pete Werner": 0,
+   "Davon Godchaux": 5,
+   "Asim Richards": 5,
+   "Jeremiah Wright": 4,
+   "Bryce Lance": 3,
+   "CJ Donaldson": 4,
+   "Treyton Welch": 0,
+   "Chris Rumph": 4,
+   "Michael Reid": 4,
+   "Isaiah Stalbird": 4,
+   "Nathan Shepherd": 4,
+   "Mason Murphy": 1,
+   "Will Sherman": 4,
+   "Martin Emerson": 4,
+   "Danny Stutsman": 0,
+   "John Ridgeway": 0,
+   "Jordan Howden": 3,
+   "Tyree Wilson": 4,
+   "Christen Miller": 4,
+   "Decamerion Richardson": 4,
+   "Khristian Boyd": 5,
+   "Jayden Price": 1,
+   "Chris Olave": 3
+  },
+  "dreads": [
+   "Barion Brown",
+   "Cameron Jordan",
+   "Chase Young",
+   "Justin Reid",
+   "Khristian Boyd",
+   "Martin Emerson",
+   "Quincy Riley"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads by eye."
+ },
+ "venue": {
+  "prefix": "s17",
+  "notes": "Saints home games at the retail Superdome scene (Caesars Superdome). End zones: black paint with SAINTS in the current wordmark in old gold, and the fleur-de-lis at both ends in place of the 2004 helmet (INFERRED: the preseason 2026 photos show the black wall wraps and the gold SAINTS wordmark, not the end zone paint). Midfield: the full-colour fleur-de-lis in place of the 2004 helmet (INFERRED). One retail texture set serves both end zones. Fan banners: 2026 names and chants.",
+  "sources": [],
+  "endzone": {
+   "paint": "ez_black",
+   "paint_alpha": 0.95,
+   "marks": [
+    {
+     "mark": "saints_fill",
+     "colour": "logo_gold",
+     "center": [
+      384,
+      64
+     ],
+     "height": 84,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      104,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      104,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_gold",
+     "colour": "logo_gold",
+     "center": [
+      104,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      104,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      664,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      664,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_gold",
+     "colour": "logo_gold",
+     "center": [
+      664,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_white",
+     "colour": "white",
+     "center": [
+      664,
+      64
+     ],
+     "height": 98,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "WHO DAT!",
+        "colour": "logo_gold",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 17
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_gold",
+      "items": [
+       {
+        "text": "#6 SHOUGH",
+        "colour": "black",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 16
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#12 OLAVE",
+        "colour": "black",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#41 KAMARA",
+        "colour": "logo_gold",
+        "center": [
+         192.0,
+         31.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_gold",
+      "items": [
+       {
+        "text": "#94 JORDAN",
+        "colour": "black",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       256,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#3 ETIENNE",
+        "colour": "black",
+        "center": [
+         192.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#1 KOOL-AID",
+        "colour": "logo_gold",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "GEAUX\nSAINTS",
+        "colour": "black",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

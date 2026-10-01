@@ -65,9 +65,15 @@ class BuildIntegrationTests(unittest.TestCase):
                            'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime)}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
+                # The ordering sentinel is plain text, not an XDVDFS image.
+                # Its copy, music handoff and atomic publication remain real.
                 with patch.object(build, '_core_module', side_effect=modules.get), patch.object(tt, 'is_disc_image', return_value=True), \
                         patch.object(build, 'inspect', side_effect=lambda p, **k:{'path':str(p)}), \
-                        patch.object(build, '_identity_note', return_value=''):
+                        patch.object(build, '_identity_note', return_value=''), \
+                        patch.object(build, '_check_playbook_scoring', return_value={'synthetic': True}), \
+                        patch('mod_editor.core.xdvdfs_compact.finish_private',
+                              side_effect=lambda path, **_kwargs: {'output_bytes': Path(path).stat().st_size}), \
+                        patch('mod_editor.core.nfl2k5_disc_extents.validate_image', return_value={'synthetic': True}):
                     if fail:
                         with self.assertRaisesRegex(ValueError, 'cancelled'):
                             build.build(selected)

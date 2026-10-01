@@ -1,0 +1,1286 @@
+{
+  "boards": [
+    {
+      "frame": {
+        "border": 1.2,
+        "colour": [
+          40,
+          40,
+          44
+        ],
+        "depth": 0.15,
+        "material": "floor01"
+      },
+      "inset": 0.3,
+      "name": "bk_board_n",
+      "path": [
+        [
+          -31.0,
+          -119.9
+        ],
+        [
+          31.0,
+          -119.9
+        ]
+      ],
+      "structure": {
+        "colour": [
+          40,
+          40,
+          44
+        ],
+        "depth": 1.5,
+        "material": "floor01"
+      },
+      "width": 60.655,
+      "y": [
+        44.5,
+        61.569
+      ]
+    },
+    {
+      "frame": {
+        "border": 1.2,
+        "colour": [
+          40,
+          40,
+          44
+        ],
+        "depth": 0.15,
+        "material": "floor01"
+      },
+      "inset": 0.3,
+      "name": "bk_board_s",
+      "path": [
+        [
+          -31.0,
+          119.9
+        ],
+        [
+          31.0,
+          119.9
+        ]
+      ],
+      "structure": {
+        "colour": [
+          40,
+          40,
+          44
+        ],
+        "depth": 1.5,
+        "material": "floor01"
+      },
+      "width": 60.655,
+      "y": [
+        44.5,
+        61.569
+      ]
+    }
+  ],
+  "drop": [
+    {
+      "materials": [
+        "jumbo_tron"
+      ],
+      "shape": "group32"
+    }
+  ],
+  "env": null,
+  "help": "the 2014 end-zone boards, 199 x 56 ft",
+  "markers": {
+    "jumboMarkerAShape": "bk_board_n",
+    "jumboMarkerB": "bk_board_s"
+  },
+  "name": "Bank of America Stadium",
+  "panels": [
+    {
+      "name": "bk_housings",
+      "parts": [
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              43.3,
+              -119.75
+            ],
+            [
+              -35.028,
+              43.3,
+              -119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              -119.75
+            ],
+            [
+              -31.527,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            0,
+            30,
+            0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -35.028,
+              43.3,
+              -119.75
+            ],
+            [
+              -35.028,
+              43.3,
+              -121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            -300,
+            50,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              64.769,
+              -119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              -119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              -121.27
+            ]
+          ],
+          "toward": [
+            -33.2,
+            300,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              43.3,
+              -121.27
+            ],
+            [
+              -35.028,
+              43.3,
+              -121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              -121.27
+            ]
+          ],
+          "toward": [
+            -33.2,
+            50,
+            -400
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              62.769,
+              -119.75
+            ],
+            [
+              -31.527,
+              62.769,
+              -121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              -121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            0,
+            63.8,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              43.3,
+              -119.75
+            ],
+            [
+              35.028,
+              43.3,
+              -119.75
+            ],
+            [
+              35.028,
+              64.769,
+              -119.75
+            ],
+            [
+              31.527,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            0,
+            30,
+            0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              35.028,
+              43.3,
+              -119.75
+            ],
+            [
+              35.028,
+              43.3,
+              -121.27
+            ],
+            [
+              35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              35.028,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            300,
+            50,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              64.769,
+              -119.75
+            ],
+            [
+              35.028,
+              64.769,
+              -119.75
+            ],
+            [
+              35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              31.527,
+              64.769,
+              -121.27
+            ]
+          ],
+          "toward": [
+            33.2,
+            300,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              43.3,
+              -121.27
+            ],
+            [
+              35.028,
+              43.3,
+              -121.27
+            ],
+            [
+              35.028,
+              64.769,
+              -121.27
+            ],
+            [
+              31.527,
+              64.769,
+              -121.27
+            ]
+          ],
+          "toward": [
+            33.2,
+            50,
+            -400
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              62.769,
+              -119.75
+            ],
+            [
+              31.527,
+              62.769,
+              -121.27
+            ],
+            [
+              31.527,
+              64.769,
+              -121.27
+            ],
+            [
+              31.527,
+              64.769,
+              -119.75
+            ]
+          ],
+          "toward": [
+            0,
+            63.8,
+            -120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              61.869,
+              -119.7
+            ],
+            [
+              -21.018,
+              63.536,
+              -119.7
+            ],
+            [
+              -21.018,
+              64.436,
+              -119.7
+            ],
+            [
+              -31.527,
+              62.769,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -21.018,
+              63.536,
+              -119.7
+            ],
+            [
+              -10.509,
+              64.536,
+              -119.7
+            ],
+            [
+              -10.509,
+              65.436,
+              -119.7
+            ],
+            [
+              -21.018,
+              64.436,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -10.509,
+              64.536,
+              -119.7
+            ],
+            [
+              0.0,
+              64.869,
+              -119.7
+            ],
+            [
+              0.0,
+              65.769,
+              -119.7
+            ],
+            [
+              -10.509,
+              65.436,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              0.0,
+              64.869,
+              -119.7
+            ],
+            [
+              10.509,
+              64.536,
+              -119.7
+            ],
+            [
+              10.509,
+              65.436,
+              -119.7
+            ],
+            [
+              0.0,
+              65.769,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              10.509,
+              64.536,
+              -119.7
+            ],
+            [
+              21.018,
+              63.536,
+              -119.7
+            ],
+            [
+              21.018,
+              64.436,
+              -119.7
+            ],
+            [
+              10.509,
+              65.436,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              21.018,
+              63.536,
+              -119.7
+            ],
+            [
+              31.527,
+              61.869,
+              -119.7
+            ],
+            [
+              31.527,
+              62.769,
+              -119.7
+            ],
+            [
+              21.018,
+              64.436,
+              -119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              43.3,
+              119.75
+            ],
+            [
+              -35.028,
+              43.3,
+              119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              119.75
+            ],
+            [
+              -31.527,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            0,
+            30,
+            0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -35.028,
+              43.3,
+              119.75
+            ],
+            [
+              -35.028,
+              43.3,
+              121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            -300,
+            50,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              64.769,
+              119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              119.75
+            ],
+            [
+              -35.028,
+              64.769,
+              121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              121.27
+            ]
+          ],
+          "toward": [
+            -33.2,
+            300,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              43.3,
+              121.27
+            ],
+            [
+              -35.028,
+              43.3,
+              121.27
+            ],
+            [
+              -35.028,
+              64.769,
+              121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              121.27
+            ]
+          ],
+          "toward": [
+            -33.2,
+            50,
+            400
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              62.769,
+              119.75
+            ],
+            [
+              -31.527,
+              62.769,
+              121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              121.27
+            ],
+            [
+              -31.527,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            0,
+            63.8,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              43.3,
+              119.75
+            ],
+            [
+              35.028,
+              43.3,
+              119.75
+            ],
+            [
+              35.028,
+              64.769,
+              119.75
+            ],
+            [
+              31.527,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            0,
+            30,
+            0
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              35.028,
+              43.3,
+              119.75
+            ],
+            [
+              35.028,
+              43.3,
+              121.27
+            ],
+            [
+              35.028,
+              64.769,
+              121.27
+            ],
+            [
+              35.028,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            300,
+            50,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              64.769,
+              119.75
+            ],
+            [
+              35.028,
+              64.769,
+              119.75
+            ],
+            [
+              35.028,
+              64.769,
+              121.27
+            ],
+            [
+              31.527,
+              64.769,
+              121.27
+            ]
+          ],
+          "toward": [
+            33.2,
+            300,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              43.3,
+              121.27
+            ],
+            [
+              35.028,
+              43.3,
+              121.27
+            ],
+            [
+              35.028,
+              64.769,
+              121.27
+            ],
+            [
+              31.527,
+              64.769,
+              121.27
+            ]
+          ],
+          "toward": [
+            33.2,
+            50,
+            400
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              31.527,
+              62.769,
+              119.75
+            ],
+            [
+              31.527,
+              62.769,
+              121.27
+            ],
+            [
+              31.527,
+              64.769,
+              121.27
+            ],
+            [
+              31.527,
+              64.769,
+              119.75
+            ]
+          ],
+          "toward": [
+            0,
+            63.8,
+            120
+          ],
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -31.527,
+              61.869,
+              119.7
+            ],
+            [
+              -21.018,
+              63.536,
+              119.7
+            ],
+            [
+              -21.018,
+              64.436,
+              119.7
+            ],
+            [
+              -31.527,
+              62.769,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -21.018,
+              63.536,
+              119.7
+            ],
+            [
+              -10.509,
+              64.536,
+              119.7
+            ],
+            [
+              -10.509,
+              65.436,
+              119.7
+            ],
+            [
+              -21.018,
+              64.436,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              -10.509,
+              64.536,
+              119.7
+            ],
+            [
+              0.0,
+              64.869,
+              119.7
+            ],
+            [
+              0.0,
+              65.769,
+              119.7
+            ],
+            [
+              -10.509,
+              65.436,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              0.0,
+              64.869,
+              119.7
+            ],
+            [
+              10.509,
+              64.536,
+              119.7
+            ],
+            [
+              10.509,
+              65.436,
+              119.7
+            ],
+            [
+              0.0,
+              65.769,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              10.509,
+              64.536,
+              119.7
+            ],
+            [
+              21.018,
+              63.536,
+              119.7
+            ],
+            [
+              21.018,
+              64.436,
+              119.7
+            ],
+            [
+              10.509,
+              65.436,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        },
+        {
+          "colour": [
+            40,
+            40,
+            44
+          ],
+          "material": "floor01",
+          "quad": [
+            [
+              21.018,
+              63.536,
+              119.7
+            ],
+            [
+              31.527,
+              61.869,
+              119.7
+            ],
+            [
+              31.527,
+              62.769,
+              119.7
+            ],
+            [
+              21.018,
+              64.436,
+              119.7
+            ]
+          ],
+          "toward": [
+            0,
+            40,
+            0
+          ],
+          "two_sided": true,
+          "uv_m": 4.0
+        }
+      ]
+    }
+  ],
+  "replace": [
+    {
+      "keep": [
+        "LIGHT_box01",
+        "LIGHT_box02",
+        "lite01"
+      ],
+      "shape": "H_group"
+    }
+  ],
+  "schema": "nfl2k5_board_kit/v1",
+  "sources": [
+    "Sports Video Group, 21 March 2014, 'Carolina Panthers Partner With Daktronics for Integrated LED Video System at Bank of America Stadium': 'Each end zone will feature a new LED video display measuring nearly 11,000 square feet', 56 ft high by 199 ft wide; an upper 360-degree ribbon (more than 1,900 ft) and a suite-level one (more than 2,000 ft), both about 5 ft high. Wikipedia's infobox gives 55.5 x 198.3 ft (x2).",
+    "The 2026 season: the renovation's fan-facing work (new boards, seats, facade screens) begins in 2027; in 2026 the bowl stands as in 2025 (Axios, 23 July 2026, via a search summary; stadiumdb.com).",
+    "The retail s04 scene (PROVED OFFLINE): the 2004 end scoreboards are housings (panthers_score01, panthers_score02 in H_group, x +-33.8, y 43.3 to 61.0, z +-119.9 to 122.6) round an 8 x 7.6 m feed quad (group32) at z +-119.8, y 46.4 to 54.1; H_group also draws the club fascia lights (LIGHT_box02) and the light banks (lite01), kept; the game's digits sit on the sideline fascias and the play clocks on the end fascias (group32), kept in place.",
+    "st2's photo pose (Commons 2015, the upper deck near the +z corner; 7 points, 2.06 px) finds the far board's picture about 61 x 19 m, the published size within its far-field error; its depth reading (about z -109) is loose, so the boards stand in the retail housings' plane at z +-119.6, centred on them, their housings on the stand tops (DESIGN).",
+    "The Commons photos of the 2014 boards (2015: the board face, its side and the far end) show each in a big dark housing on top of the end stands: dark side structures standing a little taller than the screen at both ends of it, an arched steel header over it, the body deep behind. DESIGN: the housings stand on the stand tops (their bottom at the top rows' 43.3 m, the bodies 1.5 m deep to the stands' back edge, so nothing overhangs the outside), with the side structures (3.5 m wide, 2 m taller) and the arched header (a 0.9 m steel band rising 3 m at the middle) as panels, all in floor01 at a dark colour; the header's sponsor name is left out (no marks); the two 360-degree ribbons wait for their art."
+  ],
+  "team": "CAR",
+  "venue": "s04"
+}

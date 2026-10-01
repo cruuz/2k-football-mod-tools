@@ -30,6 +30,8 @@ def atl_resource():
     if not (EXTRACT / "vc_53450030/0").is_file():
         raise unittest.SkipTest("private extracted PLAY archive absent; real loader evidence required")
     from nfl2k5_playbook_position_recode import OuterImage
+    from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+    require_nfl_retail_packs(EXTRACT)
     with OuterImage(EXTRACT) as archive:
         return archive.read_entry(308)  # one fixed 78,768-byte PLAY resource
 

@@ -1,0 +1,28 @@
+{
+  "classification": "PROVED OFFLINE",
+  "historical_targets_classification": "INFERRED",
+  "source_sha256": "7f2a5b8244e6646ba1c41ef7ed6fddd1308e6286970c7676b53c587af193ec5d",
+  "installed_map_sha256": "3f472221be7a43f6215ad1761f1dc134c5764729ef400386b9ef2d14e95690f9",
+  "rows_preserving_every_phase1_value": 50,
+  "implemented_fields": [
+    "two_point_try",
+    "kickoff_yard",
+    "free_kick_touchback_yard",
+    "scrimmage_touchback_yard",
+    "pat_kick_snap_yard",
+    "two_point_snap_yard",
+    "defensive_try_return",
+    "overtime",
+    "overtime_minutes",
+    "postseason_continues",
+    "kickoff_fair_catch_to_25",
+    "dynamic_kickoff",
+    "coin_toss_defer",
+    "incidental_facemask_5_yards"
+  ],
+  "design_fields": {
+    "goalposts": "Requires model and collision geometry work in the later art job.",
+    "hash_width_feet": "Field markings and player/ball alignment must change together; no proved per-match native selector.",
+    "pass_contact": "No proved switch for pre-1978 contact enforcement. Modern defensive tuning is not an era rule."
+  }
+}

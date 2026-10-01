@@ -1,0 +1,17 @@
+[
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "before": "7d4f9c5954ebf6e46e8c1be526cd8c114ede71391d3fe7dd259d22c71f7fdb85",
+    "after": "162922479d72e179a69c2962627d579c6040dd9c4886611408eba0ac927dd787"
+  },
+  {
+    "path": "mod_editor/gui/build_panel_qt.py",
+    "before": "7d4f9c5954ebf6e46e8c1be526cd8c114ede71391d3fe7dd259d22c71f7fdb85",
+    "after": "162922479d72e179a69c2962627d579c6040dd9c4886611408eba0ac927dd787"
+  },
+  {
+    "path": "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "before": "b2a6ddf5382f2d41381641d8ca25f8eb7f1788b8a0cd51fd9af62c8448ecd855",
+    "after": "1872762042b126df625ea53ff2819f99e1f13b007dbaf345681580290530e3d2"
+  }
+]

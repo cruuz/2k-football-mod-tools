@@ -13,31 +13,41 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_player_star as ps
 
 
+def star_passes(star: str = ps.DEFAULT_STAR):
+    """(outer tip, outer notch, inner tip, inner notch, diffuse ARGB, height) of each drawn pass of the table."""
+    va, _, code = next(row for row in ps.CAVES if row[0] <= ps.SYMBOLS['star_passes'] < row[0]+len(row[2]))
+    code = ps._star_code(va, code, star)
+    start, end = ps.SYMBOLS['star_passes']-va, ps.SYMBOLS['star_passes_end']-va
+    rows = [struct.unpack_from('<4fIf', code, at) for at in range(start, end, 24)]
+    return [row for row in rows if row[4] >> 24], code
+
+
 def render(output: Path) -> None:
+    import math
     from PIL import Image, ImageDraw, PngImagePlugin
 
-    table_va = ps.SYMBOLS['star_inset']
-    va, _, code = next(row for row in ps.CAVES if row[0] <= table_va < row[0]+len(row[2]))
-    inset = struct.unpack_from('<f', code, table_va-va)[0]
-    values = struct.unpack_from('<20f', code, ps.SYMBOLS['star_points']-va)
-    points = list(zip(values[::2], values[1::2]))
-    # Draw the actual strip triangles, including its repeated centre vertices.
-    # Supersampling smooths only the exported preview; no game texture is made.
+    # Draw the actual strips the runtime submits: eleven (outer, inner) pairs on the ten rays of each pass,
+    # composited with the pass's diffuse alpha. Supersampling smooths only the exported preview.
     supersample = 4
-    canvas = Image.new('RGB', (480*supersample, 360*supersample), '#547b45')
+    canvas = Image.new('RGBA', (480*supersample, 360*supersample), '#547b45')
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 235*supersample, 480*supersample, 248*supersample), fill='#e6e7d7')
-    for scale, color in ((1.125, '#101010'), (1.0, '#ffffff')):
+    passes, code = star_passes()
+    for ot, on, it, inn, argb, _height in passes:
+        layer = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        color = ((argb >> 16) & 255, (argb >> 8) & 255, argb & 255, argb >> 24)
         vertices = []
-        for x, z in points + points[:1]:
-            for factor in (1.0, inset):
-                vertices.append(((240+x*scale*factor*1.15)*supersample,
-                                 (179+z*scale*factor*1.15)*supersample))
+        for k in range(11):
+            for r in ((ot, it) if k % 2 == 0 else (on, inn)):
+                a = k*math.pi/5
+                vertices.append(((240+r*math.sin(a)*1.15)*supersample, (179-r*math.cos(a)*1.15)*supersample))
         for i in range(len(vertices)-2):
-            draw.polygon(vertices[i:i+3], fill=color)
-    canvas = canvas.resize((480, 360), Image.Resampling.LANCZOS)
+            d.polygon(vertices[i:i+3], fill=color)
+        canvas = Image.alpha_composite(canvas, layer)
+    canvas = canvas.convert('RGB').resize((480, 360), Image.Resampling.LANCZOS)
     draw = ImageDraw.Draw(canvas)
-    draw.text((14, 12), 'Filled player star / exact vertex table', fill='white')
+    draw.text((14, 12), 'White outline star over a thin dark under-edge / exact pass table', fill='white')
     draw.text((14, 339), 'Shape preview only; in-game appearance unwitnessed', fill='white')
     metadata = PngImagePlugin.PngInfo()
     metadata.add_text('geometry_sha256', hashlib.sha256(code).hexdigest())

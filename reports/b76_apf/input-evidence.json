@@ -1,0 +1,118 @@
+{
+  "classification": "PROVED OFFLINE",
+  "files": [
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/attachments/dm_urianus_2026-09-23_0845_Xenia_2026.09.23_-_15.30.40.02.mp4",
+      "sha256": "f98e3be9ae72236b0806a2f4c425cba76b5f53bbc3ce7159837d68d3b1743eed",
+      "bytes": 13319374,
+      "media": {
+        "programs": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60/1"
+          },
+          {
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "6.498544"
+        }
+      }
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/attachments/dm_urianus_2026-09-23_0853_image.png",
+      "sha256": "4fcff39d10e27f81279e1bcb6c58e05197229372685df3342f53c0eeafc335bf",
+      "bytes": 1051055
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/attachments/dm_urianus_2026-09-23_0855_Sims.mp4",
+      "sha256": "d4575b726894003c1235f4ea57516e295e1b8de2c8fa44ebc1f33d4487d26112",
+      "bytes": 10662936,
+      "media": {
+        "programs": [],
+        "streams": [
+          {
+            "width": 3840,
+            "height": 2160,
+            "r_frame_rate": "30/1"
+          },
+          {
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "5.966667"
+        }
+      }
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/attachments/dm_urianus_2026-09-23_0856_Barry.mp4",
+      "sha256": "54bb8f86ae36878404bbf64993bb1bf4cdd94c662c61e6d4ac79efde24ba86c5",
+      "bytes": 9113867,
+      "media": {
+        "programs": [],
+        "streams": [
+          {
+            "width": 3840,
+            "height": 2160,
+            "r_frame_rate": "30/1"
+          },
+          {
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "5.633333"
+        }
+      }
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0845_Xenia_2026.09.23_-_15.30.40.02_01.png",
+      "sha256": "fed785ffc507631c4d9f358acee38e5d8fe51c6b2519147e65c9ae844bad72b4",
+      "bytes": 722531
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0845_Xenia_2026.09.23_-_15.30.40.02_02.png",
+      "sha256": "d1f734c9d67ac9d09631760f3f15b99e57b184f2a8816ae128204c3471c2643f",
+      "bytes": 651574
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0845_Xenia_2026.09.23_-_15.30.40.02_03.png",
+      "sha256": "9839f82ef77acf29e729798341a0622e27389e53b67b0a5e4fbc1ad08934af11",
+      "bytes": 625781
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0855_Sims_01.png",
+      "sha256": "cb11c093d0171bbee5f968f5da8be11b3f430e6aa65e59837561e5cdad8a8527",
+      "bytes": 871571
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0855_Sims_02.png",
+      "sha256": "689dd371c4b85cbe948d7d5f0518556d8af3ca5f70bb27937fb79728b81d39d7",
+      "bytes": 877470
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0855_Sims_03.png",
+      "sha256": "516b0e27ff275ae5c4a5f0981c7bd1ed73cbe8c62c25f4c7793d2715b6d97bf7",
+      "bytes": 836468
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0856_Barry_01.png",
+      "sha256": "e3623a03b5fd841d571fa4fb06017c25e69ce72dcc387639c4184b5150b43897",
+      "bytes": 832917
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0856_Barry_02.png",
+      "sha256": "3b564b874d46f523bdc12b22cf0cf9cfdee0411d94ab99d3cd4c09a0f1d03aa6",
+      "bytes": 815839
+    },
+    {
+      "path": "/home/noah/Desktop/2K5-8 Editors/discord-dump-2026-09-29/frames/dm_urianus_2026-09-23_0856_Barry_03.png",
+      "sha256": "a63e72f3289d4595c407b518f276db9309b0c7297d655798a8b1c587df2d5eb7",
+      "bytes": 806560
+    }
+  ]
+}

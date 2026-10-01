@@ -10,12 +10,15 @@
 
 /* EAX=validated current team, EDX=league selector; zero on refusal.
  * Never substitute the first human coach for the selected franchise context.
+ * The league mode [0xE576A0] is 2 in Franchise (franchise init 0x13EE10 stores 2 through 0xC7570; the
+ * Tournament setups 0x2C5340/0x2C5470/0x2C55F0 store 1). Before 2026-09-23 this compared with 1, so the row
+ * refused every MyNFL franchise with "Select your franchise team first." (vb2, Noah's video [v1 5:06-5:30]).
  */
 context:
  push ebx
  push esi
  push edi
- cmp DWORD PTR [0xe576a0], 1
+ cmp DWORD PTR [0xe576a0], 2
  jne context_bad
  mov ebx, DWORD PTR [0xb72918]
  test ebx, ebx

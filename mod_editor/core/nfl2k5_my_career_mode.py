@@ -433,7 +433,7 @@ def code_for(code_va, data_va):
     return bytes(out).ljust(TAG_OFFSET, b"\xcc") + TAG, labels
 
 
-def sites(code_va, data_va):
+def sites(code_va, data_va, *, season_birth_dates=False):
     labels = code_for(code_va, data_va)[1]
     hooks = [(name, va, pin, handler, op) for name, va, pin, handler, op in legacy.HOOKS if name in COMMON]
     hooks += [(name, va, pin, name, op) for name, va, pin, op in (*SAVE_HOOKS, *MODE_HOOKS)]
@@ -445,7 +445,38 @@ def sites(code_va, data_va):
                                     ("entry_action", 0x5014BC, 0, labels["mode_entry"]),
                                     ("postgame_resume", 0x4F1994, 0xC74E0, labels["mode_postgame"])):
         edits.append((name, va, struct.pack("<I", before), struct.pack("<I", after)))
+    # Create Player's Birth Year row steps 1954..2008 instead of 1954..1984, so
+    # MyPlayer's modern default (runtime.c mode_create) can be stepped. In the
+    # 1900-based 7-bit year, the increment's limit (0x343D3A cmp dl,imm8) and the
+    # decrement's wrap value (0x343D92/0x343D98 and/or) move from 84 to 108.
+    # The season owner now supplies the complete creation-date policy. Keep
+    # the existing standalone MyCareer behavior when that owner is absent.
+    if not season_birth_dates:
+        edits += [("cap_year_up_limit", 0x343D3C, b"\x54", b"\x6c"),
+                  ("cap_year_down_wrap_clear", 0x343D94, struct.pack("<I", 0xFA9FFFFF), struct.pack("<I", 0xFD9FFFFF)),
+                  ("cap_year_down_wrap_set", 0x343D9A, struct.pack("<I", 0x0A800000), struct.pack("<I", 0x0D800000))]
     return edits
+
+
+def _season_birth_date_sites(payload):
+    """Validate the complete companion policy before deferring shared sites.
+
+    Do not call season.status here: its calendar projection can validate
+    MyCareer in turn. These instructions and the base-year immediate are
+    unchanged by that projection. A partial/mixed policy always refuses.
+    """
+    from . import nfl2k5_season_length as season
+    image = XbeImage(payload)
+    year = struct.unpack("<I", image.read(0x247AC7, 4))[0]
+    selected = season.created_player_date_sites(year)
+    installed = any(image.read(s.va, s.size) != s.retail for s in selected
+                    if s.label not in season.CAP_SHARED_YEAR_LABELS)
+    for site in selected:
+        if not installed and site.label in season.CAP_SHARED_YEAR_LABELS:
+            continue  # checked as this owner's own three legacy edits
+        legacy.require(image.read(site.va, site.size) == (site.patched if installed else site.retail),
+                       "foreign Create Player date policy")
+    return selected if installed else ()
 
 
 def recognized(payload):
@@ -473,7 +504,17 @@ def check_context(payload, edits, *, installed=False):
 
     from . import nfl2k5_draft_ai as draft_ai
     legacy.require(draft_ai.status(payload) in ("retail", "applied"), "foreign draft AI owner")
-    camera_edits = []
+    camera_edits = [(s.label, s.va, s.retail, s.patched) for s in _season_birth_date_sites(payload)]
+    # PROVED OFFLINE: the economy changes only the initial cap immediate in
+    # this native franchise initializer. Accept its exact instruction only
+    # after the complete economy owner validates, then normalize the hash view.
+    from . import nfl2k5_franchise_economy as economy
+    cap_va = 0x13EF17
+    cap_before = bytes.fromhex("c70578c2e300743a0100")
+    if image.read(cap_va, len(cap_before)) != cap_before:
+        legacy.require(economy.status(payload) == "applied", "foreign initial-cap economy companion")
+        cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
+        camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
     from . import nfl2k5_franchise_autosave as autosave
     # Practice and music already validate MyCareer. Avoid a dependency cycle
     # by checking Auto Save on a private retail view of our fully validated
@@ -559,8 +600,13 @@ def check_context(payload, edits, *, installed=False):
             ready_code, ready_data = relocated._sites(payload)
             _, ready_labels = relocated.code_for(relocated._installed(payload),
                                                   ready_code["va"], ready_data["va"])
-        camera_edits.append(("kickoff_ready", ready_va, ready_pin,
-                             dynamic._hook_bytes("ready", ready_labels)))
+        ready_after = dynamic._hook_bytes("ready", ready_labels)
+        ready_now = image.read(ready_va, len(ready_pin))
+        # b76-vb3: the 25th Anniversary kickoff gate sends this hook through its mode-8 trampoline; accept the
+        # trampoline jump only when the gate's recognizer reads it as this exact kickoff hook.
+        if ready_now != ready_after and dynamic.gate_views(payload).get(ready_va) == ready_after:
+            ready_after = ready_now
+        camera_edits.append(("kickoff_ready", ready_va, ready_pin, ready_after))
     try_va, try_hex, _ = defensive_try.HOOKS["try_text"]
     try_pin = bytes.fromhex(try_hex)
     if image.read(try_va, len(try_pin)) != try_pin:
@@ -568,6 +614,16 @@ def check_context(payload, edits, *, installed=False):
         try_labels = defensive_try.assembled(payload)[3]
         camera_edits.append(("defensive_try_text", try_va, try_pin,
                              defensive_try._hook_bytes("try_text", try_labels)))
+    # the1wam's lineman rating retargets the one blend call inside the native
+    # overall dispatch (0x246D60), which this player-rating context hashes.
+    # Accept only its complete installation (dispatch and cave both applied),
+    # then restore that exact dispatch span in our private hash view. The
+    # tier sweep calls 0x246D90, so it targets the adjusted overall.
+    from . import nfl2k5_lineman_rating as lineman
+    if image.read(lineman.HOOK_VA, len(lineman.RETAIL_HOOK)) != lineman.RETAIL_HOOK:
+        legacy.require(lineman.status(payload) == "applied", "foreign overall-dispatch owner")
+        camera_edits.append(("lineman_overall_dispatch", lineman.HOOK_VA,
+                             lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         for _, hook, before, after in [*edits, *camera_edits]:
@@ -579,9 +635,11 @@ def check_context(payload, edits, *, installed=False):
 
 
 def _recognize(payload):
+    from . import nfl2k5_era_rules as era
+    payload = era.underlying_view(payload)
     found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
-    edits = sites(code["va"], data["va"])
+    edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)))
     image = XbeImage(payload)
     own_sites = {va for _, va, _, _ in edits}
     legacy.require(all(image.read(va, len(before)) == before for _, va, before, _ in legacy.sites(0, 0)
@@ -627,7 +685,8 @@ def apply(payload):
     if state == "applied":
         return payload, {**common, "already_applied": True, "changed_bytes": 0, "edits": []}
     payload, install = space.install_code(payload, OWNER, blob)
-    result, receipt = rdata.apply(payload, sites(code["va"], data["va"]), OWNER)
+    result, receipt = rdata.apply(payload, sites(code["va"], data["va"],
+                                               season_birth_dates=bool(_season_birth_date_sites(payload))), OWNER)
     legacy.require(status(result) == "applied", "generic MyCareer postcondition failed")
     return result, {**common, **receipt, "already_applied": False, "code_install": install,
                     "changed_bytes": sum(a != b for a, b in zip(original, result)) + len(result) - len(original),

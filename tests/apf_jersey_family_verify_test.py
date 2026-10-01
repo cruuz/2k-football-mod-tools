@@ -120,6 +120,9 @@ class IndependentVerifierTests(unittest.TestCase):
                 )
 
     def test_nine_level_png_decode_back_recomputes_manifest_without_volume_copy(self) -> None:
+        missing = [str(path) for path in (verifier.CATALOG,) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Private APF jersey layout report missing: " + ", ".join(missing))
         catalog = verifier.load_catalog()
         metadata = catalog["jerseys"][6]["txtr_descriptor"]
         locations = xenos_mips.derive_layout(metadata)
@@ -151,6 +154,9 @@ class IndependentVerifierTests(unittest.TestCase):
             verifier.verify_decoded_levels(base, texture, locations, manifest)
 
     def test_retail_entry_decodes_in_memory_without_copying_0a(self) -> None:
+        missing = [str(path) for path in (WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A",) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("Retail APF 0A missing: " + ", ".join(missing))
         source = WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A"
         png = WORKSPACE / "reports/assets/apf_uniform_samples/team00_bank0_jersey_06_jersey_color.png"
         before = sha256_file(source)

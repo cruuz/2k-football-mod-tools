@@ -1,0 +1,18 @@
+RETAINED s00 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+PROVED MEMORY s00dd.iff 3
+RETAINED s01 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s03 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+PROVED MEMORY s03dd.iff 3
+RETAINED s07 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s10 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s11 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s12 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s14 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s15 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s16 []
+RETAINED s20 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s23 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+PROVED MEMORY s23dd.iff 3
+RETAINED s24 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+RETAINED s25 ['banner_away_team', 'banner_home_player', 'banner_home_team']
+DONE 39 textures 15 checks

@@ -1,0 +1,830 @@
+{
+  "schema": "nfl2k5.espn25.previews.v1",
+  "classification": "DESIGN",
+  "about": "E2 authored text for all 50 rows. Ordinals are one-based here. Engine fields are title, description/history, objective/goal and date. No art, situation, team or rule edits.",
+  "moments": [
+    {
+      "row": 1,
+      "id": "retail_01",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE ICE BOWL",
+        "description": "Bart Starr drove Green Bay from its own 32 with Dallas leading 17-14. On the frozen Lambeau Field turf, Starr followed Jerry Kramer and Ken Bowman into the end zone on a one-yard sneak with 13 seconds left. The Packers won the 1967 NFL Championship Game 21-17 and advanced to Super Bowl II.",
+        "objective": "Lead Bart Starr and the Packers past Dallas on the frozen Lambeau Field turf.",
+        "date": "December 31, 1967"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196712310gnb.htm",
+        "https://www.profootballhof.com/football-history/the-ice-bowl"
+      ]
+    },
+    {
+      "row": 2,
+      "id": "retail_02",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE HEIDI BOWL",
+        "description": "Daryle Lamonica and the Raiders trailed Joe Namath's Jets 32-29 when NBC cut away to show Heidi. Lamonica found Charlie Smith for the go-ahead touchdown. On the ensuing kickoff, Earl Christy fumbled and Preston Ridlehuber recovered in the end zone. Oakland scored twice in nine seconds to win 43-32.",
+        "objective": "Rally Daryle Lamonica's Raiders past Joe Namath's Jets.",
+        "date": "November 17, 1968"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196811170rai.htm",
+        "https://www.profootballhof.com/news/heidi"
+      ]
+    },
+    {
+      "row": 3,
+      "id": "retail_03",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MERRY CHRISTMAS MIAMI",
+        "description": "Bob Griese brought Miami back against Kansas City on Christmas Day. His touchdown pass to Marv Fleming tied the playoff game at 24. Jan Stenerud missed a late chance to win it, and the teams needed two overtime periods. Garo Yepremian's field goal gave the Dolphins a 27-24 win after 82 minutes, 40 seconds of play.",
+        "objective": "Bring Bob Griese's Dolphins back and win with Garo Yepremian.",
+        "date": "December 25, 1971"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197112250kan.htm",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf"
+      ]
+    },
+    {
+      "row": 4,
+      "id": "retail_04",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE IMMACULATE RECEPTION",
+        "description": "Terry Bradshaw faced fourth-and-10 with Pittsburgh trailing Oakland 7-6. His pass toward John Fuqua deflected near Jack Tatum, and Franco Harris caught the loose ball before it hit the turf. Harris ran for the winning touchdown in a 13-7 Steelers victory. The disputed ricochet became the Immaculate Reception.",
+        "objective": "Find Franco Harris and turn Terry Bradshaw's last chance into a win.",
+        "date": "December 23, 1972"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197212230pit.htm"
+      ]
+    },
+    {
+      "row": 5,
+      "id": "retail_05",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE SEA OF HANDS",
+        "description": "Ken Stabler had Oakland eight yards from the end zone, trailing Miami 26-21. With Vern Den Herder pulling him down, Stabler lofted a pass to Clarence Davis. Davis secured the ball among three Dolphins for the touchdown. The Raiders won the AFC divisional playoff 28-26, ending Miami's bid for a third straight Super Bowl title.",
+        "objective": "Connect Ken Stabler with Clarence Davis to beat Miami.",
+        "date": "December 21, 1974"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler"
+      ]
+    },
+    {
+      "row": 6,
+      "id": "retail_06",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE FINAL COMEBACK",
+        "description": "Roger Staubach faced a 34-21 deficit against Washington in his final regular-season game. He found Ron Springs for a touchdown, then led Dallas downfield again. Tony Hill caught Staubach's winning eight-yard pass with 39 seconds left. The Cowboys won 35-34, claimed the NFC East and knocked Washington out of the playoffs.",
+        "objective": "Find Tony Hill with Roger Staubach to win the NFC East.",
+        "date": "December 16, 1979"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown"
+      ]
+    },
+    {
+      "row": 7,
+      "id": "retail_07",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MONTANA'S COMEBACK",
+        "description": "Joe Montana and the 49ers trailed Archie Manning's Saints 35-7 at halftime. Montana led a second-half rally, and Lenvil Elliott's touchdown run helped tie the score at 35. Ray Wersching kicked the winning field goal in overtime for a 38-35 San Francisco victory. The 28-point rally set a regular-season record at the time.",
+        "objective": "Rally Joe Montana's 49ers from 28 points down.",
+        "date": "December 7, 1980"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198012070sfo.htm",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090"
+      ]
+    },
+    {
+      "row": 8,
+      "id": "retail_08",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "EPIC IN MIAMI",
+        "description": "Dan Fouts and the Chargers led Miami 24-0 before Don Strock led a comeback. Kellen Winslow caught 13 passes for 166 yards and blocked a late field-goal attempt. The playoff game went to overtime tied at 38. Rolf Benirschke's 29-yard field goal finally gave San Diego a 41-38 win at the Orange Bowl.",
+        "objective": "Win this epic with Dan Fouts and Kellen Winslow.",
+        "date": "January 2, 1982"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201020mia.htm",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami"
+      ]
+    },
+    {
+      "row": 9,
+      "id": "retail_09",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE CATCH",
+        "description": "Joe Montana rolled right with San Francisco trailing Dallas 27-21 in the NFC Championship Game. Dwight Clark leaped over Everson Walls to catch Montana's high pass for a six-yard touchdown with 51 seconds left. Ray Wersching's extra point made it 28-27, and the 49ers held on to reach Super Bowl XVI.",
+        "objective": "Find Dwight Clark with Joe Montana to beat Dallas.",
+        "date": "January 10, 1982"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201100sfo.htm"
+      ]
+    },
+    {
+      "row": 10,
+      "id": "retail_10",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "WASHINGTON RALLIES",
+        "description": "Joe Theismann's Washington team trailed the Los Angeles Raiders 35-20 in the fourth quarter at RFK Stadium. Theismann led three scoring drives, finishing the comeback with a touchdown pass to Joe Washington. Mark Moseley's extra point delivered a 37-35 victory in a regular-season meeting of the eventual Super Bowl teams.",
+        "objective": "Lead Joe Theismann's comeback against the Raiders.",
+        "date": "October 2, 1983"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198310020was.htm",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555"
+      ]
+    },
+    {
+      "row": 11,
+      "id": "retail_11",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE DRIVE",
+        "description": "John Elway took over at Denver's two-yard line, trailing Cleveland 20-13 with 5:32 left in the AFC Championship Game. He led a 98-yard drive and found Mark Jackson for the tying touchdown with 37 seconds remaining. Rich Karlis kicked the winning field goal in overtime, sending the Broncos to Super Bowl XXI with a 23-20 win.",
+        "objective": "Drive John Elway's Broncos 98 yards and beat Cleveland.",
+        "date": "January 11, 1987"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198701110cle.htm"
+      ]
+    },
+    {
+      "row": 12,
+      "id": "retail_12",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE 2-SECOND MISCALCULATION",
+        "description": "Sam Wyche called a fourth-down run with Cincinnati leading San Francisco 26-20. James Brooks was stopped, leaving Joe Montana two seconds and one play from the Bengals' 25. Montana hit Jerry Rice in the end zone, and Ray Wersching's extra point gave the 49ers an improbable 27-26 regular-season victory at Riverfront Stadium.",
+        "objective": "Find Jerry Rice with Joe Montana in two seconds.",
+        "date": "September 20, 1987"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198709200cin.htm"
+      ]
+    },
+    {
+      "row": 13,
+      "id": "retail_13",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "SAME OLD BUCS",
+        "description": "Neil Lomax and the St. Louis Cardinals trailed Tampa Bay 28-3 entering the fourth quarter. Lomax threw touchdown passes to Robert Awalt and twice to J.T. Smith, while Niko Noga returned a fumble for another score. Donald Igwebuike's late field-goal attempt hit the crossbar, and the Cardinals escaped Busch Stadium with a 31-28 win.",
+        "objective": "Rally Neil Lomax's Cardinals from 25 points down.",
+        "date": "November 8, 1987"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198711080crd.htm",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946"
+      ]
+    },
+    {
+      "row": 14,
+      "id": "retail_14",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXIII",
+      "text": {
+        "title": "SUPER BOWL XXIII",
+        "description": "Super Bowl XXIII: Joe Montana took over at San Francisco's eight-yard line with Cincinnati leading 16-13 and 3:10 left. Jerry Rice helped move the 49ers downfield, then John Taylor caught Montana's 10-yard touchdown pass with 34 seconds remaining. San Francisco won 20-16 at Joe Robbie Stadium.",
+        "objective": "Win Super Bowl XXIII with Joe Montana and John Taylor.",
+        "date": "January 22, 1989"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198901220cin.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII"
+      ]
+    },
+    {
+      "row": 15,
+      "id": "retail_15",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXV",
+      "text": {
+        "title": "WIDE RIGHT",
+        "description": "Super Bowl XXV: Jim Kelly led Buffalo's last drive with the Giants ahead 20-19. Thurman Thomas helped the Bills reach the New York 29. Scott Norwood's 47-yard field-goal attempt sailed wide right with eight seconds left. Jeff Hostetler, Ottis Anderson and the Giants held on for a one-point championship victory at Tampa Stadium.",
+        "objective": "Win Super Bowl XXV with Jim Kelly and Scott Norwood.",
+        "date": "January 27, 1991"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199101270buf.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV"
+      ]
+    },
+    {
+      "row": 16,
+      "id": "retail_16",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "HOUSTON'S HEARTS RIPPED OUT",
+        "description": "John Elway took over at Denver's two-yard line with Houston ahead 24-23, 2:07 left and no Broncos timeouts. Elway converted one fourth down with a scramble and another with a pass to Vance Johnson. David Treadwell's 28-yard field goal with 16 seconds remaining gave Denver a 26-24 AFC divisional playoff win at Mile High Stadium.",
+        "objective": "Lead John Elway past Warren Moon's Oilers.",
+        "date": "January 4, 1992"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199201040den.htm",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers"
+      ]
+    },
+    {
+      "row": 17,
+      "id": "retail_17",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE TWO TD COMEBACK ON KC",
+        "description": "John Elway and the Broncos trailed Kansas City 19-6 late in the fourth quarter. Elway led two touchdown drives, using Arthur Marshall on the final march before finding Vance Johnson for the winning 12-yard score with 38 seconds left. David Treadwell's extra point completed Denver's 20-19 comeback at Mile High Stadium.",
+        "objective": "Find Vance Johnson with John Elway to beat Kansas City.",
+        "date": "October 4, 1992"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199210040den.htm"
+      ]
+    },
+    {
+      "row": 18,
+      "id": "retail_18",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE 32-POINT COMEBACK",
+        "description": "Frank Reich and the Bills trailed Warren Moon's Oilers 35-3 in the third quarter of their AFC Wild Card game. Reich threw four touchdown passes, three to Andre Reed, as Buffalo came back. After Houston forced overtime, Nate Odomes intercepted Moon and Steve Christie kicked the winning field goal. Buffalo won 41-38 at Rich Stadium.",
+        "objective": "Rally Frank Reich's Bills from 32 points down.",
+        "date": "January 3, 1993"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199301030buf.htm"
+      ]
+    },
+    {
+      "row": 19,
+      "id": "retail_19",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE HEARTBREAKER",
+        "description": "Joe Montana and John Elway traded late scoring drives on Monday night at Mile High Stadium. Elway's touchdown run put Denver ahead 28-24 with 1:29 left. Montana answered by moving Kansas City downfield and finding Willie Davis for a five-yard touchdown with eight seconds remaining. The Chiefs won 31-28 in Denver.",
+        "objective": "Find Willie Davis with Joe Montana to beat Denver.",
+        "date": "October 17, 1994"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199410170den.htm"
+      ]
+    },
+    {
+      "row": 20,
+      "id": "retail_20",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE COLTS' COLLAPSE",
+        "description": "Todd Collins and the Bills trailed Jim Harbaugh's Colts 26-0 in the second quarter at Rich Stadium. Antowain Smith rushed for three touchdowns as Buffalo rallied to lead. Harbaugh found Marvin Harrison for a late touchdown, but Indianapolis failed on the two-point try. Buffalo completed the comeback with a 37-35 victory.",
+        "objective": "Rally Todd Collins and Antowain Smith past Indianapolis.",
+        "date": "September 21, 1997"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199709210buf.htm",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086"
+      ]
+    },
+    {
+      "row": 21,
+      "id": "retail_21",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXXII",
+      "text": {
+        "title": "SUPER BOWL XXXII",
+        "description": "Super Bowl XXXII: John Elway's helicopter run helped Denver score in the third quarter. The final drive came later, with the score tied at 24. Terrell Davis scored his third touchdown with 1:45 left, and John Mobley broke up Brett Favre's fourth-down pass. Denver beat Green Bay 31-24 at Qualcomm Stadium for its first Super Bowl title.",
+        "objective": "Win Super Bowl XXXII with John Elway.",
+        "date": "January 25, 1998"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199801250den.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII"
+      ]
+    },
+    {
+      "row": 22,
+      "id": "retail_22",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXXIV",
+      "text": {
+        "title": "A YARD TOO SHORT",
+        "description": "Super Bowl XXXIV: Steve McNair drove Tennessee to the St. Louis 10, down 23-16 with six seconds left. McNair found Kevin Dyson on a slant, but Mike Jones tackled Dyson one yard short of the goal line as time expired. Kurt Warner and the Rams won 23-16 at the Georgia Dome. A Titans touchdown would have left the conversion to decide a tie or a lead.",
+        "objective": "Find Kevin Dyson with Steve McNair in Super Bowl XXXIV.",
+        "date": "January 30, 2000"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200001300oti.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV"
+      ]
+    },
+    {
+      "row": 23,
+      "id": "retail_23",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXXVI",
+      "text": {
+        "title": "VINATIERI STRIKES AGAIN",
+        "description": "Super Bowl XXXVI: Kurt Warner tied the game at 17 with 1:30 left. Tom Brady then drove New England from its own 17 into field-goal range, completing key passes to J.R. Redmond and Troy Brown. Adam Vinatieri made a 48-yard field goal as time expired. The Patriots beat the Rams 20-17 at the Louisiana Superdome for their first Super Bowl title.",
+        "objective": "Win Super Bowl XXXVI with Tom Brady and Vinatieri.",
+        "date": "February 3, 2002"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200202030nwe.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI"
+      ]
+    },
+    {
+      "row": 24,
+      "id": "retail_24",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE BOTCHED SNAP",
+        "description": "Jeff Garcia and Terrell Owens helped San Francisco rally from a 38-14 deficit against the Giants. Garcia's touchdown pass to Tai Streets put the 49ers ahead 39-38. Trey Junkin's bad snap disrupted New York's last field-goal try, and Matt Allen's pass fell incomplete. A missed interference call on Rich Seubert left the Giants without another attempt.",
+        "objective": "Rally Jeff Garcia's 49ers past Kerry Collins and the Giants.",
+        "date": "January 5, 2003"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200301050sfo.htm"
+      ]
+    },
+    {
+      "row": 25,
+      "id": "retail_25",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "FOURTH AND TWENTY-SIX",
+        "description": "Donovan McNabb faced fourth-and-26 at Philadelphia's 26 with Green Bay leading 17-14. Freddie Mitchell caught McNabb's pass for 28 yards to keep the drive alive. David Akers tied the game, Brian Dawkins intercepted Brett Favre in overtime, and Akers kicked the winner. The Eagles advanced with a 20-17 divisional playoff victory.",
+        "objective": "Find Freddie Mitchell with Donovan McNabb on fourth-and-26.",
+        "date": "January 11, 2004"
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200401110phi.htm"
+      ]
+    },
+    {
+      "row": 26,
+      "id": "the_miss",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE MISS",
+        "description": "Gary Anderson missed a late field goal with Minnesota leading 27-20 in the NFC Championship Game. Chris Chandler took Atlanta from its own 29 and found Terance Mathis for the tying touchdown with 49 seconds left. Morten Andersen later kicked the winning field goal in overtime. The Falcons beat the Vikings 30-27 at the Metrodome and reached Super Bowl XXXIII.",
+        "objective": "Rally Chris Chandler's Falcons, then win with Morten Andersen.",
+        "date": "January 17, 1999"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+        "https://www.atlantafalcons.com/news/1998-nfc-championship-game-postgame-notes",
+        "https://www.nfl.com/news/1998-nfc-championship-09000d5d8060961f"
+      ]
+    },
+    {
+      "row": 27,
+      "id": "helmet_catch",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLII",
+      "text": {
+        "title": "SUPER BOWL XLII: TYREE",
+        "description": "Super Bowl XLII: Eli Manning took over at the Giants' 17, down 14-10 with 2:39 left. On third-and-five he escaped New England's pass rush and found David Tyree, who pinned the ball against his helmet for a 32-yard gain. Manning then hit Plaxico Burress for a 13-yard touchdown with 35 seconds left. New York won 17-14, ending the Patriots' unbeaten season.",
+        "objective": "Find David Tyree with Eli Manning and win Super Bowl XLII.",
+        "date": "February 3, 2008"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572"
+      ]
+    },
+    {
+      "row": 28,
+      "id": "toe_tap",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLIII",
+      "text": {
+        "title": "SUPER BOWL XLIII: HOLMES",
+        "description": "Super Bowl XLIII: Larry Fitzgerald's long touchdown put Arizona ahead 23-20. Ben Roethlisberger answered with an 88-yard Pittsburgh drive, repeatedly finding Santonio Holmes. Holmes caught the winning six-yard pass in the back corner of the end zone with both feet down and 35 seconds left. The Steelers won 27-23 at Raymond James Stadium for their sixth title.",
+        "objective": "Find Santonio Holmes with Ben Roethlisberger to win Super Bowl XLIII.",
+        "date": "February 1, 2009"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII"
+      ]
+    },
+    {
+      "row": 29,
+      "id": "manningham",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLVI",
+      "text": {
+        "title": "SUPER BOWL XLVI: SIDELINE",
+        "description": "Super Bowl XLVI: Eli Manning took over at New York's 12 with the Patriots ahead 17-15 and 3:46 left. Mario Manningham made a 38-yard catch along the left sideline, keeping both feet in bounds. Ahmad Bradshaw finished the drive with a six-yard touchdown run with 57 seconds remaining. The Giants held off Tom Brady and won 21-17 at Lucas Oil Stadium.",
+        "objective": "Find Mario Manningham with Eli Manning and win Super Bowl XLVI.",
+        "date": "February 5, 2012"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI"
+      ]
+    },
+    {
+      "row": 30,
+      "id": "comeback_28_3",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "LI",
+      "text": {
+        "title": "SUPER BOWL LI: 28-3",
+        "description": "Super Bowl LI: Tom Brady's Patriots trailed Atlanta 28-3 in the third quarter. Dont'a Hightower forced a crucial Matt Ryan fumble, Julian Edelman made a diving catch, and James White scored the tying touchdown before a two-point conversion. White's two-yard run ended overtime. New England won 34-28 at NRG Stadium after scoring 31 unanswered points.",
+        "objective": "Rally Tom Brady from 28-3 down and win Super Bowl LI with James White.",
+        "date": "February 5, 2017"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI"
+      ]
+    },
+    {
+      "row": 31,
+      "id": "fourth_and_18",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "FOURTH AND EIGHTEEN",
+        "description": "Kirk Cousins took over at Minnesota's 24 with Buffalo ahead 27-23. Facing fourth-and-18 later in the drive, Cousins found Justin Jefferson, who reached over Cam Lewis for a one-handed 32-yard catch. Eric Kendricks then recovered Josh Allen's goal-line fumble for a touchdown. Patrick Peterson's overtime interception sealed Minnesota's 33-30 win at Highmark Stadium.",
+        "objective": "Find Justin Jefferson with Kirk Cousins and beat Josh Allen's Bills.",
+        "date": "November 13, 2022"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 32,
+      "id": "music_city_miracle",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MUSIC CITY MIRACLE",
+        "description": "Steve Christie put Buffalo ahead 16-15 with 16 seconds left in the AFC Wild Card game. On the kickoff, Lorenzo Neal handed the ball to Frank Wycheck, whose cross-field lateral reached Kevin Dyson. Dyson raced 75 yards for the winning touchdown. Officials upheld the lateral after replay, and Steve McNair's Titans won 22-16 at Adelphia Coliseum.",
+        "objective": "Return Steve Christie's kickoff with Frank Wycheck and Kevin Dyson.",
+        "date": "January 8, 2000"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    {
+      "row": 33,
+      "id": "tuck_rule",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE TUCK RULE GAME",
+        "description": "Tom Brady lost the ball with New England trailing Oakland 13-10, but replay applied the tuck rule and changed the fumble to an incomplete pass. Adam Vinatieri then made a 45-yard tying field goal through the snow. Brady led another drive in overtime, and Vinatieri's 23-yard kick gave the Patriots a 16-13 divisional playoff victory at Foxboro Stadium.",
+        "objective": "Lead Tom Brady through the snow and win with Adam Vinatieri.",
+        "date": "January 19, 2002"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    {
+      "row": 34,
+      "id": "super_bowl_shootout",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XXXVIII",
+      "text": {
+        "title": "SUPER BOWL XXXVIII: FINALE",
+        "description": "Super Bowl XXXVIII: Jake Delhomme found Ricky Proehl for a touchdown to tie Carolina and New England at 29. John Kasay's kickoff went out of bounds, giving Tom Brady the ball at his own 40. Brady moved the Patriots into range, and Adam Vinatieri made a 41-yard field goal with four seconds left. New England beat the Panthers 32-29 at Reliant Stadium.",
+        "objective": "Answer Jake Delhomme with Tom Brady and win Super Bowl XXXVIII.",
+        "date": "February 1, 2004"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
+      ]
+    },
+    {
+      "row": 35,
+      "id": "ambush",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLIV",
+      "text": {
+        "title": "SUPER BOWL XLIV: AMBUSH",
+        "description": "Super Bowl XLIV: Drew Brees and the Saints trailed Peyton Manning's Colts 10-6 at halftime. Thomas Morstead opened the second half with a surprise onside kick, and Chris Reis recovered for New Orleans. Brees led the comeback, while Tracy Porter's late interception return clinched a 31-17 Saints victory at Sun Life Stadium, their first Super Bowl title.",
+        "objective": "Recover Thomas Morstead's onside kick and win Super Bowl XLIV with Drew Brees.",
+        "date": "February 7, 2010"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
+      ]
+    },
+    {
+      "row": 36,
+      "id": "new_meadowlands_miracle",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "NEW MEADOWLANDS MIRACLE",
+        "description": "Michael Vick's Eagles trailed the Giants 31-10 in the fourth quarter. Vick found Brent Celek, ran for a touchdown and hit Jeremy Maclin to tie the game. With 14 seconds left, Matt Dodge punted to DeSean Jackson. Jackson recovered his muff, broke through and returned the punt 65 yards for a touchdown as time expired. Philadelphia won 38-31 at New Meadowlands Stadium.",
+        "objective": "Rally Michael Vick's Eagles and finish with DeSean Jackson.",
+        "date": "December 19, 2010"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands"
+      ]
+    },
+    {
+      "row": 37,
+      "id": "beast_quake",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "BEAST QUAKE",
+        "description": "Drew Brees had brought New Orleans within four points of Seattle in the NFC Wild Card game. Marshawn Lynch then took Matt Hasselbeck's handoff and broke tackle after tackle, including a stiff-arm of Tracy Porter, on a 67-yard touchdown run. Seattle held on for a 41-36 win at Qwest Field. Lynch's run became known as Beast Quake.",
+        "objective": "Break loose with Marshawn Lynch and beat Drew Brees' Saints.",
+        "date": "January 8, 2011"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake"
+      ]
+    },
+    {
+      "row": 38,
+      "id": "catch_three",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE CATCH III",
+        "description": "Drew Brees found Jimmy Graham for a long touchdown that put New Orleans ahead 32-29 with 1:37 left. Alex Smith answered, taking San Francisco downfield with big throws to Vernon Davis. Davis caught Smith's 14-yard touchdown pass with nine seconds remaining, giving the 49ers a 36-32 divisional playoff win at Candlestick Park and a place in the NFC title game.",
+        "objective": "Find Vernon Davis with Alex Smith to win at Candlestick Park.",
+        "date": "January 14, 2012"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Catch_III"
+      ]
+    },
+    {
+      "row": 39,
+      "id": "mile_high_miracle",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MILE HIGH MIRACLE",
+        "description": "Joe Flacco's Ravens trailed Denver 35-28 with time running out in their AFC divisional playoff. On third down, Flacco threw deep to Jacoby Jones, who got behind Rahim Moore for a 70-yard touchdown with 31 seconds left. Corey Graham later intercepted Peyton Manning, and Justin Tucker's field goal in the second overtime gave Baltimore a 38-35 victory.",
+        "objective": "Find Jacoby Jones with Joe Flacco and beat Peyton Manning's Broncos.",
+        "date": "January 12, 2013"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle"
+      ]
+    },
+    {
+      "row": 40,
+      "id": "goal_line_stand",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLVII",
+      "text": {
+        "title": "SUPER BOWL XLVII: HOLD ON",
+        "description": "Super Bowl XLVII: Colin Kaepernick brought San Francisco back after Baltimore built a 28-6 lead. The 49ers reached the Ravens' seven-yard line on their final drive, down 34-29. Ray Lewis and the Baltimore defense held through four plays, including three throws toward Michael Crabtree. After a deliberate safety, Joe Flacco's Ravens finished a 34-31 win.",
+        "objective": "Stop Colin Kaepernick with Ray Lewis and win Super Bowl XLVII.",
+        "date": "February 3, 2013"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    {
+      "row": 41,
+      "id": "dez_caught_it",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "DEZ CAUGHT IT?",
+        "description": "Tony Romo faced fourth-and-two with Dallas trailing Green Bay 26-21 in the divisional playoff. Dez Bryant leaped for Romo's deep pass and reached toward the goal line as he fell. Replay overturned the catch under the rule then in force. Aaron Rodgers and the Packers ran out the clock, leaving Dallas with a 26-21 loss at Lambeau Field.",
+        "objective": "Find Dez Bryant with Tony Romo and change the finish at Lambeau Field.",
+        "date": "January 11, 2015"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs"
+      ]
+    },
+    {
+      "row": 42,
+      "id": "butler_goal_line",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "XLIX",
+      "text": {
+        "title": "SUPER BOWL XLIX: BUTLER",
+        "description": "Super Bowl XLIX: Tom Brady put New England ahead 28-24 with a touchdown pass to Julian Edelman. Russell Wilson moved Seattle to the Patriots' one-yard line after Jermaine Kearse's juggling catch and a Marshawn Lynch run. Malcolm Butler jumped Wilson's pass toward Ricardo Lockette for an interception with 20 seconds left. New England held on to win 28-24.",
+        "objective": "Intercept Russell Wilson with Malcolm Butler to win Super Bowl XLIX.",
+        "date": "February 1, 2015"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
+      ]
+    },
+    {
+      "row": 43,
+      "id": "miracle_in_motown",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MIRACLE IN MOTOWN",
+        "description": "Aaron Rodgers and Green Bay trailed Detroit 23-21 when a penalty gave the Packers one untimed down. Rodgers escaped the rush and launched a 61-yard pass into the end zone. Tight end Richard Rodgers rose above the crowd to make the touchdown catch. Green Bay won 27-23 at Ford Field, completing a comeback from a 20-point deficit in the third quarter.",
+        "objective": "Launch Aaron Rodgers' last pass to Richard Rodgers and stun Detroit.",
+        "date": "December 3, 2015"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ]
+    },
+    {
+      "row": 44,
+      "id": "minneapolis_miracle",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "MINNEAPOLIS MIRACLE",
+        "description": "Drew Brees had helped New Orleans take a 24-23 lead with 25 seconds left. Case Keenum moved Minnesota upfield, then threw to Stefon Diggs along the right sideline. Marcus Williams missed the tackle, Diggs stayed in bounds and ran for a 61-yard touchdown as time expired. The Vikings won 29-24 at U.S. Bank Stadium and advanced to the NFC Championship Game.",
+        "objective": "Find Stefon Diggs with Case Keenum and win on the final play.",
+        "date": "January 14, 2018"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds"
+      ]
+    },
+    {
+      "row": 45,
+      "id": "philly_special",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "LII",
+      "text": {
+        "title": "SUPER BOWL LII: PHILLY",
+        "description": "Super Bowl LII: Philadelphia faced fourth-and-goal at New England's one with 38 seconds left in the first half. Nick Foles moved out of the shotgun, Corey Clement took the snap and handed to Trey Burton, and Burton threw a touchdown to Foles. The Philly Special helped the Eagles beat Tom Brady's Patriots 41-33 at U.S. Bank Stadium for their first Super Bowl title.",
+        "objective": "Throw Trey Burton's pass to Nick Foles and win Super Bowl LII.",
+        "date": "February 4, 2018"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Philly_Special",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII"
+      ]
+    },
+    {
+      "row": 46,
+      "id": "jet_chip_wasp",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "LIV",
+      "text": {
+        "title": "SUPER BOWL LIV: WASP",
+        "description": "Super Bowl LIV: Patrick Mahomes' Chiefs trailed San Francisco 20-10 in the fourth quarter. On third-and-15, Mahomes found Tyreek Hill for 44 yards on Jet Chip Wasp. Travis Kelce and Damien Williams then caught touchdown passes, and Williams added a late touchdown run. Kansas City scored 21 unanswered points and beat the 49ers 31-20 at Hard Rock Stadium.",
+        "objective": "Find Tyreek Hill with Patrick Mahomes and win Super Bowl LIV.",
+        "date": "February 2, 2020"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV"
+      ]
+    },
+    {
+      "row": 47,
+      "id": "thirteen_seconds",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THIRTEEN SECONDS",
+        "description": "Josh Allen found Gabe Davis for a touchdown to put Buffalo ahead 36-33 with 13 seconds left. Patrick Mahomes completed passes to Tyreek Hill and Travis Kelce, setting up Harrison Butker's tying field goal as regulation expired. Kansas City won the overtime toss, and Mahomes found Kelce for the winning touchdown in a 42-36 AFC divisional playoff victory.",
+        "objective": "Use Patrick Mahomes' final 13 seconds to force overtime and beat Buffalo.",
+        "date": "January 23, 2022"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/13_seconds_game"
+      ]
+    },
+    {
+      "row": 48,
+      "id": "donald_fourth_down",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "LVI",
+      "text": {
+        "title": "SUPER BOWL LVI: DONALD",
+        "description": "Super Bowl LVI: Matthew Stafford found Cooper Kupp for a touchdown to put Los Angeles ahead 23-20 with 1:25 left. Joe Burrow moved Cincinnati to the Rams' 49. Aaron Donald helped stop Samaje Perine on third-and-one, then pressured Burrow into an incomplete fourth-down pass. The Rams won 23-20 at SoFi Stadium after Donald ended the Bengals' final chance.",
+        "objective": "Stop Joe Burrow with Aaron Donald and win Super Bowl LVI.",
+        "date": "February 13, 2022"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback"
+      ]
+    },
+    {
+      "row": 49,
+      "id": "comeback_33",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": null,
+      "text": {
+        "title": "THE 33-POINT COMEBACK",
+        "description": "Kirk Cousins and Minnesota trailed Indianapolis 33-0 at halftime. Cousins threw four second-half touchdown passes, including Dalvin Cook's 64-yard catch and run. A two-point pass to T.J. Hockenson tied the game at 36. Greg Joseph kicked the winning field goal in overtime, giving the Vikings a 39-36 victory and the NFL's largest comeback at U.S. Bank Stadium.",
+        "objective": "Rally Kirk Cousins from 33-0 down and win with Greg Joseph.",
+        "date": "December 17, 2022"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 50,
+      "id": "overtime_in_vegas",
+      "classification": "DESIGN",
+      "historical_basis": "INFERRED from the cited game accounts; source dataset facts independently checked offline where available.",
+      "super_bowl": "LVIII",
+      "text": {
+        "title": "SUPER BOWL LVIII: OVERTIME",
+        "description": "Super Bowl LVIII: Patrick Mahomes led Kansas City to Harrison Butker's tying field goal with three seconds left. Both teams then possessed the ball under the playoff overtime rule. Jake Moody put San Francisco ahead, but Mahomes drove 75 yards and found Mecole Hardman for the winning touchdown. The Chiefs beat the 49ers 25-22 in overtime at Allegiant Stadium in Las Vegas.",
+        "objective": "Find Mecole Hardman with Patrick Mahomes to win Super Bowl LVIII in overtime.",
+        "date": "February 11, 2024"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://www.chiefs.com/super-bowl-lviii/"
+      ]
+    }
+  ]
+}

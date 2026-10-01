@@ -1,0 +1,486 @@
+{
+  "evidence": "EXPERIMENTAL / UNWITNESSED: sourced data and a documented ratings model; no lab run, not played by Noah",
+  "schema": 1,
+  "teams": {
+    "49ers_2011": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2012": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2019": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2023": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2023,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "bengals_2021": {
+      "abbreviation": "CIN",
+      "asset_code": "06",
+      "city": "Cincinnati",
+      "nickname": "Bengals",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "bengals",
+      "template": "h-06-1988-bengals-1.iff"
+    },
+    "bills_1999": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 1999,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "bills_2021": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "bills_2022": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "broncos_2012": {
+      "abbreviation": "DEN",
+      "asset_code": "08",
+      "city": "Denver",
+      "nickname": "Broncos",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "broncos",
+      "template": "h-08-1998-broncos-0.iff"
+    },
+    "cardinals_2008": {
+      "abbreviation": "ARZ",
+      "asset_code": "00",
+      "city": "Arizona",
+      "nickname": "Cardinals",
+      "retail_same_season": null,
+      "season": 2008,
+      "selector": "cardinals",
+      "template": "h-00-1975-cardinals-3.iff"
+    },
+    "chiefs_2019": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "chiefs_2021": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "chiefs_2023": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2023,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "colts_2009": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2009,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff"
+    },
+    "colts_2022": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff"
+    },
+    "cowboys_2014": {
+      "abbreviation": "DAL",
+      "asset_code": "07",
+      "city": "Dallas",
+      "nickname": "Cowboys",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "cowboys",
+      "template": "h-07-1992-cowboys-2.iff"
+    },
+    "eagles_2010": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff"
+    },
+    "eagles_2017": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff"
+    },
+    "falcons_1998": {
+      "abbreviation": "ATL",
+      "asset_code": "01",
+      "city": "Atlanta",
+      "nickname": "Falcons",
+      "retail_same_season": "h-01-1998-falcons-1.iff",
+      "season": 1998,
+      "selector": "falcons",
+      "template": "h-01-1998-falcons-1.iff"
+    },
+    "falcons_2016": {
+      "abbreviation": "ATL",
+      "asset_code": "01",
+      "city": "Atlanta",
+      "nickname": "Falcons",
+      "retail_same_season": null,
+      "season": 2016,
+      "selector": "falcons",
+      "template": "h-01-1998-falcons-1.iff"
+    },
+    "giants_2007": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2007,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "giants_2010": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "giants_2011": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "lions_2015": {
+      "abbreviation": "DET",
+      "asset_code": "09",
+      "city": "Detroit",
+      "nickname": "Lions",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "lions",
+      "template": "h-09-1991-lions-3.iff"
+    },
+    "packers_2014": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff"
+    },
+    "packers_2015": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff"
+    },
+    "panthers_2003": {
+      "abbreviation": "CAR",
+      "asset_code": "04",
+      "city": "Carolina",
+      "nickname": "Panthers",
+      "retail_same_season": "h-04-2003-panthers-0.iff",
+      "season": 2003,
+      "selector": "panthers",
+      "template": "h-04-2003-panthers-0.iff"
+    },
+    "patriots_2001": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": "h-16-2001-patriots-0.iff",
+      "season": 2001,
+      "selector": "patriots",
+      "template": "h-16-2001-patriots-0.iff"
+    },
+    "patriots_2003": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": "h-16-2003-patriots-0.iff",
+      "season": 2003,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2007": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2007,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2011": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2014": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2016": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2016,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2017": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "raiders_2001": {
+      "abbreviation": "OAK",
+      "asset_code": "20",
+      "city": "Oakland",
+      "nickname": "Raiders",
+      "retail_same_season": null,
+      "season": 2001,
+      "selector": "raiders",
+      "template": "h-20-1983-raiders-0.iff"
+    },
+    "rams_2021": {
+      "abbreviation": "STL",
+      "asset_code": "23",
+      "city": "Los Angeles",
+      "nickname": "Rams",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "rams",
+      "template": "h-23-1999-rams-2.iff"
+    },
+    "ravens_2012": {
+      "abbreviation": "BAL",
+      "asset_code": "02",
+      "city": "Baltimore",
+      "nickname": "Ravens",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "ravens",
+      "template": "h-02-2000-ravens-0.iff"
+    },
+    "saints_2009": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2009,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2010": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2011": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2017": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "seahawks_2010": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff"
+    },
+    "seahawks_2014": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff"
+    },
+    "steelers_2008": {
+      "abbreviation": "PIT",
+      "asset_code": "22",
+      "city": "Pittsburgh",
+      "nickname": "Steelers",
+      "retail_same_season": null,
+      "season": 2008,
+      "selector": "steelers",
+      "template": "h-22-1995-steelers-0.iff"
+    },
+    "titans_1999": {
+      "abbreviation": "TEN",
+      "asset_code": "28",
+      "city": "Tennessee",
+      "nickname": "Titans",
+      "retail_same_season": "h-28-1999-titans-0.iff",
+      "season": 1999,
+      "selector": "titans",
+      "template": "h-28-1999-titans-0.iff"
+    },
+    "vikings_1998": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": "h-15-1998-vikings-0.iff",
+      "season": 1998,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    },
+    "vikings_2017": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    },
+    "vikings_2022": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    }
+  }
+}

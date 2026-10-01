@@ -71,7 +71,7 @@ class VersionTruthTests(unittest.TestCase):
 class EveryCapabilityIsReachableTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+        cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False))
 
     def test_the_facemask_colours_live_in_uniforms_and_equipment(self) -> None:
         found = [
@@ -162,7 +162,7 @@ class CardsTellTheTruthTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+        cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False))
         from mod_editor.gui.studio_qt import _WORKSPACE_CAPABILITIES
         cls.workspaces = _WORKSPACE_CAPABILITIES
 

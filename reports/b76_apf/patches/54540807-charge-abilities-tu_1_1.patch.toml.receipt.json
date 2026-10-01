@@ -1,0 +1,217 @@
+{
+  "charged_abilities": [
+    "ankle_breaker",
+    "arms_of_steel",
+    "battering_ram",
+    "cyclone",
+    "stop_on_a_dime",
+    "swim",
+    "bull_rush",
+    "club",
+    "rip",
+    "spin",
+    "laser_arm",
+    "rocket_arm",
+    "finesse",
+    "power",
+    "finesse_and_power"
+  ],
+  "classification": "EXPERIMENTAL",
+  "enabled": true,
+  "feedback_follows_charge": true,
+  "gold_comparison": 2223792332,
+  "hook": 2223792320,
+  "image_sha256": "65f522ce1cdda42cf19c112e9ec07302e89c81e4148c9f22e6db5e03952f9457",
+  "module_hash": "CEA825F7C2012F5A",
+  "original_words": [
+    {
+      "address": 2223792320,
+      "value": 2172452932
+    },
+    {
+      "address": 2225762336,
+      "value": 4290830480
+    },
+    {
+      "address": 2225762512,
+      "value": 3986620154
+    },
+    {
+      "address": 2225763996,
+      "value": 1083834388
+    },
+    {
+      "address": 2225764108,
+      "value": 790036481
+    },
+    {
+      "address": 2225764624,
+      "value": 1100546228
+    }
+  ],
+  "output_file": "54540807-charge-abilities-tu_1_1.patch.toml",
+  "output_sha256": "0041810f240e156ef950838ea47d67a1b3921561506afa622dfb65cbd4932556",
+  "passing_mode_cap_replaced": true,
+  "profile": "tu_1_1",
+  "qb_gate": 2223792204,
+  "qb_gate_preserved": true,
+  "reservation_end": 2228277632,
+  "reservation_section": "XEX code page 0x84D00000 (0x11), after .text virtual end",
+  "resume": 2223792356,
+  "retail_cap_bytes": "817d0044816b0010556b056c2b0b0200409a00102f1c00003b600001419a00083b600000",
+  "retail_qb_gate_bytes": "817d00443b800001816b00285569077a2b090000409a001c556b07382b0b0000409a0010816a0018556b07b8916a0018",
+  "revision": 2,
+  "routine": 2223792120,
+  "schema": "apf2k8_charge_abilities/v2",
+  "scope": "Input charge state machine and charge feedback; CPU bypass unchanged; gameplay UNWITNESSED.",
+  "section": ".text",
+  "source": {
+    "input_paths": []
+  },
+  "toml_reparsed": true,
+  "trampoline": 2228277504,
+  "word_masks": [
+    [
+      36,
+      260046848
+    ],
+    [
+      40,
+      508
+    ],
+    [
+      44,
+      234881024
+    ]
+  ],
+  "writes": [
+    {
+      "address": 2223792320,
+      "value": 1212444736
+    },
+    {
+      "address": 2228277504,
+      "value": 2172452932
+    },
+    {
+      "address": 2228277508,
+      "value": 2171273252
+    },
+    {
+      "address": 2228277512,
+      "value": 1433075984
+    },
+    {
+      "address": 2228277516,
+      "value": 722141184
+    },
+    {
+      "address": 2228277520,
+      "value": 1083834420
+    },
+    {
+      "address": 2228277524,
+      "value": 2172452932
+    },
+    {
+      "address": 2228277528,
+      "value": 2171273256
+    },
+    {
+      "address": 2228277532,
+      "value": 1433077242
+    },
+    {
+      "address": 2228277536,
+      "value": 722141184
+    },
+    {
+      "address": 2228277540,
+      "value": 1083834400
+    },
+    {
+      "address": 2228277544,
+      "value": 2172452932
+    },
+    {
+      "address": 2228277548,
+      "value": 2171273260
+    },
+    {
+      "address": 2228277552,
+      "value": 1433075980
+    },
+    {
+      "address": 2228277556,
+      "value": 722141184
+    },
+    {
+      "address": 2228277560,
+      "value": 1083834380
+    },
+    {
+      "address": 2228277564,
+      "value": 996147200
+    },
+    {
+      "address": 2228277568,
+      "value": 1207959560
+    },
+    {
+      "address": 2228277572,
+      "value": 996147201
+    },
+    {
+      "address": 2228277576,
+      "value": 1270583196
+    },
+    {
+      "address": 2225762336,
+      "value": 1210474800
+    },
+    {
+      "address": 2225762512,
+      "value": 3986556658
+    },
+    {
+      "address": 2225763996,
+      "value": 1610612736
+    },
+    {
+      "address": 2225764108,
+      "value": 4280152064
+    },
+    {
+      "address": 2225764624,
+      "value": 1610612736
+    },
+    {
+      "address": 2228277584,
+      "value": 2171208104
+    },
+    {
+      "address": 2228277588,
+      "value": 1433098110
+    },
+    {
+      "address": 2228277592,
+      "value": 722141188
+    },
+    {
+      "address": 2228277596,
+      "value": 4290830480
+    },
+    {
+      "address": 2228277600,
+      "value": 1083834376
+    },
+    {
+      "address": 2228277604,
+      "value": 4290810000
+    },
+    {
+      "address": 2228277608,
+      "value": 1272553148
+    }
+  ]
+}

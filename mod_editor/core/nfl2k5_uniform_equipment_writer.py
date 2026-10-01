@@ -1945,6 +1945,7 @@ def build_unified_uniform_equipment_imports(
 
     previews: list[tuple[str, bytes]] = []
     edit_reports: list[dict[str, Any]] = []
+    from mod_editor.core.equipment_palette import compact_quality
     for target, _path in selected:
         preview_name = (
             f"equipment_{outer_index}_{chunk_index}_"
@@ -1974,7 +1975,7 @@ def build_unified_uniform_equipment_imports(
             "mip_levels": template["mip_levels"],
             "size_reduction": template["size_reduction"],
             "mip_filter": template["mip_filter"],
-            "palette_quality": template["palette_quality"],
+            "palette_quality": compact_quality(template["palette_quality"]),
             "levels": [dict(level, quality=dict(level["quality"])) for level in template["levels"]],
         })
 

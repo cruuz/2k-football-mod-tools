@@ -1,0 +1,155 @@
+[
+ [
+  "live",
+  "GR:frame_000621.png",
+  {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "quarter": 1,
+   "clock": 687,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 7,
+   "possession": "away"
+  }
+ ],
+ [
+  "kickoff",
+  "GR:frame_000020.png",
+  {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 0,
+   "home_score": 0,
+   "quarter": 1,
+   "clock": 899,
+   "play_clock": 25,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "phase": 2
+  }
+ ],
+ [
+  "ball_on",
+  "BC:2036",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 7,
+   "home_score": 7,
+   "quarter": 1,
+   "clock": 163,
+   "play_clock": 25,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "event": "ball on"
+  }
+ ],
+ [
+  "flag",
+  "BC:6361",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 10,
+   "home_score": 24,
+   "quarter": 3,
+   "clock": 61,
+   "play_clock": 40,
+   "down": 3,
+   "distance": 5,
+   "possession": "home",
+   "event": "FLAG"
+  }
+ ],
+ [
+  "interim",
+  "BC:7017",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 10,
+   "home_score": 31,
+   "quarter": 4,
+   "clock": 852,
+   "play_clock": 32,
+   "down": 3,
+   "distance": 4,
+   "possession": "away",
+   "previous_down": 2
+  }
+ ],
+ [
+  "clock54",
+  "GR:frame_001526.png",
+  {
+   "away": "NYG",
+   "home": "LAR",
+   "away_score": 6,
+   "home_score": 21,
+   "quarter": 3,
+   "clock": 54,
+   "play_clock": 9,
+   "down": 1,
+   "distance": 10,
+   "possession": "home"
+  }
+ ],
+ [
+  "pc_red",
+  "BC:5250",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 7,
+   "home_score": 21,
+   "quarter": 3,
+   "clock": 603,
+   "play_clock": 2,
+   "down": 4,
+   "distance": 7,
+   "possession": "away"
+  }
+ ],
+ [
+  "timeout_away",
+  "BC:7057",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 10,
+   "home_score": 31,
+   "quarter": 4,
+   "clock": 820,
+   "play_clock": 25,
+   "down": 3,
+   "distance": 5,
+   "possession": "away",
+   "away_timeouts": 2,
+   "timeout_called": "away"
+  }
+ ],
+ [
+  "timeout_home",
+  "BC:7994",
+  {
+   "away": "DEN",
+   "home": "KC",
+   "away_score": 10,
+   "home_score": 31,
+   "quarter": 4,
+   "clock": 270,
+   "play_clock": 25,
+   "down": 1,
+   "distance": 10,
+   "possession": "away",
+   "away_timeouts": 2,
+   "home_timeouts": 2,
+   "timeout_called": "home"
+  }
+ ]
+]

@@ -1,0 +1,15 @@
+PROVED OFFLINE: native money text dumps; no renderer or xemu.
+PROVED OFFLINE: Cap screen | League cap | 301.20m
+PROVED OFFLINE: Cap screen | Bills payroll | 242.07m
+PROVED OFFLINE: Cap screen | Bills cap space | 59.12m
+PROVED OFFLINE: Contract summary | Josh Allen fitted remaining contract | 5 years / 325.36m + 65.06m bonus
+PROVED OFFLINE: Trade / roster list | Josh Allen current cap charge | 44.24m
+PROVED OFFLINE: Trade / roster list | Josh Allen fitted total | 325.36m
+PROVED OFFLINE: Trade / roster list | Josh Allen modeled release penalty | 65.06m
+PROVED OFFLINE: Re-sign / free-agent list | Josh Allen current base charge | 31.23m
+PROVED OFFLINE: Re-sign / free-agent list | Josh Allen generated demand | 65.07m
+PROVED OFFLINE: Negotiation annual schedule | Annual base charge | 31.23m
+PROVED OFFLINE: Negotiation annual schedule | Annual amortized bonus | 13.01m
+PROVED OFFLINE: Player card | Salary text branch (fitted total) | Salary : 325.36m
+DESIGN: contract figures are fitted cap liabilities. Original cash/APY is in the source ledger.
+PROVED OFFLINE: formatting vector 13,750 game-thousands -> 55.00m, not an APY callback.

@@ -66,13 +66,38 @@ def compile_texture(template):
                                compiler=receipt)
 
 
+def _helmets():
+    """Modern helmets (beta 76 hm) and the pins of each of its modes that ship: its player scenes are accepted under
+    the Guardian overlay (the two edits touch disjoint bytes and commute; see nfl2k5_modern_helmets)."""
+    try:
+        from . import nfl2k5_modern_helmets as helmets
+    except ImportError:
+        return None, []
+    found = []
+    for mode in getattr(helmets, "MODES", ("speedflex",)):
+        try:
+            found.append(helmets.load_pins(mode=mode) if hasattr(helmets, "MODES") else helmets.load_pins())
+        except (OSError, ValueError):
+            continue
+    return helmets, found
+
+
+def _target_ok(payload, target, expected):
+    at = target.pack_offset-RETAIL_START
+    found = digest(payload[at:at+target.size])
+    if found == getattr(target, expected):
+        return True
+    _module, all_pins = _helmets()
+    field = "span_applied" if expected == "retail_sha256" else "span_composed"
+    return any(found == pins["scenes"].get(target.key, {}).get(field) for pins in all_pins)
+
+
 def collection_status(payload):
     if len(payload) not in (RETAIL_SIZE, RETAIL_SIZE+TEXTURE_SIZE):
         return "foreign"
     expected = "retail_sha256" if len(payload) == RETAIL_SIZE else "applied_sha256"
     for target in TARGETS:
-        at = target.pack_offset-RETAIL_START
-        if digest(payload[at:at+target.size]) != getattr(target, expected):
+        if not _target_ok(payload, target, expected):
             return "foreign"
     if expected == "applied_sha256" and digest(payload[RETAIL_SIZE:]) != TEXTURE_SHA256:
         return "foreign"
@@ -98,8 +123,17 @@ def compile_collection(payload, template=None):
         for target in TARGETS:
             at = target.pack_offset-RETAIL_START
             before = payload[at:at+target.size]
-            after, receipt = cap._compile_model(before, target, directory)
-            require(digest(after) == target.applied_sha256, "Guardian B compiler differs from its pin")
+            if digest(before) == target.retail_sha256:
+                after, receipt = cap._compile_model(before, target, directory)
+                require(digest(after) == target.applied_sha256, "Guardian B compiler differs from its pin")
+            else:
+                # the Modern helmets scene: the same shell-B lanes written directly, refitted the same way
+                helmets, all_pins = _helmets()
+                pins = next((p for p in all_pins
+                             if digest(before) == p["scenes"].get(target.key, {}).get("span_applied")), None)
+                require(pins is not None, "Guardian B: unsupported player scene")
+                after = helmets.apply_guardian_lanes(target.key, before, pins)
+                receipt = dict(route="modern_helmets_composed", after_sha256=digest(after))
             result[at:at+target.size] = after
             receipts.append(dict(key=target.key, before_sha256=digest(before), after_sha256=digest(after),
                                  compiler={**receipt, "profile": PROFILE}))

@@ -1,0 +1,951 @@
+{
+ "schema": "b76-s14-author-steps/v1",
+ "metric": "reports/b76_s12/player_scale.py (NYG-LAR, q1 and q4, both aspects) and reports/b72_s11/player_scale.py (DEN-KC and LV-HOU reference frames), mean player px; lower is better; logo and wing overlap and must not be summed",
+ "rule": "A step is kept when its targeted features fall and no other feature rises by more than 2 player px (the metric floor; any cell change re-quantizes the shared P8 atlas, which moves unrelated features by 1 to 2 px). Same rule as b76-s12.",
+ "accepted": {
+  "wingcell": {
+   "a2": 0.45
+  },
+  "display": "wing and wash only",
+  "marks": [
+   "nyj",
+   "dal",
+   "ind"
+  ]
+ },
+ "final_residuals": "reports/b76_s14/residuals_after.json",
+ "trials": [
+  {
+   "trial": "base (s12 commit 30db13952)",
+   "params": {},
+   "NYG_LAR": {
+    "wing_colour": 1099.75,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1311.25,
+    "logo": 1931.25,
+    "score": 16.75,
+    "down_capsule": 611.25,
+    "housing_rim": 691.75,
+    "pill": 421.75
+   },
+   "verdict": "baseline",
+   "reason": ""
+  },
+  {
+   "trial": "display wing and wash, s12 wing cell (a2 0.60)",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "a2": 0.6
+   },
+   "NYG_LAR": {
+    "wing_colour": 1104.75,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1086.5,
+    "logo": 1717.0,
+    "score": 15.75,
+    "down_capsule": 611.25,
+    "housing_rim": 684.75,
+    "pill": 421.75
+   },
+   "verdict": "superseded",
+   "reason": "Guard wing -224.75 and logo -214.25, but NYG-LAR wing +5: the s12 top glow (a2 0.60) draws the brighter shade along the top rows past where the broadcast shows it."
+  },
+  {
+   "trial": "display wing, wash and rim",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "rim": "= wing",
+    "a2": 0.6
+   },
+   "NYG_LAR": {
+    "wing_colour": 1124.5,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 601.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1096.0,
+    "logo": 1713.75,
+    "score": 15.75,
+    "down_capsule": 611.25,
+    "housing_rim": 766.75,
+    "pill": 421.75
+   },
+   "verdict": "rejected",
+   "reason": "housing_rim +440 on NYG-LAR: the rim cell glows along both bar edges; the broadcast bottom rim is neutral. Rim keeps the sourced accent."
+  },
+  {
+   "trial": "display wing, wash, rim and plate (measured plate)",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "rim": "= wing",
+    "plate": {
+     "NYG": "#1B3B93",
+     "LAR": "#17449F",
+     "DEN": "#244B80",
+     "KC": "#A5143B",
+     "LV": "#737373",
+     "HOU": "#A70B31"
+    },
+    "a2": 0.6
+   },
+   "NYG_LAR": {
+    "wing_colour": 1124.5,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 599.5,
+    "housing_rim": 601.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1096.0,
+    "logo": 1713.75,
+    "score": 15.75,
+    "down_capsule": 598.25,
+    "housing_rim": 766.75,
+    "pill": 421.75
+   },
+   "verdict": "rejected",
+   "reason": "housing_rim and down_capsule rise on NYG-LAR."
+  },
+  {
+   "trial": "display wing and wash plus measured plate",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "plate": {
+     "NYG": "#1B3B93",
+     "LAR": "#17449F",
+     "DEN": "#244B80",
+     "KC": "#A5143B",
+     "LV": "#737373",
+     "HOU": "#A70B31"
+    },
+    "a2": 0.6
+   },
+   "NYG_LAR": {
+    "wing_colour": 1104.75,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 595.5,
+    "housing_rim": 161.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1086.5,
+    "logo": 1717.0,
+    "score": 15.75,
+    "down_capsule": 599.0,
+    "housing_rim": 717.0,
+    "pill": 421.75
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule +40.5 on NYG-LAR, housing_rim +25.25 on the guard."
+  },
+  {
+   "trial": "a2 0.45 with the first-probe tints",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "a2": 0.45
+   },
+   "NYG_LAR": {
+    "wing_colour": 945.75,
+    "logo": 1234.5,
+    "score": 168.0,
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "pill": 350.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 935.75,
+    "logo": 1742.5,
+    "score": 16.75,
+    "down_capsule": 611.75,
+    "housing_rim": 682.5,
+    "pill": 423.75
+   },
+   "verdict": "scan",
+   "reason": "Top-glow amplitude scan; see the probe-calibrated grid below."
+  },
+  {
+   "trial": "a2 0.30 with the first-probe tints",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "a2": 0.3
+   },
+   "NYG_LAR": {
+    "wing_colour": 1177.0,
+    "logo": 1234.5,
+    "score": 169.5,
+    "down_capsule": 555.5,
+    "housing_rim": 159.5,
+    "pill": 351.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1126.75,
+    "logo": 1772.75,
+    "score": 16.75,
+    "down_capsule": 614.0,
+    "housing_rim": 678.0,
+    "pill": 423.75
+   },
+   "verdict": "scan",
+   "reason": "Top-glow amplitude scan; see the probe-calibrated grid below."
+  },
+  {
+   "trial": "a2 0.45 and top-glow decay d3 300",
+   "params": {
+    "wing": {
+     "NYG": "#3465FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    },
+    "a2": 0.45,
+    "d3": 300
+   },
+   "NYG_LAR": {
+    "wing_colour": 1076.0,
+    "logo": 1234.5,
+    "score": 168.25,
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "pill": 351.0
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 986.5,
+    "logo": 1749.0,
+    "score": 16.75,
+    "down_capsule": 613.5,
+    "housing_rim": 688.25,
+    "pill": 421.75
+   },
+   "verdict": "rejected",
+   "reason": "Worse than d3 461.6 on both."
+  },
+  {
+   "trial": "joint nine-parameter wing field refit to all six broadcast wings, with its own tints",
+   "params": {
+    "wing": {
+     "NYG": "#4367EA",
+     "LAR": "#3B6FF1",
+     "DEN": "#5185DA",
+     "KC": "#FB3565",
+     "LV": "#E4E6E5",
+     "HOU": "#FF2858"
+    },
+    "field": [
+     1.3141805947780032,
+     40.33634364354906,
+     0.5805910768854134,
+     0.7811263176218981,
+     10.518649302360739,
+     994.1989023857979,
+     0.887240004335606,
+     5.273969837989845,
+     165.4273614658702
+    ]
+   },
+   "NYG_LAR": {
+    "wing_colour": 1189.5,
+    "logo": 1236.0,
+    "score": 166.0,
+    "down_capsule": 556.0,
+    "housing_rim": 156.5,
+    "pill": 352.25
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 933.25,
+    "logo": 1679.75,
+    "score": 16.75,
+    "down_capsule": 613.5,
+    "housing_rim": 734.75,
+    "pill": 424.0
+   },
+   "verdict": "rejected",
+   "reason": "NYG-LAR wing +89.75 against s12; the guard gains but the primary metric loses."
+  },
+  {
+   "trial": "joint field with a2 0.50",
+   "params": {
+    "wing": {
+     "NYG": "#4367EA",
+     "LAR": "#3B6FF1",
+     "DEN": "#5185DA",
+     "KC": "#FB3565",
+     "LV": "#E4E6E5",
+     "HOU": "#FF2858"
+    },
+    "field": [
+     1.3141805947780032,
+     40.33634364354906,
+     0.5805910768854134,
+     0.7811263176218981,
+     10.518649302360739,
+     994.1989023857979,
+     0.887240004335606,
+     5.273969837989845,
+     165.4273614658702
+    ],
+    "a2": 0.5
+   },
+   "NYG_LAR": {
+    "wing_colour": 1191.0,
+    "logo": 1235.5,
+    "score": 166.75,
+    "down_capsule": 555.5,
+    "housing_rim": 155.5,
+    "pill": 351.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 926.25,
+    "logo": 1703.25,
+    "score": 16.75,
+    "down_capsule": 615.0,
+    "housing_rim": 719.5,
+    "pill": 423.25
+   },
+   "verdict": "rejected",
+   "reason": "As above."
+  },
+  {
+   "trial": "joint field with d3 300",
+   "params": {
+    "wing": {
+     "NYG": "#4367EA",
+     "LAR": "#3B6FF1",
+     "DEN": "#5185DA",
+     "KC": "#FB3565",
+     "LV": "#E4E6E5",
+     "HOU": "#FF2858"
+    },
+    "field": [
+     1.3141805947780032,
+     40.33634364354906,
+     0.5805910768854134,
+     0.7811263176218981,
+     10.518649302360739,
+     994.1989023857979,
+     0.887240004335606,
+     5.273969837989845,
+     165.4273614658702
+    ],
+    "d3": 300
+   },
+   "NYG_LAR": {
+    "wing_colour": 1225.25,
+    "logo": 1236.0,
+    "score": 167.75,
+    "down_capsule": 556.0,
+    "housing_rim": 156.5,
+    "pill": 352.25
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 921.75,
+    "logo": 1678.5,
+    "score": 16.75,
+    "down_capsule": 614.25,
+    "housing_rim": 719.25,
+    "pill": 421.5
+   },
+   "verdict": "rejected",
+   "reason": "As above."
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.50, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.5,
+    "wing": {
+     "NYG": "#3566FF",
+     "LAR": "#317BFF",
+     "DEN": "#4589F3",
+     "KC": "#FF2866",
+     "LV": "#FFFFFF",
+     "HOU": "#FF1553"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 989.25,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.5,
+    "housing_rim": 159.5,
+    "pill": 351.25
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 972.25,
+    "logo": 1722.75,
+    "score": 15.75,
+    "down_capsule": 610.75,
+    "housing_rim": 686.25,
+    "pill": 422.5
+   },
+   "verdict": "scan",
+   "reason": ""
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.45, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.45,
+    "wing": {
+     "NYG": "#3567FF",
+     "LAR": "#317BFF",
+     "DEN": "#458AF5",
+     "KC": "#FF2866",
+     "LV": "#FFFFFF",
+     "HOU": "#FF1554"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 943.75,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "pill": 350.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 915.5,
+    "logo": 1739.0,
+    "score": 16.75,
+    "down_capsule": 611.75,
+    "housing_rim": 682.25,
+    "pill": 423.75
+   },
+   "verdict": "ACCEPTED",
+   "reason": "Lowest wing residual on both metrics; every other feature within 2 player px."
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.60, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.6,
+    "wing": {
+     "NYG": "#3565FF",
+     "LAR": "#3179FF",
+     "DEN": "#4588F0",
+     "KC": "#FF2865",
+     "LV": "#FEFFFE",
+     "HOU": "#FF1653"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1106.75,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "pill": 350.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1086.5,
+    "logo": 1717.0,
+    "score": 15.75,
+    "down_capsule": 611.25,
+    "housing_rim": 684.75,
+    "pill": 421.75
+   },
+   "verdict": "scan",
+   "reason": ""
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.55, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.55,
+    "wing": {
+     "NYG": "#3566FF",
+     "LAR": "#317AFF",
+     "DEN": "#4588F1",
+     "KC": "#FF2865",
+     "LV": "#FFFFFF",
+     "HOU": "#FF1653"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1058.5,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "pill": 350.25
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 1028.0,
+    "logo": 1719.5,
+    "score": 16.75,
+    "down_capsule": 610.75,
+    "housing_rim": 683.5,
+    "pill": 422.25
+   },
+   "verdict": "scan",
+   "reason": ""
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.35, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.35,
+    "wing": {
+     "NYG": "#3568FF",
+     "LAR": "#317DFF",
+     "DEN": "#468CF8",
+     "KC": "#FF2867",
+     "LV": "#FFFFFF",
+     "HOU": "#FF1554"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1083.5,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 554.5,
+    "housing_rim": 159.5,
+    "pill": 351.0
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 989.75,
+    "logo": 1758.75,
+    "score": 16.75,
+    "down_capsule": 612.5,
+    "housing_rim": 683.75,
+    "pill": 421.0
+   },
+   "verdict": "scan",
+   "reason": ""
+  },
+  {
+   "trial": "probe-calibrated grid: a2 0.40, tints re-measured through this wing cell",
+   "params": {
+    "a2": 0.4,
+    "wing": {
+     "NYG": "#3567FF",
+     "LAR": "#317CFF",
+     "DEN": "#468BF7",
+     "KC": "#FF2867",
+     "LV": "#FFFFFF",
+     "HOU": "#FF1554"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 972.5,
+    "logo": 1235.5,
+    "score": 167.5,
+    "down_capsule": 555.5,
+    "housing_rim": 159.5,
+    "pill": 351.0
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 938.75,
+    "logo": 1748.25,
+    "score": 16.75,
+    "down_capsule": 612.5,
+    "housing_rim": 682.25,
+    "pill": 422.75
+   },
+   "verdict": "scan",
+   "reason": ""
+  },
+  {
+   "trial": "a2 0.45 plus probe-calibrated measured plates",
+   "params": {
+    "spec": "{\"wing\":{\"a2\":0.45}}"
+   },
+   "NYG_LAR": {
+    "wing_colour": 943.75,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 593.5,
+    "housing_rim": 159.5,
+    "pill": 350.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 915.5,
+    "logo": 1739.0,
+    "score": 16.75,
+    "down_capsule": 598.5,
+    "housing_rim": 714.0,
+    "pill": 423.75
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule +38.5 on NYG-LAR and housing_rim +31.75 on the guard. Plate keeps the sourced accent."
+  },
+  {
+   "trial": "a2 0.45 plus the plate gradient and calibrated plate tints",
+   "params": {
+    "spec": "{\"wing\":{\"a2\":0.45},\"plate\":[0.630998863422878, 0.1215395605827477, 0.8110807892923265, 3.122282806343946]}"
+   },
+   "NYG_LAR": {
+    "wing_colour": 948.0,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 603.0,
+    "housing_rim": 157.5,
+    "pill": 367.0
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 914.75,
+    "logo": 1738.75,
+    "score": 16.75,
+    "down_capsule": 630.75,
+    "housing_rim": 714.25,
+    "pill": 440.25
+   },
+   "verdict": "rejected",
+   "reason": "pill +16.5 (atlas re-quantization), down_capsule +48 on NYG-LAR."
+  },
+  {
+   "trial": "a2 0.45 plus the measured horizontal plate gradient, sourced plate tints",
+   "params": {
+    "spec": "{\"wing\":{\"a2\":0.45},\"plate\":[0.630998863422878, 0.1215395605827477, 0.8110807892923265, 3.122282806343946],\"apply_plate\":false}"
+   },
+   "NYG_LAR": {
+    "wing_colour": 948.0,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 575.5,
+    "housing_rim": 151.5,
+    "pill": 367.0
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 914.75,
+    "logo": 1738.75,
+    "score": 16.75,
+    "down_capsule": 859.0,
+    "housing_rim": 771.5,
+    "pill": 440.25
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule +247.75 on the guard: the darker plate ends fall under the surface threshold."
+  },
+  {
+   "trial": "stronger outer-edge coverage: a1 0.95, a2 0.45, tints re-measured through this wing cell",
+   "params": {
+    "a1": 0.95,
+    "a2": 0.45,
+    "wing": {
+     "NYG": "#3462FF",
+     "LAR": "#3075FF",
+     "DEN": "#4383E7",
+     "KC": "#FF2862",
+     "LV": "#F5F7F4",
+     "HOU": "#FF1650"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 959.5,
+    "logo": 1234.5,
+    "score": 167.25,
+    "down_capsule": 555.5,
+    "housing_rim": 159.5,
+    "pill": 352.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 942.0,
+    "logo": 1727.0,
+    "score": 15.75,
+    "down_capsule": 612.75,
+    "housing_rim": 683.0,
+    "pill": 423.25
+   },
+   "verdict": "rejected",
+   "reason": "The measured tints clip at 255 on the dominant channel (the broadcast edge is 7 to 18 percent brighter than our edge coverage reaches), but raising the edge coverage a1 from 0.876 made the wing residual worse on both metrics."
+  },
+  {
+   "trial": "stronger outer-edge coverage: a1 1.15, a2 0.45, tints re-measured through this wing cell",
+   "params": {
+    "a1": 1.15,
+    "a2": 0.45,
+    "wing": {
+     "NYG": "#3159E1",
+     "LAR": "#2E69F2",
+     "DEN": "#3F75CB",
+     "KC": "#F32759",
+     "LV": "#D7D9D7",
+     "HOU": "#F9174A"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1034.0,
+    "logo": 1235.5,
+    "score": 168.0,
+    "down_capsule": 555.5,
+    "housing_rim": 160.0,
+    "pill": 351.5
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 981.75,
+    "logo": 1706.75,
+    "score": 16.75,
+    "down_capsule": 613.5,
+    "housing_rim": 689.75,
+    "pill": 425.25
+   },
+   "verdict": "rejected",
+   "reason": "The measured tints clip at 255 on the dominant channel (the broadcast edge is 7 to 18 percent brighter than our edge coverage reaches), but raising the edge coverage a1 from 0.876 made the wing residual worse on both metrics."
+  },
+  {
+   "trial": "stronger outer-edge coverage: a1 1.05, a2 0.40, tints re-measured through this wing cell",
+   "params": {
+    "a1": 1.05,
+    "a2": 0.4,
+    "wing": {
+     "NYG": "#335DF0",
+     "LAR": "#2F6FFF",
+     "DEN": "#417CD8",
+     "KC": "#FF275D",
+     "LV": "#E5E7E4",
+     "HOU": "#FF174D"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1013.5,
+    "logo": 1234.5,
+    "score": 167.25,
+    "down_capsule": 556.0,
+    "housing_rim": 160.5,
+    "pill": 351.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 972.0,
+    "logo": 1731.0,
+    "score": 16.75,
+    "down_capsule": 613.0,
+    "housing_rim": 675.25,
+    "pill": 423.75
+   },
+   "verdict": "rejected",
+   "reason": "The measured tints clip at 255 on the dominant channel (the broadcast edge is 7 to 18 percent brighter than our edge coverage reaches), but raising the edge coverage a1 from 0.876 made the wing residual worse on both metrics."
+  },
+  {
+   "trial": "stronger outer-edge coverage: a1 1.05, a2 0.45, tints re-measured through this wing cell",
+   "params": {
+    "a1": 1.05,
+    "a2": 0.45,
+    "wing": {
+     "NYG": "#325DEF",
+     "LAR": "#2F6FFF",
+     "DEN": "#417BD7",
+     "KC": "#FF275D",
+     "LV": "#E4E6E3",
+     "HOU": "#FF174D"
+    }
+   },
+   "NYG_LAR": {
+    "wing_colour": 1005.0,
+    "logo": 1234.5,
+    "score": 167.5,
+    "down_capsule": 556.0,
+    "housing_rim": 161.5,
+    "pill": 352.75
+   },
+   "DEN_KC_LV_HOU": {
+    "wing_colour": 974.25,
+    "logo": 1728.5,
+    "score": 16.75,
+    "down_capsule": 614.25,
+    "housing_rim": 695.25,
+    "pill": 422.5
+   },
+   "verdict": "rejected",
+   "reason": "The measured tints clip at 255 on the dominant channel (the broadcast edge is 7 to 18 percent brighter than our edge coverage reaches), but raising the edge coverage a1 from 0.876 made the wing residual worse on both metrics."
+  }
+ ],
+ "single_plate_trials": [
+  {
+   "trial": "LAR plate #17449F (measured, calibrated)",
+   "params": {
+    "plate": "#17449F"
+   },
+   "NYG_LAR": {
+    "down_capsule": 595.5
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule rises with plate lightness; the sourced #003594 (555.0) is lowest."
+  },
+  {
+   "trial": "LAR plate #0C3C9A (half way)",
+   "params": {
+    "plate": "#0C3C9A"
+   },
+   "NYG_LAR": {
+    "down_capsule": 578.5
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule rises with plate lightness; the sourced #003594 (555.0) is lowest."
+  },
+  {
+   "trial": "LAR plate #00307F (darker)",
+   "params": {
+    "plate": "#00307F"
+   },
+   "NYG_LAR": {
+    "down_capsule": 558.0
+   },
+   "verdict": "rejected",
+   "reason": "down_capsule rises with plate lightness; the sourced #003594 (555.0) is lowest."
+  }
+ ],
+ "evaluator": "scratch trial scripts (s14lab.py, evalfolder.py, trial_*.py); every row reproduces with author.py plus residuals.py on the listed parameters",
+ "split_by_part": {
+  "note": "Per-matchup means (both aspects) for the final state split into its two parts, to place the DEN-KC rises.",
+  "base": {
+   "DEN_KC": {
+    "down_capsule": 560.5,
+    "housing_rim": 787.5,
+    "logo": 1223.5,
+    "pill": 339.5,
+    "score": 2.0,
+    "wing_colour": 902.5
+   },
+   "LV_HOU": {
+    "down_capsule": 662.0,
+    "housing_rim": 596.0,
+    "logo": 2639.0,
+    "pill": 504.0,
+    "score": 31.5,
+    "wing_colour": 1720.0
+   },
+   "NYG_LAR": {
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "logo": 1235.5,
+    "pill": 350.5,
+    "score": 167.5,
+    "wing_colour": 1099.75
+   }
+  },
+  "wing_cell_only_sourced_tints": {
+   "DEN_KC": {
+    "down_capsule": 562.5,
+    "housing_rim": 771.0,
+    "logo": 1224.0,
+    "pill": 342.5,
+    "score": 2.0,
+    "wing_colour": 734.5
+   },
+   "LV_HOU": {
+    "down_capsule": 661.0,
+    "housing_rim": 594.0,
+    "logo": 2642.5,
+    "pill": 505.0,
+    "score": 31.5,
+    "wing_colour": 1582.0
+   },
+   "NYG_LAR": {
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "logo": 1235.5,
+    "pill": 350.75,
+    "score": 168.0,
+    "wing_colour": 1320.25
+   }
+  },
+  "display_shades_only_s12_cell": {
+   "DEN_KC": {
+    "down_capsule": 560.5,
+    "housing_rim": 773.5,
+    "logo": 1232.0,
+    "pill": 339.5,
+    "score": 2.0,
+    "wing_colour": 860.5
+   },
+   "LV_HOU": {
+    "down_capsule": 662.0,
+    "housing_rim": 596.0,
+    "logo": 2192.0,
+    "pill": 504.0,
+    "score": 29.5,
+    "wing_colour": 1338.0
+   },
+   "NYG_LAR": {
+    "down_capsule": 555.0,
+    "housing_rim": 161.5,
+    "logo": 1235.5,
+    "pill": 350.5,
+    "score": 167.5,
+    "wing_colour": 1109.75
+   }
+  },
+  "final": {
+   "DEN_KC": {
+    "down_capsule": 562.5,
+    "housing_rim": 770.5,
+    "logo": 1232.0,
+    "pill": 342.5,
+    "score": 2.0,
+    "wing_colour": 723.0
+   },
+   "LV_HOU": {
+    "down_capsule": 661.0,
+    "housing_rim": 594.0,
+    "logo": 2246.0,
+    "pill": 505.0,
+    "score": 31.5,
+    "wing_colour": 1108.0
+   },
+   "NYG_LAR": {
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "logo": 1235.5,
+    "pill": 350.75,
+    "score": 168.0,
+    "wing_colour": 943.75
+   }
+  }
+ }
+}

@@ -1,0 +1,201 @@
+{
+ "schema": "nfl2k5_hard_rock_model_art/v1",
+ "art": {
+  "hr_seat_front": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "d94678deee36c8966c209ab2f41015b85b88c4552844dffb86df74cca88028be"
+  },
+  "hr_seat_mid": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "ac87ddc51357337ab58756a5c50a0ef2c77798461c67ae42c7c3eacfedc642eb"
+  },
+  "hr_seat_back": {
+   "size": [
+    64,
+    128
+   ],
+   "sha256": "0c09fb9f47e7bbd60189e96779ddfeb4bbe9814689431889f9e262a4c3a74aef"
+  },
+  "hr_concrete": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "5eea8cb744867719adec94c6bcd9a5981251cd1afaa5317b102c1ac10ea21a7a"
+  },
+  "hr_wall": {
+   "size": [
+    256,
+    32
+   ],
+   "sha256": "17de4041c3285e537b1d8ea40d5b80eee663e79e6529c2d748ce341ed3d32cf3"
+  },
+  "LIGHT_hr_ribbon": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "bd5d7f2e30552cdfc16b528cf564f892b99a416d62743bcac2e61e8a7d80af8c"
+  },
+  "LIGHT_hr_glass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "bbcdea0203e8e0e11af0ff7aeaf035267bfc8f5a49cc7914ae5ce88e138fd083"
+  },
+  "LIGHT_hr_concourse": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "9f4cb645d6a1e599a55f53e1cf9d85a40352ea42e2ccd90246e99d4bda7c38bb"
+  },
+  "hr_portal": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "dc5c07990a2d41f4a05db8cfca4269f2fe92e702e126aefa8f662c8f423fea0e"
+  },
+  "hr_dark": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "cda0ac2d0ae2974c0009f50989a79234292fd275fdf155787052445e2194db3f"
+  },
+  "hr_black": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "7bd3f75d414addda8b9da9e1d6fc7c0f4f65529848fb58f99c30fe0353348761"
+  },
+  "hr_roof_under": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "a7687281bf1712cb3baa81d9babddae90a20442f55670bbb921264fc1b51a79b"
+  },
+  "hr_roof_top": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d350fb4441f4f4f049e5d648033fd0a5cf7a6beb2700b52d9baf268d35267d8b"
+  },
+  "hr_roof_edge": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "74e8d667da60cc051f9bbe27af104966c70262d23da9f204b5ada9c431f53e37"
+  },
+  "hr_etfe": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "d5cf13b556056896d156f0dd4c0d422693c039ee71461bc4c52e2bbf8d05ec19"
+  },
+  "hr_truss": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "d352ee1372faec7d001c8febe479d23707bd94234a63bbf4838482327b71dfae"
+  },
+  "hr_arch": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "800a2e3deb0eaad05e4d25b8172ee4ccfeea08492e187bfcbcd416de1c15d9e9"
+  },
+  "hr_mast": {
+   "size": [
+    32,
+    128
+   ],
+   "sha256": "ca530a124c7c47542538325d592e06b948b089fce30d6fc0dc0b012ca638fed1"
+  },
+  "hr_cable": {
+   "size": [
+    8,
+    32
+   ],
+   "sha256": "01aabd1e9f2945505b49d4445570fec304baa0bfc11c5ca5c8e0c5ed23b1c30c"
+  },
+  "LIGHT_hr_lights": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "1791e2f165b45f202d62ab978fecda891167f4732656c9b7323efdb0497bd1cf"
+  },
+  "LIGHT_hr_board_panel": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "198b5d2ebafc93056eb08e0b6c131ad4beea3a29c5421d298406dff7797ac848"
+  },
+  "hr_letters": {
+   "size": [
+    256,
+    64
+   ],
+   "sha256": "eca5cdff175a52ec0804fa021f4d8e55d52f8359fccc84159973d653ec6b00b8"
+  },
+  "hr_facade": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "d80f4d04a2d0730f68ef1d008a8635b86643ce270e01b1246fe7fd09db6f8fb7"
+  },
+  "hr_ramp": {
+   "size": [
+    64,
+    64
+   ],
+   "sha256": "a389eceb5616c67433bed739058e2075638a5f29c75666006bec786e72b237f5"
+  },
+  "hr_column": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "0876dbfe3e47d3583bb3894a988f0c547ced317b7b632fc9bac8be3c00541be5"
+  },
+  "hr_plaza": {
+   "size": [
+    32,
+    32
+   ],
+   "sha256": "c72ae9471227c04fc499ef39bb8f07ad43c82cb2e20ac925559681e5e6b448a8"
+  },
+  "field/hr_grass": {
+   "size": [
+    128,
+    64
+   ],
+   "sha256": "b68dbfba9b2e9c72c0aa50e4ac45c890090f65277ba6ecfa4ae97f058b703d58"
+  },
+  "field/hr_grass_outside": {
+   "size": [
+    128,
+    128
+   ],
+   "sha256": "60045b34cf484264ee6d245b650cc85d8623ec07e16c2e2ed88ae60a70d44391"
+  }
+ }
+}

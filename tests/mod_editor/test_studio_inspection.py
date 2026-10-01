@@ -1,5 +1,7 @@
 """The real child inspection preserves Build's typed throw settings."""
 from pathlib import Path
+import contextlib
+import io
 import sys
 import tempfile
 import unittest
@@ -32,6 +34,29 @@ class InspectionTests(unittest.TestCase):
             with self.subTest(result=result), patch.object(subprocess, 'run', return_value=result):
                 with self.assertRaises(ValueError):
                     studio_inspection.inspect_source(Path('synthetic.xbe'))
+
+    def test_selected_marks_reach_child_and_are_scoped_during_inspection(self):
+        from mod_editor.core import nfl2k5_official_marks as marks
+        selected = '/portable sources/marks'
+        result = subprocess.CompletedProcess([], 0, '{}', '')
+        with patch.object(subprocess, 'run', return_value=result) as run:
+            studio_inspection.inspect_source(Path('synthetic.xbe'), marks_pack=selected)
+        child_selected = run.call_args.args[0][-1]
+        self.assertEqual(Path(child_selected).absolute(), Path(selected).absolute())
+        previous = marks.selected_root()
+        def inspect(source):
+            self.assertEqual(marks.selected_root(), child_selected)
+            return {'throw': TuningSettings()}
+        with patch.object(mod_build, 'inspect', side_effect=inspect), contextlib.redirect_stdout(io.StringIO()):
+            studio_inspection._main('synthetic.xbe', child_selected)
+        self.assertEqual(marks.selected_root(), previous)
+
+    def test_child_launch_does_not_require_resolve(self):
+        result = subprocess.CompletedProcess([], 0, '{}', '')
+        with patch.object(Path, 'resolve', side_effect=OSError(234, 'More data available')), \
+             patch.object(subprocess, 'run', return_value=result) as run:
+            self.assertEqual(studio_inspection.inspect_source(Path('user sources é/disc.iso')), {})
+        self.assertEqual(Path(run.call_args.args[0][-2]).name, 'disc.iso')
 
 
 if __name__ == '__main__':

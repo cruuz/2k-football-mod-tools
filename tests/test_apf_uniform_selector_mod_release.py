@@ -25,6 +25,9 @@ QUEUE = ROOT / "reports/assets/apf_uniform_selector_xenia_replay_queue.v1.json"
 class APFUniformSelectorModReleaseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        missing = [str(path) for path in (REPORT, QUEUE) if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest("private APF selector release evidence absent: " + ", ".join(missing))
         cls.report = json.loads(REPORT.read_text(encoding="utf-8"))
         cls.queue = json.loads(QUEUE.read_text(encoding="utf-8"))
 
@@ -132,6 +135,13 @@ class APFUniformSelectorModReleaseTests(unittest.TestCase):
         self.assertFalse(Path(queue["runs"][1]["game_0a"]).exists())
 
     def test_metadata_gate_never_calls_the_full_volume_verifier(self) -> None:
+        required = [ROOT / self.report["offline_proof"][key]["path"] for key in (
+            "allocation_authority", "capacity_authority", "roundtrip_closure",
+            "frozen_writer_manifest", "frozen_independent_verification",
+        )]
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            self.skipTest("private APF selector offline proof absent: " + ", ".join(missing))
         with mock.patch.object(
             release_verify.selector_verify,
             "verify",

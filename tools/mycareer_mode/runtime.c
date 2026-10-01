@@ -501,6 +501,14 @@ void FC mode_create(u32 manager) {
     S(3464)=W((u8 *)W(ROOT,0x3c),4*W(ROOT,0x38));
     S(2676)=(u32)p; S(2680)=1;
     native_new_player(manager);
+    /* A rookie's birth year. The native default is January 1, 1979 (0xC0A80).
+     * The first season is the season owner's own immediate (0x247AC7: 2004
+     * retail, 2026); the draft path creates in the next one (M(0)==2 only at
+     * season index 1). The undrafted path creates before Sign initializes the
+     * Franchise, so the live index is stale there. MyPlayer is born 22 years
+     * earlier, in the 1900-based form the Create Player row steps (104=2004). */
+    if(G(0xCB8B14)==(u32)p)
+        W(p,24)=(W(p,24)&~0x0fe00000U)|(((G(0x247ac7)+(M(0)==2)-1922)&127)<<21);
     return;
 refuse: notice(manager,refusal_notice);
 }
@@ -595,7 +603,7 @@ static NI void ticker_play(u16 *s) {
         while(cut>1 && CALL2(0x49410,G(0xa90ecc),s)>540) {
             s[cut]=saved; saved=s[--cut]; s[cut]=0;
         }
-        text(s,0,320,374+22*line,0);
+        text(s,0,320,314+22*line,0);
         s[cut]=saved; s+=cut; while(*s==32) s++;
         line++;
     }
@@ -644,6 +652,12 @@ void mode_visuals(void) {
      * control transfer and teammate AI never observe the temporary value. */
     CALL0(0x75d90);
     if(t) W(t,0x30)=old;
+}
+/* Supersim ticker. It is drawn from the presentation tail (74879), with the
+ * MyPlayer stat line, never inside the in-match render (11A8F5): text drawn
+ * there takes the field camera, and Noah's 2026-09-23 recording showed the
+ * ticker rotated 180 degrees at the top of the screen. */
+static NI void mode_ticker(void) {
     if(S(2716) && G(0xE6028C) && G(0xE5FC28) && G(0xE5FC68)) {
         u16 header[128],last[512]; u32 seconds,args[5];
         float clock=*(float *)(G(0xE6028C)+16);
@@ -652,13 +666,13 @@ void mode_visuals(void) {
         args[2]=G(0xE602C4); args[3]=seconds/60; args[4]=seconds%60;
         ((void (FC *)(u16 *,u32,const u16 *,u32 *))0x49f00)
             (header,sizeof(header),m3_ff_format,args);
-        text(header,1,320,350,0);
+        text(header,1,320,290,0);
         /* Same last-play formatter as the native visual simulator. The
          * event counter is monotonic; its formatter owns ring indexing. */
         if(G(0xE53804) && G(0xE53804)<0x80000000U) {
             CALL2(0x150620,last,G(0xE53804)-1);
             ticker_play(last);
-        } else text(m3_ff_wait_text,0,320,374,0);
+        } else text(m3_ff_wait_text,0,320,314,0);
     }
 }
 u32 mode_result(void) {
@@ -902,9 +916,24 @@ void mode_load_error(void) {
  * the visible progress menu stays on the real manager's stack. No fabricated
  * standings, class generator, contract or pick is substituted. */
 #define LEAGUE_MENU ((u32)(m3+3600))
+/* The native league sims present their own frames (177990) and draw the
+ * stack of the context they are given. LEAGUE_MENU was empty, so the prior
+ * season was about 100 s of black with only the native sim ticker (Noah,
+ * 2026-09-23). This draw-only entry has no rows and no hook table; the
+ * native dispatcher calls +8 with ECX context and EDX event. */
+extern const u16 m3_progress_text[];
+void FC m3_sim_draw(u32 context,u32 event) {
+    (void)context;
+    if(event==7 && M(0)==1) {
+        text(m3_progress_text,1,320,196,1);
+        text(m3_progress_note,0,320,232,0);
+    }
+}
+static const void *const m3_sim_screen[3]={0,0,(const void *)m3_sim_draw};
 void FC m3_boot_tick(u32 manager) {
     u32 stage=G(0xE576A4),week=G(0xE576B4),year=G(0xE576B8);
     if(!owner(manager) || M(0)!=1) return;
+    M(3600)=(u32)m3_sim_screen;
     if(stage==4 && year==1) {
         M(0)=2;
         CALL2(0x6e450,manager,(u32)entry_menu);
@@ -1090,6 +1119,7 @@ static NI int hud_stat(u8 *p,u32 selector) {
 void mode_hud(void) {
     u8 *p,*id; u32 phase=G(0xB616C0),pos,i; u16 line[128],*out=line,*name;
     const char *format;
+    mode_ticker();
     if(S(2712) || phase<8 || phase>19 || G(0xA83A18)!=3 || G(0xA83A14) ||
        CALL0(0x83940) || !G(0xE60268) || !inline_active() || S(24)!=3 || !(id=(u8 *)primary())) return;
     p=(u8 *)S(2564);

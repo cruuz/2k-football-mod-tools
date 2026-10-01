@@ -1,0 +1,563 @@
+{
+ "tag": "before",
+ "root": "/home/noah/2k-worktrees/.b76-session/scratchpad/s15/base_tree",
+ "records_on_nyg_lar": false,
+ "metric": "mean player pixels over both states or matchups and both aspects; the logo and wing proxies overlap and must not be summed",
+ "rows": [
+  {
+   "group": "NYG_LAR",
+   "mean_player_px": {
+    "down_capsule": 555.0,
+    "housing_rim": 159.5,
+    "logo": 1235.5,
+    "pill": 350.75,
+    "score": 168.0,
+    "wing_colour": 943.75
+   },
+   "detail": [
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "wing_colour",
+     "visible_area_px": 986,
+     "rgb_diagnostic_px": 7123,
+     "measured_area_px": 13688,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "logo",
+     "visible_area_px": 1203,
+     "rgb_diagnostic_px": 9436,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "score",
+     "visible_area_px": 265,
+     "rgb_diagnostic_px": 878,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "down_capsule",
+     "visible_area_px": 608,
+     "rgb_diagnostic_px": 3595,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "housing_rim",
+     "visible_area_px": 156,
+     "rgb_diagnostic_px": 3749,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "43",
+     "feature": "pill",
+     "visible_area_px": 231,
+     "rgb_diagnostic_px": 936,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "wing_colour",
+     "visible_area_px": 992,
+     "rgb_diagnostic_px": 7309,
+     "measured_area_px": 13664,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "logo",
+     "visible_area_px": 1266,
+     "rgb_diagnostic_px": 9605,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "score",
+     "visible_area_px": 199,
+     "rgb_diagnostic_px": 739,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "down_capsule",
+     "visible_area_px": 571,
+     "rgb_diagnostic_px": 3604,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "housing_rim",
+     "visible_area_px": 162,
+     "rgb_diagnostic_px": 3740,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q1",
+     "aspect": "169",
+     "feature": "pill",
+     "visible_area_px": 230,
+     "rgb_diagnostic_px": 948,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "wing_colour",
+     "visible_area_px": 890,
+     "rgb_diagnostic_px": 7169,
+     "measured_area_px": 13656,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "logo",
+     "visible_area_px": 1205,
+     "rgb_diagnostic_px": 9493,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "score",
+     "visible_area_px": 138,
+     "rgb_diagnostic_px": 992,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "down_capsule",
+     "visible_area_px": 540,
+     "rgb_diagnostic_px": 3459,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "housing_rim",
+     "visible_area_px": 158,
+     "rgb_diagnostic_px": 3717,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "43",
+     "feature": "pill",
+     "visible_area_px": 444,
+     "rgb_diagnostic_px": 1350,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "wing_colour",
+     "visible_area_px": 907,
+     "rgb_diagnostic_px": 7314,
+     "measured_area_px": 13632,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "logo",
+     "visible_area_px": 1268,
+     "rgb_diagnostic_px": 9642,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "score",
+     "visible_area_px": 70,
+     "rgb_diagnostic_px": 808,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "down_capsule",
+     "visible_area_px": 501,
+     "rgb_diagnostic_px": 3469,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "housing_rim",
+     "visible_area_px": 162,
+     "rgb_diagnostic_px": 3727,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "NYG_LAR_q4",
+     "aspect": "169",
+     "feature": "pill",
+     "visible_area_px": 498,
+     "rgb_diagnostic_px": 1442,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    }
+   ]
+  },
+  {
+   "group": "DEN_KC_LV_HOU",
+   "mean_player_px": {
+    "down_capsule": 611.75,
+    "housing_rim": 682.25,
+    "logo": 1739.0,
+    "pill": 423.75,
+    "score": 16.75,
+    "wing_colour": 915.5
+   },
+   "detail": [
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "wing_colour",
+     "visible_area_px": 707,
+     "rgb_diagnostic_px": 5099,
+     "measured_area_px": 12831,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "logo",
+     "visible_area_px": 1209,
+     "rgb_diagnostic_px": 8288,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "score",
+     "visible_area_px": 4,
+     "rgb_diagnostic_px": 561,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "down_capsule",
+     "visible_area_px": 556,
+     "rgb_diagnostic_px": 3881,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "housing_rim",
+     "visible_area_px": 771,
+     "rgb_diagnostic_px": 3751,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "43",
+     "feature": "pill",
+     "visible_area_px": 344,
+     "rgb_diagnostic_px": 1195,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "wing_colour",
+     "visible_area_px": 739,
+     "rgb_diagnostic_px": 5204,
+     "measured_area_px": 12827,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "logo",
+     "visible_area_px": 1255,
+     "rgb_diagnostic_px": 8390,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "score",
+     "visible_area_px": 0,
+     "rgb_diagnostic_px": 532,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "down_capsule",
+     "visible_area_px": 569,
+     "rgb_diagnostic_px": 3893,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "housing_rim",
+     "visible_area_px": 770,
+     "rgb_diagnostic_px": 3764,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "DEN_KC",
+     "aspect": "169",
+     "feature": "pill",
+     "visible_area_px": 341,
+     "rgb_diagnostic_px": 1269,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "wing_colour",
+     "visible_area_px": 1120,
+     "rgb_diagnostic_px": 4111,
+     "measured_area_px": 13686,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "logo",
+     "visible_area_px": 2272,
+     "rgb_diagnostic_px": 8622,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "score",
+     "visible_area_px": 43,
+     "rgb_diagnostic_px": 888,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "down_capsule",
+     "visible_area_px": 649,
+     "rgb_diagnostic_px": 2602,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "housing_rim",
+     "visible_area_px": 596,
+     "rgb_diagnostic_px": 3854,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "43",
+     "feature": "pill",
+     "visible_area_px": 492,
+     "rgb_diagnostic_px": 1722,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "wing_colour",
+     "visible_area_px": 1096,
+     "rgb_diagnostic_px": 4125,
+     "measured_area_px": 13699,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "logo",
+     "visible_area_px": 2220,
+     "rgb_diagnostic_px": 8558,
+     "measured_area_px": 15934,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "White logo ink only; coloured silhouette also changes the wing ROI."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "score",
+     "visible_area_px": 20,
+     "rgb_diagnostic_px": 821,
+     "measured_area_px": 5964,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "down_capsule",
+     "visible_area_px": 673,
+     "rgb_diagnostic_px": 2586,
+     "measured_area_px": 4676,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "housing_rim",
+     "visible_area_px": 592,
+     "rgb_diagnostic_px": 3842,
+     "measured_area_px": 5832,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    },
+    {
+     "matchup": "LV_HOU",
+     "aspect": "169",
+     "feature": "pill",
+     "visible_area_px": 518,
+     "rgb_diagnostic_px": 1744,
+     "measured_area_px": 3744,
+     "threshold": "Feature occupancy with a 2x2 player-pixel core; exact thresholds in metrics()",
+     "method": "Visible feature occupancy XOR, filtered to 2x2 player-pixel cores. RGB mismatch retained only as a diagnostic.",
+     "caveat": "Surface/shape proxy; not a perceptual identity verdict."
+    }
+   ]
+  }
+ ],
+ "seconds": 26.3
+}

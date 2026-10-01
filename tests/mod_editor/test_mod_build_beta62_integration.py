@@ -32,6 +32,13 @@ GROWN = dict(all_stadiums=True, coverage_slider=True, scramble_tuning=True, musi
 
 
 class PlanTests(unittest.TestCase):
+    def setUp(self):
+        # These plan fixtures have no PLAY archive. Real native gate execution
+        # and corruption rejection are covered by test_nfl2k5_play_scoring.
+        gate = patch.object(build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0})
+        gate.start()
+        self.addCleanup(gate.stop)
+
     def test_presets_clear_optins_and_recipe_retains_hires_inputs(self):
         initial = build.BuildPlan('s', 't', **dict.fromkeys(FLAGS, True),
                                   hires_folder='Hi-res', hires_scale=1, hires_target='xemu-64')
@@ -64,7 +71,12 @@ class PlanTests(unittest.TestCase):
                     tt.write_xbe_copy(source, target, overwrite=True, **{key: 1})
                 self.assertEqual(target.read_bytes(), b'KEEP')
 
-    def test_hires_is_last_and_pre_remap_states_are_not_final_claims(self):
+    @patch("mod_editor.core.nfl2k5_disc_extents.validate_image", side_effect=lambda target: {"fixture": True})
+    @patch("mod_editor.core.xdvdfs_compact.finish_private",
+           side_effect=lambda target, **_: {"output_bytes": Path(target).stat().st_size})
+    def test_hires_is_last_and_pre_remap_states_are_not_final_claims(self, _compact, _extents):
+        # ig: sd2's final extent gate reads the image's XDVDFS tree; this marker-text fixture has none.
+        # This ordering fixture writes marker text in place of a disc image.
         from mod_editor.core import nfl2k5_hires_pack as hires
         with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
             source, target = Path(directory)/'source.iso', Path(directory)/'output.iso'
@@ -82,8 +94,13 @@ class PlanTests(unittest.TestCase):
                 Path(output).write_bytes(b'final remapped archive')
                 return {'verification': {'status':'verified', 'output_sha256':hashlib.sha256(b'final remapped archive').hexdigest()}}
             stack.enter_context(patch.object(hires, 'build_image', new=compile))
+            def scoring(path, progress):
+                events.append('scoring')
+                self.assertEqual(Path(path).read_bytes(), b'final remapped archive')
+                return {'status':'applied','books':37,'faults':0}
+            stack.enter_context(patch.object(build, '_check_playbook_scoring', side_effect=scoring))
             receipt = build.build(build.BuildPlan(str(source), str(target), hires_pack=True, hires_folder='art'))
-            self.assertEqual(events, ['inspect', 'hires'])
+            self.assertEqual(events, ['inspect', 'hires', 'scoring'])
             self.assertEqual([s['step'] for s in receipt['steps']], ['copy', 'hires_pack'])
             self.assertEqual(receipt['pre_remap_inspection']['scorebug'], 'retail')
             self.assertNotIn('scorebug', receipt['result'])
@@ -121,6 +138,13 @@ class PlanTests(unittest.TestCase):
                                     [(5,synthetic_resource()), (200,b'TAIL'+bytes(256))],
                                     pack_sizes=(0xA0000,), pack_sectors=(96,))
             stack.enter_context(patch.object(build, 'inspect', return_value={'path':'unused', 'container':'xiso'}))
+            # The synthetic image has no executable: the XBE key paths are proved on the retail XBE in
+            # test_nfl2k5_team_names_2026; here a stand-in records that the step installs them once.
+            xbe = {'state': 'retail'}
+            stack.enter_context(patch.object(build, '_xbe_bytes', side_effect=lambda path: b'XBE-' + xbe['state'].encode()))
+            stack.enter_context(patch.object(build, '_write_xbe_bytes', side_effect=lambda path, data: xbe.update(state=data[4:].decode())))
+            stack.enter_context(patch.object(names, 'xbe_status', side_effect=lambda data: data[4:].decode()))
+            stack.enter_context(patch.object(names, 'apply_xbe', side_effect=lambda data: (b'XBE-applied', {'status': 'applied'})))
             def roster_edits(path, *args, **kwargs):
                 self.assertEqual(names.image_status(path), 'retail')
                 return {'log':[]}
@@ -131,14 +155,18 @@ class PlanTests(unittest.TestCase):
             receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
             self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026'])
             self.assertEqual(names.image_status(target), 'applied')
-            self.assertEqual(len(receipt['steps'][-1]['writes']), 17)
+            # u3: five teams' runs plus Washington's old label nickname; the XBE key paths installed once.
+            self.assertEqual(len(receipt['steps'][-1]['runs']), 6)
+            self.assertEqual([t['team'] for t in receipt['steps'][-1]['teams']], [7, 8, 22, 23, 25])
+            self.assertEqual((receipt['steps'][-1]['xbe']['status'], xbe['state']), ('applied', 'applied'))
             self.assertEqual(names.image_status(fixture.path), 'retail')
             def conflicting(path, *args, **kwargs):
                 with records._outer_image()(path) as archive:
                     entry = archive.entries[5]
-                    cell = names.manifest()['cells'][0]
-                    archive.write(entry.virtual_offset+32+cell['body_offset'], b'X\0')
+                    block = names.manifest()['blocks'][0]
+                    archive.write(entry.virtual_offset+32+block['start'], b'X\0')
                 return {'log':[]}
+            xbe['state'] = 'retail'
             target.write_bytes(b'preserve previous')
             with patch.object(records, 'apply', new=conflicting), self.assertRaises(ValueError):
                 build.build(build.BuildPlan(str(fixture.path),str(target),overwrite=True,team_names_2026=True,roster_edits=str(edits_path)))
@@ -213,7 +241,9 @@ class ExecutableTests(unittest.TestCase):
                 else:
                     with patch.object(build,'inspect',return_value={'container':'xiso'}), patch.object(
                             build._tools_module('nfl2k5_kickoff_alignment'), 'apply', return_value={'status':'applied','kicker_depth_yd':5,'changed_bytes':0,'books':[]}), patch.object(
-                            build._tools_module('nfl2k5_kickoff_returns'), 'apply', return_value={'status':'applied','changed_bytes':0,'books':[]}):
+                            build._tools_module('nfl2k5_kickoff_returns'), 'apply', return_value={'status':'applied','changed_bytes':0,'books':[]}), patch.object(
+                            build, '_check_playbook_menus', return_value=None), patch.object(
+                            build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0}):  # Synthetic image has no PLAY archive; both real gates are covered with retail resources separately.
                         result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
                                                            kickoff_relocated=True,**GROWN))
                     self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first

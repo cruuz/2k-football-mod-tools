@@ -1,0 +1,918 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "CAR",
+ "name": "Carolina Panthers",
+ "asset_code": "04",
+ "season": 2026,
+ "sources_uw": {"sleeve_logo_2026": "nike.com's 2026 Panthers Game jerseys (blue and black): the panther head under the swoosh, a moderate patch, facing forward on both arms"},
+ "status": "Phase B job d7 (NFC South), 2026-09-23. KEPT its 2004 look with the 2012 logo, the 2019 straight pant stripes and silver pants at home and white on the road. Colours sourced; albedo INFERRED from 2026 photos.",
+ "roster": {
+  "season": 2026,
+  "stats_season": 2025,
+  "statuses": [
+   "ACT"
+  ],
+  "defense": "3-4",
+  "head_coach": "Dave Canales",
+  "depth_since": "2026-09-09",
+  "note": "nflverse roster_2026 (week 3 status). Base defense from the nflverse depth charts since 2026-09-09: 'Base 3-4 D'."
+ },
+ "sources": {
+  "kit_rules": "https://www.panthers.com/news/carolina-panthers-release-the-2026-jersey-schedule-uniforms-alternates",
+  "uniform_history": "https://en.wikipedia.org/w/index.php?title=Carolina_Panthers&action=raw",
+  "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Carolina_Panthers_Uniforms_(2022).png (CC BY-SA)",
+  "road_photos": "https://www.panthers.com/photos/game-action-gallery-panthers-at-falcons-september-20-2026",
+  "colours": "data/nfl2k5_scorebug_sprite/team_colors_official_2026.json (CAR, 2026 NFL Record and Fact Book p.154)",
+  "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/CAR.svg",
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+ },
+ "palette": {
+  "blue": "#0085CF",
+  "black": "#000000",
+  "silver": "#B2B4BB",
+  "white": "#FFFFFF"
+ },
+ "albedo": {
+  "blue": "#0088CE",
+  "black": "#111118",
+  "silver": "#B2B4BB",
+  "retail_silver": "#B9BCBE",
+  "retail_blue": "#0095CD",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "logo_blue": "#0085CA",
+  "logo_silver": "#BFC0BF",
+  "field_green": "#2E6B2E"
+ },
+ "marks": {
+  "club_logo": "club_logo.png",
+  "trims_04H0": "trims_04H0.png",
+  "trims_04A0": "trims_04A0.png",
+  "logo_silhouette": "logo_silhouette.png",
+  "logo_black": "logo_black.png",
+  "logo_blue": "logo_blue.png",
+  "logo_silver": "logo_silver.png",
+  "carolina_fill": "carolina_fill.png",
+  "carolina_outline16": "carolina_outline16.png",
+  "carolina_outline34": "carolina_outline34.png",
+  "panthers_fill": "panthers_fill.png",
+  "panthers_outline16": "panthers_outline16.png",
+  "panthers_outline34": "panthers_outline34.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "04H0",
+   "note": "2026 home: black jersey with the Panther-blue collar and blue and silver shoulder stripes, white numbers outlined in blue, panther on the sleeves, silver pants with a black-blue-black stripe (the classic pairing with the black jersey; Wikipedia), black socks, silver helmet with the 2012 panther",
+   "torso": {
+    "base_colour": "black",
+    "neck_donor": "04H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "trims_04H0",
+      "center": [
+       276.0,
+       68.438
+      ],
+      "width": 424.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "club_logo",
+      "center": [
+       61.5,
+       27.0
+      ],
+      "width": 44,
+      "mirror": false
+     },
+     {
+      "mark": "club_logo",
+      "center": [
+       65.5,
+       91.0
+      ],
+      "width": 44,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "silver",
+    "stripe": [
+     [
+      "black",
+      2
+     ],
+     [
+      "blue",
+      5
+     ],
+     [
+      "black",
+      2
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "04H0",
+    "fill": "white"
+   },
+   "nameplate": {
+    "glyph_donor": "04H0",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "retail_silver",
+    "shell": "silver",
+    "recolour": [
+     {
+      "from": "retail_blue",
+      "to": "blue"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0,
+     "boxes": {
+      "upper": [
+       34,
+       50,
+       134,
+       107
+      ],
+      "lower": [
+       34,
+       147,
+       134,
+       200
+      ]
+     }
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   },
+   "outer_index": 3650,
+   "splayer": {
+    "torso_donor_outer": 3650,
+    "torso_donor": "04H0",
+    "sleeve_from_donor": false,
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "04A0",
+   "note": "2026 road: white jersey with the black collar and blue and black shoulder stripes, black numbers outlined in blue, panther on the sleeves, white pants with a black-blue-black stripe, black socks, silver helmet with the 2012 panther",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "04H0",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "black"
+    },
+    "decorations": [
+     {
+      "mark": "trims_04A0",
+      "center": [
+       276.0,
+       68.438
+      ],
+      "width": 424.5
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "club_logo",
+      "center": [
+       61.5,
+       27.0
+      ],
+      "width": 44,
+      "mirror": false
+     },
+     {
+      "mark": "club_logo",
+      "center": [
+       65.5,
+       91.0
+      ],
+      "width": 44,
+      "mirror": true
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "black",
+      2
+     ],
+     [
+      "blue",
+      5
+     ],
+     [
+      "black",
+      2
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "black"
+   },
+   "digits": {
+    "glyph_donor": "04A0",
+    "fill": "black"
+   },
+   "nameplate": {
+    "glyph_donor": "04A0",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "retail_silver",
+    "shell": "silver",
+    "recolour": [
+     {
+      "from": "retail_blue",
+      "to": "blue"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0,
+     "boxes": {
+      "upper": [
+       34,
+       50,
+       134,
+       107
+      ],
+      "lower": [
+       34,
+       147,
+       134,
+       200
+      ]
+     }
+    }
+   },
+   "card": {
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0,
+     "boxes": {
+      "helm_256": [
+       4,
+       14,
+       140,
+       140
+      ],
+      "helm_128": [
+       2,
+       6,
+       72,
+       72
+      ]
+     }
+    }
+   },
+   "outer_index": 3967,
+   "splayer": {
+    "torso_donor_outer": 3967,
+    "torso_donor": "04A0",
+    "sleeve_from_donor": false,
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "part_intents": {
+  "home": {
+   "torso": "black jersey body, Panther-blue collar ring, blue and silver stripes along the armholes, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "black sleeve with the blue, black and silver panther head logo",
+   "pants": "silver with a black-blue-black side stripe, black maker mark",
+   "helmet": "silver shell with the blue, black and silver panther head logo, white and grey hardware, flag and shield decals",
+   "digit_jersey": "white numbers with a blue outline",
+   "digit_arm": "white numbers with a blue outline",
+   "digit_helmet": "white numbers",
+   "nameplate": "white letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: silver pants, black torso, silver helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: black jersey with a white number, silver pants, silver helmet with the panther logo, dark shading",
+   "team-select_helm": "menu render: silver helmet with the panther logo, black facemask, a dark bar and yellow UI strip below"
+  },
+  "away": {
+   "torso": "white jersey body, black collar ring, blue and black stripes along the armholes, small NFL shield at the collar, black maker marks on the shoulders; the light grey patch is the neck opening",
+   "sleeve": "white sleeve with the blue, black and silver panther head logo",
+   "pants": "white with a black-blue-black side stripe, black maker mark",
+   "helmet": "silver shell with the blue, black and silver panther head logo, white and grey hardware, flag and shield decals",
+   "digit_jersey": "black numbers with a blue outline",
+   "digit_arm": "black numbers with a blue outline",
+   "digit_helmet": "white numbers",
+   "nameplate": "black letters",
+   "socks00": "solid black",
+   "splayer": "far-away player atlas: white pants, white torso, silver helmet, black socks, skin and glove patches",
+   "team-select_unif": "menu render: white jersey with a black number, white pants, silver helmet with the panther logo, grey shading",
+   "team-select_helm": "menu render: silver helmet with the panther logo, black facemask, a dark bar and yellow UI strip below"
+  },
+  "venue": {
+   "endzone": "team end zone art: unpainted turf with the 2012 wordmark words (PANTHERS north, CAROLINA south, as retail) in Panther blue with black and white outlines, and the 2012 panther head at both ends in place of the 2004 helmet and the old NFC mark (INFERRED: no 2025-2026 photo of the end zones was found)",
+   "center_logo": "the full-colour club logo at midfield",
+   "banner": "cloth fan banners in team colours with 2026 player names and chants"
+  }
+ },
+ "faces": {
+  "skin_tone_by_eye": {
+   "Bryce Young": 3,
+   "Tetairoa McMillan": 2,
+   "Chuba Hubbard": 3,
+   "Tommy Tremble": 2,
+   "Patrick Jones": 5,
+   "Mike Jackson": 4,
+   "Devin Lloyd": 4,
+   "Lee Hunter": 5,
+   "Nick Scott": 4,
+   "Tre'von Moehrig": 3,
+   "Rasheed Walker": 4,
+   "Damien Lewis": 4,
+   "Luke Fortner": 0,
+   "Ryan Fitzgerald": 0,
+   "Sam Martin": 0,
+   "Kenny Pickett": 0,
+   "Jalen Coker": 3,
+   "Jonathon Brooks": 4,
+   "Mitchell Evans": 0,
+   "Jaelan Phillips": 2,
+   "Jaycee Horn": 4,
+   "Bobby Okereke": 4,
+   "Derrick Brown": 5,
+   "Lathan Ransom": 2,
+   "Zakee Wheatley": 4,
+   "Monroe Freeling": 0,
+   "Robert Hunt": 4,
+   "Sam Hecht": 0,
+   "Haynes King": 0,
+   "Xavier Legette": 4,
+   "AJ Dillon": 4,
+   "Darren Waller": 3,
+   "Trevis Gipson": 4,
+   "Chau Smith-Wade": 4,
+   "Claudin Cherelus": 5,
+   "Bobby Brown": 5,
+   "Stone Forsythe": 0,
+   "Corey Bullock": 4,
+   "J.J. Jansen": 0,
+   "Brycen Tremayne": 0,
+   "Feleipe Franks": 0,
+   "Princely Umanmielen": 4,
+   "Will Lee": 4,
+   "Jackson Kuwatch": 0,
+   "Cam Jackson": 5,
+   "Albert Reese": 4,
+   "John Metchie": 4,
+   "Ja'Tavion Sanders": 4,
+   "Thomas Incoom": 5,
+   "Akayleb Evans": 4,
+   "Tyrel Dodson": 4,
+   "Aaron Hall": 4,
+   "TeRah Edwards": 4
+  },
+  "dreads": [
+   "Bobby Brown",
+   "Chau Smith-Wade",
+   "John Metchie",
+   "Jonathon Brooks",
+   "Princely Umanmielen"
+  ],
+  "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads by eye."
+ },
+ "venue": {
+  "prefix": "s04",
+  "notes": "Panthers home games at the retail stadium scene (Bank of America Stadium). End zones: unpainted turf with the 2012 wordmark words (PANTHERS north, CAROLINA south, as retail) in Panther blue with black and white outlines, and the 2012 panther head at both ends in place of the 2004 helmet and the old NFC mark (INFERRED: no 2025-2026 photo of the end zones was found). Midfield: the full-colour 2012 panther (INFERRED). Fan banners: 2026 names and chants.",
+  "sources": [],
+  "endzone": {
+   "paint": "field_green",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "panthers_outline34",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "panthers_outline16",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "panthers_fill",
+     "colour": "logo_blue",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_blue",
+     "colour": "logo_blue",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_blue",
+     "colour": "logo_blue",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "endzone_south": {
+   "paint": "field_green",
+   "paint_alpha": 0.0,
+   "marks": [
+    {
+     "mark": "carolina_outline34",
+     "colour": "white",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "carolina_outline16",
+     "colour": "black",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "carolina_fill",
+     "colour": "logo_blue",
+     "center": [
+      384,
+      64
+     ],
+     "height": 80,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_blue",
+     "colour": "logo_blue",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      100,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silhouette",
+     "colour": "white",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_silver",
+     "colour": "logo_silver",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_blue",
+     "colour": "logo_blue",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    },
+    {
+     "mark": "logo_black",
+     "colour": "black",
+     "center": [
+      668,
+      64
+     ],
+     "height": 62,
+     "stretch": 1.12,
+     "alpha": 1.0
+    }
+   ]
+  },
+  "center_logo": {
+   "mark": "club_logo",
+   "width_frac": 0.9
+  },
+  "banners": {
+   "banner_home_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       64,
+       64
+      ],
+      "bg": "logo_blue",
+      "items": [
+       {
+        "text": "KEEP\nPOUND\nING",
+        "colour": "white",
+        "center": [
+         32.0,
+         31.0
+        ],
+        "height": 9
+       }
+      ]
+     },
+     {
+      "slot": [
+       64,
+       0,
+       128,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#9\nYOUNG",
+        "colour": "white",
+        "center": [
+         96.0,
+         31.0
+        ],
+        "height": 12
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       64,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#8\nHORN",
+        "colour": "black",
+        "center": [
+         32.0,
+         95.0
+        ],
+        "height": 12
+       }
+      ]
+     },
+     {
+      "slot": [
+       64,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_blue",
+      "items": [
+       {
+        "text": "CAT\nFANS",
+        "colour": "white",
+        "center": [
+         96.0,
+         95.0
+        ],
+        "height": 12
+       }
+      ]
+     }
+    ]
+   },
+   "banner_home_player": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#4 McMILLAN",
+        "colour": "logo_blue",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       0,
+       256,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#30 HUBBARD",
+        "colour": "logo_blue",
+        "center": [
+         192.0,
+         31.0
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_blue",
+      "items": [
+       {
+        "text": "#95 BROWN",
+        "colour": "black",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 16
+       }
+      ]
+     },
+     {
+      "slot": [
+       128,
+       64,
+       192,
+       128
+      ],
+      "bg": "white",
+      "items": [
+       {
+        "text": "#55\nLLOYD",
+        "colour": "black",
+        "center": [
+         160.0,
+         95.0
+        ],
+        "height": 12
+       }
+      ]
+     },
+     {
+      "slot": [
+       192,
+       64,
+       256,
+       128
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#7\nMOEHRIG",
+        "colour": "white",
+        "center": [
+         224.0,
+         95.0
+        ],
+        "height": 10
+       }
+      ]
+     }
+    ]
+   },
+   "banner_away_team": {
+    "banners": [
+     {
+      "slot": [
+       0,
+       0,
+       128,
+       64
+      ],
+      "bg": "black",
+      "items": [
+       {
+        "text": "#5 PHILLIPS",
+        "colour": "white",
+        "center": [
+         64.0,
+         31.0
+        ],
+        "height": 14
+       }
+      ]
+     },
+     {
+      "slot": [
+       0,
+       64,
+       128,
+       128
+      ],
+      "bg": "logo_blue",
+      "items": [
+       {
+        "text": "GO\nPANTHERS!",
+        "colour": "white",
+        "center": [
+         64.0,
+         95.0
+        ],
+        "height": 15
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

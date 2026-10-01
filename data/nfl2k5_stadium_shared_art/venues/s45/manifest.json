@@ -1,0 +1,271 @@
+{
+  "items": [
+    {
+      "file": "banner_corp.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "banner_corp_4x.png",
+      "master_sha256": "206c4a1a392faa8ecc00c01fa235a16aa1d23755d34b324adc36df1d599e5732",
+      "material": "banner_corp",
+      "rects": [
+        [
+          5,
+          2,
+          123,
+          61
+        ],
+        [
+          5,
+          66,
+          123,
+          125
+        ],
+        [
+          131,
+          67,
+          190,
+          126
+        ],
+        [
+          195,
+          67,
+          254,
+          126
+        ],
+        [
+          131,
+          131,
+          190,
+          190
+        ],
+        [
+          195,
+          131,
+          254,
+          190
+        ],
+        [
+          5,
+          194,
+          123,
+          253
+        ],
+        [
+          195,
+          195,
+          254,
+          254
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "4d24b214d28d9b0c8033e0ecf768d2fc09bceb5d9fc3f2f6af500c86d542fcd4",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "224ce9a1461cf36253d05e60a6810e2872b6e57cd56c93967561f9af6d8d08a2"
+    },
+    {
+      "file": "sign02.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "sign02_4x.png",
+      "master_sha256": "c248ba9bee9e6c113a7e265e3c37587e0e4446e1e1ece8e07c2ae42ca7c3ec5d",
+      "material": "sign02",
+      "rects": [
+        [
+          4,
+          2,
+          54,
+          20
+        ],
+        [
+          54,
+          2,
+          103,
+          20
+        ],
+        [
+          4,
+          22,
+          103,
+          40
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "a399950e372c15a410d5776cc13866cb5122cd79506e3cc7102695869395c61a",
+      "size": [
+        128,
+        128
+      ],
+      "source_rgba_sha256": "0a808b558f27a0dff3dcbe4770ec3e7997e192a540c71021cb5bb9edc10b535f"
+    },
+    {
+      "file": "panthers_score01.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "panthers_score01_4x.png",
+      "master_sha256": "83e8f9874503f72fea2efc977cfb692642ef459300c29988faefc001d0f086a1",
+      "material": "panthers_score01",
+      "rects": [
+        [
+          1,
+          36,
+          138,
+          62
+        ],
+        [
+          198,
+          103,
+          256,
+          159
+        ],
+        [
+          2,
+          141,
+          194,
+          173
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "10272c3687c84af9c6621723d4a14465f29c45447ddb5c6b4511bb60dd94b620",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "8e7576dd18e98a78e3e0db577ec6d64b93b1dc4cd72aefadbf36a1f04081111b"
+    },
+    {
+      "file": "sign01.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "sign01_4x.png",
+      "master_sha256": "33ce9cda55e860109cbed71e27bb9509fa73cfed28a86f9ac1d688e8a9fb082b",
+      "material": "sign01",
+      "rects": [
+        [
+          4,
+          23,
+          105,
+          43
+        ],
+        [
+          4,
+          44,
+          105,
+          63
+        ],
+        [
+          4,
+          108,
+          37,
+          126
+        ],
+        [
+          37,
+          108,
+          70,
+          126
+        ],
+        [
+          70,
+          108,
+          104,
+          126
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "3a34df142be5cc5ff66c936b500f6995ad18933510d408a74b28e12801a35db4",
+      "size": [
+        128,
+        128
+      ],
+      "source_rgba_sha256": "da96e5d079a401896f12f22fac1ef6ea49bceb0a0175e96a886e46dcd511116d"
+    },
+    {
+      "file": "wall03.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "wall03_4x.png",
+      "master_sha256": "0f2790347cba75114e2506fe9a705254cd0925fe8360a12376fe7f04d8ba1e3a",
+      "material": "wall03",
+      "rects": [
+        [
+          0,
+          0,
+          128,
+          45
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "665df8d4b112f4e25a73ff613d78c5d5ec271b9bdee515f44103c07fe958cb19",
+      "size": [
+        128,
+        128
+      ],
+      "source_rgba_sha256": "e9b9487e2bfa63f2d876e56c3adb000f31fbdac36c1c3af5ffa50b00b2f8bed5"
+    },
+    {
+      "file": "score01.png",
+      "format": "P8",
+      "kind": "sponsor",
+      "layer": "full",
+      "master": "score01_4x.png",
+      "master_sha256": "ef1bcd9a175c0ab17e91f8126ad8566fc9b6168612539a7dbb268faa072908db",
+      "material": "score01",
+      "rects": [
+        [
+          69,
+          104,
+          138,
+          142
+        ],
+        [
+          69,
+          161,
+          138,
+          230
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "1ad2ba528ef549b30428e57426becb977016fb2278832a4be6fced319f1a6458",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "1540b77c1b2d450459f641933a00bbc2ef7ca81e162704f5ca3d0c2ed2a23d9d"
+    },
+    {
+      "file": "field_logo.png",
+      "format": "P8",
+      "kind": "field-logo",
+      "layer": "full",
+      "master": "field_logo_4x.png",
+      "master_sha256": "7be8c615fceeda3fe8974582a9d95d8c0a0ba535474035782f60a21d2976a698",
+      "material": "logo",
+      "rects": [
+        [
+          0,
+          0,
+          256,
+          256
+        ]
+      ],
+      "scene": "field",
+      "sha256": "7364c92b78ce1c79830836ee8bb2d39edc756ee03a6d7ac0834a68e65c5145b9",
+      "size": [
+        256,
+        256
+      ],
+      "source_rgba_sha256": "c14f2bb94fb49ee43dc896b9562878e214e4827f926c38bea4d7a360dd816d41"
+    }
+  ],
+  "schema": "metlife_team_art/v1",
+  "team": "s45",
+  "venue_prefix": "s45"
+}

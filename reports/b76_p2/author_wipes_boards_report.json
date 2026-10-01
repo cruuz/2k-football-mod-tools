@@ -1,0 +1,931 @@
+{
+ "registration": {
+  "mnf/frames/frame_000087.png": {
+   "match": 1.0,
+   "scale": 1.0,
+   "ecc": 1.0,
+   "warp": [
+    [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ]
+   ]
+  },
+  "obs/frames/frame_000327.png": {
+   "match": 0.9627,
+   "scale": 0.83,
+   "ecc": 0.8683,
+   "warp": [
+    [
+     0.83128,
+     -0.00129,
+     162.40588
+    ],
+    [
+     -0.00113,
+     0.83411,
+     89.73993
+    ]
+   ]
+  },
+  "obs/frames/frame_000681.png": {
+   "match": 0.9649,
+   "scale": 0.83,
+   "ecc": 0.879,
+   "warp": [
+    [
+     0.83104,
+     -0.00019,
+     162.13713
+    ],
+    [
+     0.00099,
+     0.83316,
+     88.18231
+    ]
+   ]
+  },
+  "obs/frames/frame_002350.png": {
+   "match": 0.966,
+   "scale": 0.75,
+   "ecc": 0.6737,
+   "warp": [
+    [
+     0.75322,
+     8e-05,
+     236.40056
+    ],
+    [
+     -0.00015,
+     0.75408,
+     131.09081
+    ]
+   ]
+  },
+  "obs/frames/frame_002538.png": {
+   "match": 0.9703,
+   "scale": 0.94,
+   "ecc": 0.9914,
+   "warp": [
+    [
+     0.93637,
+     -0.00034,
+     60.9482
+    ],
+    [
+     7e-05,
+     0.93593,
+     35.07683
+    ]
+   ]
+  }
+ },
+ "palette": {
+  "bar_rim": {
+   "median": [
+    42,
+    50,
+    122
+   ],
+   "p10": [
+    24,
+    41,
+    61
+   ],
+   "p90": [
+    248,
+    255,
+    255
+   ],
+   "count": 8000
+  },
+  "board_charcoal": {
+   "median": [
+    32,
+    31,
+    32
+   ],
+   "p10": [
+    24,
+    24,
+    24
+   ],
+   "p90": [
+    44,
+    44,
+    45
+   ],
+   "count": 24736
+  },
+  "board_white": {
+   "median": [
+    246,
+    245,
+    245
+   ],
+   "p10": [
+    238,
+    231,
+    232
+   ],
+   "p90": [
+    254,
+    249,
+    250
+   ],
+   "count": 6780
+  },
+  "band_silver": {
+   "median": [
+    199,
+    200,
+    205
+   ],
+   "p10": [
+    168,
+    167,
+    173
+   ],
+   "p90": [
+    239,
+    239,
+    241
+   ],
+   "count": 52847
+  },
+  "band_letters": {
+   "median": [
+    42,
+    44,
+    50
+   ],
+   "p10": [
+    15,
+    16,
+    20
+   ],
+   "p90": [
+    76,
+    76,
+    82
+   ],
+   "count": 53873
+  },
+  "rim_red": {
+   "median": [
+    148,
+    10,
+    16
+   ],
+   "p10": [
+    99,
+    4,
+    7
+   ],
+   "p90": [
+    177,
+    39,
+    48
+   ],
+   "count": 63138
+  },
+  "plate_black": {
+   "median": [
+    10,
+    11,
+    16
+   ],
+   "p10": [
+    8,
+    9,
+    14
+   ],
+   "p90": [
+    17,
+    17,
+    22
+   ],
+   "count": 11838
+  },
+  "wordmark_red": {
+   "median": [
+    191,
+    13,
+    19
+   ]
+  },
+  "bumper_red": {
+   "median": [
+    120,
+    34,
+    37
+   ],
+   "p10": [
+    73,
+    6,
+    9
+   ],
+   "p90": [
+    212,
+    108,
+    104
+   ],
+   "count": 1872269
+  },
+  "bumper_hot_white": {
+   "median": [
+    242,
+    235,
+    232
+   ],
+   "p10": [
+    232,
+    212,
+    208
+   ],
+   "p90": [
+    254,
+    242,
+    243
+   ],
+   "count": 53213
+  },
+  "ribbon_red": {
+   "median": [
+    234,
+    44,
+    53
+   ],
+   "p10": [
+    176,
+    29,
+    22
+   ],
+   "p90": [
+    247,
+    122,
+    139
+   ],
+   "count": 602942
+  },
+  "sources": {
+   "emblem": [
+    "mnf/frame_000087",
+    "obs/frame_000327",
+    "obs/frame_000681",
+    "obs/frame_002350",
+    "obs/frame_002538"
+   ],
+   "bar": [
+    "mnf/frame_000290",
+    "mnf/frame_000291",
+    "mnf/frame_000292",
+    "mnf/frame_000293",
+    "mnf/frame_000294",
+    "mnf/frame_000295",
+    "mnf/frame_000296",
+    "mnf/frame_000297",
+    "mnf/frame_000298",
+    "mnf/frame_000299"
+   ],
+   "board": "obs/frame_001866",
+   "bumper": "obs/frame_000830",
+   "ribbon": "obs/frame_003102"
+  }
+ },
+ "wordmark": {
+  "box": [
+   782,
+   263,
+   1136,
+   352
+  ],
+  "level": 167.0,
+  "fill": [
+   191,
+   13,
+   19
+  ]
+ },
+ "mnf_band": {
+  "box": [
+   711,
+   413,
+   1250,
+   568
+  ],
+  "band_rows": [
+   413,
+   602
+  ]
+ },
+ "nfl_shield": {
+  "box": [
+   897,
+   644,
+   1024,
+   814
+  ]
+ },
+ "replay_wipe_pattern_flash": {
+  "colour_centre": [
+   239.0,
+   239.0,
+   241.0
+  ],
+  "colour_edge": [
+   168.0,
+   167.0,
+   173.0
+  ],
+  "reach_texels": 17.0,
+  "source": "band_silver p90 to p10 (the MNF band the transition flies through)"
+ },
+ "replay_wipe_streaks": {
+  "rows": [
+   [
+    148,
+    10,
+    16,
+    0
+   ],
+   [
+    148,
+    10,
+    16,
+    110
+   ],
+   [
+    177,
+    39,
+    48,
+    200
+   ],
+   [
+    242,
+    235,
+    232,
+    255
+   ],
+   [
+    242,
+    235,
+    232,
+    255
+   ],
+   [
+    177,
+    39,
+    48,
+    200
+   ],
+   [
+    148,
+    10,
+    16,
+    110
+   ],
+   [
+    148,
+    10,
+    16,
+    0
+   ]
+  ],
+  "source": "rim_red median/p90 and the bumper's white-hot outline core"
+ },
+ "replay_wipe_logo_glow": {
+  "placed": [
+   2,
+   16,
+   124,
+   31
+  ],
+  "retail_letters_box": [
+   2,
+   15,
+   126,
+   48
+  ],
+  "wordmark_aspect": 3.9775,
+  "glow_sigma_texels": 1.3,
+  "source": "the 2026 wordmark silhouette and shading (emblem median)"
+ },
+ "replay_wipe_rays": {
+  "centre": [
+   146.5,
+   148.1
+  ],
+  "radius": 110.0,
+  "bands": {
+   "inner": [
+    -14,
+    -8
+   ],
+   "ridges": [
+    -8,
+    4
+   ],
+   "top_edge": [
+    4,
+    7
+   ],
+   "glow": [
+    7,
+    30
+   ]
+  },
+  "ridge_period_texels": 3,
+  "source": "rim_red p10/median/p90 across the emblem's left rim, bumper white-hot"
+ },
+ "electricity_background1": {
+  "top": [
+   120.0,
+   34.0,
+   37.0
+  ],
+  "middle": [
+   73.0,
+   6.0,
+   9.0
+  ],
+  "bottom_mix_black": [
+   10.0,
+   11.0,
+   16.0
+  ],
+  "source": "bumper_red median and p10 (obs 830), plate_black (emblem median)"
+ },
+ "electricity_lightning": {
+  "columns": [
+   [
+    22.0,
+    14.0,
+    88.0,
+    1.6
+   ],
+   [
+    61.0,
+    3.0,
+    78.0,
+    1.5
+   ],
+   [
+    95.0,
+    3.0,
+    107.0,
+    1.3
+   ],
+   [
+    117.0,
+    3.0,
+    125.0,
+    0.9
+   ]
+  ],
+  "seed": 2026,
+  "source": "bumper white-hot outline core and bumper_red p90 glow (obs 830)"
+ },
+ "helmetbumper_monitor": {
+  "layout": {
+   "screen": [
+    23,
+    19,
+    238,
+    216
+   ],
+   "lines": [
+    60,
+    189
+   ],
+   "diagonal": [
+    [
+     165.5,
+     61.0
+    ],
+    [
+     101.5,
+     189.0
+    ]
+   ],
+   "slits": [
+    5.5,
+    88.5,
+    172.5
+   ],
+   "stand": 216
+  },
+  "screen": "bumper_red p10, median; ribbon_red p10 lower band",
+  "bezel": "plate_black, rim_red",
+  "lines": "bumper white-hot core, rim_red p90 glow",
+  "source": "obs 830 (MNF bumper wall), obs 1848 (emblem plate and rim), obs 3102 (ribbon)"
+ },
+ "helmetbumper_monitorcolors": {
+  "seed": 76,
+  "glint_rows": [
+   6,
+   9,
+   19,
+   75
+  ],
+  "tones": [
+   [
+    176,
+    29,
+    22
+   ],
+   [
+    205,
+    36,
+    38
+   ],
+   [
+    234,
+    44,
+    53
+   ],
+   [
+    240,
+    83,
+    96
+   ],
+   [
+    247,
+    122,
+    139
+   ]
+  ],
+  "source": "ribbon_red p10/median/p90 and white-hot glints (obs 3102, obs 830)"
+ },
+ "redflashy_logo1": {
+  "retail_wordmark_display_box": [
+   -467.19,
+   -106.37,
+   463.81,
+   107.63
+  ],
+  "placed_display_box": [
+   -427.29,
+   -106.37,
+   423.9,
+   107.63
+  ],
+  "wordmark_aspect": 3.9775,
+  "texels_owned": 58347,
+  "forward_iou": 0.9771,
+  "source": "the 2026 wordmark silhouette and shading (emblem median), inverse-mapped through the retail quads"
+ },
+ "playercard_znfl_shield": {
+  "retail_footprint": [
+   7,
+   2,
+   57,
+   63
+  ],
+  "placed": [
+   9,
+   2,
+   46,
+   61
+  ],
+  "source": "the flat NFL shield of the emblem median (five stills)"
+ },
+ "scoreboard_design": {
+  "regions": {
+   "top_sign": [
+    -252.8,
+    136.2,
+    133.4,
+    182.4
+   ],
+   "right_sign": [
+    154.4,
+    18.7,
+    284.5,
+    115.2
+   ],
+   "left_upper": [
+    -311.0,
+    -2.5,
+    -273.7,
+    115.2
+   ],
+   "left_lower": [
+    -311.0,
+    -136.6,
+    -273.7,
+    -19.1
+   ],
+   "nfl_panel": [
+    -310.9,
+    -227.6,
+    -181.4,
+    -170.3
+   ],
+   "lockup_panel": [
+    61.8,
+    -227.6,
+    242.4,
+    -170.3
+   ],
+   "espn_piece": [
+    -113.0,
+    -160.0,
+    -55.6,
+    -146.1
+   ],
+   "vision_pieces": [
+    -49.2,
+    -160.0,
+    -7.7,
+    -150.2
+   ],
+   "led_frame": [
+    -156.3,
+    -227.8,
+    36.9,
+    -166.1
+   ],
+   "main_screen": [
+    -252.8,
+    -136.7,
+    133.4,
+    115.2
+   ],
+   "led_panel": [
+    154.4,
+    -136.7,
+    284.5,
+    -2.4
+   ],
+   "led_small": [
+    -135.3,
+    -227.6,
+    15.9,
+    -178.7
+   ]
+  },
+  "lettering": {
+   "font": "RobotoCondensed-BoldItalic.ttf",
+   "text": "MONDAY NIGHT FOOTBALL",
+   "font_sha256": "6dcbc5c98d5d61038a7cb5f4e7d53d628ec4e29dd4a37239018d8c377ed1daa3"
+  }
+ },
+ "scoreboard_sign02": {
+  "texels_owned": 14956,
+  "texels_blank": 454,
+  "reused_texels_disagreeing": 65,
+  "frame_patch": [
+   12,
+   0,
+   31,
+   4
+  ],
+  "frame_colour": "band_silver median"
+ },
+ "scoreboard_led": {
+  "lattice": [
+   49,
+   50
+  ],
+  "lit_dots": 447,
+  "reused_dots": 364,
+  "split_votes": 10,
+  "labels": [
+   "VISITOR",
+   "HOME",
+   "DOWN"
+  ]
+ },
+ "scoreboard_sign01": {
+  "marquee_texels_owned": 8160,
+  "led_rows": "0-63"
+ },
+ "scoreboard_tiles": {
+  "dot_colour": [
+   42,
+   50,
+   122
+  ],
+  "dot_pitch_texels": 2,
+  "backboard": [
+   [
+    24.0,
+    24.0,
+    24.0
+   ],
+   [
+    32.0,
+    31.0,
+    32.0
+   ]
+  ],
+  "seed": 347
+ },
+ "png": {
+  "replay_wipe_pattern_flash": {
+   "sha256": "c701acfa10bd7d493d94c76befc867cae88535b17176b637b64f6655fac93a85",
+   "size": [
+    32,
+    32
+   ],
+   "unique_rgba": 90
+  },
+  "replay_wipe_streaks": {
+   "sha256": "6783a862edf988bb254d695a7b4a432ee3f4d8dc83d1e7392b42ab3687ac98db",
+   "size": [
+    8,
+    8
+   ],
+   "unique_rgba": 4
+  },
+  "replay_wipe_logo_glow": {
+   "sha256": "83057112c49b33af53241d75911549e69b7c422bff7bf079a0a49a1ac90dcaee",
+   "size": [
+    128,
+    64
+   ],
+   "unique_rgba": 57
+  },
+  "replay_wipe_rays": {
+   "sha256": "0619aa13dc160b207ff6dcc9454380a1e17d7fe7a3c61db5b6153fc81dc78c3d",
+   "size": [
+    256,
+    128
+   ],
+   "unique_rgba": 18
+  },
+  "electricity_background1": {
+   "sha256": "bf6ce08b7984c6f8f3eb8433971fd2fc57fe016f955dd9f3002c5b512da58728",
+   "size": [
+    64,
+    64
+   ],
+   "unique_rgba": 60
+  },
+  "electricity_lightning": {
+   "sha256": "e507ed06af1eb1084cd6f8279016a39f55a89e363a82c48f3c386f8795859b7c",
+   "size": [
+    128,
+    128
+   ],
+   "unique_rgba": 66
+  },
+  "redflashy_logo1": {
+   "sha256": "614848219efb1c6a690dfa09a75363bff2a93f964cf40245f27c59b8ac793387",
+   "size": [
+    256,
+    256
+   ],
+   "unique_rgba": 110
+  },
+  "scoreboard_sign02": {
+   "sha256": "686e47834680f10eaf6c3931f32bd7913c7d1519f2162efedf66db2a23c591d5",
+   "size": [
+    128,
+    128
+   ],
+   "unique_rgba": 200
+  },
+  "scoreboard_dot": {
+   "sha256": "482ee81d99aa4517c01f5ab6c79297f83efbedb0a7bce6c3bf4f24e656f0f447",
+   "size": [
+    64,
+    64
+   ],
+   "unique_rgba": 2
+  },
+  "scoreboard_sign01": {
+   "sha256": "61e7d9f95da2b0f6000e5a72f54353e029d9c6242aa159045759f6ae354c9e26",
+   "size": [
+    128,
+    128
+   ],
+   "unique_rgba": 53
+  },
+  "scoreboard_backboard01": {
+   "sha256": "abf8786f8640fa4dc3d1fa8a9543e490de896df2209c555e892ae569f668cac6",
+   "size": [
+    64,
+    64
+   ],
+   "unique_rgba": 13
+  },
+  "helmetbumper_monitor": {
+   "sha256": "ae0f8ff4d887ef03d13e7df6c30c86cb78181e19a8f903b869ee0cae15ba48b8",
+   "size": [
+    256,
+    256
+   ],
+   "unique_rgba": 23
+  },
+  "helmetbumper_monitorcolors": {
+   "sha256": "6dc50fe6b99a2295a2050454b4307ccb895cb81f0e2378c4415db469e8616093",
+   "size": [
+    256,
+    128
+   ],
+   "unique_rgba": 6
+  },
+  "playercard_znfl_shield": {
+   "sha256": "4a648238b2dce79330f90cb35763eb88a9a455a8432b4b1b5a6a12d41cc89eb6",
+   "size": [
+    64,
+    64
+   ],
+   "unique_rgba": 172
+  }
+ },
+ "targets": [
+  {
+   "png": "replay_wipe_pattern_flash.png",
+   "outer": 3114,
+   "chunk": 1,
+   "texture": 0
+  },
+  {
+   "png": "replay_wipe_streaks.png",
+   "outer": 3114,
+   "chunk": 1,
+   "texture": 1
+  },
+  {
+   "png": "replay_wipe_logo_glow.png",
+   "outer": 3114,
+   "chunk": 1,
+   "texture": 2
+  },
+  {
+   "png": "replay_wipe_rays.png",
+   "outer": 3114,
+   "chunk": 1,
+   "texture": 3
+  },
+  {
+   "png": "electricity_background1.png",
+   "outer": 3114,
+   "chunk": 3,
+   "texture": 0
+  },
+  {
+   "png": "electricity_lightning.png",
+   "outer": 3114,
+   "chunk": 3,
+   "texture": 1
+  },
+  {
+   "png": "redflashy_logo1.png",
+   "outer": 3114,
+   "chunk": 4,
+   "texture": 0
+  },
+  {
+   "png": "scoreboard_sign02.png",
+   "outer": 347,
+   "chunk": 5,
+   "texture": 0
+  },
+  {
+   "png": "scoreboard_dot.png",
+   "outer": 347,
+   "chunk": 5,
+   "texture": 1
+  },
+  {
+   "png": "scoreboard_sign01.png",
+   "outer": 347,
+   "chunk": 5,
+   "texture": 2
+  },
+  {
+   "png": "scoreboard_backboard01.png",
+   "outer": 347,
+   "chunk": 5,
+   "texture": 3
+  },
+  {
+   "png": "helmetbumper_monitor.png",
+   "outer": 18,
+   "chunk": 11,
+   "texture": 0
+  },
+  {
+   "png": "helmetbumper_monitorcolors.png",
+   "outer": 18,
+   "chunk": 11,
+   "texture": 1
+  },
+  {
+   "png": "playercard_znfl_shield.png",
+   "outer": 3,
+   "chunk": 57,
+   "texture": 1
+  }
+ ]
+}

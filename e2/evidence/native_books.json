@@ -1,0 +1,3213 @@
+{
+  "label": "PROVED OFFLINE",
+  "source": "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso",
+  "xbe": "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe",
+  "xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "main_sha256": "a5cf52fa5d1f2ecf911ef093a1afe6d3e4efbb2ce4d794b876c15a3ad537bacd",
+  "situ_sha256": "8a7a3742a944afbdf96da685f96a1ea5a5f3554fc2887e2ede3bd5c898ec35cc",
+  "boundaries": "Existing MomentsCPU and TeamSelectCPU archive/presentation stubs. Native import, label assignment, match copy, kit formatting and 0x628D0 book formatting execute. No book decode, play execution, rendered art, or full candidate B game is claimed.",
+  "books": {
+    "ARZ-pb.iff": {
+      "outer": 307,
+      "name_id": 4060574942,
+      "bytes": 78768,
+      "sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22"
+    },
+    "ATL-pb.iff": {
+      "outer": 308,
+      "name_id": 1238212385,
+      "bytes": 78768,
+      "sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5"
+    },
+    "BAL-pb.iff": {
+      "outer": 309,
+      "name_id": 742256404,
+      "bytes": 78768,
+      "sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a"
+    },
+    "BUF-pb.iff": {
+      "outer": 310,
+      "name_id": 4253408806,
+      "bytes": 78768,
+      "sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d"
+    },
+    "CAR-pb.iff": {
+      "outer": 311,
+      "name_id": 2415860839,
+      "bytes": 78768,
+      "sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a"
+    },
+    "CHI-pb.iff": {
+      "outer": 312,
+      "name_id": 3405779369,
+      "bytes": 78768,
+      "sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b"
+    },
+    "CIN-pb.iff": {
+      "outer": 313,
+      "name_id": 3651886909,
+      "bytes": 78768,
+      "sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6"
+    },
+    "CLE-pb.iff": {
+      "outer": 314,
+      "name_id": 1737102695,
+      "bytes": 78768,
+      "sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7"
+    },
+    "DAL-pb.iff": {
+      "outer": 315,
+      "name_id": 2820567745,
+      "bytes": 78768,
+      "sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab"
+    },
+    "DEN-pb.iff": {
+      "outer": 316,
+      "name_id": 605454500,
+      "bytes": 78768,
+      "sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71"
+    },
+    "DET-pb.iff": {
+      "outer": 317,
+      "name_id": 914490390,
+      "bytes": 78768,
+      "sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa"
+    },
+    "GB-pb.iff": {
+      "outer": 319,
+      "name_id": 2503681888,
+      "bytes": 78768,
+      "sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3"
+    },
+    "HOU-pb.iff": {
+      "outer": 321,
+      "name_id": 1499033059,
+      "bytes": 78768,
+      "sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98"
+    },
+    "IND-pb.iff": {
+      "outer": 322,
+      "name_id": 2602782539,
+      "bytes": 78768,
+      "sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537"
+    },
+    "JAX-pb.iff": {
+      "outer": 323,
+      "name_id": 2213563327,
+      "bytes": 78768,
+      "sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a"
+    },
+    "KC-pb.iff": {
+      "outer": 324,
+      "name_id": 665505787,
+      "bytes": 78768,
+      "sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457"
+    },
+    "MIA-pb.iff": {
+      "outer": 325,
+      "name_id": 1320776544,
+      "bytes": 78768,
+      "sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9"
+    },
+    "MIN-pb.iff": {
+      "outer": 326,
+      "name_id": 3226670170,
+      "bytes": 78768,
+      "sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e"
+    },
+    "NE-pb.iff": {
+      "outer": 327,
+      "name_id": 2428618744,
+      "bytes": 78768,
+      "sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510"
+    },
+    "NO-pb.iff": {
+      "outer": 328,
+      "name_id": 1685224916,
+      "bytes": 78768,
+      "sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94"
+    },
+    "NYG-pb.iff": {
+      "outer": 329,
+      "name_id": 2619476822,
+      "bytes": 78768,
+      "sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6"
+    },
+    "NYJ-pb.iff": {
+      "outer": 330,
+      "name_id": 2506639631,
+      "bytes": 78768,
+      "sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932"
+    },
+    "OAK-pb.iff": {
+      "outer": 331,
+      "name_id": 1737822668,
+      "bytes": 78768,
+      "sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577"
+    },
+    "PHI-pb.iff": {
+      "outer": 332,
+      "name_id": 2221930310,
+      "bytes": 78768,
+      "sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f"
+    },
+    "PIT-pb.iff": {
+      "outer": 333,
+      "name_id": 2219851104,
+      "bytes": 78768,
+      "sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd"
+    },
+    "SD-pb.iff": {
+      "outer": 336,
+      "name_id": 3819029914,
+      "bytes": 78768,
+      "sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0"
+    },
+    "SEA-pb.iff": {
+      "outer": 337,
+      "name_id": 2877221416,
+      "bytes": 78768,
+      "sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506"
+    },
+    "SF-pb.iff": {
+      "outer": 338,
+      "name_id": 1677844729,
+      "bytes": 78768,
+      "sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6"
+    },
+    "STL-pb.iff": {
+      "outer": 339,
+      "name_id": 1673872008,
+      "bytes": 78768,
+      "sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a"
+    },
+    "TB-pb.iff": {
+      "outer": 340,
+      "name_id": 1360963098,
+      "bytes": 78768,
+      "sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e"
+    },
+    "TEN-pb.iff": {
+      "outer": 341,
+      "name_id": 3301976961,
+      "bytes": 78768,
+      "sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141"
+    },
+    "WAS-pb.iff": {
+      "outer": 342,
+      "name_id": 2411515274,
+      "bytes": 78768,
+      "sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881"
+    }
+  },
+  "historic_teams": [
+    {
+      "name": "49ers '81",
+      "asset_code": "25",
+      "category": 4,
+      "identity": 155,
+      "label_abbreviation": "SF",
+      "filename": "SF-pb.iff",
+      "index": 0,
+      "source": "h-25-1981-49ers-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "49ers '81",
+        "abbr": "SF81",
+        "category": 4,
+        "players": 53,
+        "identity": 155,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-25-1981-49ers-3.iff"
+      ]
+    },
+    {
+      "name": "49ers '89",
+      "asset_code": "25",
+      "category": 4,
+      "identity": 156,
+      "label_abbreviation": "SF",
+      "filename": "SF-pb.iff",
+      "index": 1,
+      "source": "h-25-1989-49ers-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "49ers '89",
+        "abbr": "SF89",
+        "category": 4,
+        "players": 53,
+        "identity": 156,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-25-1989-49ers-3.iff"
+      ]
+    },
+    {
+      "name": "49ers '94",
+      "asset_code": "25",
+      "category": 4,
+      "identity": 157,
+      "label_abbreviation": "SF",
+      "filename": "SF-pb.iff",
+      "index": 2,
+      "source": "h-25-1994-49ers-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "49ers '94",
+        "abbr": "SF94",
+        "category": 4,
+        "players": 53,
+        "identity": 157,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-25-1994-49ers-2.iff"
+      ]
+    },
+    {
+      "name": "49ers '03",
+      "asset_code": "25",
+      "category": 4,
+      "identity": 157,
+      "label_abbreviation": "SF",
+      "filename": "SF-pb.iff",
+      "index": 3,
+      "source": "h-25-2003-49ers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "49ers '03",
+        "abbr": "SF03",
+        "category": 4,
+        "players": 53,
+        "identity": 157,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-25-2003-49ers-0.iff"
+      ]
+    },
+    {
+      "name": "Bears '63",
+      "asset_code": "05",
+      "category": 4,
+      "identity": 107,
+      "label_abbreviation": "CHI",
+      "filename": "CHI-pb.iff",
+      "index": 4,
+      "source": "h-05-1963-bears-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bears '63",
+        "abbr": "CHI63",
+        "category": 4,
+        "players": 53,
+        "identity": 107,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-05-1963-bears-2.iff"
+      ]
+    },
+    {
+      "name": "Bears '85",
+      "asset_code": "05",
+      "category": 4,
+      "identity": 108,
+      "label_abbreviation": "CHI",
+      "filename": "CHI-pb.iff",
+      "index": 5,
+      "source": "h-05-1985-bears-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bears '85",
+        "abbr": "CHI85",
+        "category": 4,
+        "players": 53,
+        "identity": 108,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-05-1985-bears-1.iff"
+      ]
+    },
+    {
+      "name": "Bengals '81",
+      "asset_code": "06",
+      "category": 4,
+      "identity": 109,
+      "label_abbreviation": "CIN",
+      "filename": "CIN-pb.iff",
+      "index": 6,
+      "source": "h-06-1981-bengals-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bengals '81",
+        "abbr": "CIN81",
+        "category": 4,
+        "players": 53,
+        "identity": 109,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-06-1981-bengals-1.iff"
+      ]
+    },
+    {
+      "name": "Bengals '88",
+      "asset_code": "06",
+      "category": 4,
+      "identity": 110,
+      "label_abbreviation": "CIN",
+      "filename": "CIN-pb.iff",
+      "index": 7,
+      "source": "h-06-1988-bengals-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bengals '88",
+        "abbr": "CIN88",
+        "category": 4,
+        "players": 53,
+        "identity": 110,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-06-1988-bengals-1.iff"
+      ]
+    },
+    {
+      "name": "Bills '64",
+      "asset_code": "03",
+      "category": 4,
+      "identity": 104,
+      "label_abbreviation": "BUF",
+      "filename": "BUF-pb.iff",
+      "index": 8,
+      "source": "h-03-1964-bills-7.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bills '64",
+        "abbr": "BUF64",
+        "category": 4,
+        "players": 53,
+        "identity": 104,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-03-1964-bills-7.iff"
+      ]
+    },
+    {
+      "name": "Bills '90",
+      "asset_code": "03",
+      "category": 4,
+      "identity": 105,
+      "label_abbreviation": "BUF",
+      "filename": "BUF-pb.iff",
+      "index": 9,
+      "source": "h-03-1990-bills-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Bills '90",
+        "abbr": "BUF90",
+        "category": 4,
+        "players": 53,
+        "identity": 105,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-03-1990-bills-2.iff"
+      ]
+    },
+    {
+      "name": "Broncos '77",
+      "asset_code": "08",
+      "category": 4,
+      "identity": 116,
+      "label_abbreviation": "DEN",
+      "filename": "DEN-pb.iff",
+      "index": 10,
+      "source": "h-08-1977-broncos-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Broncos '77",
+        "abbr": "DEN77",
+        "category": 4,
+        "players": 53,
+        "identity": 116,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-08-1977-broncos-2.iff"
+      ]
+    },
+    {
+      "name": "Broncos '86",
+      "asset_code": "08",
+      "category": 4,
+      "identity": 117,
+      "label_abbreviation": "DEN",
+      "filename": "DEN-pb.iff",
+      "index": 11,
+      "source": "h-08-1986-broncos-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Broncos '86",
+        "abbr": "DEN86",
+        "category": 4,
+        "players": 53,
+        "identity": 117,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-08-1986-broncos-1.iff"
+      ]
+    },
+    {
+      "name": "Broncos '98",
+      "asset_code": "08",
+      "category": 4,
+      "identity": 118,
+      "label_abbreviation": "DEN",
+      "filename": "DEN-pb.iff",
+      "index": 12,
+      "source": "h-08-1998-broncos-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Broncos '98",
+        "abbr": "DEN98",
+        "category": 4,
+        "players": 53,
+        "identity": 118,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-08-1998-broncos-0.iff"
+      ]
+    },
+    {
+      "name": "Browns '64",
+      "asset_code": "30",
+      "category": 4,
+      "identity": 111,
+      "label_abbreviation": "CLE",
+      "filename": "CLE-pb.iff",
+      "index": 13,
+      "source": "h-30-1964-browns-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Browns '64",
+        "abbr": "CLE64",
+        "category": 4,
+        "players": 53,
+        "identity": 111,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-30-1964-browns-2.iff"
+      ]
+    },
+    {
+      "name": "Browns '86",
+      "asset_code": "30",
+      "category": 4,
+      "identity": 112,
+      "label_abbreviation": "CLE",
+      "filename": "CLE-pb.iff",
+      "index": 14,
+      "source": "h-30-1986-browns-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Browns '86",
+        "abbr": "CLE86",
+        "category": 4,
+        "players": 53,
+        "identity": 112,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-30-1986-browns-1.iff"
+      ]
+    },
+    {
+      "name": "Buccaneers '79",
+      "asset_code": "27",
+      "category": 4,
+      "identity": 160,
+      "label_abbreviation": "TB",
+      "filename": "TB-pb.iff",
+      "index": 15,
+      "source": "h-27-1979-buccaneers-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Buccaneers '79",
+        "abbr": "TB79",
+        "category": 4,
+        "players": 53,
+        "identity": 160,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-27-1979-buccaneers-3.iff"
+      ]
+    },
+    {
+      "name": "Buccaneers '99",
+      "asset_code": "27",
+      "category": 4,
+      "identity": 161,
+      "label_abbreviation": "TB",
+      "filename": "TB-pb.iff",
+      "index": 16,
+      "source": "h-27-1999-buccaneers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Buccaneers '99",
+        "abbr": "TB99",
+        "category": 4,
+        "players": 53,
+        "identity": 161,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-27-1999-buccaneers-0.iff"
+      ]
+    },
+    {
+      "name": "Buccaneers '02",
+      "asset_code": "27",
+      "category": 4,
+      "identity": 168,
+      "label_abbreviation": "TB",
+      "filename": "TB-pb.iff",
+      "index": 17,
+      "source": "h-27-2002-buccaneers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Buccaneers '02",
+        "abbr": "TB02",
+        "category": 4,
+        "players": 53,
+        "identity": 168,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-27-2002-buccaneers-0.iff"
+      ]
+    },
+    {
+      "name": "Cardinals '75",
+      "asset_code": "00",
+      "category": 4,
+      "identity": 100,
+      "label_abbreviation": "ARZ",
+      "filename": "ARZ-pb.iff",
+      "index": 18,
+      "source": "h-00-1975-cardinals-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Cardinals '75",
+        "abbr": "STL75",
+        "category": 4,
+        "players": 53,
+        "identity": 100,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-00-1975-cardinals-3.iff"
+      ]
+    },
+    {
+      "name": "Chargers '63",
+      "asset_code": "24",
+      "category": 4,
+      "identity": 150,
+      "label_abbreviation": "SD",
+      "filename": "SD-pb.iff",
+      "index": 19,
+      "source": "h-24-1963-chargers-8.iff",
+      "selected": {
+        "index": 32,
+        "name": "Chargers '63",
+        "abbr": "SD63",
+        "category": 4,
+        "players": 53,
+        "identity": 150,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-24-1963-chargers-8.iff"
+      ]
+    },
+    {
+      "name": "Chargers '80",
+      "asset_code": "24",
+      "category": 4,
+      "identity": 151,
+      "label_abbreviation": "SD",
+      "filename": "SD-pb.iff",
+      "index": 20,
+      "source": "h-24-1980-chargers-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Chargers '80",
+        "abbr": "SD80",
+        "category": 4,
+        "players": 53,
+        "identity": 151,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-24-1980-chargers-4.iff"
+      ]
+    },
+    {
+      "name": "Chargers '94",
+      "asset_code": "24",
+      "category": 4,
+      "identity": 152,
+      "label_abbreviation": "SD",
+      "filename": "SD-pb.iff",
+      "index": 21,
+      "source": "h-24-1994-chargers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Chargers '94",
+        "abbr": "SD94",
+        "category": 4,
+        "players": 53,
+        "identity": 152,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-24-1994-chargers-0.iff"
+      ]
+    },
+    {
+      "name": "Chiefs '69",
+      "asset_code": "13",
+      "category": 4,
+      "identity": 126,
+      "label_abbreviation": "KC",
+      "filename": "KC-pb.iff",
+      "index": 22,
+      "source": "h-13-1969-chiefs-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Chiefs '69",
+        "abbr": "KC69",
+        "category": 4,
+        "players": 53,
+        "identity": 126,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-13-1969-chiefs-4.iff"
+      ]
+    },
+    {
+      "name": "Chiefs '93",
+      "asset_code": "13",
+      "category": 4,
+      "identity": 127,
+      "label_abbreviation": "KC",
+      "filename": "KC-pb.iff",
+      "index": 23,
+      "source": "h-13-1993-chiefs-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Chiefs '93",
+        "abbr": "KC93",
+        "category": 4,
+        "players": 53,
+        "identity": 127,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-13-1993-chiefs-2.iff"
+      ]
+    },
+    {
+      "name": "Colts '70",
+      "asset_code": "11",
+      "category": 4,
+      "identity": 123,
+      "label_abbreviation": "IND",
+      "filename": "IND-pb.iff",
+      "index": 24,
+      "source": "h-11-1970-colts-5.iff",
+      "selected": {
+        "index": 32,
+        "name": "Colts '70",
+        "abbr": "BAL70",
+        "category": 4,
+        "players": 53,
+        "identity": 123,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-11-1970-colts-5.iff"
+      ]
+    },
+    {
+      "name": "Cowboys '71",
+      "asset_code": "07",
+      "category": 4,
+      "identity": 113,
+      "label_abbreviation": "DAL",
+      "filename": "DAL-pb.iff",
+      "index": 25,
+      "source": "h-07-1971-cowboys-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Cowboys '71",
+        "abbr": "DAL71",
+        "category": 4,
+        "players": 53,
+        "identity": 113,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-07-1971-cowboys-4.iff"
+      ]
+    },
+    {
+      "name": "Cowboys '77",
+      "asset_code": "07",
+      "category": 4,
+      "identity": 114,
+      "label_abbreviation": "DAL",
+      "filename": "DAL-pb.iff",
+      "index": 26,
+      "source": "h-07-1977-cowboys-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Cowboys '77",
+        "abbr": "DAL77",
+        "category": 4,
+        "players": 53,
+        "identity": 114,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-07-1977-cowboys-3.iff"
+      ]
+    },
+    {
+      "name": "Cowboys '92",
+      "asset_code": "07",
+      "category": 4,
+      "identity": 115,
+      "label_abbreviation": "DAL",
+      "filename": "DAL-pb.iff",
+      "index": 27,
+      "source": "h-07-1992-cowboys-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Cowboys '92",
+        "abbr": "DAL92",
+        "category": 4,
+        "players": 53,
+        "identity": 115,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-07-1992-cowboys-2.iff"
+      ]
+    },
+    {
+      "name": "Dolphins '72",
+      "asset_code": "14",
+      "category": 4,
+      "identity": 128,
+      "label_abbreviation": "MIA",
+      "filename": "MIA-pb.iff",
+      "index": 28,
+      "source": "h-14-1972-dolphins-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Dolphins '72",
+        "abbr": "MIA72",
+        "category": 4,
+        "players": 53,
+        "identity": 128,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-14-1972-dolphins-4.iff"
+      ]
+    },
+    {
+      "name": "Dolphins '84",
+      "asset_code": "14",
+      "category": 4,
+      "identity": 129,
+      "label_abbreviation": "MIA",
+      "filename": "MIA-pb.iff",
+      "index": 29,
+      "source": "h-14-1984-dolphins-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Dolphins '84",
+        "abbr": "MIA84",
+        "category": 4,
+        "players": 53,
+        "identity": 129,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-14-1984-dolphins-3.iff"
+      ]
+    },
+    {
+      "name": "Eagles '60",
+      "asset_code": "21",
+      "category": 4,
+      "identity": 145,
+      "label_abbreviation": "PHI",
+      "filename": "PHI-pb.iff",
+      "index": 30,
+      "source": "h-21-1960-eagles-8.iff",
+      "selected": {
+        "index": 32,
+        "name": "Eagles '60",
+        "abbr": "PHI60",
+        "category": 4,
+        "players": 53,
+        "identity": 145,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-21-1960-eagles-8.iff"
+      ]
+    },
+    {
+      "name": "Eagles '80",
+      "asset_code": "21",
+      "category": 4,
+      "identity": 146,
+      "label_abbreviation": "PHI",
+      "filename": "PHI-pb.iff",
+      "index": 31,
+      "source": "h-21-1980-eagles-5.iff",
+      "selected": {
+        "index": 32,
+        "name": "Eagles '80",
+        "abbr": "PHI80",
+        "category": 4,
+        "players": 53,
+        "identity": 146,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-21-1980-eagles-5.iff"
+      ]
+    },
+    {
+      "name": "Eagles '04",
+      "asset_code": "21",
+      "category": 4,
+      "identity": 146,
+      "label_abbreviation": "PHI",
+      "filename": "PHI-pb.iff",
+      "index": 32,
+      "source": "h-21-2004-eagles-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Eagles '04",
+        "abbr": "PHI04",
+        "category": 4,
+        "players": 53,
+        "identity": 146,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-21-2004-eagles-0.iff"
+      ]
+    },
+    {
+      "name": "Falcons '80",
+      "asset_code": "01",
+      "category": 4,
+      "identity": 101,
+      "label_abbreviation": "ATL",
+      "filename": "ATL-pb.iff",
+      "index": 33,
+      "source": "h-01-1980-falcons-6.iff",
+      "selected": {
+        "index": 32,
+        "name": "Falcons '80",
+        "abbr": "ATL80",
+        "category": 4,
+        "players": 53,
+        "identity": 101,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-01-1980-falcons-6.iff"
+      ]
+    },
+    {
+      "name": "Falcons '98",
+      "asset_code": "01",
+      "category": 4,
+      "identity": 102,
+      "label_abbreviation": "ATL",
+      "filename": "ATL-pb.iff",
+      "index": 34,
+      "source": "h-01-1998-falcons-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Falcons '98",
+        "abbr": "ATL98",
+        "category": 4,
+        "players": 53,
+        "identity": 102,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-01-1998-falcons-1.iff"
+      ]
+    },
+    {
+      "name": "Giants '56",
+      "asset_code": "18",
+      "category": 4,
+      "identity": 137,
+      "label_abbreviation": "NYG",
+      "filename": "NYG-pb.iff",
+      "index": 35,
+      "source": "h-18-1956-giants-6.iff",
+      "selected": {
+        "index": 32,
+        "name": "Giants '56",
+        "abbr": "NYG56",
+        "category": 4,
+        "players": 53,
+        "identity": 137,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-18-1956-giants-6.iff"
+      ]
+    },
+    {
+      "name": "Giants '86",
+      "asset_code": "18",
+      "category": 4,
+      "identity": 138,
+      "label_abbreviation": "NYG",
+      "filename": "NYG-pb.iff",
+      "index": 36,
+      "source": "h-18-1986-giants-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Giants '86",
+        "abbr": "NYG86",
+        "category": 4,
+        "players": 53,
+        "identity": 138,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-18-1986-giants-2.iff"
+      ]
+    },
+    {
+      "name": "Giants '90",
+      "asset_code": "18",
+      "category": 4,
+      "identity": 139,
+      "label_abbreviation": "NYG",
+      "filename": "NYG-pb.iff",
+      "index": 37,
+      "source": "h-18-1990-giants-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Giants '90",
+        "abbr": "NYG90",
+        "category": 4,
+        "players": 53,
+        "identity": 139,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-18-1990-giants-2.iff"
+      ]
+    },
+    {
+      "name": "Giants '03",
+      "asset_code": "18",
+      "category": 4,
+      "identity": 139,
+      "label_abbreviation": "NYG",
+      "filename": "NYG-pb.iff",
+      "index": 38,
+      "source": "h-18-2003-giants-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Giants '03",
+        "abbr": "NYG03",
+        "category": 4,
+        "players": 53,
+        "identity": 139,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-18-2003-giants-0.iff"
+      ]
+    },
+    {
+      "name": "Jaguars '99",
+      "asset_code": "12",
+      "category": 4,
+      "identity": 124,
+      "label_abbreviation": "JAX",
+      "filename": "JAX-pb.iff",
+      "index": 39,
+      "source": "h-12-1999-jaguars-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Jaguars '99",
+        "abbr": "JAX99",
+        "category": 4,
+        "players": 53,
+        "identity": 124,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-12-1999-jaguars-1.iff"
+      ]
+    },
+    {
+      "name": "Jets '68",
+      "asset_code": "19",
+      "category": 4,
+      "identity": 140,
+      "label_abbreviation": "NYJ",
+      "filename": "NYJ-pb.iff",
+      "index": 40,
+      "source": "h-19-1968-jets-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Jets '68",
+        "abbr": "NYJ68",
+        "category": 4,
+        "players": 53,
+        "identity": 140,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-19-1968-jets-4.iff"
+      ]
+    },
+    {
+      "name": "Jets '98",
+      "asset_code": "19",
+      "category": 4,
+      "identity": 141,
+      "label_abbreviation": "NYJ",
+      "filename": "NYJ-pb.iff",
+      "index": 41,
+      "source": "h-19-1998-jets-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Jets '98",
+        "abbr": "NYJ98",
+        "category": 4,
+        "players": 53,
+        "identity": 141,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-19-1998-jets-0.iff"
+      ]
+    },
+    {
+      "name": "Lions '53",
+      "asset_code": "09",
+      "category": 4,
+      "identity": 119,
+      "label_abbreviation": "DET",
+      "filename": "DET-pb.iff",
+      "index": 42,
+      "source": "h-09-1953-lions-6.iff",
+      "selected": {
+        "index": 32,
+        "name": "Lions '53",
+        "abbr": "DET53",
+        "category": 4,
+        "players": 53,
+        "identity": 119,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-09-1953-lions-6.iff"
+      ]
+    },
+    {
+      "name": "Lions '91",
+      "asset_code": "09",
+      "category": 4,
+      "identity": 120,
+      "label_abbreviation": "DET",
+      "filename": "DET-pb.iff",
+      "index": 43,
+      "source": "h-09-1991-lions-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Lions '91",
+        "abbr": "DET91",
+        "category": 4,
+        "players": 53,
+        "identity": 120,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-09-1991-lions-3.iff"
+      ]
+    },
+    {
+      "name": "Oilers '61",
+      "asset_code": "28",
+      "category": 4,
+      "identity": 162,
+      "label_abbreviation": "TEN",
+      "filename": "TEN-pb.iff",
+      "index": 44,
+      "source": "h-28-1961-oilers-5.iff",
+      "selected": {
+        "index": 32,
+        "name": "Oilers '61",
+        "abbr": "HOU61",
+        "category": 4,
+        "players": 53,
+        "identity": 162,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-28-1961-oilers-5.iff"
+      ]
+    },
+    {
+      "name": "Oilers '79",
+      "asset_code": "28",
+      "category": 4,
+      "identity": 163,
+      "label_abbreviation": "TEN",
+      "filename": "TEN-pb.iff",
+      "index": 45,
+      "source": "h-28-1979-oilers-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Oilers '79",
+        "abbr": "HOU79",
+        "category": 4,
+        "players": 53,
+        "identity": 163,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-28-1979-oilers-2.iff"
+      ]
+    },
+    {
+      "name": "Packers '66",
+      "asset_code": "10",
+      "category": 4,
+      "identity": 121,
+      "label_abbreviation": "GB",
+      "filename": "GB-pb.iff",
+      "index": 46,
+      "source": "h-10-1966-packers-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Packers '66",
+        "abbr": "GB66",
+        "category": 4,
+        "players": 53,
+        "identity": 121,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-10-1966-packers-3.iff"
+      ]
+    },
+    {
+      "name": "Packers '96",
+      "asset_code": "10",
+      "category": 4,
+      "identity": 122,
+      "label_abbreviation": "GB",
+      "filename": "GB-pb.iff",
+      "index": 47,
+      "source": "h-10-1996-packers-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Packers '96",
+        "abbr": "GB96",
+        "category": 4,
+        "players": 53,
+        "identity": 122,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-10-1996-packers-2.iff"
+      ]
+    },
+    {
+      "name": "Packers '04",
+      "asset_code": "10",
+      "category": 4,
+      "identity": 122,
+      "label_abbreviation": "GB",
+      "filename": "GB-pb.iff",
+      "index": 48,
+      "source": "h-10-2004-packers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Packers '04",
+        "abbr": "GB04",
+        "category": 4,
+        "players": 53,
+        "identity": 122,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-10-2004-packers-0.iff"
+      ]
+    },
+    {
+      "name": "Panthers '96",
+      "asset_code": "04",
+      "category": 4,
+      "identity": 106,
+      "label_abbreviation": "CAR",
+      "filename": "CAR-pb.iff",
+      "index": 49,
+      "source": "h-04-1996-panthers-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Panthers '96",
+        "abbr": "CAR96",
+        "category": 4,
+        "players": 53,
+        "identity": 106,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-04-1996-panthers-1.iff"
+      ]
+    },
+    {
+      "name": "Panthers '03",
+      "asset_code": "04",
+      "category": 4,
+      "identity": 169,
+      "label_abbreviation": "CAR",
+      "filename": "CAR-pb.iff",
+      "index": 50,
+      "source": "h-04-2003-panthers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Panthers '03",
+        "abbr": "CAR03",
+        "category": 4,
+        "players": 53,
+        "identity": 169,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-04-2003-panthers-0.iff"
+      ]
+    },
+    {
+      "name": "Patriots '85",
+      "asset_code": "16",
+      "category": 4,
+      "identity": 133,
+      "label_abbreviation": "NE",
+      "filename": "NE-pb.iff",
+      "index": 51,
+      "source": "h-16-1985-patriots-5.iff",
+      "selected": {
+        "index": 32,
+        "name": "Patriots '85",
+        "abbr": "NE85",
+        "category": 4,
+        "players": 53,
+        "identity": 133,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-16-1985-patriots-5.iff"
+      ]
+    },
+    {
+      "name": "Patriots '01",
+      "asset_code": "16",
+      "category": 4,
+      "identity": 134,
+      "label_abbreviation": "NE",
+      "filename": "NE-pb.iff",
+      "index": 52,
+      "source": "h-16-2001-patriots-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Patriots '01",
+        "abbr": "NE01",
+        "category": 4,
+        "players": 53,
+        "identity": 134,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-16-2001-patriots-0.iff"
+      ]
+    },
+    {
+      "name": "Patriots '03",
+      "asset_code": "16",
+      "category": 4,
+      "identity": 170,
+      "label_abbreviation": "NE",
+      "filename": "NE-pb.iff",
+      "index": 53,
+      "source": "h-16-2003-patriots-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Patriots '03",
+        "abbr": "NE03",
+        "category": 4,
+        "players": 53,
+        "identity": 170,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-16-2003-patriots-0.iff"
+      ]
+    },
+    {
+      "name": "Raiders '67",
+      "asset_code": "20",
+      "category": 4,
+      "identity": 142,
+      "label_abbreviation": "OAK",
+      "filename": "OAK-pb.iff",
+      "index": 54,
+      "source": "h-20-1967-raiders-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Raiders '67",
+        "abbr": "OAK67",
+        "category": 4,
+        "players": 53,
+        "identity": 142,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-20-1967-raiders-1.iff"
+      ]
+    },
+    {
+      "name": "Raiders '76",
+      "asset_code": "20",
+      "category": 4,
+      "identity": 143,
+      "label_abbreviation": "OAK",
+      "filename": "OAK-pb.iff",
+      "index": 55,
+      "source": "h-20-1976-raiders-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Raiders '76",
+        "abbr": "OAK76",
+        "category": 4,
+        "players": 53,
+        "identity": 143,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-20-1976-raiders-0.iff"
+      ]
+    },
+    {
+      "name": "Raiders '83",
+      "asset_code": "20",
+      "category": 4,
+      "identity": 144,
+      "label_abbreviation": "OAK",
+      "filename": "OAK-pb.iff",
+      "index": 56,
+      "source": "h-20-1983-raiders-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Raiders '83",
+        "abbr": "LA83",
+        "category": 4,
+        "players": 53,
+        "identity": 144,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-20-1983-raiders-0.iff"
+      ]
+    },
+    {
+      "name": "Rams '79",
+      "asset_code": "23",
+      "category": 4,
+      "identity": 158,
+      "label_abbreviation": "STL",
+      "filename": "STL-pb.iff",
+      "index": 57,
+      "source": "h-23-1979-rams-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Rams '79",
+        "abbr": "LA79",
+        "category": 4,
+        "players": 53,
+        "identity": 158,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-23-1979-rams-4.iff"
+      ]
+    },
+    {
+      "name": "Rams '99",
+      "asset_code": "23",
+      "category": 4,
+      "identity": 159,
+      "label_abbreviation": "STL",
+      "filename": "STL-pb.iff",
+      "index": 58,
+      "source": "h-23-1999-rams-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Rams '99",
+        "abbr": "STL99",
+        "category": 4,
+        "players": 53,
+        "identity": 159,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-23-1999-rams-2.iff"
+      ]
+    },
+    {
+      "name": "Ravens '00",
+      "asset_code": "02",
+      "category": 4,
+      "identity": 103,
+      "label_abbreviation": "BAL",
+      "filename": "BAL-pb.iff",
+      "index": 59,
+      "source": "h-02-2000-ravens-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Ravens '00",
+        "abbr": "BAL00",
+        "category": 4,
+        "players": 53,
+        "identity": 103,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-02-2000-ravens-0.iff"
+      ]
+    },
+    {
+      "name": "Redskins '82",
+      "asset_code": "29",
+      "category": 4,
+      "identity": 165,
+      "label_abbreviation": "WAS",
+      "filename": "WAS-pb.iff",
+      "index": 60,
+      "source": "h-29-1982-redskins-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Redskins '82",
+        "abbr": "WAS82",
+        "category": 4,
+        "players": 53,
+        "identity": 165,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-29-1982-redskins-2.iff"
+      ]
+    },
+    {
+      "name": "Redskins '87",
+      "asset_code": "29",
+      "category": 4,
+      "identity": 166,
+      "label_abbreviation": "WAS",
+      "filename": "WAS-pb.iff",
+      "index": 61,
+      "source": "h-29-1987-redskins-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Redskins '87",
+        "abbr": "WAS87",
+        "category": 4,
+        "players": 53,
+        "identity": 166,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-29-1987-redskins-2.iff"
+      ]
+    },
+    {
+      "name": "Redskins '91",
+      "asset_code": "29",
+      "category": 4,
+      "identity": 167,
+      "label_abbreviation": "WAS",
+      "filename": "WAS-pb.iff",
+      "index": 62,
+      "source": "h-29-1991-redskins-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Redskins '91",
+        "abbr": "WAS91",
+        "category": 4,
+        "players": 53,
+        "identity": 167,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-29-1991-redskins-2.iff"
+      ]
+    },
+    {
+      "name": "Saints '91",
+      "asset_code": "17",
+      "category": 4,
+      "identity": 135,
+      "label_abbreviation": "NO",
+      "filename": "NO-pb.iff",
+      "index": 63,
+      "source": "h-17-1991-saints-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Saints '91",
+        "abbr": "NO91",
+        "category": 4,
+        "players": 53,
+        "identity": 135,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-17-1991-saints-4.iff"
+      ]
+    },
+    {
+      "name": "Saints '00",
+      "asset_code": "17",
+      "category": 4,
+      "identity": 136,
+      "label_abbreviation": "NO",
+      "filename": "NO-pb.iff",
+      "index": 64,
+      "source": "h-17-2000-saints-2.iff",
+      "selected": {
+        "index": 32,
+        "name": "Saints '00",
+        "abbr": "NO00",
+        "category": 4,
+        "players": 53,
+        "identity": 136,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-17-2000-saints-2.iff"
+      ]
+    },
+    {
+      "name": "Seahawks '84",
+      "asset_code": "26",
+      "category": 4,
+      "identity": 153,
+      "label_abbreviation": "SEA",
+      "filename": "SEA-pb.iff",
+      "index": 65,
+      "source": "h-26-1984-seahawks-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Seahawks '84",
+        "abbr": "SEA84",
+        "category": 4,
+        "players": 53,
+        "identity": 153,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-26-1984-seahawks-1.iff"
+      ]
+    },
+    {
+      "name": "Seahawks '99",
+      "asset_code": "26",
+      "category": 4,
+      "identity": 154,
+      "label_abbreviation": "SEA",
+      "filename": "SEA-pb.iff",
+      "index": 66,
+      "source": "h-26-1999-seahawks-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Seahawks '99",
+        "abbr": "SEA99",
+        "category": 4,
+        "players": 53,
+        "identity": 154,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-26-1999-seahawks-1.iff"
+      ]
+    },
+    {
+      "name": "Steelers '75",
+      "asset_code": "22",
+      "category": 4,
+      "identity": 147,
+      "label_abbreviation": "PIT",
+      "filename": "PIT-pb.iff",
+      "index": 67,
+      "source": "h-22-1975-steelers-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Steelers '75",
+        "abbr": "PIT75",
+        "category": 4,
+        "players": 53,
+        "identity": 147,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-22-1975-steelers-1.iff"
+      ]
+    },
+    {
+      "name": "Steelers '78",
+      "asset_code": "22",
+      "category": 4,
+      "identity": 148,
+      "label_abbreviation": "PIT",
+      "filename": "PIT-pb.iff",
+      "index": 68,
+      "source": "h-22-1978-steelers-1.iff",
+      "selected": {
+        "index": 32,
+        "name": "Steelers '78",
+        "abbr": "PIT78",
+        "category": 4,
+        "players": 53,
+        "identity": 148,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-22-1978-steelers-1.iff"
+      ]
+    },
+    {
+      "name": "Steelers '95",
+      "asset_code": "22",
+      "category": 4,
+      "identity": 149,
+      "label_abbreviation": "PIT",
+      "filename": "PIT-pb.iff",
+      "index": 69,
+      "source": "h-22-1995-steelers-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Steelers '95",
+        "abbr": "PIT95",
+        "category": 4,
+        "players": 53,
+        "identity": 149,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-22-1995-steelers-0.iff"
+      ]
+    },
+    {
+      "name": "Texans '62",
+      "asset_code": "13",
+      "category": 4,
+      "identity": 125,
+      "label_abbreviation": "KC",
+      "filename": "KC-pb.iff",
+      "index": 70,
+      "source": "h-13-1962-texans-5.iff",
+      "selected": {
+        "index": 32,
+        "name": "Texans '62",
+        "abbr": "DAL62",
+        "category": 4,
+        "players": 53,
+        "identity": 125,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-13-1962-texans-5.iff"
+      ]
+    },
+    {
+      "name": "Titans '99",
+      "asset_code": "28",
+      "category": 4,
+      "identity": 164,
+      "label_abbreviation": "TEN",
+      "filename": "TEN-pb.iff",
+      "index": 71,
+      "source": "h-28-1999-titans-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Titans '99",
+        "abbr": "TEN99",
+        "category": 4,
+        "players": 53,
+        "identity": 164,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-28-1999-titans-0.iff"
+      ]
+    },
+    {
+      "name": "Vikings '69",
+      "asset_code": "15",
+      "category": 4,
+      "identity": 130,
+      "label_abbreviation": "MIN",
+      "filename": "MIN-pb.iff",
+      "index": 72,
+      "source": "h-15-1969-vikings-4.iff",
+      "selected": {
+        "index": 32,
+        "name": "Vikings '69",
+        "abbr": "MIN69",
+        "category": 4,
+        "players": 53,
+        "identity": 130,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-15-1969-vikings-4.iff"
+      ]
+    },
+    {
+      "name": "Vikings '73",
+      "asset_code": "15",
+      "category": 4,
+      "identity": 131,
+      "label_abbreviation": "MIN",
+      "filename": "MIN-pb.iff",
+      "index": 73,
+      "source": "h-15-1973-vikings-3.iff",
+      "selected": {
+        "index": 32,
+        "name": "Vikings '73",
+        "abbr": "MIN73",
+        "category": 4,
+        "players": 53,
+        "identity": 131,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-15-1973-vikings-3.iff"
+      ]
+    },
+    {
+      "name": "Vikings '98",
+      "asset_code": "15",
+      "category": 4,
+      "identity": 132,
+      "label_abbreviation": "MIN",
+      "filename": "MIN-pb.iff",
+      "index": 74,
+      "source": "h-15-1998-vikings-0.iff",
+      "selected": {
+        "index": 32,
+        "name": "Vikings '98",
+        "abbr": "MIN98",
+        "category": 4,
+        "players": 53,
+        "identity": 132,
+        "pointers": 53
+      },
+      "loaded_files": [
+        "h-15-1998-vikings-0.iff"
+      ]
+    }
+  ],
+  "moments": [
+    {
+      "row": 1,
+      "loaded_files": [
+        "h-10-1966-packers-3.iff",
+        "h-07-1971-cowboys-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Cowboys '71",
+          "asset_code": "07",
+          "category": 4,
+          "identity": 113,
+          "label_abbreviation": "DAL",
+          "filename": "DAL-pb.iff",
+          "kit": "07a5.iff"
+        },
+        "home": {
+          "name": "Packers '66",
+          "asset_code": "10",
+          "category": 4,
+          "identity": 121,
+          "label_abbreviation": "GB",
+          "filename": "GB-pb.iff",
+          "kit": "10h3.iff"
+        }
+      }
+    },
+    {
+      "row": 2,
+      "loaded_files": [
+        "h-20-1967-raiders-1.iff",
+        "h-19-1968-jets-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Jets '68",
+          "asset_code": "19",
+          "category": 4,
+          "identity": 140,
+          "label_abbreviation": "NYJ",
+          "filename": "NYJ-pb.iff",
+          "kit": "19a4.iff"
+        },
+        "home": {
+          "name": "Raiders '67",
+          "asset_code": "20",
+          "category": 4,
+          "identity": 142,
+          "label_abbreviation": "OAK",
+          "filename": "OAK-pb.iff",
+          "kit": "20h1.iff"
+        }
+      }
+    },
+    {
+      "row": 3,
+      "loaded_files": [
+        "h-13-1969-chiefs-4.iff",
+        "h-14-1972-dolphins-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Dolphins '72",
+          "asset_code": "14",
+          "category": 4,
+          "identity": 128,
+          "label_abbreviation": "MIA",
+          "filename": "MIA-pb.iff",
+          "kit": "14a5.iff"
+        },
+        "home": {
+          "name": "Chiefs '69",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 126,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13h3.iff"
+        }
+      }
+    },
+    {
+      "row": 4,
+      "loaded_files": [
+        "h-22-1975-steelers-1.iff",
+        "h-20-1967-raiders-1.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Raiders '67",
+          "asset_code": "20",
+          "category": 4,
+          "identity": 142,
+          "label_abbreviation": "OAK",
+          "filename": "OAK-pb.iff",
+          "kit": "20a1.iff"
+        },
+        "home": {
+          "name": "Steelers '75",
+          "asset_code": "22",
+          "category": 4,
+          "identity": 147,
+          "label_abbreviation": "PIT",
+          "filename": "PIT-pb.iff",
+          "kit": "22h1.iff"
+        }
+      }
+    },
+    {
+      "row": 5,
+      "loaded_files": [
+        "h-20-1976-raiders-0.iff",
+        "h-14-1972-dolphins-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Dolphins '72",
+          "asset_code": "14",
+          "category": 4,
+          "identity": 128,
+          "label_abbreviation": "MIA",
+          "filename": "MIA-pb.iff",
+          "kit": "14a4.iff"
+        },
+        "home": {
+          "name": "Raiders '76",
+          "asset_code": "20",
+          "category": 4,
+          "identity": 143,
+          "label_abbreviation": "OAK",
+          "filename": "OAK-pb.iff",
+          "kit": "20h1.iff"
+        }
+      }
+    },
+    {
+      "row": 6,
+      "loaded_files": [
+        "h-07-1977-cowboys-3.iff",
+        "h-29-1982-redskins-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Redskins '82",
+          "asset_code": "29",
+          "category": 4,
+          "identity": 165,
+          "label_abbreviation": "WAS",
+          "filename": "WAS-pb.iff",
+          "kit": "29a3.iff"
+        },
+        "home": {
+          "name": "Cowboys '77",
+          "asset_code": "07",
+          "category": 4,
+          "identity": 114,
+          "label_abbreviation": "DAL",
+          "filename": "DAL-pb.iff",
+          "kit": "07h3.iff"
+        }
+      }
+    },
+    {
+      "row": 7,
+      "loaded_files": [
+        "h-25-1981-49ers-3.iff",
+        "h-17-1991-saints-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Saints '91",
+          "asset_code": "17",
+          "category": 4,
+          "identity": 135,
+          "label_abbreviation": "NO",
+          "filename": "NO-pb.iff",
+          "kit": "17a5.iff"
+        },
+        "home": {
+          "name": "49ers '81",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 155,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h3.iff"
+        }
+      }
+    },
+    {
+      "row": 8,
+      "loaded_files": [
+        "h-14-1984-dolphins-3.iff",
+        "h-24-1980-chargers-4.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Chargers '80",
+          "asset_code": "24",
+          "category": 4,
+          "identity": 151,
+          "label_abbreviation": "SD",
+          "filename": "SD-pb.iff",
+          "kit": "24a4.iff"
+        },
+        "home": {
+          "name": "Dolphins '84",
+          "asset_code": "14",
+          "category": 4,
+          "identity": 129,
+          "label_abbreviation": "MIA",
+          "filename": "MIA-pb.iff",
+          "kit": "14h3.iff"
+        }
+      }
+    },
+    {
+      "row": 9,
+      "loaded_files": [
+        "h-25-1981-49ers-3.iff",
+        "h-07-1977-cowboys-3.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Cowboys '77",
+          "asset_code": "07",
+          "category": 4,
+          "identity": 114,
+          "label_abbreviation": "DAL",
+          "filename": "DAL-pb.iff",
+          "kit": "07a2.iff"
+        },
+        "home": {
+          "name": "49ers '81",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 155,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h3.iff"
+        }
+      }
+    },
+    {
+      "row": 10,
+      "loaded_files": [
+        "h-29-1982-redskins-2.iff",
+        "h-20-1983-raiders-0.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Raiders '83",
+          "asset_code": "20",
+          "category": 4,
+          "identity": 144,
+          "label_abbreviation": "OAK",
+          "filename": "OAK-pb.iff",
+          "kit": "20a1.iff"
+        },
+        "home": {
+          "name": "Redskins '82",
+          "asset_code": "29",
+          "category": 4,
+          "identity": 165,
+          "label_abbreviation": "WAS",
+          "filename": "WAS-pb.iff",
+          "kit": "29h2.iff"
+        }
+      }
+    },
+    {
+      "row": 11,
+      "loaded_files": [
+        "h-30-1986-browns-1.iff",
+        "h-08-1986-broncos-1.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Broncos '86",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 117,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08a1.iff"
+        },
+        "home": {
+          "name": "Browns '86",
+          "asset_code": "30",
+          "category": 4,
+          "identity": 112,
+          "label_abbreviation": "CLE",
+          "filename": "CLE-pb.iff",
+          "kit": "30h1.iff"
+        }
+      }
+    },
+    {
+      "row": 12,
+      "loaded_files": [
+        "h-06-1988-bengals-1.iff",
+        "h-25-1989-49ers-3.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "49ers '89",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 156,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25a3.iff"
+        },
+        "home": {
+          "name": "Bengals '88",
+          "asset_code": "06",
+          "category": 4,
+          "identity": 110,
+          "label_abbreviation": "CIN",
+          "filename": "CIN-pb.iff",
+          "kit": "06h1.iff"
+        }
+      }
+    },
+    {
+      "row": 13,
+      "loaded_files": [
+        "h-00-1975-cardinals-3.iff",
+        "h-27-1979-buccaneers-3.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Buccaneers '79",
+          "asset_code": "27",
+          "category": 4,
+          "identity": 160,
+          "label_abbreviation": "TB",
+          "filename": "TB-pb.iff",
+          "kit": "27a3.iff"
+        },
+        "home": {
+          "name": "Cardinals '75",
+          "asset_code": "00",
+          "category": 4,
+          "identity": 100,
+          "label_abbreviation": "ARZ",
+          "filename": "ARZ-pb.iff",
+          "kit": "00h3.iff"
+        }
+      }
+    },
+    {
+      "row": 14,
+      "loaded_files": [
+        "h-25-1989-49ers-3.iff",
+        "h-06-1988-bengals-1.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Bengals '88",
+          "asset_code": "06",
+          "category": 4,
+          "identity": 110,
+          "label_abbreviation": "CIN",
+          "filename": "CIN-pb.iff",
+          "kit": "06a1.iff"
+        },
+        "home": {
+          "name": "49ers '89",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 156,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h3.iff"
+        }
+      }
+    },
+    {
+      "row": 15,
+      "loaded_files": [
+        "h-18-1990-giants-2.iff",
+        "h-03-1990-bills-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Bills '90",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 105,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03a2.iff"
+        },
+        "home": {
+          "name": "Giants '90",
+          "asset_code": "18",
+          "category": 4,
+          "identity": 139,
+          "label_abbreviation": "NYG",
+          "filename": "NYG-pb.iff",
+          "kit": "18h2.iff"
+        }
+      }
+    },
+    {
+      "row": 16,
+      "loaded_files": [
+        "h-08-1986-broncos-1.iff",
+        "h-28-1979-oilers-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Oilers '79",
+          "asset_code": "28",
+          "category": 4,
+          "identity": 163,
+          "label_abbreviation": "TEN",
+          "filename": "TEN-pb.iff",
+          "kit": "28a1.iff"
+        },
+        "home": {
+          "name": "Broncos '86",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 117,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08h1.iff"
+        }
+      }
+    },
+    {
+      "row": 17,
+      "loaded_files": [
+        "h-08-1986-broncos-1.iff",
+        "h-13-1993-chiefs-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Chiefs '93",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 127,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13a2.iff"
+        },
+        "home": {
+          "name": "Broncos '86",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 117,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08h1.iff"
+        }
+      }
+    },
+    {
+      "row": 18,
+      "loaded_files": [
+        "h-03-1990-bills-2.iff",
+        "h-28-1979-oilers-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Oilers '79",
+          "asset_code": "28",
+          "category": 4,
+          "identity": 163,
+          "label_abbreviation": "TEN",
+          "filename": "TEN-pb.iff",
+          "kit": "28a1.iff"
+        },
+        "home": {
+          "name": "Bills '90",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 105,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03h2.iff"
+        }
+      }
+    },
+    {
+      "row": 19,
+      "loaded_files": [
+        "h-13-1993-chiefs-2.iff",
+        "h-08-1986-broncos-1.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Broncos '86",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 117,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08a1.iff"
+        },
+        "home": {
+          "name": "Chiefs '93",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 127,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13h1.iff"
+        }
+      }
+    },
+    {
+      "row": 20,
+      "loaded_files": [
+        "h-03-1990-bills-2.iff",
+        "h-11-1970-colts-5.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Colts '70",
+          "asset_code": "11",
+          "category": 4,
+          "identity": 123,
+          "label_abbreviation": "IND",
+          "filename": "IND-pb.iff",
+          "kit": "11a1.iff"
+        },
+        "home": {
+          "name": "Bills '90",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 105,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03h2.iff"
+        }
+      }
+    },
+    {
+      "row": 21,
+      "loaded_files": [
+        "h-08-1998-broncos-0.iff",
+        "h-10-1996-packers-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Packers '96",
+          "asset_code": "10",
+          "category": 4,
+          "identity": 122,
+          "label_abbreviation": "GB",
+          "filename": "GB-pb.iff",
+          "kit": "10a0.iff"
+        },
+        "home": {
+          "name": "Broncos '98",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 118,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08h0.iff"
+        }
+      }
+    },
+    {
+      "row": 22,
+      "loaded_files": [
+        "h-28-1999-titans-0.iff",
+        "h-23-1999-rams-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Rams '99",
+          "asset_code": "23",
+          "category": 4,
+          "identity": 159,
+          "label_abbreviation": "STL",
+          "filename": "STL-pb.iff",
+          "kit": "23a2.iff"
+        },
+        "home": {
+          "name": "Titans '99",
+          "asset_code": "28",
+          "category": 4,
+          "identity": 164,
+          "label_abbreviation": "TEN",
+          "filename": "TEN-pb.iff",
+          "kit": "28h0.iff"
+        }
+      }
+    },
+    {
+      "row": 23,
+      "loaded_files": [
+        "h-16-2001-patriots-0.iff",
+        "h-23-1999-rams-2.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Rams '99",
+          "asset_code": "23",
+          "category": 4,
+          "identity": 159,
+          "label_abbreviation": "STL",
+          "filename": "STL-pb.iff",
+          "kit": "23a1.iff"
+        },
+        "home": {
+          "name": "Patriots '01",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 134,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 24,
+      "loaded_files": [
+        "h-25-2003-49ers-0.iff",
+        "h-18-2003-giants-0.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Giants '03",
+          "asset_code": "18",
+          "category": 4,
+          "identity": 139,
+          "label_abbreviation": "NYG",
+          "filename": "NYG-pb.iff",
+          "kit": "18a0.iff"
+        },
+        "home": {
+          "name": "49ers '03",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 157,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h0.iff"
+        }
+      }
+    },
+    {
+      "row": 25,
+      "loaded_files": [
+        "h-21-2004-eagles-0.iff",
+        "h-10-2004-packers-0.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Packers '04",
+          "asset_code": "10",
+          "category": 4,
+          "identity": 122,
+          "label_abbreviation": "GB",
+          "filename": "GB-pb.iff",
+          "kit": "10a0.iff"
+        },
+        "home": {
+          "name": "Eagles '04",
+          "asset_code": "21",
+          "category": 4,
+          "identity": 146,
+          "label_abbreviation": "PHI",
+          "filename": "PHI-pb.iff",
+          "kit": "21h0.iff"
+        }
+      }
+    },
+    {
+      "row": 26,
+      "loaded_files": [
+        "h-15-1998-vikings-9.iff",
+        "h-01-1998-falcons-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Falcons '98",
+          "asset_code": "01",
+          "category": 4,
+          "identity": 176,
+          "label_abbreviation": "ATL",
+          "filename": "ATL-pb.iff",
+          "kit": "01a1.iff"
+        },
+        "home": {
+          "name": "Vikings '98",
+          "asset_code": "15",
+          "category": 4,
+          "identity": 177,
+          "label_abbreviation": "MIN",
+          "filename": "MIN-pb.iff",
+          "kit": "15h0.iff"
+        }
+      }
+    },
+    {
+      "row": 27,
+      "loaded_files": [
+        "h-16-2007-patriots-9.iff",
+        "h-18-2007-giants-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Giants '07",
+          "asset_code": "18",
+          "category": 4,
+          "identity": 178,
+          "label_abbreviation": "NYG",
+          "filename": "NYG-pb.iff",
+          "kit": "18a0.iff"
+        },
+        "home": {
+          "name": "Patriots '07",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 179,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 28,
+      "loaded_files": [
+        "h-00-2008-cardinals-9.iff",
+        "h-22-2008-steelers-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Steelers '08",
+          "asset_code": "22",
+          "category": 4,
+          "identity": 180,
+          "label_abbreviation": "PIT",
+          "filename": "PIT-pb.iff",
+          "kit": "22a0.iff"
+        },
+        "home": {
+          "name": "Cardinals '08",
+          "asset_code": "00",
+          "category": 4,
+          "identity": 181,
+          "label_abbreviation": "ARZ",
+          "filename": "ARZ-pb.iff",
+          "kit": "00h0.iff"
+        }
+      }
+    },
+    {
+      "row": 29,
+      "loaded_files": [
+        "h-16-2011-patriots-9.iff",
+        "h-18-2011-giants-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Giants '11",
+          "asset_code": "18",
+          "category": 4,
+          "identity": 182,
+          "label_abbreviation": "NYG",
+          "filename": "NYG-pb.iff",
+          "kit": "18a0.iff"
+        },
+        "home": {
+          "name": "Patriots '11",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 183,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 30,
+      "loaded_files": [
+        "h-01-2016-falcons-9.iff",
+        "h-16-2016-patriots-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Patriots '16",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 184,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16a0.iff"
+        },
+        "home": {
+          "name": "Falcons '16",
+          "asset_code": "01",
+          "category": 4,
+          "identity": 185,
+          "label_abbreviation": "ATL",
+          "filename": "ATL-pb.iff",
+          "kit": "01h0.iff"
+        }
+      }
+    },
+    {
+      "row": 31,
+      "loaded_files": [
+        "h-03-2022-bills-9.iff",
+        "h-15-2022-vikings-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Vikings '22",
+          "asset_code": "15",
+          "category": 4,
+          "identity": 186,
+          "label_abbreviation": "MIN",
+          "filename": "MIN-pb.iff",
+          "kit": "15a0.iff"
+        },
+        "home": {
+          "name": "Bills '22",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 187,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03h4.iff"
+        }
+      }
+    },
+    {
+      "row": 32,
+      "loaded_files": [
+        "h-28-1999-titans-9.iff",
+        "h-03-1999-bills-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Bills '99",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 188,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03a2.iff"
+        },
+        "home": {
+          "name": "Titans '99",
+          "asset_code": "28",
+          "category": 4,
+          "identity": 189,
+          "label_abbreviation": "TEN",
+          "filename": "TEN-pb.iff",
+          "kit": "28h0.iff"
+        }
+      }
+    },
+    {
+      "row": 33,
+      "loaded_files": [
+        "h-16-2001-patriots-9.iff",
+        "h-20-2001-raiders-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Raiders '01",
+          "asset_code": "20",
+          "category": 4,
+          "identity": 190,
+          "label_abbreviation": "OAK",
+          "filename": "OAK-pb.iff",
+          "kit": "20a0.iff"
+        },
+        "home": {
+          "name": "Patriots '01",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 191,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 34,
+      "loaded_files": [
+        "h-16-2003-patriots-9.iff",
+        "h-04-2003-panthers-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Panthers '03",
+          "asset_code": "04",
+          "category": 4,
+          "identity": 192,
+          "label_abbreviation": "CAR",
+          "filename": "CAR-pb.iff",
+          "kit": "04a0.iff"
+        },
+        "home": {
+          "name": "Patriots '03",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 193,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 35,
+      "loaded_files": [
+        "h-11-2009-colts-9.iff",
+        "h-17-2009-saints-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Saints '09",
+          "asset_code": "17",
+          "category": 4,
+          "identity": 194,
+          "label_abbreviation": "NO",
+          "filename": "NO-pb.iff",
+          "kit": "17a0.iff"
+        },
+        "home": {
+          "name": "Colts '09",
+          "asset_code": "11",
+          "category": 4,
+          "identity": 195,
+          "label_abbreviation": "IND",
+          "filename": "IND-pb.iff",
+          "kit": "11h0.iff"
+        }
+      }
+    },
+    {
+      "row": 36,
+      "loaded_files": [
+        "h-18-2010-giants-9.iff",
+        "h-21-2010-eagles-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Eagles '10",
+          "asset_code": "21",
+          "category": 4,
+          "identity": 196,
+          "label_abbreviation": "PHI",
+          "filename": "PHI-pb.iff",
+          "kit": "21a0.iff"
+        },
+        "home": {
+          "name": "Giants '10",
+          "asset_code": "18",
+          "category": 4,
+          "identity": 197,
+          "label_abbreviation": "NYG",
+          "filename": "NYG-pb.iff",
+          "kit": "18h0.iff"
+        }
+      }
+    },
+    {
+      "row": 37,
+      "loaded_files": [
+        "h-26-2010-seahawks-9.iff",
+        "h-17-2010-saints-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Saints '10",
+          "asset_code": "17",
+          "category": 4,
+          "identity": 198,
+          "label_abbreviation": "NO",
+          "filename": "NO-pb.iff",
+          "kit": "17a0.iff"
+        },
+        "home": {
+          "name": "Seahawks '10",
+          "asset_code": "26",
+          "category": 4,
+          "identity": 199,
+          "label_abbreviation": "SEA",
+          "filename": "SEA-pb.iff",
+          "kit": "26h0.iff"
+        }
+      }
+    },
+    {
+      "row": 38,
+      "loaded_files": [
+        "h-25-2011-49ers-9.iff",
+        "h-17-2011-saints-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Saints '11",
+          "asset_code": "17",
+          "category": 4,
+          "identity": 200,
+          "label_abbreviation": "NO",
+          "filename": "NO-pb.iff",
+          "kit": "17a0.iff"
+        },
+        "home": {
+          "name": "49ers '11",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 201,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h3.iff"
+        }
+      }
+    },
+    {
+      "row": 39,
+      "loaded_files": [
+        "h-08-2012-broncos-9.iff",
+        "h-02-2012-ravens-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Ravens '12",
+          "asset_code": "02",
+          "category": 4,
+          "identity": 202,
+          "label_abbreviation": "BAL",
+          "filename": "BAL-pb.iff",
+          "kit": "02a0.iff"
+        },
+        "home": {
+          "name": "Broncos '12",
+          "asset_code": "08",
+          "category": 4,
+          "identity": 203,
+          "label_abbreviation": "DEN",
+          "filename": "DEN-pb.iff",
+          "kit": "08h0.iff"
+        }
+      }
+    },
+    {
+      "row": 40,
+      "loaded_files": [
+        "h-25-2012-49ers-9.iff",
+        "h-02-2012-ravens-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Ravens '12",
+          "asset_code": "02",
+          "category": 4,
+          "identity": 202,
+          "label_abbreviation": "BAL",
+          "filename": "BAL-pb.iff",
+          "kit": "02a0.iff"
+        },
+        "home": {
+          "name": "49ers '12",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 204,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25h3.iff"
+        }
+      }
+    },
+    {
+      "row": 41,
+      "loaded_files": [
+        "h-10-2014-packers-9.iff",
+        "h-07-2014-cowboys-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Cowboys '14",
+          "asset_code": "07",
+          "category": 4,
+          "identity": 205,
+          "label_abbreviation": "DAL",
+          "filename": "DAL-pb.iff",
+          "kit": "07a0.iff"
+        },
+        "home": {
+          "name": "Packers '14",
+          "asset_code": "10",
+          "category": 4,
+          "identity": 206,
+          "label_abbreviation": "GB",
+          "filename": "GB-pb.iff",
+          "kit": "10h0.iff"
+        }
+      }
+    },
+    {
+      "row": 42,
+      "loaded_files": [
+        "h-26-2014-seahawks-9.iff",
+        "h-16-2014-patriots-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Patriots '14",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 207,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16a0.iff"
+        },
+        "home": {
+          "name": "Seahawks '14",
+          "asset_code": "26",
+          "category": 4,
+          "identity": 208,
+          "label_abbreviation": "SEA",
+          "filename": "SEA-pb.iff",
+          "kit": "26h0.iff"
+        }
+      }
+    },
+    {
+      "row": 43,
+      "loaded_files": [
+        "h-09-2015-lions-9.iff",
+        "h-10-2015-packers-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Packers '15",
+          "asset_code": "10",
+          "category": 4,
+          "identity": 209,
+          "label_abbreviation": "GB",
+          "filename": "GB-pb.iff",
+          "kit": "10a0.iff"
+        },
+        "home": {
+          "name": "Lions '15",
+          "asset_code": "09",
+          "category": 4,
+          "identity": 210,
+          "label_abbreviation": "DET",
+          "filename": "DET-pb.iff",
+          "kit": "09h0.iff"
+        }
+      }
+    },
+    {
+      "row": 44,
+      "loaded_files": [
+        "h-15-2017-vikings-9.iff",
+        "h-17-2017-saints-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Saints '17",
+          "asset_code": "17",
+          "category": 4,
+          "identity": 211,
+          "label_abbreviation": "NO",
+          "filename": "NO-pb.iff",
+          "kit": "17a0.iff"
+        },
+        "home": {
+          "name": "Vikings '17",
+          "asset_code": "15",
+          "category": 4,
+          "identity": 212,
+          "label_abbreviation": "MIN",
+          "filename": "MIN-pb.iff",
+          "kit": "15h0.iff"
+        }
+      }
+    },
+    {
+      "row": 45,
+      "loaded_files": [
+        "h-16-2017-patriots-9.iff",
+        "h-21-2017-eagles-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Eagles '17",
+          "asset_code": "21",
+          "category": 4,
+          "identity": 213,
+          "label_abbreviation": "PHI",
+          "filename": "PHI-pb.iff",
+          "kit": "21a0.iff"
+        },
+        "home": {
+          "name": "Patriots '17",
+          "asset_code": "16",
+          "category": 4,
+          "identity": 214,
+          "label_abbreviation": "NE",
+          "filename": "NE-pb.iff",
+          "kit": "16h0.iff"
+        }
+      }
+    },
+    {
+      "row": 46,
+      "loaded_files": [
+        "h-13-2019-chiefs-9.iff",
+        "h-25-2019-49ers-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "49ers '19",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 215,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25a3.iff"
+        },
+        "home": {
+          "name": "Chiefs '19",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 216,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13h0.iff"
+        }
+      }
+    },
+    {
+      "row": 47,
+      "loaded_files": [
+        "h-13-2021-chiefs-9.iff",
+        "h-03-2021-bills-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Bills '21",
+          "asset_code": "03",
+          "category": 4,
+          "identity": 217,
+          "label_abbreviation": "BUF",
+          "filename": "BUF-pb.iff",
+          "kit": "03a4.iff"
+        },
+        "home": {
+          "name": "Chiefs '21",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 218,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13h0.iff"
+        }
+      }
+    },
+    {
+      "row": 48,
+      "loaded_files": [
+        "h-06-2021-bengals-9.iff",
+        "h-23-2021-rams-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Rams '21",
+          "asset_code": "23",
+          "category": 4,
+          "identity": 219,
+          "label_abbreviation": "STL",
+          "filename": "STL-pb.iff",
+          "kit": "23a4.iff"
+        },
+        "home": {
+          "name": "Bengals '21",
+          "asset_code": "06",
+          "category": 4,
+          "identity": 220,
+          "label_abbreviation": "CIN",
+          "filename": "CIN-pb.iff",
+          "kit": "06h0.iff"
+        }
+      }
+    },
+    {
+      "row": 49,
+      "loaded_files": [
+        "h-15-2022-vikings-9.iff",
+        "h-11-2022-colts-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "Colts '22",
+          "asset_code": "11",
+          "category": 4,
+          "identity": 221,
+          "label_abbreviation": "IND",
+          "filename": "IND-pb.iff",
+          "kit": "11a0.iff"
+        },
+        "home": {
+          "name": "Vikings '22",
+          "asset_code": "15",
+          "category": 4,
+          "identity": 186,
+          "label_abbreviation": "MIN",
+          "filename": "MIN-pb.iff",
+          "kit": "15h0.iff"
+        }
+      }
+    },
+    {
+      "row": 50,
+      "loaded_files": [
+        "h-13-2023-chiefs-9.iff",
+        "h-25-2023-49ers-9.iff"
+      ],
+      "sides": {
+        "away": {
+          "name": "49ers '23",
+          "asset_code": "25",
+          "category": 4,
+          "identity": 222,
+          "label_abbreviation": "SF",
+          "filename": "SF-pb.iff",
+          "kit": "25a3.iff"
+        },
+        "home": {
+          "name": "Chiefs '23",
+          "asset_code": "13",
+          "category": 4,
+          "identity": 223,
+          "label_abbreviation": "KC",
+          "filename": "KC-pb.iff",
+          "kit": "13h0.iff"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "historic_teams": 75,
+    "moments": 50,
+    "moment_sides": 100,
+    "extra_team_files": 48
+  }
+}

@@ -1,0 +1,448 @@
+{
+  "evidence": "PROVED OFFLINE",
+  "checks": [
+    {
+      "venue": "s00",
+      "model": "state_farm",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "d4dc3adef6ab77d41ea501b4e3b7613a52090be875ccade9f2962e953d143b11",
+      "compressed_image": true,
+      "before": "dadd28ec9fc40ae2fc40e3b1298a1fe579cf523ce8454e10df534734ef5e3d64",
+      "after": "ca6dd31848eb718c038587e0be5adcecede7268960a221e8845057445fee1534",
+      "u4_equal": [
+        {
+          "key": "banner_away_team",
+          "bytes": 22848,
+          "sha256": "7d76fe8cba027275936d1fa694e3507cb7910dc8c5dd9996d6171c900a4e31d8"
+        },
+        {
+          "key": "banner_home_player",
+          "bytes": 44672,
+          "sha256": "4f57d95ca080c01a1be6783af89f489ca1149038011eca5c38f5119b9951bef4"
+        },
+        {
+          "key": "banner_home_team",
+          "bytes": 22848,
+          "sha256": "b668b60116c9b84239a66d90218127fa8d5f08078ba300273dfcdc6ff8d2bd8a"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1382912,
+      "outside_stadium_compressed_span_unchanged": true,
+      "wrapper_unchanged": true,
+      "receipt": {
+        "schema": "nfl2k5_model_fan_art/v1",
+        "offset": 488480,
+        "length": 904880,
+        "before_sha256": "c8d83d1f4b3dd2139396d7051ee50a339159459645dff89885b93b2175ad6723",
+        "after_sha256": "126b4cdf0078c7130a2aa8961188d59561eb6724d23ae19953b771289cb4ac0f",
+        "manifest": "/media/noah/Storage/.b76-research/main/freeze/candC/root_final_v2/ARI/venue/manifest.json",
+        "art_digest": "176032f7965f69afe290f489cec2772f64983cc6d8fcea1b77028c0f02cffdeb",
+        "textures": [
+          {
+            "key": "banner_home_team",
+            "texture": 4,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          },
+          {
+            "key": "banner_home_player",
+            "texture": 5,
+            "size": [
+              256,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_player",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          },
+          {
+            "key": "banner_away_team",
+            "texture": 6,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_away_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          }
+        ],
+        "palette_cap": 256,
+        "decoded_before_sha256": "51277ac78be1e35716b06972ffc5fc23fb07699aaa4317dc69084efcd5a7eb44",
+        "decoded_after_sha256": "3763d3b9ec68877532a3f5db4e7b368958f8a20f30062cd80d887fc1c9d34676",
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        }
+      }
+    },
+    {
+      "venue": "s01",
+      "model": "mercedes_benz",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "f1eaa93740a938e4322812e70df92dc61969341825d656c0564be3d628abff6d"
+    },
+    {
+      "venue": "s03",
+      "model": "highmark",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "6af440c5474aee5c14681ff5eba68cd73ce3161089a86bc6ea92344d423c489c",
+      "compressed_image": true,
+      "before": "809d9c00f02a899ad43e197d108286908816ceec01798dcb9b765b33b9100989",
+      "after": "ebc4bcde125e2e4302bababc9b7a9066827b62d0bf4b368c83fcb71b9ce411c4",
+      "u4_equal": [
+        {
+          "key": "banner_away_team",
+          "bytes": 22848,
+          "sha256": "506f243f464e07ce338d6063ab3312c0c2408453c51ce6db58203a31561ba98c"
+        },
+        {
+          "key": "banner_home_player",
+          "bytes": 44672,
+          "sha256": "f238d15790053960a89e54af97c96a6b4f66c44d2fc38586b0b0e87c864d4686"
+        },
+        {
+          "key": "banner_home_team",
+          "bytes": 22848,
+          "sha256": "99a21e80694ba4acbe6b85ba83765c200a3879a9f0f269f378fa18809a90a96e"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1427456,
+      "outside_stadium_compressed_span_unchanged": true,
+      "wrapper_unchanged": true,
+      "receipt": {
+        "schema": "nfl2k5_model_fan_art/v1",
+        "offset": 307280,
+        "length": 974896,
+        "before_sha256": "71a4135cc47b1ed1a3e9f995527fb3644740047dae739f7d3ad6b447ba02c0c7",
+        "after_sha256": "21a0dbbf707bff86f08ab0f2d8af74f442c059eb3d05ff9c8c303268f2c32325",
+        "manifest": "/media/noah/Storage/.b76-research/main/freeze/candC/root_final_v2/BUF/venue/manifest.json",
+        "art_digest": "a19e48fb2b1f1e124824ce69243ac64a0238b5ea7bd51bea7df848f297d801eb",
+        "textures": [
+          {
+            "key": "banner_home_team",
+            "texture": 4,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 255
+          },
+          {
+            "key": "banner_home_player",
+            "texture": 5,
+            "size": [
+              256,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_player",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          },
+          {
+            "key": "banner_away_team",
+            "texture": 6,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_away_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          }
+        ],
+        "palette_cap": 256,
+        "decoded_before_sha256": "ff7db6b133e69d247f6e9fcd8273fa8f174956b634f6698151d93b3a6faec943",
+        "decoded_after_sha256": "30280d103f81528646dab3f4b8f465b95c0b4ebc0aee3363f2cfd36843889caf",
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        }
+      }
+    },
+    {
+      "venue": "s07",
+      "model": "att",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "20fdac504fa64d0dcc1f54d1e67b1f335b0647f956af590b80af2ca4143272c3"
+    },
+    {
+      "venue": "s10",
+      "model": "lambeau",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "e6483a0d6f5d925e8140e32fcba079f1367cf7a32ad55c5a3b4d3244580cfd05"
+    },
+    {
+      "venue": "s11",
+      "model": "lucas_oil",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "b0a8e1bd6b5e618767173da25f16af02bf79fff9638d3a7e719b721e0070f340"
+    },
+    {
+      "venue": "s12",
+      "model": "everbank",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "6359aebc097ac592bee27d17270358f984b959e983680cf9be33d6a2ee1992c4"
+    },
+    {
+      "venue": "s14",
+      "model": "hard_rock",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "ec62b8e38f9716cc18eacbdd92b8a2928cf88970a4353b471c9fee3eadc0ae75"
+    },
+    {
+      "venue": "s15",
+      "model": "usbank",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "73c547c780c06889ea9a8a827c1b1a21eb5aaf3e5f4aceddf24f07bc060409a1"
+    },
+    {
+      "venue": "s16",
+      "model": "gillette",
+      "retained": [],
+      "source_sha256": "cd994c30e7ef1f256bb38146220a7f77af47101f02867e9868cc78c99a7f8082"
+    },
+    {
+      "venue": "s20",
+      "model": "allegiant",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "23036d8c772146b419f2da23261748fb50d9c1e899e05bb8eb9e2dd764f1e24a"
+    },
+    {
+      "venue": "s23",
+      "model": "sofi",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "dc2f2ed1f78b3df1d6dcf26c057e1d4805e8b1dc348278e5a0d3a09c650a2de6",
+      "compressed_image": true,
+      "before": "051f0a6b03162aa58a29c35cb0ed268366daed7e4c4c743b662fae0a3e1af98d",
+      "after": "5a59e23edd78e548d5391f46607ec9ae9266b932fc6b2e8465ef4236f3f53fc4",
+      "u4_equal": [
+        {
+          "key": "banner_away_team",
+          "bytes": 22848,
+          "sha256": "8f5392c6ccfa958dbbfef60a6721c131d8362981d41b94256b947dcb718a7053"
+        },
+        {
+          "key": "banner_home_player",
+          "bytes": 44672,
+          "sha256": "dd98ffe2fa0ff350ba711a304cbe358fe628742c3e8404eea9056eb3f992d72c"
+        },
+        {
+          "key": "banner_home_team",
+          "bytes": 22848,
+          "sha256": "50ec502f4c9cc42a298418ac453c78d5ac055e0e6f30e84a92ca15f001634059"
+        }
+      ],
+      "all_other_decoded_bytes_unchanged": 1616256,
+      "outside_stadium_compressed_span_unchanged": true,
+      "wrapper_unchanged": true,
+      "receipt": {
+        "schema": "nfl2k5_model_fan_art/v1",
+        "offset": 333152,
+        "length": 1000208,
+        "before_sha256": "2dfa7fc2ddce788b369dc3649169a045b4200a38f72166e470814b603bfdf4b2",
+        "after_sha256": "5699e358a912b49846874ab5962abfa4ab37c3cd6221ba8adc55e8fb332506e6",
+        "manifest": "/media/noah/Storage/.b76-research/main/freeze/candC/root_final_v2/LAR/venue/manifest.json",
+        "art_digest": "ed9968894c5d75cfea6fd89ee5092edf8233852df144a1f081908f25be0aecab",
+        "textures": [
+          {
+            "key": "banner_home_team",
+            "texture": 4,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          },
+          {
+            "key": "banner_home_player",
+            "texture": 5,
+            "size": [
+              256,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_home_player",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 256
+          },
+          {
+            "key": "banner_away_team",
+            "texture": 6,
+            "size": [
+              128,
+              128
+            ],
+            "items": [
+              {
+                "key": "banner_away_team",
+                "source": "team",
+                "layer": "full",
+                "mark": null
+              }
+            ],
+            "palette_entries": 255
+          }
+        ],
+        "palette_cap": 256,
+        "decoded_before_sha256": "8c6673dea8233ccef575d8196a5f3892e79910b77e8fbd0345fdf6435ba1e27e",
+        "decoded_after_sha256": "f241b528c570ff15bea34d7c9e7f3ae3e0d9ab7ac1c0cb1ec135a1ee226f1f5d",
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        }
+      }
+    },
+    {
+      "venue": "s24",
+      "model": "sofi",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "9b1f75ef4aed10a8714a9dec29f8771b4c6a58d33cd9ece76f52287ce937f374"
+    },
+    {
+      "venue": "s25",
+      "model": "levis",
+      "retained": [
+        "banner_away_team",
+        "banner_home_player",
+        "banner_home_team"
+      ],
+      "source_sha256": "bf9031559e42e40c3e9fbcc66b5ac268daaa961ccc84ad6039cacaf711a30e25"
+    },
+    {
+      "venue": "s18/s19",
+      "model": "metlife",
+      "retained": [],
+      "keep": [
+        "digits",
+        "group11",
+        "group111",
+        "group8",
+        "group9",
+        "pyG001",
+        "pyG002",
+        "pyG003",
+        "pyG004",
+        "sideline_away_north",
+        "sideline_away_south",
+        "sideline_home_north",
+        "sideline_home_south"
+      ],
+      "proof": "exact KEEP set omits banners; build_scene filters shapes before compacting materials"
+    }
+  ],
+  "peak_rss_kib": 773492
+}

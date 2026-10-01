@@ -21,15 +21,27 @@ class ReplicationTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),wanted,name)
 
     def test_all_roster_slots_and_contrast_gates(self):
+        from mod_editor.core import nfl2k5_scorebug_teams as teams
         data=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/team_accents.json').read_text())
+        display=teams.load_display()
         self.assertEqual({t['slot'] for t in data['teams'].values()},set(range(52)))
         for name,team in data['teams'].items():
             for role in ('wing','rim','plate','wash'):
                 color=team[role]
-                self.assertGreaterEqual(descriptors.contrast(accents.rgb(color)),4.5,(name,role))
-                candidates=[c for c in team['candidates'].values() if c['hex']==color]
-                self.assertTrue(candidates)
-                self.assertTrue(all(c['parent'] in team['official'] for c in candidates))
+                if 'display' in team and role in teams.DISPLAY_ROLES:
+                    # Broadcast display class: recomputed from its parent or its pinned measurement, never
+                    # trusted; no label is drawn over the wing. The sourced accent it replaces keeps every gate.
+                    self.assertEqual(color,teams.display_shade(name,team,display),(name,role))
+                    self.assertIn(team['display']['parent'],team['official'])
+                    colors=(color,team['display']['sourced'])
+                    self.assertGreaterEqual(descriptors.contrast(accents.rgb(colors[1])),4.5,(name,'sourced'))
+                else:
+                    colors=(color,)
+                    self.assertGreaterEqual(descriptors.contrast(accents.rgb(color)),4.5,(name,role))
+                for color in colors:
+                    candidates=[c for c in team['candidates'].values() if c['hex']==color]
+                    self.assertTrue(candidates,(name,role,color))
+                    self.assertTrue(all(c['parent'] in team['official'] for c in candidates))
         for role in ('wing','rim','plate'):
             r,g,b=accents.rgb(data['teams']['LV'][role]);self.assertLessEqual(max(r,g,b)-min(r,g,b),2)
 
@@ -69,9 +81,11 @@ class ReplicationTests(unittest.TestCase):
 
     def test_measured_objective_vetoes_confident_worsening_and_matches_control_budget(self):
         spec=json.loads((ROOT/'data/nfl2k5_scorebug_sprite/layout.json').read_text())
+        # The target stays two pixels smaller than the shipped size, independent of subsequent measured art revisions.
+        target=next(f['size'] for f in spec['fields'] if f['name']=='down')-2
         def evaluate(s):
             size=next(f['size'] for f in s['fields'] if f['name']=='down')
-            return dict(residuals=[dict(feature='cap',error=abs(size-28),tolerance=.5)],readability=dict(label=True))
+            return dict(residuals=[dict(feature='cap',error=abs(size-target),tolerance=.5)],readability=dict(label=True))
         def decide(_):return dict(next_input='label_larger',confidence=1,goal_reached_p=1)
         final,result=layout_search.run(spec,evaluate,decide,steps=3,calibration_verified=True)
         self.assertEqual(final,spec)

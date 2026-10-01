@@ -1,0 +1,7 @@
+test_all_32_current_franchises_keep_modern_names_and_loads (tests.mod_editor.test_nfl2k5_stock_books.NativeStockBooks.test_all_32_current_franchises_keep_modern_names_and_loads) ... PROVED OFFLINE current franchise books=32, reversed mixed sides=2
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 41.555s
+
+OK

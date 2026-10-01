@@ -1,0 +1,294 @@
+{
+  "base": "3dd4087d5",
+  "steps": [
+    "marks",
+    "fits",
+    "wing",
+    "housing",
+    "tray"
+  ],
+  "marks": [
+    {
+      "file": "lar.png",
+      "fill": "#FFD100",
+      "ink_pixels_before": 1785,
+      "ink_pixels_after": 1785,
+      "alpha_bbox_before": [
+        1,
+        9,
+        63,
+        54
+      ],
+      "alpha_bbox_after": [
+        1,
+        9,
+        63,
+        54
+      ],
+      "previous_median_rgb": [
+        0,
+        53,
+        148
+      ]
+    },
+    {
+      "file": "nyg.png",
+      "fill": "#FFFFFF",
+      "keyline": "#A71930",
+      "keyline_texels": 1,
+      "keyline_mode": "inside",
+      "ink_pixels_before": 2596,
+      "ink_pixels_after": 2349,
+      "alpha_bbox_before": [
+        1,
+        8,
+        63,
+        56
+      ],
+      "alpha_bbox_after": [
+        1,
+        8,
+        63,
+        56
+      ],
+      "previous_median_rgb": [
+        0,
+        29,
+        103
+      ]
+    }
+  ],
+  "fits": {
+    "LAR": {
+      "before": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "after": {
+        "fill_x": 1.1,
+        "height": 1.0,
+        "zoom": 0.953,
+        "shift_x": 0.0469,
+        "shift_y": 0.0
+      }
+    },
+    "NYG": {
+      "before": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "after": {
+        "fill_x": 1.14,
+        "height": 1.0,
+        "zoom": 0.953,
+        "shift_x": -0.0156,
+        "shift_y": 0.0
+      }
+    }
+  },
+  "wing": {
+    "a1": 0.8761,
+    "d1": 41.19,
+    "v1": 0.2879,
+    "a2": 0.6,
+    "d2": 13.82,
+    "d3": 461.6,
+    "a3": 1.5,
+    "d4": 2.839,
+    "d5": 83.55,
+    "gamma": 1.0,
+    "floor": 0.0
+  },
+  "housing": {
+    "previous_box": [
+      834,
+      993,
+      1086,
+      1049
+    ],
+    "box": [
+      829,
+      990,
+      1090,
+      1046
+    ],
+    "ring_width": 3,
+    "dark_width": 3,
+    "ring": 97,
+    "ring_bottom": 70,
+    "ring_side": 50,
+    "inner": 30,
+    "fill": 8
+  },
+  "tray": {
+    "tray": 24,
+    "tray_inner": [
+      830,
+      1090
+    ],
+    "tray_outer": [
+      760,
+      1160
+    ]
+  },
+  "outputs": {
+    "data/nfl2k5_scorebug_sprite/template.png": {
+      "sha256": "42f662a90a574e9fca4690f72ba9ae9d5398128ac9142f389a5cd08b3dfbda3f",
+      "size": 22292,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_sprite/layout.json": {
+      "sha256": "72d3ce11b1365477fed8ea0d69246c2f963d3571032a681607aaf1aed9a124e7",
+      "size": 29489,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_sprite/team_accents.json": {
+      "sha256": "7786dbbd1e2c5b5b9a9777e37a372082202c668ae81e08d13a5554483f28f914",
+      "size": 366281,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/nyg.png": {
+      "sha256": "d4f52a376dc396df8befc6def3db36b9f3e0f8945f9058ad463d8d539be9c718",
+      "size": 1939,
+      "changed": true
+    },
+    "data/nfl2k5_scorebug_mnf/logos/lar.png": {
+      "sha256": "ff5a826d2e071f6022647b7c5b34386b4e8375292544c6c5563e568e5cb86b40",
+      "size": 2187,
+      "changed": true
+    }
+  },
+  "params": {
+    "marks": {
+      "nyg": {
+        "fill": "#FFFFFF",
+        "keyline": "#A71930",
+        "keyline_texels": 1,
+        "keyline_mode": "inside"
+      },
+      "lar": {
+        "fill": "#FFD100"
+      }
+    },
+    "fits": {
+      "NYG": {
+        "fill_x": 1.14,
+        "height": 1.0,
+        "zoom": 0.953,
+        "shift_x": -0.0156,
+        "shift_y": 0.0
+      },
+      "LAR": {
+        "fill_x": 1.1,
+        "height": 1.0,
+        "zoom": 0.953,
+        "shift_x": 0.0469,
+        "shift_y": 0.0
+      }
+    },
+    "wing": {
+      "a1": 0.8761,
+      "d1": 41.19,
+      "v1": 0.2879,
+      "a2": 0.6,
+      "d2": 13.82,
+      "d3": 461.6,
+      "a3": 1.5,
+      "d4": 2.839,
+      "d5": 83.55,
+      "gamma": 1.0,
+      "floor": 0.0
+    },
+    "plate": {
+      "rows": [
+        0,
+        1,
+        2,
+        3,
+        13,
+        14,
+        15,
+        16
+      ],
+      "values": [
+        240,
+        255,
+        250,
+        248,
+        248,
+        246,
+        255,
+        215
+      ]
+    },
+    "housing": {
+      "box": [
+        829,
+        990,
+        1090,
+        1046
+      ],
+      "ring_width": 3,
+      "dark_width": 3,
+      "ring": 97,
+      "ring_bottom": 70,
+      "ring_side": 50,
+      "inner": 30,
+      "fill": 8
+    },
+    "tray": {
+      "tray": 24,
+      "tray_inner": [
+        830,
+        1090
+      ],
+      "tray_outer": [
+        760,
+        1160
+      ]
+    },
+    "bevel": {
+      "top_rows": [
+        0,
+        2,
+        4,
+        7
+      ],
+      "top_values": [
+        58,
+        145,
+        74,
+        37
+      ],
+      "bottom_rows": [
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
+      ],
+      "bottom_values": [
+        37,
+        37,
+        45,
+        70,
+        100,
+        95,
+        35
+      ],
+      "rim_amplitude": 0.68,
+      "rim_decay": 2.0,
+      "rim_start": 0,
+      "rim_tail": 0.22,
+      "rim_bottom": false
+    }
+  }
+}

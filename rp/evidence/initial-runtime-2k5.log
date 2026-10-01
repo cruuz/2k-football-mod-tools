@@ -1,0 +1,25 @@
+2K5_MOD_STUDIO_RUNTIME_CLOSURE_REFUSED: Beta 69 game runtime pin changed: mod_editor/gui/build_panel_qt.py
+Command exited with non-zero status 1
+	Command being timed: "/usr/bin/python3 /tmp/b76-rp-2k5-9eey_d8h/stage/packaging/check_2k5_mod_studio_runtime.py"
+	User time (seconds): 6.99
+	System time (seconds): 0.31
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.34
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 192664
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 68
+	Minor (reclaiming a frame) page faults: 99992
+	Voluntary context switches: 303
+	Involuntary context switches: 22
+	Swaps: 0
+	File system inputs: 41192
+	File system outputs: 48
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

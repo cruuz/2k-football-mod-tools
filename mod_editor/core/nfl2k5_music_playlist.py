@@ -2,6 +2,8 @@
 
 The default list is the 7 menu and 59 jukebox recordings. This overrides the
 background UserList/HDD choice, but preserves explicit jukebox previews and PA.
+Games keep the retail Crib Music choice, so the default game has no background
+song and keeps the full crowd (the crowd loop, precheer and boo voices).
 Timed loading/show players retain their retail scheduling. Named routes have
 bounded native proofs, with rendering/streaming stubs; no gameplay witness.
 Apply is monotonic; reconfiguration requires rebuilding from a supported base.
@@ -29,8 +31,11 @@ CORE = tuple((bank, i) for bank in ("femusic", "cribmusic") for i in range(BANK_
 # Only established background beds; short cues and draft ambience are excluded.
 # Draft joins the shared list. This switch never changes show scheduling or narration.
 BEDS = (("loadm", 2),) + tuple(("wrapupm", i) for i in range(8)) + (("halftimeaudio", 3),)
-POSITION_POLICY = ("Keep the song and shuffle position between menus, Crib, draft and game background. "
-                   "Pause and replay screens keep music playing. Stadium clip previews pause and resume it. "
+POSITION_POLICY = ("Keep the song and shuffle position between menus, Crib and draft. "
+                   "Games follow the retail Crib Music setting: with Crib/Menus/Game the list plays in game "
+                   "and the crowd loop is off, as in retail; otherwise the song stops for the game, the full "
+                   "crowd plays and the song restarts on return. "
+                   "Pause and replay screens keep in-game music playing. Stadium clip previews pause and resume it. "
                    "Loading, halftime, wrap-up and jukebox previews stop the "
                    "background song; it restarts on return. One selected song repeats; zero stops.")
 HELP_TEXT = ("Experimental, not yet tested in game. Defaults to 7 menu recordings and 59 jukebox "

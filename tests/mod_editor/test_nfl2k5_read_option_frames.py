@@ -425,7 +425,9 @@ class FrameTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space
         from tests.nfl2k5_allocator_stack import REQUESTS
         for diagnostic in (False,True):
-            seed=space.apply(self.retail,REQUESTS+(('aaa_read_v5_probe','code',1024,16),),scaleout=True)[0]
+            # One aligned cell forces relocation without exceeding Beta 76's
+            # full code-page budget after K128 joined the owner union.
+            seed=space.apply(self.retail,REQUESTS+(('aaa_read_v5_probe','code',16,16),),scaleout=True)[0]
             payload=patch.apply(seed,intent_table=self.table,diagnostic=diagnostic)[0]
             gc.collect();m=FrameMachine(payload,self.resource,controller=0,buffer=1)
             before=bytes(m.uc.mem_read(m.base,len(self.resource)-32))

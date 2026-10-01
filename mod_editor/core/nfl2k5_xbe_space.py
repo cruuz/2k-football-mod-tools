@@ -48,6 +48,15 @@ LIB_POINTERS = ((0x164, 0x10904), (0x168, 0x10924), (0x16C, 0x10904))
 CODE2_NAME, CODE2_REFS = 0x940, 0x948
 MUSIC2_NAME, MUSIC2_REFS = 0x950, 0x958
 LOGO_REQUEST = ("nfl2k5_boot_logo", "code", logo.LOGO_SIZE, 16)
+# The Xbox kernel's XBE loader copies the boot logo (LogoBitmapAddr / LogoBitmapSize) while the
+# boot animation still runs, and it does so BEFORE it loads any section: in the 4627 kernel the
+# call at 0x8002F0BB precedes the PRELOAD section loop at 0x8002F0C0. Only the header pages are
+# mapped then, so a logo inside a grown section faults (bugcheck 0x1E, cr2 = 0x14BA000) whenever the
+# animation is still running at load time. Grown layouts therefore keep the retail bitmap in its
+# owned code allocation (addresses unchanged) and point the header at a blank logo in the last
+# four bytes before LIB_COPY, inside the header page in every grown layout.
+HEADER_LOGO_OFFSET = LIB_COPY - len(logo.BLANK_LOGO)
+HEADER_LOGO = (0x10000 + HEADER_LOGO_OFFSET, len(logo.BLANK_LOGO))
 
 
 def _require(ok, message):
@@ -160,8 +169,10 @@ def _directory(requests, code):
         raw = zlib.compress(raw, level=9)
     result = (EXT_MAGIC if extended else MAGIC) + struct.pack("<I", len(raw)) + raw
     capacity = _directory_end(requests) - DIRECTORY
-    _require(len(result) <= capacity, "allocation directory capacity exceeded")
-    return result.ljust(capacity, b"\0")
+    _require(len(result) <= HEADER_LOGO_OFFSET - DIRECTORY, "allocation directory capacity exceeded")
+    out = bytearray(result.ljust(capacity, b"\0"))
+    out[HEADER_LOGO_OFFSET - DIRECTORY:HEADER_LOGO_OFFSET - DIRECTORY + len(logo.BLANK_LOGO)] = logo.BLANK_LOGO
+    return bytes(out)
 
 
 def _read_directory(payload):
@@ -170,7 +181,7 @@ def _read_directory(payload):
     end = LIB_COPY if extended else PAGE
     _require(payload[DIRECTORY:DIRECTORY + 8] == magic, "missing allocation directory")
     size = struct.unpack_from("<I", payload, DIRECTORY + 8)[0]
-    _require(0 < size <= end - DIRECTORY - 12, "invalid allocation directory size")
+    _require(0 < size <= HEADER_LOGO_OFFSET - DIRECTORY - 12, "invalid allocation directory size")
     raw = payload[DIRECTORY + 12:DIRECTORY + 12 + size]
     if extended:
         decoder = zlib.decompressobj()
@@ -295,7 +306,8 @@ def _validate(payload):
         _require(extended == _extended(requests), "foreign allocation page count")
         allocations = _allocations(requests)
         logo_site = next(a for a in allocations if a["owner"] == LOGO_REQUEST[0])
-        _require(struct.unpack_from("<II", payload, 0x170) == (logo_site["va"], logo.LOGO_SIZE), "foreign grown logo pointer")
+        _require(struct.unpack_from("<II", payload, 0x170) == HEADER_LOGO, "foreign grown logo pointer")
+        _require(payload[HEADER_LOGO_OFFSET:HEADER_LOGO_OFFSET + HEADER_LOGO[1]] == logo.BLANK_LOGO, "foreign header logo")
         _require(payload[logo_site["raw"]:logo_site["raw"] + logo.LOGO_SIZE] == logo.RETAIL_LOGO, "foreign grown logo bitmap")
         for i, region in enumerate(_regions(requests)):
             raw = region["raw"]
@@ -420,7 +432,7 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
         buf[META_START + i * 56:META_START + (i + 1) * 56] = _descriptor(kind, _digest(buf[raw:raw + PAGE]))
     struct.pack_into("<II", buf, 0x108, PAGE, EXT_IMAGE_SIZE if extended else IMAGE_SIZE)
     struct.pack_into("<I", buf, 0x11C, COUNT + 3 if extended else COUNT + 2)
-    struct.pack_into("<II", buf, 0x170, logo_site["va"], logo.LOGO_SIZE)
+    struct.pack_into("<II", buf, 0x170, *HEADER_LOGO)
     result = bytes(buf)
     _require(status(result) == "applied", "grown XBE postcondition failed")
     return result, {"status": "applied", "experimental": True, "runtime_witnessed": False,
@@ -565,6 +577,8 @@ MAX_REQUEST_BYTES = 96 * PAGE
 # scale-out RW page. Its code moves behind the old packing, leaving every
 # other owner's address unchanged, including in partial request unions.
 MYCAREER_M3_STATE_OWNER = "nfl2k5_my_career_m3"
+# b76-k1: placed after every other scale-out owner (see _scale_allocations).
+LATE_OWNER = "nfl2k5_k128"
 MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
@@ -595,6 +609,15 @@ def dormant_union():
     from . import nfl2k5_accelerated_clock as accelerated_clock
     from . import nfl2k5_coin_defer as coin_defer, nfl2k5_decided_clock as decided_clock
     from . import nfl2k5_cpu_scrambles as cpu_scrambles
+    from . import nfl2k5_historic_teams_quick_game as historic_quick_game
+    from . import nfl2k5_era_rules as era_rules
+    from . import nfl2k5_stock_books as stock_books
+    from . import nfl2k5_moment_venues as moment_venues
+    from . import nfl2k5_espn25_more_moments as more_moments
+    from . import nfl2k5_anniversary_kickoff as anniversary_kickoff
+    from . import nfl2k5_widescreen_menus as widescreen_menus
+    from . import nfl2k5_team_logo_swap as team_logo_swap
+    from . import nfl2k5_k128 as k128
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -604,7 +627,11 @@ def dormant_union():
             + espn25.REQUESTS + coverage_trail.REQUESTS + edit_player.REQUESTS + money_downs.REQUESTS
             + weekly_prep.REQUESTS + playbook_pair.REQUESTS + deep_zone.REQUESTS
             + accelerated_clock.REQUESTS
-            + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS)
+            + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS
+            + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS
+            + widescreen_menus.REQUESTS
+            + team_logo_swap.REQUESTS
+            + k128.REQUESTS)
 
 
 def is_scaleout(payload):
@@ -675,6 +702,10 @@ def _scale_allocations(requests):
     # This late arena owner must not displace shipped beta-62 allocations or
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
+    # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
+    # sprite scorebug included, so adding it to a union moves no other owner's address.
+    late = [r for r in requests if r[0] == LATE_OWNER]
+    requests = [r for r in requests if r[0] != LATE_OWNER]
     extra = [r for r in requests if r[0] == MYCAREER_M3_STATE_OWNER]
     _require(not extra or extra == [(MYCAREER_M3_STATE_OWNER, "data", PAGE, 16)],
              "MyCareer M3 state has a fixed 4096-byte reservation")
@@ -688,6 +719,8 @@ def _scale_allocations(requests):
     if promoted:
         requests = [(o, k, 8192 if (o, k) == promoted[:2] else s, a) for o, k, s, a in requests]
     out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
+    venue = [r for r in requests if r[0] == "nfl2k5_moment_venues"]
+    requests = [r for r in requests if r[0] != "nfl2k5_moment_venues"]
     regions = _scale_regions()[3:]
     if extra:
         regions = [dict(r, size=r["size"] - PAGE) if r["kind"] == "data" else r for r in regions]
@@ -730,6 +763,40 @@ def _scale_allocations(requests):
         _require(at + size <= r["size"], "Sprite scorebug exceeds remaining RX capacity")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+        cursors[r["va"]] = at + size
+    for owner, kind, size, align in late:
+        for r in regions:
+            if r["kind"] != kind:
+                continue
+            at = (cursors[r["va"]] + align - 1) & -align
+            if at + size <= r["size"]:
+                out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                                va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+                cursors[r["va"]] = at + size
+                break
+        else:
+            _require(False, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+    # E2P3's small text owner can use the already reserved legacy RX tails.
+    # Keep every established owner at its original address. Its serializer
+    # explicitly handles split spans and never splits a UTF-16 string.
+    if venue:
+        _require(venue == [("nfl2k5_moment_venues", "code", 2304, 16)], "fixed venue allocation")
+        remaining, owner_offset = 2304, 0
+        for r in _scale_regions()[:3]:
+            if r["kind"] != "code":
+                continue
+            end = max((a["va"] + a["size"] for a in out
+                       if r["va"] <= a["va"] < r["va"] + r["size"]), default=r["va"])
+            at = (end + 15) & -16
+            take = min(remaining, r["va"] + r["size"] - at)
+            if take > 0:
+                out.append(dict(owner=venue[0][0], kind="code", size=take, align=16,
+                                va=at, raw=r["raw"] + at - r["va"], owner_offset=owner_offset))
+                remaining -= take
+                owner_offset += take
+            if not remaining:
+                break
+        _require(not remaining, "venue table exceeds reserved legacy RX tails")
     if extra:
         r = next(r for r in _scale_regions() if r["kind"] == "data" and r["va"] <= MYCAREER_M3_STATE_VA < r["va"] + r["size"])
         out.append(dict(owner=MYCAREER_M3_STATE_OWNER, kind="data", size=PAGE, align=16,
@@ -773,6 +840,7 @@ def _scale_header_directory(block, payload):
     result = bytearray(header.ljust(LIB_COPY - DIRECTORY, b"\0"))
     result[SCALE_NAMES - DIRECTORY:SCALE_NAMES_END - DIRECTORY] = _scale_names(music=has_music(payload))
     result[DEBUG_COPY - DIRECTORY:DEBUG_COPY - DIRECTORY + DEBUG_END - DEBUG_START] = payload[DEBUG_COPY:DEBUG_COPY + DEBUG_END - DEBUG_START]
+    result[HEADER_LOGO_OFFSET - DIRECTORY:HEADER_LOGO_OFFSET - DIRECTORY + HEADER_LOGO[1]] = logo.BLANK_LOGO
     return result
 
 
@@ -877,7 +945,8 @@ def _validate_scaleout(payload):
         _require(not any(payload[FILE_SIZE:CODE2_RAW]), "foreign reserved music gap")
     _require(payload[META_START:SCALE_HEADER_END] == expected, "foreign scale-out descriptors/names/counters/padding")
     logo_site = next(a for a in allocations if a["owner"] == LOGO_REQUEST[0])
-    _require(struct.unpack_from("<II", payload, 0x170) == (logo_site["va"], logo.LOGO_SIZE), "foreign grown logo pointer")
+    _require(struct.unpack_from("<II", payload, 0x170) == HEADER_LOGO, "foreign grown logo pointer")
+    _require(payload[HEADER_LOGO_OFFSET:HEADER_LOGO_OFFSET + HEADER_LOGO[1]] == logo.BLANK_LOGO, "foreign header logo")
     _require(payload[logo_site["raw"]:logo_site["raw"] + logo.LOGO_SIZE] == logo.RETAIL_LOGO, "foreign grown logo bitmap")
     for section in XbeImage(payload).sections:
         _require(payload[section.header + 36:section.header + 56] == _digest(payload[section.raw:section.raw + section.raw_size]), "stale section digest")
@@ -915,7 +984,7 @@ def _apply_scaleout(payload, requests):
     buf[logo_site["raw"]:logo_site["raw"] + logo.LOGO_SIZE] = logo.RETAIL_LOGO
     struct.pack_into("<3I", buf, 0x104, 0x10000, PAGE, SCALE_IMAGE_SIZE)
     struct.pack_into("<I", buf, 0x11C, SCALE_COUNT)
-    struct.pack_into("<II", buf, 0x170, logo_site["va"], logo.LOGO_SIZE)
+    struct.pack_into("<II", buf, 0x170, *HEADER_LOGO)
     _seal_scaleout(buf, requests)
     result = bytes(buf)
     _require(status(result) == "applied", "scale-out postcondition failed")
@@ -948,6 +1017,25 @@ def install_read_only(payload: bytes, owner: str, content: bytes) -> tuple[bytes
     """Install an exact immutable general RO request, including all its spans."""
     _require(is_scaleout(payload), "read-only requests require scale-out")
     return _install_scaleout(payload, owner, content, "read_only")
+
+
+def uninstall_read_only(payload: bytes, owner: str) -> tuple[bytes, dict]:
+    """b76-pf: the exact inverse of ``install_read_only``: the owner's read-only allocation back to zeros (reserved,
+    not installed) and the scale-out seals recomputed, so an install followed by this returns the same bytes. Every
+    other owner's bytes stay."""
+    _require(is_scaleout(payload), "read-only requests require scale-out")
+    _, _, requests = _validate(payload)
+    allocations = [a for a in _scale_allocations(requests) if a["owner"] == owner and a["kind"] == "read_only"]
+    _require(allocations and owner not in (LOGO_REQUEST[0], DIRECTORY_OWNER), "owner has no installable allocation")
+    buf = bytearray(payload)
+    edits = []
+    for a in allocations:
+        buf[a["raw"]:a["raw"] + a["size"]] = bytes(a["size"])
+        edits.append(dict(label=owner, va=hex(a["va"]), size=a["size"]))
+    _seal_scaleout(buf, requests)
+    result = bytes(buf)
+    _require(status(result) == "applied", "owner uninstall postcondition failed")
+    return result, dict(status="uninstalled", edits=edits)
 
 
 def _capacity(regions, allocations, *, scaleout):
