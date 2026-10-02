@@ -1,7 +1,7 @@
 # 2K Football Mod Tools
 
-Beta 76.1 is the last planned release for a while. The project is open source
-under the MIT license, and forks are welcome. See
+Beta 76.2 is the current release and the last one planned for a while. The
+project is open source under the MIT license, and forks are welcome. See
 [Making your own fork](CONTRIBUTING.md#making-your-own-fork).
 
 > **Beta.** Two retail-free mod editors — Windows, macOS and Linux — for classic
