@@ -163,6 +163,8 @@ def cmd_check(args: argparse.Namespace) -> int:
 
 
 def cmd_apply(args: argparse.Namespace) -> int:
+    from mod_editor.core import nfl2k5_marks_store
+    pack = modpack.load(args.pack)
     if args.in_place:
         receipt = modpack.apply_in_place(args.pack, args.in_place, progress=_progress(not args.json))
     else:
@@ -171,11 +173,18 @@ def cmd_apply(args: argparse.Namespace) -> int:
             return 2
         receipt = modpack.apply(args.pack, args.source, args.out, overwrite=args.overwrite,
                                 hash_streams=not args.no_hash, progress=_progress(not args.json))
+    nfl2k5_marks_store.after_install(pack, receipt)
+    if receipt.get("official_marks"):
+        print(f"SOFTDRINK logos saved for your builds: {receipt['official_marks']['folder']}",
+              file=sys.stderr if args.json else sys.stdout)
+    if receipt.get("official_marks_error"):
+        print(receipt["official_marks_error"], file=sys.stderr)
     if args.json:
         print(json.dumps(receipt, indent=1))
     elif receipt.get("format") == 3:
         print(f"Installed '{receipt['name']}': {receipt['files_verified']} game files verified in {receipt['elapsed_seconds']} s. "
-              f"Open {receipt['target']['path']} in xemu.")
+              f"Open {receipt['target']['path']} in xemu." +
+              (" " + receipt["memory_tip"] if receipt["memory_tip"] else ""))
     else:
         target = receipt["target"]
         print(f"Applied '{receipt['name']}': {receipt['runs']} run(s), {_human(receipt['bytes'])} written to {target['path']} "
@@ -203,6 +212,13 @@ def cmd_extract(args: argparse.Namespace) -> int:
         receipt = modpack.extract_assets(pack, args.out, overwrite=args.overwrite)
         recipe = pack.manifest.recipe
     if args.customize:
+        from mod_editor.core import nfl2k5_marks_store
+        saved, error = nfl2k5_marks_store.try_register(pack)
+        if saved:
+            receipt["official_marks"] = saved
+        if error:
+            receipt["official_marks_error"] = error
+            print(error, file=sys.stderr)
         receipt["customization"] = modpack_sources.materialize(recipe, args.out)
     if args.json:
         print(json.dumps(receipt, indent=1))

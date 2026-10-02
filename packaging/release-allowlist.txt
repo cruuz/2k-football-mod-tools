@@ -2104,3 +2104,5 @@ packaging/check_build_data_allowlist.py
 data/nfl2k5_official_marks_catalog.json
 packaging/b76_private_paths.json
 data/nfl2k5_sofi_model/art/field/s23_endzone_R_club.png
+
+mod_editor/core/nfl2k5_marks_store.py

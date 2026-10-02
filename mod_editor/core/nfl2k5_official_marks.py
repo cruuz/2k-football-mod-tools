@@ -13,8 +13,9 @@ from . import platform_compat
 
 SCHEMA = "nfl2k5_official_marks/v1"
 ENVIRONMENT = "NFL2K5_MARKS_PACK"
-MISSING = ("Official marks pack missing. Set official_marks_pack in the build recipe or "
-           "NFL2K5_MARKS_PACK to its folder; turn this option off to keep retail art.")
+MISSING = ("Official marks pack missing. Click Install SOFTDRINK 2K28 on the Share tab "
+           "to bring the logos, use From a SOFTDRINK pack..., or choose a folder. "
+           "Turn this option off to keep retail art.")
 MAX_BYTES = 4 * 1024 * 1024
 # These are the reviewed original PNG identities, not image data.
 ASSETS = {
@@ -32,7 +33,8 @@ _PACK = ContextVar("official_marks_pack", default=None)
 
 
 def selected_root(root=None):
-    return root or _PACK.get() or os.environ.get(ENVIRONMENT, "")
+    from .nfl2k5_marks_store import registered_root
+    return root or _PACK.get() or os.environ.get(ENVIRONMENT, "") or registered_root()
 
 
 @contextmanager
@@ -109,7 +111,11 @@ def build_scope(function):
             for feature in {row["feature"] for row in CATALOG.values()}:
                 if feature not in {"espn_marks_2026", "espn_wipes_boards_2026"} and getattr(plan, feature, False):
                     validate_feature(feature)
-            return function(plan, *args, **kwargs)
+            receipt = function(plan, *args, **kwargs)
+            if any(getattr(plan, feature, False) for feature in
+                   {row["feature"] for row in CATALOG.values()} | {"espn_marks_2026", "espn_wipes_boards_2026"}):
+                receipt["official_marks_pack"] = str(platform_compat.absolute_path(selected_root()))
+            return receipt
     return wrapped
 
 
