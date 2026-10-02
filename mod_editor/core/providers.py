@@ -513,6 +513,7 @@ class Nfl2k5UnifiedVisualProvider:
     )
     backend_module_sha256 = "eb357a37f87818f682faebfda7786cb235afb94193a38b0a2e3f8a101ff70ff4"
     module_pins: Mapping[str, str] = {
+        "mod_editor/core/nfl2k5_marks_store.py": "cc0049a7b10fdd31ed43c183e29470d920e0bf8af6b24b704e989095c0dc0659",
         "mod_editor/core/xdvdfs_compact.py": "1183e9f8655e5bd50250f4b590a743440fd7e88ed4daaa6eb83924566cbaaebb",
         "mod_editor/core/nfl2k5_moment_venues.py": "7d73947ccc03a9168d560a450291ce59d1cd31c4dcd890d03d7bfbc6285dab9d",
         "mod_editor/core/nfl2k5_historic_styles.py": "27de168580d3299d71b62c0e5fbc8ff949323c2aeac27f7ac8f2b721a57665b4",
@@ -730,7 +731,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_save_to_disc.py": "7c0b95c4704a0998357f89e1d72bfcd133ba4d4dc150b4abcd018e224a884006",
         "mod_editor/core/nfl2k5_franchise_history.py": "307bcb10d4351f284cdff3db988d3b5051d10905625cb358156fdba20f6c8508",
         "mod_editor/core/nfl2k5_career_stats.py": "6b12f7bcebef7f4b58cd7a72bc758b7fcd7709b46bfd17da443c6ff5aeca97a2",
-        "mod_editor/core/nfl2k5_official_marks.py": "e56a334e2ad9ad68e14c3f0a1d2fbd12783b615549fbb19407e1c9a5b926a2d2",
+        "mod_editor/core/nfl2k5_official_marks.py": "9f0e67322ba4b266693d0805d8cc80ed668b6b91ac90b301627a90b2cc2a90a2",
         "mod_editor/core/nfl2k5_college_refs.py": "2f49e35ed8904f376d7c4edc2d590d1bd48d593803f22ea7bc3399b2980fcfb7",
         "mod_editor/core/nfl2k5_resource_load_guard.py": "b679bb7dea16b1ea9bcc04b599760012d350acffb6ebd5a37ebfe857d726c9dc",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",

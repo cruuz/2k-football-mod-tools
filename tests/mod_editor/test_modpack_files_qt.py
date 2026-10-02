@@ -140,10 +140,18 @@ class FilePackQtTests(unittest.TestCase):
 
     def test_source_inspection_preserves_gated_artwork_choices(self):
         from mod_editor.gui.build_panel_qt import BuildPanel, VENUE_BUILD_KEYS
+        from mod_editor.core import nfl2k5_official_marks
+        from official_marks_fixture import synthetic_pack
+        marks_folder = self.fixture.root / "marks"
+        pins = synthetic_pack(marks_folder)
+        patcher = mock.patch.dict(nfl2k5_official_marks.ASSETS, pins, clear=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         panel = BuildPanel(available={key: True for key in (*VENUE_BUILD_KEYS, "modern_metlife", "modern_venues_2026", "custom_intro")})
         self.addCleanup(panel.deleteLater)
         recipe = dict(preset="softdrink_experimental", project="league.json",
-                      overrides=dict(modern_metlife=True, modern_venues_2026=str(self.fixture.root), custom_intro="intro.wmv",
+                      overrides=dict(official_marks_pack=str(marks_folder), modern_metlife=True,
+                                     modern_venues_2026=str(self.fixture.root), custom_intro="intro.wmv",
                                      **{key: True for key in VENUE_BUILD_KEYS}))
         panel.load_softdrink_sources(recipe)
         self.assertTrue(panel.modern_metlife_check.isChecked())

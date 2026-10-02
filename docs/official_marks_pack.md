@@ -1,5 +1,16 @@
 # Official marks pack
 
+Beta 76.1 saves the logos carried by SOFTDRINK 2K28 for your own builds. Click
+**Install SOFTDRINK 2K28** on Share to install the finished disc and save its
+logos. **Customize SOFTDRINK 2K28** and CLI apply also save them. If you already
+installed with Beta 76, click **From a SOFTDRINK pack...** beside Official marks
+pack on Build and choose your `.2k5patch`. This saves just the logos.
+
+The Build row shows the saved pack's name and date. Studio keeps the logos in
+its per-user data folder on Windows, macOS and Linux, so moving the original
+pack does not remove them. A failed save keeps the previous valid selection.
+The saved source record includes the pack name, version, SHA-256 and save date.
+
 Beta 76 keeps club art and plain type in the public tree. New league, event,
 broadcast and sponsor logos come from a separate local official marks pack.
 Previously released assets remain unchanged.
@@ -13,7 +24,8 @@ source retains any art already installed in it.
 
 Set `NFL2K5_MARKS_PACK` before starting Mod Studio, or set
 `BuildPlan.official_marks_pack`. An explicit recipe path takes priority over
-the environment and is forwarded to stadium worker processes. For the ultimate
+the environment; saved SOFTDRINK logos are the fallback. The chosen folder is
+forwarded to stadium worker processes and recorded in the build receipt. For the ultimate
 build driver's JSON recipe, add this field under `overrides`:
 
 ```json

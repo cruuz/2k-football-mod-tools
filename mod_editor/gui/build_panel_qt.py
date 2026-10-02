@@ -320,6 +320,9 @@ class BuildPanel(QWidget):
         self._hires_budget_timer.setInterval(200)
         self._hires_budget_timer.timeout.connect(self._preview_hires_budget)
         self._build_ui()
+        self._marks_task = None
+        self._marks_modules = dict(self._available)
+        self._official_marks_pack_changed()
         self._refresh()
 
     # ---------------------------------------------------------------- UI
@@ -1151,15 +1154,23 @@ class BuildPanel(QWidget):
         pack_row = QHBoxLayout()
         pack_row.addWidget(QLabel("Official marks pack"))
         self.official_marks_pack_field = QLineEdit()
-        self.official_marks_pack_field.setPlaceholderText("Local pack folder, or NFL2K5_MARKS_PACK")
+        self.official_marks_pack_field.setPlaceholderText("Saved SOFTDRINK logos, or choose a folder")
         self.official_marks_pack_field.setToolTip(
-            "Choose the separate official marks pack for ESPN marks and wipes. "
-            "An empty field uses NFL2K5_MARKS_PACK. The release does not include the pack.")
+            "Install SOFTDRINK 2K28 on the Share tab to bring the logos, or use From a SOFTDRINK pack... "
+            "to save just its logos. You can also choose a folder. An empty field uses NFL2K5_MARKS_PACK "
+            "first, then saved SOFTDRINK logos. Turn an option off to keep retail art.")
         pack_row.addWidget(self.official_marks_pack_field, 1)
         self.official_marks_pack_button = QPushButton("Choose...")
         self.official_marks_pack_button.clicked.connect(self._choose_official_marks_pack)
         pack_row.addWidget(self.official_marks_pack_button)
+        self.official_marks_import_button = QPushButton("From a SOFTDRINK pack...")
+        self.official_marks_import_button.clicked.connect(self._choose_official_marks_file)
+        pack_row.addWidget(self.official_marks_import_button)
         r.addLayout(pack_row)
+        self.official_marks_status = QLabel()
+        self.official_marks_status.setWordWrap(True)
+        self.official_marks_status.setTextFormat(Qt.PlainText)
+        r.addWidget(self.official_marks_status)
         self.official_marks_pack_field.textChanged.connect(self._official_marks_pack_changed)
         from mod_editor.core import nfl2k5_kick_meter_2026 as kick_meter  # b76-km
         self.kick_meter_check = self._option(
@@ -2112,6 +2123,7 @@ class BuildPanel(QWidget):
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
         self.suggest_target()
+        self._official_marks_pack_changed()
         self._refresh()
         pending, self.pending_preset = self.pending_preset, None
         if pending:
@@ -2873,22 +2885,75 @@ class BuildPanel(QWidget):
             self.official_marks_pack_field.setText(folder)
 
     def _official_marks_pack_changed(self):
+        from mod_editor.core import nfl2k5_official_marks as marks, nfl2k5_marks_store as store
+        import os
         folder = self.official_marks_pack_field.text().strip()
-        for key, box, check in (
-            ("espn_marks_2026", self.espn_marks_check, mod_build._espn_marks_available),
-            ("espn_wipes_boards_2026", self.espn_wipes_boards_check, mod_build._espn_wipes_boards_available),
-        ):
-            available = check(folder)
+        selected = marks.selected_root(folder)
+        source = store.registered_source()
+        label = (f"Chosen logo folder: {folder}" if folder else
+                 f"NFL2K5_MARKS_PACK: {selected}" if os.environ.get(marks.ENVIRONMENT) else
+                 f"{source['name']} logos, saved on {source['saved_at'][:10]}" if source else marks.MISSING)
+        self.official_marks_status.setText(label)
+        self.official_marks_status.setToolTip(str(selected))
+        boxes = self._boxes()
+        features = {row["feature"] for row in marks.CATALOG.values()} | {"espn_marks_2026", "espn_wipes_boards_2026"}
+        for key in features:
+            box = boxes[key]
+            try:
+                if key == "espn_marks_2026":
+                    available = mod_build._espn_marks_available(folder)
+                elif key == "espn_wipes_boards_2026":
+                    available = mod_build._espn_wipes_boards_available(folder)
+                else:
+                    marks.validate_feature(key, folder)
+                    available = self._marks_modules.get(key, False)
+            except (OSError, ValueError):
+                available = False
             self._available[key] = available
             state = self._state or {}
-            ready = available and state.get("container") == "xiso" and state.get(key) == "retail"
+            ready = available and state.get("container") == "xiso" and (
+                state.get(key) == "retail" or key == "modern_metlife_model" and state.get(key) == "skin")
             box.setEnabled(ready)
             if not ready:
                 box.setChecked(state.get(key) == "applied")
             self._set_badge(key, "EXPERIMENTAL / UNWITNESSED" if ready else
-                            "Official marks pack missing" if not available else
+                            marks.MISSING if not available else
                             "Already in this source" if state.get(key) == "applied" else "Full supported disc required")
         self._refresh()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self._official_marks_pack_changed()
+
+    def _choose_official_marks_file(self):
+        if self._marks_task is not None:
+            return
+        path, _ = QFileDialog.getOpenFileName(self, "Choose a SOFTDRINK pack", "", "SOFTDRINK packs (*.2k5patch)")
+        if not path:
+            return
+        from mod_editor.core import nfl2k5_marks_store
+        self.official_marks_import_button.setEnabled(False)
+        self.official_marks_status.setText("Saving SOFTDRINK logos...")
+        task = _Task(lambda progress: nfl2k5_marks_store.register_pack(path))
+        self._marks_task = task
+        task.signals.finished.connect(self._official_marks_saved)
+        task.signals.failed.connect(self._official_marks_failed)
+        self._pool.start(task)
+
+    @pyqtSlot(object)
+    def _official_marks_saved(self, source):
+        self._marks_task = None
+        self.official_marks_import_button.setEnabled(True)
+        self._official_marks_pack_changed()
+        if source is None:
+            QMessageBox.information(self, "No logos in this pack", "This pack has no official logos. Your saved logos are unchanged.")
+
+    @pyqtSlot(str)
+    def _official_marks_failed(self, message):
+        self._marks_task = None
+        self.official_marks_import_button.setEnabled(True)
+        self._official_marks_pack_changed()
+        QMessageBox.warning(self, "Could not save logos", message)
 
     def _parent_toggled(self, parent, on):
         if not on:

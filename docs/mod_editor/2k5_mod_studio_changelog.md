@@ -1,5 +1,12 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC106, beta 76.1: the SOFTDRINK 2K28 logos for your own builds
+
+- **PROVED OFFLINE:** Install SOFTDRINK 2K28, Customize SOFTDRINK 2K28 and CLI apply save the pack's reviewed logos in Studio's per-user folder. Build's From a SOFTDRINK pack... button also saves them without installing a disc. Every asset passes the pack SHA-256, manifest and reviewed pin checks before the new folder is published; a damaged pack preserves the last saved copy.
+- **PROVED OFFLINE:** Builds use an explicit logo folder first, then NFL2K5_MARKS_PACK, then the saved logos. The Build row identifies their source and date, refreshes all ten logo options, and build receipts record the folder used.
+- **PROVED OFFLINE:** Missing-logo messages explain Install on Share, From a SOFTDRINK pack..., and choosing a folder. Turn an option off to keep retail art.
+- **PROVED OFFLINE:** Packs with k128_memory enabled add the 128 MB xemu tip to Disc ready and CLI apply output. **DESIGN:** The tip explains the reported pregame repeat at 64 MB and pressing A; this release adds guidance, with no new emulator or Xbox witness.
+
 ## v1.0 RC105, beta 76
 
 ### Beta 76 fixes

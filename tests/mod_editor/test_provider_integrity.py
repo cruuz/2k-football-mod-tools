@@ -215,7 +215,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [344, 10, 8, 9, 8, 9]  # dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [345, 10, 8, 9, 8, 9]  # dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
             # b76-pk3: + the file-pack reader/writer imported by modpack.
             # b76-sd2: + the finite lineup iterator and final disc-extent guard.
             # b76-e2p3: + the historic moment venue names.

@@ -64,3 +64,30 @@ def requires_real_pack(feature):
             return function(*args, **kwargs)
         return wrapped
     return decorate
+
+
+def softdrink_pack(root, *, memory=True, include_marks=True):
+    """Tiny synthetic format-3 pack, including unrelated authoring assets."""
+    from mod_editor.core import modpack_files as files, xdvdfs_compact
+    from tests.mod_editor.test_modpack_files import image
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    pins = synthetic_pack(root / "marks")
+    assets = {"assets/trees/logos/" + name: root / "marks" / name
+              for name in (*pins, "manifest.json")} if include_marks else {}
+    project = root / "project.json"
+    project.write_text('{"edits": []}')
+    assets["assets/documents/project.json"] = project
+    overrides = {"k128_memory": memory}
+    if include_marks:
+        overrides["official_marks_pack"] = "@pack/assets/trees/logos"
+    recipe = dict(schema="softdrink_sources/v1", preset="softdrink_experimental", overrides=overrides,
+                  project="@pack/assets/documents/project.json")
+    base = image(root / "base.iso", {"default.xbe": b"XBEHsynthetic", "art": b"old"})
+    raw = image(root / "raw.iso", {"default.xbe": b"XBEHsynthetic", "art": b"new"})
+    built = root / "built.iso"
+    xdvdfs_compact.compact_copy(raw, built)
+    pack = root / "softdrink.2k5patch"
+    files.export(base, built, pack, name="SOFTDRINK 2K28", recipe=recipe,
+                 source_assets=assets, require_retail=False)
+    return pack, pins

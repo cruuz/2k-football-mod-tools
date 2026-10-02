@@ -500,8 +500,11 @@ class SharePanel(QWidget):
         if overwrite and not self._confirm("Replace existing output?", f"Replace {target} with the verified installation?"):
             return
         self.apply_status.setText("Checking clean game files before installation…")
-        self._start(lambda progress: modpack.apply(pack, source, target, overwrite=overwrite, progress=progress),
-                    self._apply_done, self._apply_failed)
+        def operation(progress):
+            from mod_editor.core import nfl2k5_marks_store
+            receipt = modpack.apply(pack, source, target, overwrite=overwrite, progress=progress)
+            return nfl2k5_marks_store.after_install(pack, receipt)
+        self._start(operation, self._apply_done, self._apply_failed)
 
     def customize_softdrink(self) -> None:
         if self.busy:
@@ -529,6 +532,11 @@ class SharePanel(QWidget):
             else:
                 modpack.extract_assets(pack, folder)
                 recipe = pack.manifest.recipe
+            from mod_editor.core import nfl2k5_marks_store
+            # The extracted sources carry their own logos; a failed save for later builds only reports.
+            _saved, error = nfl2k5_marks_store.try_register(pack)
+            if error:
+                progress(error, 0, 0)
             return modpack_sources.materialize(recipe, folder)
         def done(recipe):
             self.customization_ready.emit(recipe)
@@ -714,10 +722,17 @@ class SharePanel(QWidget):
                   else "every game file verified against the finished disc" if target.get("all_game_files_verified")
                   else "every run verified; the rest of the file is your own base"
                   if target["matches_author_result"] is False else "every run verified")
-        self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}.")
+        extra = ""
+        if receipt.get("official_marks"):
+            extra += " SOFTDRINK logos saved for your builds."
+        if receipt.get("official_marks_error"):
+            extra += " " + receipt["official_marks_error"]
+        if receipt.get("memory_tip"):
+            extra += " " + receipt["memory_tip"]
+        self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}." + extra)
         self._check_state = None
         self.disc_written.emit(str(target["path"]))
-        self._notify("info", "Disc ready", f"{target['path']}\n\nOpen it in xemu. " + XEMU_LINE)
+        self._notify("info", "Disc ready", f"{target['path']}\n\nOpen it in xemu. " + XEMU_LINE + extra)
 
     def _apply_failed(self, message: str) -> None:
         self.apply_status.setText(f"Couldn't make the disc: {message}")
