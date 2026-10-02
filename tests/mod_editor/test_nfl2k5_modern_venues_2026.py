@@ -379,6 +379,76 @@ class HelperTests(unittest.TestCase):
         flat = mv.clean_turf(stripes)
         self.assertEqual(len({tuple(p) for p in flat[..., :3].reshape(-1, 3)}), 1)
 
+    def test_letter_dominated_endzone_uses_its_minority_turf(self):
+        """Chicago north selects orange lettering even without taking the old flat fallback."""
+        import numpy as np
+        panel = _solid(64, 32, (209, 116, 31))
+        panel[:10, :, :3] = (108, 135, 75)
+        clean = mv.clean_turf(panel)
+        self.assertTrue((clean[..., :3] == (108, 135, 75)).all())
+        self.assertTrue(np.array_equal(clean[..., 3], panel[..., 3]))
+
+    def test_endzone_without_local_turf_borrows_a_grained_neighbour(self):
+        import numpy as np
+        middle = _solid(64, 32, (209, 116, 31), alpha=173)
+        neighbour = _solid(128, 64, (108, 135, 75))
+        neighbour[:, 64:, :3] = (112, 139, 79)
+        art = _solid(64, 32, (0, 0, 0), alpha=0)
+        item = dict(scene="field", key="endzone_N_M", layer="overlay", size=[64, 32])
+        clean = mv.compose(item, middle, middle, art, "d", neighbours=(neighbour,))
+        self.assertTrue((clean[..., 1] > clean[..., 0]).all())
+        self.assertGreater(int(clean[..., 1].max()), int(clean[..., 1].min()))
+        self.assertTrue(np.array_equal(clean[..., 3], middle[..., 3]))
+
+    def test_cincinnati_without_turf_keeps_the_exact_flat_tint(self):
+        import numpy as np
+        stripes = _solid(64, 32, (240, 120, 20), alpha=201)
+        stripes[:, ::2, :3] = 0
+        clean = mv.clean_turf(stripes, neighbours=(stripes.copy(), stripes.copy()))
+        self.assertTrue((clean[..., :3] == (120, 60, 10)).all())
+        self.assertTrue(np.array_equal(clean[..., 3], stripes[..., 3]))
+
+    def test_turf_fill_excludes_green_tinted_white_letter_edges(self):
+        panel = _solid(64, 32, (190, 0, 0))
+        panel[:10, :, :3] = (100, 130, 60)
+        panel[10:14, :, :3] = (220, 230, 210)
+        clean = mv.clean_turf(panel)
+        self.assertTrue((clean[..., :3] == (100, 130, 60)).all())
+
+    def test_green_logo_detail_is_not_turf_in_a_painted_endzone(self):
+        panel = _solid(64, 32, (15, 40, 80))
+        panel[12:18, 30:36, :3] = (50, 145, 60)
+        clean = mv.clean_turf(panel, neighbours=(panel.copy(),))
+        self.assertTrue((clean[..., :3] == (15, 40, 80)).all())
+
+    def test_painter_borrows_unpainted_turf_only_from_the_same_end(self):
+        from unittest.mock import patch
+        keys = ("endzone_N_L", "endzone_N_M", "endzone_S_M")
+        retail = [_solid(64, 32, colour) for colour in ((108, 135, 75), (209, 116, 31), (209, 116, 31))]
+        rows = [dict(index=i, width=64, height=32, format_name="P8", conversion_status="base_level_supported",
+                     mapped_material_names=[key]) for i, key in enumerate(keys)]
+        rec = dict(name="field", system_bytes=0, embedded_textures=rows)
+        items = [dict(scene="field", key=key, layer="overlay", size=[64, 32], master=None,
+                      rgba=_solid(64, 32, (200, 0, 0), alpha=255 if i == 0 else 0),
+                      dd=dict(scene="field", index=i)) for i, key in enumerate(keys)]
+        captured = {}
+
+        def read(decoded, system, row):
+            i = row["index"]
+            return (captured[i] if decoded[i] else retail[i]).copy(), b""
+
+        def write(decoded, system, row, rgba, cap):
+            captured[row["index"]] = rgba.copy()
+            decoded[row["index"]] = 1
+            return 256
+
+        with patch.object(mv._mm(), "read_p8", side_effect=read), patch.object(mv._mm(), "write_p8", side_effect=write):
+            mv.paint_scene(bytes(3), rec, "s05", "dd", dict(items=items),
+                           {("field", i): a for i, a in enumerate(retail)})
+        self.assertTrue((captured[0][..., :3] == (200, 0, 0)).all())
+        self.assertTrue((captured[1][..., :3] == (108, 135, 75)).all())
+        self.assertTrue((captured[2][..., :3] == (209, 116, 31)).all())
+
     def test_league_art_replaces_only_its_rect(self):
         import numpy as np
         base = _solid(64, 64, (90, 90, 90))

@@ -703,10 +703,8 @@ class ArcByDistanceTests(unittest.TestCase):
         for yards in (2, 6, 8, 10, 12.5, 15, 20, 25, 30, 35, 38, 40):
             self.assertAlmostEqual(tt.interpolate(profile, yards), tt.interpolate(retail, yards), places=6, msg=yards)
         speed = dict(profile)
-        self.assertEqual(speed[45.0], tt.HIGH_ARC_BAND_SPEED_YD_S)
-        self.assertEqual(speed[60.0], tt.HIGH_ARC_BAND_SPEED_YD_S)
-        self.assertEqual(tt.interpolate(profile, 52.0), tt.HIGH_ARC_BAND_SPEED_YD_S)
-        self.assertGreater(speed[63.0], tt.RETAIL_LOB_SPEED_YD_S)
+        self.assertEqual(profile[5:], ((45.0, 17.5), (60.0, 18.75), (80.0, 21.0)))
+        self.assertAlmostEqual(tt.interpolate(profile, 52.0), 18.0833333333)
         self.assertEqual(tt.interpolate(profile, 80.0), 21.0)
         self.assertEqual(tt.interpolate(profile, 10.0), 12.0)              # the point the five-point table lost
         # it fills the certificate slot exactly and never overlaps the widescreen cave
@@ -714,6 +712,100 @@ class ArcByDistanceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_widescreen as ws
         self.assertGreaterEqual(tt.ARC_TABLE_VA, ws.CAVE_VA + len(ws.cave_bytes()))
         self.assertLessEqual(tt.ARC_TABLE_VA + len(tt.RETAIL_ARC_TABLE_SLOT), ws.CAVE_END_VA)
+
+    def test_apex_bound_and_continuous_deep_hang_monotonicity(self) -> None:
+        profile = tt.ARC_BY_DISTANCE_LOBSPEED
+        # On each linear speed segment s(d)=a*d+b, (d/s)'=b/s**2.
+        # Check every segment analytically, not just the preview's five-yard samples.
+        for (x0, y0), (x1, y1) in zip(profile[4:], profile[5:]):
+            self.assertGreaterEqual(y0 * x1 - y1 * x0, 0)
+        # Extrema of d/s on a linear positive-speed segment lie at its endpoints.
+        for distance, speed in ((0.0, 6.0), *profile):
+            self.assertLessEqual(tt.GRAVITY_YD_S2 * (distance / speed) ** 2 / 8, 20.0)
+        # The reader's 0..1 blend toward bullet speed cannot increase lob hang.
+        bullet = tt.CURVES["bulletspeed"].retail
+        knots = {0.0, 80.0, *(d for d, _ in profile), *(d for d, _ in bullet)}
+        for distance in knots:
+            self.assertGreaterEqual(tt.interpolate(bullet, distance), tt.interpolate(profile, distance))
+        hangs = [d / tt.interpolate(profile, d) for d in range(5, 81, 5)]
+        self.assertEqual(hangs, sorted(hangs))
+        # The preserved retail 6..10-yard exception makes global monotonicity impossible.
+        self.assertGreater(6 / tt.interpolate(profile, 6), 10 / tt.interpolate(profile, 10))
+        self.assertEqual(tt.ARC_TABLE_CURVE.encode(profile)[4:44], tt.CURVES["lobspeed"].retail_bytes[4:])
+
+    def _old_relocated(self) -> bytes:
+        payload, _ = tt.apply_arc_table(self.source.read_bytes())
+        buf = bytearray(payload)
+        off = tt.ARC_TABLE_VA - IMAGE_BASE
+        buf[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.HIGH_ARC_20260903_LOBSPEED)
+        return bytes(buf)
+
+    def test_old_relocated_read_upgrade_and_exact_revert(self) -> None:
+        old = self._old_relocated()
+        self.assertEqual(tt.arc_table_status(old), "legacy_high_arc")
+        read = tt.read_arc_table(old)
+        self.assertEqual(read["label"], "arc by distance (2026-09-03 high arc)")
+        self.assertEqual(read["points"], tt.HIGH_ARC_20260903_LOBSPEED)
+        self.assertTrue(read["upgrade_required"])
+        new, receipt = tt.apply_arc_table(old)
+        self.assertEqual(tt.arc_table_status(new), "applied")
+        self.assertEqual(tt.revert_arc_table(new, receipt), old)
+        changed = {i for i, (a, b) in enumerate(zip(old, new)) if a != b}
+        self.assertTrue(changed <= set(range(tt.ARC_TABLE_VA - IMAGE_BASE, tt.ARC_TABLE_END_VA - IMAGE_BASE)))
+        self.source.write_bytes(old)
+        report = tt.read_xbe(self.source)
+        self.assertTrue(report["settings"].arc_by_distance)
+        target = self.work / "upgraded.xbe"
+        tt.write_xbe_copy(self.source, target, settings=report["settings"])
+        self.assertEqual(tt.read_arc_table(target.read_bytes())["state"], "applied")
+
+    def test_legacy_five_point_read_and_write_upgrade(self) -> None:
+        old, _ = tt.plan_patch(self.source.read_bytes(), {"lobspeed": tt.LEGACY_ARC_BY_DISTANCE_LOBSPEED})
+        self.source.write_bytes(old)
+        report = tt.read_xbe(self.source)
+        self.assertEqual(report["arc_table"]["label"], "arc by distance (legacy five-point high arc)")
+        self.assertTrue(report["arc_table"]["upgrade_required"])
+        target = self.work / "legacy-upgraded.xbe"
+        tt.write_xbe_copy(self.source, target, settings=report["settings"])
+        upgraded = tt.read_xbe(target)
+        self.assertEqual(upgraded["arc_table"]["points"], tt.ARC_BY_DISTANCE_LOBSPEED)
+        self.assertEqual(upgraded["curves"]["lobspeed"]["points"], tt.CURVES["lobspeed"].retail)
+        # A relocation receipt also restores the dormant five-point profile exactly.
+        new, receipt = tt.apply_arc_table(old)
+        self.assertEqual(tt.revert_arc_table(new, receipt), old)
+
+    def test_retail_exact_revert_and_revert_source_guard(self) -> None:
+        original = self.source.read_bytes()
+        patched, receipt = tt.apply_arc_table(original)
+        self.assertEqual(tt.revert_arc_table(patched, receipt), original)
+        changed = bytearray(patched)
+        changed[-1] ^= 1
+        with self.assertRaises(tt.ThrowTuningError):
+            tt.revert_arc_table(bytes(changed), receipt)
+
+    def test_revert_preserves_a_sources_original_digest_bytes(self) -> None:
+        original = bytearray(self.source.read_bytes())
+        digest_offset = strength._sections(bytes(original))[0].header_offset + 36
+        original[digest_offset] ^= 1
+        original = bytes(original)
+        patched, receipt = tt.apply_arc_table(original)
+        self.assertEqual(tt.revert_arc_table(patched, receipt), original)
+
+    def test_unrelated_edit_keeps_old_profile_and_previews_its_real_flight(self) -> None:
+        self.source.write_bytes(self._old_relocated())
+        target = self.work / "old-with-other-edit.xbe"
+        receipt = tt.write_xbe_copy(self.source, target, settings=tt.TuningSettings(60.0))
+        self.assertEqual(receipt["arc_table"], "legacy_high_arc")
+        self.assertEqual(receipt["preview"][-1]["hang_seconds"], 5.0)
+        self.assertEqual(receipt["preview"][-1]["apex_yards"], 33.5)
+
+    def test_old_table_with_retail_reader_is_foreign(self) -> None:
+        buf = bytearray(self.source.read_bytes())
+        off = tt.ARC_TABLE_VA - IMAGE_BASE
+        buf[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.HIGH_ARC_20260903_LOBSPEED)
+        self.assertEqual(tt.arc_table_status(bytes(buf)), "foreign")
+        with self.assertRaises(tt.ThrowTuningError):
+            tt.apply_arc_table(bytes(buf))
 
     def test_curves_for_keeps_the_in_place_table_and_effective_lobspeed_is_the_profile(self) -> None:
         settings = tt.TuningSettings(80.0, 0.0, True, True)

@@ -142,7 +142,8 @@ class ThrowTuningPanel(QWidget):
         subtitle = QLabel(
             "Set throw distance and deep-ball flight. The original maximum at 99 Pass Arm "
             "Strength is 55 yards. The sliders re-shape the game's own curve tables in a copy; "
-            "the source is never changed. " + XEMU_LINE
+            "the source is never changed. Arc by distance preserves retail speeds through 40 yards "
+            "and gives 60-80 yard lobs about 3.2-3.8 seconds of hang. " + XEMU_LINE
         )
         subtitle.setObjectName("throwMuted")
         subtitle.setWordWrap(True)
@@ -262,12 +263,13 @@ class ThrowTuningPanel(QWidget):
             "~60 mph release, 3.2-3.9 s hang for 60-80 air yards, apex 13-20 yd. Short game stays retail."
         )
         layout.addWidget(self.realistic_check)
-        self.arc_by_distance_check = QCheckBox("Arc by distance: 45-60 yd lobs hang high, 63+ yd keep the flat bomb")
+        self.arc_by_distance_check = QCheckBox("Arc by distance: realistic deep flight with extra touch")
         self.arc_by_distance_check.setToolTip(
-            "Relocates the lob-speed table to an eight-point copy in the XBE header: every throw up to 40 "
-            "yards keeps the retail speeds (short accuracy and power unchanged), 45 to 60 air yards get the "
-            "high hanging arc (12 yd/s ground speed), 63 yards and beyond keep the realistic flat flight. "
-            "The in-place table then only matters for read-back; the ceiling still applies."
+            "Every throw up to 40 yards keeps the retail speeds. At 45/60/80 yards, modeled hang is "
+            "2.57/3.20/3.81 seconds and apex is 8.9/13.7/19.5 yards. The ceiling still applies. "
+            "Writing a copy upgrades either older high-arc profile. Discs and SOFTDRINK patches made "
+            "before beta 76.2 with this option keep punt-height deep balls until rebuilt or reinstalled "
+            "from an updated patch."
         )
         layout.addWidget(self.arc_by_distance_check)
         self.flatter_check = QCheckBox("Flight arc: flatter deep ball (EXPERIMENTAL / UNWITNESSED)")
@@ -385,6 +387,19 @@ class ThrowTuningPanel(QWidget):
         # what a 99 arm gets.
         self.preview_table.setFixedHeight(32 * (len(tt.PREVIEW_ARMS) + 1) + 12)
         layout.addWidget(self.preview_table)
+        self.distance_preview = QTableWidget(0, 7)
+        self.distance_preview.setHorizontalHeaderLabels(
+            ("Air yd", "Source yd/s", "Source hang s", "Source apex yd",
+             "New yd/s", "New hang s", "New apex yd")
+        )
+        self.distance_preview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.distance_preview.setSelectionMode(QAbstractItemView.NoSelection)
+        self.distance_preview.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.distance_preview.verticalHeader().setVisible(False)
+        self.distance_preview.setToolTip("Equal-height ballistic guide, every 5 yards through 80. "
+                                         "Distances above the selected ceiling are reference only. "
+                                         "Source defaults to retail until a game is read.")
+        layout.addWidget(self.distance_preview)
         self.flight_preview = FlightPreview(self)
         layout.addWidget(self.flight_preview)
         self.curves_label = QLabel("")
@@ -540,6 +555,21 @@ class ThrowTuningPanel(QWidget):
             self.status_label.setText(str(exc))
             return
         rows = tt.preview(curves)
+        source_speed = tt.CURVES["lobspeed"].retail
+        if self._report:
+            source_speed = self._report["curves"]["lobspeed"]["points"]
+            arc = self._report.get("arc_table")
+            if isinstance(arc, dict) and arc.get("points"):
+                source_speed = arc["points"]
+        self.distance_preview.setRowCount(16)
+        for index, distance in enumerate(range(5, 81, 5)):
+            cells = [str(distance)]
+            for speed_table in (source_speed, curves["lobspeed"]):
+                speed = tt.interpolate(speed_table, distance)
+                hang = distance / speed
+                cells.extend((f"{speed:.2f}", f"{hang:.2f}", f"{tt.GRAVITY_YD_S2 * hang * hang / 8:.2f}"))
+            for column, value in enumerate(cells):
+                self.distance_preview.setItem(index, column, QTableWidgetItem(value))
         self.flight_preview.set_curves(curves)
         self.preview_table.setRowCount(len(rows))
         for index, (before, after) in enumerate(zip(retail, rows)):
@@ -686,7 +716,7 @@ class ThrowTuningPanel(QWidget):
         state = ("retail throw tables" if not edited
                  else "already tuned: " + ", ".join(edited) + " edited")
         flight_text = ("flatter flight (EXPERIMENTAL / UNWITNESSED)" if self.flatter_check.isChecked()
-                  else "arc by distance (45-60 high, 63+ flat)" if getattr(settings, "arc_by_distance", False)
+                  else report.get("arc_table", {}).get("label", "arc by distance") if getattr(settings, "arc_by_distance", False)
                   else "realistic flight" if settings.realistic_flight else f"arc {int(round(settings.arc * 100))} %")
         catch_text = {"retail": "catch patch not applied", "applied": "catch patch applied",
                       "foreign": "catch-patch sites unrecognised (patch disabled)"}[catch_state]
@@ -753,7 +783,7 @@ class ThrowTuningPanel(QWidget):
         arc_state = self._report.get("arc_table", "retail")
         if isinstance(arc_state, dict):
             arc_state = arc_state.get("state", "foreign")
-        arc_change = self.arc_by_distance_check.isChecked() and arc_state == "retail"
+        arc_change = self.arc_by_distance_check.isChecked() and arc_state in ("retail", "legacy_high_arc")
         return (curve_change or arc_change or catch_change or scorebug_change or accel_change or draft_change or edge_change
                 or returner_change or progression_change)
 

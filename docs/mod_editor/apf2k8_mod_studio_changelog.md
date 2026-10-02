@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.103 - beta 76.2
+
+- Version aligned with this release; no APF 2K8 changes ship here.
+
 ## 0.1.0-alpha.102 - beta 76.1
 
 Version aligned with this release; no APF 2K8 changes ship here.

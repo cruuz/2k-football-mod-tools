@@ -895,6 +895,33 @@ class ModularPackTests(unittest.TestCase):
         self.assertEqual(self.base.read_bytes(), self.patched.read_bytes())
 
 
+class ArcProfileLabelsTests(unittest.TestCase):
+    def test_unversioned_pack_keeps_plain_legacy_label(self):
+        text = modpack.describe_operation({"op": "throw_tuning", "max_deep_yards": 80,
+                                          "arc": 0, "arc_by_distance": True})
+        self.assertIn("arc by distance (legacy high arc)", text)
+
+    def test_profile_only_upgrade_is_recognised_in_pack_recipe(self):
+        sys.path.insert(0, str(_REPO_ROOT / "tests"))
+        from nfl2k5_throw_tuning_test import _build_synthetic_xbe
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        current, _ = tt.apply_arc_table(_build_synthetic_xbe())
+        previous = bytearray(current)
+        off = tt.ARC_TABLE_VA - tt.IMAGE_BASE
+        previous[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.HIGH_ARC_20260903_LOBSPEED)
+        with tempfile.TemporaryDirectory() as tmp:
+            base, patched = Path(tmp) / "old.xbe", Path(tmp) / "new.xbe"
+            base.write_bytes(previous)
+            patched.write_bytes(current)
+            with base.open("rb") as a, patched.open("rb") as b, patch.object(tt, "image_xbe_extent", return_value=(0, len(current))):
+                recipe = modpack.recognise_recipe(a.fileno(), b.fileno(), len(current), base, patched)
+            operations = [op for op in recipe["operations"] if op["op"] == "throw_tuning"]
+            self.assertEqual(len(operations), 1)
+            self.assertTrue(operations[0]["arc_by_distance"])
+            self.assertEqual(operations[0]["arc_profile"], "arc by distance (realistic deep flight)")
+            self.assertIn("realistic deep flight", modpack.describe_operation(operations[0]))
+
+
 class GrowingSpecialPackTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

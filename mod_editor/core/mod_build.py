@@ -94,7 +94,7 @@ class BuildPlan:
     max_deep_yards: float = 55.0
     arc: float = 0.0
     realistic_flight: bool = False
-    arc_by_distance: bool = False   # 45-60 yd lobs hang high, 61+ stay flat
+    arc_by_distance: bool = False   # retail through 40 yd, realistic deep flight with extra touch
     catch_slider: bool = False
     accel_ramp: bool = False
     draft_ai: bool = False

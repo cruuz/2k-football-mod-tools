@@ -133,7 +133,7 @@ Set the product versions in `mod_editor/__init__.py` and
 the numbers for each release. Search before changing versions:
 
 ```bash
-git grep -n -e '1.0.0rc106' -e 'RC106' -e '0.1.0-alpha.102' -e 'beta-76.1'
+git grep -n -e '1.0.0rc107' -e 'RC107' -e '0.1.0-alpha.103' -e 'beta-76.2'
 ```
 
 Use your checkout's current strings and update every hit in docs, packaging

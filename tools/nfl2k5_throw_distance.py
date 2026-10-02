@@ -66,7 +66,7 @@ def main() -> int:
                    help="deep-ball ceiling in yards at 99 arm (55 = retail .. 100)")
     s.add_argument("--arc", type=float, default=0.0, help="pass arc percent (0 = retail .. 100)")
     s.add_argument("--realistic", action="store_true", help="realistic deep-ball flight table (overrides --arc)")
-    s.add_argument("--arc-by-distance", action="store_true", help="45-60 yd lobs hang high, 63+ yd keep the flat bomb (overrides --arc/--realistic for the speed table)")
+    s.add_argument("--arc-by-distance", action="store_true", help="retail through 40 yd, realistic deep flight with extra touch; upgrades old high-arc profiles")
     s.add_argument("--catch-slider", action="store_true", help="also apply the Catching-slider executable patch (menu max 200)")
     s.add_argument("--accel-ramp", action="store_true", help="also apply the acceleration-ramp executable patch (players wind up to top speed)")
     s.add_argument("--draft-ai", action="store_true", help="also apply the franchise draft-AI patch (positional value + need + noise instead of four enum-ordered positions)")
@@ -105,7 +105,9 @@ def main() -> int:
                 print(f"  {name:11s} {entry['file_offset']:>9s} {'RETAIL' if entry['retail'] else 'EDITED'}: "
                       f"{_fmt(curve, entry['points'])}")
             arc = report.get("arc_table") or {}
-            if arc.get("state") == "applied":
+            if settings.arc_by_distance:
+                print(f"  {arc.get('label', 'arc by distance')}")
+            if arc.get("state") in ("applied", "legacy_high_arc"):
                 print(f"  arc table   {arc['va']:>9s} RELOCATED (FUN_002d8970 reads it instead of lobspeed): "
                       f"{_fmt(tt.ARC_TABLE_CURVE, arc['points'])}")
             elif arc.get("state") == "foreign":

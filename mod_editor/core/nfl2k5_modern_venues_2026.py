@@ -865,14 +865,33 @@ def _box_mean(values, radius):
     return (cs[k:k + h, k:k + w] - cs[0:h, k:k + w] - cs[k:k + h, 0:w] + cs[0:h, 0:w]) / (k * k)
 
 
-def clean_turf(rgba):
+def _turf_mask(rgb):
+    """Green turf, including the muted retail rain/snow variants, without orange paint or white lines."""
+    return ((rgb[..., 1] > rgb[..., 0] + 5.0) & (rgb[..., 1] > rgb[..., 2] + 5.0)
+            & (rgb.max(axis=-1) - rgb.min(axis=-1) > 0.2 * rgb.max(axis=-1)))
+
+
+def _turf_background(rgb):
+    """Turf samples away from letter edges; isolated green details in painted logos are not background."""
+    import numpy as np
+    green = _turf_mask(rgb)
+    if green.any():
+        green &= np.abs(rgb - np.median(rgb[green], axis=0)).sum(axis=-1) <= 60.0
+    keep = _box_mean((~green).astype(np.float64), 1) == 0.0
+    if not (keep[0].any() or keep[-1].any() or keep[:, 0].any() or keep[:, -1].any()):
+        keep[:] = False
+    return keep
+
+
+def clean_turf(rgba, neighbours=()):
     """The retail end zone with its 2004 marks filled in from the surrounding turf (or paint).
 
     End-zone art is painted over this base at the art's own alpha (u1's art.py paints at 0.92), so whatever
     shows through should be turf grain, not the old letters. Pixels far from the texture's dominant colour
     (the marks, dilated by a pixel) are refilled with a masked box mean of the kept pixels, growing the window
-    until every hole is filled. A texture with no dominant background (under a third of it, as Cincinnati's
-    all-over tiger stripes) becomes its median colour, so the paint shows an even tint and no pattern.
+    until every hole is filled. If the median selects lettering, use green turf instead, even when it is a
+    minority; a panel without turf can borrow it from the same end zone's retail neighbours. Only a texture
+    with no turf and no dominant background (Cincinnati's all-over tiger stripes) becomes its median tint.
     """
     import numpy as np
     rgb = rgba[..., :3].astype(np.float64)
@@ -880,10 +899,22 @@ def clean_turf(rgba):
     far = np.abs(rgb - median).sum(axis=-1) > 60.0
     far = _box_mean(far.astype(np.float64), 1) > 0.0
     keep = ~far
-    if keep.mean() < 0.33:
-        flat = rgba.copy()
-        flat[..., :3] = np.clip(np.rint(median), 0, 255).astype(np.uint8)
-        return flat
+    if keep.mean() < 0.33 or median[1] <= max(median[0], median[2]) + 5.0:
+        turf = _turf_background(rgb)
+        if turf.any():
+            keep, far = turf, ~turf
+        else:
+            # Read-only retail neighbours, never an already painted panel or the opposite end zone.
+            donors = [a for a in neighbours if _turf_background(a[..., :3].astype(float)).any()]
+            donor = max(donors, key=lambda a: _turf_mask(a[..., :3].astype(float)).mean(), default=None)
+            if donor is not None:
+                result = resample(clean_turf(donor), rgba.shape[1], rgba.shape[0]).copy()
+                result[..., 3] = rgba[..., 3]
+                return result
+            if keep.mean() < 0.33:
+                flat = rgba.copy()
+                flat[..., :3] = np.clip(np.rint(median), 0, 255).astype(np.uint8)
+                return flat
     out = rgb.copy()
     weight = keep.astype(np.float64)
     radius = 2
@@ -900,7 +931,7 @@ def clean_turf(rgba):
     return result
 
 
-def compose(item, base, current, art, weather, cls=None, canvas=None):
+def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours=()):
     """One texture of one bundle: the authored dry-day art carried to this bundle's look.
 
     ``base`` is the retail dry-day texture (resized to this bundle's size), ``current`` the retail texture of
@@ -916,7 +947,7 @@ def compose(item, base, current, art, weather, cls=None, canvas=None):
         # 2004 marks filled in (clean_turf): rain and snow turf stay exactly retail (and compress like it), and
         # no old letters show through paint painted at less than full alpha.
         paint, _fits = mm.weather_transfer(base, current, art, snow=False)
-        return mm.composite_over(clean_turf(current) if item["scene"] == "field" else current, paint)
+        return mm.composite_over(clean_turf(current, neighbours) if item["scene"] == "field" else current, paint)
     sx, sy = width / item["size"][0], height / item["size"][1]
     rects = item.get("rects") or [[0, 0, item["size"][0], item["size"][1]]]
     result = (current if canvas is None else canvas).copy()
@@ -940,6 +971,8 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
     edited = bytearray(decoded)
     system = int(rec["system_bytes"])
     rows = p8_rows(rec)
+    endzones = {key: read_texture(decoded, rec, rows[index])
+                for key, index in rows_by_material(rec).items() if key.startswith("endzone_")} if scene == "field" else {}
     receipt = dict(scene=scene, textures=[], skipped=[], palette_cap=cap)
     groups = {}
     for item in plan["items"]:
@@ -964,7 +997,9 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
             dry = resample(dry, width, height) if dry.shape[:2] != (height, width) else dry
             target = _target_row(prefix, item["key"]) if scene == "stadium" else None
             layered = compose(item, dry, current, _art_at(item, width, height), code[1],
-                              cls=(target or {}).get("class"), canvas=canvas)
+                              cls=(target or {}).get("class"), canvas=canvas,
+                              neighbours=tuple(a for key, a in endzones.items()
+                                               if key != item["key"] and key.rsplit("_", 1)[0] == item["key"].rsplit("_", 1)[0]))
             canvas = layered
             applied.append(dict(key=item["key"], source=item.get("source", "team"), layer=item["layer"],
                                 mark=item.get("mark")))

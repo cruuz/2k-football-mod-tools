@@ -1,5 +1,13 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC107, beta 76.2
+
+- **PROVED OFFLINE:** Arc by distance, used by SOFTDRINK Advanced and Experimental, no longer gives 45-60 yard lobs punt-height flight. The same eight-point table preserves all retail speed points through 40 yards. The game's own speed reader returns the new deep speeds in CPU emulation.
+- **DESIGN:** The new 45/60/80 yard speeds are 17.5/18.75/21 yd/s: modeled hang 2.57/3.20/3.81 seconds, apex 8.9/13.7/19.5 yards. Deep-ball hang increases with distance through 80 yards. Retail's existing 6-10 yard hang decrease is preserved with the short-game bytes. These are equal-height ballistic estimates, without a new in-game witness. Basic's realistic profile is unchanged.
+- **PROVED OFFLINE:** Both older high-arc profiles retain plain read-back labels and upgrade when arc by distance is written again. The panel previews source and new speeds, hang and apex every five yards. Upgrade receipts preserve the original bytes for exact reversal.
+- Discs and SOFTDRINK patches made before this release with arc by distance keep punt-height deep balls until rebuilt or reinstalled from an updated patch. Reinstalling the same old patch retains its old flight.
+- **PROVED OFFLINE:** 2026 field and wall art: end zones whose retail middle panel was mostly lettering (Chicago's BEARS and CHICAGO, Green Bay, Kansas City, Minnesota, Washington, Cleveland, the Chargers, and Miami in rain) no longer show a flat block of the old letters' colour behind the new lettering. The panel is filled from its own turf or from the same end zone's side panels; Cincinnati's painted end zones keep their even tint. Every other end-zone and stadium texture is byte for byte unchanged (5,142 composed outputs compared across all 441 venue bundles).
+
 ## v1.0 RC106, beta 76.1: the SOFTDRINK 2K28 logos for your own builds
 
 - **PROVED OFFLINE:** Install SOFTDRINK 2K28, Customize SOFTDRINK 2K28 and CLI apply save the pack's reviewed logos in Studio's per-user folder. Build's From a SOFTDRINK pack... button also saves them without installing a disc. Every asset passes the pack SHA-256, manifest and reviewed pin checks before the new folder is published; a damaged pack preserves the last saved copy.
