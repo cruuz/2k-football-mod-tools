@@ -985,7 +985,8 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
         try:
             before = tt.infer_settings(tt.read_curves(base_xbe), tt.arc_table_status(base_xbe))
             after = tt.infer_settings(tt.read_curves(patched_xbe), tt.arc_table_status(patched_xbe))
-            if before != after:
+            before_arc, after_arc = tt.read_arc_table(base_xbe), tt.read_arc_table(patched_xbe)
+            if before != after or before_arc["label"] != after_arc["label"]:
                 settings = {"max_deep_yards": after.max_deep_yards, "arc": after.arc, "realistic_flight": after.realistic_flight,
                             "arc_by_distance": getattr(after, "arc_by_distance", False)}
                 detected["throw_tuning"] = {
@@ -993,7 +994,8 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                              "arc_by_distance": getattr(before, "arc_by_distance", False)},
                     "patched": settings,
                 }
-                operations.append({"op": "throw_tuning", **settings})
+                operations.append({"op": "throw_tuning", **settings,
+                                   **({"arc_profile": after_arc["label"]} if after.arc_by_distance else {})})
         except Exception:  # noqa: BLE001
             pass
     try:
@@ -1072,7 +1074,8 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
     if op == "throw_tuning":
         return (f"Throw Distance & Arc: max deep {operation.get('max_deep_yards')} yd, arc {operation.get('arc')}"
                 + (", realistic flight" if operation.get("realistic_flight") else "")
-                + (", arc by distance (retail to 40 yd, 45-60 high, 63+ flat)" if operation.get("arc_by_distance") else ""))
+                + (", " + str(operation.get("arc_profile", "arc by distance (legacy high arc)"))
+                   if operation.get("arc_by_distance") else ""))
     if op == "team_history":
         source = "built-in nflverse data" if operation.get("source") == "retail" else "a custom CSV"
         return f"Real team history on the Player Card for the roster's past seasons ({source}; franchises created from the copy)"

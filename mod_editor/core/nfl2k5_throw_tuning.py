@@ -22,7 +22,8 @@ linear between).  This module finds the tables by their exact retail bytes
 cross-checked against the section table, rewrites point values on a COPY of the
 XBE (or of a disc image, patching ``default.xbe`` in place inside the copy),
 recomputes the touched section digest, and verifies by read-back and byte diff.
-Tables never grow, move, or change their point count.
+In-place tables never grow or change their point count. Arc by distance uses
+the fixed eight-point header slot and two reader repoints documented below.
 
 Two "sliders" sit on top of the raw curves:
 
@@ -169,18 +170,17 @@ MIN_ARC_LOB_SPEED_YD_S = 10.0
 # 60-80 air yards, apex 13-20 yd. Retail's flat 20 yd/s past 40 yd was already close;
 # this keeps the short game retail and slightly lengthens the very deep ball.
 REALISTIC_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (45.0, 19.0), (80.0, 21.0))
-# Arc by distance (Noah, 9/3): 45..60-yard lobs get the high, hanging arc (12 yd/s of ground speed
-# ~ 4-5 s hang) while 61..80-yard bombs keep the flat realistic flight (21 yd/s from 63 yd on; the
-# interpolator clamps past the last point).  The in-place .rdata table holds five points, so the
-# first cut dropped the retail 10-yard point (a 10-yard lob rode the 6->20 line at 8.9 yd/s instead
-# of 12, and every 20..45-yard ball slowed too).  Noah 9/3 night: "short accuracy and short throw
-# power" must not change.  The table is therefore RELOCATED: an eight-point copy lives in the XBE
-# header (certificate AlternateSignatureKeys tail, see ARC_TABLE_VA) and the two operands of the
-# only reader (``FUN_002d8970``: ``mov edx,[0x50BCB8]`` count, ``mov ecx,0x50BCBC`` pairs) are
-# repointed at it.  Points 1..5 ARE the retail table (6->6, 10->12, 20->16, 35->18, 40->20), so
-# every throw up to 40 yards is byte-for-byte retail; 45..60 hang at 12; 63+ fly flat at 21.
-HIGH_ARC_BAND_SPEED_YD_S = 12.0
+# Arc by distance (2026-10-02): keep Noah's retail short-game rule through 40 yd,
+# then add touch without the 2026-09-03 profile's punt-height 45..60 yd lobs.
+# The same eight-point header slot and FUN_002d8970 reader operands stay in use.
+# At 45/60/80 yd: hang 2.57/3.20/3.81 s, modeled apex 8.86/13.73/19.46 yd.
+# Hang increases throughout the deep band. Retail itself decreases from 6..10 yd;
+# preserving those bytes takes precedence over globally monotonic hang.
 ARC_BY_DISTANCE_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
+                            (45.0, 17.5), (60.0, 18.75), (80.0, 21.0))
+# Historical profiles are recognised on read and upgraded on apply, never newly written.
+HIGH_ARC_BAND_SPEED_YD_S = 12.0
+HIGH_ARC_20260903_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
                             (45.0, HIGH_ARC_BAND_SPEED_YD_S), (60.0, HIGH_ARC_BAND_SPEED_YD_S), (63.0, 21.0))
 # The superseded five-point in-place profile (discs p..y of 9/3); recognised on read, never written.
 LEGACY_ARC_BY_DISTANCE_LOBSPEED = ((6.0, 6.0), (20.0, 16.0), (45.0, HIGH_ARC_BAND_SPEED_YD_S),
@@ -346,7 +346,7 @@ class TuningSettings:
     max_deep_yards: float = RETAIL_MAX_DEEP_YARDS
     arc: float = 0.0
     realistic_flight: bool = False
-    # 45..60-yard lobs hang high, 61+ stay flat (overrides ``arc`` and ``realistic_flight`` for the
+    # Retail through 40 yd, realistic deep flight with extra touch (overrides arc and realistic_flight for the
     # lob-speed table only; the distance ceiling still comes from ``max_deep_yards``)
     arc_by_distance: bool = False
 
@@ -533,8 +533,8 @@ def read_curves(payload: bytes) -> dict[str, dict[str, object]]:
 def infer_settings(curves: Mapping[str, Mapping[str, object]], arc_table: str | None = None) -> TuningSettings:
     """Best-effort slider positions for a set of read curves (for display).
 
-    ``arc_table`` is :func:`arc_table_status` of the same executable ("applied" = the relocated
-    eight-point profile is live); the superseded five-point in-place profile also reads as
+    ``arc_table`` is :func:`arc_table_status` of the same executable ("applied" or
+    "legacy_high_arc" = a relocated eight-point profile is live); the five-point profile also reads as
     ``arc_by_distance`` so older discs and packs keep their label."""
 
     bullet = curves["bullet"]["points"]  # type: ignore[index]
@@ -543,7 +543,7 @@ def infer_settings(curves: Mapping[str, Mapping[str, object]], arc_table: str | 
     speed = curves["lobspeed"]["points"]  # type: ignore[index]
     realistic = tuple(speed) == tuple((x, y) for x, y in REALISTIC_LOBSPEED)
     legacy = tuple(speed) == tuple((x, y) for x, y in LEGACY_ARC_BY_DISTANCE_LOBSPEED)
-    by_distance = arc_table == "applied" or legacy
+    by_distance = arc_table in ("applied", "legacy_high_arc") or legacy
     end_speed = float(speed[-1][1])  # type: ignore[index]
     if realistic or legacy or end_speed >= RETAIL_LOB_SPEED_YD_S - 1e-6:
         arc = 0.0
@@ -589,30 +589,46 @@ def _arc_table_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes, int |
 
 
 def arc_table_status(payload: bytes) -> str:
-    """'retail', 'applied' (reader repointed at the eight-point header table), or 'foreign'."""
+    """'retail', 'applied', 'legacy_high_arc' (2026-09-03), or 'foreign'."""
 
     try:
         sites = _arc_table_sites(payload)
     except (ThrowTuningError, ValueError, struct.error, IndexError):
         return "foreign"
     states = set()
-    for _label, off, before, after, _section in sites:
+    for label, off, before, after, _section in sites:
         got = payload[off: off + len(before)]
-        states.add("retail" if got == before else "applied" if got == after else "foreign")
+        if label == "arc_table" and got == ARC_TABLE_CURVE.encode(HIGH_ARC_20260903_LOBSPEED):
+            states.add("legacy_high_arc")
+        else:
+            states.add("retail" if got == before else "applied" if got == after else "foreign")
     if states == {"retail"}:
         return "retail"
     if states == {"applied"}:
         return "applied"
+    if states == {"applied", "legacy_high_arc"}:
+        return "legacy_high_arc"
     return "foreign"
 
 
 def read_arc_table(payload: bytes) -> dict[str, object]:
     state = arc_table_status(payload)
     points = None
-    if state == "applied":
+    label = {"retail": "retail lob speed", "applied": "arc by distance (realistic deep flight)",
+             "legacy_high_arc": "arc by distance (2026-09-03 high arc)",
+             "foreign": "unrecognised arc table"}[state]
+    upgrade_required = state == "legacy_high_arc"
+    if state in ("applied", "legacy_high_arc"):
         off = _header_offset(payload, ARC_TABLE_VA)
         points = ARC_TABLE_CURVE.decode(payload[off: off + ARC_TABLE_CURVE.size])
-    return {"state": state, "va": f"0x{ARC_TABLE_VA:x}", "points": points,
+    elif state == "retail":
+        curve = CURVES["lobspeed"]
+        off = locate_curve(payload, curve)
+        if payload[off: off + curve.size] == curve.encode(LEGACY_ARC_BY_DISTANCE_LOBSPEED):
+            label = "arc by distance (legacy five-point high arc)"
+            upgrade_required = True
+    return {"state": state, "label": label, "upgrade_required": upgrade_required,
+            "va": f"0x{ARC_TABLE_VA:x}", "points": points,
             "reader": {"count_operand": f"0x{LOBSPEED_COUNT_SITE_VA:x}", "pairs_operand": f"0x{LOBSPEED_PAIRS_SITE_VA:x}"}}
 
 
@@ -620,12 +636,14 @@ def apply_arc_table(payload: bytes) -> tuple[bytes, dict[str, object]]:
     """Write the eight-point table into the header slot and repoint FUN_002d8970's two operands."""
 
     state = arc_table_status(payload)
-    _require(state == "retail", f"arc-by-distance sites are {state}, not retail")
+    _require(state in ("retail", "legacy_high_arc"), f"arc-by-distance sites are {state}, not retail or upgradeable")
     buf = bytearray(payload)
     sections = _sections(payload)
     touched: set[int] = set()
     edits = []
+    digest_edits = []
     for label, off, before, after, section_index in _arc_table_sites(payload):
+        before = payload[off: off + len(after)]
         buf[off: off + len(after)] = after
         if section_index is not None:
             touched.add(section_index)
@@ -634,11 +652,42 @@ def apply_arc_table(payload: bytes) -> tuple[bytes, dict[str, object]]:
         if section.index in touched:
             d = section.header_offset + 36
             buf[d: d + 20] = section_digest(bytes(buf), section)
+            digest_edits.append({"section": section.index, "file_offset": f"0x{d:x}",
+                                 "before": payload[d:d + 20].hex(), "after": bytes(buf[d:d + 20]).hex()})
     patched = bytes(buf)
     _require(arc_table_status(patched) == "applied", "post-apply verification failed")
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
+                     "digest_edits": digest_edits,
+                     "source_state": state, "source_sha256": _digest(payload), "patched_sha256": _digest(patched),
                      "points": list(ARC_BY_DISTANCE_LOBSPEED)}
+
+
+def revert_arc_table(payload: bytes, receipt: Mapping[str, object]) -> bytes:
+    """Restore the exact pre-apply bytes, including an old high-arc table on upgrade."""
+    _require(_digest(payload) == receipt.get("patched_sha256"), "arc revert source does not match receipt")
+    buf = bytearray(payload)
+    sites = _arc_table_sites(payload)
+    edits = receipt.get("edits", [])
+    _require(isinstance(edits, list) and len(edits) == len(sites), "invalid arc revert receipt")
+    for edit, (label, off, before, after, _section) in zip(edits, sites):
+        _require(edit["label"] == label and edit["file_offset"] == f"0x{off:x}", "arc revert site mismatch")
+        original = bytes.fromhex(edit["before"])
+        _require(len(original) == len(before) and edit["after"] == after.hex()
+                 and payload[off: off + len(after)] == after, "arc revert bytes mismatch")
+        buf[off: off + len(original)] = original
+    sections = [s for s in _sections(payload) if s.index in {site[4] for site in sites if site[4] is not None}]
+    digests = receipt.get("digest_edits", [])
+    _require(isinstance(digests, list) and len(digests) == len(sections), "invalid arc revert digests")
+    for edit, section in zip(digests, sections):
+        d = section.header_offset + 36
+        original = bytes.fromhex(edit["before"])
+        _require(edit["section"] == section.index and edit["file_offset"] == f"0x{d:x}"
+                 and len(original) == 20 and edit["after"] == payload[d:d + 20].hex(), "arc revert digest mismatch")
+        buf[d:d + 20] = original
+    restored = bytes(buf)
+    _require(_digest(restored) == receipt.get("source_sha256"), "arc revert verification failed")
+    return restored
 
 
 def _guardian_image_status(path: Path) -> str:
@@ -1817,7 +1866,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         patched, receipt = plan_patch(patched, wanted)
     if arc_table:
         state = arc_table_status(patched)
-        if state == "retail":
+        if state in ("retail", "legacy_high_arc"):
             patched, arc_receipt = apply_arc_table(patched)
             receipt = {**receipt, "arc_table_patch": arc_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(arc_receipt["changed_bytes"])}
@@ -2180,8 +2229,8 @@ def write_xbe_copy(
     if arc_table:
         _require(arc_state == "applied", "arc-by-distance table did not read back as applied")
     preview_curves = {n: verified[n] for n in EDITABLE_CURVES}
-    if arc_state == "applied":
-        preview_curves["lobspeed"] = ARC_BY_DISTANCE_LOBSPEED
+    if arc_state in ("applied", "legacy_high_arc"):
+        preview_curves["lobspeed"] = read_arc_table(result)["points"]
     return {
         "schema": WRITE_SCHEMA,
         "container": "xbe",
@@ -2566,8 +2615,8 @@ def write_image_copy(
     if arc_table:
         _require(arc_state == "applied", "arc-by-distance table did not read back as applied inside the copy")
     preview_curves = {n: verified[n] for n in EDITABLE_CURVES}
-    if arc_state == "applied":
-        preview_curves["lobspeed"] = ARC_BY_DISTANCE_LOBSPEED
+    if arc_state in ("applied", "legacy_high_arc"):
+        preview_curves["lobspeed"] = read_arc_table(after)["points"]
     return {
         "schema": WRITE_SCHEMA,
         "container": "xiso",
@@ -2662,6 +2711,7 @@ __all__ = [
     "Curve",
     "EDITABLE_CURVES",
     "LEGACY_ARC_BY_DISTANCE_LOBSPEED",
+    "HIGH_ARC_20260903_LOBSPEED",
     "LOBSPEED_COUNT_SITE_VA",
     "LOBSPEED_PAIRS_SITE_VA",
     "RETAIL_ARC_TABLE_SLOT",
@@ -2669,6 +2719,7 @@ __all__ = [
     "arc_table_status",
     "effective_lobspeed",
     "read_arc_table",
+    "revert_arc_table",
     "EXPECTED_XBE_SIZE",
     "GRAVITY_YD_S2",
     "MAX_MAX_DEEP_YARDS",

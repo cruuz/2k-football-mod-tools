@@ -46,6 +46,30 @@ class ThrowTuningPanelTests(unittest.TestCase):
         self.assertFalse(self.panel.write_button.isEnabled())
         self.assertFalse(self.panel.target_button.isEnabled())
 
+    def test_old_arc_source_previews_the_upgrade_and_enables_write(self):
+        payload, _ = tt.apply_arc_table(self.source.read_bytes())
+        buf = bytearray(payload)
+        off = tt.ARC_TABLE_VA - tt.IMAGE_BASE
+        buf[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.HIGH_ARC_20260903_LOBSPEED)
+        self.source.write_bytes(buf)
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.panel.target_field.setText(str(self.work / "upgrade.xbe"))
+        self.panel._refresh_controls()
+        self.assertIn("2026-09-03 high arc", self.panel.source_status.text())
+        self.assertTrue(self.panel.has_changes())
+        self.assertTrue(self.panel.write_button.isEnabled())
+        table = self.panel.distance_preview
+        self.assertEqual(table.rowCount(), 16)
+        self.assertEqual([table.item(11, c).text() for c in range(7)],
+                         ["60", "12.00", "5.00", "33.51", "18.75", "3.20", "13.73"])
+
+    def test_new_arc_source_is_not_an_upgrade(self):
+        payload, _ = tt.apply_arc_table(self.source.read_bytes())
+        self.source.write_bytes(payload)
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.assertFalse(self.panel.has_changes())
+        self.assertIn("realistic deep flight", self.panel.source_status.text())
+
     def test_flatter_option_selects_eighty_and_updates_table_and_curve(self):
         self.panel.apply_report(tt.read_xbe(self.source))
         self.panel.flatter_check.setChecked(True)

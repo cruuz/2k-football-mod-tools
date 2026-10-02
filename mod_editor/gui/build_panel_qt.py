@@ -533,9 +533,11 @@ class BuildPanel(QWidget):
         self.realistic_check.setToolTip("The speed table elite NFL arms actually produce: 3.2-3.9 s hang for 60-80 air yards. "
                                         "Overrides the manual arc below.")
         flight_row.addWidget(self.realistic_check)
-        self.arc_by_distance_check = QCheckBox("Higher arc on 45–60 yard lobs")
-        self.arc_by_distance_check.setToolTip("Throws up to 40 yards keep the original speeds, 45-60 air yards get a high hanging arc, "
-                                              "63 yards and beyond keep the realistic flat flight.")
+        self.arc_by_distance_check = QCheckBox("Realistic arc by distance, with deep-ball touch")
+        self.arc_by_distance_check.setToolTip("Throws up to 40 yards keep the original speeds. Extra touch at 45-60 yards; "
+                                              "60-80 yards hang about 3.2-3.8 seconds, with modeled apex below 20 yards. "
+                                              "Discs and SOFTDRINK patches made before beta 76.2 with this option keep "
+                                              "punt-height deep balls until rebuilt or reinstalled from an updated patch.")
         flight_row.addWidget(self.arc_by_distance_check)
         flight_row.addStretch(1)
         g.addLayout(flight_row)
