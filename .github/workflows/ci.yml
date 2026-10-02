@@ -102,7 +102,7 @@ jobs:
           set -euo pipefail
           inputs="$(mktemp -d)"
           gh release download beta-50 \
-            --repo "$GITHUB_REPOSITORY" \
+            --repo cruuz/2k-football-mod-tools \
             --pattern '2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz' \
             --pattern 'apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz' \
             --dir "$inputs"
@@ -337,7 +337,7 @@ jobs:
           set -euo pipefail
           inputs="$(mktemp -d)"
           gh release download beta-50 \
-            --repo "$GITHUB_REPOSITORY" \
+            --repo cruuz/2k-football-mod-tools \
             --pattern '2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz' \
             --pattern 'apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz' \
             --dir "$inputs"
