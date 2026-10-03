@@ -37,7 +37,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -339,7 +339,7 @@ class USBank(sm.SoFi):
         self._boards()
         self._east_wall()
         self._signs(loop, secs)
-        north = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        north = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(north)["upper"][4]
         self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -644,7 +644,7 @@ class USBank(sm.SoFi):
                 along = np.array([0.0, 0.0, 1.0])
                 normal = n * math.cos(math.radians(55)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(55))
                 upv = np.cross(along, normal)
-                upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+                upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
                 hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
                 m.quad("LIGHT_usb_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1),
                        (1, 0), (0, 0), facing=lambda p_, nn=normal: nn)
@@ -658,7 +658,7 @@ class USBank(sm.SoFi):
                 along = np.array([1.0, 0.0, 0.0])
                 normal = n * math.cos(math.radians(55)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(55))
                 upv = np.cross(along, normal)
-                upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+                upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
                 hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
                 m.quad("LIGHT_usb_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1),
                        (1, 0), (0, 0), facing=lambda p_, nn=normal: nn)
@@ -681,7 +681,7 @@ class USBank(sm.SoFi):
         five orthophotos: about 9 degrees off square to the field)."""
         q = self.p["trusses"]
         m = self.meshes.setdefault("usb_trusses", Mesh("usb_trusses"))
-        d = np.array(q["dir"], float); d /= np.linalg.norm(d)
+        d = np.array(q["dir"], float); d /= math.np_norm(d)
         P = self.outline()
         for zc in np.linspace(q["z"][0], q["z"][1], q["count"]):
             # the truss's line through (x_r, zc) along d, clipped to the outline inset by 3 m
@@ -723,8 +723,8 @@ class USBank(sm.SoFi):
         x, z = q["at"]
         top = self.roof_under(x, z) - 0.5
         w, h = q["size"]
-        face = -np.array([x, 0.0, z]); face /= np.linalg.norm(face)
-        right = np.cross(face, (0.0, 1.0, 0.0)); right /= -np.linalg.norm(right)
+        face = -np.array([x, 0.0, z]); face /= math.np_norm(face)
+        right = np.cross(face, (0.0, 1.0, 0.0)); right /= -math.np_norm(right)
         c = np.array([x, top, z])
         A, B = c - right * w / 2, c + right * w / 2
         dn = np.array([0.0, h, 0.0])
@@ -745,7 +745,7 @@ class USBank(sm.SoFi):
         stretched), a wing display either side (the game's digits go on them) and, on the west board, the usbankstadium
         header over it (the east board has none: u003, u019)."""
         q = self.p["boards"]
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         hv = np.array([0.0, H, 0.0])
         ww, wh = wing
         total = W + 2 * ww + 1.0
@@ -788,8 +788,8 @@ class USBank(sm.SoFi):
         """A flat sign ``w`` x ``h`` facing ``face`` (horizontal), its bottom edge's middle at ``centre``, leaning back by
         ``tilt`` degrees, showing rows ``v`` of its texture; a black back and, with ``hang_to`` (a height), two straps
         up to the roof."""
-        face = np.array(face, float); face /= np.linalg.norm(face)
-        right = np.cross(face, (0.0, 1.0, 0.0)); right /= -np.linalg.norm(right)   # a viewer facing it has this on the right
+        face = np.array(face, float); face /= math.np_norm(face)
+        right = np.cross(face, (0.0, 1.0, 0.0)); right /= -math.np_norm(right)   # a viewer facing it has this on the right
         up = np.array([0.0, math.cos(math.radians(tilt)), 0.0]) - face * math.sin(math.radians(tilt))
         c = np.array(centre, float)
         A, B = c - right * w / 2, c + right * w / 2
@@ -829,18 +829,18 @@ class USBank(sm.SoFi):
         x0, x1, h, y, off = q["panel_3m"]
         (z0, _y0), (z1, _y1) = self.rim_back(x0), self.rim_back(x1)
         a, b = np.array([x0, z0]), np.array([x1, z1])
-        d = (b - a) / np.linalg.norm(b - a)
+        d = (b - a) / math.np_norm(b - a)
         n = np.array([-d[1], d[0]])
         n = n if n[1] < 0 else -n                               # toward the field (west)
         c = (a + b) / 2 + n * off
-        self._panel(m, "LIGHT_usb_panels", (c[0], y, c[1]), (n[0], 0.0, n[1]), float(np.linalg.norm(b - a)), h, (0.0, 0.5))
+        self._panel(m, "LIGHT_usb_panels", (c[0], y, c[1]), (n[0], 0.0, n[1]), float(math.np_norm(b - a)), h, (0.0, 0.5))
         x0, z0, x1, z1, h, y = q["panel_lol"]
         a, b = np.array([x0, z0]), np.array([x1, z1])
-        d = (b - a) / np.linalg.norm(b - a)
+        d = (b - a) / math.np_norm(b - a)
         n = np.array([-d[1], d[0]])
-        n = n if float(n @ -((a + b) / 2)) > 0 else -n            # toward the field
+        n = n if float(math.np_matmul(n, -((a + b) / 2))) > 0 else -n            # toward the field
         c = (a + b) / 2
-        self._panel(m, "LIGHT_usb_panels", (c[0], y, c[1]), (n[0], 0.0, n[1]), float(np.linalg.norm(b - a)), h, (0.5, 1.0),
+        self._panel(m, "LIGHT_usb_panels", (c[0], y, c[1]), (n[0], 0.0, n[1]), float(math.np_norm(b - a)), h, (0.5, 1.0),
                     hang_to=self.roof_under(float(c[0]), float(c[1])) - 0.2)
 
     def _signs(self, loop, secs):
@@ -894,7 +894,7 @@ class USBank(sm.SoFi):
         for i in range(len(P)):
             a, b = P[i], P[(i + 1) % len(P)]
             e = b - a
-            L = float(np.hypot(*e))
+            L = float(math.np_hypot(*e))
             if L < 0.05:
                 continue
             n = np.array([e[1], -e[0]]) / L          # counter-clockwise ring: the right-hand normal points outward
@@ -913,7 +913,7 @@ class USBank(sm.SoFi):
                 blade = i
             if np.allclose(a, tip):
                 k = i
-                while k < len(edges) and float(np.dot(edges[k][2], edges[i][2])) > math.cos(math.radians(5.0)):
+                while k < len(edges) and float(math.np_dot(edges[k][2], edges[i][2])) > math.cos(math.radians(5.0)):
                     nw.append(k)
                     k += 1
         return blade, nw
@@ -923,7 +923,7 @@ class USBank(sm.SoFi):
         tip, the glass wall's top and the glass wall's foot (u047), so this line runs from the foot up to the tip."""
         blade, _nw = self._prow_edges()
         a, b, _n, _w = self._edges()[blade]
-        L = float(np.linalg.norm(b - a))
+        L = float(math.np_norm(b - a))
         top = self.roof_top(*self.prow_tip())
         return self.GRADE + (top - self.GRADE) * min(max(s / L, 0.0), 1.0)
 
@@ -938,11 +938,11 @@ class USBank(sm.SoFi):
         edges = self._edges()
         blade, nw = self._prow_edges()
         tip_top = self.roof_top(*self.prow_tip())
-        nw_len = sum(float(np.hypot(*(edges[k][1] - edges[k][0]))) for k in nw)
+        nw_len = sum(float(math.np_hypot(*(edges[k][1] - edges[k][0]))) for k in nw)
         nw_run = 0.0
         s = 0.0
         for i, (a, b, n, west) in enumerate(edges):
-            L = float(np.hypot(*(b - a)))
+            L = float(math.np_hypot(*(b - a)))
             k = max(1, int(math.ceil(L / 12.0)))
             ts = np.linspace(0, 1, k + 1)
             pts = [a + (b - a) * t for t in ts]
@@ -992,7 +992,7 @@ class USBank(sm.SoFi):
         if blade is None:
             return
         a, b, n, _w = self._edges()[blade]
-        L = float(np.linalg.norm(b - a))
+        L = float(math.np_norm(b - a))
         d = np.array([(b - a)[0], 0.0, (b - a)[1]]) / L        # from the glass wall's north end toward the tip
         m = self.meshes.setdefault("usb_prow", Mesh("usb_prow"))
         out = np.array([n[0], 0.0, n[1]]) * 0.35
@@ -1027,7 +1027,7 @@ class USBank(sm.SoFi):
         def grow(k):
             out = []
             for x, z in ring:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, self.GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(14.0), grow(40.0)]
@@ -1056,7 +1056,7 @@ class USBank(sm.SoFi):
                 continue
             R = np.array(ag._min_rect(Q), float)
             c = R.mean(axis=0)
-            area = float(np.linalg.norm(R[1] - R[0]) * np.linalg.norm(R[2] - R[1]))
+            area = float(math.np_norm(R[1] - R[0]) * math.np_norm(R[2] - R[1]))
             if area > self.TOWER_AREA:
                 R = c + (R - c) * math.sqrt(self.TOWER_AREA / area)
             if float(t["height"]) < self.TOWER_MIN_H or any(sm._point_in_poly(c[0], c[1], [tuple(p) for p in o["rect"]]) for o in out):
@@ -1168,8 +1168,8 @@ def light(mat, P, N, tod, weather, outside=False):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "usb_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)
@@ -1499,11 +1499,11 @@ def feed_coverage(model, shot, *, seconds=8.0, step=0.25, aspect=FEED_ASPECT):
         pitch = math.radians(shot["pitch"] + r.get("pitch", 0.0) * t_)
         f = np.array([-math.sin(yaw) * math.cos(pitch), math.sin(pitch), -math.cos(yaw) * math.cos(pitch)])
         right = np.cross(f, (0.0, 1.0, 0.0))
-        right /= np.linalg.norm(right)
+        right /= math.np_norm(right)
         upv = np.cross(right, f)
         share = 0.0
         for q in quads:
-            cam = [((p - eye) @ right, (p - eye) @ upv, (p - eye) @ f) for p in q]
+            cam = [(math.np_matmul(p - eye, right), math.np_matmul(p - eye, upv), math.np_matmul(p - eye, f)) for p in q]
             cam = [cam[0], cam[1], cam[3], cam[2]] if len(cam) == 4 else cam     # strip order to a ring
             poly = _clip_poly(cam, lambda c: c[2] - 0.3)
             if len(poly) < 3:

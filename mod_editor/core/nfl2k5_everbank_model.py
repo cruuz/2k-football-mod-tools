@@ -38,7 +38,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -95,7 +95,8 @@ class LoopPoint(mm.LoopPoint):
 
 def side_weights(nx, nz):
     """The four sides in this frame: east +x, west -x, south +z, north -z."""
-    return dict(E=max(nx, 0.0) ** 2, W=max(-nx, 0.0) ** 2, S=max(nz, 0.0) ** 2, N=max(-nz, 0.0) ** 2)
+    return dict(E=math.pow(max(nx, 0.0), 2), W=math.pow(max(-nx, 0.0), 2), S=math.pow(max(nz, 0.0), 2),
+                N=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
@@ -128,7 +129,7 @@ def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -552,7 +553,7 @@ class EverBank(sm.SoFi):
         """One board: the black housing, the live picture (over ``feed`` of its width between two stat panels, or all of
         it), facing ``face``."""
         q = self.p["boards"]
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         hv = np.array([0.0, H, 0.0])
         m.box("jx_black", c + hv / 2, (right, (0, 1, 0), face), (W / 2 + 0.6, H / 2 + 0.6, q["depth"] / 2), uvscale=0.1,
               bottom=True)
@@ -584,7 +585,7 @@ class EverBank(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(12.0), grow(36.0)]
@@ -671,7 +672,7 @@ class EverBank(sm.SoFi):
         def bank(ctr, sx, w, h, along):
             n = np.array([-sx, 0.0, 0.0])
             normal = n * math.cos(math.radians(28)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(28))
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (w / 2), upv * (h / 2)
             m.quad("LIGHT_jx_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1),
                    (1, 0), (0, 0), facing=lambda p_, nn=normal: nn)
@@ -708,10 +709,10 @@ class EverBank(sm.SoFi):
         ``width`` half its width along z (square when omitted); four faces of the see-through lattice and a cap."""
         d = top - base
         side = np.cross(d, np.array([0.0, 0.0, 1.0]))
-        side = side / max(1e-9, np.linalg.norm(side)) * w
+        side = side / max(1e-9, math.np_norm(side)) * w
         depth = np.array([0.0, 0.0, width if width is not None else w])
         corners = [side + depth, -side + depth, -side - depth, side - depth]
-        H = float(np.linalg.norm(d)) / (2 * w)
+        H = float(math.np_norm(d)) / (2 * w)
         mid = (base + top) / 2
         for a, b in zip(corners, corners[1:] + corners[:1]):
             p0, p1, p2, p3 = base + a, base + b, top + b, top + a
@@ -799,7 +800,7 @@ class EverBank(sm.SoFi):
         and blocks off it)."""
         P = np.array(footprint()["daily"], float)
         V = P - P.mean(axis=0)
-        V /= np.maximum(np.linalg.norm(V, axis=1, keepdims=True), 1e-9)
+        V /= np.maximum(math.np_norm(V, axis=1, keepdims=True), 1e-9)
         return [tuple(map(float, p)) for p in P + V * 6.0]
 
     def _daily_place(self):
@@ -821,7 +822,7 @@ class EverBank(sm.SoFi):
             if n_[1] < 0:
                 p1, p2 = p2, p1
                 n_ = -n_
-            n_ = n_ / max(1e-9, np.linalg.norm(n_))
+            n_ = n_ / max(1e-9, math.np_norm(n_))
             ids = [m.v(tuple(v_), (float(v_[0]) / 20.0, float(v_[2]) / 20.0), tuple(n_)) for v_ in (p0, p1, p2)]
             m.strip("jx_fabric", ids)
 
@@ -841,11 +842,11 @@ class EverBank(sm.SoFi):
         for x, z in ring:
             # out along the outline's own normal there (the outline is not convex), clear of the wall by the column's
             # half width
-            j = int(np.argmin([(x - a) ** 2 + (z - b) ** 2 for a, b in dense]))
+            j = int(np.argmin([math.pow(x - a, 2) + math.pow(z - b, 2) for a, b in dense]))
             a, b = np.array(dense[(j - 3) % len(dense)]), np.array(dense[(j + 3) % len(dense)])
             t = b - a
-            v = np.array([t[1], -t[0]]); v /= max(1e-9, np.linalg.norm(v))
-            if float(v @ (np.array([x, z]) - np.array([cx, cz]))) < 0:
+            v = np.array([t[1], -t[0]]); v /= max(1e-9, math.np_norm(v))
+            if float(math.np_matmul(v, np.array([x, z]) - np.array([cx, cz]))) < 0:
                 v = -v
             px, pz = x + v[0] * q["truss_out"], z + v[1] * q["truss_out"]
             while any(sm_._point_in_poly(px + dx, pz + dz, outline) for dx in (-w, w) for dz in (-w, w)):
@@ -933,7 +934,7 @@ class EverBank(sm.SoFi):
         self._end_board("north")
         self._lights()
         self._pools()
-        east = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        east = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(east)["upper"][4]
         self.nosebleed = self.at(east, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -953,7 +954,7 @@ def _min_rect(A):
     for deg in range(0, 90, 2):
         a = math.radians(deg)
         u = np.array([math.cos(a), math.sin(a)]); v = np.array([-u[1], u[0]])
-        pu, pv = (A - c) @ u, (A - c) @ v
+        pu, pv = math.np_matmul(A - c, u), math.np_matmul(A - c, v)
         area = np.ptp(pu) * np.ptp(pv)
         if best is None or area < best[0]:
             best = (area, u, v, pu.min(), pu.max(), pv.min(), pv.max())
@@ -1042,8 +1043,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "jx_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)

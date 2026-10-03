@@ -35,7 +35,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -90,7 +90,8 @@ class LoopPoint(mm.LoopPoint):
 
 
 def side_weights(nx, nz):
-    return dict(W=max(nx, 0.0) ** 2, E=max(-nx, 0.0) ** 2, N=max(nz, 0.0) ** 2, S=max(-nz, 0.0) ** 2)
+    return dict(W=math.pow(max(nx, 0.0), 2), E=math.pow(max(-nx, 0.0), 2), N=math.pow(max(nz, 0.0), 2),
+                S=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xw, xe, zn, zs, R, step=7.0, corner_steps=9):
@@ -123,7 +124,7 @@ def plan_loop4(xw, xe, zn, zs, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -334,7 +335,7 @@ class Highmark(sm.SoFi):
         self._canopy(loop, secs)
         self._lights()
         self._boards(loop, secs)
-        west = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        west = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(west)["upper"][4]
         self.nosebleed = self.at(west, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -512,7 +513,7 @@ class Highmark(sm.SoFi):
         outer = []
         for x, z, side in inner:
             a = math.atan2(z, x)
-            angs = np.arctan2(O[:, 1], O[:, 0])
+            angs = math.np_arctan2(O[:, 1], O[:, 0])
             j = int(np.argmin(np.abs(((angs - a + math.pi) % (2 * math.pi)) - math.pi)))
             outer.append((O[j][0], O[j][1], side))
         yi = [q["inner_y_end"] + (q["inner_y_side"] - q["inner_y_end"]) * s for _x, _z, s in inner]
@@ -529,7 +530,7 @@ class Highmark(sm.SoFi):
             rt, ru, uu = [], [], []
             for (ix, iz, _s), (ox, oz, _s2), y0, y1 in zip(close(inner), close(outer), close(yi), close(yo)):
                 x, z = ix + (ox - ix) * f, iz + (oz - iz) * f
-                y = y0 + (y1 - y0) * (f ** 0.8)
+                y = y0 + (y1 - y0) * math.pow(f, 0.8)
                 rt.append((x, y + q["depth"] * (1 - f) * 0.4, z))
                 ru.append((x, y - q["depth"] * (1 - 0.6 * f), z))
                 uu.append((math.atan2(z, x) * 40.0, f * 6.0))
@@ -582,8 +583,8 @@ class Highmark(sm.SoFi):
             j = min(max(j, 0), len(inner) - 1)
             (ix, iz, _s), (ox, oz, _s2), y0, y1 = inner[j], outer[j], yi[j], yo[j]
             a = np.array([ix, y0 - q["depth"] - 0.05, iz]); b_ = np.array([ix + (ox - ix) * 0.7, 0.0, iz + (oz - iz) * 0.7])
-            b_[1] = y0 + (y1 - y0) * (0.7 ** 0.8) - q["depth"] * (1 - 0.42) - 0.05
-            t = np.array([-(oz - iz), 0.0, ox - ix]); t = t / np.linalg.norm(t) * 0.25
+            b_[1] = y0 + (y1 - y0) * math.pow(0.7, 0.8) - q["depth"] * (1 - 0.42) - 0.05
+            t = np.array([-(oz - iz), 0.0, ox - ix]); t = t / math.np_norm(t) * 0.25
             und.quad("LIGHT_hm_led", a - t, a + t, b_ + t, b_ - t, (0, 1), (1, 1), (1, 0), (0, 0), facing=down)
             k += 1
 
@@ -596,11 +597,11 @@ class Highmark(sm.SoFi):
         pts = []
         for k in range(0, len(edge) - 1, q["every"]):
             x, y, z = edge[k]
-            n = np.array([x, 0.0, z]); n /= np.linalg.norm(n)
+            n = np.array([x, 0.0, z]); n /= math.np_norm(n)
             ctr = np.array([x, y - q["drop"], z])
             along = np.array([-n[2], 0.0, n[0]])
             normal = -n * math.cos(math.radians(35)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(35))
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
             m.quad("LIGHT_hm_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0),
                    (0, 0), facing=lambda p_, nn=normal: nn)
@@ -647,7 +648,7 @@ class Highmark(sm.SoFi):
             # on an open steel frame over the upper deck's gap); never below the upper deck's front
             y0 = max(fascia_bottom - 0.8 - H, sec["up_fascia"][1] + 0.3)
             face = np.array([0.0, 0.0, -float(end)])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             c = np.array([0.0, y0, zc])
             hw = right * (W / 2)
             hv = np.array([0.0, H, 0.0])
@@ -691,7 +692,7 @@ class Highmark(sm.SoFi):
 
         def side_of(x, z):
             sa = abs(math.sin(math.atan2(x, z)))
-            return float(np.clip((sa - 0.5) / 0.4, 0, 1)) ** 2 if sa < 0.9 else 1.0
+            return math.pow(float(np.clip((sa - 0.5) / 0.4, 0, 1)), 2) if sa < 0.9 else 1.0
         tops = [cq["outer_y_end"] + (cq["outer_y_side"] - cq["outer_y_end"]) * side_of(x, z) for x, z in R]
         self.facade_tops = (R, tops)
         L = np.concatenate([[0.0], np.cumsum([math.dist(a, b) for a, b in zip(R[:-1], R[1:])])])
@@ -745,9 +746,9 @@ class Highmark(sm.SoFi):
             if in_portal(x, z) or corner_entry(x, z):
                 continue
             tan = np.array(R[j + 1]) - np.array(R[j])
-            tan /= max(1e-9, np.linalg.norm(tan))
+            tan /= max(1e-9, math.np_norm(tan))
             out_n = np.array([tan[1], -tan[0]])
-            if out_n @ np.array([x, z]) < 0:
+            if math.np_matmul(out_n, np.array([x, z])) < 0:
                 out_n = -out_n
             top = tops[j] * (1 - t_) + tops[j + 1] * t_
             y0, y1 = base_top + 3.0, top - 6.0
@@ -786,12 +787,12 @@ class Highmark(sm.SoFi):
             i = int(np.argmax([x * d[0] + z * d[1] for x, z in ring]))
             x, z = ring[i]
             t = np.array(ring[(i + 1) % n]) - np.array(ring[(i - 1) % n])
-            t /= np.linalg.norm(t)
+            t /= math.np_norm(t)
             nrm = np.array([t[1], -t[0]])
-            if nrm @ d < 0:
+            if math.np_matmul(nrm, d) < 0:
                 nrm = -nrm
             face = np.array([nrm[0], 0.0, nrm[1]])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             w, h = (46.0, 11.5) if abs(ang) == 90.0 else (40.0, 10.0)
             y0 = tops[i] - h - 5.0
             c = np.array([x, y0, z]) + face * 0.5
@@ -814,7 +815,7 @@ class Highmark(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(8.0), grow(22.0)]
@@ -904,10 +905,10 @@ def canopy_occlusion(P, model):
     sees less sky the deeper it sits behind the inner edge. 1 in the open, down to 0.55."""
     q = model.p["canopy"]
     edge = np.array([(x, z) for x, _y, z in model.canopy_edge])
-    r_edge = np.hypot(edge[:, 0], edge[:, 1])
-    a_edge = np.arctan2(edge[:, 1], edge[:, 0])
-    a = np.arctan2(P[:, 2], P[:, 0])
-    r = np.hypot(P[:, 0], P[:, 2])
+    r_edge = math.np_hypot(edge[:, 0], edge[:, 1])
+    a_edge = math.np_arctan2(edge[:, 1], edge[:, 0])
+    a = math.np_arctan2(P[:, 2], P[:, 0])
+    r = math.np_hypot(P[:, 0], P[:, 2])
     idx = np.argmin(np.abs(((a[:, None] - a_edge[None, :] + math.pi) % (2 * math.pi)) - math.pi), axis=1)
     beyond = r - r_edge[idx]
     y_edge = np.array([y for _x, y, _z in model.canopy_edge])[idx]
@@ -928,8 +929,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if occlusion is not None and not (mat.startswith("LIGHT_") and tod == "n"):
         f = f * occlusion

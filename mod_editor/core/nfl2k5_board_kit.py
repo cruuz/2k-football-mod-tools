@@ -55,7 +55,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from functools import lru_cache
 from pathlib import Path
@@ -134,19 +134,19 @@ def _ordered(path):
     each point's unit normal toward the field (in plan)."""
     P = np.array(path, float)
     c = P.mean(axis=0)
-    face = -c / max(1e-9, float(np.linalg.norm(c)))                 # toward the field (the origin)
+    face = -c / max(1e-9, float(math.np_norm(c)))                 # toward the field (the origin)
     f3 = np.array([face[0], 0.0, face[1]])
     right3 = np.cross(f3, (0.0, 1.0, 0.0))
-    right3 /= -np.linalg.norm(right3)                                 # a viewer facing the board has this on the right
+    right3 /= -math.np_norm(right3)                                 # a viewer facing the board has this on the right
     right = np.array([right3[0], right3[2]])
-    if float(np.dot(P[-1] - P[0], right)) < 0:
+    if float(math.np_dot(P[-1] - P[0], right)) < 0:
         P = P[::-1]
     N = []
     for i in range(len(P)):
         a, b = P[max(0, i - 1)], P[min(len(P) - 1, i + 1)]
-        t = (b - a) / max(1e-9, float(np.linalg.norm(b - a)))
+        t = (b - a) / max(1e-9, float(math.np_norm(b - a)))
         n = np.array([-t[1], t[0]])
-        if float(np.dot(n, face)) < 0:
+        if float(math.np_dot(n, face)) < 0:
             n = -n
         N.append(n)
     return P, np.array(N), face
@@ -158,7 +158,7 @@ def board_geometry(board):
     P, N, face = _ordered(board["path"])
     inset = float(board.get("inset", 0.3))
     Q = P + N * inset
-    seg = np.linalg.norm(np.diff(Q, axis=0), axis=1)
+    seg = math.np_norm(np.diff(Q, axis=0), axis=1)
     s = np.concatenate([[0.0], np.cumsum(seg)])
     width = float(board["width"])
     mid = s[-1] / 2.0
@@ -203,8 +203,8 @@ def _box_behind(m, material, loop, normal, back0, depth):
         a, b = L[i], L[(i + 1) % len(L)]
         a2, b2 = B[i], B[(i + 1) % len(L)]
         out = (a + b) / 2 - c
-        out = out - n3 * float(np.dot(out, n3))
-        w = float(np.linalg.norm(b - a))
+        out = out - n3 * float(math.np_dot(out, n3))
+        w = float(math.np_norm(b - a))
         m.quad(material, a, b, b2, a2, (0, 0), (w / 4.0, 0), (w / 4.0, depth / 4.0), (0, depth / 4.0),
                facing=lambda p_, o=out: o)
     # the back face: fan triangles over the back loop (the loops here are convex or star-shaped from the centre)
@@ -214,7 +214,7 @@ def _box_behind(m, material, loop, normal, back0, depth):
     for i in range(len(B)):
         a, b = ids[i], ids[(i + 1) % len(B)]
         pa, pb = np.array(m.P[a]), np.array(m.P[b])
-        up = float(np.dot(np.cross(pa - cb, pb - cb), -n3)) > 0
+        up = float(math.np_dot(np.cross(pa - cb, pb - cb), -n3)) > 0
         m.strip(material, [ic, a, b] if up else [ic, b, a])
 
 
@@ -227,7 +227,7 @@ def _outline_mesh(board, feed_colour, frame_colour):
     inset = float(board.get("inset", 0.3))
     n = N[0]
     left = P[0] + n * inset
-    right = (P[1] - P[0]) / float(np.linalg.norm(P[1] - P[0]))
+    right = (P[1] - P[0]) / float(math.np_norm(P[1] - P[0]))
     y0 = float(board["y"][0])
     O = np.array(board["outline"], float)
     W, H = float(np.ptp(O[:, 0])), float(np.ptp(O[:, 1]))
@@ -245,7 +245,7 @@ def _outline_mesh(board, feed_colour, frame_colour):
             ids.append(m.v((float(q[0]), y0 + h_, float(q[1])), uvf(s_, h_), tuple(f3)))
         for a, b, c in tris:
             pa, pb, pc = (np.array(m.P[ids[k]]) for k in (a, b, c))
-            ok = float(np.dot(np.cross(pb - pa, pc - pa), f3)) > 0
+            ok = float(math.np_dot(np.cross(pb - pa, pc - pa), f3)) > 0
             m.strip(mat, [ids[a], ids[b], ids[c]] if ok else [ids[a], ids[c], ids[b]])
     put(O, "jumbo_tron", 0.0, lambda s_, h_: (u0 + (u1 - u0) * (s_ - s0) / W, v1 - (v1 - v0) * (h_ - h0) / H))
     fr = board.get("frame")
@@ -297,14 +297,14 @@ def _board_mesh(board, feed_colour, frame_colour):
     fr = board.get("frame")
     if fr:
         b, d = float(fr.get("border", 0.4)), float(fr.get("depth", 0.12))
-        end = [pts[0] - (pts[1] - pts[0]) / max(1e-9, float(np.linalg.norm(pts[1] - pts[0]))) * b]
-        tail = [pts[-1] + (pts[-1] - pts[-2]) / max(1e-9, float(np.linalg.norm(pts[-1] - pts[-2]))) * b]
+        end = [pts[0] - (pts[1] - pts[0]) / max(1e-9, float(math.np_norm(pts[1] - pts[0]))) * b]
+        tail = [pts[-1] + (pts[-1] - pts[-2]) / max(1e-9, float(math.np_norm(pts[-1] - pts[-2]))) * b]
         F = np.array(end + list(pts) + tail)
         NF = np.array([nrm[0]] + list(nrm) + [nrm[-1]])
         F = F - NF * d
         ftop = [at(p, n, y1 + b) for p, n in zip(F, NF)]
         fbot = [at(p, n, y0 - b) for p, n in zip(F, NF)]
-        L = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(F, axis=0), axis=1))])
+        L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(F, axis=0), axis=1))])
         m.grid(fr["material"], [ftop, fbot], [[(t / 4.0, 0.0) for t in L], [(t / 4.0, 1.0) for t in L]], facing=face)
         body = board.get("structure")
         if body:
@@ -405,7 +405,7 @@ def _onto(sc, shape, materials, board, dy=0.0, toward_centre=0.0, min_abs_z=0.0,
         if abs(z) < min_abs_z or math.copysign(1.0, z) != sign:
             continue
         q = np.array([x - math.copysign(min(abs(x), toward_centre), x), z])
-        q = q - n * float(np.dot(q - base, n))                   # onto the face's plane (plan)
+        q = q - n * float(math.np_dot(q - base, n))                   # onto the face's plane (plan)
         P[i] = [float(q[0]) * 100.0, (y + dy) * 100.0, float(q[1]) * 100.0]
         moved += 1
     sb.set_positions(s, [tuple(p) for p in P])
@@ -492,7 +492,7 @@ def _ribbon_mesh(m, rib, colour, backing_colour):
     more than a ribbon's vertices)."""
     P, N, _face = _ordered(rib["path"])
     Q = P + N * float(rib.get("inset", 0.05))
-    s = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(Q, axis=0), axis=1))])
+    s = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(Q, axis=0), axis=1))])
     y0, y1 = (float(v) for v in rib["y"])
     v0, v1 = (float(v) for v in rib["row"])
     tile = float(rib.get("tile_m", 8.0))
@@ -504,10 +504,10 @@ def _ribbon_mesh(m, rib, colour, backing_colour):
     bk_ = rib.get("backing")
     if bk_:
         b, d = float(bk_.get("border", 0.12)), float(bk_.get("depth", 0.03))
-        ends = [Q[0] - (Q[1] - Q[0]) / max(1e-9, float(np.linalg.norm(Q[1] - Q[0]))) * b]
-        tail = [Q[-1] + (Q[-1] - Q[-2]) / max(1e-9, float(np.linalg.norm(Q[-1] - Q[-2]))) * b]
+        ends = [Q[0] - (Q[1] - Q[0]) / max(1e-9, float(math.np_norm(Q[1] - Q[0]))) * b]
+        tail = [Q[-1] + (Q[-1] - Q[-2]) / max(1e-9, float(math.np_norm(Q[-1] - Q[-2]))) * b]
         F = np.array(ends + list(Q) + tail) - np.array([N[0]] + list(N) + [N[-1]]) * d
-        L = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(F, axis=0), axis=1))])
+        L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(F, axis=0), axis=1))])
         m.grid(bk_["material"], [[(float(p[0]), y1 + b, float(p[1])) for p in F],
                                  [(float(p[0]), y0 - b, float(p[1])) for p in F]],
                [[(t / 4.0, 0.0) for t in L], [(t / 4.0, 1.0) for t in L]], facing=face)
@@ -523,7 +523,7 @@ def _panel_mesh(panel, colours_of):
     colours = {}
     for part in panel["parts"]:
         a, b, c, d = (np.array(p, float) for p in part["quad"])
-        w, h = float(np.linalg.norm(b - a)), float(np.linalg.norm(d - a))
+        w, h = float(math.np_norm(b - a)), float(math.np_norm(d - a))
         k = float(part.get("uv_m", 4.0))
         uv = [(0.0, h / k), (w / k, h / k), (w / k, 0.0), (0.0, 0.0)]
         toward = np.array(part["toward"], float)
@@ -604,7 +604,7 @@ def renovate(sc, venue):
         cen = Pm[feed_ids].mean(axis=0)
         centres[board["name"]] = tuple(float(v) for v in cen)
         Q = Pm[feed_ids]
-        width = float(np.hypot(*np.ptp(Q[:, [0, 2]], axis=0))) if "outline" in board else float(board["width"])
+        width = float(math.np_hypot(*np.ptp(Q[:, [0, 2]], axis=0))) if "outline" in board else float(board["width"])
         height = float(np.ptp(Q[:, 1])) if "outline" in board else board_height(board)
         info["boards"].append(dict(name=board["name"], width=round(width, 2), height=round(height, 2),
                                    crop=[round(v, 4) for v in feed_crop(width / height)]))
@@ -723,11 +723,11 @@ def covered_venue_art(retail_sc, kit_sc, venue, *, reach=1.5, least=3):
     for k, (_s, _m, t) in enumerate(art_tris):
         c = t.mean(axis=0)
         n = np.cross(t[1] - t[0], t[2] - t[0])
-        ln = float(np.linalg.norm(n))
+        ln = float(math.np_norm(n))
         if ln < 1e-9:
             continue
         n = n / ln
-        if float(np.dot(eye - c, n)) < 0:                   # the art's face, turned toward the field
+        if float(math.np_dot(eye - c, n)) < 0:                   # the art's face, turned toward the field
             n = -n
         for q in [c] + [c + (v - c) * 0.6 for v in t]:
             samples.append(q)

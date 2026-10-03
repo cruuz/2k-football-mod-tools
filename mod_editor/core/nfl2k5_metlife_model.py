@@ -29,7 +29,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -97,7 +97,7 @@ class Mesh:
         du = np.gradient(P, axis=1)
         dv = np.gradient(P, axis=0)
         nrm = np.cross(dv, du)
-        ln = np.linalg.norm(nrm, axis=2, keepdims=True)
+        ln = math.np_norm(nrm, axis=2, keepdims=True)
         nrm = np.where(ln > 1e-9, nrm / np.maximum(ln, 1e-9), np.array([0, 1.0, 0]))
         flip = False
         if facing is not None:
@@ -106,8 +106,8 @@ class Mesh:
                 for c in range(Cc):
                     a, b, d = P[r, c], P[r + 1, c], P[r, c + 1]
                     n = np.cross(b - a, d - a)
-                    if np.linalg.norm(n) > 1e-6:
-                        votes += np.sign(np.dot(n, facing((a + b + d) / 3)))
+                    if math.np_norm(n) > 1e-6:
+                        votes += np.sign(math.np_dot(n, facing((a + b + d) / 3)))
             flip = votes < 0
         sign = -1.0 if flip else 1.0
         idx = [[self.v(P[r, c], uvs[r][c], sign * nrm[r, c]) for c in range(Cc + 1)] for r in range(R + 1)]
@@ -138,7 +138,7 @@ class Mesh:
             faces.append(((-1, -1, -1), (1, -1, -1), (1, -1, 1), (-1, -1, 1)))
         for f in faces:
             a, b, cc, d = (corners[k] for k in f)
-            w, h = np.linalg.norm(b - a), np.linalg.norm(d - a)
+            w, h = math.np_norm(b - a), math.np_norm(d - a)
             self.quad(material, a, b, cc, d, (0, h * uvscale), (w * uvscale, h * uvscale), (w * uvscale, 0), (0, 0),
                       facing=lambda p, c=c: p - c)
 
@@ -187,7 +187,7 @@ def plan_loop(W, L, R, step=6.0, corner_steps=10):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
             s += math.dist(prev, (x, z))
@@ -198,7 +198,7 @@ def plan_loop(W, L, R, step=6.0, corner_steps=10):
 
 def toward_field(p):
     v = np.array([-p[0], 0.0, -p[2]])
-    n = np.linalg.norm(v)
+    n = math.np_norm(v)
     return v / n if n else v
 
 
@@ -482,7 +482,7 @@ class MetLife:
         bot = np.array([self.at(loop[i], secs[i][key][0], secs[i][key][1]) for i in run])
         top = np.array([self.at(loop[i], secs[i][key][0], secs[i][key][2]) for i in run])
         mid = (bot + top) / 2
-        s = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(mid, axis=0), axis=1))])
+        s = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(mid, axis=0), axis=1))])
         return bot, top, s
 
     def _sector_mesh(self, index, cuts):
@@ -507,7 +507,7 @@ class MetLife:
                 f = (x - s[k]) / max(s[k + 1] - s[k], 1e-9)
                 pb = bot[k] * (1 - f) + bot[k + 1] * f
                 pt = top[k] * (1 - f) + top[k + 1] * f
-                mid, half = (pb + pt) / 2, (pt - pb) / np.linalg.norm(pt - pb) * height / 2
+                mid, half = (pb + pt) / 2, (pt - pb) / math.np_norm(pt - pb) * height / 2
                 off = toward_field(mid) * 0.03
                 rows_b.append(mid - half + off)
                 rows_t.append(mid + half + off)
@@ -633,7 +633,7 @@ class MetLife:
                 (cx, cz), _k = at(s0 + w / 2)
                 (ax, az), _k = at(s0 + w / 2 - 0.5)
                 (bx, bz), _k = at(s0 + w / 2 + 0.5)
-                t = np.array([bx - ax, 0.0, bz - az]); t /= np.linalg.norm(t)
+                t = np.array([bx - ax, 0.0, bz - az]); t /= math.np_norm(t)
                 c = np.array([cx, 0.0, cz]) + toward_field(np.array([cx, 0.0, cz])) * 0.03
                 bw, bh = decals["size_m"]
                 bx0, by0, bx1, by1 = decals["cells"][number]
@@ -777,7 +777,7 @@ class MetLife:
         L = self.p["letters"]
         G = self.p["logos"]
         # ring letters: the rim point on the east sideline centre (normal -x)
-        east = min(range(len(loop)), key=lambda i: (loop[i].nx + 1) ** 2 + loop[i].z ** 2)
+        east = min(range(len(loop)), key=lambda i: math.pow(loop[i].nx + 1, 2) + math.pow(loop[i].z, 2))
         lp, sec = loop[east], secs[east]
         ring = self.p["ring"]
         d_in = sec["rim"][0] + 1.0 - ring["depth"] * 0.55
@@ -785,7 +785,7 @@ class MetLife:
         self._sign_quad(m, "ml_letters", lp, d_in, y0, L["ring_width"], L["ring_height"], toward=True)
         # the MetLife mark between the boards at each end
         for zs in (1, -1):
-            i = min(range(len(loop)), key=lambda i: (loop[i].nz - zs) ** 2 + loop[i].x ** 2)
+            i = min(range(len(loop)), key=lambda i: math.pow(loop[i].nz - zs, 2) + math.pow(loop[i].x, 2))
             lp, sec = loop[i], secs[i]
             d = self.p["upper"]["front_depth"] - 1.1
             self._sign_quad(m, "ml_logo", lp, d, G["end_y"] - G["end_height"], G["end_width"], G["end_height"],
@@ -825,12 +825,12 @@ class MetLife:
             pts = np.array([[c, a] for a, c in poly], float)          # (x, z)
             c = pts.mean(0)
             u, sv, vt = np.linalg.svd(pts - c)
-            axis = vt[0] / np.linalg.norm(vt[0])
+            axis = vt[0] / math.np_norm(vt[0])
             perp = np.array([-axis[1], axis[0]])
-            if np.dot(perp, c) < 0:
+            if math.np_dot(perp, c) < 0:
                 perp = -perp                                            # the side away from the stadium
-            along = (pts - c) @ axis
-            across = (pts - c) @ perp
+            along = math.np_matmul(pts - c, axis)
+            across = math.np_matmul(pts - c, perp)
             hl, hw = (along.max() - along.min()) / 2, max((across.max() - across.min()) / 2, 3.0)
             mid = c + axis * (along.max() + along.min()) / 2 + perp * (across.max() + across.min()) / 2
             h = 6.0
@@ -883,13 +883,13 @@ class MetLife:
         ring = self.facade_ring
         a = math.atan2(pz, px)
         pts = np.array([p for p, u in ring])
-        ang = np.arctan2(pts[:, 1], pts[:, 0])
+        ang = math.np_arctan2(pts[:, 1], pts[:, 0])
         i = int(np.argmin(np.abs(((ang - a + math.pi) % (2 * math.pi)) - math.pi)))
         j = (i + 1) % len(pts)
         t = pts[j] - pts[i]
         n = np.array([t[1], -t[0]])
-        n = n / np.linalg.norm(n)
-        if np.dot(n, pts[i]) < 0:
+        n = n / math.np_norm(n)
+        if math.np_dot(n, pts[i]) < 0:
             n = -n
         return pts[i], n
 
@@ -917,7 +917,8 @@ class MetLife:
             for xs in (1, -1):
                 cx = xs * q["centre_x"]
                 # the board face follows the plan at its centre: find the loop normal there
-                best = min(loop, key=lambda lp: (lp.x - cx) ** 2 + ((lp.z - zs * L) * 0.3) ** 2 + (0 if lp.nz * zs > 0 else 1e9))
+                best = min(loop, key=lambda lp: math.pow(lp.x - cx, 2) + math.pow((lp.z - zs * L) * 0.3, 2)
+                           + (0 if lp.nz * zs > 0 else 1e9))
                 nx, nz = best.nx, best.nz
                 cxp, czp = best.x + nx * wall_d, best.z + nz * wall_d
                 t = np.array([-nz, 0.0, nx])            # along the face, left to right as seen from the field
@@ -933,7 +934,7 @@ class MetLife:
                     p0, p1, v0, v1 = left, left + t * self.PANEL_W, left + t * self.PANEL_W, right
                 else:
                     v0, v1, p0, p1 = left, right - t * self.PANEL_W, right - t * self.PANEL_W, right
-                vw = float(np.linalg.norm(v1 - v0))
+                vw = float(math.np_norm(v1 - v0))
                 rows = 640.0 * q["height"] / vw                 # feed rows that fit the window's aspect
                 vt = (448.0 - rows) / 2.0 / 512.0
                 vb = vt + rows / 512.0
@@ -965,7 +966,7 @@ class MetLife:
         rim = [(np.array(self.at(lp, sec["rim"][0] + 1.0, sec["rim"][2])), lp) for lp, sec in zip(loop, secs)]
         S = loop[-1].s
         pts = np.array([r[0] for r in rim])
-        seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+        seg = math.np_norm(np.diff(pts, axis=0), axis=1)
         cum = np.concatenate([[0], np.cumsum(seg)])
         total = cum[-1]
         def sample(u):
@@ -985,8 +986,8 @@ class MetLife:
             p1, t1 = sample(u1)
             pm, tm = sample((u0 + u1) / 2)
             inward = np.cross(np.array([0, 1.0, 0]), tm)    # left of the travel direction (counter-clockwise loop) = toward the field
-            inward = inward / np.linalg.norm(inward)
-            if np.dot(inward, -np.array([pm[0], 0, pm[2]])) < 0:
+            inward = inward / math.np_norm(inward)
+            if math.np_dot(inward, -np.array([pm[0], 0, pm[2]])) < 0:
                 inward = -inward
             base_y = pm[1]
             post = q["post"]
@@ -1001,7 +1002,7 @@ class MetLife:
                 c = pp + np.array([0, post / 2, 0])
                 m.box("cement01", c, (tt, (0, 1, 0), np.cross(tt, (0, 1, 0))), (0.35, post / 2, 0.35))
             beam_c = (i0 + i1) / 2 - np.array([0, 0.35, 0])
-            m.box("cement01", beam_c, (tm, (0, 1, 0), inward), (np.linalg.norm(i1 - i0) / 2, 0.35, 0.3))
+            m.box("cement01", beam_c, (tm, (0, 1, 0), inward), (math.np_norm(i1 - i0) / 2, 0.35, 0.3))
             # LED strip along the inner edge (lit in team colour at night)
             m.quad("LIGHT_ml_ringled", i0 - np.array([0, 0.7, 0]) + inward * 0.32, i1 - np.array([0, 0.7, 0]) + inward * 0.32,
                    i1 + inward * 0.32, i0 + inward * 0.32, (0, 1), (4, 1), (4, 0), (0, 0), facing=lambda p, w=inward: w)
@@ -1015,13 +1016,13 @@ class MetLife:
         if np.allclose(pts[0], pts[-1]):
             pts = pts[:-1]
         # order counter-clockwise by angle, starting at the +x axis like the plan loop
-        ang = np.arctan2(pts[:, 1], pts[:, 0])
+        ang = math.np_arctan2(pts[:, 1], pts[:, 0])
         start = int(np.argmin(np.abs(ang)))
         pts = np.roll(pts, -start, axis=0)
         if (math.atan2(pts[1][1], pts[1][0]) - math.atan2(pts[0][1], pts[0][0])) % (2 * math.pi) > math.pi:
             pts = np.vstack([pts[:1], pts[1:][::-1]])
         closed = np.vstack([pts, pts[:1]])
-        seg = np.linalg.norm(np.diff(closed, axis=0), axis=1)
+        seg = math.np_norm(np.diff(closed, axis=0), axis=1)
         cum = np.concatenate([[0], np.cumsum(seg)])
         total = cum[-1]
         N = int(total / step)
@@ -1038,7 +1039,7 @@ class MetLife:
         ring = self.facade_outline()
         self.facade_ring = ring
         rim = np.array([self.at(lp, sec["rim"][3], sec["rim"][2]) for lp, sec in zip(loop, secs)])
-        rim_ang = np.arctan2(rim[:, 2], rim[:, 0])
+        rim_ang = math.np_arctan2(rim[:, 2], rim[:, 0])
         out = lambda p: -toward_field(p)
         rows = [(0.0, "ml_limestone", q["base"], 1 / 6.0, 1 / 6.0),
                 (q["base"], "ml_louvre", q["louvre_top"], 1 / 8.0, 1 / 8.0),
@@ -1117,10 +1118,10 @@ def overhang_occlusion(P, params=PARAMS):
     x, y, z = P[:, 0], P[:, 1], P[:, 2]
     qx = np.abs(x) - (q["W"] - q["R"])
     qz = np.abs(z) - (q["L"] - q["R"])
-    d = np.hypot(np.maximum(qx, 0), np.maximum(qz, 0)) + np.minimum(np.maximum(qx, qz), 0) - q["R"]
+    d = math.np_hypot(np.maximum(qx, 0), np.maximum(qz, 0)) + np.minimum(np.maximum(qx, qz), 0) - q["R"]
     df, fy = u["front_depth"], u["front_y"]
     under = (d > df - 0.5) & (y < fy - 0.05)
-    theta = np.degrees(np.arctan2(np.maximum(fy - y, 0.0), np.maximum(d - df, 1e-3)))
+    theta = np.degrees(math.np_arctan2(np.maximum(fy - y, 0.0), np.maximum(d - df, 1e-3)))
     vis = np.where(under, 0.45 + 0.55 * np.clip(theta / 90.0, 0.0, 1.0), 1.0)
     return vis
 
@@ -1132,8 +1133,8 @@ def light(mat, P, N, tod, occlusion=None):
         f = np.full(len(P), 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.82 + 0.22 * nd) if tod == 'd' else (0.70 + 0.45 * nd)
     if occlusion is not None and not (mat.startswith('LIGHT_') and tod == 'n'):
         f = f * occlusion
@@ -1701,7 +1702,7 @@ def camera_matrix(x, y, z, yaw_deg, pitch_deg):
 def look_angles(eye, target):
     """(yaw, pitch) in degrees for a camera at ``eye`` looking at ``target`` (forward = -back)."""
     f = np.asarray(target, float) - np.asarray(eye, float)
-    f /= np.linalg.norm(f)
+    f /= math.np_norm(f)
     return math.degrees(math.atan2(-f[0], -f[2])), math.degrees(math.asin(f[1]))
 
 

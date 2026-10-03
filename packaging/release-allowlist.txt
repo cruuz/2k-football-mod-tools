@@ -41,6 +41,7 @@ mod_editor/core/camera_inspection.py
 mod_editor/core/capabilities.py
 mod_editor/core/controller.py
 mod_editor/core/errors.py
+mod_editor/core/exact_math.py
 mod_editor/core/gameplay_inspection.py
 mod_editor/core/image_fit.py
 mod_editor/core/json_stream.py
@@ -1123,6 +1124,8 @@ data/nfl2k5_sofi_model/art/sf_sky_o.png
 data/nfl2k5_sofi_model/art/sf_water.png
 data/nfl2k5_sofi_model/art/sf_white.png
 tests/mod_editor/test_nfl2k5_sofi_model.py
+tests/mod_editor/test_exact_math.py
+tests/mod_editor/exact_math_mpfr_vectors.json
 tests/mod_editor/test_nfl2k5_sofi_venue.py
 # Beta 76 tf: Modern playing surfaces (every home field's 2026 surface)
 mod_editor/core/nfl2k5_modern_surfaces.py

@@ -51,11 +51,18 @@ from .nfl2k5_cave_oracle import XbeImage
 ROOT = Path(__file__).resolve().parents[2]
 MOMENTS_JSON = ROOT / "data/nfl2k5_espn25_more_moments.json"
 TEAMS_DIR = ROOT / "data/nfl2k5_espn25_more_teams"
+APPEARANCE_JSON = ROOT / "data/nfl2k5_espn25_more_moments_appearance.json"   # beta 76.3; beside the generated data
 
 OWNER = "nfl2k5_espn25_more_moments"
 CODE_SIZE = 2560          # hooks, the moment team table (50 entries), the venue table (25) and the texts
 DATA_SIZE = 16            # the session dword for rows 33 to 50, then spare zero bytes
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
+# beta 76.3 (25th Anniversary QC, Noah 10/2: "Player faces on stats after plays are totally wrong and random",
+# "you made Chris hogan black", "not seeing star player icons"). A team file's photo id keys the post-play portrait
+# and the live head; a template slot's own id showed another real person. A player now gets his own art or retail's
+# historic no-photo range (no portrait, no live face: the generic head for his skin tone).
+NOPHOTO_BASE = 7100
+STAR_MIN_OVERALL = 90          # the main roster's star rule (nfl2k5_player_tags.STAR_MIN_OVERALL)
 UI_LABEL = "25th Anniversary: 25 more moments"
 BUILD_CAPTION = "25 more ESPN 25th Anniversary moments with their own team-seasons"
 HELP_TEXT = (
@@ -77,6 +84,7 @@ FIRST_ID = 176                       # new identity numbers: retail uses up to 1
 FILE_NUMBER = 9                      # the file-name digit; retail historic files use 0 to 5
 MAX_SEASON_AGE_SHIFT = 99
 TABLE_OFFSET = 0x100                 # the moment team table inside the code allocation
+STAR_OFFSET = TABLE_OFFSET - 28   # the C1030 star copy, just before the table (beta 76.3)
 VENUE_OFFSET = TABLE_OFFSET + 16 * MAX_TEAMS   # one text pointer per new row (0: the stand-in's own name)
 NAMES_OFFSET = VENUE_OFFSET + 4 * MAX_NEW      # the franchise names, then the venue texts (UTF-16)
 MAX_VENUE = 40                       # characters of a venue text
@@ -92,6 +100,11 @@ HOOKS = (
     ("venue", 0x2C5A71, "e8ea19dbff", "venue_name", "call"),
 )
 COUNT_VA, COUNT_RETAIL = 0x20C340, "b819000000c3"
+# beta 76.3: C1030 (Load Historic Team's per-player import) copies a team-file record into a spare roster record field
+# by field and never copies +0x52/+0x53, so a star tag (+0x53 bit 0) in a team file never reached the record the star
+# renderer reads (entity+0x3C). At the end of each player's copy (0xC1D6A: EBP = file record, EDI = new record; flags,
+# EAX and ECX are reloaded there) the owned code copies that one bit, replays the two retail instructions and resumes.
+STAR_VA, STAR_RETAIL, STAR_RESUME = 0xC1D6A, "8b4424100fb68e1c010000", 0xC1D75
 TEST_VA = 0x20C390
 TEST_RETAIL = "b801000000d3e02305cc18bf00f7d81bc0f7d8c3909090909090909090909090"
 ANNOUNCER_VA = 0x20C4A1
@@ -111,6 +124,7 @@ GUARDS = (
     (0x196DC0, 0x18, "the profile's saved marks"),
     (0x30CF0, 0x40, "text equality used by the search"),
     (0x2C5A70, 0x24, "the details screen's venue text callback"),
+    (0xC1D40, 0x40, "C1030's per-player tail (the star copy site)"),
 )
 GUARD_SHA256 = {
     0x20bd80: "d81fd0421d9f73396e3f60857037281146cb77f326876388009bec3d983322b9",
@@ -126,6 +140,7 @@ GUARD_SHA256 = {
     0x196dc0: "87ca59fb8c7394ee8e7c9cfeba1e33964da0d8b3424e22f0e460513ca92761e4",
     0x30cf0: "50a55aabd822ec7502c7c9e027e7645f2ee867a582be30adfaebec51205fff5d",
     0x2c5a70: "54b9c1e48955285179d17ea2f1887d885bf1d72464e4a702cd646c21a19f888d",
+    0xc1d40: "ab0bcc14b30f23123d9093d223ae54d955d66361b92352db108a95376dd20cac",
 }
 
 WEATHER = {"clear": 0, "light rain": 1, "heavy rain": 2, "flurries": 3, "heavy snow": 4}
@@ -223,11 +238,12 @@ def _ascii(text, label, low, high):
 class Data:
     """The moments and their team-seasons, validated against the contract (docs/..._contract.md)."""
 
-    def __init__(self, moments, teams, rosters):
+    def __init__(self, moments, teams, rosters, appearance=None):
         self.moments, self.teams, self.rosters = moments, teams, rosters
+        self.appearance = appearance
 
     @classmethod
-    def load(cls, moments_path=MOMENTS_JSON, teams_dir=TEAMS_DIR):
+    def load(cls, moments_path=MOMENTS_JSON, teams_dir=TEAMS_DIR, appearance_path=None):
         for path in (Path(moments_path), Path(teams_dir) / "teams.json"):
             require(path.is_file(), f"25 more moments: the moments data is missing ({path.name})")
         doc = _read_json(moments_path)
@@ -254,7 +270,9 @@ class Data:
             raw = path.read_bytes()
             require(len(raw) <= 256 * 1024, f"{path}: larger than 256 KiB")
             rosters[key] = list(csv.DictReader(io.StringIO(raw.decode("utf-8-sig"))))
-        data = cls(moments, teams, rosters)
+        if appearance_path is None and Path(teams_dir) == TEAMS_DIR:
+            appearance_path = APPEARANCE_JSON          # the shipped looks belong to the shipped rosters only
+        data = cls(moments, teams, rosters, _load_appearance(appearance_path, rosters) if appearance_path else None)
         data.validate()
         return data
 
@@ -467,6 +485,36 @@ def _append_text(body, text):
     return at
 
 
+def _load_appearance(path, rosters):
+    """{team_key: [look, ...]} from the appearance file, row for row with each roster CSV; None when it is absent.
+    A look: tone 0 (lightest) .. 5 (darkest) or null (keep the template record), dreads, and for a player found in the
+    retail 2004 roster (same name and birth date) his own record's photo id, whole skin value, face and dreads."""
+    if not Path(path).is_file():
+        return None
+    doc = _read_json(path)
+    require(isinstance(doc, dict) and doc.get("schema") == 1 and isinstance(doc.get("teams"), dict),
+            "appearance.json must be {schema: 1, teams: {...}}")
+    out = {}
+    for key, rows in rosters.items():
+        looks = doc["teams"].get(key)
+        if looks is None:
+            continue
+        require(isinstance(looks, list) and len(looks) == len(rows), f"{key}: appearance needs one row per player")
+        for i, (row, look) in enumerate(zip(rows, looks)):
+            require(isinstance(look, dict) and look.get("name") == f"{row['first']} {row['last']}",
+                    f"{key} row {i}: appearance row names {look.get('name')!r}, the roster {row['first']} {row['last']}")
+            tone = look.get("tone")
+            require(tone is None or (type(tone) is int and 0 <= tone <= 5), f"{key} row {i}: tone is 0 to 5 or null")
+            require(look.get("dreads", 0) in (0, 1) and type(look.get("dreads", 0)) is int, f"{key} row {i}: dreads 0 or 1")
+            own = look.get("retail")
+            require(own is None or (isinstance(own, dict) and set(own) == {"photo", "skin", "face", "dreads"}
+                                    and all(type(own[k]) is int for k in own) and 0 <= own["photo"] <= 0xFFFF
+                                    and 0 <= own["skin"] <= 31 and 0 <= own["face"] <= 15 and own["dreads"] in (0, 1)),
+                    f"{key} row {i}: retail appearance")
+        out[key] = looks
+    return out
+
+
 def _set_rel(body, field, target):
     struct.pack_into("<i", body, field, target - field + 1)
 
@@ -484,8 +532,10 @@ def main_people(main_rost):
     return out
 
 
-def compile_team(template_raw, team, rows, colleges, identity, people=None):
-    """A one-team historic roster file for one team-season, from a retail historic file of the same franchise."""
+def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset()):
+    """A one-team historic roster file for one team-season, from a retail historic file of the same franchise.
+    appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster uses."""
+    from . import nfl2k5_my_career_prospects as prospects
     require(template_raw[:4] == b"ROST" and struct.unpack_from("<I", template_raw, 4)[0] == len(template_raw) - 32,
             "template is not a one-team ROST resource")
     body = bytearray(template_raw[32:])
@@ -504,7 +554,7 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None):
     season = team["season"]
     names = {}
     # Records first (fields inside the 84 bytes), names after (appended strings).
-    for slot, row in zip(players, rows):
+    for index, (slot, row) in enumerate(zip(players, rows)):
         pos = row["position"]
         pool = donors.get(pos) or players
         donor = pool[min(int(row["depth"]) - 1, len(pool) - 1)]
@@ -530,11 +580,25 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None):
         v["hand"] = 0 if row["hand"] == "Left" else 1
         for rating in rr.RATING_BYTE_ORDER:
             v[rating] = int(row[rating])
-        v["pbp_id"], v["photo_id"] = 9000 + int(row["jersey"]), own["photo_id"]
-        if people:
-            hit = people.get((row["first"].casefold(), row["last"].casefold(), born.year % 100))
-            if hit:
-                v["pbp_id"], v["photo_id"] = hit
+        # His own art or none: his current main-roster record (the same person), else his retail 2004 photo id while
+        # no current record uses it (its portrait and face are still his), else the no-photo range.
+        look = appearance[index] if appearance else {}
+        v["pbp_id"], v["photo_id"] = 9000 + int(row["jersey"]), NOPHOTO_BASE + index
+        hit = people.get((row["first"].casefold(), row["last"].casefold(), born.year % 100)) if people else None
+        if hit:
+            v["pbp_id"], v["photo_id"] = hit
+        elif look.get("retail") and look["retail"]["photo"] not in main_photos:
+            v["photo_id"] = look["retail"]["photo"]
+        # The donor's skin, face and dreads belonged to someone else. The tone (skin bits 0-2) comes from the
+        # appearance data; a player with a retail 2004 record also takes its skin group, face and dreads.
+        if look.get("tone") is not None:
+            if look.get("retail"):
+                record.skin = (look["retail"]["skin"] & ~7) | look["tone"]
+                v["face"], v["dreads"] = look["retail"]["face"], look["retail"]["dreads"]
+            else:
+                record.skin = (record.skin & ~7) | look["tone"]
+                v["dreads"] = look.get("dreads", 0)
+        v["star_tag"] = int(prospects.native_overall(record) >= STAR_MIN_OVERALL)
         college = row.get("college", "")
         if college:
             require(colleges.count(college) == 1,
@@ -730,8 +794,8 @@ def code_for(code_va, data_va, entries, venue_texts=()):
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", result, offset, target & 0xFFFFFFFF)
-    require(len(result) <= TABLE_OFFSET, "hook code exceeds its space before the table")
-    result = result.ljust(TABLE_OFFSET, b"\xcc")
+    require(len(result) <= STAR_OFFSET, "hook code exceeds its space before the star copy")
+    result = result.ljust(STAR_OFFSET, b"\xcc") + star_code(code_va + STAR_OFFSET)
     names, cursor = {}, NAMES_OFFSET
     blob = bytearray()
     table = bytearray()
@@ -760,6 +824,14 @@ def code_for(code_va, data_va, entries, venue_texts=()):
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
 
+def star_code(va):
+    """28 bytes: dest[0x53] ^= (dest[0x53] ^ src[0x53]) & 1; mov eax,[esp+0x10]; movzx ecx,byte [esi+0x11c]; jmp back."""
+    code = bytes.fromhex("8a4f53" "324d53" "80e101" "304f53") + bytes.fromhex(STAR_RETAIL)
+    code += b"\xe9" + struct.pack("<i", STAR_RESUME - (va + len(code) + 5))
+    require(len(code) == TABLE_OFFSET - STAR_OFFSET, "star copy size drift")
+    return code
+
+
 def test_code(data_va):
     """20C390: (mask >> index) & 1, the saved dword for rows 1 to 32, the session dword for 33 to 50."""
     code = bytes.fromhex("83f920" "7307" "a1cc18bf00" "eb05") + b"\xa1" + struct.pack("<I", data_va) + \
@@ -783,6 +855,8 @@ def sites(code_va, data_va, total):
         after = (b"\xe9" if kind == "jmp" else b"\xe8") + struct.pack("<i", target - va - 5)
         out.append((label, va, before, after.ljust(len(before), b"\xcc")))
     out.append(("count", COUNT_VA, bytes.fromhex(COUNT_RETAIL), bytes((0xB8, total, 0, 0, 0, 0xC3))))
+    star = b"\xe9" + struct.pack("<i", code_va + STAR_OFFSET - STAR_VA - 5)
+    out.append(("star_copy", STAR_VA, bytes.fromhex(STAR_RETAIL), star.ljust(len(STAR_RETAIL) // 2, b"\xcc")))
     out.append(("mark_test", TEST_VA, bytes.fromhex(TEST_RETAIL), test_code(data_va)))
     out.append(("announcer", ANNOUNCER_VA, bytes.fromhex(ANNOUNCER_RETAIL), announcer_guard()))
     return out
@@ -821,15 +895,24 @@ def _recognize(payload, data):
     owned = allocations(payload) if any(a["owner"] == OWNER for a in layout["allocations"]) else None
     edits = sites(owned[0]["va"], owned[1]["va"], total) if owned else sites(0, 0, total)
     states = set()
-    for _, va, before, after in edits:
-        actual = image.read(va, len(before))
-        states.add("retail" if actual == before else "applied" if owned and actual == after else "foreign")
-    if owned:
+    expected = earlier = None
+    if owned and data is not None:
         code, dat = owned
         body = image.read(code["va"], CODE_SIZE)
+        expected = code_for(code["va"], dat["va"], entries, venues(data))
+        # beta 76.0-76.2 installed the same code without the star copy (int3 there) and left the C1030 site retail
+        earlier = expected[:STAR_OFFSET] + b"\xcc" * (TABLE_OFFSET - STAR_OFFSET) + expected[TABLE_OFFSET:]
+    for label, va, before, after in edits:
+        actual = image.read(va, len(before))
+        if label == "star_copy" and earlier is not None and body == earlier:
+            # Earlier code has int3 at the star target, so only its retail hook
+            # is valid. A new JMP paired with that body would jump into int3.
+            states.add("applied" if actual == before else "foreign")
+            continue
+        states.add("retail" if actual == before else "applied" if owned and actual == after else "foreign")
+    if owned:
         states.add("retail" if body == b"\xcc" * CODE_SIZE else
-                   "applied" if data is not None and body == code_for(code["va"], dat["va"], entries, venues(data))
-                   else "foreign")
+                   "applied" if expected is not None and body in (expected, earlier) else "foreign")
     require(states in ({"retail"}, {"applied"}), "foreign/mixed 25 more moments hooks or owned code")
     for va, size, what in GUARDS:
         pin = GUARD_SHA256.get(va)
@@ -937,12 +1020,16 @@ def compile_files(main, templates, data, *, one_pool=False):
     """{file name: bytes} for every team-season, in table order. The last one ends the archive, which must end on
     a sector, so its ROST body carries the zero padding: every directory size stays its file's own wrapper size, as
     it is for all 75 retail historic files."""
-    colleges = rr.RosterDocument(main[32:]).colleges
+    main_doc = rr.RosterDocument(main[32:])
+    colleges = main_doc.colleges
+    main_photos = frozenset(p.record.values["photo_id"] for p in main_doc.players)
     people = main_people(main)
+    looks = getattr(data, "appearance", None) or {}
     out = {}
     entries = table_entries(data)
     for n, (key, filename, _entry, _selector, identity) in enumerate(entries):
-        raw = compile_team(templates[key], data.teams[key], data.rosters[key], colleges, identity, people)
+        raw = compile_team(templates[key], data.teams[key], data.rosters[key], colleges, identity, people,
+                           appearance=looks.get(key), main_photos=main_photos)
         if one_pool:
             raw = _one_pool(raw)
         if n == len(entries) - 1:

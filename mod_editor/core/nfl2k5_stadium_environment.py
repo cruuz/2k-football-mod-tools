@@ -28,7 +28,7 @@ caller's: STYLE caps each venue's counts, and the stadium's own tests hold the b
 from __future__ import annotations
 
 import json
-import math
+from . import exact_math as math
 from functools import lru_cache
 from pathlib import Path
 
@@ -204,7 +204,7 @@ def shot_eyes(shots, seconds=8.0, step=1.0):
 
 def _ring_area(Q):
     A = np.asarray(Q, float)
-    return 0.5 * float(np.dot(A[:, 0], np.roll(A[:, 1], 1)) - np.dot(A[:, 1], np.roll(A[:, 0], 1)))
+    return 0.5 * float(math.np_dot(A[:, 0], np.roll(A[:, 1], 1)) - math.np_dot(A[:, 1], np.roll(A[:, 0], 1)))
 
 
 def site_of(venue):
@@ -369,7 +369,7 @@ def light(mat, P, N, tod, weather, venue):
         fkey = texture_name(materials(venue)["env_far"][0], tod)
         fmean = np.maximum(_tex_mean(fkey, weather), 1.0)
         c0 = fmean * np.clip(haze * 255.0 / fmean, 0, 255) / 255.0
-        r = np.hypot(P[:, 0], P[:, 2])
+        r = math.np_hypot(P[:, 0], P[:, 2])
         k = _smooth((r - HAZE_END) / (BAND_RADIUS - HAZE_END))[:, None]
         out[:, :3] = np.clip(c0[None, :] * (1 - k) + haze[None, :] * k, 0, 255)
         return out
@@ -378,8 +378,8 @@ def light(mat, P, N, tod, weather, venue):
     if tod == "n":
         f = np.ones(n)
     else:
-        s = np.array(SUN[tod]); s /= np.linalg.norm(s)
-        nd = np.clip(N @ s, 0, 1)
+        s = np.array(SUN[tod]); s /= math.np_norm(s)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.78 + 0.24 * nd) if tod == "d" else (0.66 + 0.42 * nd)
     rgb = base * f[:, None] * np.array(TINT[tod])[None, :]
     if mat in WALL_TINT and tod != "n":
@@ -388,7 +388,7 @@ def light(mat, P, N, tod, weather, venue):
         rgb = rgb * np.array(FLAT[mat])[None, :] / 255.0
         if weather == "s" and mat.startswith("env_roof"):
             rgb = rgb * 0.3 + base * f[:, None] * 0.7 * np.array([0.93, 0.94, 0.97])[None, :]
-    r = np.hypot(P[:, 0], P[:, 2])
+    r = math.np_hypot(P[:, 0], P[:, 2])
     if tod == "n" and mat in ("env_lot", "env_road", "env_grass", "env_tree", "env_roof", "env_roof_b", "env_plaza",
                               "env_trunk"):
         # the lamps over the lots and streets round the stadium (warm, fading by 450 m)
@@ -485,12 +485,12 @@ def _min_rect(Q):
     best = None
     for i in range(len(hull)):
         e = hull[(i + 1) % len(hull)] - hull[i]
-        L = float(np.hypot(*e))
+        L = float(math.np_hypot(*e))
         if L < 1e-6:
             continue
         u = e / L
         v = np.array([-u[1], u[0]])
-        pu, pv = hull @ u, hull @ v
+        pu, pv = math.np_matmul(hull, u), math.np_matmul(hull, v)
         area = (pu.max() - pu.min()) * (pv.max() - pv.min())
         if best is None or area < best[0]:
             best = (area, u, v, pu.min(), pu.max(), pv.min(), pv.max())
@@ -534,7 +534,7 @@ def _simplify(Q, tol):
         if b <= a + 1:
             continue
         d = Q[b] - Q[a]
-        L = float(np.hypot(*d)) or 1e-9
+        L = float(math.np_hypot(*d)) or 1e-9
         dist = np.abs(d[0] * (Q[a + 1:b, 1] - Q[a, 1]) - d[1] * (Q[a + 1:b, 0] - Q[a, 0])) / L
         k = int(np.argmax(dist))
         if dist[k] > tol:
@@ -551,7 +551,7 @@ def _simplify_ring(Q, tol):
     if len(Q) < 4 or tol <= 0:
         return Q
     A = np.asarray(Q)
-    k = int(np.argmax(np.hypot(A[:, 0] - A[0, 0], A[:, 1] - A[0, 1])))
+    k = int(np.argmax(math.np_hypot(A[:, 0] - A[0, 0], A[:, 1] - A[0, 1])))
     first = _simplify(Q[:k + 1], tol)
     second = _simplify(Q[k:] + [Q[0]], tol)
     return [tuple(map(float, p)) for p in first[:-1] + second[:-1]]
@@ -574,14 +574,14 @@ def _runs_outside(pts, keep_out):
 
 def _ribbon(m, mat, pts, width, y, u_span):
     Q = np.asarray(pts, float)
-    seg = np.linalg.norm(np.diff(Q, axis=0), axis=1)
+    seg = math.np_norm(np.diff(Q, axis=0), axis=1)
     Q = Q[np.concatenate([[True], seg > 0.5])]
     if len(Q) < 2:
         return 0
     T = np.gradient(Q, axis=0)
-    T /= np.maximum(np.linalg.norm(T, axis=1, keepdims=True), 1e-9)
+    T /= np.maximum(math.np_norm(T, axis=1, keepdims=True), 1e-9)
     Nn = np.stack([-T[:, 1], T[:, 0]], axis=1)
-    Ls = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(Q, axis=0), axis=1))])
+    Ls = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(Q, axis=0), axis=1))])
     left = [(x + nx * width / 2, y, z + nz * width / 2) for (x, z), (nx, nz) in zip(Q, Nn)]
     right = [(x - nx * width / 2, y, z - nz * width / 2) for (x, z), (nx, nz) in zip(Q, Nn)]
     m.grid(mat, [left, right], [[(0.0, s / ROAD_REPEAT) for s in Ls], [(u_span, s / ROAD_REPEAT) for s in Ls]],
@@ -629,7 +629,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             row = []
             for x, z in list(R0) + [R0[0]]:
                 v = np.array([x - c0[0], z - c0[1]])
-                v /= max(1e-9, float(np.linalg.norm(v)))
+                v /= max(1e-9, float(math.np_norm(v)))
                 row.append((float(x + v[0] * k), grade, float(z + v[1] * k)))
             grown.append(row)
         mesh("env_plaza").grid("env_plaza", grown, [[(x / 20.0, z / 20.0) for x, _y, z in row] for row in grown],
@@ -655,7 +655,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             if t > 0 and -1e-9 <= s <= 1 + 1e-9:
                 best = max(best, t)
         inner_pts.append(d * best * 0.96)
-    rin = max(float(np.hypot(*p)) for p in inner_pts)
+    rin = max(float(math.np_hypot(*p)) for p in inner_pts)
     radii = [r for r in FAR_RINGS if r > rin + 60.0]
     y0 = grade - 0.08
     rows = [[(float(p[0]), y0, float(p[1])) for p in inner_pts]]
@@ -722,7 +722,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             continue
         Q = _simplify_ring(lot["points"], 1.5)
         c = np.mean(np.array(Q), axis=0)
-        r = float(np.hypot(*c))
+        r = float(math.np_hypot(*c))
         if len(Q) < 3 or r > near or any(_inside_any(x, z, keep) for x, z in Q):
             continue
         todo.append((r, Q))
@@ -734,10 +734,10 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             continue
         R = np.array(R)
         e1, e2 = R[1] - R[0], R[3] - R[0]
-        u = e1 / max(1e-6, np.linalg.norm(e1)) if np.linalg.norm(e1) >= np.linalg.norm(e2) else e2 / max(1e-6, np.linalg.norm(e2))
+        u = e1 / max(1e-6, math.np_norm(e1)) if math.np_norm(e1) >= math.np_norm(e2) else e2 / max(1e-6, math.np_norm(e2))
         v = np.array([-u[1], u[0]])
         _flat(lots, "env_lot", Q, grade + 0.10 * _lift(r),
-              lambda x, z, u=u, v=v: (float(np.dot((x, z), u)) / LOT_U, float(np.dot((x, z), v)) / LOT_V))
+              lambda x, z, u=u, v=v: (float(math.np_dot((x, z), u)) / LOT_U, float(math.np_dot((x, z), v)) / LOT_V))
     counts["lots"] = lots.count()
 
     # -- grass and parks (the biggest and nearest first), water
@@ -751,7 +751,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             continue
         area = abs(_ring_area(Q))
         c = np.mean(np.array(Q), axis=0)
-        r = float(np.hypot(*c))
+        r = float(math.np_hypot(*c))
         if area < st.get("grass_min", 600.0) or r > near or _inside_any(c[0], c[1], keep):
             continue
         cand.append((r - 3.0 * math.sqrt(area), r, Q))
@@ -771,12 +771,12 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
         c = np.mean(np.array(Qc), axis=0)
         if _inside_any(c[0], c[1], keep):
             continue
-        _flat(wat, "env_water", Qc, grade + 0.03 * _lift(float(np.hypot(*c))), lambda x, z: (x / 20.0, z / 20.0))
+        _flat(wat, "env_water", Qc, grade + 0.03 * _lift(float(math.np_hypot(*c))), lambda x, z: (x / 20.0, z / 20.0))
     for w in sorted(L.get("waterways", []), key=lambda w: -float(w["width"])):
         pts = [tuple(p) for p in _simplify(w["points"], 4.0) if math.hypot(*p) < BAND_RADIUS * 0.95]
         for run in _runs_outside(pts, keep):
             if room(wat, "water", 2 * len(run)):
-                rr = float(np.min(np.hypot(*np.array(run).T)))
+                rr = float(np.min(math.np_hypot(*np.array(run).T)))
                 _ribbon(wat, "env_water", run, float(w["width"]), grade + 0.03 * _lift(rr), float(w["width"]) / 20.0)
     counts["water"] = wat.count()
 
@@ -796,7 +796,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
                if kind.endswith("_link") or kind in ("residential", "unclassified") else st["roads_service"])
         pts = _simplify(road["points"], st.get("road_tol", 0.0))
         for run in _runs_outside([p for p in pts if math.hypot(*p) <= lim + 60.0], keep):
-            rr = float(np.min(np.hypot(*np.array(run).T)))
+            rr = float(np.min(math.np_hypot(*np.array(run).T)))
             if rr <= lim:
                 runs.append((rr * weight.get(base_kind, 1.2), rr, kind, road, run))
     for road in L.get("far_roads", []):
@@ -804,7 +804,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
             continue
         pts = [p for p in _simplify(road["points"], 2 * st.get("road_tol", 1.0)) if math.hypot(*p) < HAZE_END]
         for run in _runs_outside(pts, keep):
-            rr = float(np.min(np.hypot(*np.array(run).T)))
+            rr = float(np.min(math.np_hypot(*np.array(run).T)))
             runs.append((rr * weight.get(road["kind"], 1.0), rr, road["kind"], road, run))
     for _score, rr, kind, road, run in sorted(runs, key=lambda t_: (t_[0], t_[3]["way"])):
         if room(rd, "roads", 2 * len(run)):
@@ -823,7 +823,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
         if len(Q) < 3:
             continue
         c = Q.mean(axis=0)
-        r = float(np.hypot(*c))
+        r = float(math.np_hypot(*c))
         if r > st["block_radius"] or _inside_any(c[0], c[1], keep):
             continue
         area = abs(_ring_area(Q))
@@ -856,10 +856,10 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
     for row in L["tree_rows"]:
         P_ = np.array(row["points"], float)
         for a_, b_ in zip(P_[:-1], P_[1:]):
-            n_ = max(1, int(np.linalg.norm(b_ - a_) / 9.0))
+            n_ = max(1, int(math.np_norm(b_ - a_) / 9.0))
             spots += [tuple(a_ + (b_ - a_) * (i / n_)) for i in range(n_)]
     spots = [p for p in spots if math.hypot(*p) < near and not _inside_any(p[0], p[1], keep)
-             and (eyes_xz is None or float(np.min(np.hypot(eyes_xz[:, 0] - p[0], eyes_xz[:, 1] - p[1]))) > 12.0)]
+             and (eyes_xz is None or float(np.min(math.np_hypot(eyes_xz[:, 0] - p[0], eyes_xz[:, 1] - p[1]))) > 12.0)]
     round_ = st.get("crowns") == "round"
     cost, crown = (ROUND_TREE, _round_tree) if round_ else (6, _crown)
     for x, z in sorted(spots, key=lambda p: (math.hypot(*p), p)):
@@ -881,7 +881,7 @@ def dress(model, venue, *, grade, keep_out, inner=None, exclude_ways=(), block_m
                 z = R - (r_ + float(rnd.random())) * cell
                 d = math.hypot(x, z)
                 if d < near and not _inside_any(x, z, keep) and (
-                        eyes_xz is None or float(np.min(np.hypot(eyes_xz[:, 0] - x, eyes_xz[:, 1] - z))) > 12.0):
+                        eyes_xz is None or float(np.min(math.np_hypot(eyes_xz[:, 0] - x, eyes_xz[:, 1] - z))) > 12.0):
                     woods.append((d, x, z))
     for _d, x, z in sorted(woods):
         if not room(tr, "trees", cost):
@@ -899,12 +899,12 @@ def _near_rect(Q, pts, pad):
     R = np.asarray(R, float)
     c = R.mean(axis=0)
     u, v = R[1] - R[0], R[3] - R[0]
-    lu, lv = float(np.linalg.norm(u)), float(np.linalg.norm(v))
+    lu, lv = float(math.np_norm(u)), float(math.np_norm(v))
     if lu < 1e-6 or lv < 1e-6:
         return False
     u, v = u / lu, v / lv
     d = pts - c
-    return bool(np.any((np.abs(d @ u) <= lu / 2 + pad) & (np.abs(d @ v) <= lv / 2 + pad)))
+    return bool(np.any((np.abs(math.np_matmul(d, u)) <= lu / 2 + pad) & (np.abs(math.np_matmul(d, v)) <= lv / 2 + pad)))
 
 
 def _box(m, R, y0, y1, wall="env_block", roof="env_roof"):

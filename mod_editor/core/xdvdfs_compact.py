@@ -2,7 +2,8 @@
 
 File contents, names, attributes and directory search trees are retained. The
 output is an extracted game partition with 2048-byte extents and a 32-sector
-end alignment. No extracted files, second build image or OS-specific I/O.
+end alignment. No extracted files or OS-specific I/O. A second image is written
+beside the build copy only when the in-place move plan is too fragmented.
 """
 from __future__ import annotations
 
@@ -10,9 +11,11 @@ from dataclasses import dataclass
 import hashlib
 import os
 from pathlib import Path
+import shutil
 import stat
 import struct
 import tempfile
+import time
 
 from tools import nfl_uniform_color_xiso_direct_patch as xiso
 
@@ -26,9 +29,22 @@ NFL_ORDER = ("update.xbe", "default.xbe", "dashupdate.xbe") + tuple(
     "vc_53450030/" + name for name in "9531024768dbacef")
 
 
+# beta 76.3: bounds for the in-place move plan, checked by a dry run with no I/O before anything is written. The
+# SOFTDRINK 2K28 build needs about 360 steps in well under a second. A dump that stores the same files in another
+# order can need a full in-place permutation whose fragments are rescanned every step: minutes to hours even without
+# I/O, seen by users as a frozen "Compacting disc image".
+IN_PLACE_MAX_STEPS = 20_000
+IN_PLACE_MAX_SECONDS = 2.0
+REWRITE_SPARE_BYTES = 64 * 1024 * 1024
+
+
 def require(ok, message):
     if not ok:
         raise ValueError(message)
+
+
+class _OverBudget(Exception):
+    """The in-place move plan exceeds its dry-run bounds."""
 
 
 def align(size, unit=SECTOR):
@@ -198,7 +214,7 @@ class Move:
                     None if self.saved is None else self.saved[start:end])
 
 
-def _move_private(stream, rows, progress):
+def _move_private(stream, rows, progress, *, budget=None):
     """DESIGN: drain safe destination intervals, breaking cycles with <=1 MiB.
 
     A destination is safe only if it overlaps no OTHER pending source. A
@@ -206,11 +222,20 @@ def _move_private(stream, rows, progress):
     bounded source prefix in memory and drain the hole it leaves. Source and
     destination extents are disjoint within each set, so a saved prefix always
     leaves a gap until it has been restored. No disk scratch is needed.
+    With budget=(steps, seconds) the same plan runs with no I/O at all and
+    raises _OverBudget once it passes either bound.
     """
+    dry = budget is not None
+    deadline = time.monotonic() + budget[1] if dry else None
+    steps = 0
     pending = [Move(r["source_offset"], r["offset"], align(r["size"])) for r in rows
                if r["size"] and r["source_offset"] != r["offset"]]
     peak_saved = 0
     while pending:
+        if dry:
+            steps += 1
+            if steps > budget[0] or time.monotonic() > deadline:
+                raise _OverBudget(steps)
         choice = None
         sources = sorted((m.source, m.source + m.size, i) for i, m in enumerate(pending) if m.saved is None)
         for index, move in enumerate(pending):
@@ -239,7 +264,7 @@ def _move_private(stream, rows, progress):
             require(not any(m.saved is not None for m in pending), "compaction dependency stalled")
             move = pending.pop(0)
             count = min(BLOCK, move.size)
-            saved = read_at(stream, move.source, count)
+            saved = bytes(count) if dry else read_at(stream, move.source, count)
             peak_saved = max(peak_saved, count)
             pending.append(Move(move.source, move.dest, count, saved))
             if count < move.size:
@@ -247,7 +272,9 @@ def _move_private(stream, rows, progress):
             continue
         index, start, end = choice
         move = pending.pop(index)
-        if move.saved is not None:
+        if dry:
+            pass
+        elif move.saved is not None:
             write_at(stream, move.dest + start, move.saved[start:end])
         else:
             _copy(stream, stream, move.source + start, move.dest + start, end - start, progress,
@@ -257,6 +284,59 @@ def _move_private(stream, rows, progress):
         if end < move.size:
             pending.append(move.part(end, move.size))
     return peak_saved
+
+
+def _in_place_fits(rows):
+    """True when the in-place move plan finishes within its bounds (dry run, no I/O)."""
+    try:
+        _move_private(None, rows, None, budget=(IN_PLACE_MAX_STEPS, IN_PLACE_MAX_SECONDS))
+    except _OverBudget:
+        return False
+    except ValueError:
+        return False  # a stalled plan: the sibling rewrite handles any plan
+    return True
+
+
+def _replace_image(staged, target):
+    """Replace the build image; Windows may briefly hold a just-closed file open (indexer, antivirus)."""
+    for attempt in range(40):
+        try:
+            os.replace(staged, target)
+            return
+        except PermissionError:
+            if os.name != "nt" or attempt == 39:
+                raise
+            time.sleep(0.25)
+
+
+def _rewrite_beside(target, layout, planned, hashes, progress):
+    """beta 76.3: write the SAME planned layout into a new sibling file, then replace the build image.
+
+    Used only when the in-place plan is too fragmented. The output bytes equal the
+    in-place result; it needs the finished image's size in free space beside it.
+    """
+    need = planned["output_bytes"] + REWRITE_SPARE_BYTES
+    free = shutil.disk_usage(target.parent).free
+    require(free >= need,
+            "This copy of the game stores its files in a different order from the retail disc, so finishing the "
+            f"disc needs {need / 1e9:.1f} GB free on the drive that holds {target.name} ({free / 1e9:.1f} GB free "
+            "now). Free some space there and make the disc again.")
+    from .platform_compat import temporary_sibling
+    staged = temporary_sibling(target, suffix=".compact")
+    try:
+        with target.open("rb", buffering=0) as source, staged.open("x+b", buffering=0) as out:
+            for row in planned["files"]:
+                for at in range(0, row["size"], BLOCK):
+                    count = min(BLOCK, row["size"] - at)
+                    write_at(out, row["offset"] + at, read_at(source, row["source_offset"] + at, count))
+                    progress("Compacting disc image", at + count, row["size"])
+            _metadata(out, planned)
+            receipt = _verify(out, layout, planned, hashes, progress)
+        _replace_image(staged, target)
+    except BaseException:
+        staged.unlink(missing_ok=True)
+        raise
+    return dict(receipt, scratch_disk_bytes=planned["output_bytes"], peak_cycle_buffer_bytes=0)
 
 
 def _metadata(output, planned):
@@ -306,14 +386,26 @@ def finish_private(target, *, original=None, progress=None):
         layout = read_layout(stream)
         # The known retail name order survives rebuilding an already grown 2K5
         # source. Other games retain the caller's original source order.
-        planned = plan(layout, None if set(NFL_ORDER) <= layout.entries.keys() else original)
+        nfl = set(NFL_ORDER) <= layout.entries.keys()
+        candidates = [plan(layout, None if nfl else original)]
+        if nfl and original is not None:
+            # beta 76.3: a dump that stores its files in another order (other xiso tools) would need a full
+            # in-place permutation into retail order; its own order needs only the growth moves.
+            own = plan(layout, original)
+            if [r["offset"] for r in own["files"]] != [r["offset"] for r in candidates[0]["files"]]:
+                candidates.append(own)
+        planned = next((c for c in candidates if _in_place_fits(c["files"])), None)
+        if planned is not None:
+            hashes = _hash_files(stream, planned["files"], "source_offset", progress)
+            # A final partial source sector has no file bytes in its missing suffix.
+            stream.truncate(max(align(layout.size), planned["output_bytes"]))
+            peak = _move_private(stream, planned["files"], progress)
+            _metadata(stream, planned)
+            receipt = _verify(stream, layout, planned, hashes, progress)
+            return dict(receipt, scratch_disk_bytes=0, peak_cycle_buffer_bytes=peak)
+        planned = candidates[0]
         hashes = _hash_files(stream, planned["files"], "source_offset", progress)
-        # A final partial source sector has no file bytes in its missing suffix.
-        stream.truncate(max(align(layout.size), planned["output_bytes"]))
-        peak = _move_private(stream, planned["files"], progress)
-        _metadata(stream, planned)
-        receipt = _verify(stream, layout, planned, hashes, progress)
-    return dict(receipt, scratch_disk_bytes=0, peak_cycle_buffer_bytes=peak)
+    return _rewrite_beside(target, layout, planned, hashes, progress)
 
 
 def compact_copy(source, output, *, reference=None, progress=None):

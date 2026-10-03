@@ -34,7 +34,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -91,7 +91,8 @@ class LoopPoint(mm.LoopPoint):
 
 def side_weights(nx, nz):
     """The four sides in this frame: east +x, west -x, south +z, north -z."""
-    return dict(E=max(nx, 0.0) ** 2, W=max(-nx, 0.0) ** 2, S=max(nz, 0.0) ** 2, N=max(-nz, 0.0) ** 2)
+    return dict(E=math.pow(max(nx, 0.0), 2), W=math.pow(max(-nx, 0.0), 2), S=math.pow(max(nz, 0.0), 2),
+                N=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
@@ -124,7 +125,7 @@ def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -401,7 +402,7 @@ class Allegiant(sm.SoFi):
         self._lanai(loop, secs)
         self._torch(loop, secs)
         self._boards(loop, secs)
-        east = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        east = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(east)["upper"][4]
         self.nosebleed = self.at(east, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -548,9 +549,9 @@ class Allegiant(sm.SoFi):
         if ring is None:
             pts, _pos = self.facade_ring(360)
             P = np.array(pts)
-            ang = np.arctan2(P[:, 1], P[:, 0])
+            ang = math.np_arctan2(P[:, 1], P[:, 0])
             order = np.argsort(ang)
-            ring = (ang[order], np.hypot(P[:, 0], P[:, 1])[order])
+            ring = (ang[order], math.np_hypot(P[:, 0], P[:, 1])[order])
             self._eave_polar = ring
         a, r = ring
         th = math.atan2(z, x)
@@ -565,7 +566,8 @@ class Allegiant(sm.SoFi):
         rr = q["ring_rho"]
         if rho >= rr:
             return q["eave"] + (q["ring_top"] - q["eave"]) * (1.0 - rho) / (1.0 - rr)
-        return q["ring_top"] + (q["crown"] - q["ring_top"]) * max(0.0, 1.0 - (rho / rr) ** 2) ** q["power"]
+        dome = math.pow(max(0.0, 1.0 - math.pow(rho / rr, 2)), q["power"])
+        return q["ring_top"] + (q["crown"] - q["ring_top"]) * dome
 
     def roof_top(self, x, z):
         """The roof's top over (x, z): flat over the ring (the drum's top), then ``depth`` over the ETFE."""
@@ -614,11 +616,11 @@ class Allegiant(sm.SoFi):
         ring = self.roof_rows[self.ring_row]
         for k in range(0, len(ring) - 1, q["every"]):
             x, y, z = ring[k]
-            n = np.array([x, 0.0, z]); n /= max(1e-9, np.linalg.norm(n))
+            n = np.array([x, 0.0, z]); n /= max(1e-9, math.np_norm(n))
             ctr = np.array([x, y - q["drop"], z])
             along = np.array([-n[2], 0.0, n[0]])
             normal = -n * math.cos(math.radians(55)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(55))
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
             m.quad("LIGHT_ag_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0),
                    (0, 0), facing=lambda p_, nn=normal: nn)
@@ -645,7 +647,7 @@ class Allegiant(sm.SoFi):
         the club tier's top walk to the glass and dark side walls up to the roof."""
         q = self.p["lanai"]
         m = self.meshes.setdefault("ag_lanai", Mesh("ag_lanai"))
-        mid = min(range(len(loop) - 1), key=lambda i: (loop[i].nz + 1) ** 2 + (loop[i].x / 30.0) ** 2)
+        mid = min(range(len(loop) - 1), key=lambda i: math.pow(loop[i].nz + 1, 2) + math.pow(loop[i].x / 30.0, 2))
         y0 = secs[mid]["rim"][2]
         y1 = q["glass_top"]
         arc = self.lanai_arc()
@@ -731,7 +733,7 @@ class Allegiant(sm.SoFi):
         """One board: the black housing, the live picture (over ``feed`` of its width between two stat panels, or all of
         it), facing ``face``."""
         q = self.p["boards"]
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         hv = np.array([0.0, H, 0.0])
         m.box("ag_black", c + hv / 2, (right, (0, 1, 0), face), (W / 2 + 0.6, H / 2 + 0.6, q["depth"] / 2), uvscale=0.1,
               bottom=True)
@@ -842,7 +844,7 @@ class Allegiant(sm.SoFi):
         x, z = ring[i]
         c = np.array([0.0, GRADE + q["lines"][-1] - h - 1.5, z]) + np.array([0.0, 0.0, 0.6])
         face = np.array([0.0, 0.0, 1.0])
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         sg.quad("ag_letters", c - right * w / 2, c + right * w / 2, c + right * w / 2 + [0, h, 0], c - right * w / 2 + [0, h, 0],
                 (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, f=face: f)
         if la:
@@ -867,7 +869,7 @@ class Allegiant(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(12.0), grow(36.0)]
@@ -898,7 +900,7 @@ class Allegiant(sm.SoFi):
             h = float(b["height"])
             if "luxor" in name:
                 c = A.mean(axis=0)
-                half = math.sqrt(max(1.0, 0.5 * abs(float(np.dot(A[:, 0], np.roll(A[:, 1], 1)) - np.dot(A[:, 1], np.roll(A[:, 0], 1)))))) / 2
+                half = math.sqrt(max(1.0, 0.5 * abs(float(math.np_dot(A[:, 0], np.roll(A[:, 1], 1)) - math.np_dot(A[:, 1], np.roll(A[:, 0], 1)))))) / 2
                 apex = (c[0], GRADE + h, c[1])
                 base = [(c[0] - half, GRADE, c[1] - half), (c[0] + half, GRADE, c[1] - half), (c[0] + half, GRADE, c[1] + half),
                         (c[0] - half, GRADE, c[1] + half)]
@@ -921,7 +923,7 @@ class Allegiant(sm.SoFi):
             bearing = (math.degrees(a) + 115.0) % 360.0
 
             def bump(c, w):
-                return math.exp(-(((bearing - c + 180) % 360 - 180) / w) ** 2)
+                return math.exp(-math.pow(((bearing - c + 180) % 360 - 180) / w, 2))
             h = 230.0 * bump(270.0, 45.0) + 130.0 * bump(90.0, 40.0) + 120.0 * bump(180.0, 35.0) + 90.0 * bump(0.0, 30.0) + 15.0
             h *= 0.85 + 0.3 * float(ridge.random())
             x, z = q["radius"] * math.cos(a), q["radius"] * math.sin(a)
@@ -940,7 +942,7 @@ def _min_rect(A):
     for deg in range(0, 90, 2):
         a = math.radians(deg)
         u = np.array([math.cos(a), math.sin(a)]); v = np.array([-u[1], u[0]])
-        pu, pv = (A - c) @ u, (A - c) @ v
+        pu, pv = math.np_matmul(A - c, u), math.np_matmul(A - c, v)
         area = np.ptp(pu) * np.ptp(pv)
         if best is None or area < best[0]:
             best = (area, u, v, pu.min(), pu.max(), pv.min(), pv.max())
@@ -1038,8 +1040,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "ag_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)

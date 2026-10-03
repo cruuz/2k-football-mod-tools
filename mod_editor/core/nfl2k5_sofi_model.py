@@ -34,7 +34,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -148,7 +148,7 @@ def _ring_polyline(points, n):
     if np.allclose(P[0], P[-1]):
         P = P[:-1]
     C = np.vstack([P, P[:1]])
-    seg = np.linalg.norm(np.diff(C, axis=0), axis=1)
+    seg = math.np_norm(np.diff(C, axis=0), axis=1)
     cum = np.concatenate([[0], np.cumsum(seg)])
     total = cum[-1]
     out, pos = [], []
@@ -227,7 +227,7 @@ def superellipse(a, b, e, n, phase=0.0):
     for k in range(n):
         t = phase + 2 * math.pi * k / n
         c, s = math.cos(t), math.sin(t)
-        out.append((a * math.copysign(abs(c) ** (2 / e), c), b * math.copysign(abs(s) ** (2 / e), s)))
+        out.append((a * math.copysign(math.pow(abs(c), 2 / e), c), b * math.copysign(math.pow(abs(s), 2 / e), s)))
     return out
 
 
@@ -318,7 +318,7 @@ class SoFi(mm.MetLife):
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
                 vs.append(lp.s * q["v_per_m"])
             bot, top, vs = np.array(bot), np.array(top), np.array(vs)
-            L = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(bot, axis=0), axis=1))])
+            L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
             aisles = [L[i] + t * (L[i + 1] - L[i]) for i, t in cuts]
             edges = [0.0] + [e for a in aisles for e in (a - half, a + half)] + [L[-1]]
 
@@ -466,7 +466,7 @@ class SoFi(mm.MetLife):
         self._screen()
         self._lights(loop, secs)
         self._end_signs(loop, secs)
-        west = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + ((lp.z - 20.0) / 40.0) ** 2)
+        west = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow((lp.z - 20.0) / 40.0, 2))
         row = self.section(west)["up4"][4]
         self.nosebleed = self.at(west, row[0] + 0.3, row[1] + 0.05)
         self._exterior(loop, secs)
@@ -578,12 +578,12 @@ class SoFi(mm.MetLife):
         outline between the anchors nearest to each point."""
         P = np.asarray(pts, float)
         n = len(P)
-        seg = np.linalg.norm(np.diff(np.vstack([P, P[:1]]), axis=0), axis=1)
+        seg = math.np_norm(np.diff(np.vstack([P, P[:1]]), axis=0), axis=1)
         cum = np.concatenate([[0], np.cumsum(seg)])[:-1]
         total = seg.sum()
         anchors = []
         for ax, az, h in LIP_ANCHORS:
-            i = int(np.argmin((P[:, 0] - ax) ** 2 + (P[:, 1] - az) ** 2))
+            i = int(np.argmin(np.square(P[:, 0] - ax) + np.square(P[:, 1] - az)))
             anchors.append((cum[i], h))
         anchors.sort()
         s_a = [a for a, _ in anchors]
@@ -637,15 +637,15 @@ class SoFi(mm.MetLife):
         band = self.meshes.setdefault("sf_band", Mesh("sf_band"))
         inner = []
         for ox, oz in O:
-            j = int(np.argmin((boundary[:, 0] - ox) ** 2 + (boundary[:, 1] - oz) ** 2))
+            j = int(np.argmin(np.square(boundary[:, 0] - ox) + np.square(boundary[:, 1] - oz)))
             # project onto the ETFE boundary polyline near j
             best, bp = None, None
             for jj in (j - 1, j):
                 p0, p1 = boundary[jj % N], boundary[(jj + 1) % N]
                 e = p1 - p0
-                t = float(np.clip(np.dot([ox, oz] - p0, e) / max(np.dot(e, e), 1e-9), 0, 1))
+                t = float(np.clip(math.np_dot([ox, oz] - p0, e) / max(math.np_dot(e, e), 1e-9), 0, 1))
                 q_ = p0 + e * t
-                dd = (q_[0] - ox) ** 2 + (q_[1] - oz) ** 2
+                dd = math.pow(q_[0] - ox, 2) + math.pow(q_[1] - oz, 2)
                 if best is None or dd < best:
                     best, bp = dd, q_
             inner.append(bp)
@@ -658,7 +658,7 @@ class SoFi(mm.MetLife):
                 y0 = self.roof_height(ix, iz)
                 y1 = GRADE + h
                 # the shell: level off the roof, then a steep curl down to the lip (the aerials)
-                y = y0 + (y1 - y0) * (f ** 3.0)
+                y = y0 + (y1 - y0) * math.pow(f, 3.0)
                 rt.append((x, y, z))
                 ru.append((x, y - 0.8 * (1 - f), z))
                 uu.append((x / 18.0, z / 18.0))
@@ -720,7 +720,7 @@ class SoFi(mm.MetLife):
         rims = {}
         for face, a, b, fy0, fy1, outward in faces:
             loop = np.array(superellipse(a, b, q["exponent"], 720))
-            seg = np.linalg.norm(np.diff(np.vstack([loop, loop[:1]]), axis=0), axis=1)
+            seg = math.np_norm(np.diff(np.vstack([loop, loop[:1]]), axis=0), axis=1)
             cum = np.concatenate([[0], np.cumsum(seg)])
             per = cum[-1]
             h = fy1 - fy0
@@ -795,12 +795,12 @@ class SoFi(mm.MetLife):
         for s_c in (0.0, per_o / 2):
             p = at_o(s_c)
             t = at_o(s_c + 0.5) - at_o(s_c - 0.5)
-            t = t / np.linalg.norm(t)
+            t = t / math.np_norm(t)
             nrm = np.array([t[1], 0.0, -t[0]])
-            if np.dot(nrm, [p[0], 0.0, p[1]]) < 0:
+            if math.np_dot(nrm, [p[0], 0.0, p[1]]) < 0:
                 nrm = -nrm
             right = np.cross(-nrm, (0.0, 1.0, 0.0))
-            right = right / np.linalg.norm(right) * (hb * 4.0)
+            right = right / math.np_norm(right) * (hb * 4.0)
             c = np.array([p[0], y0 + (y_sp - y0) * 0.5 - hb / 2, p[1]]) + nrm * 0.12
             hv = np.array([0.0, hb, 0.0])
             m.quad("sf_letters_screen", c - right, c + right, c + right + hv, c - right + hv, (0, 1), (1, 1), (1, 0), (0, 0),
@@ -814,13 +814,13 @@ class SoFi(mm.MetLife):
         s_c = 0.0 if z_sign > 0 else per / 2
         p = at(s_c + dist)
         t = at(s_c + dist + 0.5) - at(s_c + dist - 0.5)
-        t = t / np.linalg.norm(t)
+        t = t / math.np_norm(t)
         nrm = np.array([t[1], 0.0, -t[0]])
-        if np.dot(nrm, [p[0], 0.0, p[1]]) < 0:
+        if math.np_dot(nrm, [p[0], 0.0, p[1]]) < 0:
             nrm = -nrm
         right = np.cross(-nrm, (0.0, 1.0, 0.0))
         y_sp = q["bottom"] + (q["inner"] - q["outer"])
-        return np.array([p[0], y_sp + q["outer"] * 0.5, p[1]]), nrm, right / np.linalg.norm(right)
+        return np.array([p[0], y_sp + q["outer"] * 0.5, p[1]]), nrm, right / math.np_norm(right)
 
     # -- the ring of sports lights under the roof ----------------------------------------------------------------
     #: the light banks under the canopy's rim (Noah's reference and the game-day photos: bright banks above the upper
@@ -839,7 +839,7 @@ class SoFi(mm.MetLife):
             along = np.array([-lp.nz, 0.0, lp.nx])                          # the loop's tangent
             normal = inward * math.cos(t) + np.array([0.0, -1.0, 0.0]) * math.sin(t)   # faces the field, down
             up = np.cross(along, normal)
-            up = up / np.linalg.norm(up) * (1.0 if up[1] > 0 else -1.0)
+            up = up / math.np_norm(up) * (1.0 if up[1] > 0 else -1.0)
             hw, hh = along * (self.BANK_W / 2), up * (self.BANK_H / 2)
             u1 = self.BANK_W / (self.BANK_H * 2.0)                          # the texture is 2:1: no stretch
             m.quad("LIGHT_sf_lights", c - hw - hh, c + hw - hh, c + hw + hh, c - hw + hh, (0, 1), (u1, 1), (u1, 0), (0, 0),
@@ -860,7 +860,7 @@ class SoFi(mm.MetLife):
             c = np.array([0.0, (y0 + y1) / 2, lp.z + lp.nz * (d - 0.15)])
             face = np.array([0.0, 0.0, -float(end)])
             right = np.cross(-face, (0.0, 1.0, 0.0))
-            right = right / np.linalg.norm(right) * (w / 2)
+            right = right / math.np_norm(right) * (w / 2)
             hv = np.array([0.0, h / 2, 0.0])
             m.quad("sf_letters_screen", c - right - hv, c + right - hv, c + right + hv, c - right + hv,
                    (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, f=face: f)
@@ -893,7 +893,7 @@ class SoFi(mm.MetLife):
         plaza = [(x, z) for x, _y, z in rings[2][:-1]] if rings[2][0] == rings[2][-1] else [(x, z) for x, _y, z in rings[2]]
         lk = np.array(lake, float)
         lc = lk.mean(axis=0)
-        lake_keep = [tuple(lc + (q - lc) * (1.0 + 8.0 / max(1.0, float(np.linalg.norm(q - lc))))) for q in lk]
+        lake_keep = [tuple(lc + (q - lc) * (1.0 + 8.0 / max(1.0, float(math.np_norm(q - lc))))) for q in lk]
         self.env_counts = env.dress(self, self.venue, grade=GRADE, keep_out=[plaza, lake_keep], inner=plaza,
                                     eyes=env.shot_eyes(sofi_shots(self.venue)))
 
@@ -941,17 +941,17 @@ class SoFi(mm.MetLife):
         m = self.meshes.setdefault("sf_signs", Mesh("sf_signs"))
         O, lip = self.lip
         for (tx, tz, w, h) in ((-121.0, -20.0, 48.0, 6.0), (60.0, -205.0, 44.0, 5.5)):
-            i = int(np.argmin((O[:, 0] - tx) ** 2 + (O[:, 1] - tz) ** 2))
+            i = int(np.argmin(np.square(O[:, 0] - tx) + np.square(O[:, 1] - tz)))
             a, b = O[(i - 1) % len(O)], O[(i + 1) % len(O)]
-            t = (b - a) / np.linalg.norm(b - a)
+            t = (b - a) / math.np_norm(b - a)
             nrm = np.array([t[1], -t[0]])
-            if np.dot(nrm, O[i]) < 0:
+            if math.np_dot(nrm, O[i]) < 0:
                 nrm = -nrm
             y0 = GRADE + lip[i] + 0.6
             c = np.array([O[i][0] + nrm[0] * 0.3, y0, O[i][1] + nrm[1] * 0.3])
             face = np.array([nrm[0], 0.0, nrm[1]])
             right = np.cross(-face, (0.0, 1.0, 0.0))
-            right = right / np.linalg.norm(right) * (w / 2)
+            right = right / math.np_norm(right) * (w / 2)
             hv = np.array([0.0, h, 0.0])
             A, B, C, D = c - right, c + right, c + right + hv, c - right + hv
             m.quad("sf_letters", A, B, C, D, (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p, f=face: f)
@@ -1039,8 +1039,8 @@ def light(mat, P, N, tod, weather, outside=False, venue=None):
         f = np.full(n, 1.0)
     elif outside:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.72 + 0.28 * nd) if tod == "d" else (0.62 + 0.45 * nd)
     else:
         f = 0.90 + 0.10 * np.clip(N[:, 1], 0, 1)
@@ -1053,13 +1053,13 @@ def light(mat, P, N, tod, weather, outside=False, venue=None):
         # from the sun by day and from the plaza's floodlights (outward and low) at night
         if tod == "n":
             L = np.stack([P[:, 0], np.full(n, 0.0), P[:, 2]], axis=1)
-            L = L / np.maximum(np.linalg.norm(L, axis=1, keepdims=True), 1e-6)
+            L = L / np.maximum(math.np_norm(L, axis=1, keepdims=True), 1e-6)
             L[:, 1] = -0.35
-            L = L / np.linalg.norm(L, axis=1, keepdims=True)
+            L = L / math.np_norm(L, axis=1, keepdims=True)
             f = 0.52 + 0.48 * np.clip(np.sum(N * L, axis=1), 0, 1)
         else:
             sun = np.array(SUN[tod])
-            f = 0.60 + 0.40 * np.clip(N @ (sun / np.linalg.norm(sun)), 0, 1)
+            f = 0.60 + 0.40 * np.clip(math.np_matmul(N, sun / math.np_norm(sun)), 0, 1)
     if mat == "sf_alu" and tod == "n" and venue in SOFFIT_NIGHT:
         # at night (c103): the soffit glows in team colour, the canopy's lip reads as a lit warm-white band, and only
         # the roof's top stays dark
@@ -1288,7 +1288,7 @@ def _wall_point(model, x, z):
         L2 = dx * dx + dz * dz
         t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((x - ax) * dx + (z - az) * dz) / L2))
         px, pz = ax + dx * t, az + dz * t
-        d = (px - x) ** 2 + (pz - z) ** 2
+        d = math.pow(px - x, 2) + math.pow(pz - z, 2)
         if best is None or d < best[0]:
             nx, nz = a.nx * (1 - t) + b.nx * t, a.nz * (1 - t) + b.nz * t
             n = math.hypot(nx, nz)

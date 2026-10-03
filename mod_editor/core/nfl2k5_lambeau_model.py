@@ -36,7 +36,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -93,7 +93,8 @@ class LoopPoint(mm.LoopPoint):
 
 def side_weights(nx, nz):
     """The four sides in this frame: east +x, west -x, south +z, north -z."""
-    return dict(E=max(nx, 0.0) ** 2, W=max(-nx, 0.0) ** 2, S=max(nz, 0.0) ** 2, N=max(-nz, 0.0) ** 2)
+    return dict(E=math.pow(max(nx, 0.0), 2), W=math.pow(max(-nx, 0.0), 2), S=math.pow(max(nz, 0.0), 2),
+                N=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
@@ -126,7 +127,7 @@ def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -522,7 +523,7 @@ class Lambeau(sm.SoFi):
         """One board: the black housing, the live picture (over ``feed`` of its width between two stat panels, or all of
         it), facing ``face``."""
         q = self.p["boards"]
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         hv = np.array([0.0, H, 0.0])
         m.box("gb_black", c + hv / 2, (right, (0, 1, 0), face), (W / 2 + 0.6, H / 2 + 0.6, q["depth"] / 2), uvscale=0.1,
               bottom=True)
@@ -554,7 +555,7 @@ class Lambeau(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(12.0), grow(36.0)]
@@ -624,8 +625,8 @@ class Lambeau(sm.SoFi):
         """The side scoreboards (2023: 75 x 7.5 ft) on the suites' fascias over midfield, facing the field."""
         q = self.p["side_boards"]
         m = self.meshes.setdefault("gb_boards", Mesh("gb_boards"))
-        for lp in (min(self.loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2),
-                   min(self.loop, key=lambda lp: (lp.nx + 1) ** 2 + (lp.z / 40.0) ** 2)):
+        for lp in (min(self.loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2)),
+                   min(self.loop, key=lambda lp: math.pow(lp.nx + 1, 2) + math.pow(lp.z / 40.0, 2))):
             sec = self.section(lp)
             if "band" not in sec:
                 continue
@@ -650,7 +651,7 @@ class Lambeau(sm.SoFi):
                 normal = n * math.cos(math.radians(30)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(30))
                 ctr = np.array([sx * q["x"], q["y"], zc])
                 along = np.array([0.0, 0.0, 1.0])
-                upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+                upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
                 hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
                 m.quad("LIGHT_gb_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1),
                        (1, 0), (0, 0), facing=lambda p_, nn=normal: nn)
@@ -664,7 +665,7 @@ class Lambeau(sm.SoFi):
             normal = np.array([0.0, 0.0, -1.0]) * math.cos(math.radians(30)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(30))
             ctr = np.array([x, q["south_y"], z])
             along = np.array([1.0, 0.0, 0.0])
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
             m.quad("LIGHT_gb_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0), (0, 0),
                    facing=lambda p_, nn=normal: nn)
@@ -759,7 +760,7 @@ class Lambeau(sm.SoFi):
         self._end_board("north")
         self._side_boards()
         self._lights()
-        south = min(loop, key=lambda lp: (lp.nz - 1) ** 2 + (lp.x / 40.0) ** 2)
+        south = min(loop, key=lambda lp: math.pow(lp.nz - 1, 2) + math.pow(lp.x / 40.0, 2))
         row = self.section(south)["upper"][4]
         self.nosebleed = self.at(south, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -776,7 +777,7 @@ def _min_rect(A):
     for deg in range(0, 90, 2):
         a = math.radians(deg)
         u = np.array([math.cos(a), math.sin(a)]); v = np.array([-u[1], u[0]])
-        pu, pv = (A - c) @ u, (A - c) @ v
+        pu, pv = math.np_matmul(A - c, u), math.np_matmul(A - c, v)
         area = np.ptp(pu) * np.ptp(pv)
         if best is None or area < best[0]:
             best = (area, u, v, pu.min(), pu.max(), pv.min(), pv.max())
@@ -858,8 +859,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "gb_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)
