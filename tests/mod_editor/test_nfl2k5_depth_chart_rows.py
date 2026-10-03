@@ -32,7 +32,7 @@ BEFORE_ROLES = ((3, 4, "SLOT", "SLOT RECEIVER", 3, 2),
 EXPECTED_ORDER = "KR PR K P LS LGUN RGUN NCB DCB SLWR GAD 3DRB PWRB".split()
 EXPECTED_CHAINS = {"LS": (12, 2), "LGUN": (3, 3), "RGUN": (4, 3),
                    "NCB": (4, 2), "DCB": (4, 3), "SLWR": (3, 2),
-                   "GAD": (3, 4), "3DRB": (7, 2), "PWRB": (7, 4)}
+                   "GAD": (3, 4), "3DRB": (7, 0), "PWRB": (7, 1)}
 
 
 def before_special(patched):
@@ -303,7 +303,7 @@ class NativeDrawTests(DrawProbe):
         self.assertEqual(before[:40] + before[44:], after[:40] + after[44:])
         self.assertEqual(struct.unpack_from('<f', after, 40)[0], 1)
 
-    def test_every_tab_uses_the_same_screen_and_resolver_chains_are_unchanged(self):
+    def test_every_tab_uses_the_same_screen_and_correct_resolver_chains(self):
         for va in (0x243C30, 0x243C60, 0x243C90, 0x243CC0):
             self.assertEqual(rows._read(self.patched, va, 8), bytes.fromhex('568bf2ba88305300'))
         # Existing native ordinal/picker tests check these preserved contracts
@@ -311,7 +311,8 @@ class NativeDrawTests(DrawProbe):
         old = {long: (pos, chain) for _, _, _, long, pos, chain in BEFORE_ROLES}
         for _, _, short, long, pos, chain in rows.ROLE_ROWS:
             key = '3RD DOWN BACK' if short == '3DRB' else long
-            self.assertEqual((pos, chain), old[key])
+            expected = EXPECTED_CHAINS[short] if short in ('3DRB', 'PWRB') else old[key]
+            self.assertEqual((pos, chain), expected)
 
 
 def load_tests(loader, tests, pattern):

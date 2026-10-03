@@ -166,7 +166,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
         result = d.normalise(raw)
         self.assertEqual(lib.category_positions(result.replacement[32:], 0)[6:9],
                          lib.category_positions(raw[32:], 0)[6:9])
-        self.assertEqual(lib.category_positions(result.replacement[32:], 0)[10], 10 | 1 << 5)
+        self.assertEqual(lib.category_positions(result.replacement[32:], 0)[10], 10)
         self.assertEqual(result.report["refused_groups"][0]["refused_reason"], "disagreeing_inner_slot")
         self.assertGreater(result.report["refused_groups"][0]["max_disagreement_yd"], 2)
         self.assertEqual(result.report["gate"]["excluded"], 3)
@@ -191,9 +191,14 @@ class OfflineDepthRolesTests(unittest.TestCase):
     def test_only_role_ordinal_bytes_change_and_link_words_are_exact(self):
         raw = fixture()
         result = d.normalise(raw)
-        allowed = {32 + insp.CATEGORY_BASE + 5 + s for s in (6, 7, 8, 10)}
+        allowed = {32 + insp.CATEGORY_BASE + 5 + s for s in (6, 7, 8)}
         changed = {i for i, (a, b) in enumerate(zip(raw, result.replacement)) if a != b}
         self.assertEqual(changed, allowed)
+        # This fixture already selects the lead HB. Normalising receiver
+        # ordinals must not replace him with the former 3DRB backup ordinal.
+        hb_offset = 32 + insp.CATEGORY_BASE + 5 + 10
+        self.assertEqual(raw[hb_offset], 10)
+        self.assertEqual(result.replacement[hb_offset], raw[hb_offset])
         for i in changed:
             self.assertEqual(raw[i] & 31, result.replacement[i] & 31)
         self.assertEqual(d._parse(raw), d._parse(result.replacement))
@@ -229,7 +234,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
         with self.assertRaisesRegex(d.DepthRolesError, "foreign"):
             d.apply_to_archive(archive)
         self.assertEqual(archive.writes, 0)
-        self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 4)
+        self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 3)
         archive.writes = 0
         self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 0)
         self.assertEqual(archive.writes, 0)
@@ -279,7 +284,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
                 self.assertEqual(before["totals"]["books"], 2)
                 self.assertEqual(before["totals"], d.audit(image.retail_packs)["totals"])
                 receipt = d.apply(image.path, allow_custom=True)
-                self.assertEqual(receipt["changed_bytes"], 8)
+                self.assertEqual(receipt["changed_bytes"], 6)
                 self.assertTrue(d.audit(image.path)["totals"]["gate_ok"])
                 self.assertEqual(d.apply(image.path, allow_custom=True)["changed_bytes"], 0)
                 # The complete XISO differs only at reported role ordinals;
@@ -298,7 +303,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
             result = subprocess.run(command + ["normalise", str(source), "-o", str(output), "--allow-custom", "--json", "-"],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(json.loads(result.stdout)["changed_bytes"], 4)
+            self.assertEqual(json.loads(result.stdout)["changed_bytes"], 3)
             result = subprocess.run(command + ["audit", str(output), "--json", "-"], capture_output=True, text=True)
             self.assertTrue(json.loads(result.stdout)["totals"]["gate_ok"])
             result = subprocess.run(command + ["status", str(output), "--json", "-"], capture_output=True, text=True)

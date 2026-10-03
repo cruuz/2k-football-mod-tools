@@ -1,5 +1,14 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC109, beta 76.4: running backs, free-agent portraits and stadium crowds
+
+- **PROVED OFFLINE:** SPECIAL personnel no longer assigns RB2 to normal shotgun and spread formations just because they were classified as third-down formations. Those formations use regular RB1. 3DRB shows the lead rank order; it does not add a down-conditional substitution rule.
+- **PROVED OFFLINE:** PWRB uses an independent HB side order. Changing the power-back row leaves regular RB1 unchanged. Native roster loading, lineup selection, chart lookup, the SPECIAL swap and three weekly franchise sorts were checked across all 32 SOFTDRINK teams. Injury, fatigue, eligibility and saved formation substitutions keep their native behavior.
+- **PROVED OFFLINE:** New stadium crowd texture spacing follows the actual seating-band length, avoiding stretched fans at upper corners. Seated billboard height is bounded, and AT&T PartyPass standing decks use a person-height band on each floor. MetLife is unchanged.
+- **PROVED OFFLINE, SOFTDRINK 2K28 v0.4:** 236 free agents whose photo key was zero no longer borrow the same player's portrait. They use the native no-photo fallback; this release does not add individual headshots. Names, ratings, contracts and other appearance fields are preserved. Use the disc roster and a fresh franchise; an existing save retains its old roster data.
+- **PROVED OFFLINE, SOFTDRINK 2K28 v0.4:** 135 crowd variants were repaired while preserving non-crowd draw data, textures, palettes and markers. The pack reproduces the desktop test disc, including its existing Anniversary and kickoff corrections.
+- No new gameplay witness is claimed. APF 2K8 has no gameplay changes in this release.
+
 ## v1.0 RC108, beta 76.3: Windows builds, onside kicks and Anniversary corrections
 
 - **PROVED OFFLINE:** Make my disc on Windows no longer stops with "SoFi Stadium state is foreign" (or AT&T, Allegiant, Hard Rock, Highmark, Lambeau, Mercedes-Benz). Each new stadium model checks that it compiled to exactly the bytes it was made with, and the compile went through the C math library and numpy's matrix routines, which round differently on Windows and on some processors. The stadium models now use their own exactly rounded math, so they compile to the same bytes everywhere: all 288 checked stadium and board pieces match on Linux, under Wine with the installer's Windows CPython, and with other numpy matrix routines, another Python and a newer Pillow. Builds that worked before are byte for byte the same.

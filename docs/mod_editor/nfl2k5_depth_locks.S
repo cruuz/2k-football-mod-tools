@@ -84,7 +84,7 @@ unlocked:
  cmp ecx,13
  jne cap
  # Retail only seeds the side chain for paired position enums.
- mov edx,0x1ec18
+ mov edx,0x1ec98
  bt edx,edi
  jc paired_side
  movzx eax,word ptr [esi+0x28]

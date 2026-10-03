@@ -59,8 +59,8 @@ ROLE_ROWS = ((3, 4, "LS", "LONG SNAPPER", 12, 2),
              (3, 8, "DCB", "DIME CORNER", 4, 3),
              (3, 9, "SLWR", "SLOT RECEIVER", 3, 2),
              (3, 10, "GAD", "GADGET", 3, 4),
-             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 2),
-             (3, 12, "PWRB", "POWER BACK", 7, 4))
+             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 0),
+             (3, 12, "PWRB", "POWER BACK", 7, 1))
 WR_LABELS = ((3, ("LWR", "LEFT WIDE RECEIVER"), ("X", "X RECEIVER")),
              (4, ("RWR", "RIGHT WIDE RECEIVER"), ("Z", "Z RECEIVER")))
 

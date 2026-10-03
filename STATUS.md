@@ -1,4 +1,11 @@
-# 2K5 Mod Studio — v1.0 RC108 Release Status
+# 2K5 Mod Studio — v1.0 RC109 Release Status
+
+## Beta 76.4 (RC109, 2026-10-03): running backs and stadium crowds
+
+- Normal and shotgun/spread personnel use the lead running back. SPECIAL PWRB has an independent order that can be changed without moving RB1; both orders survive native franchise reordering in bounded offline checks.
+- Rebuilt stadium crowds use the actual seating-band length for texture spacing. AT&T's standing decks use a separate person-height band on each floor.
+- SOFTDRINK 2K28 v0.4 clears the repeated wrong portrait on 236 free agents using the native no-photo fallback. It includes the corrected RB orders and 135 repaired stadium variants. Load the disc roster and start a fresh franchise; existing saves retain their embedded roster.
+- These changes have offline evidence. No new gameplay witness is claimed. APF 2K8 alpha.105 aligns the version with this release and has no gameplay changes.
 
 ## Beta 63 (RC87, 2026-09-08) — the last 2K5 beta before APF 2K8
 

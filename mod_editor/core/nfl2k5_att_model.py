@@ -395,7 +395,7 @@ class ATT(sm.SoFi):
                 lp_r = [loop[i] for i in idx]
                 pr_r = [t2[i] for i in idx]
                 self._rows_surface(m2, "att_seat", lp_r, pr_r, 2, deck=is_deck)
-                self._crowd(m2, lp_r, pr_r)
+                self._crowd(m2, lp_r, pr_r, standing=is_deck)
                 if is_deck:
                     # each deck's glass railing along its front edge (the 2022 end-zone photo: glass rails, steel tops)
                     R_ = min(len(pr) for pr in pr_r)

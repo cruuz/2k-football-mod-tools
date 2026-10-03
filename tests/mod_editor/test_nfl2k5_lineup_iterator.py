@@ -62,6 +62,7 @@ class NativeSweepTests(unittest.TestCase):
         pointers = [team + 0x4000 + i * 0x54 for i in range(34)]
         pairs = list(fixture.RETAIL_LIST_PAIRS)
         pairs[15] = pairs[14]
+        pairs[10] = pools.HB_LIST_PAIR
         rows = list(struct.iter_unpack('<19I', uc.mem_read(0x4F5A38, 19 * 76)))
         uc.mem_write(0x4F5930, b''.join(struct.pack('<II', *p) for p in pairs))
         uc.mem_write(code.VA, code.replacement())

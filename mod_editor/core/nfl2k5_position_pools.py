@@ -31,6 +31,8 @@ site                                       VA          retail -> new
 enum->kind row for OLB (``FUN_00221ee0``)  0x510230    kind 15 (OLB) -> 14 (ILB): OLB-enum players join the LB lists
 kind->enum byte for the OLB kind           0x5101FF    enum 10 -> 11: an OLB-kind slot counts as LB
 OLB-kind list pair (``FUN_000e7530``)      0x4F59A8    lists (15, 16) -> (17, 18): OLB-kind codes read the LB lists
+HB-kind list pair                       0x4F5980    lists (1, 1) -> (1, 15): regular rank and independent power side
+physical-list inverse for list 15       0x4F5A04    kind 15 -> 10: the freed OLB list now sorts HB side order
 roster targets (``FUN_002bd410``)          0x521C68    OLB 3 / ILB 2 / DT 2 / DE 2 -> 0 / 5 / 4 / 4
 roster maxima (``FUN_002bd400``)           0x521C20    OLB 5 / ILB 4 / DT 4 / DE 4 -> 0 / 7 / 6 / 6
 enum abbreviation entry 11 (ILB)           0x4F26FC    -> the existing ``LB`` string at 0xE69C30 (entry 10 keeps ``OLB``)
@@ -186,6 +188,8 @@ POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "I
 ENUM_OLB, ENUM_ILB, ENUM_DT, ENUM_DE = 10, 11, 15, 16
 KIND_DE, KIND_DT, KIND_ILB, KIND_OLB = 12, 13, 14, 15
 LB_LIST_PAIR = (17, 18)          # the ILB kind's two on-field lists (rank order, side order)
+HB_LIST_PAIR = (1, 15)           # regular HB order and an independent power order
+PHYSICAL_TO_KIND_VA = 0x004F59C8
 
 # ---------------------------------------------------------------------------------------------
 # .rdata tables
@@ -729,6 +733,11 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
     add("enum_to_kind_olb", ENUM_TO_KIND_VA + 4 * ENUM_OLB, struct.pack("<I", KIND_OLB), struct.pack("<I", KIND_ILB))
     add("kind_to_enum_olb", KIND_TO_ENUM_VA + KIND_OLB, bytes([ENUM_OLB]), bytes([ENUM_ILB]))
     add("olb_kind_lists", KIND_LIST_PAIRS_VA + 8 * KIND_OLB, struct.pack("<II", 15, 16), struct.pack("<II", *LB_LIST_PAIR))
+    # The LB pass retires physical OLB list 15. The native builder already
+    # sorts every kind by both fields; its inverse map must agree with the
+    # picker when that list becomes the HB side chain.
+    add("hb_kind_lists", KIND_LIST_PAIRS_VA + 8 * 10, struct.pack("<II", 1, 1), struct.pack("<II", *HB_LIST_PAIR))
+    add("hb_side_list_kind", PHYSICAL_TO_KIND_VA + 4 * 15, struct.pack("<I", KIND_OLB), struct.pack("<I", 10))
     add("roster_targets", ROSTER_TARGETS_VA, struct.pack("<17I", *RETAIL_TARGETS), struct.pack("<17I", *new_targets()))
     add("roster_maxima", ROSTER_MAXIMA_VA, struct.pack("<17I", *RETAIL_MAXIMA), struct.pack("<17I", *new_maxima()))
     add("abbrev_enum_ilb", ABBREV_TABLE_VA + 4 * ENUM_ILB, struct.pack("<I", STRING_ILB_VA), struct.pack("<I", STRING_LB_VA))

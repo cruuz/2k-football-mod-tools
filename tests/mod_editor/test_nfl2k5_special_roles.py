@@ -39,9 +39,9 @@ class ClassificationTests(unittest.TestCase):
         passing[9] = 73
         power = BASE.copy()
         power[6] = 40
-        for raw, ordinal in ((offense(BASE), 0), (offense(BASE, gun=True), 1),
-                             (offense(passing), 1), (offense(power), 2),
-                             (offense(BASE, wide_hb=True), 1)):
+        for raw, ordinal in ((offense(BASE), 0), (offense(BASE, gun=True), 0),
+                             (offense(passing), 0), (offense(power), 1),
+                             (offense(BASE, wide_hb=True), 0)):
             result = roles.normalise(raw)
             self.assertEqual(lib.category_positions(result.replacement[32:], 0)[10], 10 | ordinal << 5)
             self.assertTrue(result.report["special"]["gate"]["ok"])
@@ -155,9 +155,9 @@ class SpecialChartContractTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         expected = {'LS': (6, 1), 'LGUN': (9, 3), 'RGUN': (18, 3),
                     'NCB': (18, 2), 'DCB': (18, 3), 'SLWR': (9, 2),
-                    'GAD': (9, 4), '3DRB': (10, 1), 'PWRB': (10, 2)}
+                    'GAD': (9, 4), '3DRB': (10, 0), 'PWRB': (10, 1)}
         kinds = {3: 9, 4: 18, 7: 10, 12: 6}
-        actual = {abbr: (kinds[pos], chain >> 1 if pos in (7, 12) else chain)
+        actual = {abbr: (kinds[pos], chain >> 1 if pos == 12 else chain)
                   for _, _, abbr, _, pos, chain in rows.ROLE_ROWS}
         self.assertEqual(actual, expected)
 

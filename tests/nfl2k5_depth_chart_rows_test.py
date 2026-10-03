@@ -467,7 +467,7 @@ class ExecutionTests(unittest.TestCase):
         context, lists, assigned = self.TEAM + 0x8000, self.TEAM + 0x9000, self.TEAM + 0x9800
         uc.mem_write(context, struct.pack("<II", self.TEAM, 0))
         kinds = {3: 9, 4: 18, 7: 10, 12: 6}
-        channels = {1: (7, 1), 4: (3, 1), 5: (3, 2), 10: (12, 1), 21: (4, 1), 22: (4, 2)}
+        channels = {1: (7, 1), 15: (7, 2), 4: (3, 1), 5: (3, 2), 10: (12, 1), 21: (4, 1), 22: (4, 2)}
         cursor = lists
         for channel in range(29):
             uc.mem_write(context + 0x9C + channel * 4, struct.pack("<I", cursor))
@@ -479,7 +479,7 @@ class ExecutionTests(unittest.TestCase):
         uc.mem_write(cursor, b"\xff")  # empty returner list sentinel
         uc.mem_write(0xAC26B8, bytes(4))  # no saved formation substitution
         for unit, slot, abbreviation, _name, pos, chain in rows.ROLE_ROWS:
-            ordinal = chain >> 1 if pos in (7, 12) else chain
+            ordinal = chain >> 1 if pos == 12 else chain
             expected = self.lookup(uc, 0, pos, chain)
             self.assertNotEqual(expected, 0)
             args = (0, 0, assigned, 0, 0, kinds[pos], ordinal)
