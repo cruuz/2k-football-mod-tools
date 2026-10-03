@@ -68,12 +68,12 @@
         "home": 14
       },
       "quarter": 4,
-      "clock": "2:39",
-      "down": 1,
-      "distance": 10,
-      "ball_on": "NYG 17",
+      "clock": "1:15",
+      "down": 3,
+      "distance": 5,
+      "ball_on": "NYG 44",
       "timeouts": {
-        "away": 3,
+        "away": 2,
         "home": 3
       },
       "weather": "clear",
@@ -85,7 +85,7 @@
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
-        "nflverse play_by_play_2007: game_id 2007_21_NYG_NE, play_id 3447"
+        "nflverse play_by_play_2007: game_id 2007_21_NYG_NE, play_id 3651"
       ],
       "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
       "notes": "Super Bowl XLII: New England was the designated home team and wore navy jerseys with silver pants; New York wore white jerseys with grey pants. Retail Giants style 0 is a 2004 stand-in, not the 2005 road redesign. Sources: https://en.wikipedia.org/wiki/Super_Bowl_XLII ; https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572"
@@ -112,12 +112,12 @@
         "home": 23
       },
       "quarter": 4,
-      "clock": "2:30",
-      "down": 1,
-      "distance": 10,
-      "ball_on": "PIT 22",
+      "clock": "0:42",
+      "down": 2,
+      "distance": 6,
+      "ball_on": "ARZ 6",
       "timeouts": {
-        "away": 2,
+        "away": 0,
         "home": 2
       },
       "weather": "clear",
@@ -129,7 +129,7 @@
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
-        "nflverse play_by_play_2008: game_id 2008_21_PIT_ARI, play_id 3665"
+        "nflverse play_by_play_2008: game_id 2008_21_PIT_ARI, play_id 3912"
       ],
       "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
       "notes": "The Cardinals' 2005 redesign is not on the disc; their 2004 uniform (index 0) is the closest."
@@ -727,13 +727,13 @@
         "home": 24
       },
       "quarter": 4,
-      "clock": "2:02",
-      "down": 1,
-      "distance": 10,
-      "ball_on": "SEA 20",
+      "clock": "0:26",
+      "down": 2,
+      "distance": 1,
+      "ball_on": "NE 1",
       "timeouts": {
         "away": 2,
-        "home": 3
+        "home": 1
       },
       "weather": "clear",
       "time_of_day": "night",
@@ -744,7 +744,7 @@
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
-        "nflverse play_by_play_2014: game_id 2014_21_NE_SEA, play_id 3985"
+        "nflverse play_by_play_2014: game_id 2014_21_NE_SEA, play_id 4205"
       ],
       "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
       "notes": "Defensive moment: the user is New England on defense from Seattle's final drive."

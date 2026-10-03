@@ -276,6 +276,67 @@ class Field(unittest.TestCase):
         self.assertEqual(row["state"], "applied", row)
 
 
+@unittest.skipUnless(EXTRACTED.is_dir(), "needs the hydrated retail archive")
+class FieldWithoutVenueArt(unittest.TestCase):
+    """The 2026 venue art off: no team art reaches s11's field, so it keeps the RCA Dome end zones and midfield, takes tf's
+    turf and apron and fits its span, with Modern colour and without. The zlib estimate overstates this field past the
+    ladder's gate, which once skipped every rung untried (b763, 2026-10-02: the Experimental preset with every modern
+    stadium, Modern colour and Modern surfaces but no venue art refused to build at s11ad)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_modern_color as colour
+        from mod_editor.core import nfl2k5_sofi_model as sm
+        ml = sm._ml()
+        cls.name = name = "s11ad.iff"
+        cls.retail = lo.read_retail(EXTRACTED)[name]
+        cls.chunk = ml.bundle_scenes(cls.retail)["field"]
+        cls.span = ml.scene_span(cls.retail, cls.chunk)
+        cls.fields = {
+            "plain": lo.field_span(cls.retail, name),
+            "colour": lo.field_span(cls.retail, name, colour_settings=colour.normalize_settings({}),
+                                    outer_index=lo._venue_pins()[name]["outer"]),
+        }
+
+    def test_the_field_fits_its_span_with_and_without_colour(self):
+        for label, (field, info) in self.fields.items():
+            with self.subTest(label):
+                self.assertEqual(len(field), len(self.span))
+                self.assertEqual(field[:32], self.span[:32])
+                self.assertEqual(info["team_art"], [])
+                self.assertEqual(info["fit_attempts"], [])
+                self.assertEqual(info["colour"], label == "colour")
+                self.assertTrue(info["surface"]["refit"])
+
+    def test_the_end_zones_and_midfield_keep_their_retail_texels(self):
+        from mod_editor.core import nfl2k5_sofi_model as sm
+        ml = sm._ml()
+        tx = ml._tools()[0]
+        rec, retail = ml._scene(self.retail, self.chunk)
+        rows = ml.texture_rows(rec)
+        system = self.chunk.system_bytes
+        marks = [m for m in lo.TEAM_FIELD if m in rows]
+        self.assertTrue(marks)
+
+        def texels(decoded, row):
+            return bytes(decoded[system + int(row["pixel_offset"]):system + int(row["palette_offset"])])
+        for label, (field, _info) in self.fields.items():
+            _rec, decoded = ml._scene(field, tx.parse_chunks(field, allow_trailing=True)[0])
+            for material in marks:
+                with self.subTest(label, material=material):
+                    self.assertEqual(texels(decoded, rows[material]), texels(retail, rows[material]))
+
+    def test_modern_surfaces_keeps_this_field_and_reads_it_applied(self):
+        from mod_editor.core import nfl2k5_modern_surfaces as ms
+        field, _info = self.fields["plain"]
+        ours = self.retail[:self.chunk.offset] + field + self.retail[self.chunk.offset + len(field):]
+        after, rec = ms.surface_bundle(ours, self.name, indoor=True)
+        self.assertFalse(rec["field"]["refit"])
+        at, size = ms.bundle_sites(ours)["field"]
+        self.assertEqual(after[at:at + size], ours[at:at + size])
+        row = ms.bundle_report(_Archive(after), self.name, _Entry(len(after)), None, deep=True)
+        self.assertEqual(row["state"], "applied", row)
+
 
 @unittest.skipUnless(EXTRACTED.is_dir(), "needs the hydrated retail archive")
 class VenueRow(unittest.TestCase):

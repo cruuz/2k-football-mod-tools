@@ -143,14 +143,17 @@ class MomentsTests(unittest.TestCase):
                     self.assertTrue(isinstance(kit, int) and 0 <= kit <= 14 or isinstance(kit, dict) and "era_year" in kit)
 
     def test_noah_five_situations(self):
-        """The five starting situations, read from nflverse play-by-play (PROVED OFFLINE from the source data)."""
+        """The five starting situations, read from nflverse play-by-play (PROVED OFFLINE from the source data).
+        Beta 76.3 (Noah 10/2: the Tyree Super Bowl "is off"): a moment named for one play starts AT that play,
+        Tyree (2007_21_NYG_NE play 3651) and Holmes (2008_21_PIT_ARI play 3912). Manningham's catch is the drive's
+        first play already; New England still had 3 timeouts before it (the row's 2 counts the lost challenge)."""
         expected = {
-            "helmet_catch": dict(quarter=4, clock="2:39", down=1, distance=10, ball_on="NYG 17",
+            "helmet_catch": dict(quarter=4, clock="1:15", down=3, distance=5, ball_on="NYG 44",
                                  score_now={"away": 10, "home": 14}, final_score={"away": 17, "home": 14},
-                                 timeouts={"away": 3, "home": 3}),
-            "toe_tap": dict(quarter=4, clock="2:30", down=1, distance=10, ball_on="PIT 22",
+                                 timeouts={"away": 2, "home": 3}),
+            "toe_tap": dict(quarter=4, clock="0:42", down=2, distance=6, ball_on="ARZ 6",
                             score_now={"away": 20, "home": 23}, final_score={"away": 27, "home": 23},
-                            timeouts={"away": 2, "home": 2}),
+                            timeouts={"away": 0, "home": 2}),
             "manningham": dict(quarter=4, clock="3:46", down=1, distance=10, ball_on="NYG 12",
                                score_now={"away": 15, "home": 17}, final_score={"away": 21, "home": 17},
                                timeouts={"away": 1, "home": 3}),

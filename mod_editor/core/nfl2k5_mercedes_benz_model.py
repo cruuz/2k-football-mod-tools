@@ -36,7 +36,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -92,7 +92,8 @@ class LoopPoint(mm.LoopPoint):
 
 def side_weights(nx, nz):
     """The four sides in this frame: east +x, west -x, south +z, north -z."""
-    return dict(E=max(nx, 0.0) ** 2, W=max(-nx, 0.0) ** 2, S=max(nz, 0.0) ** 2, N=max(-nz, 0.0) ** 2)
+    return dict(E=math.pow(max(nx, 0.0), 2), W=math.pow(max(-nx, 0.0), 2), S=math.pow(max(nz, 0.0), 2),
+                N=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
@@ -125,7 +126,7 @@ def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -387,7 +388,7 @@ class MercedesBenz(sm.SoFi):
         self._halo()
         self._window(loop, secs)
         self._column()
-        north = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        north = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(north)["upper"][4]
         self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -539,9 +540,9 @@ class MercedesBenz(sm.SoFi):
         if ring is None:
             pts, _pos = self.facade_ring(360)
             P = np.array(pts)
-            ang = np.arctan2(P[:, 1], P[:, 0])
+            ang = math.np_arctan2(P[:, 1], P[:, 0])
             order = np.argsort(ang)
-            ring = (ang[order], np.hypot(P[:, 0], P[:, 1])[order])
+            ring = (ang[order], math.np_hypot(P[:, 0], P[:, 1])[order])
             self._eave_polar = ring
         a, rr = ring
         Ro = float(np.interp(math.atan2(z, x), a, rr, period=2 * math.pi))
@@ -555,7 +556,7 @@ class MercedesBenz(sm.SoFi):
         if np.allclose(P[0], P[-1]):
             P = P[:-1]
         C = np.vstack([P, P[:1]])
-        seg = np.linalg.norm(np.diff(C, axis=0), axis=1)
+        seg = math.np_norm(np.diff(C, axis=0), axis=1)
         cum = np.concatenate([[0], np.cumsum(seg)])
         u = (frac % 1.0) * cum[-1]
         i = min(int(np.searchsorted(cum, u, side="right") - 1), len(seg) - 1)
@@ -577,7 +578,7 @@ class MercedesBenz(sm.SoFi):
         corners, tips = [], []
         for k in range(8):
             x, z = pts[2 * k]
-            v = np.array([x - cx, z - cz]); v /= max(1e-9, np.linalg.norm(v))
+            v = np.array([x - cx, z - cz]); v /= max(1e-9, math.np_norm(v))
             o = q["corner_out"][k]
             corners.append(dict(base=(x, z), top=(float(x + v[0] * o), q["corner_y"][k], float(z + v[1] * o))))
             tx, tz = pts[2 * k + 1]
@@ -625,10 +626,10 @@ class MercedesBenz(sm.SoFi):
             for (x0, z0), (x1, z1) in segs:
                 e = np.array([x1 - x0, z1 - z0])
                 M = np.array([[d[0], -e[0]], [d[1], -e[1]]])
-                det = float(np.linalg.det(M))
+                det = float(math.np_det(M))
                 if abs(det) < 1e-9:
                     continue
-                t, u = np.linalg.solve(M, np.array([x0 - cx, z0 - cz]))
+                t, u = math.np_solve(M, np.array([x0 - cx, z0 - cz]))
                 if t > 0 and -1e-6 <= u <= 1 + 1e-6 and (best is None or t < best):
                     best = float(t)
             out.append(best if best is not None else float("inf"))
@@ -666,7 +667,7 @@ class MercedesBenz(sm.SoFi):
                 ao = math.atan2(z - cz0, x - cx0)
                 so = sec[j % len(sec)]
                 edge = np.array([cx0 + (so - q["eave_inset"]) * math.cos(ao), cz0 + (so - q["eave_inset"]) * math.sin(ao)])
-                Re = min(Ro, float(np.hypot(*edge))) if math.isfinite(so) else Ro
+                Re = min(Ro, float(math.np_hypot(*edge))) if math.isfinite(so) else Ro
                 r = Re + (R0 - Re) * f
                 px, pz = r * math.cos(a), r * math.sin(a)
                 ru.append((px, self.roof_height(px, pz) if (f > 0 or Re < Ro - 1e-6) else q["eave"], pz))
@@ -699,7 +700,7 @@ class MercedesBenz(sm.SoFi):
             if n_[1] < 0:
                 n_ = -n_
                 p1, p2 = p2, p1
-            n_ = n_ / max(1e-9, np.linalg.norm(n_))
+            n_ = n_ / max(1e-9, math.np_norm(n_))
             pl = lambda v_: (float(v_[0]) / 30.0, float(v_[2]) / 30.0)  # noqa: E731
             top.strip(mat, [top.v(tuple(v_), pl(v_), tuple(n_)) for v_ in (p0, p1, p2)])
         for k in range(n8):
@@ -752,21 +753,21 @@ class MercedesBenz(sm.SoFi):
                 At, Bt = arc_t[j], arc_t[j + 1]
                 n_t = np.cross(Bt - At, apex_t - At)
                 n_t = n_t if n_t[1] > 0 else -n_t
-                n_t = n_t / np.linalg.norm(n_t)
+                n_t = n_t / math.np_norm(n_t)
                 t_ = [top.v(tuple(At), pl(At), tuple(n_t)), top.v(tuple(Bt), pl(Bt), tuple(n_t)),
                       top.v(tuple(apex_t), pl(apex_t), tuple(n_t))]
                 top.strip("mb_pinwheel", t_ if np.cross(Bt - At, apex_t - At)[1] > 0 else [t_[0], t_[2], t_[1]])
             # the blade: from the circle at the panel's leading edge to a point near the apex turned by the twist
             e0 = arc[0]
             e1 = np.array([10.0 * math.cos(a0 + tw), q["apex"] - (q["apex"] - q["rim"]) * 10.0 / R0, 10.0 * math.sin(a0 + tw)])
-            side = np.cross(e1 - e0, [0.0, 1.0, 0.0]); side = side / max(1e-9, np.linalg.norm(side)) * 0.9
+            side = np.cross(e1 - e0, [0.0, 1.0, 0.0]); side = side / max(1e-9, math.np_norm(side)) * 0.9
             und.quad("mb_black", e0 - side - [0, 0.3, 0], e0 + side - [0, 0.3, 0], e1 + side - [0, 0.3, 0], e1 - side - [0, 0.3, 0],
                      (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_: np.array([0.0, -1.0, 0.0]))
             # and its white steel from above, from the ring to the apex's top
             f0 = arc_t[0] + [0, 0.25, 0]
             f1 = np.array([10.0 * math.cos(a0 + tw), q["apex_top"] - (q["apex_top"] - (rt + 0.4)) * 10.0 / R0 + 0.25,
                            10.0 * math.sin(a0 + tw)])
-            side = np.cross(f1 - f0, [0.0, 1.0, 0.0]); side = side / max(1e-9, np.linalg.norm(side)) * 0.8
+            side = np.cross(f1 - f0, [0.0, 1.0, 0.0]); side = side / max(1e-9, math.np_norm(side)) * 0.8
             top.quad("mb_roof_top", f0 - side, f0 + side, f1 + side, f1 - side, (0, 1), (1, 1), (1, 0), (0, 0),
                      facing=lambda p_: np.array([0.0, 1.0, 0.0]))
 
@@ -781,11 +782,11 @@ class MercedesBenz(sm.SoFi):
             a = 2 * math.pi * k / n
             x, z = R1 * math.cos(a), R1 * math.sin(a)
             y = self.roof_height(x, z)
-            nrm = np.array([x, 0.0, z]); nrm /= max(1e-9, np.linalg.norm(nrm))
+            nrm = np.array([x, 0.0, z]); nrm /= max(1e-9, math.np_norm(nrm))
             ctr = np.array([x, y - q["drop"], z])
             along = np.array([-nrm[2], 0.0, nrm[0]])
             normal = -nrm * math.cos(math.radians(55)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(55))
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
             m.quad("LIGHT_mb_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0),
                    (0, 0), facing=lambda p_, nn=normal: nn)
@@ -856,7 +857,7 @@ class MercedesBenz(sm.SoFi):
                    [[(j / S, 0.0) for j in range(S + 1)], [(j / S, 0.1) for j in range(S + 1)]], facing=inward)
             c = np.array([r * math.cos(ac), y0 + h / 2, r * math.sin(ac)])
             face = -np.array([math.cos(ac), 0.0, math.sin(ac)])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             self.halo_frames.append(dict(centre=c, face=face, right=right, feed=k % 2 == 1, angle=ac))
         for k in (K // 4, 3 * K // 4):
             kk = k if k % 2 == 1 else k + 1
@@ -888,7 +889,7 @@ class MercedesBenz(sm.SoFi):
         outline's east face from the 200 level's top walk up to the roof, downtown's towers beyond it; the walk out to it
         and the side walls; the star on its black panel under the glass, over the end's middle (the 2018 photo)."""
         m = self.meshes.setdefault("mb_window", Mesh("mb_window"))
-        mid = min(range(len(loop) - 1), key=lambda i: (loop[i].nz - 1) ** 2 + (loop[i].x / 30.0) ** 2)
+        mid = min(range(len(loop) - 1), key=lambda i: math.pow(loop[i].nz - 1, 2) + math.pow(loop[i].x / 30.0, 2))
         y0 = secs[mid]["rim"][2]
         arc = self.window_arc()
         x0, x1 = arc[0][0], arc[-1][0]
@@ -1003,10 +1004,10 @@ class MercedesBenz(sm.SoFi):
             p0, p1, p2 = (np.array(v_, float) for v_ in tri)
             n_ = np.cross(p1 - p0, p2 - p0)
             o = outward(p0)
-            if float(n_ @ o) < 0:
+            if float(math.np_matmul(n_, o)) < 0:
                 n_ = -n_
                 p1, p2 = p2, p1
-            n_ = n_ / max(1e-9, np.linalg.norm(n_))
+            n_ = n_ / max(1e-9, math.np_norm(n_))
             tip_down = kind == "petal"
             uvs_ = ((0.0, 0.0), (1.0, 0.0), (0.5, 1.0)) if tip_down else ((0.0, 1.0), (1.0, 1.0), (0.5, 0.0))
             ids = [m.v(tuple(p0), uvs_[0], tuple(n_)), m.v(tuple(p1), uvs_[1], tuple(n_)), m.v(tuple(p2), uvs_[2], tuple(n_))]
@@ -1030,12 +1031,12 @@ class MercedesBenz(sm.SoFi):
             used.add(k)
             T, nrm, unit, _kind = metal_tris[k]
             A_, B_, C_ = T
-            la, lb, lc = np.linalg.norm(B_ - C_), np.linalg.norm(C_ - A_), np.linalg.norm(A_ - B_)
+            la, lb, lc = math.np_norm(B_ - C_), math.np_norm(C_ - A_), math.np_norm(A_ - B_)
             inc = (la * A_ + lb * B_ + lc * C_) / (la + lb + lc)
-            area = 0.5 * np.linalg.norm(np.cross(B_ - A_, C_ - A_))
+            area = 0.5 * math.np_norm(np.cross(B_ - A_, C_ - A_))
             rin = 2 * area / (la + lb + lc)
             upv = np.array([0.0, 1.0, 0.0]) - nrm * nrm[1]
-            upv /= np.linalg.norm(upv)
+            upv /= math.np_norm(upv)
             right = np.cross(upv, nrm)
             if what == "mb_star":
                 w = h = min(dia, 1.3 * rin) / 2
@@ -1058,7 +1059,7 @@ class MercedesBenz(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(12.0), grow(36.0)]
@@ -1088,7 +1089,7 @@ class MercedesBenz(sm.SoFi):
             if float(np.max(np.abs(A[:, 0]))) < 140.0 and float(np.max(np.abs(A[:, 1]))) < 170.0:
                 continue
             height = float(b["height"])
-            d = float(np.max(np.hypot(A[:, 0], A[:, 1])))
+            d = float(np.max(math.np_hypot(A[:, 0], A[:, 1])))
             far = self.p["skyline"]["far"]
             if d > far:
                 # pass 3: inside the sky backdrop, along its bearing, the same size seen from the stadium
@@ -1117,7 +1118,7 @@ def _min_rect(A):
     for deg in range(0, 90, 2):
         a = math.radians(deg)
         u = np.array([math.cos(a), math.sin(a)]); v = np.array([-u[1], u[0]])
-        pu, pv = (A - c) @ u, (A - c) @ v
+        pu, pv = math.np_matmul(A - c, u), math.np_matmul(A - c, v)
         area = np.ptp(pu) * np.ptp(pv)
         if best is None or area < best[0]:
             best = (area, u, v, pu.min(), pu.max(), pv.min(), pv.max())
@@ -1226,8 +1227,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "mb_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)

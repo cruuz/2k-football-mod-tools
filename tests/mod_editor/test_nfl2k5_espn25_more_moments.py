@@ -575,3 +575,168 @@ class NativeMomentsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AnniversaryQcTests(unittest.TestCase):
+    """Beta 76.3 (Noah 10/2: post-play faces "totally wrong and random", "you made Chris hogan black", no star icons).
+    Retail-free: the shipped appearance data and the star copy's semantics (Unicorn)."""
+
+    def test_the_shipped_looks_follow_the_rosters_row_for_row(self):
+        data = mm.Data.load()
+        self.assertEqual(set(data.appearance), set(data.rosters))
+        for key, rows in data.rosters.items():
+            self.assertEqual([look["name"] for look in data.appearance[key]],
+                             [f"{row['first']} {row['last']}" for row in rows], key)
+        looks = {(key, look["name"]): look for key, team in data.appearance.items() for look in team}
+        self.assertEqual(looks[("patriots_2016", "Chris Hogan")]["tone"], 0)
+        brady = looks[("patriots_2007", "Tom Brady")]
+        self.assertEqual((brady["tone"], brady["retail"]["photo"]), (0, 2712))
+        unknown = [name for (_key, name), look in looks.items() if look["tone"] is None]
+        self.assertLessEqual(len(unknown), 20)
+
+    def test_a_look_that_names_someone_else_is_refused(self):
+        data = mm.Data.load()
+        doc = json.loads(mm.APPEARANCE_JSON.read_text(encoding="utf-8"))
+        doc["teams"]["patriots_2016"][0]["name"] = "Somebody Else"
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "appearance.json"
+            path.write_text(json.dumps(doc), encoding="utf-8")
+            with self.assertRaises(mm.MoreMomentsError):
+                mm._load_appearance(path, data.rosters)
+            self.assertIsNone(mm._load_appearance(Path(folder) / "absent.json", data.rosters))
+
+    def test_star_copy_moves_one_bit_and_replays_the_retail_tail(self):
+        try:
+            from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+            from unicorn import x86_const as x86
+        except ImportError:
+            self.skipTest("unicorn required")
+        code_va = 0x14DA000
+        stub = mm.star_code(code_va + mm.STAR_OFFSET)
+        self.assertEqual(len(stub), mm.TABLE_OFFSET - mm.STAR_OFFSET)
+        resume = struct.unpack_from("<i", stub, len(stub) - 4)[0] + code_va + mm.STAR_OFFSET + len(stub)
+        self.assertEqual(resume, mm.STAR_RESUME)
+        for src_tag in (0, 1, 0x5F, 0xA0):
+            for dst_tag in (0x00, 0x01, 0xFE, 0xFF, 0x5A):
+                uc = Uc(UC_ARCH_X86, UC_MODE_32)
+                uc.mem_map(0x14DA000, 0x1000)
+                uc.mem_map(0x200000, 0x10000)
+                uc.mem_write(code_va + mm.STAR_OFFSET, stub)
+                src, dst, esi, stack = 0x200000, 0x201000, 0x202000, 0x208000
+                record = bytes(range(0x53)) + bytes([src_tag])
+                target = bytes(0x53) + bytes([dst_tag])
+                uc.mem_write(src, record)
+                uc.mem_write(dst, target)
+                uc.mem_write(esi + 0x11C, bytes([0x35]))
+                uc.mem_write(stack + 0x10, struct.pack("<I", 0x1234))
+                regs = {x86.UC_X86_REG_EBP: src, x86.UC_X86_REG_EDI: dst, x86.UC_X86_REG_ESI: esi,
+                        x86.UC_X86_REG_ESP: stack, x86.UC_X86_REG_EBX: 0x11111111, x86.UC_X86_REG_EDX: 0x22222222,
+                        x86.UC_X86_REG_EAX: 0xDEADBEEF, x86.UC_X86_REG_ECX: 0xCAFEBABE}
+                for reg, value in regs.items():
+                    uc.reg_write(reg, value)
+                uc.emu_start(code_va + mm.STAR_OFFSET, mm.STAR_RESUME)
+                with self.subTest(src=src_tag, dst=dst_tag):
+                    self.assertEqual(uc.reg_read(x86.UC_X86_REG_EIP), mm.STAR_RESUME)
+                    self.assertEqual(bytes(uc.mem_read(dst, 0x54)), bytes(0x53) + bytes([(dst_tag & 0xFE) | (src_tag & 1)]))
+                    self.assertEqual(bytes(uc.mem_read(src, 0x54)), record)
+                    self.assertEqual(uc.reg_read(x86.UC_X86_REG_EAX), 0x1234)        # mov eax,[esp+0x10]
+                    self.assertEqual(uc.reg_read(x86.UC_X86_REG_ECX), 0x35)          # movzx ecx,byte [esi+0x11c]
+                    for reg in (x86.UC_X86_REG_EBP, x86.UC_X86_REG_EDI, x86.UC_X86_REG_ESI, x86.UC_X86_REG_ESP,
+                                x86.UC_X86_REG_EBX, x86.UC_X86_REG_EDX):
+                        self.assertEqual(uc.reg_read(reg), regs[reg])
+
+    def test_the_star_copy_sits_in_the_owned_code_before_the_table(self):
+        entries = mm.table_entries(mm.Data.load())
+        code = mm.code_for(0x14DA000, 0x14F2000, entries, mm.venues(mm.Data.load()))
+        self.assertEqual(code[mm.STAR_OFFSET:mm.TABLE_OFFSET], mm.star_code(0x14DA000 + mm.STAR_OFFSET))
+        site = [s for s in mm.sites(0x14DA000, 0x14F2000, 50) if s[0] == "star_copy"]
+        self.assertEqual(len(site), 1)
+        _label, va, before, after = site[0]
+        self.assertEqual((va, before.hex()), (mm.STAR_VA, mm.STAR_RETAIL))
+        self.assertEqual(after[:5], b"\xe9" + struct.pack("<i", 0x14DA000 + mm.STAR_OFFSET - mm.STAR_VA - 5))
+        self.assertEqual(after[5:], b"\xcc" * (len(before) - 5))
+
+
+@unittest.skipUnless(retail_available(), "user-owned USA disc folder absent")
+class AnniversaryQcRetailTests(unittest.TestCase):
+    """Retail-backed: the C1030 site, an earlier install without the star copy, own-or-no-photo portraits."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_espn25_rosters as e
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.data = write_dataset(cls.tmp.name, copies=25)
+        cls.retail = e.read_xbe(RETAIL)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_no_branch_in_c1030_lands_inside_the_replaced_tail(self):
+        import capstone
+        image = XbeImage(self.retail)
+        start, end = 0xC1030, 0xC1E2E
+        self.assertEqual(image.read(mm.STAR_VA, 11).hex(), mm.STAR_RETAIL)
+        md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+        targets = set()
+        for ins in md.disasm(image.read(start, end - start), start):
+            if ins.mnemonic.startswith("j") or ins.mnemonic == "call":
+                try:
+                    targets.add(int(ins.op_str, 16))
+                except ValueError:
+                    pass
+        self.assertIn(mm.STAR_VA, targets)                      # the jne over the contract fix lands on the site
+        self.assertFalse(targets & set(range(mm.STAR_VA + 1, mm.STAR_VA + 11)))
+
+    def test_an_install_without_the_star_copy_still_reads_applied(self):
+        """Beta 76.0-76.2 installed the owned code with int3 where the star copy now sits and left C1030 retail."""
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        patched, _ = mm.apply(self.retail, self.data)
+        allocated, _ = space.apply(self.retail, mm.REQUESTS)
+        code, dat = mm.allocations(allocated)
+        body = mm.code_for(code["va"], dat["va"], mm.table_entries(self.data), mm.venues(self.data))
+        body = body[:mm.STAR_OFFSET] + b"\xcc" * (mm.TABLE_OFFSET - mm.STAR_OFFSET) + body[mm.TABLE_OFFSET:]
+        installed, _ = space.install_code(allocated, mm.OWNER, body)
+        image = XbeImage(installed)
+        earlier = bytearray(installed)
+        for label, va, before, after in mm.sites(code["va"], dat["va"], mm.RETAIL_COUNT + len(self.data.moments)):
+            if label != "star_copy":
+                at = image.offset(va, len(before))
+                earlier[at:at + len(before)] = after
+        for s in _sections(earlier):
+            earlier[s.header_offset + 36:s.header_offset + 56] = section_digest(earlier, s)
+        earlier = bytes(earlier)
+        site = image.offset(mm.STAR_VA, 11)
+        self.assertEqual(mm.status(earlier, self.data), "applied")
+        self.assertEqual(mm.apply(earlier, self.data)[1]["status"], "already_applied")
+        half = bytearray(earlier)                               # the site without its code is mixed, not applied
+        half[site:site + 11] = patched[site:site + 11]
+        self.assertEqual(mm.status(bytes(half), self.data), "foreign")
+
+    def test_a_player_gets_his_own_art_or_none_and_his_tone(self):
+        with outer_image() as archive:
+            main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
+            by_id = {e.name_id: e for e in archive.entries}
+            template = archive.read(by_id[mm.name_id(TEAMS["falcons_1998"]["template"])].virtual_offset,
+                                    by_id[mm.name_id(TEAMS["falcons_1998"]["template"])].size)
+        doc = rr.RosterDocument(main[32:])
+        rows = self.data.rosters["falcons_1998"]
+        looks = [{"name": f"{r['first']} {r['last']}", "tone": None} for r in rows]
+        looks[0] = dict(looks[0], tone=4)
+        looks[1] = dict(looks[1], tone=1, retail={"photo": 4321, "skin": 16, "face": 9, "dreads": 1})
+        looks[2] = dict(looks[2], tone=2, retail={"photo": 4321, "skin": 8, "face": 3, "dreads": 0})
+        raw = mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200,
+                              appearance=looks, main_photos=frozenset({999}))
+        players = sorted(rr.RosterDocument(raw[32:]).players, key=lambda p: p.index)
+        v = [p.record.values for p in players]
+        self.assertEqual(players[0].record.skin & 7, 4)
+        self.assertEqual((v[0]["photo_id"], v[3]["photo_id"]), (mm.NOPHOTO_BASE, mm.NOPHOTO_BASE + 3))
+        self.assertEqual((v[1]["photo_id"], players[1].record.skin, v[1]["face"], v[1]["dreads"]), (4321, 17, 9, 1))
+        blocked = mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200,
+                                  appearance=looks, main_photos=frozenset({4321}))
+        self.assertEqual(sorted(rr.RosterDocument(blocked[32:]).players, key=lambda p: p.index)[1].record.values["photo_id"],
+                         mm.NOPHOTO_BASE + 1)                   # a current record uses that id: its art may be his no more
+        from mod_editor.core import nfl2k5_my_career_prospects as prospects
+        for p in players:
+            self.assertEqual(p.record.values["star_tag"], int(prospects.native_overall(p.record) >= mm.STAR_MIN_OVERALL))
+        self.assertTrue(any(p.record.values["star_tag"] for p in players))

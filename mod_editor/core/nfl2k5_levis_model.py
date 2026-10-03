@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -89,7 +89,8 @@ class LoopPoint(mm.LoopPoint):
 
 def side_weights(nx, nz):
     """The four sides in this frame: east +x, west -x, south +z, north -z."""
-    return dict(E=max(nx, 0.0) ** 2, W=max(-nx, 0.0) ** 2, S=max(nz, 0.0) ** 2, N=max(-nz, 0.0) ** 2)
+    return dict(E=math.pow(max(nx, 0.0), 2), W=math.pow(max(-nx, 0.0), 2), S=math.pow(max(nz, 0.0), 2),
+                N=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
@@ -122,7 +123,7 @@ def plan_loop4(xe, xw, zs, zn, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -369,7 +370,7 @@ class Levis(sm.SoFi):
         self._tower()
         self._rails(loop, secs)
         self._boards(loop, secs)
-        east = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        east = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(east)["upper"][4]
         self.nosebleed = self.at(east, row[0] + 0.3, row[1] + 0.05)
         self._facade(loop, secs)
@@ -600,7 +601,7 @@ class Levis(sm.SoFi):
         every ``rails.every`` points; each lamp's centre joins ``light_points``."""
         q = self.p["rails"]
         P = [np.array(b, float) for b in base_pts]
-        L = np.concatenate([[0.0], np.cumsum([np.linalg.norm(b - a) for a, b in zip(P[:-1], P[1:])])])
+        L = np.concatenate([[0.0], np.cumsum([math.np_norm(b - a) for a, b in zip(P[:-1], P[1:])])])
         if toward is None:
             facing = lambda p_: -np.array([p_[0], 0.0, p_[2]])  # noqa: E731
         else:
@@ -612,13 +613,13 @@ class Levis(sm.SoFi):
             a, b = P[k], P[min(k + 1, len(P) - 1)]
             along = b - a
             along[1] = 0.0
-            along /= max(1e-9, np.linalg.norm(along))
+            along /= max(1e-9, math.np_norm(along))
             n = toward if toward is not None else np.array([-a[0], 0.0, -a[2]])
-            n = np.asarray(n, float) / max(1e-9, np.linalg.norm(n))
+            n = np.asarray(n, float) / max(1e-9, math.np_norm(n))
             ctr = (a + b) / 2 + np.array([0.0, q["h"] * 0.6, 0.0]) + n * 0.4
             normal = n * math.cos(math.radians(35)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(35))
             upv = np.cross(along, normal)
-            upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["lamp_h"] / 2)
             lm.quad("LIGHT_lv_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0),
                     (0, 0), facing=lambda p_, nn=normal: nn)
@@ -677,7 +678,7 @@ class Levis(sm.SoFi):
             zc = lp.z + lp.nz * (r[3] + Dp / 2 + 0.6)
             y0 = max(q["bottom"], r[1] + 0.5)          # never below the end's last row (its bottom hides behind the rim wall)
             face = np.array([0.0, 0.0, -float(end)])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             c = np.array([ox, y0, zc])
             hv = np.array([0.0, H, 0.0])
             m.box("lv_black", c + hv / 2, (right, (0, 1, 0), face), (W / 2 + 0.6, H / 2 + 0.6, Dp / 2), uvscale=0.1,
@@ -704,7 +705,7 @@ class Levis(sm.SoFi):
             sw, sh = q["sign_w"], q["sign_h"]
             for f_, sgn in ((face, 1.0), (-face, -1.0)):
                 sc = np.array([ox, y0 + H + 1.0, zc]) + f_ * (Dp / 2 + 0.1)
-                rr = np.cross(-f_, (0.0, 1.0, 0.0)); rr /= np.linalg.norm(rr)
+                rr = np.cross(-f_, (0.0, 1.0, 0.0)); rr /= math.np_norm(rr)
                 m.quad("lv_letters", sc - rr * sw / 2, sc + rr * sw / 2, sc + rr * sw / 2 + [0, sh, 0],
                        sc - rr * sw / 2 + [0, sh, 0], (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, f=f_: f)
             m.box("lv_black", np.array([ox, y0 + H + 1.0 + sh / 2, zc]), (right, (0, 1, 0), face), (sw / 2, sh / 2, Dp / 2 - 0.2),
@@ -805,7 +806,7 @@ class Levis(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(10.0), grow(30.0)]
@@ -832,7 +833,7 @@ class Levis(sm.SoFi):
             # east (bearings 40 to 160): the Diablo Range, 250 to 420 m; south-west (190 to 290): the Santa Cruz
             # Mountains, lower in the haze; north (the bay): flat
             def bump(c, w):
-                return math.exp(-(((bearing - c + 180) % 360 - 180) / w) ** 2)
+                return math.exp(-math.pow(((bearing - c + 180) % 360 - 180) / w, 2))
             h = 330.0 * bump(95.0, 55.0) + 150.0 * bump(240.0, 45.0) + 12.0
             h *= 0.85 + 0.3 * float(ridge.random())
             x, z = q["radius"] * math.cos(a), q["radius"] * math.sin(a)
@@ -915,8 +916,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if occlusion is not None and not (mat.startswith("LIGHT_") and tod == "n"):
         f = f * occlusion

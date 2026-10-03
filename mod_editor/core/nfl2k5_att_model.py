@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -82,7 +82,8 @@ class LoopPoint(mm.LoopPoint):
 
 
 def side_weights(nx, nz):
-    return dict(W=max(nx, 0.0) ** 2, E=max(-nx, 0.0) ** 2, N=max(nz, 0.0) ** 2, S=max(-nz, 0.0) ** 2)
+    return dict(W=math.pow(max(nx, 0.0), 2), E=math.pow(max(-nx, 0.0), 2), N=math.pow(max(nz, 0.0), 2),
+                S=math.pow(max(-nz, 0.0), 2))
 
 
 def plan_loop4(xw, xe, zn, zs, R, step=7.0, corner_steps=9):
@@ -115,7 +116,7 @@ def plan_loop4(xw, xe, zn, zs, R, step=7.0, corner_steps=9):
 
     def w(v):
         v = abs(v)
-        return 1.0 if v > 0.999 else float(np.clip((v - 0.55) / 0.4, 0, 1)) ** 2
+        return 1.0 if v > 0.999 else math.pow(float(np.clip((v - 0.55) / 0.4, 0, 1)), 2)
 
     for x, z, nx, nz in segs + [segs[0]]:
         if prev is not None:
@@ -319,7 +320,7 @@ class ATT(sm.SoFi):
         self._arches()
         self._lights()
         self._board()
-        west = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        west = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(west)["upper"][min(4, len(self.section(west)["upper"]) - 1)]
         self.nosebleed = self.at(west, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -472,7 +473,7 @@ class ATT(sm.SoFi):
         push = f["height"] * math.tan(math.radians(f["lean"]))
         for x, z in ring:
             v = np.array([x, z]) - c
-            v /= np.linalg.norm(v)
+            v /= math.np_norm(v)
             out.append((x + v[0] * push, z + v[1] * push))
         return out, q["eave"]
 
@@ -482,7 +483,7 @@ class ATT(sm.SoFi):
         between two deep arch trusses that hang below them), so the corridor is higher than the dome round it."""
         q = self.p["roof"]
         rho = self._roof_rho(x, z)
-        dome = q["eave"] + (q["crown"] - q["eave"]) * max(0.0, 1.0 - rho * rho) ** q["power"]
+        dome = q["eave"] + (q["crown"] - q["eave"]) * math.pow(max(0.0, 1.0 - rho * rho), q["power"])
         a = self.p["arches"]
         if abs(x) < a["x"] - 0.5 and abs(z) < q["panels_z"]:
             return max(dome, self.arch_y(z) - q["panel_drop"])
@@ -493,9 +494,9 @@ class ATT(sm.SoFi):
         if ring is None:
             pts, _y = self.eave_ring(360)
             P = np.array(pts)
-            ang = np.arctan2(P[:, 1], P[:, 0])
+            ang = math.np_arctan2(P[:, 1], P[:, 0])
             order = np.argsort(ang)
-            ring = (ang[order], np.hypot(P[:, 0], P[:, 1])[order])
+            ring = (ang[order], math.np_hypot(P[:, 0], P[:, 1])[order])
             self._eave_polar = ring
         a, r = ring
         th = math.atan2(z, x)
@@ -558,7 +559,7 @@ class ATT(sm.SoFi):
     def arch_y(self, z):
         q = self.p["arches"]
         t = min(1.0, abs(z) / q["feet_z"])
-        return q["peak"] * (1.0 - t ** q["power"])
+        return q["peak"] * (1.0 - math.pow(t, q["power"]))
 
     def _arches(self):
         """The two box arches (lattice steel, grey) along the field over the dome, from their feet outside the end walls."""
@@ -569,7 +570,7 @@ class ATT(sm.SoFi):
             x0 = sx * q["x"]
             top = [(x0, self.arch_y(z) + 0.0, z) for z in zs]
             bot = [(x0, max(GRADE, self.arch_y(z) - q["depth"]), z) for z in zs]
-            L = np.concatenate([[0.0], np.cumsum(np.hypot(np.diff(zs), np.diff([p_[1] for p_ in top])))])
+            L = np.concatenate([[0.0], np.cumsum(math.np_hypot(np.diff(zs), np.diff([p_[1] for p_ in top])))])
             for off, face in ((q["width"] / 2, 1.0), (-q["width"] / 2, -1.0)):
                 m.grid("att_truss", [[(x + off, y, z) for x, y, z in bot], [(x + off, y, z) for x, y, z in top]],
                        [[(s / q["depth"], 1.0) for s in L], [(s / q["depth"], 0.0) for s in L]],
@@ -587,11 +588,11 @@ class ATT(sm.SoFi):
         pts = []
         for k in range(0, len(ring) - 1, q["every"]):
             x, y, z = ring[k]
-            n = np.array([x, 0.0, z]); n /= max(1e-9, np.linalg.norm(n))
+            n = np.array([x, 0.0, z]); n /= max(1e-9, math.np_norm(n))
             ctr = np.array([x, y - q["drop"], z])
             along = np.array([-n[2], 0.0, n[0]])
             normal = -n * math.cos(math.radians(55)) + np.array([0.0, -1.0, 0.0]) * math.sin(math.radians(55))
-            upv = np.cross(along, normal); upv = upv / np.linalg.norm(upv) * (1.0 if upv[1] > 0 else -1.0)
+            upv = np.cross(along, normal); upv = upv / math.np_norm(upv) * (1.0 if upv[1] > 0 else -1.0)
             hw, hh = along * (q["w"] / 2), upv * (q["h"] / 2)
             m.quad("LIGHT_att_lights", ctr - hw - hh, ctr + hw - hh, ctr + hw + hh, ctr - hw + hh, (0, 1), (1, 1), (1, 0),
                    (0, 0), facing=lambda p_, nn=normal: nn)
@@ -631,7 +632,7 @@ class ATT(sm.SoFi):
         (U0, U1), (V0, V1) = self.board_crop(W / H)
         for sx in (1.0, -1.0):
             face = np.array([sx, 0.0, 0.0])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             fc = c + face * (Dp / 2 + 0.05)
             hw, hv = right * (W / 2), np.array([0.0, H / 2, 0.0])
             m.quad("jumbo_tron", fc - hw - hv, fc + hw - hv, fc + hw + hv, fc - hw + hv, (U0, V1), (U1, V1), (U1, V0), (U0, V0),
@@ -641,7 +642,7 @@ class ATT(sm.SoFi):
         (u0, u1), (v0, v1) = self.board_crop(q["end_w"] / q["end_h"])
         for sz in (1.0, -1.0):
             face = np.array([0.0, 0.0, sz])
-            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+            right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
             fc = c + face * (W / 2 + 0.65) + np.array([0.0, -H / 2 + q["end_h"] / 2 + 0.6, 0.0])
             hw, hv = right * (q["end_w"] / 2), np.array([0.0, q["end_h"] / 2, 0.0])
             m.quad("jumbo_tron", fc - hw - hv, fc + hw - hv, fc + hw + hv, fc - hw + hv, (u0, v1), (u1, v1), (u1, v0), (u0, v0),
@@ -677,7 +678,7 @@ class ATT(sm.SoFi):
         topv = []
         for x, z in R:
             v = np.array([x, z]) - c
-            v /= np.linalg.norm(v)
+            v /= math.np_norm(v)
             topv.append((x + v[0] * push, GRADE + f["height"], z + v[1] * push))
         end_w = f["end_wall_w"] / 2
 
@@ -727,7 +728,7 @@ class ATT(sm.SoFi):
         def grow(k):
             out = []
             for x, z in R:
-                v = np.array([x - cx, z - cz]); v /= np.linalg.norm(v)
+                v = np.array([x - cx, z - cz]); v /= math.np_norm(v)
                 out.append((x + v[0] * k, GRADE, z + v[1] * k))
             return out
         rings = [grow(0.0), grow(10.0), grow(34.0)]
@@ -827,8 +828,8 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     tint = TINT[tod] if out_side or tod != "n" else (1.0, 1.0, 1.0)
     if weather in OVERCAST and out_side:
@@ -872,7 +873,7 @@ def adjust_digits(shape, sc, model):
     strips = []
     for sz in (1.0, -1.0):
         face = np.array([0.0, 0.0, sz])
-        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= np.linalg.norm(right)
+        right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         centre = np.array([0.0, q["bottom"] + q["end_h"] + 3.6, sz * (q["side_w"] / 2 + 0.72)])
         strips.append(dict(centre=centre, right=right))
     counters = {}

@@ -38,6 +38,13 @@ STORAGE_RANGES = ((FLAGS, 7), (TB_YARD, 3))
 # flags: first contact (bits 0..2), active, negative direction, CPU touchback
 # preference, a controlled return has entered the field, force receiving 40.
 NONE, LANDING, END_ZONE, SHORT, OUT = range(5)
+# beta 76.3 (onside fix): the launch hook's first store gives every kick a contact class without ACTIVE. A normal
+# kickoff overwrites that byte in the same hook (ACTIVE + settings) before anything reads it, so it is unchanged. A
+# declared onside kick (Place Kick mode 2), and any kick the hook does not activate, keeps it: `held` then releases
+# both teams at the kick, as retail does. Every other reader of the class bits is behind `guard` (ACTIVE). Discs
+# built before 76.3 stored NONE there ("previous"): a declared onside kick stayed held until someone touched the ball.
+LAUNCH_CLASS = LANDING
+PREVIOUS_LAUNCH_CLASS = NONE
 ACTIVE, NEGATIVE, TAKE_TB, RETURNED, FORCE_40 = 8, 16, 32, 64, 128
 GOAL = 0x4E72A0
 LANDING_EDGE = 0x4F0F98
@@ -178,7 +185,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
 
     label("launch")
     save(False)
-    b("c605" + imm(FLAGS) + "00")
+    # See LAUNCH_CLASS. One immediate byte: the cave size and every label are unchanged.
+    b("c605" + imm(FLAGS)); label("launch_class"); b(f"{LAUNCH_CLASS:02x}")
     b("833d" + imm(PHASE) + "02"); j("0f85", "launch_done")
     b("8b742428")  # original [esp+8] is kicker, plus PUSHAD (32 bytes)
     b("85f6"); j("0f84", "launch_done")
@@ -586,6 +594,18 @@ def cave_bytes(**kwargs) -> bytes:
     return _code(_settings(**kwargs))[0]
 
 
+def previous_code(code: bytes, labels, cave_va: int) -> bytes:
+    """The same cave as built before beta 76.3 (launch class NONE): the only difference is that one byte."""
+    out = bytearray(code)
+    out[labels["launch_class"] - cave_va] = PREVIOUS_LAUNCH_CLASS
+    return bytes(out)
+
+
+def previous_cave_bytes(**kwargs) -> bytes:
+    code, labels = _code(_settings(**kwargs))
+    return previous_code(code, labels, CAVE_VA)
+
+
 def _offset(payload: bytes, va: int, size: int) -> int:
     for section in _sections(payload):
         if section.virtual_address <= va and va + size <= section.virtual_address + section.raw_size:
@@ -630,13 +650,15 @@ def _legacy_status(payload: bytes) -> str:
         got = payload[off:off + CAVE_SIZE]
         labels = cave_labels()
         retail = hashlib.sha256(got).hexdigest() == RETAIL_CAVE_SHA256
-        patched = False
+        patched = previous = False
         if not retail:
             try:
-                patched = got == cave_bytes(**_decode_legacy_settings(payload))
+                settings = _decode_legacy_settings(payload)
+                patched = got == cave_bytes(**settings)
+                previous = not patched and got == previous_cave_bytes(**settings)
             except (ValueError, struct.error, IndexError):
                 pass
-        expected = "retail" if retail else "applied" if patched else "foreign"
+        expected = "retail" if retail else "applied" if patched else "previous" if previous else "foreign"
         if expected == "foreign":
             return expected
         views = None
@@ -672,7 +694,7 @@ def status(payload: bytes) -> str:
 
 
 def _decode_settings(payload):
-    if _legacy_status(payload) == "applied":
+    if _legacy_status(payload) in ("applied", "previous"):
         return _decode_legacy_settings(payload)
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     result = relocated.read_settings(payload)
@@ -682,7 +704,7 @@ def _decode_settings(payload):
 
 def read_settings(payload: bytes) -> dict[str, object]:
     state = status(payload)
-    return {"status": state, **(_decode_settings(payload) if state == "applied" else {})}
+    return {"status": state, **(_decode_settings(payload) if state in ("applied", "previous") else {})}
 
 
 def apply(payload: bytes, *, touchback_yard=35, cpu_landing_probability=90,
@@ -693,6 +715,10 @@ def apply(payload: bytes, *, touchback_yard=35, cpu_landing_probability=90,
     if state == "applied":
         _require(_decode_settings(payload) == settings, "dynamic kickoff already applied with different settings; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, **settings}
+    if state == "previous":
+        # beta 76.3: upgrade a pre-76.3 cave in place (the launch class byte; same hooks, same settings).
+        _require(_decode_settings(payload) == settings,
+                 "dynamic kickoff (an earlier version) has different settings; rebuild from base")
     code, labels = _code(settings)
     edits = [("cave", CAVE_VA, code)] + [(n, va, _hook_bytes(n, labels)) for n, (va, _) in HOOKS.items()]
     buf = bytearray(payload)
@@ -708,7 +734,7 @@ def apply(payload: bytes, *, touchback_yard=35, cpu_landing_probability=90,
             buf[off:off + 20] = section_digest(bytes(buf), section)
     result = bytes(buf)
     _require(status(result) == "applied", "dynamic kickoff post-apply verification failed")
-    return result, {"status": "applied", "experimental": True, **settings,
+    return result, {"status": "applied", "experimental": True, "upgraded_from_previous": state == "previous", **settings,
                     "changed_bytes": sum(x != y for x, y in zip(payload, result)),
                     "sections_repinned": sorted(touched),
                     "edits": [{"label": n, "va": hex(va), "bytes": len(data),

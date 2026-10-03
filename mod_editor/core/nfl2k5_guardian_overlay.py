@@ -139,6 +139,22 @@ def _inspect(payload):
         for hook, before in HOOKS.values():
             if va <= hook and hook+len(before) <= va+size:
                 blob[hook-va:hook-va+len(before)] = before
+        # The Anniversary star-bit copy is a separate hook in C1030's tail,
+        # inside this full-function dependency guard. Normalize it only after
+        # verifying that owner's complete installation, including its code.
+        # Retail tails need neither the moments module nor its data files.
+        star_va, star_retail = 0xC1D6A, bytes.fromhex("8b4424100fb68e1c010000")
+        if va <= star_va and star_va + len(star_retail) <= va + size:
+            start = star_va - va
+            if blob[start:start + len(star_retail)] != star_retail:
+                from . import nfl2k5_espn25_more_moments as moments
+                # The manifest and allocator gates use the module's fixed
+                # Probe table. Both variants verify every owned byte and hook;
+                # this does not admit arbitrary custom tables or jump targets.
+                _require(moments.STAR_VA == star_va and bytes.fromhex(moments.STAR_RETAIL) == star_retail
+                         and (moments.status(payload) == "applied" or moments.Probe.status(payload) == "applied"),
+                         "foreign Guardian historic star dependency")
+                blob[start:start + len(star_retail)] = star_retail
         _require(hashlib.sha256(blob).hexdigest() == digest, f"foreign Guardian dependency at {va:#x}")
     state, practice = "retail", True
     labels = {name: 0 for name in HOOKS}
@@ -208,7 +224,7 @@ def apply(payload, *, guardian_everyone_practice=_UNSET):
                     "changed_bytes": sum(a != b for a, b in zip(payload, result))+len(result)-len(payload)}
 
 
-# Full retail dependencies, normalized only at the two owned hook sites.
+# Full retail dependencies, normalized at owned hooks and fully verified companion hooks.
 GUARDS = (
     (0xc16b0, 1750, 'f7e3aa60c3daa88af0da1ded2c0278672f810e63e018db2a4793b32819593523'),
     (0x8efa0, 194, 'b4615263dcf020a9b1f335413f3da8593af33e2214193d7225f93afb054e567e'),

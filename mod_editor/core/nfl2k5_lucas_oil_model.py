@@ -34,7 +34,7 @@ from . import nfl2k5_official_marks as official
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -278,11 +278,11 @@ class LucasOil(um.USBank):
         for key in ("nw", "se"):
             x, z = q[key]
             face = -np.array([x, 0.0, z])
-            face /= np.linalg.norm(face)
+            face /= math.np_norm(face)
             c = np.array([x, q["y"], z])
             self._board(m, c, face, q["w"], q["h"], q["wing"], self.board_frames, header=False)
             right = np.cross(-face, (0.0, 1.0, 0.0))
-            right /= np.linalg.norm(right)
+            right /= math.np_norm(right)
             aw, ah = q["aux"]
             for s_ in (-1, 1):
                 ac = c + right * s_ * (aw / 2 + 0.6) + np.array([0.0, q["h"] + 1.4, 0.0])
@@ -316,7 +316,7 @@ class LucasOil(um.USBank):
     def _hang(self, m, top, face, w, h, u0):
         face = np.array(face, float)
         right = -np.cross(face, (0.0, 1.0, 0.0))
-        right /= np.linalg.norm(right)
+        right /= math.np_norm(right)
         t = np.array(top, float)
         A, B = t - right * w / 2, t + right * w / 2
         dn = np.array([0.0, h, 0.0])
@@ -343,7 +343,7 @@ class LucasOil(um.USBank):
         for i in range(len(P)):
             a, b = P[i], P[(i + 1) % len(P)]
             e = b - a
-            L = float(np.hypot(*e))
+            L = float(math.np_hypot(*e))
             if L < 0.05:
                 continue
             n = np.array([e[1], -e[0]]) / L
@@ -490,7 +490,7 @@ class LucasOil(um.USBank):
         self._boards()
         self._window()
         self._banners()
-        north = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        north = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(north)["upper"][4]
         self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -598,8 +598,8 @@ def light(mat, P, N, tod, weather, outside=False):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "los_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)
@@ -917,7 +917,7 @@ def surface_span(span, bundle, name, colour_settings=None):
 
 def field_span(bundle, name, *, team=None, colour_settings=None, outer_index=0):
     """(field span of the same size, receipt) for one retail bundle (Allegiant's ladder and colour path, then tf's
-    surface)."""
+    surface). Without team art the field is the retail field: one rung, no estimate."""
     ml = sm._ml()
     tx = ml._tools()[0]
     chunk = ml.bundle_scenes(bundle)["field"]
@@ -931,6 +931,14 @@ def field_span(bundle, name, *, team=None, colour_settings=None, outer_index=0):
         if half and not team:
             continue
         painted = paint_field(base_dec, base_rec, chunk.system_bytes, weather, team=team, cap=cap, half=half)
+        if painted == base_dec:
+            # No team art reaches the field (the 2026 venue art off): every rung paints the retail field, which the
+            # retail stream already holds in this span, so there is one rung to try and nothing to estimate. The zlib
+            # estimate overstates this field (the RCA Dome field's VC-LZ stream is 1.19 times its zlib size, not
+            # FIELD_ZLIB_RATIO's 1.30) past FIELD_SKIP_OVER on all nine bundles, which skipped every rung untried and
+            # refused the build (b763, 2026-10-02). The palette cap only steps the team art down.
+            estimates = {(half, cap): 0}
+            break
         estimates[(half, cap)] = int(len(zlib.compress(painted, 9)) * sm.FIELD_ZLIB_RATIO)
     order = [(r, FIELD_SKIP_FIRST) for r in estimates] + [(r, sm.FIELD_SKIP_OVER) for r in estimates]
     tried = set()

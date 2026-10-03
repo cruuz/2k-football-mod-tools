@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -522,7 +522,7 @@ class PracticeFacility:
             top = _v(x, h + 3.0, z)
             ring = [_v(x + 1.3 * math.cos(a), h + 2.45, z + 1.3 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 9)]
             ti = m.v(top, (0.5, 0.0), (0.0, 1.0, 0.0))
-            ri = [m.v(p, (k / 8.0, 1.0), tuple((p - top) / np.linalg.norm(p - top))) for k, p in enumerate(ring)]
+            ri = [m.v(p, (k / 8.0, 1.0), tuple((p - top) / math.np_norm(p - top))) for k, p in enumerate(ring)]
             for k in range(8):
                 m.strip("pf_canvas", [ti, ri[k], ri[k + 1]])
             self.box(m, "pf_steel", (x, h + 1.9, z), (0.03, 1.1, 0.03))
@@ -671,8 +671,8 @@ class PracticeFacility:
             for k in range(4):
                 a, b = corners[k], corners[(k + 1) % 4]
                 self.wall(m, "pf_canvas", (a[0], a[2]), (b[0], b[2]), hh - 0.25, hh, tuple(
-                    np.array([(a[0] + b[0]) / 2 - x, (a[2] + b[2]) / 2 - z]) / max(1e-6, np.hypot((a[0] + b[0]) / 2 - x,
-                                                                                                  (a[2] + b[2]) / 2 - z))),
+                    np.array([(a[0] + b[0]) / 2 - x, (a[2] + b[2]) / 2 - z])
+                    / max(1e-6, math.np_hypot((a[0] + b[0]) / 2 - x, (a[2] + b[2]) / 2 - z))),
                           u_len=3.0, double=True)
 
     def _pavilion(self):
@@ -698,7 +698,7 @@ class PracticeFacility:
                 ic = m.v(_v(xm, r, zz + off), (0.5, 0.0), (0.0, 0.0, f_))
                 tri = [ia, ib, ic]
                 a_, b_, c_ = (np.array(m.P[i]) for i in tri)
-                if np.dot(np.cross(b_ - a_, c_ - a_), _v(0.0, 0.0, f_)) < 0:
+                if math.np_dot(np.cross(b_ - a_, c_ - a_), _v(0.0, 0.0, f_)) < 0:
                     tri = [ib, ia, ic]
                 m.strip("pf_canvas", tri)
         for zz in np.arange(z0, z1 + 0.01, q["bay"]):
@@ -900,13 +900,13 @@ def light(mat, P, N, tod, weather, poles=()):
             pool = np.zeros(n)
             L = np.asarray(poles, float)
             for p in L:
-                d2 = ((P[:, 0] - p[0]) ** 2 + (P[:, 2] - p[2]) ** 2) / NIGHT_POOL["radius"] ** 2
+                d2 = (np.square(P[:, 0] - p[0]) + np.square(P[:, 2] - p[2])) / math.pow(NIGHT_POOL["radius"], 2)
                 pool += 1.0 / (1.0 + d2)
             f = f + np.clip(pool, 0, 2.0) * NIGHT_POOL["gain"] / max(1.0, base)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.74 + 0.28 * nd) if tod == "d" else (0.62 + 0.46 * nd)
         if mat in ("pf_tree1", "pf_tree2", "pf_tree3", "pf_tree4"):
             f = np.full(n, 0.92 if tod == "d" else 0.86)
@@ -987,7 +987,7 @@ def surface_target(look):
 def flat_day_light(material):
     """The baked day light (0..1) of a level surface of ``material``: ``light``'s day term with the normal straight up."""
     s = np.array(SUN["d"], float)
-    s = s / np.linalg.norm(s)
+    s = s / math.np_norm(s)
     return BASE[material][0] * (0.74 + 0.28 * max(0.0, float(s[1]))) / 255.0
 
 

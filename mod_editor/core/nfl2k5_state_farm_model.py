@@ -34,7 +34,7 @@ from __future__ import annotations
 from . import nfl2k5_official_marks as official
 
 import json
-import math
+from . import exact_math as math
 import struct
 from pathlib import Path
 
@@ -144,7 +144,7 @@ class StateFarm(um.USBank):
         y = q["crown"] - q["c"] * z * z
         ax = abs(x)
         if ax > q["ox"]:
-            y -= q["k"] * (ax - q["ox"]) + q["k2"] * (ax - q["ox"]) ** 2
+            y -= q["k"] * (ax - q["ox"]) + q["k2"] * math.pow(ax - q["ox"], 2)
         return y
 
     def in_opening(self, x, z):
@@ -346,7 +346,7 @@ class StateFarm(um.USBank):
         for i in range(len(P)):
             a, b = P[i], P[(i + 1) % len(P)]
             e = b - a
-            L = float(np.hypot(*e))
+            L = float(math.np_hypot(*e))
             if L < 0.05:
                 continue
             n = np.array([e[1], -e[0]]) / L
@@ -379,8 +379,8 @@ class StateFarm(um.USBank):
             p_, n = self.logo_spot(segs, s, side)
             # 0.4 m proud of the drum wherever the sign spans it (the drum's corners bound its flat facets)
             rel = D - np.array([p_[0], 0.0, p_[1]])
-            near = np.abs(rel @ np.array([-n[1], 0.0, n[0]])) <= lq["w"] / 2 + 2.0
-            out = max(q["bulge"], float((rel[near] @ np.array([n[0], 0.0, n[1]])).max())) + 0.4
+            near = np.abs(math.np_matmul(rel, np.array([-n[1], 0.0, n[0]]))) <= lq["w"] / 2 + 2.0
+            out = max(q["bulge"], float((math.np_matmul(rel[near], np.array([n[0], 0.0, n[1]]))).max())) + 0.4
             x, z = p_ + n * out
             y = self.roof_top(float(p_[0]), float(p_[1])) * 0.5
             # flush on the drum: no black back (lab 3, PROVED IN GAME: the transparent ground showed black there)
@@ -427,7 +427,7 @@ class StateFarm(um.USBank):
             bearing = math.degrees(math.atan2(e, nn)) % 360.0
 
             def bump(c, w):
-                return math.exp(-(((bearing - c + 180) % 360 - 180) / w) ** 2)
+                return math.exp(-math.pow(((bearing - c + 180) % 360 - 180) / w, 2))
             h = 150.0 * bump(265.0, 40.0) + 70.0 * bump(170.0, 35.0) + 50.0 * bump(20.0, 50.0) + 10.0
             h *= 0.85 + 0.3 * float(rnd.random())
             bot.append((x, self.GRADE - 2.0, z))
@@ -461,7 +461,7 @@ class StateFarm(um.USBank):
         self._ribs()
         self._lights()
         self._boards()
-        north = min(loop, key=lambda lp: (lp.nx - 1) ** 2 + (lp.z / 40.0) ** 2)
+        north = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
         row = self.section(north)["upper"][4]
         self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
         self._facade()
@@ -552,8 +552,8 @@ def light(mat, P, N, tod, weather, outside=False):
         f = np.full(n, 1.0)
     else:
         sun = np.array(SUN[tod])
-        s = sun / np.linalg.norm(sun)
-        nd = np.clip(N @ s, 0, 1)
+        s = sun / math.np_norm(sun)
+        nd = np.clip(math.np_matmul(N, s), 0, 1)
         f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "sf_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)

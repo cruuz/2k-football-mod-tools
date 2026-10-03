@@ -165,8 +165,10 @@ class Machine:
             self.put(team + 0x10C, team + 0x200)
             self.f32(team + 0x204, sign)
         for team, book, kind, xz in (
-            (self.KICK_TEAM, self.KICK_BOOK, 10 if onside else 8, ka.kickoff_xz_2026()),
-            (self.RECEIVE_TEAM, self.RECEIVE_BOOK, 11 if onside else 9, ka.KICK_RETURN_XZ_2026),
+            # beta 76.3: the retail "Onside Kickoff" / "Onside Kick Return" formations are types 8 / 9 like the
+            # normal pair (PROVED in all 36 books); only the kicker's Place Kick mode (2) marks the onside kick.
+            (self.KICK_TEAM, self.KICK_BOOK, 8, ka.kickoff_xz_2026()),
+            (self.RECEIVE_TEAM, self.RECEIVE_BOOK, 9, ka.KICK_RETURN_XZ_2026),
         ):
             self.put(team + 0xC, team + 0x300)
             self.put(team + 0x308, book + 0x200)
@@ -519,12 +521,49 @@ class RetailExecutionTests(unittest.TestCase):
                     m.run(dk.HOOKS["plan"][0], ecx=who)
                     self.assertEqual(m.get(m.COUNTER), old + 1)
 
+    def test_declared_onside_kick_releases_both_teams_at_the_kick_and_76_2_held_them(self):
+        # Discord 2026-10-02: on an onside kick the return team stood still until the ball reached them. The real
+        # onside formation is type 8, so `held` applied; the unactivated launch left no contact class to release it.
+        previous = bytearray(self.payload)
+        at = dk._offset(self.payload, dk.cave_labels()["launch_class"], 1)
+        self.assertEqual(previous[at], dk.LAUNCH_CLASS)
+        previous[at] = dk.PREVIOUS_LAUNCH_CLASS
+        for payload, released in ((self.payload, True), (bytes(previous), False)):
+            for who in ("COVERAGE", "BLOCKER"):
+                with self.subTest(released=released, who=who):
+                    m = Machine(payload, onside=True)
+                    m.launch()
+                    old = m.get(m.COUNTER)
+                    m.run(dk.HOOKS["plan"][0], ecx=getattr(m, who))
+                    self.assertEqual(m.get(m.COUNTER), old + (1 if released else 0))
+        # A normal kickoff from the same machine is still held until first contact (unchanged).
+        m = Machine(self.payload)
+        m.launch()
+        self.assertEqual(m.flags() & (dk.ACTIVE | 7), dk.ACTIVE)
+        old = m.get(m.COUNTER)
+        m.run(dk.HOOKS["plan"][0], ecx=m.COVERAGE)
+        self.assertEqual(m.get(m.COUNTER), old)
+
+    def test_previous_cave_reads_previous_and_upgrades_by_one_byte(self):
+        previous = bytearray(self.payload)
+        at = dk._offset(self.payload, dk.cave_labels()["launch_class"], 1)
+        previous[at] = dk.PREVIOUS_LAUNCH_CLASS
+        previous = bytes(previous)
+        self.assertEqual(dk.status(previous), "previous")
+        self.assertEqual(dk.read_settings(previous)["status"], "previous")
+        upgraded, receipt = dk.apply(previous)
+        self.assertEqual(upgraded, self.payload)
+        self.assertTrue(receipt["upgraded_from_previous"])
+        with self.assertRaises(dk.DynamicKickoffError):
+            dk.apply(previous, touchback_yard=30)
+
     def test_lineup_exception_is_scoped_to_normal_kickoff_coverage(self):
-        for phase, kind, who_name in ((1, 8, "COVERAGE"), (4, 8, "COVERAGE"),
-                                      (2, 10, "COVERAGE"), (2, 8, "KICKER")):
+        # beta 76.3: the old (2, 10, onside) case modelled a formation type the retail books never use; the real
+        # onside kickoff is type 8 and keeps the normal line-up exception, unchanged since beta 76.
+        for phase, kind, who_name in ((1, 8, "COVERAGE"), (4, 8, "COVERAGE"), (2, 8, "KICKER")):
             outputs = []
             for payload in (self.base, self.payload):
-                m = Machine(payload, phase=phase, onside=kind == 10)
+                m = Machine(payload, phase=phase)
                 who = getattr(m, who_name)
                 m.f32(m.CONTACT, 1000)
                 m.f32(m.CONTACT + 8, 914.4)  # force the retail clamp to run
@@ -642,11 +681,13 @@ class RetailExecutionTests(unittest.TestCase):
     def test_safety_onside_scrimmage_and_reset_bypass(self):
         for phase, onside in ((1, False), (2, True), (4, False)):
             m = self.machine(phase=phase, onside=onside)
-            self.assertEqual(m.flags(), 0)
+            # beta 76.3: an unactivated launch keeps a contact class and no ACTIVE bit (see LAUNCH_CLASS).
+            self.assertEqual(m.flags(), dk.LAUNCH_CLASS)
+            self.assertFalse(m.flags() & dk.ACTIVE)
             m.position(0, 4800)
             m.event("ground")
             m.event("touch")
-            self.assertEqual(m.flags(), 0)
+            self.assertEqual(m.flags(), dk.LAUNCH_CLASS)
             m.run(dk.HOOKS["plan"][0], ecx=m.COVERAGE)
             m.run(dk.HOOKS["motion"][0], esi=m.COVERAGE)
             self.assertEqual(m.get(m.COUNTER), 2)

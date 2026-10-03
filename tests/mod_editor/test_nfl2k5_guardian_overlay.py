@@ -9,6 +9,7 @@ from pathlib import Path
 import struct
 import sys
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -128,6 +129,101 @@ class PatchTests(unittest.TestCase):
             self.assertTrue(any(r["owner"]==g.OWNER and int(r["start"],0)==va and r["size"]==len(before) for r in rows))
         a=g.allocation(self.patched)
         self.assertTrue(any(r["owner"]==g.OWNER and int(r["start"],0)==a["va"] and r["size"]==a["size"] for r in rows))
+
+    def test_retail_star_tail_does_not_import_anniversary_dependencies(self):
+        import builtins
+        original_import = builtins.__import__
+
+        def without_moments(name, globals=None, locals=None, fromlist=(), level=0):
+            if "nfl2k5_espn25_more_moments" in name or "nfl2k5_espn25_more_moments" in (fromlist or ()):
+                raise AssertionError("retail star tail must not load Anniversary dependencies")
+            return original_import(name, globals, locals, fromlist, level)
+
+        with mock.patch("builtins.__import__", side_effect=without_moments):
+            self.assertEqual(g.status(self.retail), "retail")
+            self.assertEqual(g.status(self.patched), "applied")
+            self.assertEqual(g.apply(self.patched)[0], self.patched)
+
+    def test_anniversary_star_copy_and_guardian_compose_both_orders_and_replay(self):
+        from mod_editor.core import nfl2k5_espn25_more_moments as moments
+        allocated, _ = g.space.apply(self.retail, g.REQUESTS + moments.REQUESTS, scaleout=True)
+        for variant, owner in (("shipped", moments), ("manifest_probe", moments.Probe)):
+            with self.subTest(variant=variant):
+                guardian_first, _ = g.apply(allocated)
+                guardian_first, _ = owner.apply(guardian_first)
+                moments_first, _ = owner.apply(allocated)
+                moments_first, _ = g.apply(moments_first)
+                self.assertEqual(guardian_first, moments_first)
+                self.assertEqual(g.status(guardian_first), "applied")
+                self.assertEqual(owner.status(guardian_first), "applied")
+                self.assertEqual(g.apply(guardian_first)[0], guardian_first)
+                self.assertEqual(owner.apply(guardian_first)[0], guardian_first)
+
+    def test_anniversary_guard_normalization_rejects_foreign_hooks_code_and_neighbors(self):
+        from mod_editor.core import nfl2k5_espn25_more_moments as moments
+        allocated, _ = g.space.apply(self.retail, g.REQUESTS + moments.REQUESTS, scaleout=True)
+        for variant, owner in (("shipped", moments), ("manifest_probe", moments.Probe)):
+            both, _ = g.apply(allocated)
+            both, _ = owner.apply(both)
+            image = XbeImage(both)
+            code, _ = moments.allocations(both)
+            requests = g.space._read_scale_directory(both)
+            for label, va in (
+                ("star jump target", moments.STAR_VA + 1),
+                ("owned star code", code["va"] + moments.STAR_OFFSET),
+                ("other owned code", code["va"]),
+                ("owned team table", code["va"] + moments.TABLE_OFFSET),
+                ("before star hook", moments.STAR_VA - 1),
+                ("after star hook", moments.STAR_VA + len(bytes.fromhex(moments.STAR_RETAIL))),
+            ):
+                with self.subTest(variant=variant, label=label):
+                    bad = bytearray(both)
+                    bad[image.offset(va)] ^= 1
+                    if code["va"] <= va < code["va"] + code["size"]:
+                        # Deliberately reseal the malformed fixture: rejection must
+                        # inspect companion code, not just its previous checksum.
+                        g.space._seal_scaleout(bad, requests)
+                    bad = repin(bad)
+                    self.assertEqual(g.status(bad), "foreign")
+                    with self.assertRaises(ValueError):
+                        g.apply(bad)
+
+    def test_anniversary_star_hook_and_owned_code_versions_must_match(self):
+        from mod_editor.core import nfl2k5_espn25_more_moments as moments
+        allocated, _ = g.space.apply(self.retail, g.REQUESTS + moments.REQUESTS, scaleout=True)
+        for variant, owner in (("shipped", moments), ("manifest_probe", moments.Probe)):
+            current, _ = g.apply(allocated)
+            current, _ = owner.apply(current)
+            image = XbeImage(current)
+            code, _ = moments.allocations(current)
+            requests = g.space._read_scale_directory(current)
+            star_size = moments.TABLE_OFFSET - moments.STAR_OFFSET
+            star_at = image.offset(code["va"] + moments.STAR_OFFSET, star_size)
+            hook_retail = bytes.fromhex(moments.STAR_RETAIL)
+            hook_at = image.offset(moments.STAR_VA, len(hook_retail))
+            for current_body in (False, True):
+                for current_hook in (False, True):
+                    with self.subTest(variant=variant, current_body=current_body, current_hook=current_hook):
+                        candidate = bytearray(current)
+                        if not current_body:
+                            candidate[star_at:star_at + star_size] = b"\xcc" * star_size
+                        if not current_hook:
+                            candidate[hook_at:hook_at + len(hook_retail)] = hook_retail
+                        g.space._seal_scaleout(candidate, requests)
+                        candidate = repin(candidate)
+                        if current_body == current_hook:
+                            self.assertEqual(owner.status(candidate), "applied")
+                            self.assertEqual(owner.apply(candidate)[0], candidate)
+                            self.assertEqual(g.status(candidate), "applied")
+                            self.assertEqual(g.apply(candidate)[0], candidate)
+                        else:
+                            self.assertEqual(owner.status(candidate), "foreign")
+                            with self.assertRaises(ValueError):
+                                owner.apply(candidate)
+                            if current_hook:
+                                self.assertEqual(g.status(candidate), "foreign")
+                                with self.assertRaises(ValueError):
+                                    g.apply(candidate)
 
 
 if __name__ == "__main__": unittest.main()

@@ -31,7 +31,7 @@ def code_for(settings, code_va, data_va):
     return kickoff._code(settings, cave_va=code_va, storage_ranges=((data_va, 7), (data_va + 7, 3)))
 
 
-def _installed(payload):
+def _installed(payload, *, with_previous=False):
     code, data = _sites(payload)
     _, labels = code_for(kickoff._settings(), code["va"], data["va"])
     vals = {key: payload[code["raw"] + labels["config_" + key] - code["va"]]
@@ -39,7 +39,10 @@ def _installed(payload):
     settings = kickoff._settings(vals["tb_yard"], vals["aim_prob"],
                                  (vals["target_min"], vals["target_max"]), vals["tb_prob"])
     expected, labels = code_for(settings, code["va"], data["va"])
-    space._require(payload[code["raw"]:code["raw"] + code["size"]] == expected, "foreign relocated code")
+    installed = payload[code["raw"]:code["raw"] + code["size"]]
+    # beta 76.3: a relocated cave written before the onside fix differs only in the launch class byte.
+    previous = installed != expected and installed == kickoff.previous_code(expected, labels, code["va"])
+    space._require(installed == expected or previous, "foreign relocated code")
     views = None
     for name, (va, original) in kickoff.HOOKS.items():
         off = kickoff._offset(payload, va, len(original))
@@ -51,8 +54,9 @@ def _installed(payload):
     old = kickoff._offset(payload, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
     old_bytes = payload[old:old + kickoff.CAVE_SIZE]
     space._require(hashlib.sha256(old_bytes).hexdigest() == kickoff.RETAIL_CAVE_SHA256
-                   or old_bytes == kickoff._code(settings)[0], "foreign retired kickoff cave")
-    return settings
+                   or old_bytes == kickoff._code(settings)[0]
+                   or old_bytes == kickoff.previous_cave_bytes(**settings), "foreign retired kickoff cave")
+    return (settings, previous) if with_previous else settings
 
 
 def status(payload: bytes) -> str:
@@ -65,17 +69,16 @@ def status(payload: bytes) -> str:
             if owners:
                 code, _ = _sites(payload)
                 if payload[code["raw"]:code["raw"] + code["size"]] != b"\xcc" * code["size"]:
-                    _installed(payload)
-                    return "applied"
+                    return "previous" if _installed(payload, with_previous=True)[1] else "applied"
         # Use the legacy-only recognizer to avoid a status delegation cycle.
-        return "retail" if kickoff._legacy_status(payload) in ("retail", "applied") else "foreign"
+        return "retail" if kickoff._legacy_status(payload) in ("retail", "applied", "previous") else "foreign"
     except (ValueError, KeyError, IndexError, struct.error):
         return "foreign"
 
 
 def read_settings(payload):
     state = status(payload)
-    return {"status": state, **(_installed(payload) if state == "applied" else {})}
+    return {"status": state, **(_installed(payload) if state in ("applied", "previous") else {})}
 
 
 def apply(payload: bytes, **kwargs) -> tuple[bytes, dict]:
@@ -85,8 +88,23 @@ def apply(payload: bytes, **kwargs) -> tuple[bytes, dict]:
         settings = _installed(payload)
         space._require(not kwargs or kickoff._settings(**kwargs) == settings, "different kickoff settings; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, **settings}
+    if state == "previous":
+        # beta 76.3: rewrite the relocated cave with the onside fix (same allocation, hooks and settings).
+        settings = _installed(payload)
+        space._require(not kwargs or kickoff._settings(**kwargs) == settings, "different kickoff settings; rebuild from base")
+        code, data = _sites(payload)
+        content, labels = code_for(settings, code["va"], data["va"])
+        installed, _ = space.install_code(payload, OWNER, content)
+        buf = bytearray(installed)
+        for s in _sections(buf):
+            buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
+        result = bytes(buf)
+        space._require(status(result) == "applied", "kickoff relocation upgrade postcondition failed")
+        return result, {"status": "applied", "upgraded_from_previous": True, "experimental": True, "runtime_witnessed": False,
+                        "changed_bytes": sum(a != b for a, b in zip(payload, result)), "code_va": hex(code["va"]),
+                        "data_va": hex(data["va"]), **settings}
     legacy = kickoff._legacy_status(payload)
-    settings = kickoff._decode_legacy_settings(payload) if legacy == "applied" else kickoff._settings(**kwargs)
+    settings = kickoff._decode_legacy_settings(payload) if legacy in ("applied", "previous") else kickoff._settings(**kwargs)
     space._require(not kwargs or settings == kickoff._settings(**kwargs), "different legacy kickoff settings")
     if space.status(payload) == "retail":
         allocated, allocation_receipt = space.apply(payload, REQUESTS)
