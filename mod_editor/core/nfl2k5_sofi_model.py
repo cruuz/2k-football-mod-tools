@@ -298,10 +298,14 @@ class SoFi(mm.MetLife):
                     break
         return out
 
-    def _crowd(self, m, loop, profiles):
+    def _crowd(self, m, loop, profiles, *, standing=False):
         """u5's crowd billboards, cut at every aisle: each band stops half an aisle short of it and starts again half an
         aisle past it, measured along the band itself, so the seat texture's steps show between the sections."""
-        q = self.p["crowd"]
+        q = dict(self.p["crowd"])
+        if standing:
+            # A deck is a floor, not a tall pair of seating rows. Put a
+            # person-height billboard on each floor without spanning its riser.
+            q.update(rows_per_band=1, lean=0.0)
         half = q["aisle"] / 2.0
         R = max(len(pr) for pr in profiles) - 1
         cuts = self._aisle_cuts(loop)
@@ -313,12 +317,15 @@ class SoFi(mm.MetLife):
                 d0, y0 = pr[min(k, last)]
                 d1, y1 = pr[min(k + q["rows_per_band"], last)]
                 # a profile without this band collapses the billboard to zero height at its last row
-                h = 0.0 if k >= last else (y1 - y0) + q["extra"]
+                h = 0.0 if k >= last else (1.8 if standing else min((y1 - y0) + q["extra"], 2.8))
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
                 vs.append(lp.s * q["v_per_m"])
             bot, top, vs = np.array(bot), np.array(top), np.array(vs)
             L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
+            # The upper rows and corners are longer than the field-wall line.
+            # Using lp.s there stretched the fan atlas several times wider.
+            vs = (loop[0].s + L) * q["v_per_m"]
             aisles = [L[i] + t * (L[i + 1] - L[i]) for i, t in cuts]
             edges = [0.0] + [e for a in aisles for e in (a - half, a + half)] + [L[-1]]
 

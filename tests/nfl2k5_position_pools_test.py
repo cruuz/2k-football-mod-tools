@@ -73,6 +73,7 @@ def build_synthetic_xbe() -> bytes:
     buf[off(pools.KIND_TO_ENUM_VA): off(pools.KIND_TO_ENUM_VA) + 19] = pools.RETAIL_KIND_TO_ENUM
     for kind, pair in enumerate(RETAIL_LIST_PAIRS):
         struct.pack_into("<II", buf, off(pools.KIND_LIST_PAIRS_VA + 8 * kind), *pair)
+    struct.pack_into("<I", buf, off(pools.PHYSICAL_TO_KIND_VA + 4 * 15), pools.KIND_OLB)
     struct.pack_into("<17I", buf, off(pools.ROSTER_TARGETS_VA), *pools.RETAIL_TARGETS)
     struct.pack_into("<17I", buf, off(pools.ROSTER_MAXIMA_VA), *pools.RETAIL_MAXIMA)
     struct.pack_into("<17I", buf, off(pools.ABBREV_TABLE_VA), *RETAIL_ABBREV_PTRS)
@@ -284,6 +285,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(tables["enum_to_kind"][pools.ENUM_OLB], pools.KIND_ILB)
         self.assertEqual(tables["kind_to_enum"][pools.KIND_OLB], pools.ENUM_ILB)
         self.assertEqual(tables["kind_list_pairs"][pools.KIND_OLB], pools.LB_LIST_PAIR)
+        self.assertEqual(tables["kind_list_pairs"][10], pools.HB_LIST_PAIR)
         self.assertEqual(tables["roster_targets"]["OLB"], 0)
         self.assertEqual(tables["roster_targets"]["ILB"], 5)
         self.assertEqual(tables["roster_maxima"]["DE"], 6)

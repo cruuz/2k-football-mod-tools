@@ -54,6 +54,23 @@ class Geometry(unittest.TestCase):
                 self.assertLessEqual(max(us), 1.0)
                 self.assertLess(max(us) - min(us), 0.25)
 
+    def test_fan_spacing_follows_the_seating_row_through_corners(self):
+        for mesh in self.model.meshes.values():
+            for strip in mesh.groups.get("crowd", ()):
+                # Higher U is the foot of the billboard in the retail atlas.
+                foot_u = max(mesh.UV[i][0] for i in strip)
+                feet = [i for i in strip if abs(mesh.UV[i][0] - foot_u) < 1e-6]
+                for a, b in zip(feet, feet[1:]):
+                    metres = np.linalg.norm(np.array(mesh.P[a]) - mesh.P[b])
+                    repeats = abs(mesh.UV[a][1] - mesh.UV[b][1])
+                    self.assertAlmostEqual(metres, repeats * 9.14, places=5)
+
+    def test_crowd_bands_do_not_stretch_people_over_tall_risers(self):
+        for mesh in self.model.meshes.values():
+            for strip in mesh.groups.get("crowd", ()):
+                for a, b in zip(strip[::2], strip[1::2]):
+                    self.assertLessEqual(abs(mesh.P[a][1] - mesh.P[b][1]), 2.8 + 1e-6)
+
     def test_aisles_cut_the_crowd_over_the_texture_steps(self):
         """An aisle at both ends of every straight and corner, sections of 11 to 18 m, symmetric about each end zone and
         the 50; every crowd band leaves a gap about 1.2 m wide at each aisle it crosses, and the seat texture's u is a
