@@ -38,3 +38,20 @@ LABELS = {
     'venue_name': 192,
     'venue_retail': 222,
 }
+
+DISPLAY_CODE = bytes.fromhex(
+    "0fb68900000000e9fcffffff890d000000000fb6b90000000089f9e9fcffffff8b1500000000c3"
+)
+DISPLAY_RELOCATIONS = (
+    (3, 1, 'display_map', 0),
+    (14, 1, 'display_selected', 0),
+    (21, 1, 'display_map', 0),
+    (34, 1, 'display_selected', 0),
+    (8, 2, 'record_get', 0),
+    (28, 2, 'record_get', 0),
+)
+DISPLAY_LABELS = {
+    'display_caption': 0,
+    'display_return': 32,
+    'display_select': 12,
+}

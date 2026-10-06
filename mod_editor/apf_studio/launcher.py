@@ -512,8 +512,16 @@ class XeniaLauncher:
                     revision = parse_payload(destination.read_bytes()).revision
                     detail += f" [revision {revision}]"
                     if revision < CURRENT_REVISION:
-                        defect = "beta 75 feedback bug" if revision == 1 else "Finesse move qualification bug"
+                        defect = ("beta 75 feedback bug" if revision == 1 else
+                                  "Finesse move qualification bug" if revision == 2 else
+                                  "discharge lost during native charge cleanup")
                         detail += f" [{defect}; install a newly exported revision {CURRENT_REVISION} patch]"
+                if kind == "situations":
+                    from mod_editor.core.apf2k8_situation_mask import parse_payload
+                    revision = parse_payload(destination.read_bytes()).version
+                    detail += f" [revision {revision}]"
+                    if revision == 3:
+                        detail += " [personnel weights unchanged in this revision; export and install revision 4]"
                 if config.exists():
                     self.settings._regular(config, "Xenia config")
                     enabled = patch_enabled and tomllib.loads(config.read_text(encoding="utf-8-sig")).get("Memory", {}).get("apply_patches") is True
@@ -538,6 +546,10 @@ class XeniaLauncher:
             revision = parse_payload(payload).revision
             if revision < CURRENT_REVISION:
                 raise LaunchError(f"This legacy revision {revision} charge patch needs replacement; export revision {CURRENT_REVISION}")
+        if kind == "situations":
+            from mod_editor.core.apf2k8_situation_mask import parse_payload
+            if parse_payload(payload).version == 3:
+                raise LaunchError("This revision 3 situation patch leaves personnel weights unchanged; export revision 4")
         if not enabled:
             raise LaunchError("The chosen patch is disabled; export an enabled Studio patch")
         destination = self.settings.patches_folder / filename

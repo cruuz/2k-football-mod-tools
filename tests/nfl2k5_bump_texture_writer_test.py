@@ -215,6 +215,22 @@ class BumpTextureWriterTests(unittest.TestCase):
         self.assertEqual(metadata["rgba_sha256"], _digest(self.retail_rgba))
         self.assertEqual(metadata["chunk_index"], 1)
 
+    def test_coloured_normal_preserves_red_blue_and_alpha(self) -> None:
+        # R != B exercises the A8R8G8B8 storage convention. The old grayscale-only fixtures missed the swap.
+        target_dir = self.work / "colour-dst"
+        target_dir.mkdir()
+        _write_fixture(target_dir)
+        authored = bytes((32, 96, 240, 211)) * (WIDTH * HEIGHT)
+        png = self._write_png(authored, "colour-normal.png")
+        evidence = writer.import_bump(self.source_dir, target_dir, 0, "bump_sleeve", png)
+        self.assertTrue(evidence["post_write_readback_matches"])
+        exported, _metadata = writer.export_bump(target_dir, 0, "bump_sleeve")
+        _width, _height, actual = decode_rgba_png(exported, (WIDTH, HEIGHT))
+        self.assertEqual(actual, authored)
+        verification = writer.verify_write(target_dir, 0, "bump_sleeve", authored)
+        self.assertTrue(verification["ok"], verification)
+        self.assertTrue(all(verification["checks"].values()))
+
     def test_import_authored_pattern_verifies_and_touches_only_the_span(
         self,
     ) -> None:

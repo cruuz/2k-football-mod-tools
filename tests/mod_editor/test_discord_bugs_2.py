@@ -56,12 +56,31 @@ class DigitLayoutTests(unittest.TestCase):
                         self.assertEqual(decoded.getpixel((8, 8)), (d * 20, 30, 40, d * 20))
 
     def test_ambiguous_and_unequal_cells_refuse_with_exact_reason(self):
-        for size, reason in (((80, 32), "layout"), ((161, 16), "divisible")):
+        for size, reason in (((80, 33), "layout"), ((161, 16), "divisible")):
             with tempfile.TemporaryDirectory() as tmp:
                 path = Path(tmp) / "sheet.png"
                 Image.new("RGBA", size).save(path)
                 with self.assertRaisesRegex(ValidationError, reason):
                     digits.split_digit_sheet(path, map(Target, range(10)))
+
+    def test_documented_square_cell_grid_is_detected_automatically(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "sheet.png"
+            image = Image.new("RGBA", (80, 32))
+            for digit in range(10):
+                x, y = digit % 5 * 16, digit // 5 * 16
+                image.paste((digit * 20, 30, 40, 255), (x, y, x + 16, y + 16))
+            image.save(path)
+            before = path.read_bytes()
+            rows = digits.split_digit_sheet(path, map(Target, range(10)))
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(len(rows), 10)
+            for digit, row in enumerate(rows):
+                self.assertEqual((row.digit, row.layout, row.cell_size),
+                                 (digit, "grid_5x2", (16, 16)))
+                with Image.open(BytesIO(row.png)) as decoded:
+                    self.assertEqual(decoded.size, (16, 16))
+                    self.assertEqual(decoded.getpixel((8, 8)), (digit * 20, 30, 40, 255))
 
 
 class ApfCompositionTests(unittest.TestCase):

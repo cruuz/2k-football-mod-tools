@@ -6278,17 +6278,17 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+        "reason": "Compatibility option retires the incomplete screen; old recipe keys remain readable."
       },
       "id": "nfl2k5.franchise.practice_squad_screen",
       "input_constraints": [
         "Pinned USA XBE and applied practice_squad, franchise_practice, practice_reserves prerequisites.",
         "Allocate all selected owner requests together before any installation. Foreign, mixed and altered prerequisites refuse.",
-        "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves on legacy saves; 16 or an explicitly eligible 17 on migrated saves, 65 physical slots.",
-        "No CPU poaching or protection; no save-format growth."
+        "The incomplete screen is removed. Final cuts release players to free agency; storage and transactions remain available for existing reserves in the Studio save tools.",
+        "No new practice squads, modern eligibility policy, CPU filling, protection or poaching."
       ],
       "portme": [
-        "Complete Noah's in-game witness list in ASTRA_PS_NATIVE_SCREEN_REPORT.md, including sorted identity, 0/12 reserves, multi-human context, save/reload, cap/depth and game-day exclusion."
+        "Noah: start a fresh franchise, complete preseason cuts, reach regular Week 1, save/reload, and confirm Practice Squad is absent from Coach's Desk."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -6300,8 +6300,8 @@
         "evidence": [
           "ASTRA_PS_NATIVE_SCREEN_REPORT.md"
         ],
-        "scope": "The lab opened the Giants Practice Squad from the Coach's Desk and switched between Active and Reserves without the old popup. Complete transaction, save lifecycle and Xbox coverage remain unwitnessed.",
-        "status": "partial"
+        "scope": "Removal checked with native offline execution. Rendered navigation, full save/reload and gameplay await Noah.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
@@ -6311,7 +6311,7 @@
             "required": true
           }
         ],
-        "notes": "Requires practice_squad, franchise_practice, practice_reserves and a complete allocator request union; WIRING.md specifies protected integration."
+        "notes": "Legacy option key preserved; selected recipes restore the Schedule/Practice/Crib table."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
@@ -6321,9 +6321,9 @@
         "resource": "One delegated Coach Desk pointer, 4096 immutable RX bytes and 256 zero-initialized RW bytes",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Coach's Desk Active and Reserves lists with guarded Promote and Demote actions.",
+      "summary": "Restore the Coach's Desk Crib destination and normal preseason cuts; preserve existing reserve save ownership.",
       "surface": "menus",
-      "title": "Practice Squad screen (experimental, unwitnessed)",
+      "title": "Remove incomplete Practice Squad screen",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_practice_squad_screen"
     },
     {
@@ -6546,12 +6546,12 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; its three locks default on. Protected UI integration is in WIRING.md."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; move locks default off and Speedster lock defaults on. Protected UI integration is in WIRING.md."
       },
       "id": "nfl2k5.gameplay.abilities_runtime",
       "input_constraints": [
         "Pinned USA XBE and the complete sealed owner union. Rebuild v1 or different configurations from the supported base.",
-        "Three independent Boolean locks default true when the runtime is enabled; abilities stays off in every preset.",
+        "Move locks default false, preserving base moves and charge for every player; Speedster lock defaults true. Abilities stays off in every preset.",
         "Two footer bits encode Unranked/Star/Superstar/X-Factor. Slot limits 0/2/4/7; legacy Unranked flags retain v1 permissions. Excess flags on a tiered record fail closed.",
         "Juke/Agility, Stiff-Arm/Strength, Hurdle/Jumping, Truck/Break Tackle and Spin/Pass Rush gain at most 0.02 per tier after native clamps, capped at 1 during live phase 14.",
         "With either move lock on, charge is limited to live carriers and known move consumers. Both move locks off restores native charge. Disabled locks never grant rating bonuses.",
@@ -6586,12 +6586,12 @@
             "required": false
           },
           {
-            "allowed": "Boolean; defaults true and meaningful only with abilities enabled",
+            "allowed": "Boolean; defaults false and meaningful only with abilities enabled",
             "name": "abilities_lock_right_stick",
             "required": false
           },
           {
-            "allowed": "Boolean; defaults true and meaningful only with abilities enabled",
+            "allowed": "Boolean; defaults false and meaningful only with abilities enabled",
             "name": "abilities_lock_special_moves",
             "required": false
           },
@@ -10244,7 +10244,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; its three locks default on. Protected UI integration is in WIRING.md."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; move locks default off and Speedster lock defaults on. Protected UI integration is in WIRING.md."
       },
       "id": "nfl2k5.rosters.abilities_v2",
       "input_constraints": [
@@ -12411,9 +12411,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s20 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s20 row of the main ROST",
         "hash_pins": [
           "63632a745ff023a328d16ef92e41baf9bca707308a8fc0818d1c39dd37c0dbed",
-          "2c22b158c419dcbb013a24221f42e6b10595f72b860dfa2f64ae21b216ac5272",
+          "43168f0e16a42bb726f6819a43c2c89f5cf61c70474322ba386c077319093ee6",
           "5bb67457acaba6e7865d7ba8152e31b21d29a5f3a669277172c31b86cb7ed6b9",
-          "803a8bc926a21c5fc75ff4eaf81477bf53a6f5cea349b436db1324c5183a9939"
+          "a5a4dfecbbacb978d417108d8f2069376471351b198222092a23216f3330b7cb"
         ],
         "resource": "archive entries s20{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s20",
         "retail_file": "the vc_53450030 archive packs holding the Raiders stadium bundles, and the main roster"
@@ -12552,9 +12552,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s07 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s07 row of the main ROST",
         "hash_pins": [
           "b48b1b75b8b5cb7614493a6bb9f2c7f2e613714a5111016012967ccfab3d3ea8",
-          "8f5fd5ed33df0f290e3c098e8f2d6768452a86bc12c107c2d844fdcd9a030d3d",
+          "dedafd0a8b07a6cf0321aea859837e30adf03e783446cf2702cad8dc1082f20f",
           "876bfd59b2c66a4bccb8705fb0ade92b5365d23cf8d39165cf8b6403a117e5dc",
-          "78609d3a024b217630219351d6ed343df43fd8b0b95e06dd0112d76a9ea63e84"
+          "0d964efa40fbc13ff5f17c9f93540fa969ea39b0355abd5f8a75648a25e6a15e"
         ],
         "resource": "archive entries s07{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s07",
         "retail_file": "the vc_53450030 archive packs holding the Cowboys stadium bundles, and the main roster"
@@ -12749,11 +12749,11 @@
         "format": "In-place fixed-span SCNE resources in the nine s12 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s12 row of the main ROST",
         "hash_pins": [
           "3baabdf9e98ed284216cc27445856f7f8a9060dd1356ab033ad079327f90e587",
-          "c3aa13eedc7a60629956bb3037b081c96921dbb0aced2d3b41dd27e83212b065",
-          "246b718b72cf4bb8e90c8e9bdb83a21ea63afcf032ee5720bbfc2e5f40496643",
+          "fdcc701bf15b7464d0ce8b1eb58ba59097375321e96746bd85cbb0cd531c1f60",
+          "99f9d20f2bd9a54b6b07db9322e44cbc2503ecdcb3f0f97c4b808b6f41ef632a",
           "e5c6be1dc68e0e1719c31e846c7c797aff0af967f75381e803a66b55c00151e5",
-          "abe0d9a38353386b8cbfd7d9a118f34f0248450e48044a8886eb2c9d7032b2b7",
-          "7f7bda6dc6e49694bdb2564d368b139d0277627df07e4d2790591eb97fb91a6d"
+          "120190ed1249c10e2c11151cdcd224b0fa835621f3afc7138157891e8b90f2e8",
+          "a32387a309d5efb12161c401f597fde0ec428688e65540101a10d72fd6839615"
         ],
         "resource": "archive entries s12{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s12",
         "retail_file": "the vc_53450030 archive packs holding the Jaguars stadium bundles, and the main roster"
@@ -12821,9 +12821,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s16 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s16 row of the main ROST",
         "hash_pins": [
           "9cfb084ca94003169c95a177498beb6f884495cd4625e1bd80d7bb11b9811c48",
-          "0ffa3d5f292c285a02995316769f19ef2936853eabca92b909d6055e4b9cfeb8",
+          "3bf5a60e439abbd54ac75ad6baf68421ff59cdb8a64fbb5131a39a7ebf7d2605",
           "1bf261ef9dc96dbcdd5530eb671ee94e16a7712f5ab304e53473678024f6a1de",
-          "576cb86dc0e8417239a671f8ed706213df6eb0ac2977543b0fb295956677eda3"
+          "398a37424c59f97940d23e013ae80e9854c61be6f810feaebd7fd6cb56e88430"
         ],
         "resource": "archive entries s16{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s16",
         "retail_file": "the vc_53450030 archive packs holding the Patriots stadium bundles, and the main roster"
@@ -12894,9 +12894,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s14 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s14 row of the main ROST",
         "hash_pins": [
           "41adaee558a90e06cbbd3a47753fea8339f09e728347dc1d0b0684e76e6f1173",
-          "9f016919cfe01100b60c5ad01057fde7a6fdcc4ec5753d1f142ded09f188d49c",
+          "1841944b989804946e2101339302b160f8753b46df70e3fa68aabb32a3326ef4",
           "1cc8ec3ca37e416eec9ac2d50a787e5f3a94361e2a3d227577ee167d7131b173",
-          "69ecd6785ba621f694cce4aa0edcb17dafeba13c79aa822f95bddd9a67bbdb82"
+          "ce10705a752677913595d4e74e7028f746152b9cb6f65356f9a0f3afe7513d26"
         ],
         "resource": "archive entries s14{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s14",
         "retail_file": "the vc_53450030 archive packs holding the Dolphins stadium bundles, and the main roster"
@@ -12967,9 +12967,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s03 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s03 row of the main ROST",
         "hash_pins": [
           "7b103d8845e69c49bceea39b00d350aa20d8e57d06a08b4f1c4ca56a2882b4a1",
-          "d3c2f810b03d218ca94998dfce90f071301df09da6b3ea4ca29e86ab0f659d53",
+          "954b65028fe4a8cf75fe3e532d63a87870f831ddf3a025b5d5bdc14bd8175fa8",
           "011740844a7e4237e1aefe2953a1813ca64e09091e7c33e56bbc87a60a7ee37d",
-          "229f60777adb319586abf2aa15edb20b98708f2dd4d77cc9eeec36391e041f41"
+          "50c7c34d5a3b778dec1a0955e11513981275a0d322b2b74f9928460f7acedce1"
         ],
         "resource": "archive entries s03{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s03",
         "retail_file": "the vc_53450030 archive packs holding the Bills stadium bundles, and the main roster"
@@ -13040,9 +13040,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s10 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s10 row of the main ROST",
         "hash_pins": [
           "c7bdff363dcb2957dd9b8d3aef990ea9a1b0369e3343334168daaf370f1aba6d",
-          "4cfd41d418ed25db26c42480a751956777ef9907c1a29236d4a80ee5ef20823e",
+          "6167e809fceb3f37d91a98a0386d3702a9f05530df78d462d26b14573e823a7c",
           "13cca2066764a2909442b3066bdf37d98e4bb7df521a371f9fe4925b09f2d40b",
-          "c49c18e4ce4fdc3c1bc47a294d7b87d58442f9424d428f7702c37c1c0ed811ab"
+          "db7c3dbc2458ee73e3d2fa063c8b7157f3ee89f55b2b412dd4fcb72c072908af"
         ],
         "resource": "archive entries s10{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s10",
         "retail_file": "the vc_53450030 archive packs holding the Packers stadium bundles, and the main roster"
@@ -13113,9 +13113,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s25 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s25 row of the main ROST",
         "hash_pins": [
           "ba0e1c95200155c602eea10b8395378d4c75989f0bbef11546bae1af3f668aec",
-          "2ca3b52d256e1ee26e6b4ff65ad8c4ae6cc57e2b05c54e3bc0340f3255e6065a",
+          "2b255b63085a15d0596cc7d11ff692bf4fc28842011d1b94ff4b7e049e358839",
           "dd23e78790ce5fea1dad06fc6fd6b7c8669efc684f75b33d3ef5625c15f5f96e",
-          "9b901dbc2720ecbe165a8705d2a4cb2f15c56e4b90010f62594fbdb8d2e31348"
+          "4c903ace000dd6d8f3b3a387822a7e4be562b43509187d5909970d4c404e91c5"
         ],
         "resource": "archive entries s25{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s25",
         "retail_file": "the vc_53450030 archive packs holding the 49ers stadium bundles, and the main roster"
@@ -13186,9 +13186,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s11 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s11 row of the main ROST",
         "hash_pins": [
           "73b6108105c258909ac0f587d98eaf9f82f3f7af5931e6009b58918ecc94933d",
-          "1fcab1a6a4d358860c63ba0c47edf8c6d1c3aaece92a38eb39eea284276f0e7e",
+          "351d57a4e22d10aec54a55b052e94b60b3dda4371055bd76130624834e21582f",
           "9bf537ba551091dbb0d6b2798237556cd46b4fece64262b8d96e3e748bed83ca",
-          "239035da760c3d4c47ac31bb88c2a76b8bda5659bbb53e93a5d19fe49dc0f563"
+          "22a071daf2366bc4ac19150c0854ff777ba9de51dd005f8887c41cfb779f2c5e"
         ],
         "resource": "archive entries s11{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s11",
         "retail_file": "the vc_53450030 archive packs holding the Colts stadium bundles, and the main roster"
@@ -13259,9 +13259,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s01 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s01 row of the main ROST",
         "hash_pins": [
           "63ba9409e1330aed7dca26f82b4b85ad108579f85f57e4f898b2732b43bba2a6",
-          "a1a307259d7051721349ce061d96a2c51b10f19d564fd7198068b6d1937d0d2a",
+          "b8e6f63ba9600f3b37c7c0733eaf40422c0df6a36832dd23b15c99576939cad3",
           "58e71859906ced218a934f61a5f36c822bad97cda028c1a40f347c04a179ed11",
-          "5b7c3d9896636d9f0e2870177e865d295c300972142b94a70a81ca822b98d1ca"
+          "362e3a994be30d40a1caa5e0e9eb21e84ff20109c4526354a3c041edac91d34f"
         ],
         "resource": "archive entries s01{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s01",
         "retail_file": "the vc_53450030 archive packs holding the Falcons stadium bundles, and the main roster"
@@ -13399,9 +13399,9 @@
         "format": "In-place fixed-span SCNE resources in the eighteen s18/s19 bundles of the vc_53450030 archive packs (stadium and intro_cameras chunks) and the four crowd outers",
         "hash_pins": [
           "1e6f0ffe3af39b12cf464fb65f09b36b00488320419611aae05f9c929486c25d",
-          "28c956ae4d4235f6ac27b22ffc4975d4d34adbf889fd3a534deb73e1936a38fc",
+          "c216f42312cdf9fcd56c9a5da5da3b6436b415feed1d21c49996d6527e0c441c",
           "6a80c5e1ce69f121a58115af77bf6e94391866a1b40003226af25c0906061759",
-          "3510d536cc277beb8298a4c7ee89dfe8db1f6aa3e6634cf0ee782a6beccb6ba4"
+          "81ae25cd59675196e2c22cbfcc434c9c2c687d26bdf4ddd111445d52f6bc1d85"
         ],
         "resource": "archive entries s18{d,a,n}{d,r,s}.iff and s19{d,a,n}{d,r,s}.iff: the stadium and intro_cameras scenes; outers 2550, 2845, 2551 and 2846: the crowds18 and crowds19 superfan atlases",
         "retail_file": "the vc_53450030 archive packs holding the Giants and Jets stadium bundles and crowd scenes"
@@ -13553,9 +13553,9 @@
         "format": "In-place fixed-span SCNE resources in the eighteen s23/s24 bundles of the vc_53450030 archive packs (field, stadium, intro_cameras and s24 cityscape chunks), the s23 and s24 rows of the main ROST and the four crowd outers",
         "hash_pins": [
           "152de2b2a9e11e6c881ae6fb40934975768cbaec303d11ea39543766bfdd9a67",
-          "72f2aa79955ed306e7f50cba2edcec5e45cb70298c581827c76f2506a95c6f45",
+          "8741eeef9a6a24384d3d401f409ce27b39a595eb4a5361f7d5f0b12a60da6a00",
           "7016f66823744c23cafb2c62a6cb3776ab3fc9f0648aaed9b62dd0aa4af8933c",
-          "44c9ec019c0f638f97699c0a788c182389712a188e7517bda4d8d857612c5550"
+          "27f586389cdc1a93ced3069d702bd731a21f42f2205d9a4cfe006ed2d073dc61"
         ],
         "resource": "archive entries s23, s24 and s40{d,a,n}{d,r,s}.iff: the field, stadium, intro_cameras and cityscape scenes; the main ROST stadium rows s23, s24 and s40; outers 2555, 2850, 2556 and 2851: the crowds23 and crowds24 superfan atlases",
         "retail_file": "the vc_53450030 archive packs holding the Rams and Chargers stadium bundles and crowd scenes, and the main roster"
@@ -13626,9 +13626,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s00 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s00 row of the main ROST",
         "hash_pins": [
           "a09d2f3c7ec3d4655b77dde36088f5cd8e01148219c91273171acfc3614a5376",
-          "7bd2f6d9de2fcf36d5196defb31dd25fd2cfe0f7a1024023bfc44701e66bd3f1",
+          "b5bd54be453218b4a3026dcb4a63b72da7464567b54502622471bd289160ce3d",
           "5256e590b35c2c529651551efc67651785b0cb626d476b69715bed51b71da620",
-          "f0ba9a4b46b386905c8e0046f011cd4cca9c5d21ea75eb97c8d7c42068b3fbc8"
+          "00088e09b8f387b0ad3768be7e7840d22357740d9ec1597ce766324f216a2724"
         ],
         "resource": "archive entries s00{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s00",
         "retail_file": "the vc_53450030 archive packs holding the Cardinals stadium bundles, and the main roster"
@@ -13771,9 +13771,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s15 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s15 row of the main ROST",
         "hash_pins": [
           "e0e6744e35f064142a90a493fe306f511c1ee7855e55752076ad8caeef699376",
-          "60837b68c6071e4c6a0accb12bbaa0c78430c3884c252586f0999c30dfdc558e",
+          "3972999b08235995c3df2d2a012e5e01381a291422c64f0a3aad90c07c800559",
           "81f415d012a8294c5aa9ee1e1705fca97bdfbed943c7ac0cadfc64f942be75ec",
-          "618febbc38fd7012f1b32ff3760f0f96bc1eef80eed043faa6e8e654d1331d99"
+          "a4346df096e6de7ab112bee15a50cad9aae7b68eed45e038c54712de03c51482"
         ],
         "resource": "archive entries s15{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s15",
         "retail_file": "the vc_53450030 archive packs holding the Vikings stadium bundles, and the main roster"

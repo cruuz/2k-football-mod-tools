@@ -37,7 +37,8 @@ class AbilitiesPanel(QWidget):
         layout = QVBoxLayout(self)
         note = QLabel(
             "EXPERIMENTAL / UNWITNESSED. Retail ignores these ability flags. Patch: "
-            "Player abilities rules v2 supplies move locks and small live rating bonuses. "
+            "Player abilities rules v2 adds small live rating bonuses. Base moves work "
+            "for every player by default; move locks are optional. "
             "Star, Superstar and X-Factor allow 2, 4 and 7 abilities. Their bonuses are "
             "2, 4 and 6 effective points, capped at 100. The cosmetic star stays separate. "
             "Lowering a tier removes excess abilities in the order shown. Rosters Undo restores them.")
@@ -72,7 +73,7 @@ class AbilitiesPanel(QWidget):
             ("lock_speedster", "Lock Speedster speed"),
         ):
             check = QCheckBox(caption)
-            check.setChecked(True)
+            check.setChecked(runtime.DEFAULT_LOCKS[name])
             check.toggled.connect(self._locks_changed)
             self.lock_checks[name] = check
             lock_layout.addWidget(check)

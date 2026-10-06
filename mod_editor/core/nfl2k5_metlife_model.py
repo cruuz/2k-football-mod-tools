@@ -1195,7 +1195,7 @@ def adjust_kept(sc, model, mat_ix):
     for zs in (1, -1):
         for name, side in (('digit_playclock_L', -1), ('digit_playclock_R', 1)):
             tvec = np.array([-zs, 0.0, 0.0])
-            c = np.array([side * 0.9 * zs, 2.6, zs * (L - 0.06)])
+            c = np.array([-side * 0.9 * zs, 2.6, zs * (L - 0.06)])
             bl = c - tvec * 0.75 - up * 1.1; br = c + tvec * 0.75 - up * 1.1
             quads.setdefault(name, []).append((bl, br, br + up * 2.2, bl + up * 2.2))
     positions, colours, uvs, subs = [], [], [], []

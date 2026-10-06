@@ -151,6 +151,9 @@ def compile_offense(resource, pack, *, asset_id):
         aux = insp.FORMATION_AUX_BASE + f.replace_index * insp.FORMATION_AUX_SIZE
         result[32 + aux + 72:32 + aux + 80] = compiled.replacement[32 + aux + 72:32 + aux + 80]
         names[off] = f.custom_name.encode('utf-16le') + b'\0\0'
+    checkdown_routes = []
+    play_formations = {p.id: [pack.formations_by_id[fid] for fid, menu in pack.menus if p.id in menu]
+                       for p in pack.plays}
     for p in pack.plays:
         require(p.donor.index in ps, 'Play donor must be ordinary offense')
         donor_flags, donor_chains = lib.play_chains(old, p.donor.index)
@@ -158,7 +161,20 @@ def compile_offense(resource, pack, *, asset_id):
                 f'{p.id}: donor metadata differs from source')
         require(lib.qb_signature(p.assignments[0]) == ('run' if p.play_type == 'run' else p.play_type),
                 f'{p.id}: QB chain disagrees with play type')
+        # Old complete-offense files retain their original authored nodes.
+        # Normalize their deep-back flats here so rebuilding those packs in
+        # Studio receives the same geometry repair as new route authoring.
+        variants = [lib.forward_back_flats(p.assignments, f.slot_positions, f.position_codes)
+                    for f in play_formations[p.id]]
+        require(all(v[0] == variants[0][0] for v in variants),
+                f'{p.id}: shared checkdown has conflicting formation depths')
+        authored, repaired_slots = variants[0]
         req = p.request_mapping(asset_id)
+        req['assignments'] = [codec.chain_json(chain) for chain in authored]
+        if repaired_slots:
+            checkdown_routes.append(dict(play_id=p.id, play_index=p.replace_index,
+                                         slots=repaired_slots,
+                                         formations=[f.id for f in play_formations[p.id]]))
         req.pop('custom_name')
         compiled = writer.compile_formation_play_creations(staging, (), [req])
         flags, chains = lib.play_chains(compiled.replacement[32:], p.replace_index)
@@ -228,6 +244,7 @@ def compile_offense(resource, pack, *, asset_id):
                   new_node_count=final.node_count, replaced_formations=len(fs), replaced_plays=len(ps),
                   retained_plays=len(source.plays)-len(ps), menus=len(pack.menus),
                   name_pool_bytes=struct.unpack_from('<I', new, writer.POOL_COUNT_WORD)[0]*2,
-                  pool_strategy='exact chain/string interning; stable indices', runtime_witness=False)
+                  pool_strategy='exact chain/string interning; stable indices',
+                  checkdown_routes=checkdown_routes, runtime_witness=False)
     return writer.CompiledFormationPlayResource(asset_id, 'complete-offense:'+asset_id, digest(resource), digest(rebuilt),
         sum(b-a for a,b in diffs), diffs, (), (), tuple(sorted(fs)), tuple(sorted(ps)), rebuilt, final, report)

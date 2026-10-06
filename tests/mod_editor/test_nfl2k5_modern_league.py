@@ -84,7 +84,7 @@ class LeagueTests(unittest.TestCase):
         events=[]
         fixture=complete_tests.PipelineTests()
         fixture.run_build([ROOT/r['pack'] for r in self.manifest],events)
-        self.assertEqual(events,[[p.OFFENSE_SCHEMA]*32,'menus','scoring'])
+        self.assertEqual(events,['forward_pass_ruling',[p.OFFENSE_SCHEMA]*32,'menus','scoring'])
     def test_all_diagram_pages_have_the_correct_native_te_role(self):
         pages=json.loads((ROOT/'pb/diagrams/league_pages.json').read_text())
         self.assertEqual(set(pages),set(p.TEAM_BOOKS))

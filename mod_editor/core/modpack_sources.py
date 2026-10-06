@@ -90,7 +90,7 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None):
     work.mkdir(parents=True, exist_ok=True)
     portable_project = f._path(work / "league-project.json")
     with f._transaction(portable_project, (recipe_path, project_path, *assets.values()), overwrite=True) as part:
-        part.write_text(json.dumps(project, indent=1), encoding="utf-8", newline="\n")
+        part.write_text(json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     assets.update({"assets/documents/frozen-recipe.json": recipe_path,
                    "assets/documents/frozen-project.json": project_path,
                    "assets/documents/league-project.json": portable_project})
@@ -129,7 +129,7 @@ def materialize(recipe, directory):
     recipe_path = f._contained_path(root, "SOFTDRINK-build-recipe.json")
     m._require(not project_path.exists() and not recipe_path.exists(), "Choose a new source folder to preserve your edits")
     with f._transaction(project_path) as part:
-        part.write_text(json.dumps(project, indent=1), encoding="utf-8", newline="\n")
+        part.write_text(json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     local["project"] = str(project_path)
     with f._transaction(recipe_path) as part:
         part.write_text(json.dumps(local, indent=2), encoding="utf-8", newline="\n")
@@ -189,8 +189,15 @@ def build_project(plan, project, progress):
     from . import mod_build
     from .nfl2k5_source_cache import Nfl2k5SourceCache
     from .nfl2k5_build_service import Nfl2k5BuildService
-    cache = Nfl2k5SourceCache().index(Path(plan.source))
     service = Nfl2k5BuildService()
+    progress = progress or (lambda *_: None)
+    progress("Checking the SOFTDRINK artwork recipe", 0, 0)
+    document = service.preflight_project(Path(project))
+    mod_build.preflight_project_options(plan, document)
+    mod_build.preflight_board_source(plan, progress)
+    if not document["edits"]:
+        return mod_build.build(plan, progress)
+    cache = Nfl2k5SourceCache().index(Path(plan.source))
     def project_progress(event):
         progress(getattr(event, "message", str(event)), getattr(event, "completed", 0), getattr(event, "total", 0))
     return mod_build.build(plan, progress, _project_builder=lambda output: service.build(cache, Path(project), output, project_progress))

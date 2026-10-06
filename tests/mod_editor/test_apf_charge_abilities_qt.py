@@ -29,7 +29,7 @@ class ChargeQtTests(unittest.TestCase):
             facade = SimpleNamespace(build_options=ApfBuildOptions(), launcher=XeniaLauncher(settings, root / "data"))
             dialog = ChargeAbilitiesDialog(facade)
             text = " ".join(label.text() for label in dialog.findChildren(QLabel))
-            for phrase in ("Revision 3", "Finesse", "spin and juke", "Power", "stiff arm and shoulder charge", "medal stars"):
+            for phrase in ("Revision 4", "Finesse", "spin and juke", "Power", "stiff arm and shoulder charge", "Medal stars", "executed move"):
                 self.assertIn(phrase, text)
             self.assertFalse(dialog.build_enabled.isChecked())
             self.assertFalse(dialog.enabled.isChecked())
@@ -39,7 +39,7 @@ class ChargeQtTests(unittest.TestCase):
             dialog.enabled.setChecked(True)
             dialog.install()
             from mod_editor.core.apf2k8_charge_abilities import parse_payload, FILENAME
-            self.assertEqual(parse_payload((settings.patches_folder / FILENAME).read_bytes()).revision, 3)
+            self.assertEqual(parse_payload((settings.patches_folder / FILENAME).read_bytes()).revision, 4)
             self.assertTrue(facade.launcher.pass_fetch_status(kind="charge_abilities")["enabled"])
             reopened = ChargeAbilitiesDialog(facade)
             self.assertTrue(reopened.build_enabled.isChecked())

@@ -16,17 +16,17 @@
       "default_enabled": false,
       "expose": true,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      "reason": "Compatibility option retires the incomplete screen; old recipe keys remain readable."
     },
     "id": "nfl2k5.franchise.practice_squad_screen",
     "input_constraints": [
       "Pinned USA XBE and applied practice_squad, franchise_practice, practice_reserves prerequisites.",
       "Allocate all selected owner requests together before any installation. Foreign, mixed and altered prerequisites refuse.",
-      "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves, 65 physical slots.",
-      "No CPU poaching or protection; no save-format growth."
+      "The incomplete screen is removed. Final cuts release players to free agency; storage and transactions remain available for existing reserves in the Studio save tools.",
+      "No new practice squads, modern eligibility policy, CPU filling, protection or poaching."
     ],
     "portme": [
-      "Complete Noah's in-game witness list in ASTRA_PS_NATIVE_SCREEN_REPORT.md, including sorted identity, 0/12 reserves, multi-human context, save/reload, cap/depth and game-day exclusion."
+      "Noah: start a fresh franchise, complete preseason cuts, reach regular Week 1, save/reload, and confirm Practice Squad is absent from Coach's Desk."
     ],
     "public_distribution": {
       "game_data": "never-bundle-retail-data",
@@ -36,7 +36,7 @@
     },
     "runtime": {
       "status": "not-tested",
-      "scope": "Bounded CPU execution of native page dispatch, construction, transactions, rebuilding and teardown. Graphics, controller use, Xbox loading and save lifecycle remain unwitnessed.",
+      "scope": "Removal checked with native offline execution. Rendered navigation, full save/reload and gameplay await Noah.",
       "evidence": [
         "ASTRA_PS_NATIVE_SCREEN_REPORT.md"
       ]
@@ -49,7 +49,7 @@
           "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
         }
       ],
-      "notes": "Requires practice_squad, franchise_practice, practice_reserves and a complete allocator request union; WIRING.md specifies protected integration."
+      "notes": "Legacy option key preserved; selected recipes restore the Schedule/Practice/Crib table."
     },
     "source_container": {
       "format": "XBE in XDVDFS",
@@ -59,9 +59,9 @@
       "resource": "One delegated Coach Desk pointer, 4096 immutable RX bytes and 256 zero-initialized RW bytes",
       "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
     },
-    "summary": "Coach's Desk Active and Reserves lists with guarded Promote and Demote actions.",
+    "summary": "Restore the Coach's Desk Crib destination and normal preseason cuts; preserve existing reserve save ownership.",
     "surface": "menus",
-    "title": "Practice Squad screen (experimental, unwitnessed)",
+    "title": "Remove incomplete Practice Squad screen",
     "validation_command": "python3 tests/mod_editor/test_nfl2k5_practice_squad_screen.py"
   }
 ]

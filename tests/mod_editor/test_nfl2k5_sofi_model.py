@@ -65,6 +65,28 @@ class Geometry(unittest.TestCase):
                     repeats = abs(mesh.UV[a][1] - mesh.UV[b][1])
                     self.assertAlmostEqual(metres, repeats * 9.14, places=5)
 
+    def test_crowd_fans_continue_across_sector_joins(self):
+        """Matched active columns must show the same atlas phase on both sides of a sector join."""
+        columns = {}
+        for mesh in self.model.meshes.values():
+            for strip in mesh.groups.get("crowd", ()):
+                for a, b in zip(strip[::2], strip[1::2]):
+                    if mesh.P[a][1] > mesh.P[b][1]:
+                        a, b = b, a
+                    if mesh.P[b][1] - mesh.P[a][1] <= 1e-6:
+                        continue  # collapsed bands and strip connectors do not draw a person
+                    key = (tuple(round(v, 6) for v in mesh.P[a]), tuple(round(v, 6) for v in mesh.P[b]),
+                           round(mesh.UV[a][0], 6), round(mesh.UV[b][0], 6))
+                    columns.setdefault(key, {})[mesh.name] = (mesh.UV[a][1], mesh.UV[b][1])
+        shared = [(key, sides) for key, sides in columns.items() if len(sides) > 1]
+        self.assertGreater(len(shared), 100, "the test must exercise active joins between bowl sectors")
+        for key, sides in shared:
+            phases = list(sides.values())
+            for other in phases[1:]:
+                for first, second in zip(phases[0], other):
+                    wrapped = (second - first + 0.5) % 1.0 - 0.5
+                    self.assertAlmostEqual(wrapped, 0.0, places=6, msg=(key, sides))
+
     def test_crowd_bands_do_not_stretch_people_over_tall_risers(self):
         for mesh in self.model.meshes.values():
             for strip in mesh.groups.get("crowd", ()):

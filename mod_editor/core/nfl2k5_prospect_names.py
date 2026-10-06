@@ -48,7 +48,7 @@ What the patch does (tier B of the 2026-09-04 study):
        jae replacement
        add edx,0x2454 ; ret      ; retained surname: 9300 + index, the retail call-out
    replacement:
-       mov edx,0x238C ; ret      ; 9100: no recorded cue, the resolver announces the number
+       mov edx,0x238D ; ret      ; 9101: absent cue, the resolver announces the live number
 
    BOUNDARY is baked at apply time from the CSV layout, so the executable half and the pool half
    belong together: the build writes both, ``inspect`` reports ``applied`` only when both are present
@@ -57,6 +57,10 @@ What the patch does (tier B of the 2026-09-04 study):
    stub owns 0xB4A60..0xB4A70 of the same routine; zero rel32 / immediate / pointer references land
    anywhere in 0xB4A60..0xB4A8E in the retail image, and the routine's ``ret 8`` and nop padding at
    0xB4A8B..0xB4A90 stay retail).  The cave writes no memory, so both cave gates pass.
+   The older cave used 9100, whose existing clips say "double zero".  9101 is absent from both
+   retail SPCI cue arrays, forcing the native resolver to read the current jersey after the
+   generator has rolled it.  Applying to that recognized older cave upgrades its immediate
+   inside the same 27-byte host; the boundary and every surrounding instruction stay intact.
 
 Consequences: a franchise created from the patched disc drafts 2020s-sounding classes; a rookie with
 a retained surname (Smith, Jackson, Brown, ...) is announced by name as in retail, one with a
@@ -98,7 +102,8 @@ MAX_NAME_CHARS = 12
 NAME_PUNCTUATION = "'-."
 ROSTER_GLOBAL = 0x00B72918                  # -> the live roster object
 RETAIL_AUDIO_BASE = 0x2454                  # 9300: player+0x04 = 9300 + surname index
-NUMBER_AUDIO_ID = 0x238C                    # 9100: no recorded cue -> the resolver falls back to "number NN"
+NUMBER_AUDIO_ID = 0x238D                    # 9101: absent from retail SPCI -> resolver uses the live jersey
+LEGACY_NUMBER_AUDIO_ID = 0x238C             # 9100 exists: its clips say "double zero", not the live jersey
 
 # sha256 of body[0x90:0x98] + the entry array + the string span, see pool_digest()
 RETAIL_POOL_SHA256 = "1a4900797b05ecc9858f2663cf1afbce9d4dc1d33dd803559e3350b008d204ab"
@@ -400,20 +405,48 @@ def _utf16(body: bytes, off: int) -> str:
     return body[off:end].decode("utf-16-le")
 
 
+def _array_offset(body: bytes) -> int:
+    target = HEADER_ARRAY_OFF + _s32(body, HEADER_ARRAY_OFF) - 1
+    if target == ARRAY_OFF:
+        return target
+    from . import nfl2k5_spare_capacity as capacity
+    _require(target == capacity.ARRAY_AFTER, "foreign relocated prospect-name array")
+    capacity.extended_layout(body)
+    return target
+
+
+def _canonical_array(body: bytes) -> bytes:
+    array_offset = _array_offset(body)
+    delta = array_offset - ARRAY_OFF
+    result = bytearray(body[array_offset:array_offset + ARRAY_SIZE])
+    _require(len(result) == ARRAY_SIZE, "prospect-name array is truncated")
+    if delta:
+        for offset in range(0, ARRAY_SIZE, 4):
+            word = _s32(result, offset)
+            _require(word != 0, "prospect-name array contains a null string")
+            struct.pack_into("<i", result, offset, word + delta)
+    return bytes(result)
+
+
 def header_ok(body: bytes) -> bool:
-    return (len(body) == BODY_SIZE and body[0x0C:0x10] == b"ROST" and _u32(body, HEADER_COUNT_OFF) == POOL_COUNT
-            and HEADER_ARRAY_OFF + _s32(body, HEADER_ARRAY_OFF) - 1 == ARRAY_OFF)
+    try:
+        return (len(body) == BODY_SIZE and body[0x0C:0x10] == b"ROST"
+                and _u32(body, HEADER_COUNT_OFF) == POOL_COUNT
+                and _array_offset(body) in (ARRAY_OFF, ARRAY_OFF + 140 * 84))
+    except (ValueError, IndexError, KeyError, struct.error):
+        return False
 
 
 def parse_pool(body: bytes) -> Pool:
     """Decode the pool; raises when the count, the array or any string is not what the game expects."""
 
-    _require(header_ok(body), "the roster's name pool header is not retail-shaped (count 485, array at 0x72FB4)")
+    _require(header_ok(body), "the roster's name pool header is not a recognized native layout (485 entries)")
     entries: list[tuple[int, int]] = []
     firsts: list[str] = []
     lasts: list[str] = []
+    array_offset = _array_offset(body)
     for i in range(POOL_COUNT):
-        field = ARRAY_OFF + i * 8
+        field = array_offset + i * 8
         first = field + _s32(body, field) - 1
         last = field + 4 + _s32(body, field + 4) - 1
         firsts.append(_utf16(body, first))
@@ -423,8 +456,11 @@ def parse_pool(body: bytes) -> Pool:
 
 
 def pool_digest(body: bytes) -> str:
-    h = hashlib.sha256(body[HEADER_COUNT_OFF: HEADER_ARRAY_OFF + 4])
-    h.update(body[ARRAY_OFF: ARRAY_OFF + ARRAY_SIZE])
+    # Canonicalize only the exactly recognized pointer-table relocation. The
+    # native string bytes and recorded/replacement surname boundary do not move.
+    header = body[HEADER_COUNT_OFF:HEADER_ARRAY_OFF] + struct.pack("<i", ARRAY_OFF - HEADER_ARRAY_OFF + 1)
+    h = hashlib.sha256(header)
+    h.update(_canonical_array(body))
     h.update(body[STRINGS_START: STRINGS_END])
     return h.hexdigest()
 
@@ -470,11 +506,17 @@ def apply_body(body: bytes, rows: Sequence[NameRow]) -> tuple[bytes, dict[str, A
     _require(header_ok(body), "the roster's name pool header is not retail-shaped; refusing")
     layout = plan_layout(rows)
     out = bytearray(body)
-    out[ARRAY_OFF: ARRAY_OFF + ARRAY_SIZE] = layout.array
+    array_offset = _array_offset(body)
+    delta = array_offset - ARRAY_OFF
+    array = bytearray(layout.array)
+    if delta:
+        for offset in range(0, ARRAY_SIZE, 4):
+            struct.pack_into("<i", array, offset, _s32(array, offset) - delta)
+    out[array_offset:array_offset + ARRAY_SIZE] = array
     out[STRINGS_START: STRINGS_END] = layout.strings
     result = bytes(out)
     changed = [i for i in range(len(result)) if result[i] != body[i]]
-    stray = [i for i in changed if not (ARRAY_OFF <= i < ARRAY_OFF + ARRAY_SIZE or STRINGS_START <= i < STRINGS_END)]
+    stray = [i for i in changed if not (array_offset <= i < array_offset + ARRAY_SIZE or STRINGS_START <= i < STRINGS_END)]
     _require(not stray, f"rewrite touched bytes outside the pool: {[hex(i) for i in stray[:5]]}")
     pool = parse_pool(result)
     _require(pool.firsts == tuple(r.first for r in rows) and pool.lasts == tuple(r.last for r in rows), "pool read-back differs")
@@ -523,7 +565,7 @@ def apply(path: Path | str, source: Path | str | None = "modern", *,
         state = resource_status(before)
         body = before[RESOURCE_HEADER_SIZE:]
         if state in ("applied", "custom"):
-            same = (body[ARRAY_OFF: ARRAY_OFF + ARRAY_SIZE] == layout.array and body[STRINGS_START: STRINGS_END] == layout.strings)
+            same = (_canonical_array(body) == layout.array and body[STRINGS_START: STRINGS_END] == layout.strings)
             _require(same, f"the roster's name pool is already rewritten ({state}) with other names; refusing")
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, "boundary": layout.boundary,
                     "retained": len(layout.retained), "replaced": len(layout.replaced), **provenance}
@@ -559,17 +601,18 @@ PATCHED_HOOK = b"\xe8" + struct.pack("<i", HOST_VA - (HOOK_VA + 5)) + b"\x90"
 BOUNDARY_IMM_OFFSET = 6                                       # the imm32 of `add eax,imm32` inside the cave
 
 
-def cave_bytes(boundary: int) -> bytes:
+def cave_bytes(boundary: int, *, number_audio_id: int = NUMBER_AUDIO_ID) -> bytes:
     """The 27-byte cave with ``boundary`` (a body offset inside the string span) baked in."""
 
     _require(STRINGS_START <= boundary <= STRINGS_END, f"boundary 0x{boundary:x} is outside the pool's string span")
+    _require(number_audio_id in (NUMBER_AUDIO_ID, LEGACY_NUMBER_AUDIO_ID), "unrecognized prospect number cue")
     code = (b"\xa1" + struct.pack("<I", ROSTER_GLOBAL)              # mov eax,[0xB72918]
             + b"\x05" + struct.pack("<I", boundary - OBJ_OFF)       # add eax,boundary-0x40
             + b"\x3b\xc8"                                           # cmp ecx,eax
             + b"\x73\x07"                                           # jae replacement
             + RETAIL_HOOK                                           # add edx,0x2454
             + b"\xc3"                                               # ret
-            + b"\xba" + struct.pack("<I", NUMBER_AUDIO_ID)          # replacement: mov edx,0x238C
+            + b"\xba" + struct.pack("<I", number_audio_id)          # replacement: absent cue, live-number fallback
             + b"\xc3")                                              # ret
     assert len(code) == HOST_SIZE
     return code
@@ -583,7 +626,8 @@ def _cave_boundary(host: bytes) -> int | None:
     boundary = struct.unpack_from("<I", host, BOUNDARY_IMM_OFFSET)[0] + OBJ_OFF
     if not STRINGS_START <= boundary <= STRINGS_END:
         return None
-    return boundary if host == cave_bytes(boundary) else None
+    return boundary if any(host == cave_bytes(boundary, number_audio_id=cue)
+                           for cue in (NUMBER_AUDIO_ID, LEGACY_NUMBER_AUDIO_ID)) else None
 
 
 def _header_size(payload: bytes) -> int:
@@ -640,11 +684,16 @@ def xbe_apply(payload: bytes, boundary: int) -> tuple[bytes, Mapping[str, object
     """Hook the generator and host the cave with ``boundary`` baked in; the .text digest is recomputed."""
 
     state = xbe_status(payload)
+    legacy = False
     if state == "applied":
         _require(xbe_boundary(payload) == boundary,
                  f"the executable already carries the prospect-names cave with boundary 0x{xbe_boundary(payload):x}, not 0x{boundary:x}")
-        return payload, {"already_applied": True, "changed_bytes": 0, "boundary": boundary}
-    _require(state == "retail", f"prospect-names sites are {state}, not retail")
+        host_off, _ = _spans(payload)["host"]
+        legacy = payload[host_off:host_off + HOST_SIZE] == cave_bytes(boundary, number_audio_id=LEGACY_NUMBER_AUDIO_ID)
+        if not legacy:
+            return payload, {"already_applied": True, "changed_bytes": 0, "boundary": boundary,
+                             "number_audio_id": NUMBER_AUDIO_ID}
+    _require(state in ("retail", "applied"), f"prospect-names sites are {state}, not retail or recognized legacy")
     cave = cave_bytes(boundary)
     buf = bytearray(payload)
     sections = _sections(payload)
@@ -663,7 +712,8 @@ def xbe_apply(payload: bytes, boundary: int) -> tuple[bytes, Mapping[str, object
     _require(xbe_status(patched) == "applied" and xbe_boundary(patched) == boundary, "post-apply verification failed")
     return patched, {"edits": edits, "changed_bytes": sum(1 for a, b in zip(payload, patched) if a != b),
                      "sections_repinned": sorted(touched), "cave_va": f"0x{HOST_VA:x}", "cave_bytes": cave.hex(),
-                     "hook_va": f"0x{HOOK_VA:x}", "boundary": boundary, "number_audio_id": NUMBER_AUDIO_ID}
+                     "hook_va": f"0x{HOOK_VA:x}", "boundary": boundary, "number_audio_id": NUMBER_AUDIO_ID,
+                     **({"upgraded_from": "legacy_9100"} if legacy else {})}
 
 
 # --------------------------------------------------------------------------------------------- both halves
@@ -717,7 +767,7 @@ def image_status(path: Path | str) -> str:
 
 
 __all__ = ["ARRAY_OFF", "ARRAY_SIZE", "ATTRIBUTION", "BODY_SIZE", "BUDGET", "CSV_COLUMNS", "HOOK_SIZE", "HOOK_VA",
-           "HOST_SIZE", "HOST_VA", "Layout", "MAX_NAME_CHARS", "NUMBER_AUDIO_ID", "NameRow", "OBJ_OFF", "PATCHED_HOOK",
+           "HOST_SIZE", "HOST_VA", "Layout", "MAX_NAME_CHARS", "NUMBER_AUDIO_ID", "LEGACY_NUMBER_AUDIO_ID", "NameRow", "OBJ_OFF", "PATCHED_HOOK",
            "POOL_COUNT", "Pool", "ProspectNamesError", "RETAIL_AUDIO_BASE", "RETAIL_FIRSTS", "RETAIL_HOOK",
            "RETAIL_HOST", "RETAIL_LASTS", "RETAIL_POOL_SHA256", "ROSTER_GLOBAL", "ROST_OUTER_INDEX", "SHIPPED_BOUNDARY",
            "SHIPPED_CSV", "SHIPPED_CSV_SHA256", "SHIPPED_POOL_SHA256", "STRINGS_END", "STRINGS_START", "apply",

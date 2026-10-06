@@ -76,7 +76,10 @@ class QueueQtTests(FacadeFixture):
 
     def test_all_blockers_inline_clean_rows_stage_and_pending_survives_book_refresh(self):
         p = self.panel; p.queue_edits.click()
-        p.remove_button.click(); p.ratings_button.click()
+        self.assertEqual(p.formation_picker.currentData(), 62)
+        p.ratings_button.click(); p.remove_button.click()
+        self.assertEqual([r["formation"] for r in p._pending], [62, 62])
+        self.assertEqual(p.formation_picker.currentData(), 63)
         p.tendency.setValue(61); p.tendency_button.click()
         p.confirm_button.click()
         self.assertEqual(len(p._pending), 2)
@@ -101,7 +104,12 @@ class QueueQtTests(FacadeFixture):
         from mod_editor.apf_studio.apf_theme import install_theme
         install_theme(self.app)
         p = self.panel; p.resize(1200, 900); p.show(); self.app.processEvents()
-        p.queue_edits.click(); p.remove_button.click(); p.ratings_button.click(); p.confirm_button.click()
+        p.queue_edits.click()
+        self.assertEqual(p.formation_picker.currentData(), 62)
+        p.ratings_button.click(); p.remove_button.click()
+        self.assertEqual([r["formation"] for r in p._pending], [62, 62])
+        self.assertEqual(p.formation_picker.currentData(), 63)
+        p.confirm_button.click()
         self.app.processEvents()
         self.assertTrue(p.pending_table.wordWrap())
         self.assertEqual(p.pending_table.horizontalScrollBar().maximum(), 0)

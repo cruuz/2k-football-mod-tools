@@ -953,7 +953,7 @@ class PlayerRecord:
         _require(name in FIELD_BY_NAME, f"no roster field named {name!r}")
         return self.values[name]
 
-    def set(self, name: str, value: int) -> None:
+    def set(self, name: str, value: int, *, normalise_commentary: bool = True) -> None:
         if name == "guardian_cap":
             _require(type(value) in (int, bool) and value in (0, 1), "Guardian cap accepts 0 or 1")
             self.guardian_cap = bool(value)
@@ -972,6 +972,8 @@ class PlayerRecord:
         assert f is not None
         _require(0 <= int(value) <= f.maximum, f"{f.label} accepts 0..{f.maximum}, got {value}")
         self.values[name] = int(value)
+        if normalise_commentary and name == "jersey" and PBP_NUMBER_BASE <= self.values["pbp_id"] < PBP_NUMBER_BASE + 100:
+            self.values["pbp_id"] = number_commentary_id(int(value))
 
     # ------------------------------------------------------------------ composites
     @property
@@ -2308,11 +2310,35 @@ class RosterDocument:
         return out
 
     # ------------------------------------------------------------------ serialise
-    def to_body(self) -> bytes:
-        """The block with every record, team slot list, free-agent list and string edit written back."""
+    def to_body(self, *, normalise_commentary: bool = True) -> bytes:
+        """Write records, membership and strings, repairing edited commentary by default.
+
+        A field-scoped writer may defer commentary to the final disc/save pass so its
+        receipt covers only the fields it owns.
+        """
 
         out = bytearray(self.body)
+        surname_ids = recorded_surname_ids() if normalise_commentary else {}
+        original = RosterDocument.__new__(RosterDocument)
+        original.body = bytearray(self.original)
+        original.base = self.base
         for player in self.players:
+            # A read/serialize round trip stays lossless, including retail's stored zero ordinal.
+            # Writers repair the whole output; edits made directly through the document repair
+            # the affected identities here as well (a shared string can change without moving).
+            if normalise_commentary:
+                before_record = self.original[player.offset:player.offset + PLAYER_SIZE]
+                dirty = False
+                if player.record.encode() != before_record:
+                    before_values = decode_record(before_record)
+                    dirty = any(player.record.values[key] != before_values[key] for key in
+                                ("first_name_pointer", "last_name_pointer", "jersey", "pbp_id"))
+                if not dirty and player.record.values["pbp_id"] in ({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK} | PBP_UNRECORDED_NAMES):
+                    for which, key in (("first", "first_name_pointer"), ("last", "last_name_pointer")):
+                        was = original._player_string_at(player.offset, key) if player.record.values[key] else ""
+                        dirty |= was != getattr(player, which)
+                if dirty:
+                    normalise_player_commentary(player, surname_ids)
             out[player.offset: player.offset + PLAYER_SIZE] = player.record.encode()
         for team in self.teams:
             # only a team whose list actually changed is rewritten.  A reorder writes the parsed
@@ -2783,6 +2809,8 @@ def save_document(document: RosterDocument, target: Path | str, *, overwrite: bo
     assert document.container is not None
     document.check_depth_locks()
     payload = document.to_body()        # for a save-loaded document this is the whole arena
+    payload, _commentary_receipt = repair_commentary_body(
+        payload, base=document.base, reference_year=document.reference_year)
     _require(len(payload) == len(document.container.savegame), "the arena changed size; refusing to write")
     from .nfl2k5_practice_squad import validate_save
     if document.version in (0, 1) or any(document.reserves.values()):
@@ -2989,6 +3017,9 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     """
 
     doc = read_edits(source)
+    if "appearance_assets" in doc:
+        from . import nfl2k5_roster_appearance_transfer as appearance
+        appearance.validate_bundle(doc["appearance_assets"])
     from . import nfl2k5_roster_snapshot as snapshot
     if doc["schema"] == snapshot.SCHEMA:
         return snapshot.apply_body(body, doc, scheme=scheme)
@@ -3074,7 +3105,18 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     if doc.get("franchise_history"):
         from . import nfl2k5_franchise_history
         out, history_receipt = nfl2k5_franchise_history.apply_body(out, doc["franchise_history"])
-    return out, {"franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    fa_receipt = None
+    if doc.get("modern_free_agents"):
+        from . import nfl2k5_free_agents
+        _require(doc["modern_free_agents"] == "2026-10-05", "Unknown free-agent pool version")
+        out, fa_receipt = nfl2k5_free_agents.apply_body(out)
+        if doc.get("restore_historic_spare_capacity"):
+            _require(doc["restore_historic_spare_capacity"] is True,
+                     "Historic spare capacity marker must be Boolean")
+            from . import nfl2k5_spare_capacity
+            out, spare_receipt = nfl2k5_spare_capacity.apply_body(out)
+            fa_receipt = dict(fa_receipt, historic_spare_capacity=spare_receipt)
+    return out, {"modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,
@@ -3363,23 +3405,34 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
     """
 
     say = progress or (lambda _m: None)
+    edits = read_edits(source)
     with _outer_image()(path, writable=True) as archive:
         entry = _entry(archive)
         before = archive.read(entry.virtual_offset, entry.size)
         state = resource_status(before)
         _require(state in ("retail", "edited"), f"the roster resource is {state}; refusing")
         say("Applying the roster edits")
-        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], source, scheme=scheme)
+        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme)
+        body, commentary_receipt = repair_commentary_body(body)
+        receipt["commentary"] = {k: v for k, v in commentary_receipt.items() if k != "edits"}
         replacement = before[:RESOURCE_HEADER_SIZE] + body
         from . import nfl2k5_college_refs
         nfl2k5_college_refs.verify_table_edit(archive, before[RESOURCE_HEADER_SIZE:], body)
-        if replacement == before:
+        appearance_writes = []
+        if "appearance_assets" in edits:
+            from . import nfl2k5_roster_appearance_transfer as appearance
+            appearance_writes = appearance.prepare_writes(archive, edits["appearance_assets"], body)
+        if replacement == before and not appearance_writes:
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, **receipt}
-        say("Writing the edited roster")
-        count = archive.write(entry.virtual_offset, replacement)
-        _require(count == len(replacement), "short write of the roster resource")
-        _require(archive.read(entry.virtual_offset, entry.size) == replacement,
-                 "read-back of the roster resource differs")
+        if replacement != before:
+            say("Writing the edited roster")
+            count = archive.write(entry.virtual_offset, replacement)
+            _require(count == len(replacement), "short write of the roster resource")
+            _require(archive.read(entry.virtual_offset, entry.size) == replacement,
+                     "read-back of the roster resource differs")
+        if appearance_writes:
+            say("Writing the roster's faces and portraits")
+            receipt["appearance_resources"] = appearance.apply_writes(archive, appearance_writes)
     return {"status": resource_status(replacement), "outer_index": ROST_OUTER_INDEX,
             "virtual_offset": f"0x{entry.virtual_offset:x}", **receipt}
 
@@ -3509,14 +3562,17 @@ class CsvPreview:
     scheme: str
     reference_year: int | None
     receipt: dict[str, Any]
+    normalise_commentary: bool = True
 
 
-def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None) -> CsvPreview:
+def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
+                normalise_commentary: bool = True) -> CsvPreview:
     """Stage valid rows on a private document; a refused row contributes no edits.
 
     Duplicate identities are ALL refused, including the first occurrence. Unknown
     headers and malformed CSV refuse the sheet. No name matching or scheme conversion.
     Unchanged cells preserve existing out-of-editor-range values byte for byte.
+    Field-scoped native writers can defer commentary to the final full save.
     """
     _require(isinstance(text, str) and len(text.encode("utf-8")) <= CSV_MAX_BYTES,
              "Player CSV exceeds 16 MiB; export a smaller list and try again.")
@@ -3536,7 +3592,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
             rows.append((reader.line_num, row))
     except csv.Error as exc:
         raise RosterRecordError(f"Malformed player CSV: {exc}. Correct the quoting and try again.") from exc
-    before = document.to_body()
+    before = document.to_body(normalise_commentary=normalise_commentary)
     working = copy.deepcopy(document)
     by_key = {(p.pool, p.index): p for p in working.players}
     identities = []
@@ -3575,7 +3631,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         try:
             expected = {}
             for column, value in edits.items():
-                _apply_csv_cell(working, player, column, value)
+                _apply_csv_cell(working, player, column, value, normalise_commentary=normalise_commentary)
                 expected[column] = _csv_row(working, player)[column]
             new = _csv_row(working, player)
             _require(all(new[k] == v for k, v in expected.items()),
@@ -3603,7 +3659,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
             final_changes.append({"row": source_rows.get(key, "related player"),
                                   "pool": key[0], "index": key[1], "changes": fields})
     changes = final_changes
-    after = working.to_body() if changes else before
+    after = working.to_body(normalise_commentary=normalise_commentary) if changes else before
     # Reparse the candidate and verify the canonical sheet, including side effects
     # of team moves/locks. This is a writer/readback check, never source I/O.
     verified = copy.deepcopy(document)
@@ -3614,25 +3670,27 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
     receipt = {"rows": matched, "changed": len(changes),
                "fields": sum(len(row["changes"]) for row in changes), "changes": changes,
                "refused": refused, "log": [f"row {r['row']}: {r['reason']}" for r in refused]}
-    return CsvPreview(before, after, document.scheme, document.reference_year, receipt)
+    return CsvPreview(before, after, document.scheme, document.reference_year, receipt, normalise_commentary)
 
 
 def apply_csv_preview(document: RosterDocument, preview: CsvPreview) -> dict[str, Any]:
     _require(document.scheme == preview.scheme and document.reference_year == preview.reference_year and
-             document.to_body() == preview.before,
+             document.to_body(normalise_commentary=preview.normalise_commentary) == preview.before,
              "The roster changed after the CSV preview; preview the CSV again before applying it.")
     if preview.before != preview.after:
         document.adopt_body(preview.after)
     return copy.deepcopy(preview.receipt)
 
 
-def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None) -> dict[str, Any]:
+def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
+               normalise_commentary: bool = True) -> dict[str, Any]:
     """Apply a validated CSV as one candidate. The GUI displays preview_csv first."""
-    return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter))
+    return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter,
+                                                   normalise_commentary=normalise_commentary))
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
-                    value: str) -> tuple[int, str]:
+                    value: str, *, normalise_commentary: bool = True) -> tuple[int, str]:
     """Apply one cell.  Returns ``(fields written, note)``; the note goes in the receipt's log."""
 
     record = player.record
@@ -3673,7 +3731,7 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
         _require(low <= new <= high, f"{column} accepts {low}..{high}, got {value}")
     if record.get(column) == new:
         return 0, ""
-    record.set(column, new)
+    record.set(column, new, normalise_commentary=normalise_commentary)
     return 1, ""
 
 
@@ -3727,8 +3785,9 @@ def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tup
 # * **Play-by-play**: the loaded roster's own records (id -> the name(s) that carry it; 2,479 real
 #   players in retail), the 485-entry recorded surname bank (9300 + i = RETAIL_LASTS[i], proved by
 #   the class generator's ``add edx,0x2454`` at 0x2BE7B8), the jersey call-outs 9000..9099 (the
-#   create-player path at 0x343C00 writes ``9000 + jersey % 100`` for any id >= 9000) and 9100, the
-#   "announce the number" fallback.  Ids the roster does not use stay typeable; the wider audio bank
+#   create-player path at 0x343C00 writes ``9000 + jersey % 100`` for any id >= 9000).  9100 has
+#   six recorded "double zero" cues; 9101 is absent and invokes the native live-number fallback.
+#   Ids the roster does not use stay typeable; the wider audio bank
 #   index (Finn's 10,158 rows) lives in the commentary AUSB descriptors and is not decoded here.
 # * **Portraits**: the disc's portrait bank is catalogued in ``reports/assets/nfl2k5_player_portrait_
 #   compatibility.json`` (shipped): 4,303 P8 portraits named by their 4-digit id, plus the roster
@@ -3737,7 +3796,93 @@ def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tup
 #   and the reason is stated.
 PORTRAIT_REPORT = ROOT / "reports" / "assets" / "nfl2k5_player_portrait_compatibility.json"
 PBP_NUMBER_BASE = 9000               # 9000 + NN: the jersey-number call-outs
-PBP_NUMBER_FALLBACK = 9100           # no recorded cue: the resolver announces the number
+PBP_NUMBER_FALLBACK = 9101           # absent SPCI cue: resolver reads the live +0x20 jersey bits
+PBP_DOUBLE_ZERO = 9100               # a real cue, never an automatic jersey-number fallback
+# These retail record selections have no SPCI cue. Nine occur on 28 v0.4 players;
+# the final two are the absent entries at the end of the generic surname bank.
+PBP_UNRECORDED_NAMES = frozenset((971, 2634, 3787, 4903, 4906, 5221, 6711, 6734, 6735, 9783, 9784))
+
+
+def number_commentary_id(jersey: int) -> int:
+    """An explicit call of the stored uniform number, including the legitimate number zero."""
+    _require(type(jersey) is int and 0 <= jersey <= 99, "commentary jersey must be 0..99")
+    return PBP_NUMBER_BASE + jersey
+
+
+def commentary_surname(last: str) -> str:
+    """Exact spelling, ignoring case and a separate generational suffix only."""
+    import re
+    return re.sub(r"\s+(?:jr\.?|sr\.?|ii|iii|iv)$", "", last.strip(), flags=re.IGNORECASE).casefold()
+
+
+def recorded_surname_ids() -> dict[str, int]:
+    """Unambiguous, recorded generic surname cues, without another player's first-name inserts.
+
+    Retail SPCI type 3 contains 483 of the 485 indexed surnames.  Zdyrko and Navarro (9783/9784)
+    have no cue.  Keep punctuation: e.g. McBride is never inferred from Mc-Bride.
+    """
+    from .nfl2k5_prospect_names import RETAIL_AUDIO_BASE, RETAIL_LASTS
+    candidates: dict[str, list[int]] = {}
+    for index, last in enumerate(RETAIL_LASTS):
+        cue = RETAIL_AUDIO_BASE + index
+        if cue not in (9783, 9784):
+            candidates.setdefault(commentary_surname(last), []).append(cue)
+    return {last: ids[0] for last, ids in candidates.items() if len(ids) == 1}
+
+
+def normalise_player_commentary(player: Player, surname_ids: Mapping[str, int] | None = None, *,
+                               sync_numbers: bool = False) -> bool:
+    """Repair only pbp_id, for populated player records; preserve explicit name selections.
+
+    Unused CAP buffers and unnamed draft/template records must remain blank.  Zero, the legacy
+    double-zero ID, and the absent fallback ID are resolved after identity and jersey edits.
+    Jersey edits synchronize explicit number cues in PlayerRecord.set. An explicit repair can
+    also synchronize old numeric cues; ordinary serialization preserves retail's stored choices.
+    """
+    if not (player.first or player.last) or "*" in player.first + player.last:
+        return False
+    old = player.record.values["pbp_id"]
+    if old in ({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK} | PBP_UNRECORDED_NAMES):
+        bank = recorded_surname_ids() if surname_ids is None else surname_ids
+        new = bank.get(commentary_surname(player.last))
+        if new is None:
+            new = number_commentary_id(player.record.values["jersey"])
+    elif sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100:
+        new = number_commentary_id(player.record.values["jersey"])
+    else:
+        return False
+    player.record.set("pbp_id", new)
+    return old != new
+
+
+def repair_commentary_body(body: bytes, *, base: int = 0,
+                           reference_year: int | None = None) -> tuple[bytes, dict[str, Any]]:
+    """Composable native repair: only the little-endian u16 at each player record +0x04.
+
+    Accepts the current records and membership, including added free agents and roster-arena
+    records.  It never reserializes team lists, pointers, names, appearance, or uniform numbers.
+    """
+    document = RosterDocument(body, base=base, reference_year=reference_year)
+    out = bytearray(body)
+    bank = recorded_surname_ids()
+    edits = []
+    for player in document.players:
+        before = player.record.values["pbp_id"]
+        if normalise_player_commentary(player, bank, sync_numbers=True):
+            after = player.record.values["pbp_id"]
+            offset = player.offset + FIELD_BY_NAME["pbp_id"].offset
+            struct.pack_into("<H", out, offset, after)
+            edits.append({"pool": player.pool, "index": player.index, "name": player.display,
+                          "offset": offset, "before": before, "after": after,
+                          "jersey": player.record.values["jersey"]})
+    scope = {i for edit in edits for i in range(edit["offset"], edit["offset"] + 2)}
+    _require(all(a == b or i in scope for i, (a, b) in enumerate(zip(body, out))),
+             "commentary repair changed bytes outside pbp_id")
+    return bytes(out), {"before_sha256": hashlib.sha256(body).hexdigest(),
+                        "after_sha256": hashlib.sha256(out).hexdigest(),
+                        "field": "pbp_id", "record_offset": 4, "field_bytes": 2,
+                        "players_changed": len(edits), "edits": edits,
+                        "outside_scope_identical": True}
 
 
 def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
@@ -3759,6 +3904,7 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
             out[pbp] = " / ".join(labels[:4]) + (f" (+{len(labels) - 4})" if len(labels) > 4 else "")
     for number in range(100):
         out.setdefault(PBP_NUMBER_BASE + number, f"#{number:02d} (jersey-number call-out)")
+    out[PBP_DOUBLE_ZERO] = "Double zero (recorded 00 cue)"
     out.setdefault(PBP_NUMBER_FALLBACK, "(announce the jersey number)")
     for index, surname in enumerate(RETAIL_LASTS):
         out.setdefault(RETAIL_AUDIO_BASE + index, f"{surname} (recorded surname bank)")

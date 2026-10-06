@@ -178,6 +178,85 @@ REALISTIC_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (45.0, 19.0), (80.
 # preserving those bytes takes precedence over globally monotonic hang.
 ARC_BY_DISTANCE_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
                             (45.0, 17.5), (60.0, 18.75), (80.0, 21.0))
+
+# The native Challenges branch can deliberately miscall a forward outlet as a
+# lateral. Fall through to the existing velocity-sign test instead. This does
+# not change targets, arcs, actual backward passes, or other challenge types.
+FORWARD_PASS_RULING_VA = 0x2368DF
+FORWARD_PASS_RULING_BEFORE = bytes.fromhex("751c")
+FORWARD_PASS_RULING_AFTER = bytes.fromhex("9090")
+FORWARD_PASS_RULING_GUARDS = (
+    (0x236810, 0x18B, "d907cef815db3b6dd62ada313e7048a2ebf5f7abe0296137e6e46fd16d4138be"),
+    (0xB7450, 0xBB, "328418a0bd1f9e7713bc1185148c79c26d471c41d014d37a8c729eaed4da3ac4"),
+)
+
+
+def forward_pass_ruling_status(payload: bytes) -> str:
+    """Recognize the complete native classifier and its exact two-byte repair."""
+    from .nfl2k5_cave_oracle import XbeImage
+    try:
+        image = XbeImage(payload)
+        got = image.read(FORWARD_PASS_RULING_VA, 2)
+        if got not in (FORWARD_PASS_RULING_BEFORE, FORWARD_PASS_RULING_AFTER):
+            return "foreign"
+        for va, size, digest in FORWARD_PASS_RULING_GUARDS:
+            content = bytearray(image.read(va, size))
+            if va <= FORWARD_PASS_RULING_VA < va + size:
+                at = FORWARD_PASS_RULING_VA - va
+                content[at:at + 2] = FORWARD_PASS_RULING_BEFORE
+            if hashlib.sha256(content).hexdigest() != digest:
+                return "foreign"
+        section = image.section(FORWARD_PASS_RULING_VA, 2)
+        native_section = next(s for s in _sections(payload) if s.raw_offset == section.raw)
+        if payload[section.header + 36:section.header + 56] != section_digest(payload, native_section):
+            return "foreign"
+        return "retail" if got == FORWARD_PASS_RULING_BEFORE else "applied"
+    except (ValueError, TypeError, IndexError, StopIteration, struct.error):
+        return "foreign"
+
+
+def apply_forward_pass_ruling(payload: bytes) -> tuple[bytes, dict[str, object]]:
+    """Keep legal forward outlets forward; preserve the native backward branch."""
+    from .nfl2k5_cave_oracle import XbeImage
+    state = forward_pass_ruling_status(payload)
+    if state == "foreign":
+        raise ValueError("Foreign forward-pass classifier or section digest")
+    image = XbeImage(payload)
+    off = image.offset(FORWARD_PASS_RULING_VA, 2)
+    section = image.section(FORWARD_PASS_RULING_VA, 2)
+    digest_at = section.header + 36
+    result = bytearray(payload)
+    if state == "retail":
+        result[off:off + 2] = FORWARD_PASS_RULING_AFTER
+        native_section = next(s for s in _sections(payload) if s.raw_offset == section.raw)
+        result[digest_at:digest_at + 20] = section_digest(result, native_section)
+    result = bytes(result)
+    if forward_pass_ruling_status(result) != "applied":
+        raise ValueError("Forward-pass ruling postcondition failed")
+    scopes = [(digest_at, digest_at + 20, ".text section SHA1"),
+              (off, off + 2, "forward-pass Challenges branch")]
+    outside = hashlib.sha256()
+    cursor = 0
+    edits = []
+    for start, end, label in sorted(scopes):
+        if payload[cursor:start] != result[cursor:start]:
+            raise ValueError("Unexpected byte outside forward-pass repair scope")
+        outside.update(payload[cursor:start])
+        edits.append(dict(label=label, file_offset=hex(start), size=end - start,
+                          before=payload[start:end].hex(), after=result[start:end].hex()))
+        cursor = end
+    if payload[cursor:] != result[cursor:] or len(payload) != len(result):
+        raise ValueError("Unexpected byte outside forward-pass repair scope")
+    outside.update(payload[cursor:])
+    return result, dict(owner="nfl2k5_throw_tuning", label="forward-pass ruling",
+                        source_sha256=hashlib.sha256(payload).hexdigest(),
+                        patched_sha256=hashlib.sha256(result).hexdigest(),
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                        already_applied=state == "applied", edits=edits,
+                        outside_scope_identical=True, outside_scope_sha256=outside.hexdigest(),
+                        reservations=[dict(owner="nfl2k5_throw_tuning", start=hex(FORWARD_PASS_RULING_VA),
+                                           end=hex(FORWARD_PASS_RULING_VA + 2), size=2,
+                                           basis="pinned native forward-pass ruling; not a cave")])
 # Historical profiles are recognised on read and upgraded on apply, never newly written.
 HIGH_ARC_BAND_SPEED_YD_S = 12.0
 HIGH_ARC_20260903_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
@@ -1529,7 +1608,7 @@ class _cpu_money_downs_adapter:
 
 
 class _abilities_adapter:
-    def __init__(self, off_week, lock_right_stick=True, lock_special_moves=True, lock_speedster=True):
+    def __init__(self, off_week, lock_right_stick=False, lock_special_moves=False, lock_speedster=True):
         self.off_week = off_week
         self.settings = dict(abilities_off_week=off_week, lock_right_stick=lock_right_stick,
                              lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
@@ -1769,6 +1848,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                camera: bool = False, kick_rules: bool = False,
                widescreen: bool = False, overtime: bool = False,
                arc_table: bool = False, kick_power: bool = False,
+               forward_pass_ruling: bool = False,
                team_column: bool = False,
                seven_on_seven: bool = False, position_row: bool = False,
                probowl_order: bool = False, elbow_options: bool = False,
@@ -1793,7 +1873,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                music_shuffle: bool = False, music_shuffle_selection=None,
                practice_squad_screen: bool = False,
                abilities: bool = False, abilities_off_week: int | None = None,
-               abilities_lock_right_stick: bool = True, abilities_lock_special_moves: bool = True, abilities_lock_speedster: bool = True,
+               abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
                qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
                calendar_engine: bool = False,
     momentum_collisions=False,
@@ -1864,6 +1944,11 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         wanted = _flat_distance_curves(payload, wanted, arc_table)
     if wanted and _curves_differ(payload, wanted):
         patched, receipt = plan_patch(patched, wanted)
+    _require(type(forward_pass_ruling) is bool, "forward_pass_ruling must be boolean")
+    if forward_pass_ruling:
+        patched, ruling_receipt = apply_forward_pass_ruling(patched)
+        receipt = {**receipt, "forward_pass_ruling_patch": ruling_receipt,
+                   "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(ruling_receipt["changed_bytes"])}
     if arc_table:
         state = arc_table_status(patched)
         if state in ("retail", "legacy_high_arc"):
@@ -1962,8 +2047,9 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             continue
         state = module.status(patched)
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
-        # every other module still only ever goes retail -> applied
-        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key in ("chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch")):
+        # Reserve compatibility also accepts the old automatic-cut installation;
+        # replay its guarded writer so an upgrade actually restores native cuts.
+        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}
@@ -2017,6 +2103,18 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     else:
         receipt["boot_logo"] = {"status": boot_logo.status(patched)}
     # Final owners: choose the complete allocation set before the first growth.
+    # Selecting reserve compatibility must also retire an installed legacy
+    # screen, even when the old screen recipe key is off. Do not add a request
+    # or install screen code for an absent/prepared owner. Validate any existing
+    # owner completely; corrupt code must not be mistaken for an absent screen.
+    retire_installed_practice_screen = False
+    if practice_squad:
+        if any(a["owner"] == practice_squad_screen_patch.OWNER
+               for a in xbe_space_patch.layout(patched)["allocations"]):
+            screen_state = practice_squad_screen_patch.status(patched)
+            _require(screen_state in ("retail", "applied"),
+                     "installed Practice Squad screen is foreign; refusing")
+            retire_installed_practice_screen = screen_state == "applied"
     for flag, module, key, label in (
         (defensive_try, _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
                                                music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, camera=camera, **_r62_space_options(r62)),
@@ -2039,7 +2137,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
          "abilities_patch", "experimental player abilities rules v2"),
         (qb_spy, _qb_spy_adapter(qb_spy_intent_table), "qb_spy_patch", "QB spy for zone, man and rush (experimental)"),
         (music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(), "music_shuffle_patch", "experimental music playlist"),
-        (practice_squad_screen, practice_squad_screen_patch, "practice_squad_screen_patch", "experimental Practice Squad screen"),
+        (practice_squad_screen or retire_installed_practice_screen, practice_squad_screen_patch,
+         "practice_squad_screen_patch", "retired Practice Squad screen compatibility"),
         (kickoff_relocated, kickoff_relocated_patch,
          "kickoff_relocated_patch", "experimental relocated kickoff"),
         (scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects"),
@@ -2087,7 +2186,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         if not flag:
             continue
         state = module.status(patched)
-        _require(state in ("retail", "applied"), f"{label} is {state}; refusing")
+        accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
+        _require(state in accepted, f"{label} is {state}; refusing")
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt
         receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
@@ -2103,6 +2203,7 @@ def write_xbe_copy(
     curves: Mapping[str, Sequence[tuple[float, float]]] | None = None,
     overwrite: bool = False,
     catch_slider: bool = False,
+    forward_pass_ruling: bool = False,
     accel_ramp: bool = False,
     draft_ai: bool = False,
     edge_rename: bool = False,
@@ -2149,7 +2250,7 @@ def write_xbe_copy(
     music_shuffle: bool = False, music_shuffle_selection=None,
     practice_squad_screen: bool = False,
     abilities: bool = False, abilities_off_week: int | None = None,
-               abilities_lock_right_stick: bool = True, abilities_lock_special_moves: bool = True, abilities_lock_speedster: bool = True,
+               abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
     qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
     calendar_engine: bool = False,
     momentum_collisions=False,
@@ -2200,7 +2301,7 @@ def write_xbe_copy(
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
+    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
          or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or espn25_rosters,
              "nothing requested")
@@ -2208,7 +2309,7 @@ def write_xbe_copy(
     target = Path(target_xbe).expanduser()
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata, music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen, abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata, music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen, abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     _prepare_target(source, target, overwrite)
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
@@ -2332,6 +2433,7 @@ def write_image_copy(
     overwrite: bool = False,
     progress: ProgressSink | None = None,
     catch_slider: bool = False,
+    forward_pass_ruling: bool = False,
     accel_ramp: bool = False,
     draft_ai: bool = False,
     edge_rename: bool = False,
@@ -2378,7 +2480,7 @@ def write_image_copy(
     music_shuffle: bool = False, music_shuffle_selection=None,
     practice_squad_screen: bool = False,
     abilities: bool = False, abilities_off_week: int | None = None,
-               abilities_lock_right_stick: bool = True, abilities_lock_special_moves: bool = True, abilities_lock_speedster: bool = True,
+               abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
     qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
     calendar_engine: bool = False,
     momentum_collisions=False,
@@ -2443,7 +2545,7 @@ def write_image_copy(
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
+    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
          or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or espn25_rosters,
              "nothing requested")
@@ -2467,7 +2569,7 @@ def write_image_copy(
         report("Preparing default.xbe patches", 0, 0)
         if not _defer_image_resources:
             _check_installed_runtime_settings(original, r62)
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, _defer_runtime_settings=bool(_defer_image_resources or defer_grown), **_deferred_r62_options(r62, defer_grown))
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, _defer_runtime_settings=bool(_defer_image_resources or defer_grown), **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:

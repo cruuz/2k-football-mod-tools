@@ -225,18 +225,18 @@ class BuildTagTests(unittest.TestCase):
     def test_the_build_tag_looks_like_a_release_tag(self) -> None:
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
 
-    def test_the_build_tag_matches_beta_76_4(self) -> None:
-        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-76.4")
+    def test_the_build_tag_matches_beta_76_5(self) -> None:
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-76.5")
 
-    def test_beta_76_4_is_offered_to_76_3_and_current_build_is_up_to_date(self) -> None:
-        with _serve([_release("beta-76.3"), _release("beta-76.4")]):
-            old = update_check.check("beta-76.3")
+    def test_beta_76_5_is_offered_to_76_4_and_current_build_is_up_to_date(self) -> None:
+        with _serve([_release("beta-76.4"), _release("beta-76.5")]):
+            old = update_check.check("beta-76.4")
             current = update_check.check()
         self.assertTrue(old.available)
-        self.assertEqual(old.latest_tag, "beta-76.4")
+        self.assertEqual(old.latest_tag, "beta-76.5")
         self.assertTrue(current.checked)
         self.assertFalse(current.available)
-        self.assertEqual(current.headline, "You are up to date (beta-76.4).")
+        self.assertEqual(current.headline, "You are up to date (beta-76.5).")
 
     def test_beta_76_is_offered_to_both_previous_published_releases(self) -> None:
         # The shared release tag drives discovery for both product versions.

@@ -134,9 +134,9 @@ LAB_SCOPES = {'modern_metlife_model': 'The MetLife model was seen in a headless 
  'modern_venues_2026': 'The first venue art was seen at Pittsburgh and Kansas City. The release draft also '
                        'records the environment kit at nine venues. Later sponsor sweeps, venue read-back '
                        'changes and environment pass 3 remain offline only.',
- 'espn25_more_moments': 'All 50 Anniversary moments appeared in the lab list; selected added moments and '
-                        'previews loaded. Completion saving across all added rows and full games remain '
-                        'unwitnessed.',
+ 'espn25_more_moments': 'The earlier 50-moment collection appeared in the lab list. The 51-moment '
+                        'chronological menu, Unc Bowl and later revisions have offline checks only; '
+                        'completion saving and full games remain unwitnessed.',
  'historic_teams_quick_game': 'Historic teams loaded in mixed and historic-pair Quick Games on candidate E '
                               'with era uniforms; a Jets 1968 player card showed George Sauer. Full coverage '
                               'of every historic team remains unwitnessed.',
@@ -146,9 +146,8 @@ LAB_SCOPES = {'modern_metlife_model': 'The MetLife model was seen in a headless 
  'espn25_rosters': 'The Wide Right repair and Anniversary loading were seen in the lab, as recorded in the '
                    'release draft. Later historic-roster corrections remain offline only; full moment and '
                    'save coverage is not claimed.',
- 'practice_squad_screen': "The lab opened the Giants Practice Squad from the Coach's Desk and switched "
-                          'between Active and Reserves without the old popup. Complete transaction, save '
-                          'lifecycle and Xbox coverage remain unwitnessed.',
+ 'practice_squad_screen': 'The incomplete destination is retired. Final cuts release players to free agency. '
+                          'Native offline timeline and save storage checks passed; gameplay awaits Noah.',
  'position_pools': 'Candidate D reproduced the tired-linebacker freeze on demand. The repaired code in E '
                    'survived the same forced drain for 180 seconds and 102 lineups; an E CPU game also '
                    'completed without a stall. Other causes of freezing and Xbox behaviour remain '
@@ -186,9 +185,9 @@ LAB_SCOPES = {'modern_metlife_model': 'The MetLife model was seen in a headless 
  'kickoff_return_blocking': 'Lab kicks kept the setup-zone players still before first touch. After '
                             'landing-zone catches, ten return blockers took ten distinct coverage players. '
                             'Full-game feel and Xbox play remain unverified.',
- 'espn25_named_previews': 'All 50 named previews were seen in the lab; Ice Bowl, Wide Right and moment 50 '
-                          'showed Lambeau Field, Tampa Stadium and Allegiant Stadium on candidate E. No '
-                          'claim for every rendered venue name.',
+ 'espn25_named_previews': 'The earlier 50 named previews were seen in the lab. The later period field '
+                          'reconstructions and 51-moment venue route have offline checks only. Some '
+                          'historical lettering and insignia still need photo review.',
  'historic_stock_books': 'The home-side stock book content was verified from memory for Ice Bowl, Wide '
                          'Right, moment 50 and a mixed Quick Game on candidate E. Away-side content and '
                          'complete two-side coverage remain unwitnessed.',
@@ -198,15 +197,15 @@ LAB_SCOPES = {'modern_metlife_model': 'The MetLife model was seen in a headless 
                'wider. Other screens and Xbox behaviour remain unverified.'}
 
 ANNIVERSARY_OPTIONS = (
-    ("espn25_named_previews", "Anniversary: named previews and historic venues",
-     "Name the players and Super Bowls in all 50 previews and use historic venue names. "
-     "Requires 25 more moments. Previews and three venue names were seen in the lab."),
+    ("espn25_named_previews", "Anniversary: named previews and period fields",
+     "Name the players and Super Bowls, use historic venue names and separate period field reconstructions. "
+     "Requires historic Anniversary moments. Later fields and the Unc Bowl are unwitnessed in game."),
     ("historic_stock_books", "Stock playbooks for historic teams",
      "Keep a separate retail playbook bank for historic teams and Anniversary sides. "
      "Cannot combine with Separate offensive and defensive playbooks. Home-side bindings "
      "were verified in four lab cases; away-side content remains unwitnessed."),
     ("espn25_era_rules", "Anniversary rules by season",
-     "Use season-specific rules in Anniversary moments. Requires 25 more moments, dynamic kickoff, "
+     "Use season-specific rules in Anniversary moments. Requires historic Anniversary moments, dynamic kickoff, "
      "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
 )
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS)
@@ -239,6 +238,7 @@ class _Task(QRunnable):
         self.cancelled = threading.Event()
         self.latest_progress = "Preparing the build"
         self.started = time.monotonic()
+        self.last_update = self.started
         self._last_emit = 0.0
         self.setAutoDelete(False)
 
@@ -251,6 +251,7 @@ class _Task(QRunnable):
                 from mod_editor.core.nfl2k5_project_fit import progress_text
                 message = progress_text(message, done, total, self.started)
                 self.latest_progress = message
+                self.last_update = time.monotonic()
                 if total > 2**31 - 1:  # Qt's int signal is signed 32-bit; discs are larger.
                     self.signals.counts.emit(round(done * 1000 / total), 1000)
                 else:
@@ -622,7 +623,7 @@ class BuildPanel(QWidget):
                              ("abilities_lock_special_moves", "Lock special moves behind their abilities"),
                              ("abilities_lock_speedster", "Lock Speedster speed")):
             box = QCheckBox(caption)
-            box.setChecked(True)
+            box.setChecked(tt.abilities_patch.DEFAULT_LOCKS[key.removeprefix("abilities_")])
             box.setEnabled(False)
             box.setToolTip("Rules v2 setting of the Player abilities option. Both move locks off restores the retail "
                            "charge meter; either one on keeps the restricted charge policy. A rebuilt disc is required.")
@@ -864,7 +865,7 @@ class BuildPanel(QWidget):
             f, "season_cap", "128-season franchise (experimental)",
             tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
         self.practice_squad_screen_check = self._option(
-            f, "practice_squad_screen", "Practice Squad screen (experimental)",
+            f, "practice_squad_screen", "Remove incomplete Practice Squad screen",
             tt.practice_squad_screen_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.position_row_check = self._option(f, "position_row", "Change position in Edit Player",
                                                "In-game: use Depth Chart → Auto afterward.", badge=NOT_TESTED,
@@ -893,14 +894,13 @@ class BuildPanel(QWidget):
         self.franchise_practice_check = self._option(f, "franchise_practice", 'Free Practice inside Franchise',
                                                      r62_ui.PRACTICE_HELP,
                                                      badge=NOT_TESTED)
-        self.practice_squad_check = self._option(f, "practice_squad", "Practice squads (53 + 12 reserves)",
-                                                 "Each team keeps up to 12 cut players as reserves in Franchise; no reserve screen yet.",
+        self.practice_squad_check = self._option(f, "practice_squad", "Reserve save compatibility (53 + 12)",
+                                                 "Preserve existing reserves; final cuts release players to free agency.",
                                                  badge=NOT_TESTED,
-                                                 details="The CPU's 65-to-53 season cut keeps up to twelve players per team as reserves that stay off "
-                                                         "the active roster, the depth chart and the team rating, cost no cap space, keep their contract "
-                                                         "terms, and survive saves, team imports and the season rollover. There is no in-game reserve "
-                                                         "screen or automatic promotion yet; a full 53 + 12 roster must release players to draft. Only use "
-                                                         "saves with reserves on a disc that carries this patch. Experimental.")
+                                                 details="Existing reserves remain owned, keep their contract terms, and survive saves and imports. "
+                                                         "Use Studio's save tools to promote or demote an existing reserve. Final cuts use native "
+                                                         "free agency instead of creating new reserves. Modern practice-squad eligibility and CPU "
+                                                         "signings are unavailable. Only use reserve saves with this compatibility patch.")
         self.depth_locks_check = self._option(f, "depth_locks", "Depth chart locks (LT/RT, LG/RG, KR/PR)",
                                               "Your depth chart moves and returner picks stay put through the weekly auto-depth.",
                                               badge=NOT_TESTED,
@@ -3707,6 +3707,12 @@ class BuildPanel(QWidget):
     def _heartbeat(self):
         if self._task is not None:
             message = self._task.latest_progress
+            now = time.monotonic()
+            elapsed = max(0, int(now - self._task.started))
+            quiet = max(0, int(now - self._task.last_update))
+            message += f" • {elapsed // 60}:{elapsed % 60:02d} elapsed"
+            if quiet >= 5:
+                message += f" • Still working; last progress update {quiet} s ago"
             self.progress_label.setText(message)
             self.progress_text_changed.emit(message)
 
@@ -3772,7 +3778,8 @@ class BuildPanel(QWidget):
             labels = list(dict.fromkeys(names.get(str(step.get("step")), "other selected project changes")
                         for step in receipt.get("steps", ()) if isinstance(step, dict)))
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
-        next_step = "Open this copy in xemu, or use Play latest disc in xemu in the studio."
+        from mod_editor.gui.ux_text import disc_next_steps
+        next_step = disc_next_steps(target)
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
         from mod_editor.core.build_feedback import timing_summary

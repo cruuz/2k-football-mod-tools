@@ -2,7 +2,7 @@
 # APF 2K8 Mod Studio - macOS launcher (double-clickable from Finder).
 #
 # Mirrors tools/launch_apf2k8_mod_studio.sh: it resolves the application root
-# from this script's own real path, checks that Python 3, PyQt5, and Pillow are
+# from this script's own real path, checks that Python 3 and all Studio runtime packages are
 # importable, shows a friendly terminal error if not, and otherwise starts
 # `python3 -m mod_editor.apf_studio`.  BSD readlink has no `-f`, so the real
 # path is resolved with a portable symlink-follow loop instead.
@@ -49,15 +49,15 @@ for candidate in python3 python; do
 done
 
 if [ -z "$python_bin" ]; then
-    fail "Python 3 is not installed. Install Python 3 from https://www.python.org/downloads/ then run: pip3 install PyQt5 Pillow"
+    fail "Python 3 is not installed. Install Python 3 from https://www.python.org/downloads/ then run: python3 -m pip install -r \"$app_root/packaging/requirements-studio.txt\""
 fi
 
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$app_root"
 
-if ! "$python_bin" -c 'from PyQt5 import QtWidgets; import PIL; import mod_editor.apf_studio.gui' >/dev/null 2>&1; then
-    fail "A required component (PyQt5 or Pillow) is missing. Install both with: pip3 install PyQt5 Pillow"
+if ! "$python_bin" -c 'from PyQt5 import QtWidgets; import PIL; import numpy; import capstone; import unicorn; import mod_editor.apf_studio.gui' >/dev/null 2>&1; then
+    fail "A Studio runtime package is missing. Install the packages with: \"$python_bin\" -m pip install -r \"$app_root/packaging/requirements-studio.txt\""
 fi
 
 exec "$python_bin" -m mod_editor.apf_studio "$@"

@@ -64,5 +64,6 @@ class SourceSelection(QDialog):
         edits = [edit for edit, item in zip(self.document["edits"], self.items) if item.checkState(0) == Qt.Checked]
         m._require(edits, "Choose at least one edit, or turn off Include SOFTDRINK league artwork in Build.")
         with f._transaction(output, (self.project,), overwrite) as part:
-            part.write_text(json.dumps(dict(self.document, edits=edits), indent=1), encoding="utf-8", newline="\n")
+            part.write_text(json.dumps(dict(self.document, edits=edits), indent=2, sort_keys=True) + "\n",
+                            encoding="utf-8", newline="\n")
         return len(edits)

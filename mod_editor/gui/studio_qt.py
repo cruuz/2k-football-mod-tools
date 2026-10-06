@@ -92,7 +92,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformSet,
     load_nfl2k5_uniform_catalog,
 )
-from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet, SHEET_HELP, SHEET_LAYOUTS
+from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet, SHEET_HELP, SHEET_LAYOUTS, SHEET_LAYOUT_CHOICES
 from mod_editor.core.nfl2k5_extended_visual_catalog import (
     ExtendedVisualAsset,
     Nfl2k5ExtendedVisualCatalog,
@@ -7440,11 +7440,11 @@ class StudioMainWindow(QMainWindow):
             return
         layout_label, accepted = QInputDialog.getItem(
             self, "Number sheet layout", SHEET_HELP,
-            [row[0] for row in SHEET_LAYOUTS], 0, False,
+            [row[0] for row in SHEET_LAYOUT_CHOICES], 0, False,
         )
         if not accepted:
             return
-        orientation = dict(SHEET_LAYOUTS).get(str(layout_label), SHEET_LAYOUTS[0][1])
+        orientation = dict(SHEET_LAYOUT_CHOICES).get(str(layout_label), "auto")
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
         registration_label, accepted = QInputDialog.getItem(
             self, "Number size", "Match retail size keeps the glyph inside the original number box. "
@@ -9021,12 +9021,14 @@ class StudioMainWindow(QMainWindow):
         self.launch_button.setEnabled(not global_busy)
         latest = None
         try:
-            latest = self.facade.last_build_output()
+            latest = self.facade.last_build_output
+            if callable(latest):  # Older integrations exposed a method.
+                latest = latest()
         except Exception:  # noqa: BLE001 - browse-only facades have no build
             latest = None
         self.launch_button.setToolTip(
             blocker or (
-                f"Open the most recently made disc in xemu: {Path(str(latest)).name}"
+                f"Open the most recently made disc in xemu: {latest}. Load the disc roster and start a fresh franchise."
                 if latest else "Open the most recently made disc in xemu."
             )
         )

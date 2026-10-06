@@ -5,7 +5,7 @@
  "name": "Arizona Cardinals",
  "asset_code": "00",
  "season": 2026,
- "status": "Phase B job d8 (2026-09-23). Colours sourced (team_colors_official_2026.json); silver trims and albedo INFERRED from the 2023 unveil and 2026 week 1 photos.",
+ "status": "Phase B job d8 (2026-09-23). Colours sourced (team_colors_official_2026.json); silver trims and albedo INFERRED from the 2023 unveil and 2026 week 1 photos. Numeral follow-up: full 0..9 primary-photo measured straight-stroke/chamfer reconstruction for both jerseys and visible home shoulder numerals; native height/baseline/colours preserved.",
  "roster": {
   "season": 2026,
   "stats_season": 2025,
@@ -100,7 +100,280 @@
   "logo_vector": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg",
   "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Arizona_Cardinals_wordmark.svg (PD-textlogo)",
   "head_coach": "https://www.azcardinals.com/team/coaches-roster/mike-lafleur",
-  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status"
+  "roster": "nflverse-data rosters/roster_2026.csv (CC-BY-4.0), week 3 status",
+  "number_font": "Official Nike Game jersey measured and regularized contours for all digits 0..9, including visible home arm numerals. Away arm spans are blank and skipped. Existing helmet/name blocks unchanged; see jersey_number_art.",
+  "jersey_number_art": {
+   "method": "Full ten-digit family measured from official club-shop Nike Game jersey front photographs. Intended straight strokes and chamfers fitted to axes; silver outline, fabric drape, mesh perforations and edge nicks excluded from fill artwork. Product-photo approximation with explicit hand regularization, not an extracted exact font. Native height/baseline and existing colours/outlines preserved. No marketing font used.",
+   "retrieved": "2026-10-05",
+   "sources": [
+    {
+     "digit": 0,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-paris-johnson-jr-cardinal-arizona-cardinals-game-jersey_ss5_p-200096259%2Bpv-1%2Bu-5k0x8kqapusgeujo6wtb%2Bv-g5fcpq12efomahmiaoez.png?_hv=2&w=2000",
+     "sha256": "1bf17e0cc843391f2405ac30110f0678f9af42e0681cb471a3a8c5dbfbf3044d",
+     "fill_width_height_ratio": 0.5597190000000001,
+     "regularized_fill_width_height_ratio": 0.537
+    },
+    {
+     "digit": 1,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/womens-nike-michael-wilson-cardinal-arizona-cardinals-team-game-jersey_ss5_p-200627028%2Bpv-1%2Bu-7nr6cp71zlkfn5gfpmvc%2Bv-oq01mnyw54ufvmpfaelr.jpg?_hv=2&w=2000",
+     "sha256": "1956c91387994a5c80429f37987d7140efd28c549ce2fd687f26a16ac8ed89e2",
+     "fill_width_height_ratio": 0.223913,
+     "regularized_fill_width_height_ratio": 0.202
+    },
+    {
+     "digit": 2,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-will-johnson-cardinal-arizona-cardinals-team-game-jersey_ss5_p-204025759%2Bpv-1%2Bu-hmnf8znwkchyj5rywctf%2Bv-ogbsou2fc1hzlrc7bg7k.png?_hv=2&w=2000",
+     "sha256": "43a3a335dd3c0d942af03326a842eea6d98672708276d511845a3a4402eaaf13",
+     "fill_width_height_ratio": 0.5222672,
+     "regularized_fill_width_height_ratio": 0.488
+    },
+    {
+     "digit": 3,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-budda-baker-cardinal-arizona-cardinals-game-player-jersey_ss5_p-5036072%2Bpv-1%2Bu-oykc5mqw5jnpvgmbumtn%2Bv-4yanf0rb1xodylnvau0i.png?_hv=2&w=2000",
+     "sha256": "94b408f908ca5165679464071170edb9e9c4a12cf88664cfc4330bcbd31bca48",
+     "fill_width_height_ratio": 0.5289855,
+     "regularized_fill_width_height_ratio": 0.495
+    },
+    {
+     "digit": 4,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/womens-nike-michael-wilson-cardinal-arizona-cardinals-team-game-jersey_ss5_p-200627028%2Bpv-1%2Bu-7nr6cp71zlkfn5gfpmvc%2Bv-oq01mnyw54ufvmpfaelr.jpg?_hv=2&w=2000",
+     "sha256": "1956c91387994a5c80429f37987d7140efd28c549ce2fd687f26a16ac8ed89e2",
+     "fill_width_height_ratio": 0.5389474,
+     "regularized_fill_width_height_ratio": 0.54
+    },
+    {
+     "digit": 5,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-dante-stills-cardinal-arizona-cardinals-team-game-jersey_ss5_p-202222689%2Bpv-2%2Bu-8vmfowz5ckblftdf3meo%2Bv-bcxiyciwppuxqph77vvw.png?_hv=2&w=2000",
+     "sha256": "41cc301430deb3683f908e75443ddf8dd9d0849472bc057a5be2b8d37faf2852",
+     "fill_width_height_ratio": 0.5557851,
+     "regularized_fill_width_height_ratio": 0.526,
+     "product_url": "https://shop.azcardinals.com/mens-nike-dante-stills-cardinal-arizona-cardinals-team-game-jersey/p-681124243568620843%2Bz-8-3280692442"
+    },
+    {
+     "digit": 6,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-kitan-crawford-cardinal-arizona-cardinals-team-game-jersey_ss5_p-203456620%2Bpv-2%2Bu-umvsnb49d2oiyhmf1riz%2Bv-jnv4hfgillkdh3j8i3s5.png?_hv=2&w=2000",
+     "sha256": "7ad9701267714d111ebb2ad5b7e826ab0717f13bc58fff115b5f9687f4c8d94c",
+     "fill_width_height_ratio": 0.5696466,
+     "regularized_fill_width_height_ratio": 0.495,
+     "product_url": "https://shop.azcardinals.com/mens-nike-kitan-crawford-cardinal-arizona-cardinals-team-game-jersey/p-243370371662626811%2Bz-98-1257320297"
+    },
+    {
+     "digit": 7,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-walter-nolen-cardinal-arizona-cardinals-game-player-jersey_ss5_p-202982191%2Bpv-1%2Bu-whvyzods9tq90bxk8dhw%2Bv-rtoktzhzxyl4fknvtmkt.png?_hv=2&w=2000",
+     "sha256": "5be82c5c4a46c69365c6ef18f426867ea5096800b55922365978a9678da857a0",
+     "fill_width_height_ratio": 0.5,
+     "regularized_fill_width_height_ratio": 0.395,
+     "product_url": null
+    },
+    {
+     "digit": 8,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-chad-ryland-cardinal-arizona-cardinals-team-game-jersey_ss5_p-203456622%2Bpv-2%2Bu-22q7rbtmafbnkmugcgd8%2Bv-zywztxxubtfoorret5jt.png?_hv=2&w=2000",
+     "sha256": "f4f9e912e6ed14fd0c07ae0a96447d248d103bbf60d1876f332346444c84a521",
+     "fill_width_height_ratio": 0.56875,
+     "regularized_fill_width_height_ratio": 0.438,
+     "product_url": "https://shop.azcardinals.com/mens-nike-chad-ryland-cardinal-arizona-cardinals-team-game-jersey/p-131158711673287968%2Bz-95-3728533908"
+    },
+    {
+     "digit": 9,
+     "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-xavier-weaver-cardinal-arizona-cardinals-team-game-jersey_ss5_p-202222701%2Bpv-2%2Bu-jbytfwweysvfmrqxe8c7%2Bv-xdzvx5ldndakihzpilab.png?_hv=2&w=2000",
+     "sha256": "3002b5cd6af046ed507f2535337d79a098b46f415df9ca6ac85bf8aa0baa3e2f",
+     "fill_width_height_ratio": 0.5729167,
+     "regularized_fill_width_height_ratio": 0.458,
+     "product_url": "https://shop.azcardinals.com/mens-nike-xavier-weaver-cardinal-arizona-cardinals-team-game-jersey/p-248824915791306645%2Bz-97-1714809782"
+    }
+   ],
+   "regularization": "ARI front-photo straight-edge/chamfer fitting; source_trace_contact.png shows cyan authored contour over green measured contour. All 10 source-photo references retained in source_traces.json; this is a measured reconstruction, not a binary-extracted official font.",
+   "official_shop": "https://shop.azcardinals.com/d-3084",
+   "width_calibration": {
+    "method": "Trailing or centred single-digit primary photo controls replace foreshortened leading-digit widths; DEN6 uses explicit repeated77 template factor. Individual glyph widths are retained, not forced equal. All native heights/baselines/colours unchanged.",
+    "changes": [
+     {
+      "digit": 5,
+      "old_width_height_ratio": 0.526,
+      "new_width_height_ratio": 0.5557851,
+      "x_factor": 1.0566256653992396,
+      "reference": {
+       "source": {
+        "team": "ARI",
+        "name": "Stills55_pv2",
+        "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-dante-stills-cardinal-arizona-cardinals-team-game-jersey_ss5_p-202222689%2Bpv-2%2Bu-8vmfowz5ckblftdf3meo%2Bv-bcxiyciwppuxqph77vvw.png?_hv=2&w=2000",
+        "product_url": "https://shop.azcardinals.com/mens-nike-dante-stills-cardinal-arizona-cardinals-team-game-jersey/p-681124243568620843%2Bz-8-3280692442",
+        "sha256": "41cc301430deb3683f908e75443ddf8dd9d0849472bc057a5be2b8d37faf2852",
+        "observed_printed_numbers": "55",
+        "inspected_printed_number": "55",
+        "observed_digit": "5",
+        "cache_label_note": "name identifies cached image only; inspected_printed_number identifies actual on-photo jersey numeral.",
+        "glyph_position": "trailing"
+       },
+       "slot": 1,
+       "crop": [
+        350,
+        530,
+        1500,
+        1300
+       ],
+       "bounds": [
+        479,
+        95,
+        270,
+        485,
+        78322
+       ],
+       "ratio": 0.5557851239669421,
+       "threshold": 210
+      },
+      "method": "Retain measured straight-stroke/chamfer reconstruction; width calibrated directly to inspected trailing digit."
+     },
+     {
+      "digit": 6,
+      "old_width_height_ratio": 0.495,
+      "new_width_height_ratio": 0.5696466,
+      "x_factor": 1.1508012121212121,
+      "reference": {
+       "source": {
+        "team": "ARI",
+        "name": "Crawford39_pv2",
+        "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-kitan-crawford-cardinal-arizona-cardinals-team-game-jersey_ss5_p-203456620%2Bpv-2%2Bu-umvsnb49d2oiyhmf1riz%2Bv-jnv4hfgillkdh3j8i3s5.png?_hv=2&w=2000",
+        "product_url": "https://shop.azcardinals.com/mens-nike-kitan-crawford-cardinal-arizona-cardinals-team-game-jersey/p-243370371662626811%2Bz-98-1257320297",
+        "sha256": "7ad9701267714d111ebb2ad5b7e826ab0717f13bc58fff115b5f9687f4c8d94c",
+        "observed_printed_numbers": "36",
+        "inspected_printed_number": "36",
+        "observed_digit": "6",
+        "cache_label_note": "name identifies cached image only; inspected_printed_number identifies actual on-photo jersey numeral.",
+        "glyph_position": "trailing"
+       },
+       "slot": 1,
+       "crop": [
+        350,
+        530,
+        1500,
+        1300
+       ],
+       "bounds": [
+        480,
+        98,
+        275,
+        482,
+        81194
+       ],
+       "ratio": 0.5696465696465697,
+       "threshold": 210
+      },
+      "method": "Retain measured straight-stroke/chamfer reconstruction; width calibrated directly to inspected trailing digit."
+     },
+     {
+      "digit": 8,
+      "old_width_height_ratio": 0.438,
+      "new_width_height_ratio": 0.56875,
+      "x_factor": 1.29851598173516,
+      "reference": {
+       "source": {
+        "team": "ARI",
+        "name": "Ryland38_pv2",
+        "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-chad-ryland-cardinal-arizona-cardinals-team-game-jersey_ss5_p-203456622%2Bpv-2%2Bu-22q7rbtmafbnkmugcgd8%2Bv-zywztxxubtfoorret5jt.png?_hv=2&w=2000",
+        "product_url": "https://shop.azcardinals.com/mens-nike-chad-ryland-cardinal-arizona-cardinals-team-game-jersey/p-131158711673287968%2Bz-95-3728533908",
+        "sha256": "f4f9e912e6ed14fd0c07ae0a96447d248d103bbf60d1876f332346444c84a521",
+        "observed_printed_numbers": "38",
+        "inspected_printed_number": "38",
+        "observed_digit": "8",
+        "cache_label_note": "name identifies cached image only; inspected_printed_number identifies actual on-photo jersey numeral.",
+        "glyph_position": "trailing"
+       },
+       "slot": 1,
+       "crop": [
+        350,
+        530,
+        1500,
+        1300
+       ],
+       "bounds": [
+        480,
+        98,
+        274,
+        481,
+        83647
+       ],
+       "ratio": 0.56875,
+       "threshold": 210
+      },
+      "method": "Retain measured straight-stroke/chamfer reconstruction; width calibrated directly to inspected trailing digit."
+     },
+     {
+      "digit": 9,
+      "old_width_height_ratio": 0.458,
+      "new_width_height_ratio": 0.5729167,
+      "x_factor": 1.2509098253275108,
+      "reference": {
+       "source": {
+        "team": "ARI",
+        "name": "Weaver19_pv2",
+        "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-xavier-weaver-cardinal-arizona-cardinals-team-game-jersey_ss5_p-202222701%2Bpv-2%2Bu-jbytfwweysvfmrqxe8c7%2Bv-xdzvx5ldndakihzpilab.png?_hv=2&w=2000",
+        "product_url": "https://shop.azcardinals.com/mens-nike-xavier-weaver-cardinal-arizona-cardinals-team-game-jersey/p-248824915791306645%2Bz-97-1714809782",
+        "sha256": "3002b5cd6af046ed507f2535337d79a098b46f415df9ca6ac85bf8aa0baa3e2f",
+        "observed_printed_numbers": "89",
+        "inspected_printed_number": "89",
+        "observed_digit": "9",
+        "cache_label_note": "name identifies cached image only; inspected_printed_number identifies actual on-photo jersey numeral.",
+        "glyph_position": "trailing"
+       },
+       "slot": 1,
+       "crop": [
+        350,
+        530,
+        1500,
+        1300
+       ],
+       "bounds": [
+        481,
+        98,
+        276,
+        481,
+        82089
+       ],
+       "ratio": 0.5729166666666666,
+       "threshold": 210
+      },
+      "method": "Retain measured straight-stroke/chamfer reconstruction; width calibrated directly to inspected trailing digit."
+     },
+     {
+      "digit": 7,
+      "old_width_height_ratio": 0.395,
+      "new_width_height_ratio": 0.5,
+      "x_factor": 1.2658227848101267,
+      "reference": {
+       "source": {
+        "team": "ARI",
+        "name": "Nolen90",
+        "url": "https://fanatics.frgimages.com/arizona-cardinals/mens-nike-walter-nolen-cardinal-arizona-cardinals-game-player-jersey_ss5_p-202982191%2Bpv-1%2Bu-whvyzods9tq90bxk8dhw%2Bv-rtoktzhzxyl4fknvtmkt.png?_hv=2&w=2000",
+        "sha256": "5be82c5c4a46c69365c6ef18f426867ea5096800b55922365978a9678da857a0",
+        "observed_printed_numbers": "97",
+        "inspected_printed_number": "97",
+        "observed_digit": "7",
+        "cache_label_note": "name identifies cached image only; inspected_printed_number identifies actual on-photo jersey numeral.",
+        "glyph_position": "trailing"
+       },
+       "slot": 1,
+       "crop": [
+        900,
+        770,
+        1510,
+        1370
+       ],
+       "bounds": [
+        277,
+        29,
+        209,
+        417,
+        36901
+       ],
+       "ratio": 0.5,
+       "threshold": 210
+      },
+      "method": "Retain measured straight-stroke/chamfer reconstruction; width calibrated directly to inspected trailing digit."
+     }
+    ]
+   }
+  }
  },
  "palette": {
   "red": "#97233F",
@@ -172,10 +445,297 @@
     "colour": "jersey_red"
    },
    "digits": {
-    "glyph_donor": "37H0",
+    "glyph_donor": "00H0",
     "fill": "white",
     "outline": "silver",
-    "outline_frac": 0.028
+    "outline_frac": 0.028,
+    "glyph_shapes": {
+     "0": {
+      "width": 537,
+      "height": 1000,
+      "contours": [
+       [
+        [115, 0],
+        [420, 0],
+        [537, 135],
+        [537, 865],
+        [420, 1000],
+        [115, 1000],
+        [0, 865],
+        [0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [135, 165],
+        [350, 165],
+        [392, 210],
+        [392, 845],
+        [175, 845],
+        [135, 795]
+       ]
+      ]
+     },
+     "1": {
+      "width": 202,
+      "height": 1000,
+      "contours": [
+       [
+        [0, 0],
+        [202, 0],
+        [202, 1000],
+        [70, 1000],
+        [70, 170],
+        [0, 170]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 488,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [488, 135],
+        [488, 405],
+        [130, 735],
+        [130, 835],
+        [365, 835],
+        [365, 745],
+        [488, 745],
+        [488, 1000],
+        [0, 1000],
+        [0, 640],
+        [350, 325],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 280],
+        [0, 280],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 495,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [495, 135],
+        [495, 390],
+        [410, 485],
+        [495, 600],
+        [495, 875],
+        [380, 1000],
+        [110, 1000],
+        [0, 860],
+        [0, 730],
+        [130, 730],
+        [130, 835],
+        [310, 835],
+        [350, 795],
+        [350, 580],
+        [205, 580],
+        [205, 415],
+        [350, 415],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 240],
+        [0, 240],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 540,
+      "height": 1000,
+      "contours": [
+       [
+        [240, 0],
+        [455, 0],
+        [455, 630],
+        [540, 630],
+        [540, 785],
+        [455, 785],
+        [455, 1000],
+        [320, 1000],
+        [320, 785],
+        [0, 785],
+        [0, 585]
+       ]
+      ],
+      "holes": [
+       [
+        [320, 175],
+        [320, 630],
+        [135, 630],
+        [135, 570]
+       ]
+      ]
+     },
+     "5": {
+      "width": 555.7851,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [510.3502, 0],
+        [510.3502, 165],
+        [147.9276, 165],
+        [147.9276, 335],
+        [433.2165, 335],
+        [555.7851, 475],
+        [555.7851, 865],
+        [433.2165, 1000],
+        [116.2288, 1000],
+        [0.0, 850],
+        [0.0, 675],
+        [137.3613, 675],
+        [137.3613, 790],
+        [179.6264, 835],
+        [401.5178, 835],
+        [401.5178, 540],
+        [359.2527, 495],
+        [0.0, 495]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 569.6466,
+      "height": 1000,
+      "contours": [
+       [
+        [126.5881, 0],
+        [437.3044, 0],
+        [569.6466, 135],
+        [569.6466, 260],
+        [414.2884, 260],
+        [414.2884, 210],
+        [362.5024, 165],
+        [143.8501, 165],
+        [143.8501, 410],
+        [437.3044, 410],
+        [569.6466, 560],
+        [569.6466, 875],
+        [437.3044, 1000],
+        [126.5881, 1000],
+        [0.0, 850],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [143.8501, 565],
+        [345.2403, 565],
+        [391.2724, 610],
+        [391.2724, 845],
+        [189.8822, 845],
+        [143.8501, 795]
+       ]
+      ]
+     },
+     "7": {
+      "width": 500.0,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [500.0, 0],
+        [500.0, 180],
+        [240.5063, 1000],
+        [120.2532, 1000],
+        [329.1139, 180],
+        [0.0, 180]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 568.75,
+      "height": 1000,
+      "contours": [
+       [
+        [103.8813, 0],
+        [441.4954, 0],
+        [568.75, 135],
+        [568.75, 380],
+        [473.9583, 475],
+        [568.75, 595],
+        [568.75, 875],
+        [435.0029, 1000],
+        [129.8516, 1000],
+        [25.9703, 850],
+        [25.9703, 570],
+        [97.3887, 470],
+        [0.0, 365],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [149.3293, 165],
+        [383.0622, 165],
+        [422.0177, 205],
+        [422.0177, 415],
+        [181.7922, 415],
+        [149.3293, 365]
+       ],
+       [
+        [155.8219, 565],
+        [363.5845, 565],
+        [402.54, 605],
+        [402.54, 840],
+        [188.2848, 840],
+        [155.8219, 795]
+       ]
+      ]
+     },
+     "9": {
+      "width": 572.9167,
+      "height": 1000,
+      "contours": [
+       [
+        [125.091, 0],
+        [444.073, 0],
+        [572.9167, 135],
+        [572.9167, 880],
+        [444.073, 1000],
+        [150.1092, 1000],
+        [50.0364, 850],
+        [50.0364, 740],
+        [162.6183, 740],
+        [162.6183, 795],
+        [212.6547, 845],
+        [422.8075, 845],
+        [422.8075, 600],
+        [143.8546, 580],
+        [0.0, 420],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [156.3637, 165],
+        [369.0184, 165],
+        [412.8002, 205],
+        [412.8002, 440],
+        [193.891, 440],
+        [156.3637, 385]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 56,
+    "glyph_center": [32, 32],
+    "registration": "as_authored"
    },
    "helmet_digits": {
     "glyph_donor": "37H0",
@@ -226,6 +786,299 @@
      "mark": "club_logo",
      "scale": 1.0
     }
+   },
+   "arm_digits": {
+    "glyph_donor": "00H0",
+    "fill": "white",
+    "outline": "silver",
+    "outline_frac": 0.028,
+    "glyph_shapes": {
+     "0": {
+      "width": 537,
+      "height": 1000,
+      "contours": [
+       [
+        [115, 0],
+        [420, 0],
+        [537, 135],
+        [537, 865],
+        [420, 1000],
+        [115, 1000],
+        [0, 865],
+        [0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [135, 165],
+        [350, 165],
+        [392, 210],
+        [392, 845],
+        [175, 845],
+        [135, 795]
+       ]
+      ]
+     },
+     "1": {
+      "width": 202,
+      "height": 1000,
+      "contours": [
+       [
+        [0, 0],
+        [202, 0],
+        [202, 1000],
+        [70, 1000],
+        [70, 170],
+        [0, 170]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 488,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [488, 135],
+        [488, 405],
+        [130, 735],
+        [130, 835],
+        [365, 835],
+        [365, 745],
+        [488, 745],
+        [488, 1000],
+        [0, 1000],
+        [0, 640],
+        [350, 325],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 280],
+        [0, 280],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 495,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [495, 135],
+        [495, 390],
+        [410, 485],
+        [495, 600],
+        [495, 875],
+        [380, 1000],
+        [110, 1000],
+        [0, 860],
+        [0, 730],
+        [130, 730],
+        [130, 835],
+        [310, 835],
+        [350, 795],
+        [350, 580],
+        [205, 580],
+        [205, 415],
+        [350, 415],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 240],
+        [0, 240],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 540,
+      "height": 1000,
+      "contours": [
+       [
+        [240, 0],
+        [455, 0],
+        [455, 630],
+        [540, 630],
+        [540, 785],
+        [455, 785],
+        [455, 1000],
+        [320, 1000],
+        [320, 785],
+        [0, 785],
+        [0, 585]
+       ]
+      ],
+      "holes": [
+       [
+        [320, 175],
+        [320, 630],
+        [135, 630],
+        [135, 570]
+       ]
+      ]
+     },
+     "5": {
+      "width": 555.7851,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [510.3502, 0],
+        [510.3502, 165],
+        [147.9276, 165],
+        [147.9276, 335],
+        [433.2165, 335],
+        [555.7851, 475],
+        [555.7851, 865],
+        [433.2165, 1000],
+        [116.2288, 1000],
+        [0.0, 850],
+        [0.0, 675],
+        [137.3613, 675],
+        [137.3613, 790],
+        [179.6264, 835],
+        [401.5178, 835],
+        [401.5178, 540],
+        [359.2527, 495],
+        [0.0, 495]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 569.6466,
+      "height": 1000,
+      "contours": [
+       [
+        [126.5881, 0],
+        [437.3044, 0],
+        [569.6466, 135],
+        [569.6466, 260],
+        [414.2884, 260],
+        [414.2884, 210],
+        [362.5024, 165],
+        [143.8501, 165],
+        [143.8501, 410],
+        [437.3044, 410],
+        [569.6466, 560],
+        [569.6466, 875],
+        [437.3044, 1000],
+        [126.5881, 1000],
+        [0.0, 850],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [143.8501, 565],
+        [345.2403, 565],
+        [391.2724, 610],
+        [391.2724, 845],
+        [189.8822, 845],
+        [143.8501, 795]
+       ]
+      ]
+     },
+     "7": {
+      "width": 500.0,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [500.0, 0],
+        [500.0, 180],
+        [240.5063, 1000],
+        [120.2532, 1000],
+        [329.1139, 180],
+        [0.0, 180]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 568.75,
+      "height": 1000,
+      "contours": [
+       [
+        [103.8813, 0],
+        [441.4954, 0],
+        [568.75, 135],
+        [568.75, 380],
+        [473.9583, 475],
+        [568.75, 595],
+        [568.75, 875],
+        [435.0029, 1000],
+        [129.8516, 1000],
+        [25.9703, 850],
+        [25.9703, 570],
+        [97.3887, 470],
+        [0.0, 365],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [149.3293, 165],
+        [383.0622, 165],
+        [422.0177, 205],
+        [422.0177, 415],
+        [181.7922, 415],
+        [149.3293, 365]
+       ],
+       [
+        [155.8219, 565],
+        [363.5845, 565],
+        [402.54, 605],
+        [402.54, 840],
+        [188.2848, 840],
+        [155.8219, 795]
+       ]
+      ]
+     },
+     "9": {
+      "width": 572.9167,
+      "height": 1000,
+      "contours": [
+       [
+        [125.091, 0],
+        [444.073, 0],
+        [572.9167, 135],
+        [572.9167, 880],
+        [444.073, 1000],
+        [150.1092, 1000],
+        [50.0364, 850],
+        [50.0364, 740],
+        [162.6183, 740],
+        [162.6183, 795],
+        [212.6547, 845],
+        [422.8075, 845],
+        [422.8075, 600],
+        [143.8546, 580],
+        [0.0, 420],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [156.3637, 165],
+        [369.0184, 165],
+        [412.8002, 205],
+        [412.8002, 440],
+        [193.891, 440],
+        [156.3637, 385]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 60,
+    "glyph_center": [32, 32],
+    "registration": "as_authored"
    }
   },
   "away": {
@@ -340,10 +1193,297 @@
     "colour": "white"
    },
    "digits": {
-    "glyph_donor": "37H0",
+    "glyph_donor": "00A0",
     "fill": "jersey_red",
     "outline": "black",
-    "outline_frac": 0.028
+    "outline_frac": 0.028,
+    "glyph_shapes": {
+     "0": {
+      "width": 537,
+      "height": 1000,
+      "contours": [
+       [
+        [115, 0],
+        [420, 0],
+        [537, 135],
+        [537, 865],
+        [420, 1000],
+        [115, 1000],
+        [0, 865],
+        [0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [135, 165],
+        [350, 165],
+        [392, 210],
+        [392, 845],
+        [175, 845],
+        [135, 795]
+       ]
+      ]
+     },
+     "1": {
+      "width": 202,
+      "height": 1000,
+      "contours": [
+       [
+        [0, 0],
+        [202, 0],
+        [202, 1000],
+        [70, 1000],
+        [70, 170],
+        [0, 170]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 488,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [488, 135],
+        [488, 405],
+        [130, 735],
+        [130, 835],
+        [365, 835],
+        [365, 745],
+        [488, 745],
+        [488, 1000],
+        [0, 1000],
+        [0, 640],
+        [350, 325],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 280],
+        [0, 280],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 495,
+      "height": 1000,
+      "contours": [
+       [
+        [110, 0],
+        [380, 0],
+        [495, 135],
+        [495, 390],
+        [410, 485],
+        [495, 600],
+        [495, 875],
+        [380, 1000],
+        [110, 1000],
+        [0, 860],
+        [0, 730],
+        [130, 730],
+        [130, 835],
+        [310, 835],
+        [350, 795],
+        [350, 580],
+        [205, 580],
+        [205, 415],
+        [350, 415],
+        [350, 210],
+        [310, 165],
+        [125, 165],
+        [125, 240],
+        [0, 240],
+        [0, 135]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 540,
+      "height": 1000,
+      "contours": [
+       [
+        [240, 0],
+        [455, 0],
+        [455, 630],
+        [540, 630],
+        [540, 785],
+        [455, 785],
+        [455, 1000],
+        [320, 1000],
+        [320, 785],
+        [0, 785],
+        [0, 585]
+       ]
+      ],
+      "holes": [
+       [
+        [320, 175],
+        [320, 630],
+        [135, 630],
+        [135, 570]
+       ]
+      ]
+     },
+     "5": {
+      "width": 555.7851,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [510.3502, 0],
+        [510.3502, 165],
+        [147.9276, 165],
+        [147.9276, 335],
+        [433.2165, 335],
+        [555.7851, 475],
+        [555.7851, 865],
+        [433.2165, 1000],
+        [116.2288, 1000],
+        [0.0, 850],
+        [0.0, 675],
+        [137.3613, 675],
+        [137.3613, 790],
+        [179.6264, 835],
+        [401.5178, 835],
+        [401.5178, 540],
+        [359.2527, 495],
+        [0.0, 495]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 569.6466,
+      "height": 1000,
+      "contours": [
+       [
+        [126.5881, 0],
+        [437.3044, 0],
+        [569.6466, 135],
+        [569.6466, 260],
+        [414.2884, 260],
+        [414.2884, 210],
+        [362.5024, 165],
+        [143.8501, 165],
+        [143.8501, 410],
+        [437.3044, 410],
+        [569.6466, 560],
+        [569.6466, 875],
+        [437.3044, 1000],
+        [126.5881, 1000],
+        [0.0, 850],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [143.8501, 565],
+        [345.2403, 565],
+        [391.2724, 610],
+        [391.2724, 845],
+        [189.8822, 845],
+        [143.8501, 795]
+       ]
+      ]
+     },
+     "7": {
+      "width": 500.0,
+      "height": 1000,
+      "contours": [
+       [
+        [0.0, 0],
+        [500.0, 0],
+        [500.0, 180],
+        [240.5063, 1000],
+        [120.2532, 1000],
+        [329.1139, 180],
+        [0.0, 180]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 568.75,
+      "height": 1000,
+      "contours": [
+       [
+        [103.8813, 0],
+        [441.4954, 0],
+        [568.75, 135],
+        [568.75, 380],
+        [473.9583, 475],
+        [568.75, 595],
+        [568.75, 875],
+        [435.0029, 1000],
+        [129.8516, 1000],
+        [25.9703, 850],
+        [25.9703, 570],
+        [97.3887, 470],
+        [0.0, 365],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [149.3293, 165],
+        [383.0622, 165],
+        [422.0177, 205],
+        [422.0177, 415],
+        [181.7922, 415],
+        [149.3293, 365]
+       ],
+       [
+        [155.8219, 565],
+        [363.5845, 565],
+        [402.54, 605],
+        [402.54, 840],
+        [188.2848, 840],
+        [155.8219, 795]
+       ]
+      ]
+     },
+     "9": {
+      "width": 572.9167,
+      "height": 1000,
+      "contours": [
+       [
+        [125.091, 0],
+        [444.073, 0],
+        [572.9167, 135],
+        [572.9167, 880],
+        [444.073, 1000],
+        [150.1092, 1000],
+        [50.0364, 850],
+        [50.0364, 740],
+        [162.6183, 740],
+        [162.6183, 795],
+        [212.6547, 845],
+        [422.8075, 845],
+        [422.8075, 600],
+        [143.8546, 580],
+        [0.0, 420],
+        [0.0, 135]
+       ]
+      ],
+      "holes": [
+       [
+        [156.3637, 165],
+        [369.0184, 165],
+        [412.8002, 205],
+        [412.8002, 440],
+        [193.891, 440],
+        [156.3637, 385]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 50,
+    "glyph_center": [32, 32],
+    "registration": "as_authored"
    },
    "helmet_digits": {
     "glyph_donor": "37H0",
@@ -383,7 +1523,8 @@
      "mark": "club_logo",
      "scale": 1.0
     }
-   }
+   },
+   "arm_digits": "none"
   }
  },
  "part_intents": {

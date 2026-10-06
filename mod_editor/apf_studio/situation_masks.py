@@ -37,7 +37,7 @@ def export_build(directory, state):
             raise ValidationError('Situation patch failed build readback')
         receipts.append({**prepared['receipt'], 'file': target.name})
     data = policy_data(state)
-    keys = 13 if native.SituationPatch(native.PROFILES[0], data).version == 3 else 12
+    keys = 13 if native.SituationPatch(native.PROFILES[0], data).version >= 3 else 12
     target = Path(directory) / 'situation-masks.bin'
     target.write_bytes(data)
     if native.decode_data(target.read_bytes()) != native.canonical_policies(state.situation_masks, key_count=keys):

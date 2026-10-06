@@ -43,11 +43,22 @@ class ChargeNativeTests(unittest.TestCase):
         self.assertEqual(struct.unpack_from(">I", source, security + 0x184 + page * 24)[0], 0x11)
         for image, profile in zip(self.images, p.PROFILES):
             doc = p.PatchDocument(profile, True)
+            audit = p.audit_latch_reservations(image)
+            self.assertEqual(audit["direct_executable_references"], [])
+            self.assertFalse(audit["declared_section_overlap"])
+            print("CHARGE_LATCH_RESERVATIONS", json.dumps(audit, sort_keys=True), flush=True)
             self.assertEqual(p.revert_image(p.apply_image(image, doc), doc), image)
             self.assertFalse(any(image[p.CAVE-p.IMAGE_BASE:p.CAVE_LIMIT-p.IMAGE_BASE]))
             references = [offset * 4 + p.IMAGE_BASE for offset, (word,) in enumerate(struct.iter_unpack(">I", image))
                           if p.CAVE <= word < p.CAVE_LIMIT]
-            self.assertEqual(references, [])
+            # Expanded cave padding has one unaligned, non-executable numeric
+            # collision in each profile. The independent audit above rejects
+            # executable literals, decoded branches and address constructions.
+            self.assertEqual(references, [pc for pc, word in audit["numeric_collisions"]
+                                          if p.CAVE <= word < p.CAVE_LIMIT])
+            self.assertEqual([(hex(pc), hex(word)) for pc, word in audit["numeric_collisions"]
+                              if p.CAVE <= word < p.CAVE_LIMIT],
+                             [(hex(0x83BB6564 + (0x20 if profile == p.PROFILES[1] else 0)), "0x84d0d35d")])
             print("CHARGE_PINS", json.dumps(doc.receipt, sort_keys=True), flush=True)
 
     def test_retail_and_patched_full_charge_state_machine(self):
@@ -191,7 +202,7 @@ class ChargeNativeTests(unittest.TestCase):
             ("Ankle Breaker", 6, ("ankle_breaker",), 2),
         )
         for image, profile in zip(self.images, p.PROFILES):
-            for revision in (2, 3):
+            for revision in (2, 3, p.CURRENT_REVISION):
                 m = ChargeMachine(image, patched=True, revision=revision)
                 for name, tier, abilities, cap in fixtures:
                     for move in ("spin_left", "spin_right", "juke_left", "juke_right"):
@@ -200,7 +211,7 @@ class ChargeNativeTests(unittest.TestCase):
                         self.assertEqual(m.charge()["maximum"], cap)
                         held = m.feedback(tier)
                         specific = "cyclone" if move.startswith("spin") else "ankle_breaker"
-                        qualified = specific in abilities or (revision == 3 and bool(
+                        qualified = specific in abilities or (revision >= 3 and bool(
                             {"finesse", "finesse_and_power"}.intersection(abilities)))
                         expected = cap == 2 and qualified
                         self.assertEqual(m.consume_move(move), 4 if expected else 1)
@@ -254,7 +265,7 @@ class ChargeNativeTests(unittest.TestCase):
                     self.assertAlmostEqual(m.move_bonus(0x1B), .3 if "stop_on_a_dime" in ability else 0.)
                     m.setreg(30, PLAYER)
                     delta = 0xEC8 if m.updated else 0
-                    m.call(0x84903754 + delta, stop=0x84903770 + delta, bound=100)
+                    m.call(0x84903754 + delta, stop=0x84903770 + delta, bound=2_000)
                     expected_state = 4 if "stop_on_a_dime" in ability else 1
                     self.assertEqual((m.get(STATE + 0x1A8) >> 22) & 7, expected_state)
             print("MOVE_BONUS_CONTACT_STOP", profile.name, "all tiers and individual ability controls PASS", flush=True)
@@ -278,6 +289,107 @@ class ChargeNativeTests(unittest.TestCase):
                             m.consume_move(move)
                             self.assertFalse(m.feedback(tier)["second_level_discharge"])
             print("MOVE_PARTIAL_REPEAT", profile.name, "no fabricated charge or repeated level-2 discharge PASS", flush=True)
+            del m
+            gc.collect()
+
+    def test_rev3_native_cleanup_regression_and_per_action_latch(self):
+        """The old tests stopped before cleanup and missed the visible regression."""
+        fixtures = ((), ("finesse",), ("power",), ("finesse_and_power",),
+                    ("cyclone",), ("ankle_breaker",), ("arms_of_steel",), ("battering_ram",))
+        actions = (("spin_left", "cyclone", "finesse", None),
+                   ("juke_right", "ankle_breaker", "finesse", None),
+                   ("stiff", "arms_of_steel", "power", 0x820C4870),
+                   ("shoulder", "battering_ram", "power", 0x820C48D0))
+        for image, profile in zip(self.images, p.PROFILES):
+            for revision in (3, p.CURRENT_REVISION):
+                m = ChargeMachine(image, patched=True, revision=revision)
+                for tier in (0, 2, 4, 6):
+                    for abilities in fixtures:
+                        for move, own, family, descriptor in actions:
+                            m.configure_player(tier, abilities)
+                            self.assertEqual(m.charge()["maximum"], 2 if abilities else 1)
+                            roster = bytes(m.cpu.mem_read(ROSTER, 0x150))
+                            if descriptor is None:
+                                m.consume_move(move)
+                            else:
+                                # These real descriptors point at the native stiff-arm
+                                # and shoulder entry routines; TU's table data is +0x20.
+                                actual = descriptor + (0x20 if m.updated else 0)
+                                self.assertEqual(m.get(actual) >> 24, 0x17 if move == "stiff" else 0x19)
+                                m.put(STATE + 4, actual)
+                                m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+                            qualified = bool({own, family, "finesse_and_power"}.intersection(abilities))
+                            # This is the missing lifecycle step: the real retail
+                            # routine clears both charge and consumed state, but
+                            # leaves an active ripple timer at zero.
+                            m.call(m.site(0x848C4CB8), PLAYER, bound=2_000)
+                            self.assertEqual((m.get(STATE + 0x1A8) >> 22) & 7, 0)
+                            self.assertEqual(struct.unpack('>f', m.cpu.mem_read(STATE + 0xFC, 4))[0], 0.)
+                            for timer in (0., .25, .75):
+                                m.putf(STATE + 0x100, timer)
+                                visual = m.feedback(tier)
+                                self.assertEqual(visual["second_level_discharge"], qualified and revision >= 4,
+                                                 (profile.name, revision, tier, abilities, move, timer))
+                                self.assertEqual(visual["consumed_state"], 0)
+                                self.assertEqual(visual["medal"], tier // 2)
+                            for timer in (-1., 10., 10.5):
+                                m.putf(STATE + 0x100, timer)
+                                self.assertFalse(m.feedback(tier)["second_level_discharge"],
+                                                 (profile.name, revision, tier, abilities, move, timer))
+                            self.assertEqual(bytes(m.cpu.mem_read(ROSTER, 0x150)), roster)
+                print("CHARGE_CLEANUP_LATCH", profile.name, revision,
+                      "native cleanup and per-action HB qualification PASS", flush=True)
+                del m
+                gc.collect()
+
+    def test_visual_latch_table_saturation_reuse_and_native_downgrade(self):
+        for image, profile in zip(self.images, p.PROFILES):
+            m = ChargeMachine(image, patched=True)
+            m.configure_player(2, ("finesse",))
+            # Populate every owned slot with distinct synthetic state objects.
+            # They all run the complete real common consume routine.
+            for i in range(p.LATCH_COUNT):
+                state = 0x390000 + i * 0x400
+                m.cpu.mem_write(state, bytes(m.cpu.mem_read(STATE, 0x400)))
+                m.putf(state + 0xFC, 2.)
+                m.put(PLAYER + 0x14, state)
+                m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+                self.assertEqual(m.get(p.LATCH_START + i * p.LATCH_ENTRY_SIZE), state)
+                self.assertEqual(m.get(p.LATCH_START + i * p.LATCH_ENTRY_SIZE + 8), 1)
+            # The 129th state fails closed without evicting another actor or
+            # writing outside the reservation. The first actor still works.
+            m.put(PLAYER + 0x14, STATE)
+            m.putf(STATE + 0xFC, 2.)
+            table = bytes(m.cpu.mem_read(p.LATCH_START, p.LATCH_LIMIT - p.LATCH_START))
+            m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+            self.assertEqual(bytes(m.cpu.mem_read(p.LATCH_START, len(table))), table)
+            self.assertFalse(m.feedback(2)["second_level_discharge"])
+            # A known state with a changed roster pointer must not borrow its
+            # previous identity's marker. Re-consuming reuses that state's slot.
+            first = 0x390000
+            m.put(PLAYER + 0x14, first)
+            m.put(PLAYER + 0x44, ROSTER + 0x200)
+            m.cpu.mem_write(ROSTER + 0x200, bytes(0x150))
+            m.setreg(10, first)
+            m.setreg(29, PLAYER)
+            m.setfpr(28, 0.)
+            m.setfpr(18, 1.)
+            m.call(p.LATCH_FEEDBACK_CAVE, stop=p.feedback_address(0x84AA6070, profile), bound=2_000)
+            self.assertEqual(m.fpr(30), 0.)
+            m.putf(first + 0xFC, 2.)
+            m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+            self.assertEqual(m.get(p.LATCH_START + 4), ROSTER + 0x200)
+            # An unclassified full consume keeps the native level; a native
+            # 4->1 move downgrade then explicitly clears its visual marker.
+            self.assertEqual(m.get(p.LATCH_START + 8), 1)
+            m.call(m.site(0x848C4D48), PLAYER, bound=2_000)
+            self.assertEqual((m.get(first + 0x1A8) >> 22) & 7, 1)
+            self.assertEqual(m.get(p.LATCH_START + 8), 0)
+            m.putf(first + 0xFC, .5)
+            m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+            self.assertEqual(m.get(p.LATCH_START + 8), 0)
+            print("CHARGE_LATCH_SATURATION", profile.name,
+                  "128 keys, 129th denied, roster reuse, partial charge and native downgrade PASS", flush=True)
             del m
             gc.collect()
 

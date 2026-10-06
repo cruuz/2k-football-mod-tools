@@ -124,15 +124,18 @@ This is a **beta**. What that means here:
 
 ## Requirements
 
-- **Python 3, PyQt5, Pillow** — on Linux, Windows, or macOS.
+- The **Windows installer** includes Python and its runtime dependencies.
+- For **portable archives or source**, use Python 3.11+ with **PyQt5, Pillow,
+  NumPy, Capstone and Unicorn**. Install the complete pinned set:
   - **Linux** (Debian/Mint/Ubuntu):
     ```bash
-    sudo apt install python3 python3-pyqt5 python3-pil
+    python3 -m venv .venv
+    .venv/bin/python -m pip install -r packaging/requirements-studio.txt
     ```
   - **Windows / macOS** (the `apt` line above is Linux-only): install Python 3
     from [python.org](https://www.python.org/downloads/), then:
     ```bash
-    pip install PyQt5 Pillow
+    python -m pip install -r packaging/requirements-studio.txt
     ```
 - An emulator to run your modded game:
   - **xemu** for ESPN NFL 2K5.
@@ -187,7 +190,7 @@ Double-click launchers are bundled for all three platforms (see *Install*).
      **`2K5-Mod-Studio.command`** (the first time, right-click it and choose
      **Open** to clear Gatekeeper).
 
-   Each launcher checks for Python 3, PyQt5, and Pillow and shows a plain
+   Each launcher checks the runtime dependencies and shows a plain
    message if something is missing. (APF 2K8 Mod Studio ships the same three
    launchers named `APF-2K8-Mod-Studio.sh` / `.bat` / `.command`.)
 
@@ -210,6 +213,12 @@ python3 -m mod_editor --studio          # 2K5 Mod Studio
 ---
 
 ## Usage (the short version)
+
+**Install SOFTDRINK 2K28:** go to **Build & Share → Share → Install SOFTDRINK
+2K28**, then choose your unmodified retail image, the downloaded `.2k5patch`
+file itself, and a new output image. Follow [Install SOFTDRINK 2K28 in 5
+steps](docs/mod_editor/install_softdrink_2k28.md) and [recommended xemu
+settings](docs/mod_editor/recommended_xemu_settings.md).
 
 **2K5, quickest path:** open the studio, choose your disc image, go to
 ★ Build & Share → Build, press **Basic** (the 2004 game with the 2K5 fixes),

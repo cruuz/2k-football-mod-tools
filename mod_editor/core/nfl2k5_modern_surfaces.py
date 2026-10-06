@@ -958,7 +958,7 @@ def _fit_encoded(span, decoded, encoded):
     raise ModernSurfacesError("the stream cannot keep the retail scratch word")
 
 
-def normal_span(span, kind):
+def normal_span(span, kind, *, preserve_full=False):
     """(detail_normal chunk with this kind's normals, variant): the same size, wrapper and descriptor. A raw chunk takes
     the full art; a compressed chunk (s11, s15) takes the tiled art refit inside its span, or, if that misses, its
     retail indices with a flattened palette."""
@@ -974,6 +974,10 @@ def normal_span(span, kind):
         require(len(video) == chunk.video_bytes and len(span) == HEADER.size + body + len(video),
                 "detail_normal size differs")
         return span[:HEADER.size + body] + video, "full"
+    if preserve_full:
+        require(output == bytes(output[:body]) + detail_video(kind),
+                "the selected field allocation needs its exact full-resolution normal")
+        return bytes(span), "full"
     from . import nfl2k5_modern_color as colour
     fields = HEADER.unpack_from(span)
     prefix = span[HEADER.size:HEADER.size + 9]
@@ -1090,7 +1094,8 @@ def _fit(span, decoded, *, optimal):
     raise tx.TxtrError("; ".join(attempts))
 
 
-def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 255), target=None):
+def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 255), target=None,
+               full_detail=False):
     """(new field span of the same size, receipt): paint, then refit inside the fixed VC-LZ span with the retail
     wrapper, stepping the pattern detail and the palette down (FIT_LADDER) when a span misses."""
     ml = _ml()
@@ -1101,7 +1106,7 @@ def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 25
     attempts = []
     # the greedy encoder over the whole ladder first (seconds); the optimal parser (minutes) only if none fits
     for optimal in (False, True):
-        for detail, cap in FIT_LADDER:
+        for detail, cap in (((2, 256),) if full_detail else FIT_LADDER):
             painted, receipt = paint_field(decoded, rec, chunk.system_bytes, look=look, cls=cls, rig=rig,
                                            colour_settings=colour_settings, tint=tint, cap=cap, detail=detail,
                                            target=target)
@@ -1127,10 +1132,18 @@ def _span_surfaced(span):
     return surfaced(decoded, rec)
 
 
-def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None):
+def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
+                   preserve_full_normal=False, full_detail=False, field_normal_loan=False):
     """(new bundle bytes of the same size, receipt) for one home-venue bundle as it stands (retail, graded, or
     written by a stadium option)."""
     prefix, t, _w = bundle_parts(name)
+    require(type(preserve_full_normal) is bool and type(full_detail) is bool,
+            "surface allocation options must be booleans")
+    require(type(field_normal_loan) is bool, "field normal allocation option must be a boolean")
+    require(not field_normal_loan or prefix == "s29", "field normal allocation is reviewed only for WAS")
+    if preserve_full_normal or full_detail:
+        from . import nfl2k5_split_endzone_art as endzone_art
+        require(prefix in endzone_art.LOAN_VENUES, "full surface allocation is not reviewed for " + prefix)
     look = venue_look(prefix, overrides)
     family = LOOKS[look]["family"]
     cls = light_class(name, indoor)
@@ -1140,13 +1153,36 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None):
     tint = field_tint(data)
     at, size = sites["field"]
     again = _span_surfaced(bytes(data[at:at + size]))
-    new_field, frec = field_span(bytes(data[at:at + size]), look=look, cls=cls, rig=rig,
-                                 colour_settings=colour_settings, tint=tint, target=venue_target(prefix, look, cls))
-    out[at:at + size] = new_field
-    at, size = sites["normal"]
-    new_normal, normal_variant = normal_span(bytes(data[at:at + size]), LOOKS[look]["detail"])
-    out[at:at + size] = new_normal
-    if "divots" in sites and not again:
+    field_args = dict(full_detail=True) if full_detail else {}
+    loan_receipt = None
+    if field_normal_loan:
+        from . import nfl2k5_midfield_art as midfield
+        normal_at, normal_size = sites["normal"]
+        new_normal, normal_variant = normal_span(bytes(data[normal_at:normal_at + normal_size]), LOOKS[look]["detail"])
+        require(normal_variant == "full", "WAS allocation donor must be the ordinary full-resolution normal")
+        def painter(span):
+            from . import nfl2k5_modern_color as colour
+            ml = _ml()
+            chunk = _tools()[0].parse_chunks(span, allow_trailing=True)[0]
+            rec, decoded = ml._scene(span, chunk)
+            painted, receipt = paint_field(decoded, rec, chunk.system_bytes, look=look, cls=cls, rig=rig,
+                                            colour_settings=colour_settings, tint=tint, cap=256, detail=2,
+                                            target=venue_target(prefix, look, cls))
+            after, fit = colour.fit_fixed_span(span, painted)
+            return after, dict(receipt, refit=True, palette_cap=256, **fit)
+        rebuilt, loan_receipt = midfield.refit_washington_field(data, name, painter, normal_span=new_normal)
+        out = bytearray(rebuilt)
+        frec = loan_receipt["paint"]
+    else:
+        new_field, frec = field_span(bytes(data[at:at + size]), look=look, cls=cls, rig=rig,
+                                     colour_settings=colour_settings, tint=tint, target=venue_target(prefix, look, cls),
+                                     **field_args)
+        out[at:at + size] = new_field
+        at, size = sites["normal"]
+        normal_args = dict(preserve_full=True) if preserve_full_normal else {}
+        new_normal, normal_variant = normal_span(bytes(data[at:at + size]), LOOKS[look]["detail"], **normal_args)
+        out[at:at + size] = new_normal
+    if "divots" in sites and (not again or preserve_full_normal):
         at, size = sites["divots"]
         grass_mean = [v * (tt / 255.0) for v, tt in zip(frec["map_mean"], tint)]
         out[at:at + size] = divots_span(bytes(data[at:at + size]), family, grass_mean)
@@ -1155,12 +1191,20 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None):
         struct.pack_into("<I", out, at + 4, SYNTHETIC_WEAR)
     require(len(out) == len(data), f"{name}: bundle changed size")
     edits = []
+    if loan_receipt is not None:
+        end = loan_receipt["scope_size"]
+        edits.append(dict(kind="field_detail_prefix", offset=0, size=end,
+                          before=sha(data[:end]), after=sha(bytes(out[:end]))))
     for kind, (at, size) in sorted(sites.items()):
+        if loan_receipt is not None and kind in {"field", "normal"}:
+            continue
         before, after = bytes(data[at:at + size]), bytes(out[at:at + size])
         if before != after:
             edits.append(dict(kind=kind, offset=at, size=size, before=sha(before), after=sha(after)))
-    return bytes(out), dict(name=name, look=look, family=family, light=cls, rig=rig, field=frec, normal=normal_variant,
-                            edits=edits)
+    receipt = dict(name=name, look=look, family=family, light=cls, rig=rig, field=frec, normal=normal_variant, edits=edits)
+    if loan_receipt is not None:
+        receipt["field_normal_loan"] = loan_receipt
+    return bytes(out), receipt
 
 
 # --- disc images -----------------------------------------------------------------------------------------------------
@@ -1236,11 +1280,17 @@ def save_receipt(target, receipt):
 
 @lru_cache(maxsize=1)
 def _detail_by_hash():
-    """{SHA-256 of a detail_normal video this option writes: (kind, variant)} for every kind, full and tiled."""
+    """Recognize written normals using the release pins, without compiling art.
+
+    Source inspection runs for plain builds too. Generating every normal here
+    required NumPy just to read a retail disc and did unnecessary image work.
+    The art tests independently compare generated bytes with these same pins.
+    """
     out = {digest: tuple(row) for digest, row in LEGACY_DETAIL_SHA256.items()}
+    details = pins()["details"]
     for kind in sorted({look["detail"] for look in LOOKS.values()}):
-        out[sha(detail_video(kind))] = (kind, "full")
-        out[sha(detail_video(kind, tiled=True))] = (kind, "tiled")
+        for variant in ("full", "tiled"):
+            out[details[kind][variant]] = (kind, variant)
     return out
 
 
@@ -1387,8 +1437,11 @@ def check_request(source):
 
 def _job(args):
     """Worker: (name, bundle bytes, indoor, colour settings, overrides) -> (name, new bytes, receipt)."""
-    name, data, indoor, settings, overrides = args
-    out, rec = surface_bundle(data, name, indoor=indoor, colour_settings=settings, overrides=overrides)
+    name, data, indoor, settings, overrides, *selected = args
+    options = dict(preserve_full_normal=True, full_detail=True) if selected and selected[0] else {}
+    if len(selected) > 1 and selected[1]:
+        options["field_normal_loan"] = True
+    out, rec = surface_bundle(data, name, indoor=indoor, colour_settings=settings, overrides=overrides, **options)
     return name, out, rec
 
 
@@ -1411,14 +1464,23 @@ def _update_colour_receipt(colour_receipt, name, after):
                 dict(site, applied=sha(after[site["offset"]:site["offset"] + site["size"]])) for site in row.get("sites", [])])
 
 
-def apply_to_image(target, *, progress=None, workers=None, overrides=None):
+def apply_to_image(target, *, progress=None, workers=None, overrides=None, preserve_full_normal_prefixes=(),
+                   field_normal_loan_prefixes=()):
     """Build step (after every stadium writer): the modern surface in all 288 home-venue bundles of a DISPOSABLE
     output image, written in place (same sizes), with read-back; the colour and 2026 venue receipts are updated so
     those options still read applied, and this option's receipt is written beside the image."""
     from . import nfl2k5_modern_color as colour
+    from . import nfl2k5_split_endzone_art as endzone_art
+    selected = frozenset(preserve_full_normal_prefixes)
+    require(selected <= endzone_art.LOAN_VENUES, "full surface allocation includes an unreviewed venue")
+    loan_selected = frozenset(field_normal_loan_prefixes)
+    require(loan_selected <= {"s29"}, "field normal allocation includes an unreviewed venue")
     say = progress or (lambda message, done, total: None)
     before_report = image_report(target)
-    require(before_report["state"] == "retail",
+    allowed_prepass = bool(selected) and all(row["state"] == "retail" or
+                         (name[:3] in selected and row["state"] == "applied")
+                         for name, row in before_report["bundles"].items())
+    require(before_report["state"] == "retail" or allowed_prepass,
             "the home-venue bundles are not all unsurfaced before this step: "
             + "; ".join(f"{count} {key}" for key, count in before_report["counts"].items()))
     try:
@@ -1437,7 +1499,9 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None):
         for name in HOME_BUNDLES:
             data = archive.read(entries[name].virtual_offset, entries[name].size)
             before[name] = (entries[name].virtual_offset, sha(data))
-            jobs.append((name, data, indoor[name[:3]], settings, overrides))
+            args = (name, data, indoor[name[:3]], settings, overrides)
+            jobs.append(args + (name[:3] in selected, True) if name[:3] in loan_selected
+                        else args + (True,) if name[:3] in selected else args)
     say(f"Modern surfaces: {len(jobs)} home-venue bundles", 0, len(jobs))
     results = {}
     count = _workers(workers)
@@ -1454,6 +1518,10 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None):
             say(f"Modern surfaces: {index + 1} of {len(jobs)} bundles", index + 1, len(jobs))
     receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False, revision=TRANSFORM_REVISION,
                    overrides=overrides or {}, colour=settings is not None, bundles={})
+    if selected:
+        receipt["preserve_full_normal_prefixes"] = sorted(selected)
+    if loan_selected:
+        receipt["field_normal_loan_prefixes"] = sorted(loan_selected)
     with _outer_image()(str(target), writable=True) as archive:
         for name in HOME_BUNDLES:
             out, rec = results[name]

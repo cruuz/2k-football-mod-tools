@@ -27,6 +27,7 @@ are deliberately left on the plain quantizer.
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 import sys
 import unittest
@@ -178,12 +179,49 @@ class BoundedQuantizerWiringTests(unittest.TestCase):
 
     @staticmethod
     def _plain_calls(text: str) -> list[str]:
-        return [
-            line.strip() for line in text.splitlines()
-            if "quantize_levels(" in line
-            and "quantize_levels_to_vc_lz_bound" not in line
-            and "def quantize_levels" not in line
-        ]
+        tree = ast.parse(text)
+        parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+        plain = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            name = node.func.attr if isinstance(node.func, ast.Attribute) else getattr(node.func, "id", "")
+            if name != "quantize_levels":
+                continue
+            parent = parents.get(node)
+            callback = None
+            while parent is not None and not isinstance(parent, (ast.keyword, ast.FunctionDef)):
+                if isinstance(parent, ast.Lambda):
+                    callback = parent
+                parent = parents.get(parent)
+            bounded = parents.get(parent)
+            bounded_name = (bounded.func.attr if isinstance(bounded, ast.Call) and
+                            isinstance(bounded.func, ast.Attribute) else
+                            getattr(getattr(bounded, "func", None), "id", ""))
+            # A custom quantizer is still bounded when the ladder supplies its
+            # current palette maximum. Hard-coded 256 callbacks remain errors.
+            if (isinstance(parent, ast.keyword) and parent.arg == "quantizer" and
+                    bounded_name == "quantize_levels_to_vc_lz_bound" and callback is not None and
+                    len(callback.args.args) == 2 and len(node.args) >= 2 and
+                    isinstance(node.args[1], ast.Name) and node.args[1].id == callback.args.args[1].arg):
+                continue
+            plain.append(ast.get_source_segment(text, node) or "quantize_levels call")
+        return plain
+
+    def test_palette_callback_uses_the_ladder_maximum(self) -> None:
+        self.assertEqual(self._plain_calls(
+            "p.quantize_levels_to_vc_lz_bound(mips, build, "
+            "quantizer=(lambda levels, maximum: p.quantize_levels(levels, maximum, locked_colors=colors)) "
+            "if colors else None)"), [])
+
+    def test_hardcoded_palette_callback_is_not_bounded(self) -> None:
+        self.assertEqual(len(self._plain_calls(
+            "p.quantize_levels_to_vc_lz_bound(mips, build, "
+            "quantizer=lambda levels, maximum: p.quantize_levels(levels, 256))")), 1)
+
+    def test_callback_outside_the_ladder_is_not_bounded(self) -> None:
+        self.assertEqual(len(self._plain_calls(
+            "other(quantizer=lambda levels, maximum: p.quantize_levels(levels, maximum))")), 1)
 
     def test_an_always_compressed_importer_never_hard_quantizes_at_256(self) -> None:
         """A leftover plain call is exactly how this bug shipped."""

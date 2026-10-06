@@ -1,0 +1,5 @@
+# Optional acceleration for tools/b765/s1_audit.py and s1_render.py.
+# Studio and the portable audit fallbacks use requirements-studio.txt only.
+# Reviewed diagnostic environment: CPython 3.11; both packages are optional.
+scipy==1.11.4
+numba==0.66.0

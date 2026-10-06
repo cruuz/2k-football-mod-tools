@@ -17,6 +17,8 @@ def mapping_note(bucket):
                 'This candidate sample is a fourth-down scrimmage proxy, not a prediction '
                 'of the native kick-versus-two-point decision. The policy applies only after '
                 'the game requests ordinary offense; kicks retain their special path.')
-    return (f'Studio sample label; Live situations sample maps to "{KEY_LABELS[key]}". '
+    return (f'Studio sample label; shared Live situations key {key}: "{KEY_LABELS[key]}". '
+            'Editing any sample with this key changes the same book/bucket record, including '
+            'Openers, 1st-and-10 and 1st-and-11+ when they map to key 2. '
             'No independent stored game row has this name. Other live downs/distances '
             'within this coaching label use their corresponding live bucket.')

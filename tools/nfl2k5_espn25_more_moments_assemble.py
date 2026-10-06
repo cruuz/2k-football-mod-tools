@@ -35,16 +35,20 @@ def generate() -> str:
     names = content(sections[strings])
     by_name = {name(names, section[0]): (i, section) for i, section in enumerate(sections)}
     text_index, text_section = by_name[".text"]
+    display_index, display_section = by_name[".display"]
     symbols_section = by_name[".symtab"][1]
     symbol_names = content(sections[symbols_section[6]])
     symbols = []
     labels = {}
+    display_labels = {}
     for off in range(0, symbols_section[5], 16):
         n, value, _size, _info, _other, section = struct.unpack_from("<IIIBBH", content(symbols_section), off)
         n = name(symbol_names, n)
         symbols.append((n, value, section))
         if section == text_index and n:
             labels[n] = value
+        if section == display_index and n:
+            display_labels[n] = value
     relocations = []
     for offset, info in struct.iter_unpack("<II", content(by_name[".rel.text"][1])):
         symbol, kind = info >> 8, info & 255
@@ -64,6 +68,18 @@ def generate() -> str:
     lines += [f"    {r!r}," for r in relocations]
     lines += [")", "LABELS = {"]
     lines += [f"    {n!r}: {v}," for n, v in sorted(labels.items())]
+    lines += ["}", "", "DISPLAY_CODE = bytes.fromhex("]
+    display_blob = content(display_section)
+    lines += ['    "' + display_blob[i:i + 40].hex() + '"' for i in range(0, len(display_blob), 40)]
+    lines += [")", "DISPLAY_RELOCATIONS = ("]
+    for offset, info in struct.iter_unpack("<II", content(by_name[".rel.display"][1])):
+        symbol, kind = info >> 8, info & 255
+        n, value, section = symbols[symbol]
+        if section != 0 or kind not in (1, 2):
+            raise ValueError("unexpected display relocation")
+        lines.append(f"    {(offset, kind, n, value)!r},")
+    lines += [")", "DISPLAY_LABELS = {"]
+    lines += [f"    {n!r}: {v}," for n, v in sorted(display_labels.items())]
     lines += ["}", ""]
     return "\n".join(lines)
 

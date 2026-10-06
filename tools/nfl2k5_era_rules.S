@@ -11,7 +11,7 @@ profile:
     cmp dword ptr [0xe5ff80], 8
     jne profile_done
     mov eax, [0xbf1858]
-    cmp eax, 50
+    cmp eax, 51
     jae profile_none
     shl eax, 5
     add eax, offset profiles

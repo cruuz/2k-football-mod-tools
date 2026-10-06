@@ -137,7 +137,7 @@ class NativeRules(unittest.TestCase):
 
     def test_invalid_row_and_current_mode_keep_underlying_rules(self):
         m = self.m
-        for ordinal, mode, yard in ((0, 4, 35), (49, 7, 35), (50, 8, 30), (0xFFFFFFFF, 8, 30)):
+        for ordinal, mode, yard in ((0, 4, 35), (49, 7, 35), (51, 8, 30), (0xFFFFFFFF, 8, 30)):
             m.row(ordinal, mode)
             self.assertAlmostEqual(m.multiply(kr.KICKOFF_SITES[0][1]), (50 - yard) * 91.44, places=2)
 

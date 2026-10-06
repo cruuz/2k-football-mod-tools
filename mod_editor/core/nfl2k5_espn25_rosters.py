@@ -490,7 +490,7 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
     require(len(document.players) == 53 and len(document.teams) == 1 and document.college_count == 0 and
             all(p.pool == "primary" for p in document.players) and document.teams[0].player_count == 53,
             "foreign historic roster layout")
-    require(document.to_body() == raw[32:], "retail codec round trip differs")
+    require(document.to_body(normalise_commentary=False) == raw[32:], "retail codec round trip differs")
     bounds = (document.names.start, document.names.end)
     original_values = [dict(p.record.values) for p in document.players]
     original_slots = tuple(document.teams[0].slots)
@@ -506,7 +506,10 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
                             extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows)
-    receipt = rr.import_csv(document, stream.getvalue(), delimiter=",")
+    # This historical author owns names, jerseys and college pointers only.
+    # Defer commentary through preview/apply as well as final serialization;
+    # the full Studio save retains its default commentary normalization.
+    receipt = rr.import_csv(document, stream.getvalue(), delimiter=",", normalise_commentary=False)
     require(receipt["rows"] == 53 and not receipt["log"], "roster import refused: " + "; ".join(receipt["log"]))
     for p, row, old in zip(document.players, rows, original_values):
         require(row["pool"] == p.pool and int(row["index"]) == p.index, "roster slot identity changed")
@@ -522,7 +525,7 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
         if name:
             require(colleges.count(name) == 1, f"college must resolve exactly once in the main table: {name!r}")
             p.record.set("college_pointer", colleges.index(name))
-    result = raw[:32] + document.to_body()
+    result = raw[:32] + document.to_body(normalise_commentary=False)
     require(len(result) == len(raw) and result[:32] == raw[:32], "resource wrapper/size changed")
     allowed = set(range(32 + bounds[0], 32 + bounds[1]))
     for p in document.players:

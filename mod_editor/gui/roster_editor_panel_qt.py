@@ -1137,6 +1137,7 @@ class RosterEditorPanel(QWidget):
         self._baseline: rr.RosterDocument | None = None
         self._source_path: Path | None = None
         self._source_kind = ""
+        self._appearance_bundle = None
         self._clipboard: rr.PlayerRecord | None = None
         self._dirty: set[tuple[str, int]] = set()
         self.auto_filled = False        # the document came from the shell's open disc, not a button here
@@ -1303,6 +1304,12 @@ class RosterEditorPanel(QWidget):
         self.save_roster_to_disc_action.setToolTip(
             "Choose an Xbox roster or franchise save and export its roster for the current disc. "
             "EXPERIMENTAL / UNWITNESSED.")
+        self.export_roster_faces_action = passes_menu.addAction(
+            "Export complete roster with faces...", self._export_roster_faces)
+        self.export_roster_faces_action.setToolTip(
+            "Carry this roster, its faces and portraits into another project.")
+        self.import_roster_faces_action = passes_menu.addAction(
+            "Load complete roster with faces...", self._import_roster_faces)
         self.passes_button.setMenu(passes_menu)
         self.csv_button = QToolButton()
         self.csv_button.setText("CSV ▾")
@@ -2020,6 +2027,7 @@ class RosterEditorPanel(QWidget):
         self._baseline = None
         self._source_path = source
         self._source_kind = kind
+        self._appearance_bundle = None
         self.write_button.setText("Save Xbox save copy…" if kind == "save" else "Save disc copy…")
         self._show_franchise(None)
         self.franchise_panel.clear()
@@ -3743,6 +3751,11 @@ class RosterEditorPanel(QWidget):
     def edits_document(self) -> dict[str, Any]:
         if self.document is None:
             return {}
+        if self._appearance_bundle is not None:
+            from mod_editor.core import nfl2k5_roster_snapshot as snapshot
+            document = snapshot.document(self.document, name="Imported roster with faces")
+            document["appearance_assets"] = copy.deepcopy(self._appearance_bundle)
+            return document
         document = rr.edits_document(self.document, name=self._source_path.name if self._source_path else "")
         if self._college_repairs:
             # a repaired college word has no text diff when the college is blank (a null and a blank both
@@ -3764,6 +3777,57 @@ class RosterEditorPanel(QWidget):
             document["edits"].sort(key=lambda e: (e["pool"] != "primary", int(e["index"])))
         return document
 
+    def save_roster_with_faces_to(self, path: Path | str) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_roster_appearance_transfer as appearance
+        if self.document is None or self._source_kind != "disc" or self._source_path is None:
+            raise rr.RosterRecordError("Open the source disc to export its faces and portraits.")
+        target = Path(path).expanduser().resolve()
+        source = self._source_path.resolve()
+        if target == source or source.is_dir() and source in target.parents:
+            raise rr.RosterRecordError("Export the roster outside the source disc or pack folder.")
+        document = (self.edits_document() if self._appearance_bundle is not None else
+                    appearance.complete_document(self._source_path, self.document))
+        return self.save_edits_to(target, document=document)
+
+    def load_roster_with_faces(self, path: Path | str) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_roster_appearance_transfer as appearance
+        from mod_editor.core import nfl2k5_roster_snapshot as snapshot
+        if self.document is None or self._source_kind != "disc" or self._source_path is None:
+            raise rr.RosterRecordError("Open the destination disc before loading the roster.")
+        edits = rr.read_edits(path)
+        if edits["schema"] != snapshot.SCHEMA or "appearance_assets" not in edits:
+            raise rr.RosterRecordError("Choose an Export complete roster with faces file.")
+        body, receipt = rr.apply_body(self.document.to_body(), edits, scheme=self.document.scheme)
+        with rr._outer_image()(self._source_path) as archive:
+            appearance.prepare_writes(archive, edits["appearance_assets"], body)
+        document = rr.RosterDocument(body, source=str(self._source_path),
+                                     resource_header=self.document.resource_header,
+                                     scheme=self.document.scheme)
+        document.original = self.document.original
+        self.load_document(document, source=self._source_path, kind="disc", label=Path(path).name)
+        self._appearance_bundle = copy.deepcopy(edits["appearance_assets"])
+        self._set_status("Roster and faces loaded. Export roster edits for Build, or save a disc copy.")
+        return receipt
+
+    def _export_roster_faces(self) -> None:
+        chosen, _ = QFileDialog.getSaveFileName(
+            self, "Export complete roster with faces", "roster_with_faces.json", EDITS_FILTER)
+        if not chosen:
+            return
+        try:
+            self.save_roster_with_faces_to(chosen)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(self, "Could not export roster faces", failure_body(exc))
+
+    def _import_roster_faces(self) -> None:
+        chosen, _ = QFileDialog.getOpenFileName(self, "Load complete roster with faces", "", EDITS_FILTER)
+        if not chosen:
+            return
+        try:
+            self.load_roster_with_faces(chosen)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(self, "Could not load roster faces", failure_body(exc))
+
     def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
         document = self.edits_document() if document is None else document
         from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
@@ -3776,7 +3840,8 @@ class RosterEditorPanel(QWidget):
         return document
 
     def save_roster_to_disc(self, path: Path | str, *, save_path: Path | str | None = None,
-                            disc_path: Path | str | None = None):
+                            disc_path: Path | str | None = None,
+                            appearance_source: Path | str | None = None):
         """Export against freshly read disc bytes; keep the current editor session intact."""
         from mod_editor.core import nfl2k5_roster_save_to_disc as save_import
         source = (save_import.load_save(save_path) if save_path is not None else self.document)
@@ -3795,7 +3860,7 @@ class RosterEditorPanel(QWidget):
         if destination in protected or receipt_path in protected:
             raise rr.RosterRecordError("The edits and receipt must be separate from the source disc and save.")
         target = rr.load_image(target_path, detect=True)
-        result = save_import.compare(target, source, replace_roster=True)
+        result = save_import.compare(target, source, replace_roster=True, appearance_source=appearance_source)
         result.write_receipt(destination)
         self.save_edits_to(destination, document=result.edits)
         self._set_status(result.summary)
@@ -3924,6 +3989,8 @@ class RosterEditorPanel(QWidget):
 
     def _refresh_actions(self) -> None:
         loaded = self.document is not None
+        self.export_roster_faces_action.setEnabled(loaded and self._source_kind == "disc")
+        self.import_roster_faces_action.setEnabled(loaded and self._source_kind == "disc")
         self.save_roster_to_disc_button.setVisible(loaded and self._source_kind == "save")
         self.save_roster_to_disc_button.setEnabled(loaded)
         self.save_roster_to_disc_action.setVisible(loaded and self._source_kind == "disc")

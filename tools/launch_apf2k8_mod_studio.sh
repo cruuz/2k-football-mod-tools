@@ -119,6 +119,12 @@ if ! "$studio_python" -c 'import PIL' >>"$studio_log" 2>&1; then
     show_studio_error "$studio_message"
     exit 1
 fi
+if ! "$studio_python" -c 'import numpy; import capstone; import unicorn' >>"$studio_log" 2>&1; then
+    printf -v studio_message 'A Studio runtime package is missing. Run: "%s" -m pip install -r "%s/packaging/requirements-studio.txt"\n\nDetails: %s' \
+        "$studio_python" "$portable_root" "$studio_log"
+    show_studio_error "$studio_message"
+    exit 1
+fi
 if ! "$studio_python" -c 'import mod_editor.apf_studio.gui' >>"$studio_log" 2>&1; then
     printf -v studio_message '%s\n\nDetails: %s' \
         'An APF 2K8 Mod Studio program file is missing or damaged. Run install.sh again, or re-extract the portable release.' \

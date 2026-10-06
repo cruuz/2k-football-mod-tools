@@ -2000,6 +2000,7 @@ MASK_FRAME_ROLES = ("raised", "ear", "ear2", "tab", "tab2", "top", "B", "chin", 
 MASK_FRAME_RADIUS = 0.40
 PHOTO_TOP_Y = {"SF": 44.7, "AX": 44.5}
 MASK_EASE = 4.0
+MASK_FACE_STANDOFF, MASK_STANDOFF_MAX, MASK_SWING_MIN = 3.0, 5.0, 0.25
 SEAT_GAP = 0.25
 MASK_FAMILY = {
     'SF': dict(ref='SF-2BD-SW', front_x=329,
@@ -2402,6 +2403,45 @@ class MaskPhotoFit:
         self.k, self.k_row = min(ks)
         self.z_front = z_t + self.k * (side_t - self.fam_data["front_x"]) * self.s
         mh.require(0.5 < self.k < 1.2, f"{style}: depth scale {self.k:.2f} out of range")
+        # k flattens the cage as well as the frame: on the retail head the lower bars then reach the face (Axiom
+        # centrelines ran up to 0.5 cm inside it and the face clamp moulded them onto it; Noah 10/5 "smushed").
+        # Swing the lower cage forward about the top bar, the frame's rear (the flaps and temples) staying put, by
+        # the least standoff that keeps every centreline MASK_FACE_STANDOFF clear of the face (the retail masks'
+        # nearest bar is 2.8-3.3 cm off it).
+        self.y_t = self.y(self.py_top)
+        self.y_low = min(self.y(py) for poly in self.bars.values() for _px, py in poly)
+        self.side_rear = max(side for _py, side in self.fam_data["frame"])
+        self.standoff = 0.0
+        self.standoff = self._solve_standoff()
+
+    def _side_at(self, x, y, frame):
+        py = self.py_top + (PHOTO_TOP_Y[self.fam] - y) / self.s
+        return self.side(abs(x), py, self.ref_centre if frame else None)
+
+    def _swing(self, y, side):
+        h = min(1.0, max(0.0, (self.y_t - y) / max(self.y_t - self.y_low, 1e-6)))
+        w = min(1.0, max(0.0, (self.side_rear - side) / max(self.side_rear - self.fam_data["front_x"], 1e-6)))
+        return (h * h * (3 - 2 * h)) * (w * w * (3 - 2 * w))
+
+    def _solve_standoff(self):
+        face, self.face = self.face, None
+        try:
+            def worst(a):
+                self.standoff = a
+                gap = math.inf
+                for _role, path, is_frame in self.paths():
+                    r = self.frame_radius if is_frame else self.radius
+                    for x, y, z in path:
+                        fz = face.front_z(abs(x), y)
+                        if fz is not None and self._swing(y, self._side_at(x, y, is_frame)) >= MASK_SWING_MIN:
+                            gap = min(gap, z - fz - r)
+                return gap
+            a = 0.0
+            while worst(a) < MASK_FACE_STANDOFF and a + 0.05 <= MASK_STANDOFF_MAX:
+                a = round(a + 0.05, 2)
+            return a
+        finally:
+            self.face = face
 
     def x(self, px):
         return (px - PHOTO_CX) * self.s
@@ -2426,9 +2466,12 @@ class MaskPhotoFit:
 
     def point(self, px, py, mirror=False, frame=False):
         x, y = self.x(px), self.y(py)
-        z = self.z_front - self.k * (self.side(x, py, self.ref_centre if frame else None) - self.fam_data["front_x"]) * self.s
+        side = self.side(x, py, self.ref_centre if frame else None)
+        z = self.z_front - self.k * (side - self.fam_data["front_x"]) * self.s + self.standoff * self._swing(y, side)
         radius = self.frame_radius if frame else self.radius
         for surf, gap in ((self.shell, SEAT_GAP), (self.face, 0.3)):
+            if surf is None:
+                continue
             zs = surf.front_z(abs(x), y)
             if zs is not None and z < zs + radius + gap:
                 z = zs + radius + gap
@@ -2582,6 +2625,10 @@ def build_revolution():
     lay_hi = mh.parse_layout("o3c115", hi.decoded); lay_lo = mh.parse_layout("o3c113", lo.decoded)
     shell_surf, face_surf = mask_surfaces(hi)
     fits = [MaskPhotoFit(mk["name"], shell_surf, face_surf) for mk in MASKS15]
+    for ref in {f.ref for f in fits}:                   # masks sharing a frame keep it byte for byte (stored span)
+        group = [f for f in fits if f.ref == ref]
+        for f in group:
+            f.standoff = max(g.standoff for g in group)
     parts = {}
     for i, mk in enumerate(MASKS15):
         slot = 12 + i

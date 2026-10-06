@@ -384,7 +384,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # v7 requires its matching atlas. Observe its actual fixed-span
             # writer, then the runtime XBE owner after all ordinary build passes.
             for module in modules.values():
-                for name in ("apply", "apply_xbe", "xbe_apply", "plan_patch", "apply_arc_table", "patch_xbe", "apply_chop_block"):
+                for name in ("apply", "apply_xbe", "xbe_apply", "plan_patch", "apply_arc_table", "patch_xbe", "apply_chop_block", "apply_forward_pass_ruling"):
                     function = getattr(module, name, None)
                     if inspect.isfunction(function) and function.__module__ == module.__name__:
                         stack.enter_context(patch.object(module, name, recorder.wrapper(module, name)))

@@ -57,7 +57,7 @@ class WeightNativeTests(unittest.TestCase):
                     situation = model.Situation(down, yards, 50, 1, 900, 0, 3)
                     key = mask.situation_key(situation)
                     factors = {'2': .25, '14': .5, '24': 4.}
-                    patch = mask.compile_patch(image, {}, rows(key, {'6': 10}), rows(key, factors))
+                    patch = mask.compile_patch(image, {}, rows(key, {'6': 10}), rows(key, factors), version=3)
                     m = self.machine(130, updated, down=down, yards=yards, goal_yards=50, run_share=0)
                     m.normalize()
                     install(m, patch)
@@ -76,7 +76,7 @@ class WeightNativeTests(unittest.TestCase):
     def test_vectors_distribution_isolation_and_full_cpu_calls(self):
         for updated in (False, True):
             image = self.tu if updated else self.base
-            patch = mask.compile_patch(image, {}, {}, rows())
+            patch = mask.compile_patch(image, {}, {}, rows(), version=3)
             for down, yards in ((3, 8), (1, 10), (3, 5)):
                 original = self.machine(130, updated, down=down, yards=yards, goal_yards=50, run_share=0)
                 changed = self.machine(130, updated, down=down, yards=yards, goal_yards=50, run_share=0)
@@ -120,7 +120,7 @@ class WeightNativeTests(unittest.TestCase):
         for updated in (False, True):
             image = self.tu if updated else self.base
             excluded = {'O-ManBlock': [[] for _ in range(13)]}; excluded['O-ManBlock'][12] = [2]
-            patch = mask.compile_patch(image, excluded, rows(12, {'6': 10}), rows(12))
+            patch = mask.compile_patch(image, excluded, rows(12, {'6': 10}), rows(12), version=3)
             for phase in (3, 4):
                 m = self.machine(130, updated, down=4, yards=2, goal_yards=2, run_share=0)
                 install(m, patch)
@@ -161,7 +161,7 @@ class WeightNativeTests(unittest.TestCase):
                     ({}, rows(), (mask.DATA_START+16+288+4, 0xFFFFFFFF)), (masks, rows(), None)):
                 baseline = self.machine(130, updated, down=3, yards=8, goal_yards=50, run_share=0)
                 changed = self.machine(130, updated, down=3, yards=8, goal_yards=50, run_share=0)
-                patch = mask.compile_patch(image, policies, {}, weights)
+                patch = mask.compile_patch(image, policies, {}, weights, version=3)
                 install(changed, patch)
                 if corrupt: changed.put(*corrupt)
                 for m in (baseline, changed):
@@ -176,7 +176,7 @@ class WeightNativeTests(unittest.TestCase):
 
     def test_pinned_reservations_exact_revert_and_receipts(self):
         for image in (self.base, self.tu):
-            patch = mask.compile_patch(image, {}, {}, rows())
+            patch = mask.compile_patch(image, {}, {}, rows(), version=3)
             audit = mask.audit_reservations(image)
             patched = bytearray(image)
             for address, value in patch.words:

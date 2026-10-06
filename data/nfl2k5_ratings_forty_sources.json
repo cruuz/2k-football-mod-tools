@@ -3505,6 +3505,79 @@
    "forty": null,
    "note": "Never ran a 40 in the pre-draft process. PFN (March 31, 2023): \"Defender Felix Anudike-Uzomah, who did not run the 40 at the Combine, chose not to run the 40 at his pro day.\" He was excused from Combine testing with a right foot injury. Wikipedia's measurables table has no 40.",
    "checked_url": "https://www.profootballnetwork.com/pro-day-news-and-rumors-felix-anudike-uzomah-jammie-robinson-and-deuce-vaughn-headline-florida-state-and-kansas-state-pro-days/"
+  },
+  "00-0038546": {
+   "name": "Myles Murphy",
+   "teams": [
+    "bengals_2025"
+   ],
+   "forty": 4.52,
+   "kind": "pro_day",
+   "source_url": "https://www.bengals.com/news/myles-murphy-arrives-with-grand-design",
+   "quote": "The stopwatches were still showing anywhere from 4.49 to 4.52 and 4.53 seconds.",
+   "note": "Source reports a hand-timed range. 4.52 is a model choice inside that range, not a unique official time.",
+   "found_on_page": true
+  },
+  "00-0038642": {
+   "name": "D.J. Ivey",
+   "teams": [
+    "bengals_2025"
+   ],
+   "forty": 4.46,
+   "kind": "pro_day",
+   "source_url": "https://www.bengals.com/news/dj-ivey-eyes-his-hometown-legacy-in-nfl-debut",
+   "quote": "a 4.46 40-yard dash",
+   "note": "Team article connects the time with the Miami pro day.",
+   "found_on_page": true
+  },
+  "00-0040157": {
+   "name": "Barrett Carter",
+   "teams": [
+    "bengals_2025"
+   ],
+   "forty": 4.64,
+   "kind": "pro_day",
+   "source_url": "https://tnet.b-cdn.net/stories/25/football/pdf/pro-day-results.pdf",
+   "quote": "BARRETT CARTER 6001 232 22 1.59 4.64",
+   "note": "Clemson-authored March 13 2025 pro-day results sheet, hosted by TigerNet; school consensus scout times.",
+   "found_on_page": true
+  },
+  "00-0035298": {
+   "name": "Scott Miller",
+   "teams": [
+    "steelers_2025"
+   ],
+   "forty": 4.39,
+   "kind": "pro_day",
+   "source_url": "https://www.buccaneers.com/news/scotty-miller-terry-beckner-day-three-draft-picks-bucs",
+   "quote": "Miller ran a 4.39 40-yard dash at Bowling Green's Pro Day",
+   "note": "Team name Scotty Miller; same NFL identity as weekly source Scott Miller. Other team article reports 4.30; use conservative 4.39.",
+   "found_on_page": true
+  },
+  "00-0040534": {
+   "name": "Ke'Shawn Williams",
+   "teams": [
+    "steelers_2025"
+   ],
+   "forty": 4.51,
+   "kind": "pro_day",
+   "source_url": "https://www.bengals.com/news/ke-shawn-williams-bengals-53-man-roster-2026-journey",
+   "quote": "4.51-second 40-yard dash with a 39-inch vertical",
+   "note": "2026 official team retrospective describes 2025 Bloomington pro day; not a 2026 timing.",
+   "found_on_page": true
+  },
+  "00-0039632": {
+   "name": "PJ Jules",
+   "forty": null,
+   "checked_url": "https://www.bengals.com/team/players-roster/pj-jules/",
+   "note": "Searched official Bengals biography and Southern Illinois pro-day queries; no usable primary published time returned. Unknown, use explicitly estimated position profile."
+  },
+  "00-0040160": {
+   "name": "Jack Sawyer",
+   "forty": null,
+   "checked_url": "https://ohiostatebuckeyes.com/sports/2025/3/24/2025-pro-day",
+   "note": "Searched official school pro-day page and Steelers draft coverage; no recorded 40 time found on those pages. DraftScout headline projected 4.64 is not a measured event and is rejected. Unknown, use explicitly estimated position profile."
   }
- }
+ },
+ "a1_addendum": "2026-10-05: five measured pro-day sources and two explicitly unresolved searches for the 2025 Week 7 team-seasons. Existing entries unchanged."
 }

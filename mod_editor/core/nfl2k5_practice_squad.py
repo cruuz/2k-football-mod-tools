@@ -1,5 +1,8 @@
 """Experimental franchise practice squads: 53 active plus up to 12 reserves.
 
+Beta 76.5 retires automatic reserve creation at final cuts. The saved-list
+codec and transactions remain for existing saves and Studio reserve tools.
+
 The brief's 16-entry side-list was disproved: +19C..+1A9 is future cap
 accounting, +1AA..+1F1 contains live season statistics. The permitted fallback
 uses the existing 65-pointer array, with active pointers followed immediately
@@ -502,8 +505,17 @@ def _standalone_status(xbe: bytes) -> str:
     """retail/applied/foreign; partial patches and malformed images fail closed."""
     try:
         sections = _sections(xbe)
-        states = {_state(xbe, site, sections) for site in sites()}
-        return states.pop() if len(states) == 1 else 'foreign'
+        # b765-p1: retain storage/transactions for existing saves, but final
+        # cuts must release players instead of silently creating reserves.
+        # Accept the complete legacy owner as an upgrade source. A lone cut
+        # detour on an otherwise retail executable is still a partial patch.
+        cut = next(site for site in sites() if site.va == 0x2BFA6E)
+        cut_state = _state(xbe, cut, sections)
+        states = {_state(xbe, site, sections) for site in sites() if site.va != cut.va}
+        if len(states) != 1 or cut_state == 'foreign':
+            return 'foreign'
+        state = states.pop()
+        return state if state == 'applied' or cut_state == state else 'foreign'
     except (ValueError, struct.error, IndexError):
         return 'foreign'
 
@@ -537,9 +549,24 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
         'reserve_limit': RESERVE_LIMIT, 'storage_version': VERSION,
         'preset_tier': 'EXPERIMENTAL', 'runtime_verified': False,
         'reserve_salary': 'zero cap cost; existing contract retained for promotion',
-        'in_game_ui': False, 'changed_bytes': 0, 'sections_repinned': []}
+        'in_game_ui': False, 'automatic_preseason_reserves': False,
+        'changed_bytes': 0, 'sections_repinned': []}
     if state == 'applied':
-        return bytes(xbe), receipt
+        cut = next(site for site in sites() if site.va == 0x2BFA6E)
+        sections = _sections(xbe)
+        off = _offset(xbe, cut.va, sections)
+        if xbe[off:off + cut.size] == cut.retail:
+            return bytes(xbe), receipt
+        out = bytearray(xbe)
+        out[off:off + cut.size] = cut.retail
+        section = _section_for_offset(sections, off)
+        at = section.header_offset + 36
+        out[at:at + 20] = section_digest(out, section)
+        result = bytes(out)
+        _require(status(result) == 'applied', 'reserve compatibility postcondition failed')
+        receipt['changed_bytes'] = sum(a != b for a, b in zip(xbe, result))
+        receipt['sections_repinned'] = [section.index] if result != xbe else []
+        return result, receipt
     from . import nfl2k5_roster_fill_composition as composition
     shared = composition.installation_edits(xbe, "squad")
     sections = _sections(xbe)
@@ -549,7 +576,7 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
         off = _offset(xbe, site.va, sections)
         section = _section_for_offset(sections, off)
         _require(off + site.size <= section.raw_offset + section.raw_size, 'patch straddles XBE sections')
-        out[off:off + site.size] = site.patched
+        out[off:off + site.size] = site.retail if site.va == 0x2BFA6E else site.patched
         touched.add(section.index)
     for address, code in shared:
         off = _offset(xbe, address, sections)

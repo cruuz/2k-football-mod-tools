@@ -318,6 +318,8 @@ def main() -> int:
     sys.path.insert(0, str(repo / "packaging"))
     from runtime_dependencies import check_runtime_dependencies
     check_runtime_dependencies(app, work / "runtime")
+    from check_packaged_runtime import check_layout
+    check_layout(work)
 
     print("[3/4] icon")
     icon = build_icon(repo, product["icon"], work / f"{args.product}.ico")
@@ -338,6 +340,9 @@ def main() -> int:
     print(f"      wrote {nsi}")
     print("\nCompile with:")
     print(f"  makensis {nsi}")
+    installer = out / f"{product['slug']}-{args.version}-Setup.exe"
+    print("Then validate the finished installer before releasing it:")
+    print(f'  "{sys.executable}" "{repo / "packaging/check_packaged_runtime.py"}" "{installer}"')
     return 0
 
 

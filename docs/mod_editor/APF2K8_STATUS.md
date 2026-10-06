@@ -1,6 +1,12 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.105`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.106`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.106 — beta 76.5 (2026-10-06)
+
+- Revision 4 situation weights affect personnel-category contributions and formation selection; Live Call Preview uses pending edits, and shared first-down samples are labeled.
+- Revision 4 charged discharge retains the qualified move's second-level effect through native cleanup. Export matching BASE or TU 1.1 patches and restart Xenia.
+- The [VIP reader](apf_vip_format.md) is lossless and read-only. CPU VIP assignment is a design; no VIP writer or DL gameplay fix ships. Native/offline checks cover both profiles; the new behavior awaits gameplay confirmation from Urianus.
 
 ## Unreleased APF wave — 2026-09-09
 

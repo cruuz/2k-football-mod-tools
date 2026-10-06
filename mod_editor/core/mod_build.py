@@ -156,8 +156,8 @@ class BuildPlan:
     kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
-    espn25_named_previews: bool = False  # e2: known 50-row text and historic venue profile
-    espn25_more_moments: bool = False  # b76-m1: 25 more 25th Anniversary moments with their own team-seasons; experimental, needs an image
+    espn25_named_previews: bool = False  # named previews, period field aliases and historic venue profile
+    espn25_more_moments: bool = False  # Anniversary collection with its own team-seasons; experimental, needs an image
     # b76-k1: 128 MB memory on stock xemu (K128, R1's late form: a 226-byte startup patch that teaches xemu's
     # Xbox kernel to manage 128 MB after the game built its arena; asleep at 64 MB and on any other kernel; needs
     # xemu System memory 128 MB) and, with it, the roster block in the game's >64 MB extra heap. Experimental.
@@ -177,8 +177,8 @@ class BuildPlan:
     practice_squad_screen: bool = False  # native Coach's Desk Practice Squad screen (experimental, unwitnessed)
     abilities: bool = False  # player abilities rules v1 (experimental, unwitnessed)
     abilities_off_week: int | None = None  # zero-based regular-season row 0..17 with abilities off, or None
-    abilities_lock_right_stick: bool = True    # rules v2: right-stick moves need the ability (settings of the abilities owner, not separate owners)
-    abilities_lock_special_moves: bool = True  # rules v2: each special move needs its stored permission
+    abilities_lock_right_stick: bool = False   # opt-in restriction; base moves stay available by default
+    abilities_lock_special_moves: bool = False # opt-in restriction; abilities normally add bonuses only
     abilities_lock_speedster: bool = True      # rules v2: Speed above 99 needs Speedster
     qb_spy: bool = False  # zone, man and rush QB spy runtime (experimental, unwitnessed)
     calendar_engine: bool = False  # the complete 128-season calendar (implementation half of the 128-season option)
@@ -421,7 +421,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": False,
         "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False, "franchise_economy": False,
@@ -442,7 +442,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
@@ -463,7 +463,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
         "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
-        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": True, "abilities_lock_special_moves": True, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
+        "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
@@ -1624,12 +1624,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         blockers = validate_plan(plan)
         if blockers:
             raise ValueError("\n".join(blockers))
-        r62 = _validated_r62_plan_options(plan)
         platform_compat.validate_output_path(plan.target)
         require_build_source(plan.source)
         source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
         if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
+        preflight_board_source(plan, progress)
+        r62 = _validated_r62_plan_options(plan)
         from .image_use import check_image_destination, publish_image
         previous_target = check_image_destination(target, overwrite=plan.overwrite)
         with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
@@ -1745,9 +1746,56 @@ def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
     return _build(plan, progress, _preflight_only=True)
 
 
+def preflight_board_source(plan, progress=None):
+    """Check the selected scene bytes before texture compilation or other preflights."""
+    if not plan.modern_board_kit:
+        return
+    boards = _core_module("nfl2k5_board_kit")
+    if boards is None or not tt.is_disc_image(plan.source):
+        raise ValueError("Modern stadium boards need a disc image. Choose your unmodified USA retail image.")
+    (progress or (lambda *_: None))("Checking Modern stadium boards source scenes", 0, 0)
+    try:
+        boards.check_request(Path(plan.source))
+    except (OSError, ValueError) as exc:
+        raise ValueError(str(exc)) from exc
+
+
+def preflight_project_options(plan, document):
+    """Reject known scene/board conflicts while the project is still only a recipe."""
+    if not plan.modern_board_kit:
+        return
+    import re
+    boards = _core_module("nfl2k5_board_kit")
+    if boards is None:
+        raise ValueError("Modern stadium boards are unavailable. Update Studio and try again.")
+    bundles = {int(pin["outer"]): pin["name"]
+               for venue in boards.pinned_venues()
+               for pin in boards._venue_pins(venue).values()}
+    conflicts = []
+    for edit in document["edits"]:
+        if edit["kind"] not in {"stadium_texture", "stadium_geometry"}:
+            continue
+        target = str(edit.get("target", ""))
+        match = re.match(r"nfl2k5\.stadium\.o(\d+)\.", target)
+        if match and int(match[1]) in bundles:
+            conflicts.append(bundles[int(match[1])])
+    if conflicts:
+        raise ValueError("Modern stadium boards conflict with this project's stadium scene edits: "
+                         + ", ".join(sorted(set(conflicts))[:6]) + ". "
+                         "Turn off Modern stadium boards to keep your artwork, or remove these "
+                         "stadium edits and build the boards from an unmodified retail image.")
+
+
 def build_with_project(plan, service, cache, session, progress=None):
     """One private project copy, then gameplay, then one final publication."""
     from .nfl2k5_model_project import plan_rows, validate_build_plan
+    preflight = getattr(service, "preflight_project", None)
+    if callable(preflight):
+        (progress or (lambda *_: None))("Checking the artwork recipe", 0, 0)
+        document = preflight(session)
+        preflight_project_options(plan, document)
+        if not document["edits"]:
+            return build(plan, progress)
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
@@ -1870,7 +1918,13 @@ def _apply_roster_history(plan, target, receipt, progress):
         records = _core_module("nfl2k5_roster_records")
         if records is None:
             raise RuntimeError("the roster records module is not available in this build")
-        modern_history = records.read_edits(Path(plan.roster_edits)).get("franchise_history")
+        edits_document = records.read_edits(Path(plan.roster_edits))
+        modern_history = edits_document.get("franchise_history")
+        from . import nfl2k5_free_agents
+        if plan.season_2026 and plan.position_pools and nfl2k5_free_agents.is_pack_input(edits_document):
+            edits_document = dict(edits_document, modern_free_agents="2026-10-05")
+        if edits_document.get("modern_free_agents"):
+            edits_document = dict(edits_document, restore_historic_spare_capacity=True)
         if modern_history:
             if modern_history.get("base_year") != epoch:
                 raise ValueError("franchise history epoch differs from the build season")
@@ -1879,7 +1933,7 @@ def _apply_roster_history(plan, target, receipt, progress):
         progress("Applying the roster edits", 0, 0)
         # the reclassify pass above retires the OLB code, so an edit authored on a retail roster
         # must not write it back: tell the writer which scheme the disc it is landing on is on
-        edits_receipt = records.apply(target, Path(plan.roster_edits),
+        edits_receipt = records.apply(target, edits_document,
                                       progress=lambda msg: progress(msg, 0, 0),
                                       scheme="one_pool" if plan.position_pools else None)
         receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
@@ -2056,15 +2110,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.historic_stock_books and plan.playbook_pair:
         raise ValueError("Stock historical books cannot be combined with separate offensive and defensive book selections")
     if plan.espn25_era_rules and not (plan.espn25_more_moments and plan.dynamic_kickoff and plan.defensive_try and plan.overtime):
-        raise ValueError("Era rules require all 50 moments, dynamic kickoff, defensive tries and modern overtime as the base")
+        raise ValueError("Era rules require the expanded Anniversary collection, dynamic kickoff, defensive tries and modern overtime as the base")
     if type(plan.historic_stock_books) is not bool or type(plan.espn25_named_previews) is not bool:
         raise ValueError("historical book and preview options must be boolean")
     if plan.espn25_named_previews and not plan.espn25_more_moments:
-        raise ValueError("Named Anniversary previews require all 50 moments")
+        raise ValueError("Named Anniversary previews require the expanded Anniversary collection")
     if type(plan.espn25_more_moments) is not bool:
         raise ValueError("espn25_more_moments must be boolean")
     if plan.espn25_more_moments and plan.espn25_plan:
-        raise ValueError("Choose 25 more Anniversary moments or a saved ESPN Anniversary plan, not both")
+        raise ValueError("Choose the expanded Anniversary collection or a saved ESPN Anniversary plan, not both")
     tt._validate_lever_flags(plan.coverage_slider, plan.scramble_tuning, plan.flatter_deep_ball, plan.chop_block_toggle)
     if plan.flatter_deep_ball:
         if plan.arc or plan.realistic_flight or plan.arc_by_distance:
@@ -2771,11 +2825,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False).wants_xbe_patch() or plan.edge_rename:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
                                   "catch_slider": plan.catch_slider, "accel_ramp": plan.accel_ramp,
+                                  "forward_pass_ruling": bool(complete_offense_packs),
                                   "draft_ai": plan.draft_ai, "edge_rename": plan.edge_rename,
                                   "returner_fix": plan.returner_fix, "progression": plan.progression, "franchise_economy": plan.franchise_economy,
                                   "scheme_labels": plan.scheme_labels or plan.position_pools,
@@ -2800,7 +2855,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["source_sha256"] = step.get("source_sha256")
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -3326,10 +3381,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if receipt["result"]["espn25_rosters"] != "applied":
             raise ValueError("the historic moment rosters failed their read-back on the copy")
     if plan.espn25_more_moments:
-        # b76-m1: rows 26 to 50 and their team-season files, after every relocating pass; the executable half was
+        # b765-a1: rows 26 to 51 and their team-season files, after every relocating pass; the executable half was
         # installed with the allocator owners. On a One-pool positions build the new files get the same historic
         # 4-3 reclassification the pools option gave the retail 75.
-        progress("Adding 25 more Anniversary moments", 0, 0)
+        progress("Adding historic Anniversary moments", 0, 0)
         module = _core_module("nfl2k5_espn25_more_moments")
         pools_now = _core_module("nfl2k5_position_pools")
         one_pool = bool(pools_now is not None and pools_now.status(_xbe_bytes(target)) == "applied")
@@ -3337,13 +3392,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "espn25_more_moments", **moments_receipt})
         receipt["result"]["espn25_more_moments"] = module.image_status(target)
         if receipt["result"]["espn25_more_moments"] != "applied" or module.status(_xbe_bytes(target)) != "applied":
-            raise ValueError("the 25 more Anniversary moments failed their read-back on the copy")
+            raise ValueError("the historic Anniversary moments failed their read-back on the copy")
         if plan.espn25_named_previews:
             receipt["result"]["espn25_named_previews"] = module.named_image_status(target)
             if (receipt["result"]["espn25_named_previews"] != "applied"
                     or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
                 raise ValueError("the named Anniversary previews failed their read-back")
-            receipt["steps"].append({"step": "espn25_named_previews", "status": "applied", "rows": 50})
+            receipt["steps"].append({"step": "espn25_named_previews", "status": "applied", "rows": 51})
         # b76-m1: historic and moment teams on style 0 move to a spare style holding the RETAIL style-0 art, so the
         # 2026 art a project writes to style 0 (the project copy runs before these steps) shows on the current teams
         # only. The copies come from the retail source, never from the copy.
@@ -3635,9 +3690,25 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # fixed span and keeps their receipts reading applied. Same-size writes on the copy; no retail source needed.
         surfaces = _core_module("nfl2k5_modern_surfaces")
         progress("Modern playing surfaces: home-venue fields", 0, 0)
-        surfaces_receipt = surfaces.apply_to_image(target, progress=progress)
+        surface_options = {}
+        if plan.modern_venues_2026:
+            venues = _core_module("nfl2k5_modern_venues_2026")
+            full_normals = venues.field_prefix_loan_prefixes(plan.modern_venues_2026)
+            if full_normals:
+                surface_options["preserve_full_normal_prefixes"] = full_normals
+            normal_loans = venues.field_normal_loan_prefixes(plan.modern_venues_2026)
+            if normal_loans:
+                surface_options["field_normal_loan_prefixes"] = normal_loans
+        surfaces_receipt = surfaces.apply_to_image(target, progress=progress, **surface_options)
         receipt["steps"].append({"step": "modern_surfaces", **surfaces_receipt})
         receipt["result"]["modern_surfaces"] = surfaces_receipt["state"]
+    if plan.modern_venues_2026:
+        # s2: PIT borrows losslessly from the completed field detail-normal map.
+        # Keep this after surfaces so its full-resolution normal art is retained.
+        midfield = _core_module("nfl2k5_midfield_art")
+        midfield_receipt = midfield.apply_late_to_image(target, plan.modern_venues_2026, progress=progress)
+        if midfield_receipt is not None:
+            receipt["steps"].append({"step": "missing_midfield", **midfield_receipt})
     if plan.espn_marks_2026:
         # Four fixed-span GAMEDATA resources, compiled from the copy's own retail spans and resolved through
         # its own XDVDFS and outer tables, so a relocating pass above cannot misplace them.
@@ -3705,10 +3776,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # b76-m1: the intro passes lay the outer archive out again after the moments step (the new team files are
         # outer entries in the last pack), so read the moments back once more on the finished copy.
         if _core_module("nfl2k5_espn25_more_moments").image_status(target) != "applied":
-            raise ValueError("the 25 more Anniversary moments did not survive the intro video pass on the copy")
+            raise ValueError("the extra Anniversary moments did not survive the intro video pass on the copy")
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+    # Use the completed venue models and edited SITU, after all other resource passes.
+    if plan.espn25_named_previews:
+        progress("Building period Anniversary fields", 0, 51)
+        field_pack = _core_module("nfl2k5_anniversary_pack")
+        if field_pack is None:
+            raise ValueError("the Anniversary field compiler is unavailable")
+        field_receipt = field_pack.apply_fields_to_image(
+            target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n))
+        receipt["steps"].append({"step": "espn25_fields", **field_receipt})
+        receipt["result"]["espn25_fields"] = "applied"
     if tt.is_disc_image(target):
         # DESIGN: all growth writers have finished. Compact only this disposable
         # build copy, then run the publication gates through its new directory.
@@ -3729,6 +3810,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if receipt["result"]["historic_stock_books"] != "applied":
             raise ValueError("stock books did not survive the final resource passes")
     if plan.espn25_named_previews:
+        receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)
         if (receipt["result"]["espn25_named_previews"] != "applied"
                     or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):

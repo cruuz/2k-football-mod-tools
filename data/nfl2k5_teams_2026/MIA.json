@@ -4,8 +4,11 @@
  "name": "Miami Dolphins",
  "asset_code": "14",
  "season": 2026,
- "sources_uw": {"sleeve_swoosh_2026": "miamidolphins.com 2026 game day (Falcons at Dolphins) photo xbfjl1wgugfb53tbajgk (#90, #34 aqua) and nike.com's Dolphins Game jersey (Aqua, 67NMMDGH): an ORANGE swoosh above the sleeve's dolphin", "sleeve_logo_2026": "nike.com's 2026 Dolphins Game jersey (Aqua) and miamidolphins.com 2026 game day photo xbfjl1wgugfb53tbajgk: the dolphin under an orange swoosh, facing forward on both arms"},
- "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); albedo INFERRED from 2026 photos; kit from the 2013 design (Wikipedia diagram 2025, 2026 week 1 and preseason galleries).",
+ "sources_uw": {
+  "sleeve_swoosh_2026": "miamidolphins.com 2026 game day (Falcons at Dolphins) photo xbfjl1wgugfb53tbajgk (#90, #34 aqua) and nike.com's Dolphins Game jersey (Aqua, 67NMMDGH): an ORANGE swoosh above the sleeve's dolphin",
+  "sleeve_logo_2026": "nike.com's 2026 Dolphins Game jersey (Aqua) and miamidolphins.com 2026 game day photo xbfjl1wgugfb53tbajgk: the dolphin under an orange swoosh, facing forward on both arms"
+ },
+ "status": "Phase B d1 (2026-09-23). Colours sourced (2026 Record and Fact Book via team_colors_official_2026.json); albedo INFERRED from 2026 photos; kit from the 2013 design (Wikipedia diagram 2025, 2026 week 1 and preseason galleries). u1 2026-10-05: complete current jersey and visible shoulder 0..9 numerals from primary Nike garment photo traces; original native registration and colour/outline recipes preserved. Photo traces are measured approximations, not licensed font files.",
  "sort": "redesigned: 2013 logo, wordmarks and number style; built on the retail sets with the logo redrawn from the club mark and the 1970s-90s block digits (14H1/14A4) as the closest retail glyphs",
  "sources": {
   "uniform_diagram": "https://commons.wikimedia.org/wiki/File:Miami_Dolphins_Uniforms_2025.png (Wikipedia 2026 season infobox)",
@@ -141,10 +144,1495 @@
     "colour": "jersey_aqua"
    },
    "digits": {
-    "glyph_donor": "14H1",
+    "glyph_donor": "14H0",
     "fill": "white",
     "outline": "orange",
-    "outline_frac": 0.035
+    "outline_frac": 0.035,
+    "glyph_shapes": {
+     "0": {
+      "width": 40.8861,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1215,
+         0.1739
+        ],
+        [
+         5.5224,
+         1.3827
+        ],
+        [
+         2.9946,
+         3.9233
+        ],
+        [
+         1.3768,
+         6.875
+        ],
+        [
+         0.2853,
+         11.3641
+        ],
+        [
+         0.0,
+         51.6338
+        ],
+        [
+         0.7781,
+         82.7446
+        ],
+        [
+         1.4276,
+         90.7278
+        ],
+        [
+         2.7136,
+         94.0164
+        ],
+        [
+         4.3952,
+         96.4006
+        ],
+        [
+         6.7176,
+         98.3161
+        ],
+        [
+         8.5375,
+         99.1381
+        ],
+        [
+         18.3449,
+         99.8857
+        ],
+        [
+         33.2239,
+         100.0
+        ],
+        [
+         36.0446,
+         98.783
+        ],
+        [
+         38.782,
+         96.0122
+        ],
+        [
+         40.376,
+         92.6165
+        ],
+        [
+         40.8861,
+         89.706
+        ],
+        [
+         40.3652,
+         59.253
+        ],
+        [
+         40.7489,
+         12.5293
+        ],
+        [
+         40.3728,
+         9.6517
+        ],
+        [
+         39.063,
+         5.9191
+        ],
+        [
+         36.2023,
+         2.2442
+        ],
+        [
+         33.4487,
+         0.5671
+        ],
+        [
+         30.7545,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         11.9882,
+         18.4916
+        ],
+        [
+         27.5319,
+         18.5812
+        ],
+        [
+         27.5319,
+         64.1785
+        ],
+        [
+         28.0755,
+         82.6197
+        ],
+        [
+         27.6562,
+         83.0801
+        ],
+        [
+         12.3102,
+         82.5384
+        ],
+        [
+         11.6186,
+         44.7516
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 22.1784,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.435,
+         0.1602
+        ],
+        [
+         5.1654,
+         1.6368
+        ],
+        [
+         3.0369,
+         3.9519
+        ],
+        [
+         1.3855,
+         7.1345
+        ],
+        [
+         0.2538,
+         12.2936
+        ],
+        [
+         0.0,
+         22.9677
+        ],
+        [
+         9.3241,
+         23.224
+        ],
+        [
+         8.7783,
+         72.3418
+        ],
+        [
+         9.3957,
+         99.8605
+        ],
+        [
+         21.3765,
+         100.0
+        ],
+        [
+         20.9274,
+         59.5896
+        ],
+        [
+         22.1784,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 38.8425,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1563,
+         0.6885
+        ],
+        [
+         6.1985,
+         1.7046
+        ],
+        [
+         3.8415,
+         3.8591
+        ],
+        [
+         1.1636,
+         9.1496
+        ],
+        [
+         0.4436,
+         13.424
+        ],
+        [
+         0.1069,
+         27.4648
+        ],
+        [
+         10.9732,
+         27.2101
+        ],
+        [
+         11.2976,
+         18.5108
+        ],
+        [
+         26.3705,
+         17.9853
+        ],
+        [
+         26.8656,
+         19.2885
+        ],
+        [
+         26.6196,
+         29.9856
+        ],
+        [
+         26.2291,
+         31.3459
+        ],
+        [
+         16.7626,
+         44.6394
+        ],
+        [
+         0.0,
+         69.974
+        ],
+        [
+         0.7074,
+         99.3018
+        ],
+        [
+         15.6025,
+         99.9004
+        ],
+        [
+         38.2468,
+         100.0
+        ],
+        [
+         38.0361,
+         83.3242
+        ],
+        [
+         12.0707,
+         83.4384
+        ],
+        [
+         10.9463,
+         83.0658
+        ],
+        [
+         11.1102,
+         75.9344
+        ],
+        [
+         38.2511,
+         37.9151
+        ],
+        [
+         38.8425,
+         13.3992
+        ],
+        [
+         29.2159,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 39.3562,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.0739,
+         0.5142
+        ],
+        [
+         5.9003,
+         1.5245
+        ],
+        [
+         3.5578,
+         3.6577
+        ],
+        [
+         0.9196,
+         8.9253
+        ],
+        [
+         0.2334,
+         13.1948
+        ],
+        [
+         0.0,
+         27.0167
+        ],
+        [
+         11.5533,
+         27.0502
+        ],
+        [
+         11.6278,
+         19.2507
+        ],
+        [
+         12.0394,
+         18.5599
+        ],
+        [
+         26.7052,
+         18.6452
+        ],
+        [
+         26.3126,
+         43.1667
+        ],
+        [
+         21.227,
+         43.6687
+        ],
+        [
+         16.3314,
+         43.4922
+        ],
+        [
+         16.0668,
+         51.9704
+        ],
+        [
+         16.309,
+         57.0798
+        ],
+        [
+         24.2961,
+         56.8637
+        ],
+        [
+         26.0897,
+         57.2107
+        ],
+        [
+         26.636,
+         82.7942
+        ],
+        [
+         24.4309,
+         83.138
+        ],
+        [
+         12.2023,
+         82.9189
+        ],
+        [
+         11.7811,
+         74.033
+        ],
+        [
+         0.4389,
+         73.7651
+        ],
+        [
+         0.8386,
+         86.884
+        ],
+        [
+         9.8796,
+         99.5282
+        ],
+        [
+         29.6731,
+         100.0
+        ],
+        [
+         39.2757,
+         86.9998
+        ],
+        [
+         39.0356,
+         58.504
+        ],
+        [
+         32.0094,
+         50.8719
+        ],
+        [
+         31.9567,
+         49.7611
+        ],
+        [
+         39.1216,
+         41.5721
+        ],
+        [
+         39.3562,
+         13.7184
+        ],
+        [
+         29.5979,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 46.7926,
+      "height": 100,
+      "contours": [
+       [
+        [
+         26.5308,
+         0.0
+        ],
+        [
+         11.9163,
+         35.2774
+        ],
+        [
+         0.8927,
+         63.5672
+        ],
+        [
+         0.0,
+         67.3654
+        ],
+        [
+         0.2123,
+         71.1291
+        ],
+        [
+         2.0465,
+         76.1727
+        ],
+        [
+         4.8734,
+         79.1892
+        ],
+        [
+         6.2369,
+         79.8118
+        ],
+        [
+         28.854,
+         80.4345
+        ],
+        [
+         29.7194,
+         99.7025
+        ],
+        [
+         41.47,
+         100.0
+        ],
+        [
+         41.0465,
+         80.7181
+        ],
+        [
+         46.7926,
+         80.5383
+        ],
+        [
+         46.5814,
+         65.0201
+        ],
+        [
+         41.0564,
+         65.193
+        ],
+        [
+         40.5894,
+         64.7641
+        ],
+        [
+         40.6999,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         28.3628,
+         28.5526
+        ],
+        [
+         28.8086,
+         32.5308
+        ],
+        [
+         28.8638,
+         64.9094
+        ],
+        [
+         24.6773,
+         65.2622
+        ],
+        [
+         11.8217,
+         64.9993
+        ],
+        [
+         11.5383,
+         63.8993
+        ],
+        [
+         27.0617,
+         29.0369
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 39.8793,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.7897,
+         0.9772
+        ],
+        [
+         0.0,
+         21.2126
+        ],
+        [
+         0.0,
+         44.0585
+        ],
+        [
+         9.2813,
+         57.6534
+        ],
+        [
+         26.2859,
+         57.2183
+        ],
+        [
+         26.7481,
+         57.632
+        ],
+        [
+         27.1077,
+         83.3381
+        ],
+        [
+         25.5861,
+         83.8802
+        ],
+        [
+         11.8771,
+         83.8802
+        ],
+        [
+         11.402,
+         69.4936
+        ],
+        [
+         0.1177,
+         69.3367
+        ],
+        [
+         0.4152,
+         84.622
+        ],
+        [
+         1.2198,
+         92.1113
+        ],
+        [
+         3.6594,
+         96.8331
+        ],
+        [
+         5.9707,
+         98.9016
+        ],
+        [
+         7.7768,
+         99.6719
+        ],
+        [
+         30.1251,
+         100.0
+        ],
+        [
+         39.676,
+         87.1826
+        ],
+        [
+         39.3186,
+         52.3823
+        ],
+        [
+         28.3168,
+         39.786
+        ],
+        [
+         12.6454,
+         40.3566
+        ],
+        [
+         11.3015,
+         40.0
+        ],
+        [
+         11.4192,
+         19.5863
+        ],
+        [
+         11.8172,
+         18.6733
+        ],
+        [
+         39.6332,
+         17.7603
+        ],
+        [
+         39.8793,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 40.2608,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.5819,
+         0.0
+        ],
+        [
+         5.327,
+         1.6564
+        ],
+        [
+         3.2099,
+         3.9442
+        ],
+        [
+         1.5756,
+         7.1059
+        ],
+        [
+         0.6359,
+         10.9128
+        ],
+        [
+         0.0,
+         51.3773
+        ],
+        [
+         0.6679,
+         86.2457
+        ],
+        [
+         10.348,
+         99.2793
+        ],
+        [
+         30.1308,
+         100.0
+        ],
+        [
+         39.7704,
+         87.2569
+        ],
+        [
+         39.7575,
+         52.146
+        ],
+        [
+         31.2845,
+         41.2972
+        ],
+        [
+         14.8654,
+         41.3612
+        ],
+        [
+         11.9647,
+         41.0066
+        ],
+        [
+         12.2647,
+         17.8861
+        ],
+        [
+         26.6793,
+         17.6619
+        ],
+        [
+         27.1424,
+         18.092
+        ],
+        [
+         27.0221,
+         30.318
+        ],
+        [
+         40.1169,
+         30.3569
+        ],
+        [
+         40.2608,
+         13.6857
+        ],
+        [
+         30.1078,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.2937,
+         58.3299
+        ],
+        [
+         26.738,
+         58.7714
+        ],
+        [
+         26.7289,
+         83.4386
+        ],
+        [
+         12.2747,
+         82.7751
+        ],
+        [
+         11.8703,
+         58.7875
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 44.9998,
+      "height": 100,
+      "contours": [
+       [
+        [
+         44.9998,
+         0.0
+        ],
+        [
+         10.6363,
+         0.0
+        ],
+        [
+         7.3636,
+         1.4359
+        ],
+        [
+         5.4545,
+         3.073
+        ],
+        [
+         2.7273,
+         7.0108
+        ],
+        [
+         1.3636,
+         11.6067
+        ],
+        [
+         0.2727,
+         26.7051
+        ],
+        [
+         13.0908,
+         27.1348
+        ],
+        [
+         14.1817,
+         17.7472
+        ],
+        [
+         28.6362,
+         18.1442
+        ],
+        [
+         28.9089,
+         19.7378
+        ],
+        [
+         16.6363,
+         50.5928
+        ],
+        [
+         0.0,
+         98.8959
+        ],
+        [
+         13.3636,
+         100.0
+        ],
+        [
+         28.0908,
+         57.2174
+        ],
+        [
+         43.3634,
+         18.3074
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 46.7649,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.7964,
+         0.4529
+        ],
+        [
+         5.1453,
+         2.0431
+        ],
+        [
+         1.6342,
+         5.9746
+        ],
+        [
+         0.0187,
+         10.2819
+        ],
+        [
+         0.0,
+         41.2815
+        ],
+        [
+         6.9849,
+         48.4499
+        ],
+        [
+         7.6198,
+         51.2364
+        ],
+        [
+         0.0747,
+         58.1861
+        ],
+        [
+         0.579,
+         90.0992
+        ],
+        [
+         2.7547,
+         95.1577
+        ],
+        [
+         9.1046,
+         99.5395
+        ],
+        [
+         37.6977,
+         100.0
+        ],
+        [
+         40.4431,
+         98.9245
+        ],
+        [
+         43.5433,
+         95.9526
+        ],
+        [
+         45.9525,
+         89.2577
+        ],
+        [
+         45.8871,
+         56.8532
+        ],
+        [
+         38.9583,
+         50.6214
+        ],
+        [
+         38.8182,
+         48.2799
+        ],
+        [
+         46.7182,
+         39.4339
+        ],
+        [
+         46.7649,
+         8.9026
+        ],
+        [
+         44.1223,
+         3.8672
+        ],
+        [
+         40.6859,
+         1.2196
+        ],
+        [
+         36.8666,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         14.5207,
+         56.9999
+        ],
+        [
+         28.0608,
+         56.3283
+        ],
+        [
+         31.3852,
+         57.1028
+        ],
+        [
+         31.8988,
+         73.516
+        ],
+        [
+         31.0863,
+         83.4195
+        ],
+        [
+         14.2218,
+         83.3167
+        ],
+        [
+         13.7549,
+         59.856
+        ]
+       ],
+       [
+        [
+         14.53,
+         18.0163
+        ],
+        [
+         32.3283,
+         18.0728
+        ],
+        [
+         32.3283,
+         41.5567
+        ],
+        [
+         31.5066,
+         43.4762
+        ],
+        [
+         16.0708,
+         43.7721
+        ],
+        [
+         14.1471,
+         42.9282
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 41.3498,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.4922,
+         0.9286
+        ],
+        [
+         6.0378,
+         2.4989
+        ],
+        [
+         3.689,
+         4.6837
+        ],
+        [
+         1.9061,
+         7.5154
+        ],
+        [
+         0.6979,
+         11.2207
+        ],
+        [
+         0.0,
+         28.0627
+        ],
+        [
+         0.0,
+         48.9492
+        ],
+        [
+         6.9058,
+         59.6574
+        ],
+        [
+         26.1219,
+         60.0888
+        ],
+        [
+         26.9488,
+         60.4931
+        ],
+        [
+         27.289,
+         83.1753
+        ],
+        [
+         25.6791,
+         83.4993
+        ],
+        [
+         12.6768,
+         82.9205
+        ],
+        [
+         11.9671,
+         71.6119
+        ],
+        [
+         0.3226,
+         71.1784
+        ],
+        [
+         0.9208,
+         86.5802
+        ],
+        [
+         10.3338,
+         99.1806
+        ],
+        [
+         30.6466,
+         100.0
+        ],
+        [
+         40.4496,
+         87.831
+        ],
+        [
+         40.0772,
+         50.394
+        ],
+        [
+         41.3498,
+         13.5389
+        ],
+        [
+         32.4412,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.6064,
+         18.4491
+        ],
+        [
+         25.8433,
+         18.1056
+        ],
+        [
+         27.7493,
+         18.4448
+        ],
+        [
+         26.8198,
+         43.2468
+        ],
+        [
+         12.7648,
+         43.4125
+        ],
+        [
+         11.9378,
+         43.0083
+        ],
+        [
+         12.0082,
+         23.9338
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Custom_back",
+      "raw_left_ratio": 0.36425339366515835,
+      "raw_right_ratio": 0.434878587196468,
+      "leading_correction": 1.1938902828623532
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aqua-miami-dolphins-custom-game-jersey_ss5_p-3887276+pv-3+u-xcf1nx770rndnw02yvj1+v-syoei1qzb2xx3igtymjs.png?_hv=2&w=2000",
+       "source_image_sha256": "b72f8f1c2efc4cbf0b6a0d2cb241851ac184215c906418e3c0701a9590b8a45c",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.434878587196468,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03709394205443371,
+       "removed_vertical_lean": -0.05355194643523084,
+       "normalized_width_height_ratio": 0.408861,
+       "outer_vertices": 25,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        848,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         17.0
+        ],
+        [
+         120.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.23008849557522124,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04390681003584229,
+       "removed_vertical_lean": -0.0385523230663731,
+       "normalized_width_height_ratio": 0.221784,
+       "outer_vertices": 12,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-bob-griese-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974193+pv-3+u-kluhb8xgdajfmgxef75h+v-7jmrl35culxp4v8es61b.png?_hv=2&w=2000",
+       "source_image_sha256": "13eadbd6b82404ec667728569c9da9049f8eb91672e3d73ce285d7b059fc7977",
+       "source_crop": [
+        770,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         15.0
+        ],
+        [
+         201.0,
+         470.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41098901098901097,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.064228255404726,
+       "removed_vertical_lean": -0.03925705460446306,
+       "normalized_width_height_ratio": 0.388425,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-dan-marino-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974194+pv-3+u-uoj1uxzukpwoyvwrjubh+v-8rwvvhsaamrsegx2xibh.png?_hv=2&w=2000",
+       "source_image_sha256": "70b713040b7055ab14dffc0f50a8974584010d4a22c50ad2f604fb012a543e38",
+       "source_crop": [
+        770,
+        570,
+        990,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         204.0,
+         467.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41814159292035397,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.05478976022240241,
+       "removed_vertical_lean": -0.047403890445441785,
+       "normalized_width_height_ratio": 0.393562,
+       "outer_vertices": 32,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-chop-robinson-aqua-miami-dolphins-game-jersey_ss5_p-202260942+pv-3+u-otokj9y5jy1ycccwytoi+v-rg9ltgl89cdhpqf2plrv.png?_hv=2&w=2000",
+       "source_image_sha256": "c192eb3986c9149072ec068aea61d40edc3de8e3a987bfb6d4596f2410e4ebfa",
+       "source_crop": [
+        800,
+        570,
+        1045,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         17.0,
+         19.0
+        ],
+        [
+         228.0,
+         472.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.46578366445916114,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03125,
+       "removed_vertical_lean": -0.05640715205932598,
+       "normalized_width_height_ratio": 0.467926,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aaron-brewer-aqua-miami-dolphins-game-jersey_ss5_p-202260947+pv-3+u-ndd2peqkqz9etuv5ru0m+v-5z1u7nm9wle9qan92ksk.png?_hv=2&w=2000",
+       "source_image_sha256": "919c5c6858b7183d6fa93b21d7f6d5c6283b9ae690b8a399fca22b9ef93dd1f6",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         14.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.432967032967033,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.06451612903225806,
+       "removed_vertical_lean": -0.048392132375897595,
+       "normalized_width_height_ratio": 0.398793,
+       "outer_vertices": 26,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-storm-duck-aqua-miami-dolphins-game-jersey_ss5_p-202260941+pv-3+u-igxa9hz1wxa0h2gn8fep+v-gfvmqghrknpxmroozlsx.png?_hv=2&w=2000",
+       "source_image_sha256": "7949d2e9cb4b5e16816f209bf0f03679cdcf40c0129e9d3dbe2e74b94c258bfc",
+       "source_crop": [
+        800,
+        570,
+        1025,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         208.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4260485651214128,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.030927835051546393,
+       "removed_vertical_lean": -0.04461277629963673,
+       "normalized_width_height_ratio": 0.402608,
+       "outer_vertices": 21,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        655,
+        565,
+        850,
+        1035
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         179.0,
+         454.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.3767123287671233,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.023809523809523808,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.449998,
+       "outer_vertices": 16,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-de%E2%80%99von-achane-aqua-miami-dolphins-game-jersey_ss5_p-205074736+pv-2+u-ak2y0islbx4bkpefp914+v-5a9pjtnflbn5a2huc9tx.png?_hv=2&w=2000",
+       "source_image_sha256": "b42bdad0180fca893a8a754d641c578c30d276ca3962eee7add9458d0840324b",
+       "source_crop": [
+        976,
+        498,
+        1110,
+        735
+       ],
+       "raw_ink_bounds": [
+        [
+         10.0,
+         11.0
+        ],
+        [
+         119.0,
+         226.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5069767441860465,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04945355191256831,
+       "removed_vertical_lean": -0.05982249391150848,
+       "normalized_width_height_ratio": 0.467649,
+       "outer_vertices": 23,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kenneth-grant-aqua-miami-dolphins-team-game-jersey_ss5_p-201359708+pv-3+u-qhe05vdg16onn0dglzse+v-gvbmx7bzrhtsyscvudwd.png?_hv=2&w=2000",
+       "source_image_sha256": "c16138881fc3da5573fa93880dad05a9aeeeafe26508cb2e3d9a9c9e3da9fbac",
+       "source_crop": [
+        620,
+        565,
+        810,
+        1040
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         175.0,
+         457.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.36199095022624433,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.07176470588235294,
+       "removed_vertical_lean": -0.032532564459130164,
+       "normalized_width_height_ratio": 0.41349800000000003,
+       "outer_vertices": 22,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    },
    "helmet_digits": {
     "glyph_donor": "14H1",
@@ -235,6 +1723,1497 @@
       14
      ]
     }
+   },
+   "arm_digits": {
+    "glyph_donor": "14H0",
+    "fill": "white",
+    "outline": "orange",
+    "outline_frac": 0.035,
+    "glyph_shapes": {
+     "0": {
+      "width": 40.8861,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1215,
+         0.1739
+        ],
+        [
+         5.5224,
+         1.3827
+        ],
+        [
+         2.9946,
+         3.9233
+        ],
+        [
+         1.3768,
+         6.875
+        ],
+        [
+         0.2853,
+         11.3641
+        ],
+        [
+         0.0,
+         51.6338
+        ],
+        [
+         0.7781,
+         82.7446
+        ],
+        [
+         1.4276,
+         90.7278
+        ],
+        [
+         2.7136,
+         94.0164
+        ],
+        [
+         4.3952,
+         96.4006
+        ],
+        [
+         6.7176,
+         98.3161
+        ],
+        [
+         8.5375,
+         99.1381
+        ],
+        [
+         18.3449,
+         99.8857
+        ],
+        [
+         33.2239,
+         100.0
+        ],
+        [
+         36.0446,
+         98.783
+        ],
+        [
+         38.782,
+         96.0122
+        ],
+        [
+         40.376,
+         92.6165
+        ],
+        [
+         40.8861,
+         89.706
+        ],
+        [
+         40.3652,
+         59.253
+        ],
+        [
+         40.7489,
+         12.5293
+        ],
+        [
+         40.3728,
+         9.6517
+        ],
+        [
+         39.063,
+         5.9191
+        ],
+        [
+         36.2023,
+         2.2442
+        ],
+        [
+         33.4487,
+         0.5671
+        ],
+        [
+         30.7545,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         11.9882,
+         18.4916
+        ],
+        [
+         27.5319,
+         18.5812
+        ],
+        [
+         27.5319,
+         64.1785
+        ],
+        [
+         28.0755,
+         82.6197
+        ],
+        [
+         27.6562,
+         83.0801
+        ],
+        [
+         12.3102,
+         82.5384
+        ],
+        [
+         11.6186,
+         44.7516
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 22.1784,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.435,
+         0.1602
+        ],
+        [
+         5.1654,
+         1.6368
+        ],
+        [
+         3.0369,
+         3.9519
+        ],
+        [
+         1.3855,
+         7.1345
+        ],
+        [
+         0.2538,
+         12.2936
+        ],
+        [
+         0.0,
+         22.9677
+        ],
+        [
+         9.3241,
+         23.224
+        ],
+        [
+         8.7783,
+         72.3418
+        ],
+        [
+         9.3957,
+         99.8605
+        ],
+        [
+         21.3765,
+         100.0
+        ],
+        [
+         20.9274,
+         59.5896
+        ],
+        [
+         22.1784,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 38.8425,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1563,
+         0.6885
+        ],
+        [
+         6.1985,
+         1.7046
+        ],
+        [
+         3.8415,
+         3.8591
+        ],
+        [
+         1.1636,
+         9.1496
+        ],
+        [
+         0.4436,
+         13.424
+        ],
+        [
+         0.1069,
+         27.4648
+        ],
+        [
+         10.9732,
+         27.2101
+        ],
+        [
+         11.2976,
+         18.5108
+        ],
+        [
+         26.3705,
+         17.9853
+        ],
+        [
+         26.8656,
+         19.2885
+        ],
+        [
+         26.6196,
+         29.9856
+        ],
+        [
+         26.2291,
+         31.3459
+        ],
+        [
+         16.7626,
+         44.6394
+        ],
+        [
+         0.0,
+         69.974
+        ],
+        [
+         0.7074,
+         99.3018
+        ],
+        [
+         15.6025,
+         99.9004
+        ],
+        [
+         38.2468,
+         100.0
+        ],
+        [
+         38.0361,
+         83.3242
+        ],
+        [
+         12.0707,
+         83.4384
+        ],
+        [
+         10.9463,
+         83.0658
+        ],
+        [
+         11.1102,
+         75.9344
+        ],
+        [
+         38.2511,
+         37.9151
+        ],
+        [
+         38.8425,
+         13.3992
+        ],
+        [
+         29.2159,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 39.3562,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.0739,
+         0.5142
+        ],
+        [
+         5.9003,
+         1.5245
+        ],
+        [
+         3.5578,
+         3.6577
+        ],
+        [
+         0.9196,
+         8.9253
+        ],
+        [
+         0.2334,
+         13.1948
+        ],
+        [
+         0.0,
+         27.0167
+        ],
+        [
+         11.5533,
+         27.0502
+        ],
+        [
+         11.6278,
+         19.2507
+        ],
+        [
+         12.0394,
+         18.5599
+        ],
+        [
+         26.7052,
+         18.6452
+        ],
+        [
+         26.3126,
+         43.1667
+        ],
+        [
+         21.227,
+         43.6687
+        ],
+        [
+         16.3314,
+         43.4922
+        ],
+        [
+         16.0668,
+         51.9704
+        ],
+        [
+         16.309,
+         57.0798
+        ],
+        [
+         24.2961,
+         56.8637
+        ],
+        [
+         26.0897,
+         57.2107
+        ],
+        [
+         26.636,
+         82.7942
+        ],
+        [
+         24.4309,
+         83.138
+        ],
+        [
+         12.2023,
+         82.9189
+        ],
+        [
+         11.7811,
+         74.033
+        ],
+        [
+         0.4389,
+         73.7651
+        ],
+        [
+         0.8386,
+         86.884
+        ],
+        [
+         9.8796,
+         99.5282
+        ],
+        [
+         29.6731,
+         100.0
+        ],
+        [
+         39.2757,
+         86.9998
+        ],
+        [
+         39.0356,
+         58.504
+        ],
+        [
+         32.0094,
+         50.8719
+        ],
+        [
+         31.9567,
+         49.7611
+        ],
+        [
+         39.1216,
+         41.5721
+        ],
+        [
+         39.3562,
+         13.7184
+        ],
+        [
+         29.5979,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 46.7926,
+      "height": 100,
+      "contours": [
+       [
+        [
+         26.5308,
+         0.0
+        ],
+        [
+         11.9163,
+         35.2774
+        ],
+        [
+         0.8927,
+         63.5672
+        ],
+        [
+         0.0,
+         67.3654
+        ],
+        [
+         0.2123,
+         71.1291
+        ],
+        [
+         2.0465,
+         76.1727
+        ],
+        [
+         4.8734,
+         79.1892
+        ],
+        [
+         6.2369,
+         79.8118
+        ],
+        [
+         28.854,
+         80.4345
+        ],
+        [
+         29.7194,
+         99.7025
+        ],
+        [
+         41.47,
+         100.0
+        ],
+        [
+         41.0465,
+         80.7181
+        ],
+        [
+         46.7926,
+         80.5383
+        ],
+        [
+         46.5814,
+         65.0201
+        ],
+        [
+         41.0564,
+         65.193
+        ],
+        [
+         40.5894,
+         64.7641
+        ],
+        [
+         40.6999,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         28.3628,
+         28.5526
+        ],
+        [
+         28.8086,
+         32.5308
+        ],
+        [
+         28.8638,
+         64.9094
+        ],
+        [
+         24.6773,
+         65.2622
+        ],
+        [
+         11.8217,
+         64.9993
+        ],
+        [
+         11.5383,
+         63.8993
+        ],
+        [
+         27.0617,
+         29.0369
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 39.8793,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.7897,
+         0.9772
+        ],
+        [
+         0.0,
+         21.2126
+        ],
+        [
+         0.0,
+         44.0585
+        ],
+        [
+         9.2813,
+         57.6534
+        ],
+        [
+         26.2859,
+         57.2183
+        ],
+        [
+         26.7481,
+         57.632
+        ],
+        [
+         27.1077,
+         83.3381
+        ],
+        [
+         25.5861,
+         83.8802
+        ],
+        [
+         11.8771,
+         83.8802
+        ],
+        [
+         11.402,
+         69.4936
+        ],
+        [
+         0.1177,
+         69.3367
+        ],
+        [
+         0.4152,
+         84.622
+        ],
+        [
+         1.2198,
+         92.1113
+        ],
+        [
+         3.6594,
+         96.8331
+        ],
+        [
+         5.9707,
+         98.9016
+        ],
+        [
+         7.7768,
+         99.6719
+        ],
+        [
+         30.1251,
+         100.0
+        ],
+        [
+         39.676,
+         87.1826
+        ],
+        [
+         39.3186,
+         52.3823
+        ],
+        [
+         28.3168,
+         39.786
+        ],
+        [
+         12.6454,
+         40.3566
+        ],
+        [
+         11.3015,
+         40.0
+        ],
+        [
+         11.4192,
+         19.5863
+        ],
+        [
+         11.8172,
+         18.6733
+        ],
+        [
+         39.6332,
+         17.7603
+        ],
+        [
+         39.8793,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 40.2608,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.5819,
+         0.0
+        ],
+        [
+         5.327,
+         1.6564
+        ],
+        [
+         3.2099,
+         3.9442
+        ],
+        [
+         1.5756,
+         7.1059
+        ],
+        [
+         0.6359,
+         10.9128
+        ],
+        [
+         0.0,
+         51.3773
+        ],
+        [
+         0.6679,
+         86.2457
+        ],
+        [
+         10.348,
+         99.2793
+        ],
+        [
+         30.1308,
+         100.0
+        ],
+        [
+         39.7704,
+         87.2569
+        ],
+        [
+         39.7575,
+         52.146
+        ],
+        [
+         31.2845,
+         41.2972
+        ],
+        [
+         14.8654,
+         41.3612
+        ],
+        [
+         11.9647,
+         41.0066
+        ],
+        [
+         12.2647,
+         17.8861
+        ],
+        [
+         26.6793,
+         17.6619
+        ],
+        [
+         27.1424,
+         18.092
+        ],
+        [
+         27.0221,
+         30.318
+        ],
+        [
+         40.1169,
+         30.3569
+        ],
+        [
+         40.2608,
+         13.6857
+        ],
+        [
+         30.1078,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.2937,
+         58.3299
+        ],
+        [
+         26.738,
+         58.7714
+        ],
+        [
+         26.7289,
+         83.4386
+        ],
+        [
+         12.2747,
+         82.7751
+        ],
+        [
+         11.8703,
+         58.7875
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 44.9998,
+      "height": 100,
+      "contours": [
+       [
+        [
+         44.9998,
+         0.0
+        ],
+        [
+         10.6363,
+         0.0
+        ],
+        [
+         7.3636,
+         1.4359
+        ],
+        [
+         5.4545,
+         3.073
+        ],
+        [
+         2.7273,
+         7.0108
+        ],
+        [
+         1.3636,
+         11.6067
+        ],
+        [
+         0.2727,
+         26.7051
+        ],
+        [
+         13.0908,
+         27.1348
+        ],
+        [
+         14.1817,
+         17.7472
+        ],
+        [
+         28.6362,
+         18.1442
+        ],
+        [
+         28.9089,
+         19.7378
+        ],
+        [
+         16.6363,
+         50.5928
+        ],
+        [
+         0.0,
+         98.8959
+        ],
+        [
+         13.3636,
+         100.0
+        ],
+        [
+         28.0908,
+         57.2174
+        ],
+        [
+         43.3634,
+         18.3074
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 46.7649,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.7964,
+         0.4529
+        ],
+        [
+         5.1453,
+         2.0431
+        ],
+        [
+         1.6342,
+         5.9746
+        ],
+        [
+         0.0187,
+         10.2819
+        ],
+        [
+         0.0,
+         41.2815
+        ],
+        [
+         6.9849,
+         48.4499
+        ],
+        [
+         7.6198,
+         51.2364
+        ],
+        [
+         0.0747,
+         58.1861
+        ],
+        [
+         0.579,
+         90.0992
+        ],
+        [
+         2.7547,
+         95.1577
+        ],
+        [
+         9.1046,
+         99.5395
+        ],
+        [
+         37.6977,
+         100.0
+        ],
+        [
+         40.4431,
+         98.9245
+        ],
+        [
+         43.5433,
+         95.9526
+        ],
+        [
+         45.9525,
+         89.2577
+        ],
+        [
+         45.8871,
+         56.8532
+        ],
+        [
+         38.9583,
+         50.6214
+        ],
+        [
+         38.8182,
+         48.2799
+        ],
+        [
+         46.7182,
+         39.4339
+        ],
+        [
+         46.7649,
+         8.9026
+        ],
+        [
+         44.1223,
+         3.8672
+        ],
+        [
+         40.6859,
+         1.2196
+        ],
+        [
+         36.8666,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         14.5207,
+         56.9999
+        ],
+        [
+         28.0608,
+         56.3283
+        ],
+        [
+         31.3852,
+         57.1028
+        ],
+        [
+         31.8988,
+         73.516
+        ],
+        [
+         31.0863,
+         83.4195
+        ],
+        [
+         14.2218,
+         83.3167
+        ],
+        [
+         13.7549,
+         59.856
+        ]
+       ],
+       [
+        [
+         14.53,
+         18.0163
+        ],
+        [
+         32.3283,
+         18.0728
+        ],
+        [
+         32.3283,
+         41.5567
+        ],
+        [
+         31.5066,
+         43.4762
+        ],
+        [
+         16.0708,
+         43.7721
+        ],
+        [
+         14.1471,
+         42.9282
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 41.3498,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.4922,
+         0.9286
+        ],
+        [
+         6.0378,
+         2.4989
+        ],
+        [
+         3.689,
+         4.6837
+        ],
+        [
+         1.9061,
+         7.5154
+        ],
+        [
+         0.6979,
+         11.2207
+        ],
+        [
+         0.0,
+         28.0627
+        ],
+        [
+         0.0,
+         48.9492
+        ],
+        [
+         6.9058,
+         59.6574
+        ],
+        [
+         26.1219,
+         60.0888
+        ],
+        [
+         26.9488,
+         60.4931
+        ],
+        [
+         27.289,
+         83.1753
+        ],
+        [
+         25.6791,
+         83.4993
+        ],
+        [
+         12.6768,
+         82.9205
+        ],
+        [
+         11.9671,
+         71.6119
+        ],
+        [
+         0.3226,
+         71.1784
+        ],
+        [
+         0.9208,
+         86.5802
+        ],
+        [
+         10.3338,
+         99.1806
+        ],
+        [
+         30.6466,
+         100.0
+        ],
+        [
+         40.4496,
+         87.831
+        ],
+        [
+         40.0772,
+         50.394
+        ],
+        [
+         41.3498,
+         13.5389
+        ],
+        [
+         32.4412,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.6064,
+         18.4491
+        ],
+        [
+         25.8433,
+         18.1056
+        ],
+        [
+         27.7493,
+         18.4448
+        ],
+        [
+         26.8198,
+         43.2468
+        ],
+        [
+         12.7648,
+         43.4125
+        ],
+        [
+         11.9378,
+         43.0083
+        ],
+        [
+         12.0082,
+         23.9338
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Custom_back",
+      "raw_left_ratio": 0.36425339366515835,
+      "raw_right_ratio": 0.434878587196468,
+      "leading_correction": 1.1938902828623532
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aqua-miami-dolphins-custom-game-jersey_ss5_p-3887276+pv-3+u-xcf1nx770rndnw02yvj1+v-syoei1qzb2xx3igtymjs.png?_hv=2&w=2000",
+       "source_image_sha256": "b72f8f1c2efc4cbf0b6a0d2cb241851ac184215c906418e3c0701a9590b8a45c",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.434878587196468,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03709394205443371,
+       "removed_vertical_lean": -0.05355194643523084,
+       "normalized_width_height_ratio": 0.408861,
+       "outer_vertices": 25,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        848,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         17.0
+        ],
+        [
+         120.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.23008849557522124,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04390681003584229,
+       "removed_vertical_lean": -0.0385523230663731,
+       "normalized_width_height_ratio": 0.221784,
+       "outer_vertices": 12,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-bob-griese-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974193+pv-3+u-kluhb8xgdajfmgxef75h+v-7jmrl35culxp4v8es61b.png?_hv=2&w=2000",
+       "source_image_sha256": "13eadbd6b82404ec667728569c9da9049f8eb91672e3d73ce285d7b059fc7977",
+       "source_crop": [
+        770,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         15.0
+        ],
+        [
+         201.0,
+         470.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41098901098901097,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.064228255404726,
+       "removed_vertical_lean": -0.03925705460446306,
+       "normalized_width_height_ratio": 0.388425,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-dan-marino-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974194+pv-3+u-uoj1uxzukpwoyvwrjubh+v-8rwvvhsaamrsegx2xibh.png?_hv=2&w=2000",
+       "source_image_sha256": "70b713040b7055ab14dffc0f50a8974584010d4a22c50ad2f604fb012a543e38",
+       "source_crop": [
+        770,
+        570,
+        990,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         204.0,
+         467.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41814159292035397,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.05478976022240241,
+       "removed_vertical_lean": -0.047403890445441785,
+       "normalized_width_height_ratio": 0.393562,
+       "outer_vertices": 32,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-chop-robinson-aqua-miami-dolphins-game-jersey_ss5_p-202260942+pv-3+u-otokj9y5jy1ycccwytoi+v-rg9ltgl89cdhpqf2plrv.png?_hv=2&w=2000",
+       "source_image_sha256": "c192eb3986c9149072ec068aea61d40edc3de8e3a987bfb6d4596f2410e4ebfa",
+       "source_crop": [
+        800,
+        570,
+        1045,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         17.0,
+         19.0
+        ],
+        [
+         228.0,
+         472.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.46578366445916114,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03125,
+       "removed_vertical_lean": -0.05640715205932598,
+       "normalized_width_height_ratio": 0.467926,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aaron-brewer-aqua-miami-dolphins-game-jersey_ss5_p-202260947+pv-3+u-ndd2peqkqz9etuv5ru0m+v-5z1u7nm9wle9qan92ksk.png?_hv=2&w=2000",
+       "source_image_sha256": "919c5c6858b7183d6fa93b21d7f6d5c6283b9ae690b8a399fca22b9ef93dd1f6",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         14.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.432967032967033,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.06451612903225806,
+       "removed_vertical_lean": -0.048392132375897595,
+       "normalized_width_height_ratio": 0.398793,
+       "outer_vertices": 26,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-storm-duck-aqua-miami-dolphins-game-jersey_ss5_p-202260941+pv-3+u-igxa9hz1wxa0h2gn8fep+v-gfvmqghrknpxmroozlsx.png?_hv=2&w=2000",
+       "source_image_sha256": "7949d2e9cb4b5e16816f209bf0f03679cdcf40c0129e9d3dbe2e74b94c258bfc",
+       "source_crop": [
+        800,
+        570,
+        1025,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         208.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4260485651214128,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.030927835051546393,
+       "removed_vertical_lean": -0.04461277629963673,
+       "normalized_width_height_ratio": 0.402608,
+       "outer_vertices": 21,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        655,
+        565,
+        850,
+        1035
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         179.0,
+         454.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.3767123287671233,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.023809523809523808,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.449998,
+       "outer_vertices": 16,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-de%E2%80%99von-achane-aqua-miami-dolphins-game-jersey_ss5_p-205074736+pv-2+u-ak2y0islbx4bkpefp914+v-5a9pjtnflbn5a2huc9tx.png?_hv=2&w=2000",
+       "source_image_sha256": "b42bdad0180fca893a8a754d641c578c30d276ca3962eee7add9458d0840324b",
+       "source_crop": [
+        976,
+        498,
+        1110,
+        735
+       ],
+       "raw_ink_bounds": [
+        [
+         10.0,
+         11.0
+        ],
+        [
+         119.0,
+         226.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5069767441860465,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04945355191256831,
+       "removed_vertical_lean": -0.05982249391150848,
+       "normalized_width_height_ratio": 0.467649,
+       "outer_vertices": 23,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kenneth-grant-aqua-miami-dolphins-team-game-jersey_ss5_p-201359708+pv-3+u-qhe05vdg16onn0dglzse+v-gvbmx7bzrhtsyscvudwd.png?_hv=2&w=2000",
+       "source_image_sha256": "c16138881fc3da5573fa93880dad05a9aeeeafe26508cb2e3d9a9c9e3da9fbac",
+       "source_crop": [
+        620,
+        565,
+        810,
+        1040
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         175.0,
+         457.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.36199095022624433,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.07176470588235294,
+       "removed_vertical_lean": -0.032532564459130164,
+       "normalized_width_height_ratio": 0.41349800000000003,
+       "outer_vertices": 22,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    }
   },
   "away": {
@@ -319,10 +3298,1495 @@
     "colour": "jersey_aqua"
    },
    "digits": {
-    "glyph_donor": "14A4",
+    "glyph_donor": "14A0",
     "fill": "jersey_aqua",
     "outline": "orange",
-    "outline_frac": 0.035
+    "outline_frac": 0.035,
+    "glyph_shapes": {
+     "0": {
+      "width": 40.8861,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1215,
+         0.1739
+        ],
+        [
+         5.5224,
+         1.3827
+        ],
+        [
+         2.9946,
+         3.9233
+        ],
+        [
+         1.3768,
+         6.875
+        ],
+        [
+         0.2853,
+         11.3641
+        ],
+        [
+         0.0,
+         51.6338
+        ],
+        [
+         0.7781,
+         82.7446
+        ],
+        [
+         1.4276,
+         90.7278
+        ],
+        [
+         2.7136,
+         94.0164
+        ],
+        [
+         4.3952,
+         96.4006
+        ],
+        [
+         6.7176,
+         98.3161
+        ],
+        [
+         8.5375,
+         99.1381
+        ],
+        [
+         18.3449,
+         99.8857
+        ],
+        [
+         33.2239,
+         100.0
+        ],
+        [
+         36.0446,
+         98.783
+        ],
+        [
+         38.782,
+         96.0122
+        ],
+        [
+         40.376,
+         92.6165
+        ],
+        [
+         40.8861,
+         89.706
+        ],
+        [
+         40.3652,
+         59.253
+        ],
+        [
+         40.7489,
+         12.5293
+        ],
+        [
+         40.3728,
+         9.6517
+        ],
+        [
+         39.063,
+         5.9191
+        ],
+        [
+         36.2023,
+         2.2442
+        ],
+        [
+         33.4487,
+         0.5671
+        ],
+        [
+         30.7545,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         11.9882,
+         18.4916
+        ],
+        [
+         27.5319,
+         18.5812
+        ],
+        [
+         27.5319,
+         64.1785
+        ],
+        [
+         28.0755,
+         82.6197
+        ],
+        [
+         27.6562,
+         83.0801
+        ],
+        [
+         12.3102,
+         82.5384
+        ],
+        [
+         11.6186,
+         44.7516
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 22.1784,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.435,
+         0.1602
+        ],
+        [
+         5.1654,
+         1.6368
+        ],
+        [
+         3.0369,
+         3.9519
+        ],
+        [
+         1.3855,
+         7.1345
+        ],
+        [
+         0.2538,
+         12.2936
+        ],
+        [
+         0.0,
+         22.9677
+        ],
+        [
+         9.3241,
+         23.224
+        ],
+        [
+         8.7783,
+         72.3418
+        ],
+        [
+         9.3957,
+         99.8605
+        ],
+        [
+         21.3765,
+         100.0
+        ],
+        [
+         20.9274,
+         59.5896
+        ],
+        [
+         22.1784,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 38.8425,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1563,
+         0.6885
+        ],
+        [
+         6.1985,
+         1.7046
+        ],
+        [
+         3.8415,
+         3.8591
+        ],
+        [
+         1.1636,
+         9.1496
+        ],
+        [
+         0.4436,
+         13.424
+        ],
+        [
+         0.1069,
+         27.4648
+        ],
+        [
+         10.9732,
+         27.2101
+        ],
+        [
+         11.2976,
+         18.5108
+        ],
+        [
+         26.3705,
+         17.9853
+        ],
+        [
+         26.8656,
+         19.2885
+        ],
+        [
+         26.6196,
+         29.9856
+        ],
+        [
+         26.2291,
+         31.3459
+        ],
+        [
+         16.7626,
+         44.6394
+        ],
+        [
+         0.0,
+         69.974
+        ],
+        [
+         0.7074,
+         99.3018
+        ],
+        [
+         15.6025,
+         99.9004
+        ],
+        [
+         38.2468,
+         100.0
+        ],
+        [
+         38.0361,
+         83.3242
+        ],
+        [
+         12.0707,
+         83.4384
+        ],
+        [
+         10.9463,
+         83.0658
+        ],
+        [
+         11.1102,
+         75.9344
+        ],
+        [
+         38.2511,
+         37.9151
+        ],
+        [
+         38.8425,
+         13.3992
+        ],
+        [
+         29.2159,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 39.3562,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.0739,
+         0.5142
+        ],
+        [
+         5.9003,
+         1.5245
+        ],
+        [
+         3.5578,
+         3.6577
+        ],
+        [
+         0.9196,
+         8.9253
+        ],
+        [
+         0.2334,
+         13.1948
+        ],
+        [
+         0.0,
+         27.0167
+        ],
+        [
+         11.5533,
+         27.0502
+        ],
+        [
+         11.6278,
+         19.2507
+        ],
+        [
+         12.0394,
+         18.5599
+        ],
+        [
+         26.7052,
+         18.6452
+        ],
+        [
+         26.3126,
+         43.1667
+        ],
+        [
+         21.227,
+         43.6687
+        ],
+        [
+         16.3314,
+         43.4922
+        ],
+        [
+         16.0668,
+         51.9704
+        ],
+        [
+         16.309,
+         57.0798
+        ],
+        [
+         24.2961,
+         56.8637
+        ],
+        [
+         26.0897,
+         57.2107
+        ],
+        [
+         26.636,
+         82.7942
+        ],
+        [
+         24.4309,
+         83.138
+        ],
+        [
+         12.2023,
+         82.9189
+        ],
+        [
+         11.7811,
+         74.033
+        ],
+        [
+         0.4389,
+         73.7651
+        ],
+        [
+         0.8386,
+         86.884
+        ],
+        [
+         9.8796,
+         99.5282
+        ],
+        [
+         29.6731,
+         100.0
+        ],
+        [
+         39.2757,
+         86.9998
+        ],
+        [
+         39.0356,
+         58.504
+        ],
+        [
+         32.0094,
+         50.8719
+        ],
+        [
+         31.9567,
+         49.7611
+        ],
+        [
+         39.1216,
+         41.5721
+        ],
+        [
+         39.3562,
+         13.7184
+        ],
+        [
+         29.5979,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 46.7926,
+      "height": 100,
+      "contours": [
+       [
+        [
+         26.5308,
+         0.0
+        ],
+        [
+         11.9163,
+         35.2774
+        ],
+        [
+         0.8927,
+         63.5672
+        ],
+        [
+         0.0,
+         67.3654
+        ],
+        [
+         0.2123,
+         71.1291
+        ],
+        [
+         2.0465,
+         76.1727
+        ],
+        [
+         4.8734,
+         79.1892
+        ],
+        [
+         6.2369,
+         79.8118
+        ],
+        [
+         28.854,
+         80.4345
+        ],
+        [
+         29.7194,
+         99.7025
+        ],
+        [
+         41.47,
+         100.0
+        ],
+        [
+         41.0465,
+         80.7181
+        ],
+        [
+         46.7926,
+         80.5383
+        ],
+        [
+         46.5814,
+         65.0201
+        ],
+        [
+         41.0564,
+         65.193
+        ],
+        [
+         40.5894,
+         64.7641
+        ],
+        [
+         40.6999,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         28.3628,
+         28.5526
+        ],
+        [
+         28.8086,
+         32.5308
+        ],
+        [
+         28.8638,
+         64.9094
+        ],
+        [
+         24.6773,
+         65.2622
+        ],
+        [
+         11.8217,
+         64.9993
+        ],
+        [
+         11.5383,
+         63.8993
+        ],
+        [
+         27.0617,
+         29.0369
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 39.8793,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.7897,
+         0.9772
+        ],
+        [
+         0.0,
+         21.2126
+        ],
+        [
+         0.0,
+         44.0585
+        ],
+        [
+         9.2813,
+         57.6534
+        ],
+        [
+         26.2859,
+         57.2183
+        ],
+        [
+         26.7481,
+         57.632
+        ],
+        [
+         27.1077,
+         83.3381
+        ],
+        [
+         25.5861,
+         83.8802
+        ],
+        [
+         11.8771,
+         83.8802
+        ],
+        [
+         11.402,
+         69.4936
+        ],
+        [
+         0.1177,
+         69.3367
+        ],
+        [
+         0.4152,
+         84.622
+        ],
+        [
+         1.2198,
+         92.1113
+        ],
+        [
+         3.6594,
+         96.8331
+        ],
+        [
+         5.9707,
+         98.9016
+        ],
+        [
+         7.7768,
+         99.6719
+        ],
+        [
+         30.1251,
+         100.0
+        ],
+        [
+         39.676,
+         87.1826
+        ],
+        [
+         39.3186,
+         52.3823
+        ],
+        [
+         28.3168,
+         39.786
+        ],
+        [
+         12.6454,
+         40.3566
+        ],
+        [
+         11.3015,
+         40.0
+        ],
+        [
+         11.4192,
+         19.5863
+        ],
+        [
+         11.8172,
+         18.6733
+        ],
+        [
+         39.6332,
+         17.7603
+        ],
+        [
+         39.8793,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 40.2608,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.5819,
+         0.0
+        ],
+        [
+         5.327,
+         1.6564
+        ],
+        [
+         3.2099,
+         3.9442
+        ],
+        [
+         1.5756,
+         7.1059
+        ],
+        [
+         0.6359,
+         10.9128
+        ],
+        [
+         0.0,
+         51.3773
+        ],
+        [
+         0.6679,
+         86.2457
+        ],
+        [
+         10.348,
+         99.2793
+        ],
+        [
+         30.1308,
+         100.0
+        ],
+        [
+         39.7704,
+         87.2569
+        ],
+        [
+         39.7575,
+         52.146
+        ],
+        [
+         31.2845,
+         41.2972
+        ],
+        [
+         14.8654,
+         41.3612
+        ],
+        [
+         11.9647,
+         41.0066
+        ],
+        [
+         12.2647,
+         17.8861
+        ],
+        [
+         26.6793,
+         17.6619
+        ],
+        [
+         27.1424,
+         18.092
+        ],
+        [
+         27.0221,
+         30.318
+        ],
+        [
+         40.1169,
+         30.3569
+        ],
+        [
+         40.2608,
+         13.6857
+        ],
+        [
+         30.1078,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.2937,
+         58.3299
+        ],
+        [
+         26.738,
+         58.7714
+        ],
+        [
+         26.7289,
+         83.4386
+        ],
+        [
+         12.2747,
+         82.7751
+        ],
+        [
+         11.8703,
+         58.7875
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 44.9998,
+      "height": 100,
+      "contours": [
+       [
+        [
+         44.9998,
+         0.0
+        ],
+        [
+         10.6363,
+         0.0
+        ],
+        [
+         7.3636,
+         1.4359
+        ],
+        [
+         5.4545,
+         3.073
+        ],
+        [
+         2.7273,
+         7.0108
+        ],
+        [
+         1.3636,
+         11.6067
+        ],
+        [
+         0.2727,
+         26.7051
+        ],
+        [
+         13.0908,
+         27.1348
+        ],
+        [
+         14.1817,
+         17.7472
+        ],
+        [
+         28.6362,
+         18.1442
+        ],
+        [
+         28.9089,
+         19.7378
+        ],
+        [
+         16.6363,
+         50.5928
+        ],
+        [
+         0.0,
+         98.8959
+        ],
+        [
+         13.3636,
+         100.0
+        ],
+        [
+         28.0908,
+         57.2174
+        ],
+        [
+         43.3634,
+         18.3074
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 46.7649,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.7964,
+         0.4529
+        ],
+        [
+         5.1453,
+         2.0431
+        ],
+        [
+         1.6342,
+         5.9746
+        ],
+        [
+         0.0187,
+         10.2819
+        ],
+        [
+         0.0,
+         41.2815
+        ],
+        [
+         6.9849,
+         48.4499
+        ],
+        [
+         7.6198,
+         51.2364
+        ],
+        [
+         0.0747,
+         58.1861
+        ],
+        [
+         0.579,
+         90.0992
+        ],
+        [
+         2.7547,
+         95.1577
+        ],
+        [
+         9.1046,
+         99.5395
+        ],
+        [
+         37.6977,
+         100.0
+        ],
+        [
+         40.4431,
+         98.9245
+        ],
+        [
+         43.5433,
+         95.9526
+        ],
+        [
+         45.9525,
+         89.2577
+        ],
+        [
+         45.8871,
+         56.8532
+        ],
+        [
+         38.9583,
+         50.6214
+        ],
+        [
+         38.8182,
+         48.2799
+        ],
+        [
+         46.7182,
+         39.4339
+        ],
+        [
+         46.7649,
+         8.9026
+        ],
+        [
+         44.1223,
+         3.8672
+        ],
+        [
+         40.6859,
+         1.2196
+        ],
+        [
+         36.8666,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         14.5207,
+         56.9999
+        ],
+        [
+         28.0608,
+         56.3283
+        ],
+        [
+         31.3852,
+         57.1028
+        ],
+        [
+         31.8988,
+         73.516
+        ],
+        [
+         31.0863,
+         83.4195
+        ],
+        [
+         14.2218,
+         83.3167
+        ],
+        [
+         13.7549,
+         59.856
+        ]
+       ],
+       [
+        [
+         14.53,
+         18.0163
+        ],
+        [
+         32.3283,
+         18.0728
+        ],
+        [
+         32.3283,
+         41.5567
+        ],
+        [
+         31.5066,
+         43.4762
+        ],
+        [
+         16.0708,
+         43.7721
+        ],
+        [
+         14.1471,
+         42.9282
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 41.3498,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.4922,
+         0.9286
+        ],
+        [
+         6.0378,
+         2.4989
+        ],
+        [
+         3.689,
+         4.6837
+        ],
+        [
+         1.9061,
+         7.5154
+        ],
+        [
+         0.6979,
+         11.2207
+        ],
+        [
+         0.0,
+         28.0627
+        ],
+        [
+         0.0,
+         48.9492
+        ],
+        [
+         6.9058,
+         59.6574
+        ],
+        [
+         26.1219,
+         60.0888
+        ],
+        [
+         26.9488,
+         60.4931
+        ],
+        [
+         27.289,
+         83.1753
+        ],
+        [
+         25.6791,
+         83.4993
+        ],
+        [
+         12.6768,
+         82.9205
+        ],
+        [
+         11.9671,
+         71.6119
+        ],
+        [
+         0.3226,
+         71.1784
+        ],
+        [
+         0.9208,
+         86.5802
+        ],
+        [
+         10.3338,
+         99.1806
+        ],
+        [
+         30.6466,
+         100.0
+        ],
+        [
+         40.4496,
+         87.831
+        ],
+        [
+         40.0772,
+         50.394
+        ],
+        [
+         41.3498,
+         13.5389
+        ],
+        [
+         32.4412,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.6064,
+         18.4491
+        ],
+        [
+         25.8433,
+         18.1056
+        ],
+        [
+         27.7493,
+         18.4448
+        ],
+        [
+         26.8198,
+         43.2468
+        ],
+        [
+         12.7648,
+         43.4125
+        ],
+        [
+         11.9378,
+         43.0083
+        ],
+        [
+         12.0082,
+         23.9338
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Custom_back",
+      "raw_left_ratio": 0.36425339366515835,
+      "raw_right_ratio": 0.434878587196468,
+      "leading_correction": 1.1938902828623532
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aqua-miami-dolphins-custom-game-jersey_ss5_p-3887276+pv-3+u-xcf1nx770rndnw02yvj1+v-syoei1qzb2xx3igtymjs.png?_hv=2&w=2000",
+       "source_image_sha256": "b72f8f1c2efc4cbf0b6a0d2cb241851ac184215c906418e3c0701a9590b8a45c",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.434878587196468,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03709394205443371,
+       "removed_vertical_lean": -0.05355194643523084,
+       "normalized_width_height_ratio": 0.408861,
+       "outer_vertices": 25,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        848,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         17.0
+        ],
+        [
+         120.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.23008849557522124,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04390681003584229,
+       "removed_vertical_lean": -0.0385523230663731,
+       "normalized_width_height_ratio": 0.221784,
+       "outer_vertices": 12,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-bob-griese-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974193+pv-3+u-kluhb8xgdajfmgxef75h+v-7jmrl35culxp4v8es61b.png?_hv=2&w=2000",
+       "source_image_sha256": "13eadbd6b82404ec667728569c9da9049f8eb91672e3d73ce285d7b059fc7977",
+       "source_crop": [
+        770,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         15.0
+        ],
+        [
+         201.0,
+         470.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41098901098901097,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.064228255404726,
+       "removed_vertical_lean": -0.03925705460446306,
+       "normalized_width_height_ratio": 0.388425,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-dan-marino-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974194+pv-3+u-uoj1uxzukpwoyvwrjubh+v-8rwvvhsaamrsegx2xibh.png?_hv=2&w=2000",
+       "source_image_sha256": "70b713040b7055ab14dffc0f50a8974584010d4a22c50ad2f604fb012a543e38",
+       "source_crop": [
+        770,
+        570,
+        990,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         204.0,
+         467.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41814159292035397,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.05478976022240241,
+       "removed_vertical_lean": -0.047403890445441785,
+       "normalized_width_height_ratio": 0.393562,
+       "outer_vertices": 32,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-chop-robinson-aqua-miami-dolphins-game-jersey_ss5_p-202260942+pv-3+u-otokj9y5jy1ycccwytoi+v-rg9ltgl89cdhpqf2plrv.png?_hv=2&w=2000",
+       "source_image_sha256": "c192eb3986c9149072ec068aea61d40edc3de8e3a987bfb6d4596f2410e4ebfa",
+       "source_crop": [
+        800,
+        570,
+        1045,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         17.0,
+         19.0
+        ],
+        [
+         228.0,
+         472.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.46578366445916114,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03125,
+       "removed_vertical_lean": -0.05640715205932598,
+       "normalized_width_height_ratio": 0.467926,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aaron-brewer-aqua-miami-dolphins-game-jersey_ss5_p-202260947+pv-3+u-ndd2peqkqz9etuv5ru0m+v-5z1u7nm9wle9qan92ksk.png?_hv=2&w=2000",
+       "source_image_sha256": "919c5c6858b7183d6fa93b21d7f6d5c6283b9ae690b8a399fca22b9ef93dd1f6",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         14.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.432967032967033,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.06451612903225806,
+       "removed_vertical_lean": -0.048392132375897595,
+       "normalized_width_height_ratio": 0.398793,
+       "outer_vertices": 26,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-storm-duck-aqua-miami-dolphins-game-jersey_ss5_p-202260941+pv-3+u-igxa9hz1wxa0h2gn8fep+v-gfvmqghrknpxmroozlsx.png?_hv=2&w=2000",
+       "source_image_sha256": "7949d2e9cb4b5e16816f209bf0f03679cdcf40c0129e9d3dbe2e74b94c258bfc",
+       "source_crop": [
+        800,
+        570,
+        1025,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         208.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4260485651214128,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.030927835051546393,
+       "removed_vertical_lean": -0.04461277629963673,
+       "normalized_width_height_ratio": 0.402608,
+       "outer_vertices": 21,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        655,
+        565,
+        850,
+        1035
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         179.0,
+         454.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.3767123287671233,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.023809523809523808,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.449998,
+       "outer_vertices": 16,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-de%E2%80%99von-achane-aqua-miami-dolphins-game-jersey_ss5_p-205074736+pv-2+u-ak2y0islbx4bkpefp914+v-5a9pjtnflbn5a2huc9tx.png?_hv=2&w=2000",
+       "source_image_sha256": "b42bdad0180fca893a8a754d641c578c30d276ca3962eee7add9458d0840324b",
+       "source_crop": [
+        976,
+        498,
+        1110,
+        735
+       ],
+       "raw_ink_bounds": [
+        [
+         10.0,
+         11.0
+        ],
+        [
+         119.0,
+         226.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5069767441860465,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04945355191256831,
+       "removed_vertical_lean": -0.05982249391150848,
+       "normalized_width_height_ratio": 0.467649,
+       "outer_vertices": 23,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kenneth-grant-aqua-miami-dolphins-team-game-jersey_ss5_p-201359708+pv-3+u-qhe05vdg16onn0dglzse+v-gvbmx7bzrhtsyscvudwd.png?_hv=2&w=2000",
+       "source_image_sha256": "c16138881fc3da5573fa93880dad05a9aeeeafe26508cb2e3d9a9c9e3da9fbac",
+       "source_crop": [
+        620,
+        565,
+        810,
+        1040
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         175.0,
+         457.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.36199095022624433,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.07176470588235294,
+       "removed_vertical_lean": -0.032532564459130164,
+       "normalized_width_height_ratio": 0.41349800000000003,
+       "outer_vertices": 22,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    },
    "helmet_digits": {
     "glyph_donor": "14A4",
@@ -406,6 +4870,1497 @@
       18,
       14
      ]
+    }
+   },
+   "arm_digits": {
+    "glyph_donor": "14A0",
+    "fill": "jersey_aqua",
+    "outline": "orange",
+    "outline_frac": 0.035,
+    "glyph_shapes": {
+     "0": {
+      "width": 40.8861,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1215,
+         0.1739
+        ],
+        [
+         5.5224,
+         1.3827
+        ],
+        [
+         2.9946,
+         3.9233
+        ],
+        [
+         1.3768,
+         6.875
+        ],
+        [
+         0.2853,
+         11.3641
+        ],
+        [
+         0.0,
+         51.6338
+        ],
+        [
+         0.7781,
+         82.7446
+        ],
+        [
+         1.4276,
+         90.7278
+        ],
+        [
+         2.7136,
+         94.0164
+        ],
+        [
+         4.3952,
+         96.4006
+        ],
+        [
+         6.7176,
+         98.3161
+        ],
+        [
+         8.5375,
+         99.1381
+        ],
+        [
+         18.3449,
+         99.8857
+        ],
+        [
+         33.2239,
+         100.0
+        ],
+        [
+         36.0446,
+         98.783
+        ],
+        [
+         38.782,
+         96.0122
+        ],
+        [
+         40.376,
+         92.6165
+        ],
+        [
+         40.8861,
+         89.706
+        ],
+        [
+         40.3652,
+         59.253
+        ],
+        [
+         40.7489,
+         12.5293
+        ],
+        [
+         40.3728,
+         9.6517
+        ],
+        [
+         39.063,
+         5.9191
+        ],
+        [
+         36.2023,
+         2.2442
+        ],
+        [
+         33.4487,
+         0.5671
+        ],
+        [
+         30.7545,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         11.9882,
+         18.4916
+        ],
+        [
+         27.5319,
+         18.5812
+        ],
+        [
+         27.5319,
+         64.1785
+        ],
+        [
+         28.0755,
+         82.6197
+        ],
+        [
+         27.6562,
+         83.0801
+        ],
+        [
+         12.3102,
+         82.5384
+        ],
+        [
+         11.6186,
+         44.7516
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 22.1784,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.435,
+         0.1602
+        ],
+        [
+         5.1654,
+         1.6368
+        ],
+        [
+         3.0369,
+         3.9519
+        ],
+        [
+         1.3855,
+         7.1345
+        ],
+        [
+         0.2538,
+         12.2936
+        ],
+        [
+         0.0,
+         22.9677
+        ],
+        [
+         9.3241,
+         23.224
+        ],
+        [
+         8.7783,
+         72.3418
+        ],
+        [
+         9.3957,
+         99.8605
+        ],
+        [
+         21.3765,
+         100.0
+        ],
+        [
+         20.9274,
+         59.5896
+        ],
+        [
+         22.1784,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 38.8425,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.1563,
+         0.6885
+        ],
+        [
+         6.1985,
+         1.7046
+        ],
+        [
+         3.8415,
+         3.8591
+        ],
+        [
+         1.1636,
+         9.1496
+        ],
+        [
+         0.4436,
+         13.424
+        ],
+        [
+         0.1069,
+         27.4648
+        ],
+        [
+         10.9732,
+         27.2101
+        ],
+        [
+         11.2976,
+         18.5108
+        ],
+        [
+         26.3705,
+         17.9853
+        ],
+        [
+         26.8656,
+         19.2885
+        ],
+        [
+         26.6196,
+         29.9856
+        ],
+        [
+         26.2291,
+         31.3459
+        ],
+        [
+         16.7626,
+         44.6394
+        ],
+        [
+         0.0,
+         69.974
+        ],
+        [
+         0.7074,
+         99.3018
+        ],
+        [
+         15.6025,
+         99.9004
+        ],
+        [
+         38.2468,
+         100.0
+        ],
+        [
+         38.0361,
+         83.3242
+        ],
+        [
+         12.0707,
+         83.4384
+        ],
+        [
+         10.9463,
+         83.0658
+        ],
+        [
+         11.1102,
+         75.9344
+        ],
+        [
+         38.2511,
+         37.9151
+        ],
+        [
+         38.8425,
+         13.3992
+        ],
+        [
+         29.2159,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 39.3562,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.0739,
+         0.5142
+        ],
+        [
+         5.9003,
+         1.5245
+        ],
+        [
+         3.5578,
+         3.6577
+        ],
+        [
+         0.9196,
+         8.9253
+        ],
+        [
+         0.2334,
+         13.1948
+        ],
+        [
+         0.0,
+         27.0167
+        ],
+        [
+         11.5533,
+         27.0502
+        ],
+        [
+         11.6278,
+         19.2507
+        ],
+        [
+         12.0394,
+         18.5599
+        ],
+        [
+         26.7052,
+         18.6452
+        ],
+        [
+         26.3126,
+         43.1667
+        ],
+        [
+         21.227,
+         43.6687
+        ],
+        [
+         16.3314,
+         43.4922
+        ],
+        [
+         16.0668,
+         51.9704
+        ],
+        [
+         16.309,
+         57.0798
+        ],
+        [
+         24.2961,
+         56.8637
+        ],
+        [
+         26.0897,
+         57.2107
+        ],
+        [
+         26.636,
+         82.7942
+        ],
+        [
+         24.4309,
+         83.138
+        ],
+        [
+         12.2023,
+         82.9189
+        ],
+        [
+         11.7811,
+         74.033
+        ],
+        [
+         0.4389,
+         73.7651
+        ],
+        [
+         0.8386,
+         86.884
+        ],
+        [
+         9.8796,
+         99.5282
+        ],
+        [
+         29.6731,
+         100.0
+        ],
+        [
+         39.2757,
+         86.9998
+        ],
+        [
+         39.0356,
+         58.504
+        ],
+        [
+         32.0094,
+         50.8719
+        ],
+        [
+         31.9567,
+         49.7611
+        ],
+        [
+         39.1216,
+         41.5721
+        ],
+        [
+         39.3562,
+         13.7184
+        ],
+        [
+         29.5979,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 46.7926,
+      "height": 100,
+      "contours": [
+       [
+        [
+         26.5308,
+         0.0
+        ],
+        [
+         11.9163,
+         35.2774
+        ],
+        [
+         0.8927,
+         63.5672
+        ],
+        [
+         0.0,
+         67.3654
+        ],
+        [
+         0.2123,
+         71.1291
+        ],
+        [
+         2.0465,
+         76.1727
+        ],
+        [
+         4.8734,
+         79.1892
+        ],
+        [
+         6.2369,
+         79.8118
+        ],
+        [
+         28.854,
+         80.4345
+        ],
+        [
+         29.7194,
+         99.7025
+        ],
+        [
+         41.47,
+         100.0
+        ],
+        [
+         41.0465,
+         80.7181
+        ],
+        [
+         46.7926,
+         80.5383
+        ],
+        [
+         46.5814,
+         65.0201
+        ],
+        [
+         41.0564,
+         65.193
+        ],
+        [
+         40.5894,
+         64.7641
+        ],
+        [
+         40.6999,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         28.3628,
+         28.5526
+        ],
+        [
+         28.8086,
+         32.5308
+        ],
+        [
+         28.8638,
+         64.9094
+        ],
+        [
+         24.6773,
+         65.2622
+        ],
+        [
+         11.8217,
+         64.9993
+        ],
+        [
+         11.5383,
+         63.8993
+        ],
+        [
+         27.0617,
+         29.0369
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 39.8793,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.7897,
+         0.9772
+        ],
+        [
+         0.0,
+         21.2126
+        ],
+        [
+         0.0,
+         44.0585
+        ],
+        [
+         9.2813,
+         57.6534
+        ],
+        [
+         26.2859,
+         57.2183
+        ],
+        [
+         26.7481,
+         57.632
+        ],
+        [
+         27.1077,
+         83.3381
+        ],
+        [
+         25.5861,
+         83.8802
+        ],
+        [
+         11.8771,
+         83.8802
+        ],
+        [
+         11.402,
+         69.4936
+        ],
+        [
+         0.1177,
+         69.3367
+        ],
+        [
+         0.4152,
+         84.622
+        ],
+        [
+         1.2198,
+         92.1113
+        ],
+        [
+         3.6594,
+         96.8331
+        ],
+        [
+         5.9707,
+         98.9016
+        ],
+        [
+         7.7768,
+         99.6719
+        ],
+        [
+         30.1251,
+         100.0
+        ],
+        [
+         39.676,
+         87.1826
+        ],
+        [
+         39.3186,
+         52.3823
+        ],
+        [
+         28.3168,
+         39.786
+        ],
+        [
+         12.6454,
+         40.3566
+        ],
+        [
+         11.3015,
+         40.0
+        ],
+        [
+         11.4192,
+         19.5863
+        ],
+        [
+         11.8172,
+         18.6733
+        ],
+        [
+         39.6332,
+         17.7603
+        ],
+        [
+         39.8793,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 40.2608,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.5819,
+         0.0
+        ],
+        [
+         5.327,
+         1.6564
+        ],
+        [
+         3.2099,
+         3.9442
+        ],
+        [
+         1.5756,
+         7.1059
+        ],
+        [
+         0.6359,
+         10.9128
+        ],
+        [
+         0.0,
+         51.3773
+        ],
+        [
+         0.6679,
+         86.2457
+        ],
+        [
+         10.348,
+         99.2793
+        ],
+        [
+         30.1308,
+         100.0
+        ],
+        [
+         39.7704,
+         87.2569
+        ],
+        [
+         39.7575,
+         52.146
+        ],
+        [
+         31.2845,
+         41.2972
+        ],
+        [
+         14.8654,
+         41.3612
+        ],
+        [
+         11.9647,
+         41.0066
+        ],
+        [
+         12.2647,
+         17.8861
+        ],
+        [
+         26.6793,
+         17.6619
+        ],
+        [
+         27.1424,
+         18.092
+        ],
+        [
+         27.0221,
+         30.318
+        ],
+        [
+         40.1169,
+         30.3569
+        ],
+        [
+         40.2608,
+         13.6857
+        ],
+        [
+         30.1078,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.2937,
+         58.3299
+        ],
+        [
+         26.738,
+         58.7714
+        ],
+        [
+         26.7289,
+         83.4386
+        ],
+        [
+         12.2747,
+         82.7751
+        ],
+        [
+         11.8703,
+         58.7875
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 44.9998,
+      "height": 100,
+      "contours": [
+       [
+        [
+         44.9998,
+         0.0
+        ],
+        [
+         10.6363,
+         0.0
+        ],
+        [
+         7.3636,
+         1.4359
+        ],
+        [
+         5.4545,
+         3.073
+        ],
+        [
+         2.7273,
+         7.0108
+        ],
+        [
+         1.3636,
+         11.6067
+        ],
+        [
+         0.2727,
+         26.7051
+        ],
+        [
+         13.0908,
+         27.1348
+        ],
+        [
+         14.1817,
+         17.7472
+        ],
+        [
+         28.6362,
+         18.1442
+        ],
+        [
+         28.9089,
+         19.7378
+        ],
+        [
+         16.6363,
+         50.5928
+        ],
+        [
+         0.0,
+         98.8959
+        ],
+        [
+         13.3636,
+         100.0
+        ],
+        [
+         28.0908,
+         57.2174
+        ],
+        [
+         43.3634,
+         18.3074
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 46.7649,
+      "height": 100,
+      "contours": [
+       [
+        [
+         8.7964,
+         0.4529
+        ],
+        [
+         5.1453,
+         2.0431
+        ],
+        [
+         1.6342,
+         5.9746
+        ],
+        [
+         0.0187,
+         10.2819
+        ],
+        [
+         0.0,
+         41.2815
+        ],
+        [
+         6.9849,
+         48.4499
+        ],
+        [
+         7.6198,
+         51.2364
+        ],
+        [
+         0.0747,
+         58.1861
+        ],
+        [
+         0.579,
+         90.0992
+        ],
+        [
+         2.7547,
+         95.1577
+        ],
+        [
+         9.1046,
+         99.5395
+        ],
+        [
+         37.6977,
+         100.0
+        ],
+        [
+         40.4431,
+         98.9245
+        ],
+        [
+         43.5433,
+         95.9526
+        ],
+        [
+         45.9525,
+         89.2577
+        ],
+        [
+         45.8871,
+         56.8532
+        ],
+        [
+         38.9583,
+         50.6214
+        ],
+        [
+         38.8182,
+         48.2799
+        ],
+        [
+         46.7182,
+         39.4339
+        ],
+        [
+         46.7649,
+         8.9026
+        ],
+        [
+         44.1223,
+         3.8672
+        ],
+        [
+         40.6859,
+         1.2196
+        ],
+        [
+         36.8666,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         14.5207,
+         56.9999
+        ],
+        [
+         28.0608,
+         56.3283
+        ],
+        [
+         31.3852,
+         57.1028
+        ],
+        [
+         31.8988,
+         73.516
+        ],
+        [
+         31.0863,
+         83.4195
+        ],
+        [
+         14.2218,
+         83.3167
+        ],
+        [
+         13.7549,
+         59.856
+        ]
+       ],
+       [
+        [
+         14.53,
+         18.0163
+        ],
+        [
+         32.3283,
+         18.0728
+        ],
+        [
+         32.3283,
+         41.5567
+        ],
+        [
+         31.5066,
+         43.4762
+        ],
+        [
+         16.0708,
+         43.7721
+        ],
+        [
+         14.1471,
+         42.9282
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 41.3498,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.4922,
+         0.9286
+        ],
+        [
+         6.0378,
+         2.4989
+        ],
+        [
+         3.689,
+         4.6837
+        ],
+        [
+         1.9061,
+         7.5154
+        ],
+        [
+         0.6979,
+         11.2207
+        ],
+        [
+         0.0,
+         28.0627
+        ],
+        [
+         0.0,
+         48.9492
+        ],
+        [
+         6.9058,
+         59.6574
+        ],
+        [
+         26.1219,
+         60.0888
+        ],
+        [
+         26.9488,
+         60.4931
+        ],
+        [
+         27.289,
+         83.1753
+        ],
+        [
+         25.6791,
+         83.4993
+        ],
+        [
+         12.6768,
+         82.9205
+        ],
+        [
+         11.9671,
+         71.6119
+        ],
+        [
+         0.3226,
+         71.1784
+        ],
+        [
+         0.9208,
+         86.5802
+        ],
+        [
+         10.3338,
+         99.1806
+        ],
+        [
+         30.6466,
+         100.0
+        ],
+        [
+         40.4496,
+         87.831
+        ],
+        [
+         40.0772,
+         50.394
+        ],
+        [
+         41.3498,
+         13.5389
+        ],
+        [
+         32.4412,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         12.6064,
+         18.4491
+        ],
+        [
+         25.8433,
+         18.1056
+        ],
+        [
+         27.7493,
+         18.4448
+        ],
+        [
+         26.8198,
+         43.2468
+        ],
+        [
+         12.7648,
+         43.4125
+        ],
+        [
+         11.9378,
+         43.0083
+        ],
+        [
+         12.0082,
+         23.9338
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Custom_back",
+      "raw_left_ratio": 0.36425339366515835,
+      "raw_right_ratio": 0.434878587196468,
+      "leading_correction": 1.1938902828623532
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aqua-miami-dolphins-custom-game-jersey_ss5_p-3887276+pv-3+u-xcf1nx770rndnw02yvj1+v-syoei1qzb2xx3igtymjs.png?_hv=2&w=2000",
+       "source_image_sha256": "b72f8f1c2efc4cbf0b6a0d2cb241851ac184215c906418e3c0701a9590b8a45c",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.434878587196468,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03709394205443371,
+       "removed_vertical_lean": -0.05355194643523084,
+       "normalized_width_height_ratio": 0.408861,
+       "outer_vertices": 25,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        848,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         17.0
+        ],
+        [
+         120.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.23008849557522124,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04390681003584229,
+       "removed_vertical_lean": -0.0385523230663731,
+       "normalized_width_height_ratio": 0.221784,
+       "outer_vertices": 12,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-bob-griese-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974193+pv-3+u-kluhb8xgdajfmgxef75h+v-7jmrl35culxp4v8es61b.png?_hv=2&w=2000",
+       "source_image_sha256": "13eadbd6b82404ec667728569c9da9049f8eb91672e3d73ce285d7b059fc7977",
+       "source_crop": [
+        770,
+        570,
+        985,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         15.0
+        ],
+        [
+         201.0,
+         470.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41098901098901097,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.064228255404726,
+       "removed_vertical_lean": -0.03925705460446306,
+       "normalized_width_height_ratio": 0.388425,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-dan-marino-aqua-miami-dolphins-game-retired-player-jersey_ss5_p-3974194+pv-3+u-uoj1uxzukpwoyvwrjubh+v-8rwvvhsaamrsegx2xibh.png?_hv=2&w=2000",
+       "source_image_sha256": "70b713040b7055ab14dffc0f50a8974584010d4a22c50ad2f604fb012a543e38",
+       "source_crop": [
+        770,
+        570,
+        990,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         204.0,
+         467.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.41814159292035397,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.05478976022240241,
+       "removed_vertical_lean": -0.047403890445441785,
+       "normalized_width_height_ratio": 0.393562,
+       "outer_vertices": 32,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-chop-robinson-aqua-miami-dolphins-game-jersey_ss5_p-202260942+pv-3+u-otokj9y5jy1ycccwytoi+v-rg9ltgl89cdhpqf2plrv.png?_hv=2&w=2000",
+       "source_image_sha256": "c192eb3986c9149072ec068aea61d40edc3de8e3a987bfb6d4596f2410e4ebfa",
+       "source_crop": [
+        800,
+        570,
+        1045,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         17.0,
+         19.0
+        ],
+        [
+         228.0,
+         472.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.46578366445916114,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03125,
+       "removed_vertical_lean": -0.05640715205932598,
+       "normalized_width_height_ratio": 0.467926,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-aaron-brewer-aqua-miami-dolphins-game-jersey_ss5_p-202260947+pv-3+u-ndd2peqkqz9etuv5ru0m+v-5z1u7nm9wle9qan92ksk.png?_hv=2&w=2000",
+       "source_image_sha256": "919c5c6858b7183d6fa93b21d7f6d5c6283b9ae690b8a399fca22b9ef93dd1f6",
+       "source_crop": [
+        800,
+        570,
+        1030,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         14.0
+        ],
+        [
+         212.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.432967032967033,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.06451612903225806,
+       "removed_vertical_lean": -0.048392132375897595,
+       "normalized_width_height_ratio": 0.398793,
+       "outer_vertices": 26,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-storm-duck-aqua-miami-dolphins-game-jersey_ss5_p-202260941+pv-3+u-igxa9hz1wxa0h2gn8fep+v-gfvmqghrknpxmroozlsx.png?_hv=2&w=2000",
+       "source_image_sha256": "7949d2e9cb4b5e16816f209bf0f03679cdcf40c0129e9d3dbe2e74b94c258bfc",
+       "source_crop": [
+        800,
+        570,
+        1025,
+        1055
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         208.0,
+         469.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4260485651214128,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.030927835051546393,
+       "removed_vertical_lean": -0.04461277629963673,
+       "normalized_width_height_ratio": 0.402608,
+       "outer_vertices": 21,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kion-smith-aqua-miami-dolphins-game-jersey_ss5_p-202260950+pv-3+u-jm1rakb89erhoffi0v3e+v-fyit6fmbvvwx3tsoplik.png?_hv=2&w=2000",
+       "source_image_sha256": "174ac4e8b6638ea40ba055f62491372c61f30176376dbe6bffbd5cf3be5c2096",
+       "source_crop": [
+        655,
+        565,
+        850,
+        1035
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         179.0,
+         454.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.3767123287671233,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.023809523809523808,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.449998,
+       "outer_vertices": 16,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-de%E2%80%99von-achane-aqua-miami-dolphins-game-jersey_ss5_p-205074736+pv-2+u-ak2y0islbx4bkpefp914+v-5a9pjtnflbn5a2huc9tx.png?_hv=2&w=2000",
+       "source_image_sha256": "b42bdad0180fca893a8a754d641c578c30d276ca3962eee7add9458d0840324b",
+       "source_crop": [
+        976,
+        498,
+        1110,
+        735
+       ],
+       "raw_ink_bounds": [
+        [
+         10.0,
+         11.0
+        ],
+        [
+         119.0,
+         226.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5069767441860465,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.04945355191256831,
+       "removed_vertical_lean": -0.05982249391150848,
+       "normalized_width_height_ratio": 0.467649,
+       "outer_vertices": 23,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/miami-dolphins/mens-nike-kenneth-grant-aqua-miami-dolphins-team-game-jersey_ss5_p-201359708+pv-3+u-qhe05vdg16onn0dglzse+v-gvbmx7bzrhtsyscvudwd.png?_hv=2&w=2000",
+       "source_image_sha256": "c16138881fc3da5573fa93880dad05a9aeeeafe26508cb2e3d9a9c9e3da9fbac",
+       "source_crop": [
+        620,
+        565,
+        810,
+        1040
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         175.0,
+         457.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.36199095022624433,
+       "leading_digit_width_calibration": 1.1938902828623532,
+       "removed_horizontal_tilt": 0.07176470588235294,
+       "removed_vertical_lean": -0.032532564459130164,
+       "normalized_width_height_ratio": 0.41349800000000003,
+       "outer_vertices": 22,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
     }
    }
   }

@@ -26,7 +26,7 @@ class InstructionTests(unittest.TestCase):
     def setUpClass(cls):
         cls.retail=RETAIL.read_bytes()
         if hashlib.sha256(cls.retail).hexdigest()!=RETAIL_SHA256: raise unittest.SkipTest('USA retail hash mismatch')
-        cls.payload=patch.apply(cls.retail,abilities_off_week=7)[0]
+        cls.payload=patch.apply(cls.retail,abilities_off_week=7,lock_right_stick=True,lock_special_moves=True)[0]
 
     def test_speed_99_127_bit_on_off_through_both_native_clamps(self):
         m=Machine(self.payload)

@@ -1,0 +1,488 @@
+{
+  "schema": "b765.d2b.checkdown-manifest.v1",
+  "books": {
+    "307": {
+      "book": "ARZ",
+      "before_sha256": "3b377bae9d56358d8f58e2837071c222b67f20ac9013bf4b27b8dbf553609f7a",
+      "after_sha256": "45ddb7c5057116e46a5196a9c446f3c34ce06d3a1ca7b597ecd24d498e003173",
+      "assignments": 28,
+      "appended_chains": 1
+    },
+    "308": {
+      "book": "ATL",
+      "before_sha256": "378242f03487e041853f1bf2e6e8b06ff8eea5f87f34ed3522f4a7dec6f4bee8",
+      "after_sha256": "15362413a563a01e1189bd230e5e8685add6f673d76134197c2c659041de5a3e",
+      "assignments": 28,
+      "appended_chains": 2
+    },
+    "309": {
+      "book": "BAL",
+      "before_sha256": "769d1bb67bae2000bd82839880ba531f406de0dfa47d2c40515bcc84fe349b98",
+      "after_sha256": "db8ba1dade1831a40347da280114d3e3c965f1bee354f2f0b53ea8838ca7e7d2",
+      "assignments": 15,
+      "appended_chains": 1
+    },
+    "310": {
+      "book": "BUF",
+      "before_sha256": "4763be71d4149f58242467fafd5456e63c41f36e8e56112760fff304576aba1b",
+      "after_sha256": "b406361c0ed419770bff391785bd207395996ffbc4b618736601709e76f2a0d9",
+      "assignments": 31,
+      "appended_chains": 2
+    },
+    "311": {
+      "book": "CAR",
+      "before_sha256": "5d4ff7bacb918edfd45681da9fcffa4366db860cfb50b9f6c30bba8e7865fca1",
+      "after_sha256": "93b277a2dbbe4402858b09f372c684c65e50f2cef6c44a5a4e973be51e315c67",
+      "assignments": 23,
+      "appended_chains": 2
+    },
+    "312": {
+      "book": "CHI",
+      "before_sha256": "ceaee8f55cf74e8791ce2b079f134888ab691adbb642bbc2ffabda85b7c5b531",
+      "after_sha256": "cfc873ae19635c19daa1c135cd491ca1dbdfa415088158d7cbcf0486d52666be",
+      "assignments": 23,
+      "appended_chains": 1
+    },
+    "313": {
+      "book": "CIN",
+      "before_sha256": "3094a6ce83ddf7cef20478732213b0650b308b794a403ff4c5123bbc1df4d61f",
+      "after_sha256": "a5def4b187b6e68e833fa5640b7848b9055aa81e64e84641e3ce96f57213e600",
+      "assignments": 20,
+      "appended_chains": 2
+    },
+    "314": {
+      "book": "CLE",
+      "before_sha256": "9f4cd0198e369fa7dfc24ee333712b1f5135b83c2d7f7d9848f70d312cefb804",
+      "after_sha256": "9337e6d4647637b77e4ec722238ca180d1b15dc9ed42aa5708cc388b9984bb66",
+      "assignments": 30,
+      "appended_chains": 1
+    },
+    "315": {
+      "book": "DAL",
+      "before_sha256": "ea63be6700605e0655ccde3d89922f1516de2dc876f555d70557cf3c589eca69",
+      "after_sha256": "317a2d34254cc9dcb61a8955456a9a845249bbf6167ebcba2790954cc49a6751",
+      "assignments": 23,
+      "appended_chains": 2
+    },
+    "316": {
+      "book": "DEN",
+      "before_sha256": "51c8d11eee2bce35986dc844c65e3eb597e659f491426705facdc349953ad298",
+      "after_sha256": "d22dd185db1279fb9643a67d32ce8569bd89db38fdeb0d322d19bdfac17c59d3",
+      "assignments": 27,
+      "appended_chains": 1
+    },
+    "317": {
+      "book": "DET",
+      "before_sha256": "94b16afcd8e2fb0ed28ac2e5836ab63d85b6598349efcff75ef1954ad1c4920f",
+      "after_sha256": "9994380abeaadebf3a63abe7f56f006464a462188198b6b03df25eaafd14d360",
+      "assignments": 16,
+      "appended_chains": 2
+    },
+    "318": {
+      "book": "Editor",
+      "before_sha256": "86508469f372528e4487c99067143a0bb5eaa26caa677dca836fb64289be1e06",
+      "after_sha256": "86508469f372528e4487c99067143a0bb5eaa26caa677dca836fb64289be1e06",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "319": {
+      "book": "GB",
+      "before_sha256": "9991ce8693678c4753f6a5bff0ea03c5c21af2e145bacafe18fea9c35e2ad544",
+      "after_sha256": "2fd8d4eca42c034fc17c72f6b3a0f7703f3a7a37c19567f95aaa959236731b5d",
+      "assignments": 25,
+      "appended_chains": 2
+    },
+    "320": {
+      "book": "GEN",
+      "before_sha256": "887350dd5fffccd1ee12f50a99740ca8551b02b75610095b7ffaef1268ce2ca5",
+      "after_sha256": "887350dd5fffccd1ee12f50a99740ca8551b02b75610095b7ffaef1268ce2ca5",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "321": {
+      "book": "HOU",
+      "before_sha256": "212e45acafe824d56e2b45244fd50a4f64175c68a8fd232b98e8ea464dc03d27",
+      "after_sha256": "30e68c343b4649a7dc51c1adf51681988831c96be1d69cfedd6a3e1e0f8d38da",
+      "assignments": 26,
+      "appended_chains": 1
+    },
+    "322": {
+      "book": "IND",
+      "before_sha256": "61662b4f6c909bbd1915520408aa979301bf94fa0f38e51b9d067251f40ad50e",
+      "after_sha256": "6ee9e0dce19a1c2a523c9a0c8b33dc6e657392c229a5edae47b1b2890733ea52",
+      "assignments": 27,
+      "appended_chains": 1
+    },
+    "323": {
+      "book": "JAX",
+      "before_sha256": "7632bb290e21c0969ab0f8167ab6da56bbceb88c9e93168ef08b3e5e662e0819",
+      "after_sha256": "8bd50970111c5e2b0be4bc3fe7550ee43c3bad6134f7064d8ee61cdb322fc79b",
+      "assignments": 20,
+      "appended_chains": 2
+    },
+    "324": {
+      "book": "KC",
+      "before_sha256": "71fbfc3858982967b0a6db7add60503f76288bf637cf51bc1c674ecc017dd3a3",
+      "after_sha256": "f9533a123c4bdfd01a32e08e56822c92b71dd97b74a0402d982eedc27dd43edf",
+      "assignments": 16,
+      "appended_chains": 1
+    },
+    "325": {
+      "book": "MIA",
+      "before_sha256": "4af7d73bd1f68dda3e26d6b8cc77a41dba93c93e6b8e4ae300b81ec35964c399",
+      "after_sha256": "5d2b6456f1a6b18bb8825be783bcf2667cea30e99799fc1d3e6403a7f87d797b",
+      "assignments": 15,
+      "appended_chains": 2
+    },
+    "326": {
+      "book": "MIN",
+      "before_sha256": "9990552763ab490782dcac2d37280037c3415cab33394737d59fef4e4de927b6",
+      "after_sha256": "4375f2bde29af541c8647108a5ef582549a83ffb43e32c9985a5cab0e51634b9",
+      "assignments": 29,
+      "appended_chains": 2
+    },
+    "327": {
+      "book": "NE",
+      "before_sha256": "28a0e2922fc044e863c32ebce97c8ec7ea977580b214ac7b8bbe6c26ee59295f",
+      "after_sha256": "273046a3ae6b84353ae152efaf820a57e5ce01980dd752bfbe8c5554d69fa9e9",
+      "assignments": 29,
+      "appended_chains": 1
+    },
+    "328": {
+      "book": "NO",
+      "before_sha256": "4533bf33b59c79ab7028968a4bb956649249b07a0594cd5aff3eb1e35e78313e",
+      "after_sha256": "fb3b658febf2e450d5f7d6cdb4b470fb47506c67aa8a90f96bd41cbda4e4c2ce",
+      "assignments": 22,
+      "appended_chains": 1
+    },
+    "329": {
+      "book": "NYG",
+      "before_sha256": "1c36829df1a9982bccffacd813d2eb6589532798b3afb9935145fd953cffc6fe",
+      "after_sha256": "c71eb8d1fed6f0378771f4b95d6e47170f20ce7b85bd040e291b4145864b1dfb",
+      "assignments": 31,
+      "appended_chains": 2
+    },
+    "330": {
+      "book": "NYJ",
+      "before_sha256": "5812e0bc21e12fac623e556a527fb118f02e67b5c15bf24afe31f669abd84d4c",
+      "after_sha256": "92dd4ac3a9e2bab4ed6650de27b3343fdd12af97f079b4d6e3314f0938113849",
+      "assignments": 17,
+      "appended_chains": 2
+    },
+    "331": {
+      "book": "OAK",
+      "before_sha256": "eeb65fd7c55a3586316882225a803fac5d9efa96d7b3014350ada8e478bd5e50",
+      "after_sha256": "b3b84f2b2e36ddd69e9ee84060b0b208f4559559509d48fbeda2e488989af7b9",
+      "assignments": 19,
+      "appended_chains": 1
+    },
+    "332": {
+      "book": "PHI",
+      "before_sha256": "8248c46f5fc70417efa0da764257b78524f7dace28ca5ac7cb3278521517160f",
+      "after_sha256": "9be0bf63de60cbc5aa961cae442d9c05a0a94c25912a8ffaf73327716e8dffb4",
+      "assignments": 16,
+      "appended_chains": 2
+    },
+    "333": {
+      "book": "PIT",
+      "before_sha256": "a80f2327137435f86f6f063642ed0e54c32565e40bf507b285cceac78a69cb0c",
+      "after_sha256": "ed01ebca7bd57809c01e843a826c1a59dce0ce0317b9cabe9b194305970dcc2f",
+      "assignments": 23,
+      "appended_chains": 1
+    },
+    "334": {
+      "book": "PRACTICE",
+      "before_sha256": "36b708c768145ce93327aa2d12c418e169a060ee80316ece1ac45bbb16f17cf6",
+      "after_sha256": "a48181961c764e07ab81fe957130e896f2da1534a74eafbd4602b0c1c414e56c",
+      "assignments": 3,
+      "appended_chains": 1
+    },
+    "335": {
+      "book": "reference",
+      "before_sha256": "0373372201b25db53b3507ba1f9d228dbd72696d9d8235b381a548cf505ffc8b",
+      "after_sha256": "0373372201b25db53b3507ba1f9d228dbd72696d9d8235b381a548cf505ffc8b",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "336": {
+      "book": "SD",
+      "before_sha256": "2780586f3fe28411996fc7f051eaa824eb9d59fc7eb4f9ed1f58abec60a52b79",
+      "after_sha256": "739ba40caa808df142c24a177b4b04c78ff699f099a322283e41282ee4c384ac",
+      "assignments": 14,
+      "appended_chains": 2
+    },
+    "337": {
+      "book": "SEA",
+      "before_sha256": "6e365dd8fc31e6017728c49cc63e1a0eea24c521ed0d5e6ac45ad07c5b3f645a",
+      "after_sha256": "e6ce5a6470bd18c1302341949cb6fc9fb23abf16d5a00be01e455941465b9a05",
+      "assignments": 25,
+      "appended_chains": 2
+    },
+    "338": {
+      "book": "SF",
+      "before_sha256": "a34cb476f5ad3b65e1fcfef9efd3573788be8e0f3508bc2052d1beb3b2dfbf67",
+      "after_sha256": "d889df7d12d94eab040db1f0c8533111553bca087d23ae614259a33add3c6c20",
+      "assignments": 20,
+      "appended_chains": 2
+    },
+    "339": {
+      "book": "STL",
+      "before_sha256": "388c6241670a492e1cfe54f206d5220414302686218cf700fb33a9caffcebf87",
+      "after_sha256": "0e168444ca99014843fac1e3528a1c0cbf0007d169ed8ac0f0e50ef07b37b043",
+      "assignments": 36,
+      "appended_chains": 1
+    },
+    "340": {
+      "book": "TB",
+      "before_sha256": "383184ebef7b59669b8d08eeb1fa31b396cd3d03b2cede1581b425845750b22a",
+      "after_sha256": "788bbb88b2d5a20357aad648efc6ce96bc77d7ac994356c03d2654d68ef46978",
+      "assignments": 19,
+      "appended_chains": 1
+    },
+    "341": {
+      "book": "TEN",
+      "before_sha256": "0803fdfc324312750852dc492b0f464b27749339a211243f23828eabeef15254",
+      "after_sha256": "11b5872902b7e4259fb3464228b8b1780e682bfe8a26e8b81bf99894bf2979e7",
+      "assignments": 24,
+      "appended_chains": 1
+    },
+    "342": {
+      "book": "WAS",
+      "before_sha256": "91c804cadafb5ecd5e3894552729517e1988b6a67ac3c863b0cb1f105d88052a",
+      "after_sha256": "96b162a3d9fb68c9758347a5cefa5448f46405d15e48703a471c89f782663890",
+      "assignments": 20,
+      "appended_chains": 1
+    },
+    "343": {
+      "book": "WCO",
+      "before_sha256": "48e8565ec24b9ff4e34ee44c573c2f5f21846bdb3e85bc0f12107e051de5ad8c",
+      "after_sha256": "48e8565ec24b9ff4e34ee44c573c2f5f21846bdb3e85bc0f12107e051de5ad8c",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4418": {
+      "book": "ARZ",
+      "before_sha256": "cde32bc0f1dcd7d9b382a5d7c8c0fc52b53b80ae3797d39ab09a207ede6dfc3d",
+      "after_sha256": "cde32bc0f1dcd7d9b382a5d7c8c0fc52b53b80ae3797d39ab09a207ede6dfc3d",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4419": {
+      "book": "ATL",
+      "before_sha256": "cb477dcfa09e593b430b8f7111b476624f1a813055f35209b8ffa6a171800316",
+      "after_sha256": "cb477dcfa09e593b430b8f7111b476624f1a813055f35209b8ffa6a171800316",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4420": {
+      "book": "BAL",
+      "before_sha256": "2eddc84274cbeb9d059b4256c2c6eb15968dc6b246202941ece0cc059f3acdf4",
+      "after_sha256": "2eddc84274cbeb9d059b4256c2c6eb15968dc6b246202941ece0cc059f3acdf4",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4421": {
+      "book": "BUF",
+      "before_sha256": "96b4fa1de9f732ee9892a5be60ef4030cee2d71dece80fe1e6818a352b83241a",
+      "after_sha256": "96b4fa1de9f732ee9892a5be60ef4030cee2d71dece80fe1e6818a352b83241a",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4422": {
+      "book": "CAR",
+      "before_sha256": "febb3fa81fec138eacf8eb5f6625086856508c4ceb521e8bb36a96efc4982ea7",
+      "after_sha256": "febb3fa81fec138eacf8eb5f6625086856508c4ceb521e8bb36a96efc4982ea7",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4423": {
+      "book": "CHI",
+      "before_sha256": "c99b41739f17f7a422be8be6fcb56b55b92a29cee58bf67c9eba33e3122c261d",
+      "after_sha256": "c99b41739f17f7a422be8be6fcb56b55b92a29cee58bf67c9eba33e3122c261d",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4424": {
+      "book": "CIN",
+      "before_sha256": "e9851eb2c482f93fce6a265096f79b86462b5d3617f5c0bf6f4401d1fd4ba918",
+      "after_sha256": "e9851eb2c482f93fce6a265096f79b86462b5d3617f5c0bf6f4401d1fd4ba918",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4425": {
+      "book": "CLE",
+      "before_sha256": "97571f07edac27027e0fcf58f13fd8c756c31dee282c4fc79eb0e9a51090ff3d",
+      "after_sha256": "97571f07edac27027e0fcf58f13fd8c756c31dee282c4fc79eb0e9a51090ff3d",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4426": {
+      "book": "DAL",
+      "before_sha256": "500147f12105ac8379039c0e1b8eec640f6af1b2fd433b787c7d731350a140cb",
+      "after_sha256": "500147f12105ac8379039c0e1b8eec640f6af1b2fd433b787c7d731350a140cb",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4427": {
+      "book": "DEN",
+      "before_sha256": "f8d2538c4792afd140613037d34dd41c939e0bdd1d445a76ddff7ee8f49faeac",
+      "after_sha256": "f8d2538c4792afd140613037d34dd41c939e0bdd1d445a76ddff7ee8f49faeac",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4428": {
+      "book": "DET",
+      "before_sha256": "6aa4e981fe98287faa5854b9730828971ebb0c2f9238b05c9c3b8a2977b30c78",
+      "after_sha256": "6aa4e981fe98287faa5854b9730828971ebb0c2f9238b05c9c3b8a2977b30c78",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4429": {
+      "book": "GB",
+      "before_sha256": "0fe0492dbe3af8d49d8bb221c7bc02be895cdcae32e567bd7bc7b75c7eed73d3",
+      "after_sha256": "0fe0492dbe3af8d49d8bb221c7bc02be895cdcae32e567bd7bc7b75c7eed73d3",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4430": {
+      "book": "HOU",
+      "before_sha256": "cc4c7673161940d6bfe8601c2e0c54b3b24e68d68a9c9f193920e96650937fe0",
+      "after_sha256": "cc4c7673161940d6bfe8601c2e0c54b3b24e68d68a9c9f193920e96650937fe0",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4431": {
+      "book": "IND",
+      "before_sha256": "4d3fdad413d894772ca6c7c1219591ea534f1b85ffae07068d086de1f8cbd0b5",
+      "after_sha256": "4d3fdad413d894772ca6c7c1219591ea534f1b85ffae07068d086de1f8cbd0b5",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4432": {
+      "book": "JAX",
+      "before_sha256": "f7bf1d7e63b1164fecdc49a8f256a85e15ce76805fee961b8fc2a9c0a37006f0",
+      "after_sha256": "f7bf1d7e63b1164fecdc49a8f256a85e15ce76805fee961b8fc2a9c0a37006f0",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4433": {
+      "book": "KC",
+      "before_sha256": "8c9623dcc92be602dd4ebd6affc7773ac4f52280f3792dbe979f936677d34569",
+      "after_sha256": "8c9623dcc92be602dd4ebd6affc7773ac4f52280f3792dbe979f936677d34569",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4434": {
+      "book": "MIA",
+      "before_sha256": "369781bbec578f9dac7d0d76a14ccf065cd40cf90cc3240efb1deffc6433ee18",
+      "after_sha256": "369781bbec578f9dac7d0d76a14ccf065cd40cf90cc3240efb1deffc6433ee18",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4435": {
+      "book": "MIN",
+      "before_sha256": "efbcffa1e696cc6b4cdc8259a3bdffc14277cef879f2c37f9363f42384ed456f",
+      "after_sha256": "efbcffa1e696cc6b4cdc8259a3bdffc14277cef879f2c37f9363f42384ed456f",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4436": {
+      "book": "NE",
+      "before_sha256": "115f5a8a398fa62da653a8658c312575fdbc4a93feca7ec9c3a73bbaa6bd0fce",
+      "after_sha256": "115f5a8a398fa62da653a8658c312575fdbc4a93feca7ec9c3a73bbaa6bd0fce",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4437": {
+      "book": "NO",
+      "before_sha256": "eba2aa75ddbfd0fd9f83f16462ba37eeeb0751c8c7de05179d10ee62de1f0f62",
+      "after_sha256": "eba2aa75ddbfd0fd9f83f16462ba37eeeb0751c8c7de05179d10ee62de1f0f62",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4438": {
+      "book": "NYG",
+      "before_sha256": "de16572c5e1e5ff38fe0bd2d91916964be72b597db1ae948fb93f3a6e62aeafd",
+      "after_sha256": "de16572c5e1e5ff38fe0bd2d91916964be72b597db1ae948fb93f3a6e62aeafd",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4439": {
+      "book": "NYJ",
+      "before_sha256": "22158b188ae62f699eaa029dbeb0c13812dd259fb94675ca357e9119770748c6",
+      "after_sha256": "22158b188ae62f699eaa029dbeb0c13812dd259fb94675ca357e9119770748c6",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4440": {
+      "book": "OAK",
+      "before_sha256": "85a778d75f25c6e5e98276b32507555c70d8f4843d0867884acc4af7a6029265",
+      "after_sha256": "85a778d75f25c6e5e98276b32507555c70d8f4843d0867884acc4af7a6029265",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4441": {
+      "book": "PHI",
+      "before_sha256": "7baa3c2a539ded7705673dbc3e7892bf7013f1e8262cbe596b5c955f064859de",
+      "after_sha256": "7baa3c2a539ded7705673dbc3e7892bf7013f1e8262cbe596b5c955f064859de",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4442": {
+      "book": "PIT",
+      "before_sha256": "c62970887a513f89f9009e418c0823fea4dd5c3b82a36193411188aced48de82",
+      "after_sha256": "c62970887a513f89f9009e418c0823fea4dd5c3b82a36193411188aced48de82",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4443": {
+      "book": "SD",
+      "before_sha256": "4e027c11453c7945a0e69e2238c3e5a1c8dc6556ef60949f7d427f3d5771eeb6",
+      "after_sha256": "4e027c11453c7945a0e69e2238c3e5a1c8dc6556ef60949f7d427f3d5771eeb6",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4444": {
+      "book": "SEA",
+      "before_sha256": "df1d3ce1cdb62baad3463ae5dd56854fbda5093f7cae53c1e6875f66ff023458",
+      "after_sha256": "df1d3ce1cdb62baad3463ae5dd56854fbda5093f7cae53c1e6875f66ff023458",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4445": {
+      "book": "SF",
+      "before_sha256": "e10309ee625b3aeba6a72a000e3ab50bc33e7bf2aeba77cf95c2924a1c51edad",
+      "after_sha256": "e10309ee625b3aeba6a72a000e3ab50bc33e7bf2aeba77cf95c2924a1c51edad",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4446": {
+      "book": "STL",
+      "before_sha256": "ecb43438be136e77d0f18284fe4365309ffa9c58a1891b48717392773b857189",
+      "after_sha256": "ecb43438be136e77d0f18284fe4365309ffa9c58a1891b48717392773b857189",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4447": {
+      "book": "TB",
+      "before_sha256": "058232e00111c5568a19a8f51a2da28485bd25a98263b7c105fc03012f395236",
+      "after_sha256": "058232e00111c5568a19a8f51a2da28485bd25a98263b7c105fc03012f395236",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4448": {
+      "book": "TEN",
+      "before_sha256": "4a3372505d1d449df78e1bd16ad101a9e30e2320603ee7c9329e8067f33cb67f",
+      "after_sha256": "4a3372505d1d449df78e1bd16ad101a9e30e2320603ee7c9329e8067f33cb67f",
+      "assignments": 0,
+      "appended_chains": 0
+    },
+    "4449": {
+      "book": "WAS",
+      "before_sha256": "ffda5cfd1d8ebe4f8522038b3b86dbffe626baf7f3fbec2eb8ce8d6c14c96206",
+      "after_sha256": "ffda5cfd1d8ebe4f8522038b3b86dbffe626baf7f3fbec2eb8ce8d6c14c96206",
+      "assignments": 0,
+      "appended_chains": 0
+    }
+  }
+}

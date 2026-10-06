@@ -159,7 +159,8 @@ class WiringTests(unittest.TestCase):
         sites = {label: (va, before, after) for label, va, before, after in mm.sites(0x1000000, 0x1100000, 50)}
         self.assertEqual(sites["count"][2], bytes.fromhex("b832000000c3"))
         test = sites["mark_test"][2]
-        self.assertEqual(test[:5], bytes.fromhex("83f9207307"))
+        self.assertEqual(test[:3], bytes.fromhex("0fb689"))
+        self.assertEqual(test[7:12], bytes.fromhex("83f9207307"))
         self.assertIn(struct.pack("<I", 0x1100000), test)
         self.assertEqual(len(sites["announcer"][2]), 31)
 
@@ -191,23 +192,23 @@ class WiringTests(unittest.TestCase):
             plan = mod_build.BuildPlan(source=str(source), target=str(target), espn25_more_moments=True,
                                        espn25_plan=str(Path(folder) / "plan.json"))
             with patch.object(mod_build.tt, "is_disc_image", return_value=True):
-                with self.assertRaisesRegex(ValueError, "25 more Anniversary moments or a saved ESPN Anniversary plan"):
+                with self.assertRaisesRegex(ValueError, "expanded Anniversary collection or a saved ESPN Anniversary plan"):
                     mod_build.build(plan)
             self.assertFalse(target.exists())
 
     def test_probe_table_fills_the_owned_code_and_needs_no_data_files(self):
         data = mm.probe_data()
         entries = mm.table_entries(data)
-        self.assertEqual((len(data.moments), len(entries)), (25, 50))
-        self.assertEqual(mm.strings_bytes(data), mm.CODE_SIZE - mm.NAMES_OFFSET)   # the whole allocation
+        self.assertEqual((len(data.moments), len(entries)), (26, 50))
+        self.assertEqual(mm.strings_bytes(data), mm.DISPLAY_OFFSET - mm.NAMES_OFFSET)   # the text allocation
         code = mm.code_for(0x14DA000, 0x14F2000, entries, mm.venues(data))
         self.assertEqual(len(code), mm.CODE_SIZE)
-        self.assertEqual(code[-2:], b"\0\0")
+        self.assertEqual(code[mm.DISPLAY_OFFSET - 2:mm.DISPLAY_OFFSET], b"\0\0")
         self.assertEqual({e[1][-6:] for e in entries}, {"-9.iff"})
-        last = struct.unpack_from("<I", code, mm.VENUE_OFFSET + 4 * 24)[0] - 0x14DA000
-        self.assertEqual(sc.utf16(code, last), "Probe Venue Row Fifty")
+        last = struct.unpack_from("<I", code, mm.VENUE_OFFSET + 4 * 25)[0] - 0x14DA000
+        self.assertEqual(sc.utf16(code, last), "Probe Row Fifty")
         longer = mm.Data([dict(m, stadium=m["stadium"] + "x") for m in data.moments], data.teams, {})
-        self.assertGreater(mm.strings_bytes(longer), mm.CODE_SIZE - mm.NAMES_OFFSET)
+        self.assertGreater(mm.strings_bytes(longer), mm.DISPLAY_OFFSET - mm.NAMES_OFFSET)
         self.assertIs(mm.Probe.OWNER, mm.OWNER)
 
     def test_missing_data_refuses_by_name(self):
@@ -233,6 +234,27 @@ class WiringTests(unittest.TestCase):
 
 class DataRuleTests(unittest.TestCase):
     """Retail-free rules of the data contract."""
+
+    def test_display_order_is_chronological_with_stable_physical_identities(self):
+        data = mm.Data([MOMENT, dict(MOMENT, id="latest", date="October 16, 2025")], {}, {})
+        order = mm.display_order(data)
+        self.assertEqual(order.index(25), 21)  # 1999 falls between Super Bowl XXXII and A YARD TOO SHORT
+        self.assertEqual(order[-1], 26)
+        self.assertEqual(set(order), set(range(27)))
+        inventory = mm.display_inventory(data)
+        self.assertEqual(inventory[21], dict(display_row=22, physical_row=26,
+                                             date="January 17, 1999", id="the_miss"))
+        self.assertEqual(inventory[-1]["date"], "October 16, 2025")
+
+    def test_display_mapping_is_bounded_and_permutations_are_required(self):
+        data = mm.probe_data()
+        code = mm.code_for(0x1400000, 0x1500000, mm.table_entries(data), mm.venues(data),
+                           order=mm.display_order(data))
+        self.assertEqual(list(code[mm.DISPLAY_MAP_OFFSET:mm.DISPLAY_MAP_OFFSET + 51]),
+                         list(mm.display_order(data)))
+        self.assertEqual(code[mm.DISPLAY_MAP_OFFSET + 51:], b"\xff" * 13)
+        with self.assertRaisesRegex(mm.MoreMomentsError, "permutation"):
+            mm.code_for(0x1400000, 0x1500000, [], order=[0, 0])
 
     def test_ball_on_follows_the_retail_convention(self):
         data = mm.Data([MOMENT], {k: dict(v, team_key=k) for k, v in TEAMS.items()}, {})
@@ -284,6 +306,27 @@ class RetailCompileTests(unittest.TestCase):
 
     def test_retail_collection_is_pinned(self):
         self.assertEqual(mm.sha(self.situ), mm.RETAIL_SITU_SHA256)
+        self.assertEqual(tuple(sc.u32(self.situ, 32 + sc.RECORDS + i * sc.STRIDE + 0x10)
+                               for i in range(25)), mm.RETAIL_STADIUMS)
+
+    def test_situ_recognizes_only_the_catalogs_dated_historical_venues(self):
+        data = mm.Data.load()
+        collection = mm.compile_situ(self.situ, data, self.main)
+        self.assertEqual(mm.situ_rows(collection, data), "applied")
+        alternative = mm._historical_stadiums(data)
+        repaired = bytearray(collection)
+        for row, stadium in alternative.items():
+            struct.pack_into("<I", repaired, 32 + sc.RECORDS + row * sc.STRIDE + 0x10, stadium)
+        self.assertEqual(mm.situ_rows(bytes(repaired), data), "applied")
+        # A valid native index which belongs to neither known profile is refused in either row family.
+        for row in (12, 47):
+            foreign = bytearray(repaired)
+            original = mm.RETAIL_STADIUMS[row] if row < 25 else data.moments[row - 25]["stadium_index"]
+            bad = next(value for value in range(82) if value not in (original, alternative[row]))
+            struct.pack_into("<I", foreign, 32 + sc.RECORDS + row * sc.STRIDE + 0x10, bad)
+            self.assertEqual(mm.situ_rows(bytes(foreign), data), "foreign")
+        # A catalog row for a different dated/title moment grants no alternative to synthetic scenarios.
+        self.assertNotIn(47, mm._historical_stadiums(self.data))
 
     def test_situ_keeps_the_retail_rows_and_siblings(self):
         collection = mm.compile_situ(self.situ, self.data, self.main)
@@ -413,10 +456,45 @@ class RetailXbeTests(unittest.TestCase):
 
     def test_probe_owner_installs_and_replays_without_data_files(self):
         patched, receipt = mm.Probe.apply(self.retail)
-        self.assertEqual((receipt["status"], receipt["rows"], receipt["team_seasons"]), ("applied", 50, 50))
+        self.assertEqual((receipt["status"], receipt["rows"], receipt["team_seasons"]), ("applied", 51, 50))
         self.assertEqual(mm.Probe.status(patched), "applied")
         self.assertEqual(mm.Probe.apply(patched)[0], patched)
         self.assertEqual(mm.status(patched, self.data), "foreign")
+
+    def test_exact_legacy_upgrade_preserves_all_other_owner_allocations(self):
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        newer = write_dataset(Path(self.tmp.name) / "newer", copies=26)
+        allocated, _ = space.apply(self.retail, mm.REQUESTS, scaleout=True)
+        code, dat = mm.allocations(allocated)
+        legacy_body = mm.code_for(code["va"], dat["va"], mm.table_entries(self.data),
+                                  mm.venues(self.data), legacy=True)
+        installed, _ = space.install_code(allocated, mm.OWNER, legacy_body)
+        image, legacy = XbeImage(installed), bytearray(installed)
+        for _label, va, _before, after in mm.sites(code["va"], dat["va"], 50, legacy=True):
+            at = image.offset(va, len(after))
+            legacy[at:at + len(after)] = after
+        for section in _sections(legacy):
+            legacy[section.header_offset + 36:section.header_offset + 56] = section_digest(legacy, section)
+        legacy = bytes(legacy)
+        self.assertEqual(mm.legacy_status(legacy, self.data), "applied")
+        with self.assertRaises(mm.MoreMomentsError):
+            mm.apply(legacy, newer)  # no silent reconfiguration of a differently authored owner
+        patched, receipt = mm.apply(legacy, newer, legacy_data=self.data)
+        self.assertEqual((receipt["status"], receipt["rows"]), ("upgraded", 51))
+        self.assertEqual(mm.status(patched, newer), "applied")
+        self.assertEqual(mm.apply(patched, newer)[0], patched)
+        self.assertEqual(space.layout(legacy)["allocations"], space.layout(patched)["allocations"])
+        for allocation in space.layout(legacy)["allocations"]:
+            if allocation["owner"] not in (mm.OWNER, "nfl2k5_xbe_space_directory"):
+                at, size = allocation["raw"], allocation["size"]
+                self.assertEqual(legacy[at:at + size], patched[at:at + size])
+        mixed = bytearray(legacy)
+        mixed[image.offset(mm.COUNT_VA)] ^= 1
+        for section in _sections(mixed):
+            mixed[section.header_offset + 36:section.header_offset + 56] = section_digest(mixed, section)
+        self.assertEqual(mm.legacy_status(bytes(mixed), self.data), "foreign")
+        with self.assertRaises(mm.MoreMomentsError):
+            mm.apply(bytes(mixed), newer, legacy_data=self.data)
 
     def test_the_venue_callback_is_the_details_screens_alone(self):
         """2C5A70 is registered once, in the Anniversary details screen's text callbacks (the group that also
@@ -463,7 +541,7 @@ class NativeMomentsTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_espn25_rosters as e
         from mod_editor.core import nfl2k5_practice_squad as ps  # noqa: F401
         cls.tmp = tempfile.TemporaryDirectory()
-        cls.data = write_dataset(cls.tmp.name, copies=25)
+        cls.data = write_dataset(cls.tmp.name, copies=26)
         with outer_image() as archive:
             main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
             situ = archive.read(archive.entries[22].virtual_offset, archive.entries[22].size)
@@ -493,12 +571,12 @@ class NativeMomentsTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
-    def test_fifty_rows_and_captions(self):
+    def test_fifty_one_rows_and_captions(self):
         cpu = self.cpu
-        self.assertEqual(cpu.run(0x20C340), 50)
+        self.assertEqual(cpu.run(0x20C340), 51)
         self.assertEqual(cpu.caption(0), "THE ICE BOWL | December 31, 1967")
-        self.assertEqual(cpu.caption(25), "THE MISS | January 17, 1999")
-        self.assertEqual(cpu.caption(49), "TEST MOMENT 50 | January 17, 1999")
+        self.assertEqual(cpu.caption(mm.display_order(self.data).index(25)), "THE MISS | January 17, 1999")
+        self.assertEqual(cpu.caption(mm.display_order(self.data).index(49)), "TEST MOMENT 50 | January 17, 1999")
 
     def test_new_moments_load_their_own_files_and_set_up(self):
         cpu = self.cpu
@@ -507,7 +585,7 @@ class NativeMomentsTests(unittest.TestCase):
                 cpu.run(0x20C3C0)
                 continue
             before, loads = len(cpu.imports), len(cpu.extra_loads)
-            cpu.select(index)
+            cpu.select(mm.display_order(self.data).index(index))
             selected, match = cpu.selected(), cpu.match()
             with self.subTest(moment=index):
                 self.assertEqual([i["result"] for i in cpu.imports[before:]], [1, 1])
@@ -531,12 +609,12 @@ class NativeMomentsTests(unittest.TestCase):
         file; the new row with that team-season loads the new file."""
         cpu = self.cpu
         before, events = len(cpu.extra_loads), len(cpu.events)
-        cpu.select(21)
+        cpu.select(mm.display_order(self.data).index(21))
         self.assertEqual(cpu.extra_loads[before:], [])
         self.assertIn("h-28-1999-titans-0.iff", [e["filename"] for e in cpu.events[events:]])
         cpu.run(0x20C3C0)
         before = len(cpu.extra_loads)
-        cpu.select(TITANS_ROW)
+        cpu.select(mm.display_order(self.data).index(TITANS_ROW))
         self.assertEqual(sorted(cpu.extra_loads[before:]), ["h-01-1998-falcons-9.iff", "h-28-1999-titans-9.iff"])
         cpu.run(0x20C3C0)
 
@@ -547,7 +625,7 @@ class NativeMomentsTests(unittest.TestCase):
         out = 0x2500000
 
         def venue(row):
-            cpu.select(row)
+            cpu.select(mm.display_order(self.data).index(row))
             cpu.w(out, 0)
             cpu.run(0x2C5A70, args=(out, 0, 0))
             record = cpu.run(0x77460)                    # the selected stadium, as every other reader sees it
@@ -560,21 +638,52 @@ class NativeMomentsTests(unittest.TestCase):
         self.assertEqual(venue(30), ("H. H. H. Metrodome", "H. H. H. Metrodome", "s15"))     # no venue text
         self.assertEqual(venue(14), ("Tampa Bay Stadium", "Tampa Bay Stadium", "s27"))       # WIDE RIGHT, retail
 
+    def test_selected_physical_identity_and_returned_display_selection(self):
+        cpu = self.cpu
+        display = mm.display_order(self.data).index(25)
+        cpu.select(display)
+        self.assertEqual(cpu.r(0xBF1858), 25)
+        self.assertEqual(cpu.r(self.session + 4), display)
+        out = []
+        cpu.stubs[0x1707C0] = lambda: (out.append(cpu.reg("edx")), cpu.ret(1))
+        cpu.stubs[0xF31B0] = lambda: cpu.ret(0)
+        try:
+            cpu.run(0x20C2F0)
+        finally:
+            cpu.stubs.pop(0x1707C0)
+            cpu.stubs.pop(0xF31B0)
+            cpu.run(0x20C3C0)
+        self.assertEqual(out, [display])
+
+    def test_row_fifty_one_selects_its_own_situation_and_session_mark(self):
+        cpu = self.cpu
+        display = mm.display_order(self.data).index(50)
+        self.assertEqual(cpu.caption(display), "TEST MOMENT 51 | January 17, 1999")
+        before = len(cpu.extra_loads)
+        cpu.select(display)
+        self.assertEqual(cpu.r(0xBF1858), 50)
+        self.assertEqual(sorted(cpu.extra_loads[before:]),
+                         ["h-01-1998-falcons-9.iff", "h-15-1998-vikings-9.iff"])
+        self.assertEqual(cpu.match()["scenario"], {"home_score": 27, "away_score": 20,
+                                                   "clock_seconds": 127.0, "quarter": 4})
+        cpu.w(0xBF18CC, 0)
+        cpu.w(self.session, 0)
+        cpu.win(50)
+        self.assertEqual((cpu.r(0xBF18CC), cpu.r(self.session)), (0, 1 << 18))
+        self.assertEqual([i for i in range(51) if cpu.completed(i)], [display])
+        cpu.run(0x20C3C0)
+
     def test_marks_for_rows_33_to_50_stay_in_the_session(self):
         cpu = self.cpu
         cpu.w(0xBF18CC, 0)
         cpu.w(self.session, 0)
         cpu.win(40)
         self.assertEqual((cpu.r(0xBF18CC), cpu.r(self.session)), (0, 1 << 8))
-        self.assertEqual([i for i in range(50) if cpu.completed(i)], [40])
+        self.assertEqual([i for i in range(50) if cpu.completed(i)], [mm.display_order(self.data).index(40)])
         for row in (0, 28, 49):
             cpu.win(row)
         self.assertEqual((cpu.r(0xBF18CC), cpu.r(self.session)), ((1 << 0) | (1 << 28), (1 << 8) | (1 << 17)))
-        self.assertEqual([i for i in range(50) if cpu.completed(i)], [0, 28, 40, 49])
-
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assertEqual([i for i in range(50) if cpu.completed(i)], sorted(mm.display_order(self.data).index(k) for k in (0, 28, 40, 49)))
 
 
 class AnniversaryQcTests(unittest.TestCase):
@@ -591,8 +700,16 @@ class AnniversaryQcTests(unittest.TestCase):
         self.assertEqual(looks[("patriots_2016", "Chris Hogan")]["tone"], 0)
         brady = looks[("patriots_2007", "Tom Brady")]
         self.assertEqual((brady["tone"], brady["retail"]["photo"]), (0, 2712))
-        unknown = [name for (_key, name), look in looks.items() if look["tone"] is None]
+        # The new 2025 teams use explicitly unresearched fallback looks where no current roster art exists.
+        # Retain the original appearance audit's bound without manufacturing tones for those new players.
+        unknown = [name for (key, name), look in looks.items()
+                   if look["tone"] is None and key not in ("steelers_2025", "bengals_2025")]
         self.assertLessEqual(len(unknown), 20)
+        new_unknown = [look for (key, name), look in looks.items()
+                       if look["tone"] is None and key in ("steelers_2025", "bengals_2025")]
+        self.assertEqual(len(new_unknown), 32)
+        self.assertTrue(all(look["source"] == "none; template generic appearance unverified"
+                            for look in new_unknown))
 
     def test_a_look_that_names_someone_else_is_refused(self):
         data = mm.Data.load()
@@ -694,7 +811,7 @@ class AnniversaryQcRetailTests(unittest.TestCase):
         patched, _ = mm.apply(self.retail, self.data)
         allocated, _ = space.apply(self.retail, mm.REQUESTS)
         code, dat = mm.allocations(allocated)
-        body = mm.code_for(code["va"], dat["va"], mm.table_entries(self.data), mm.venues(self.data))
+        body = mm.code_for(code["va"], dat["va"], mm.table_entries(self.data), mm.venues(self.data), order=mm.display_order(self.data))
         body = body[:mm.STAR_OFFSET] + b"\xcc" * (mm.TABLE_OFFSET - mm.STAR_OFFSET) + body[mm.TABLE_OFFSET:]
         installed, _ = space.install_code(allocated, mm.OWNER, body)
         image = XbeImage(installed)
@@ -740,3 +857,7 @@ class AnniversaryQcRetailTests(unittest.TestCase):
         for p in players:
             self.assertEqual(p.record.values["star_tag"], int(prospects.native_overall(p.record) >= mm.STAR_MIN_OVERALL))
         self.assertTrue(any(p.record.values["star_tag"] for p in players))
+
+
+if __name__ == "__main__":
+    unittest.main()

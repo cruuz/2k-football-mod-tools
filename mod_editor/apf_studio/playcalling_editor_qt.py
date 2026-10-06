@@ -227,7 +227,7 @@ class ApfPlayCallingEditor(QWidget):
         self.situation_note = note(situation_root, "")
         note(situation_root, "Select a candidate to fine-tune its weights beside this table; personnel controls are below. Adding, removing or changing personnel edits the shared book, "
              "so it affects every situation using that data. These 23 coaching samples map to the Live situations controls below. Live formation multipliers and exclusions are independent per book and live bucket.")
-        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nproduct", "Formation\nweight", "Curve\nterm", "Ratings\nmean", "Personnel\nrank", "Retail\nweight", "Row: retail /\neffective", "Draw status", "Formation retail", "Situation multiplier"), "All ordinary situation candidates before the draw")
+        self.candidate_table = table(("Formation", "Personnel", "Requested\nTEs", "Personnel\nproduct", "Formation\nweight", "Curve\nterm", "Weighted\nratings mean", "Personnel\nrank", "Retail\nweight", "Row: retail /\neffective", "Draw status", "Formation retail", "Situation multiplier"), "All ordinary situation candidates before the draw")
         self.candidate_table.setMaximumHeight(260)
         self.candidate_table.setMinimumHeight(180)
         candidate_row = QHBoxLayout()
@@ -591,7 +591,9 @@ class ApfPlayCallingEditor(QWidget):
         team, side = self.team_picker.currentData() or 0, self.side_picker.currentData()
         book = self.donor_picker.currentText() or None
         preview_tendency = self.preview_tendency.value()
-        self.notice.setText("Recomputing calls from the selected staged book…")
+        from copy import deepcopy
+        pending = deepcopy(self._pending)
+        self.notice.setText("Recomputing calls from staged and pending edits…")
         # Copy Qt values before entering a worker.
         custom = {key: control.value() for key, control in self.custom.items()}
         custom["phase"] = "scrimmage"
@@ -601,7 +603,7 @@ class ApfPlayCallingEditor(QWidget):
             self.notice.setText(f"CPU Play Calling could not read this project: {plain_error(exc)}")
             return
         def operation(progress):
-            context = self.facade.playcalling_context(team, side, progress, book=book, preview_tendency=preview_tendency)
+            context = self.facade.playcalling_context(team, side, progress, book=book, preview_tendency=preview_tendency, pending=pending)
             if side == "offense":
                 rows = list(SITUATIONS) + [("Custom situation", custom)]
             else:
@@ -609,13 +611,13 @@ class ApfPlayCallingEditor(QWidget):
                          {"offense_category_row": i, "yards_to_goal": custom["yards_to_goal"]}) for i in range(11)]
             return context, self.facade.playcalling_predict(context, side, rows, progress), self.facade.playcalling_situations(context, side)
         def done(result):
-            if snapshot != self.facade.playcalling_snapshot():
+            if snapshot != self.facade.playcalling_snapshot() or pending != self._pending:
                 self.refresh()
                 return
             self._context, predictions, self._situations = result
             self._render_context()
             self.render_grid(predictions)
-            self.notice.setText("Preview recomputed from staged edits. Offline prediction; gameplay UNWITNESSED.")
+            self.notice.setText(f"Preview includes {len(pending)} pending edits and staged edits. Offline prediction; gameplay UNWITNESSED.")
         self._task("Predict CPU play calls", operation, done)
 
     def render_grid(self, predictions):
@@ -839,7 +841,7 @@ class ApfPlayCallingEditor(QWidget):
         self._pending_blockers.clear()
         self._render_pending()
         if self._context:
-            self.situation_masks.set_context(self._context, self.side_picker.currentData())
+            self.refresh()
 
     def review_request(self, request, confirm=False):
         # Historical callers all come here, including the live situation panel.
@@ -853,6 +855,7 @@ class ApfPlayCallingEditor(QWidget):
         if self.queue_edits.isChecked():
             self._pending.extend(requests)
             self._render_pending()
+            self.refresh()
             self.notice.setText(f"{len(self._pending)} pending edits. Confirm all runs the checks together.")
             return
         self._confirm_requests(requests, queued=False)

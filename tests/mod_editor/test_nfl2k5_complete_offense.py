@@ -93,6 +93,14 @@ class PipelineTests(unittest.TestCase):
         def inspect_real(*args, **kwargs):
             with patch.object(mod_build.tt,'is_disc_image',original_disc):
                 return original_inspect(*args,**kwargs)
+        def copy_with_ruling(source, target, **kwargs):
+            # This ordering fixture is not an XDVDFS image. The native ruling
+            # guard/writer has separate real-XBE tests; verify dispatch here.
+            self.assertIs(kwargs['forward_pass_ruling'], True)
+            events.append('forward_pass_ruling')
+            Path(target).write_bytes(Path(source).read_bytes())
+            return {'source_sha256': hashlib.sha256(Path(source).read_bytes()).hexdigest(),
+                    'forward_pass_ruling_patch': {'synthetic_ordering_fixture': True}}
         def apply(target,paths,**kwargs):
             events.append([packs.load_pack(p).schema for p in paths])
             return {'status':'applied','packs':[]}
@@ -108,6 +116,7 @@ class PipelineTests(unittest.TestCase):
             # This ordering fixture presents a synthetic XBE as a disc. The
             # final compaction/extent gates have separate real-XDVDFS tests.
             with patch.object(mod_build.tt,'is_disc_image',return_value=True), \
+                 patch.object(mod_build.tt,'write_copy',side_effect=copy_with_ruling), \
                  patch.object(mod_build,'inspect',side_effect=inspect_real), \
                  patch.object(packs,'apply_packs_to_image',side_effect=apply), \
                  patch.object(mod_build,'_check_playbook_menus',side_effect=menus), \
@@ -122,7 +131,8 @@ class PipelineTests(unittest.TestCase):
     def test_complete_offense_runs_first_and_reaches_final_menu_gate(self):
         events=[]
         receipt=self.run_build([ROOT/'data/playbooks/modern_gun_core.2k5book',PACK],events)
-        self.assertEqual(events,[[packs.OFFENSE_SCHEMA],[packs.SCHEMA],'menus','scoring'])
+        self.assertEqual(events,['forward_pass_ruling',[packs.OFFENSE_SCHEMA],[packs.SCHEMA],'menus','scoring'])
+        self.assertTrue(receipt['steps'][0]['forward_pass_ruling_patch']['synthetic_ordering_fixture'])
         self.assertEqual(receipt['playbook_menus'],{'books':37,'problems':0})
         self.assertEqual(receipt['playbook_scoring']['status'],'applied')
 

@@ -38,6 +38,15 @@
     "team_logo_outline": "ny_outer_mask.png",
     "wordmark": "giants_wordmark.png"
   },
+  "live_helmet_mip_refinement": {
+    "schema": "b765/u1/nyg-logo-mips/v1",
+    "family": "helmet02",
+    "filter": "direct_premultiplied_area_native_palette",
+    "base_boxes": [[52, 60, 107, 102], [51, 157, 106, 204]],
+    "mip_levels": [1],
+    "note": "u1 native shell-C texture refinement: retain mip0 shape, placement, colours, palette and mips2-5. Proper stored-mip CPU sampling shows a small near-distance motion-error reduction; gameplay wobble is unconfirmed. Source author: tools/b765/u1_nyg.py; overlay its live_helmet project after the full pack build. No geometry or UV edit.",
+    "static_shape_evidence": "Current projected outer silhouette differs by under 0.7% in aspect from the official NFL vector; measured straight-stroke bow is below primary 2026 helmet-photo controls. A pre-warp is unsupported."
+  },
   "kits": {
     "home": {
       "selector": "18H0",

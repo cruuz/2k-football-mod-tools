@@ -120,3 +120,21 @@ venue_name:
     ret
 venue_retail:
     jmp stadium_get              /* 77460: the selected stadium record, whose first dword is its name */
+
+/* The physical SITU order and saved completion identities remain stable. Only the list's caption, selected
+ * record and completion callbacks translate the chronological display ordinal. EDI is the selected identity
+ * at 20CB45; replacing it here makes BF1858 and all subsequent readers retain the legacy physical identity. */
+.section .display,"ax"
+.global display_caption, display_select, display_return
+.extern display_map, record_get, display_selected
+display_caption:
+    movzx ecx, byte ptr [ecx + display_map]
+    jmp record_get
+display_select:
+    mov [display_selected], ecx
+    movzx edi, byte ptr [ecx + display_map]
+    mov ecx, edi
+    jmp record_get
+display_return:
+    mov edx, [display_selected]
+    ret

@@ -404,13 +404,15 @@ class KickoffHookTests(_Images, unittest.TestCase):
         cls.build()
         cls.build_e1()
 
-    def compare(self, name, va, original, mode, e1=False):
+    def compare(self, name, va, original, mode, e1=False, moment=0):
         seed = sum(map(ord, name)) * 10 + mode
         gated = Machine(self.gated_e1 if e1 else self.gated)
-        other = Machine(self.ungated if mode != 8 else self.retail)
+        historical = mode == 8 and moment != gate.MODERN_MOMENT
+        other = Machine(self.retail if historical else self.ungated)
         for m in (gated, other):
             _prime(m, mode, seed)
-        if mode == 8:
+            m.put(gate.MOMENT_VA, moment)
+        if historical:
             end = (va + 5 + struct.unpack_from("<i", original, 1)[0]) if original[0] == 0xE9 else va + len(original)
         elif name == "block_target" and e1:
             # E1 on: outside mode 8 this site enters the return blocking rule, not the cave label. Out of the
@@ -436,6 +438,12 @@ class KickoffHookTests(_Images, unittest.TestCase):
                 with self.subTest(hook=name, e1=e1):
                     self.compare(name, va, original, 8, e1)
 
+    def test_unc_bowl_keeps_every_dynamic_kickoff_path(self):
+        for e1 in (False, True):
+            for name, va, original in gate.kickoff_hooks():
+                with self.subTest(hook=name, e1=e1):
+                    self.compare(name, va, original, 8, e1, moment=50)
+
 
 @unittest.skipUnless(HAVE_UC, "Unicorn required")
 class KickRulesTests(_Images, unittest.TestCase):
@@ -445,9 +453,10 @@ class KickRulesTests(_Images, unittest.TestCase):
     def setUpClass(cls):
         cls.build()
 
-    def spot(self, payload, va, mode, value=-1.0):
+    def spot(self, payload, va, mode, value=-1.0, *, moment=0):
         m = Machine(payload)
         _prime(m, mode, va)
+        m.put(gate.MOMENT_VA, moment)
         # fld1 then fchs gives ST0 = -1.0 (the kicking direction sign); run the site after it.
         pre = m.alloc(b"\xd9\xe8\xd9\xe0" + b"\xe9" + struct.pack("<i", va - (Machine.HEAP + 9)))
         result = m.run(pre, [va + 6], _regs(va, {}))
@@ -462,9 +471,10 @@ class KickRulesTests(_Images, unittest.TestCase):
                 assert_equivalent(self, self.spot(self.gated, va, 8), self.spot(self.retail, va, 8), esp, msg=label)
                 self.assertNotEqual(self.spot(self.gated, va, 8)[1]["st0"], self.spot(self.gated, va, 7)[1]["st0"])
 
-    def touchback(self, payload, mode, phase):
+    def touchback(self, payload, mode, phase, *, moment=0):
         m = Machine(payload)
         _prime(m, mode, phase)
+        m.put(gate.MOMENT_VA, moment)
         m.uc.mem_write(kick_rules.PHASE_GLOBAL, bytes((phase,)))
         va = kick_rules.TOUCHBACK_SITE_VA
         pre = m.alloc(b"\xd9\xe8" + b"\xe9" + struct.pack("<i", va - (Machine.HEAP + 7)))
@@ -481,6 +491,13 @@ class KickRulesTests(_Images, unittest.TestCase):
         self.assertNotEqual(self.touchback(self.gated, 8, 2)[1]["st0"], self.touchback(self.gated, 7, 2)[1]["st0"])
         # Outside a kickoff (phase 1, a safety kick) the 20 holds in both modes.
         self.assertEqual(self.touchback(self.gated, 8, 1)[1]["st0"], self.touchback(self.gated, 7, 1)[1]["st0"])
+
+    def test_unc_bowl_uses_modern_spots_and_touchback(self):
+        esp = _regs(0, {})['esp']
+        for _label, va, _kind in gate.kick_rule_sites():
+            assert_equivalent(self, self.spot(self.gated, va, 8, moment=50), self.spot(self.ungated, va, 8, moment=50), esp)
+        for phase in (1, 2, 4):
+            assert_equivalent(self, self.touchback(self.gated, 8, phase, moment=50), self.touchback(self.ungated, 8, phase, moment=50), esp)
 
 
 def _record(tables, name, xz):
@@ -500,9 +517,10 @@ class ReaderTests(_Images, unittest.TestCase):
         from tools import nfl2k5_kickoff_alignment as alignment
         cls.alignment = alignment
 
-    def read(self, payload, entry, record, mode, slot, column, mirror):
+    def read(self, payload, entry, record, mode, slot, column, mirror, *, moment=0):
         m = Machine(payload)
         _prime(m, mode, slot * 7 + column)
+        m.put(gate.MOMENT_VA, moment)
         rec = m.alloc(record)
         out = m.alloc(bytes(16))
         esp = Machine.STACK + 0xF000 - 0x400
@@ -544,6 +562,13 @@ class ReaderTests(_Images, unittest.TestCase):
                     with self.subTest(reader=label, slot=slot):
                         self.assertEqual(self.read(self.gated, entry, record, 8, slot, 0, 0),
                                          self.read(self.ungated, entry, record, 8, slot, 0, 0))
+
+    def test_unc_bowl_keeps_modern_lineup_and_diagram_positions(self):
+        for _label, entry in gate.READER_SITES:
+            for _name, modern, _retail in self.cases():
+                for slot in range(11):
+                    self.assertEqual(self.read(self.gated, entry, modern, 8, slot, 0, 0, moment=50),
+                                     self.read(self.ungated, entry, modern, 8, slot, 0, 0, moment=50))
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn required")
@@ -608,6 +633,19 @@ class PlayStoreTests(_Images, unittest.TestCase):
                 self.store(m, at, 7, p + 20)
                 self.assertEqual(bytes(m.uc.mem_read(at, gate.PLAY_SIZE)), original)
                 self.assertEqual(m.get(self.data_va), 0)
+
+    def test_unc_bowl_keeps_return_chains_and_restores_prior_historical_replacements(self):
+        for p, name in enumerate(gate.RETURN_PLAYS):
+            m, at, original = self.machine(self.gated, name)
+            m.put(gate.MOMENT_VA, 50)
+            self.store(m, at, 8, p)
+            self.assertEqual(bytes(m.uc.mem_read(at, gate.PLAY_SIZE)), original)
+            m.put(gate.MOMENT_VA, 49)
+            self.store(m, at, 8, p)
+            self.assertNotEqual(bytes(m.uc.mem_read(at, gate.PLAY_SIZE)), original)
+            m.put(gate.MOMENT_VA, 50)
+            self.store(m, at, 8, p)
+            self.assertEqual(bytes(m.uc.mem_read(at, gate.PLAY_SIZE)), original)
 
     def test_registers_flags_and_stack_match_the_retail_prologue(self):
         for mode in (7, 8):

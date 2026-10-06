@@ -68,7 +68,7 @@ PATCHES = (
      "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
      "testing. Team and reserve limits stay the same."),
     ("music_shuffle", "Shared music shuffle (experimental)", "Retail: Uses the original music selections. Patch: " + tt.music_playlist_patch.HELP_TEXT),
-    ("practice_squad_screen", "Practice Squad screen (experimental)", tt.practice_squad_screen_patch.HELP_TEXT),
+    ("practice_squad_screen", "Remove incomplete Practice Squad screen", tt.practice_squad_screen_patch.HELP_TEXT),
     ("abilities", "Player abilities rules v2 (experimental)", tt.abilities_patch.HELP_TEXT),
     ("qb_spy", "QB spy for zone, man and rush (experimental)", tt.qb_spy_patch.HELP_TEXT),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
@@ -200,13 +200,10 @@ PATCHES = (
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
     ("depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
      "Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED."),
-    ("practice_squad", "Practice squads: 53 active + up to 12 reserves in franchise (experimental)",
-     "Retail: the season gate cuts every franchise roster to 53 and the rest become free agents. Patch: each team keeps up to "
-     "twelve of the players it cuts as team-owned reserves (the same 65-slot roster table; three spare bytes mark the list). "
-     "Reserves stay off the active roster, the depth chart and the team rating, cost no cap space, keep their contract terms, "
-     "and survive saves, team imports and the season rollover. There is no in-game reserve screen or automatic promotion yet; "
-     "a full 53 + 12 roster must release players to draft. Only use saves with reserves on a disc that carries this patch. "
-     "Unwitnessed in game."),
+    ("practice_squad", "Reserve save compatibility: 53 active + 12 existing reserves",
+     "Retail: franchise rosters have no practice-squad phase. Patch: preserves existing reserves, contracts and save "
+     "storage, with reserve moves available in Studio's save tools. Final cuts release players to free agency. "
+     "Modern eligibility and CPU practice-squad signings are unavailable. Gameplay awaits Noah."),
     ("xbe_space", "Extra patch space (experimental, unwitnessed)",
      "Retail: patches have no spare room for larger changes. Patch: adds room for "
      "experimental features. Needs a disc boot check before regular use."),

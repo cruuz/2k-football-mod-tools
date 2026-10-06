@@ -11,6 +11,7 @@ archive or creates an XISO.
 from __future__ import annotations
 
 import argparse
+import base64
 from collections import Counter
 from dataclasses import asdict, dataclass
 import hashlib
@@ -485,7 +486,81 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
     return palette
 
 
-def quantize_levels(levels: list[MipLevel], maximum: int = 256) -> tuple[
+def png_palette_reservation(payload: bytes) -> dict | None:
+    """Read an opt-in exact-colour reservation from an already validated PNG.
+
+    The small tEXt record reserves palette entries; it cannot supply descriptors, indices or geometry.
+    Missing metadata keeps the existing quantizer path unchanged. Invalid or duplicate reservations refuse.
+    """
+    offset=8
+    found=None
+    while offset+12<=len(payload):
+        size=struct.unpack_from('>I',payload,offset)[0]
+        kind=payload[offset+4:offset+8];data=payload[offset+8:offset+8+size]
+        if kind==b'tEXt' and data.startswith(b'nfl2k5_palette_lock\0'):
+            require(found is None and len(data)<=131072,'duplicate or oversized PNG palette reservation')
+            found=data.split(b'\0',1)[1]
+        offset+=size+12
+    if found is None:return None
+    try:doc=json.loads(found.decode('ascii'))
+    except (UnicodeError,ValueError) as exc:raise ImportError('invalid PNG palette reservation') from exc
+    require(isinstance(doc,dict) and doc.get('schema')=='nfl2k5_palette_lock/v1','PNG palette reservation schema mismatch')
+    colors=doc.get('rgba')
+    require(isinstance(colors,list) and 0<len(colors)<=256,'PNG palette reservation must contain 1 through 256 colors')
+    require(all(isinstance(c,list) and len(c)==4 and all(type(v) is int and 0<=v<=255 for v in c) for c in colors),
+            'PNG palette reservation contains invalid RGBA values')
+    result=sorted(set(tuple(c) for c in colors))
+    require(len(result)==len(colors),'PNG palette reservation contains duplicate colors')
+    doc['rgba']=result
+    return doc
+
+
+def png_locked_colors(payload: bytes) -> list[tuple[int, int, int, int]]:
+    doc=png_palette_reservation(payload)
+    return doc['rgba'] if doc else []
+
+
+def preserve_reserved_mips(levels: list[MipLevel], reservation: dict | None) -> tuple[list[MipLevel],list[tuple[int,int,int,int]]]:
+    """Keep protected mip texels exact; only the declared texture scope is regenerated.
+
+    The reservation contains RGBA artwork and a bit mask, never a stored chunk or its descriptors. All sizes
+    are pinned to the existing jersey class and zlib output is bounded before allocating the original tail.
+    """
+    if not reservation:return levels,[]
+    locked=reservation['rgba']
+    keep=reservation.get('preserve_mips')
+    if keep is None:return levels,locked
+    require(isinstance(keep,dict) and tuple((x.width,x.height) for x in levels)==MIP_DIMENSIONS,
+            'reserved mips require the exact six-level jersey dimensions')
+    try:
+        scope_bits=base64.b64decode(keep['scope_bits'],validate=True)
+        encoded=base64.b64decode(keep['clean_tail_zlib'],validate=True)
+    except (KeyError,TypeError,ValueError) as exc:raise ImportError('invalid reserved mip data') from exc
+    require(len(scope_bits)==BASE_WIDTH*BASE_HEIGHT//8 and len(encoded)<=65536,'reserved mip data size exceeds its bound')
+    expected=(INDEX_CHAIN_BYTES-BASE_WIDTH*BASE_HEIGHT)*4
+    decoder=zlib.decompressobj()
+    tail=decoder.decompress(encoded,expected+1)
+    require(len(tail)==expected and decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail,
+            'reserved mip RGBA is truncated, trailing or oversized')
+    require(keep.get('clean_tail_sha256')==sha256_bytes(tail),'reserved mip RGBA hash mismatch')
+    scope=[bool((scope_bits[i//8]>>(7-i%8))&1) for i in range(BASE_WIDTH*BASE_HEIGHT)]
+    result=[levels[0]];cursor=0;width=BASE_WIDTH;height=BASE_HEIGHT;protected=set(locked)
+    for level in levels[1:]:
+        next_scope=[any(scope[(y*2+dy)*width+x*2+dx] for dy in (0,1) for dx in (0,1))
+                    for y in range(height//2) for x in range(width//2)]
+        count=level.width*level.height
+        original=tail[cursor:cursor+count*4];cursor+=count*4
+        rgba=bytearray(level.rgba)
+        for i,changed in enumerate(next_scope):
+            if not changed:
+                color=original[i*4:i*4+4];rgba[i*4:i*4+4]=color;protected.add(tuple(color))
+        result.append(MipLevel(level.level,level.width,level.height,bytes(rgba)))
+        scope=next_scope;width//=2;height//=2
+    require(len(protected)<=256,'protected mip colors exceed the shared palette budget')
+    return result,sorted(protected)
+
+
+def quantize_levels(levels: list[MipLevel], maximum: int = 256, *, locked_colors=()) -> tuple[
     list[tuple[int, int, int, int]], list[bytes], dict[str, int]
 ]:
     """Quantize one mip chain into at most ``maximum`` shared RGBA entries.
@@ -504,7 +579,15 @@ def quantize_levels(levels: list[MipLevel], maximum: int = 256) -> tuple[
         colors = rgba_tuples(level.rgba)
         level_colors.append(colors)
         histogram.update(colors)
-    palette = median_cut_palette(histogram, maximum)
+    locked=sorted(set(tuple(c) for c in locked_colors))
+    require(len(locked)<=maximum and all(len(c)==4 and all(type(v) is int and 0<=v<=255 for v in c) for c in locked),
+            'locked palette colors exceed the palette budget or contain invalid RGBA values')
+    if locked:
+        remaining=Counter({c:n for c,n in histogram.items() if c not in locked})
+        additions=median_cut_palette(remaining,maximum-len(locked)) if remaining and len(locked)<maximum else []
+        palette=sorted(set(locked+additions))
+    else:
+        palette = median_cut_palette(histogram, maximum)
     color_to_index: dict[tuple[int, int, int, int], int] = {}
     total_squared_error = 0
     maximum_channel_error = 0
@@ -530,6 +613,7 @@ def quantize_levels(levels: list[MipLevel], maximum: int = 256) -> tuple[
             differing_pixels += histogram[color]
     indices = [bytes(color_to_index[color] for color in colors) for colors in level_colors]
     return palette, indices, {
+        **({'locked_palette_entries':len(locked)} if locked else {}),
         "input_unique_rgba_colors": len(histogram),
         "palette_entries": len(palette),
         "total_squared_rgba_error": total_squared_error,

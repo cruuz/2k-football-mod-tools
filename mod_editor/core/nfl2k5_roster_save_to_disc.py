@@ -128,6 +128,9 @@ class ExportResult:
         if r.get("mode") == "replace_roster":
             return (f"Roster prepared: {r['replaced']} player slots and {len(r['teams'])} teams. "
                     "No unmatched players were skipped.\n"
+                    + ("Faces and portraits are included.\n" if r.get("appearance_source_supplied") else
+                       "This save has no face art. Export a complete roster with faces from its source disc "
+                       "to keep faces when moving between projects.\n") +
                     "Build with Include exported Rosters edits. Franchise progress stays in the Xbox save.")
         return (f"Matched: {r['matched']}. Added in free slots: {r['added']}. "
                 f"Changed: {r['changed']}. Unmatched: {r['unmatched']}. "
@@ -145,7 +148,8 @@ class ExportResult:
 
 
 def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
-            name: str = "Xbox save roster for disc", replace_roster: bool = False) -> ExportResult:
+            name: str = "Xbox save roster for disc", replace_roster: bool = False,
+            appearance_source: Path | str | None = None) -> ExportResult:
     """Return replay-checked edits and a receipt without mutating either input.
 
     ``replace_roster`` exports every supported player slot and membership using
@@ -159,6 +163,8 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
     """
     if save.container is None or not save.container.verified:
         raise SaveToDiscError("Open a signature-verified Xbox save (SAVEGAME.DAT with its EXTRA).")
+    if appearance_source is not None and not replace_roster:
+        raise SaveToDiscError("Source face art requires a complete roster replacement export.")
     if sum(Path(k).name.casefold() == "savegame.dat" for k in save.container.members) != 1:
         raise SaveToDiscError("Choose a container holding exactly one Xbox SAVEGAME.DAT.")
     if not rr.verify_extra(save.container.savegame, save.container.members[save.container.extra_name]):
@@ -183,12 +189,20 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
             raise SaveToDiscError("This roster has injured-reserve ownership in the save. "
                                   "Use the signed Xbox save on the HDD to keep that ownership.")
         edits = snapshot.document(save, name=name)
+        if appearance_source is not None:
+            from . import nfl2k5_roster_appearance_transfer as appearance
+            edits["appearance_assets"] = appearance.export_bundle(appearance_source, save)
         before = disc.to_body()
         after, replay = rr.apply_body(before, edits, scheme=disc.scheme)
         receipt = {"schema": RECEIPT_SCHEMA, "experimental": True, "witnessed": False,
                    "mode": "replace_roster", "source_kind": "franchise save" if franchise else "roster save",
                    "source_note": "Replaces player slots, active teams, reserves, free agents and specialists. "
-                                  "Franchise progress stays in the Xbox save. Disc presentation stays on the disc.",
+                                  "Franchise progress stays in the Xbox save. "
+                                  + ("Faces and portraits travel from the supplied source disc."
+                                     if appearance_source is not None else
+                                     "This save has no face art. Use a complete roster with faces export "
+                                     "or supply its source disc to carry faces between projects."),
+                   "appearance_source_supplied": appearance_source is not None,
                    "matched": 0, "added": 0, "changed": replay["players_changed"],
                    "unmatched": 0, "skipped": [], "replaced": len(save.players),
                    "teams": [{"index": t.index, "save_active": len(t.slots)} for t in save.teams],
@@ -457,9 +471,9 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
 
 
 def from_file(disc: Path | str | rr.RosterDocument, source: Path | str, *,
-              replace_roster: bool = False) -> ExportResult:
+              replace_roster: bool = False, appearance_source: Path | str | None = None) -> ExportResult:
     target = disc if isinstance(disc, rr.RosterDocument) else rr.load_image(disc, detect=True)
-    return compare(target, load_save(source), replace_roster=replace_roster)
+    return compare(target, load_save(source), replace_roster=replace_roster, appearance_source=appearance_source)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -469,8 +483,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--replace-roster", action="store_true",
                         help="Replace the supported player roster, as the Studio button does")
+    parser.add_argument("--appearance-source", type=Path,
+                        help="Disc or loose packs matching the save's faces; requires --replace-roster.")
     args = parser.parse_args(argv)
-    result = from_file(args.disc, args.save, replace_roster=args.replace_roster)
+    result = from_file(args.disc, args.save, replace_roster=args.replace_roster,
+                       appearance_source=args.appearance_source)
     output = args.output.expanduser().resolve()
     receipt_path = output.with_suffix(".receipt.json")
     if (output.suffix.lower() != ".json" or receipt_path == output

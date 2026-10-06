@@ -177,10 +177,10 @@ class ApfStudioFacade:
     def source_ready(self) -> bool:
         return self.source is not None and self.catalog is not None and self.session is not None
 
-    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop, *, book=None, preview_tendency=None):
+    def playcalling_context(self, team=0, side="offense", progress: Progress = _noop, *, book=None, preview_tendency=None, pending=()):
         with self._session_lock:
             progress("Updating the selected book and its staged edits", 0, 1)
-            return self._playcalling.context(self.require_session(), team, side, book=book, preview_tendency=preview_tendency)
+            return self._playcalling.context(self.require_session(), team, side, book=book, preview_tendency=preview_tendency, pending=pending)
 
     def playcalling_predict(self, context, side, rows, progress: Progress = _noop):
         with self._session_lock:

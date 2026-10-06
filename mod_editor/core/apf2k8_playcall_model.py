@@ -231,7 +231,7 @@ def _records(book):
     return tuple(result)
 
 
-def category_weight_terms(book, master, row, situation, *, run_share=.5, urgency=0., distance_curve=None, personnel_rows=None):
+def category_weight_terms(book, master, row, situation, *, run_share=.5, urgency=0., distance_curve=None, personnel_rows=None, formation_multipliers=None):
     """Factors used by the draw, before its cubic personnel lottery."""
     categories = category_table(master)
     records = _records(book)
@@ -244,24 +244,30 @@ def category_weight_terms(book, master, row, situation, *, run_share=.5, urgency
         effective = override if type(override) is int and 0 <= override <= 10 and row <= 10 and c.row <= 10 else c.row
         if row <= 10:
             distance = abs(effective - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1)
-            weights = [formation_weight(r, master, situation, category=True, urgency=urgency, run_share=run_share) for r in members]
+            retail_weights = [formation_weight(r, master, situation, category=True, urgency=urgency, run_share=run_share) for r in members]
+            weights = [f32(w * (formation_multipliers or {}).get(str(r.formation_index), 1.))
+                       for r, w in zip(members, retail_weights)]
             total = 0.
             for w in weights:
                 total = f32(total + w)
             mean = f32(total / len(weights)) if min(weights) > 0 else 0.
             factor = curve(distance, distance_curve or OFFENSE_CURVE)
+            retail_mean = 0.
+            for w in retail_weights:
+                retail_mean = f32(retail_mean + w)
+            retail_mean = f32(retail_mean / len(retail_weights)) if min(retail_weights) > 0 else 0.
             retail_factor = curve(abs(c.row - row) * (.5 if situation.down <= 2 and abs(urgency) < .5 else 1), distance_curve or OFFENSE_CURVE)
             weight = f32(factor * mean)
         elif 11 <= row <= 16:
             factor = curve(c.row - row, distance_curve or DEFENSE_CURVE) if c.row >= row else 0.
-            mean, retail_factor, weight = 1., factor, factor
+            mean, retail_mean, retail_factor, weight = 1., 1., factor, factor
         else:
             if row != 25 and row != c.row:
                 continue
-            factor = mean = retail_factor = weight = 1.
+            factor = mean = retail_mean = retail_factor = weight = 1.
         result.append(dict(category=c.id, stored_row=c.row, effective_row=effective,
                            curve_term=factor, ratings_term=mean, category_weight=weight,
-                           retail_weight=f32(retail_factor * mean), row_override=effective != c.row))
+                           retail_weight=f32(retail_factor * retail_mean), row_override=effective != c.row))
     ordered = sorted(result, key=lambda c: (-c["category_weight"], c["category"]))
     ranks = {c["category"]: i + 1 for i, c in enumerate(ordered)}
     return tuple(dict(c, rank=ranks[c["category"]]) for c in result)
@@ -296,7 +302,8 @@ def situation_candidates(book, master, situation, *, requested_row=None, personn
     row = requested_offense_row(situation) if requested_row is None else requested_row
     categories = {c.id: c for c in category_table(master)}
     result = []
-    terms = category_weight_terms(book, master, row, situation, personnel_rows=personnel_rows)
+    terms = category_weight_terms(book, master, row, situation, personnel_rows=personnel_rows,
+                                  formation_multipliers=formation_multipliers)
     from .apf2k8_situation_mask import filter_categories, filter_formations
     allowed, category_fallback = filter_categories(book, master, tuple((c["category"], c["category_weight"]) for c in terms), exclusions)
     allowed_ids = {category for category, _ in allowed}
@@ -556,7 +563,8 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
         run = float(rng.random() <= share)
         key = row, run
         if key not in cache:
-            cache[key] = category_weights(book, master, row, situation, run_share=run, personnel_rows=personnel_rows)
+            cache[key] = category_weights(book, master, row, situation, run_share=run,
+                                          personnel_rows=personnel_rows, formation_multipliers=formation_multipliers)
         candidates, fallback = filter_categories(book, master, cache[key], exclusions) if exclusions else (cache[key], False)
         fallbacks["category"] += fallback
         cat = draw(candidates, rng.random(), power=3)
@@ -584,7 +592,7 @@ def predict_offense(book: bytes, master: bytes, tendency_run_share: float, situa
         return [(i, _name(master, base + i * stride), n / seeds) for i, n in sorted(counter.items(), key=lambda x: (-x[1], x[0]))]
     notes = DEFAULT_NOTES + tuple(f'{c.name} carries no tight end' for c in category_table(master) if c.id in counters[0] and c.tight_ends == 0)
     if formation_multipliers:
-        notes += ("Formation weight = retail weight x this book/situation multiplier. Requires the matching v3 patch; gameplay UNWITNESSED.",)
+        notes += ("Multipliers weight each formation's native personnel-rating contribution and its final formation draw. Requires the matching v4 patch; gameplay UNWITNESSED.",)
     if personnel_rows:
         notes += ("Per-book personnel-row override preview assumes the matching situation patch is installed and enabled. Gameplay UNWITNESSED.",)
     if exclusions:

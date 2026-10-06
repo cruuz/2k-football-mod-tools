@@ -1,0 +1,6 @@
+# Optional offline DET/WAS field-authoring environment; Studio builds consume PNGs.
+# Reviewed CPython 3.12 environment; external Inkscape is also required.
+numpy==1.26.4
+Pillow==11.3.0
+scipy==1.11.4
+opencv-python==4.11.0.86

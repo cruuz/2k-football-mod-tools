@@ -1,0 +1,2151 @@
+{
+  "schema": "nfl2k5_espn25_fields/v1",
+  "classification": "OFFLINE RECONSTRUCTION / UNWITNESSED",
+  "moments": [
+    {
+      "row": 1,
+      "date": "1967-12-31",
+      "title": "THE ICE BOWL",
+      "season": 1967,
+      "venue": "Lambeau Field",
+      "native_stadium_index": 10,
+      "source_prefix": "s10",
+      "source_kind": "retail",
+      "variant": "ds",
+      "stadium_note": "2004 Lambeau bowl; the 1967 seating configuration is unavailable.",
+      "super_bowl": null,
+      "away": "DAL",
+      "home": "GB",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196712310gnb.htm",
+        "https://www.profootballhof.com/football-history/the-ice-bowl",
+        "https://www.profootballhof.com/football-history/the-ice-bowl"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "GB",
+          "text": "",
+          "background": "#50753d",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "GB",
+          "text": "",
+          "background": "#50753d",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank",
+      "pattern": "diagonal"
+    },
+    {
+      "row": 2,
+      "date": "1968-11-17",
+      "title": "THE HEIDI BOWL",
+      "season": 1968,
+      "venue": "Oakland-Alameda County Coliseum",
+      "native_stadium_index": 20,
+      "source_prefix": "s20",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "2004 Oakland Coliseum bowl includes the later Mount Davis deck.",
+      "super_bowl": null,
+      "away": "NYJ",
+      "home": "OAK",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196811170rai.htm",
+        "https://www.profootballhof.com/news/heidi",
+        "https://www.profootballhof.com/news/heidi"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "OAK",
+          "text": "RAIDERS",
+          "background": "#101820",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        },
+        {
+          "team": "OAK",
+          "text": "RAIDERS",
+          "background": "#101820",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 3,
+      "date": "1971-12-25",
+      "title": "MERRY CHRISTMAS MIAMI",
+      "season": 1971,
+      "venue": "Municipal Stadium, Kansas City",
+      "native_stadium_index": 13,
+      "source_prefix": "s13",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Municipal Stadium is unavailable; retail Arrowhead is the closest Kansas City venue.",
+      "super_bowl": null,
+      "away": "MIA",
+      "home": "KC",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197112250kan.htm",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2023/MIA.pdf",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1971/r1024/KC_1971%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1971/r1024/KC_1971%5Ediv.png",
+      "art_status": "Period end zones and midfield identity cropped from game-specific playoff reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "#ffb81c",
+          "foreground": "#e31837",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "#ffb81c",
+          "foreground": "#e31837",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "MIA_KC_HELMETS",
+      "endzone_files": {
+        "N": "source/row03_endzone_N.png",
+        "S": "source/row03_endzone_S.png"
+      },
+      "center_file": "source/row03_center.png"
+    },
+    {
+      "row": 4,
+      "date": "1972-12-23",
+      "title": "THE IMMACULATE RECEPTION",
+      "season": 1972,
+      "venue": "Three Rivers Stadium",
+      "native_stadium_index": 22,
+      "source_prefix": "s22",
+      "source_kind": "retail",
+      "variant": "dr",
+      "stadium_note": "Three Rivers is unavailable; retail Heinz Field is the closest Pittsburgh venue.",
+      "super_bowl": null,
+      "away": "OAK",
+      "home": "PIT",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197212230pit.htm",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1972/r1024/PIT_1972%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1972/r1024/PIT_1972%5Ediv.png",
+      "art_status": "Period end zones and midfield identity cropped from game-specific playoff reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "PIT",
+          "text": "STEELERS",
+          "background": "#ffb612",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "PIT",
+          "text": "PITTSBURGH",
+          "background": "#ffb612",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "PIT",
+      "endzone_files": {
+        "N": "source/row04_endzone_N.png",
+        "S": "source/row04_endzone_S.png"
+      },
+      "center_file": "source/row04_center.png"
+    },
+    {
+      "row": 5,
+      "date": "1974-12-21",
+      "title": "THE SEA OF HANDS",
+      "season": 1974,
+      "venue": "Oakland-Alameda County Coliseum",
+      "native_stadium_index": 20,
+      "source_prefix": "s20",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "2004 Oakland Coliseum bowl includes the later Mount Davis deck.",
+      "super_bowl": null,
+      "away": "MIA",
+      "home": "OAK",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler",
+        "https://www.raiders.com/news/sea-of-hands-game-50th-anniversary-raiders-vs-miami-dolphins-john-madden-clarence-davis-ken-stabler"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "OAK",
+          "text": "RAIDERS",
+          "background": "#101820",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        },
+        {
+          "team": "OAK",
+          "text": "RAIDERS",
+          "background": "#101820",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 6,
+      "date": "1979-12-16",
+      "title": "THE FINAL COMEBACK",
+      "season": 1979,
+      "venue": "Texas Stadium",
+      "native_stadium_index": 7,
+      "source_prefix": "s07",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "WAS",
+      "home": "DAL",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown",
+        "https://www.dallascowboys.com/video/countdown-play-8-staubach-to-hill-gw-touchdown",
+        "https://gridiron-uniforms.com/fields/images/regular-season/DAL/r1024/DAL_1979%5E1.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/regular-season/DAL/r1024/DAL_1979%5E1.png",
+      "art_status": "Period end-zone paint cropped from inferred regular-season period reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "DAL",
+          "text": "COWBOYS",
+          "background": "#003594",
+          "foreground": "#ffffff",
+          "outline": "#869397"
+        },
+        {
+          "team": "DAL",
+          "text": "COWBOYS",
+          "background": "#003594",
+          "foreground": "#ffffff",
+          "outline": "#869397"
+        }
+      ],
+      "center": "DAL",
+      "endzone_files": {
+        "N": "source/row06_endzone_N.png",
+        "S": "source/row06_endzone_S.png"
+      }
+    },
+    {
+      "row": 7,
+      "date": "1980-12-07",
+      "title": "MONTANA'S COMEBACK",
+      "season": 1980,
+      "venue": "Candlestick Park",
+      "native_stadium_index": 25,
+      "source_prefix": "s25",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "NO",
+      "home": "SF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198012070sfo.htm",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090",
+        "https://www.49ers.com/video/farewell-candlestick-greatest-comeback-11414090"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 8,
+      "date": "1982-01-02",
+      "title": "EPIC IN MIAMI",
+      "season": 1981,
+      "venue": "Miami Orange Bowl",
+      "native_stadium_index": 14,
+      "source_prefix": "s14",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "The Orange Bowl is unavailable; retail Pro Player Stadium is the closest Miami venue.",
+      "super_bowl": null,
+      "away": "SD",
+      "home": "MIA",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201020mia.htm",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami",
+        "https://www.profootballhof.com/news/flashback-winslow-chargers-outlast-miami"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "MIA",
+          "text": "DOLPHINS",
+          "background": "#008e97",
+          "foreground": "#fc4c02",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "MIA",
+          "text": "DOLPHINS",
+          "background": "#008e97",
+          "foreground": "#fc4c02",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 9,
+      "date": "1982-01-10",
+      "title": "THE CATCH",
+      "season": 1981,
+      "venue": "Candlestick Park",
+      "native_stadium_index": 25,
+      "source_prefix": "s25",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "DAL",
+      "home": "SF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201100sfo.htm",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1981/r1024/SF_1981%5Econf.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1981/r1024/SF_1981%5Econf.png",
+      "art_status": "Period end zones and midfield identity cropped from game-specific playoff reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "SAN FRANCISCO",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "SF_HELMET",
+      "endzone_files": {
+        "N": "source/row09_endzone_N.png",
+        "S": "source/row09_endzone_S.png"
+      },
+      "center_file": "source/row09_center.png"
+    },
+    {
+      "row": 10,
+      "date": "1983-10-02",
+      "title": "WASHINGTON RALLIES",
+      "season": 1983,
+      "venue": "RFK Stadium",
+      "native_stadium_index": 29,
+      "source_prefix": "s29",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "RFK is unavailable; retail FedEx Field is the closest Washington venue.",
+      "super_bowl": null,
+      "away": "LA",
+      "home": "WAS",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198310020was.htm",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555",
+        "https://www.commanders.com/news/83-redskins-the-best-team-in-franchise-history-3446555"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "WAS",
+          "text": "REDSKINS",
+          "background": "#5a1414",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "WAS",
+          "text": "REDSKINS",
+          "background": "#5a1414",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 11,
+      "date": "1987-01-11",
+      "title": "THE DRIVE",
+      "season": 1986,
+      "venue": "Cleveland Municipal Stadium",
+      "native_stadium_index": 30,
+      "source_prefix": "s30",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Cleveland Municipal is unavailable; retail Cleveland Browns Stadium is the closest Cleveland venue.",
+      "super_bowl": null,
+      "away": "DEN",
+      "home": "CLE",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198701110cle.htm",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1986/r1024/CLE_1986%5Econf.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1986/r1024/CLE_1986%5Econf.png",
+      "art_status": "Period end zones from game-specific playoff field reference; that reference has no midfield identity mark. Creator-authored reconstruction, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "CLE",
+          "text": "BROWNS",
+          "background": "#311d00",
+          "foreground": "#ff3c00",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "#311d00",
+          "foreground": "#ff3c00",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank",
+      "endzone_files": {
+        "N": "source/row11_endzone_N.png",
+        "S": "source/row11_endzone_S.png"
+      }
+    },
+    {
+      "row": 12,
+      "date": "1987-09-20",
+      "title": "THE 2-SECOND MISCALCULATION",
+      "season": 1987,
+      "venue": "Riverfront Stadium",
+      "native_stadium_index": 6,
+      "source_prefix": "s06",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Riverfront is unavailable; retail Paul Brown Stadium is the closest Cincinnati venue.",
+      "super_bowl": null,
+      "away": "SF",
+      "home": "CIN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198709200cin.htm"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#101820",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#101820",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 13,
+      "date": "1987-11-08",
+      "title": "SAME OLD BUCS",
+      "season": 1987,
+      "venue": "Busch Memorial Stadium",
+      "native_stadium_index": 20,
+      "source_prefix": "s20",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Busch Memorial is unavailable; retail Oakland Coliseum approximates its multipurpose open bowl.",
+      "super_bowl": null,
+      "away": "TB",
+      "home": "STL",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198711080crd.htm",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946",
+        "https://www.buccaneers.com/news/series-history-buccaneers-cardinals-19547946"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "STL",
+          "text": "CARDINALS",
+          "background": "#b71234",
+          "foreground": "#ffffff",
+          "outline": "#000000"
+        },
+        {
+          "team": "STL",
+          "text": "CARDINALS",
+          "background": "#b71234",
+          "foreground": "#ffffff",
+          "outline": "#000000"
+        }
+      ],
+      "center": "blank"
+    },
+    {
+      "row": 14,
+      "date": "1989-01-22",
+      "title": "SUPER BOWL XXIII",
+      "season": 1988,
+      "venue": "Joe Robbie Stadium",
+      "native_stadium_index": 14,
+      "source_prefix": "s14",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XXIII",
+      "away": "CIN",
+      "home": "SF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198901220cin.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXIII",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/23/r1024/23.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/23/r1024/23.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#101820",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "#aa0000",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row14_endzone_N.png",
+        "S": "source/row14_endzone_S.png"
+      }
+    },
+    {
+      "row": 15,
+      "date": "1991-01-27",
+      "title": "WIDE RIGHT",
+      "season": 1990,
+      "venue": "Tampa Stadium",
+      "native_stadium_index": 27,
+      "source_prefix": "s27",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Tampa Stadium is unavailable; retail Raymond James is the closest Tampa venue.",
+      "super_bowl": "XXV",
+      "away": "BUF",
+      "home": "NYG",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199101270buf.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXV",
+        "https://upload.wikimedia.org/wikipedia/commons/a/ac/Super_Bowl_XXV.svg",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/25/r1024/25.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/25/r1024/25.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced authentic SB25 midfield graphic; period end-zone colours/layout reconstructed. Participant helmets, side event insignia and exact placement still need review.",
+      "endzones": [
+        {
+          "team": "NYG",
+          "text": "GIANTS",
+          "background": "#0b2265",
+          "foreground": "#ffffff",
+          "outline": "#a71930"
+        },
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#00338d",
+          "foreground": "#c60c30",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "SB25",
+      "center_file": "source/sb25.png",
+      "endzone_files": {
+        "N": "source/row15_endzone_N.png",
+        "S": "source/row15_endzone_S.png"
+      }
+    },
+    {
+      "row": 16,
+      "date": "1992-01-04",
+      "title": "HOUSTON'S HEARTS RIPPED OUT",
+      "season": 1991,
+      "venue": "Mile High Stadium",
+      "native_stadium_index": 8,
+      "source_prefix": "s08",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "The original Mile High is unavailable; retail INVESCO is the closest Denver venue.",
+      "super_bowl": null,
+      "away": "HOU",
+      "home": "DEN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199201040den.htm",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers",
+        "https://www.denverbroncos.com/news/way-back-when-remembering-the-drive-ii-broncos-oilers",
+        "https://www.denverbroncos.com/uniforms/history",
+        "https://commons.wikimedia.org/wiki/File:Denver_Broncos_wordmark_(1968_-_1996).png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Official pre-1997 D logo and sourced 1968-1996 Denver wordmark; old Mile High uses a venue fallback. Exact paint placement still needs game-photo review.",
+      "endzones": [
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        }
+      ],
+      "center": "DEN_old"
+    },
+    {
+      "row": 17,
+      "date": "1992-10-04",
+      "title": "THE TWO TD COMEBACK ON KC",
+      "season": 1992,
+      "venue": "Mile High Stadium",
+      "native_stadium_index": 8,
+      "source_prefix": "s08",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "The original Mile High is unavailable; retail INVESCO is the closest Denver venue.",
+      "super_bowl": null,
+      "away": "KC",
+      "home": "DEN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199210040den.htm",
+        "https://www.denverbroncos.com/uniforms/history",
+        "https://commons.wikimedia.org/wiki/File:Denver_Broncos_wordmark_(1968_-_1996).png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Official pre-1997 D logo and sourced 1968-1996 Denver wordmark; old Mile High uses a venue fallback. Exact paint placement still needs game-photo review.",
+      "endzones": [
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        }
+      ],
+      "center": "DEN_old"
+    },
+    {
+      "row": 18,
+      "date": "1993-01-03",
+      "title": "THE 32-POINT COMEBACK",
+      "season": 1992,
+      "venue": "Rich Stadium",
+      "native_stadium_index": 3,
+      "source_prefix": "s03",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "HOU",
+      "home": "BUF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199301030buf.htm",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1992/r1024/BUF_1992%5Ewc.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1992/r1024/BUF_1992%5Ewc.png",
+      "art_status": "Period end zones and midfield identity cropped from game-specific playoff reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#c60c30",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#c60c30",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "BUF_HELMET",
+      "endzone_files": {
+        "N": "source/row18_endzone_N.png",
+        "S": "source/row18_endzone_S.png"
+      },
+      "center_file": "source/row18_center.png"
+    },
+    {
+      "row": 19,
+      "date": "1994-10-17",
+      "title": "THE HEARTBREAKER",
+      "season": 1994,
+      "venue": "Mile High Stadium",
+      "native_stadium_index": 8,
+      "source_prefix": "s08",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "The original Mile High is unavailable; retail INVESCO is the closest Denver venue.",
+      "super_bowl": null,
+      "away": "KC",
+      "home": "DEN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199410170den.htm",
+        "https://www.denverbroncos.com/uniforms/history",
+        "https://commons.wikimedia.org/wiki/File:Denver_Broncos_wordmark_(1968_-_1996).png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Official pre-1997 D logo and sourced 1968-1996 Denver wordmark; old Mile High uses a venue fallback. Exact paint placement still needs game-photo review.",
+      "endzones": [
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff",
+          "wordmark_file": "source/den_wordmark_1968_1996.png"
+        }
+      ],
+      "center": "DEN_old"
+    },
+    {
+      "row": 20,
+      "date": "1997-09-21",
+      "title": "THE COLTS' COLLAPSE",
+      "season": 1997,
+      "venue": "Rich Stadium",
+      "native_stadium_index": 3,
+      "source_prefix": "s03",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "IND",
+      "home": "BUF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199709210buf.htm",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086",
+        "https://www.buffalobills.com/news/april-19-1997-bills-select-antowain-smith-with-23rd-pick-12892086",
+        "https://gridiron-uniforms.com/fields/images/regular-season/BUF/r1024/BUF_1994-1998%5E1.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/regular-season/BUF/r1024/BUF_1994-1998%5E1.png",
+      "art_status": "Period end zones and midfield identity cropped from inferred regular-season period reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#c60c30",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#c60c30",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "BUF_HELMET",
+      "endzone_files": {
+        "N": "source/row20_endzone_N.png",
+        "S": "source/row20_endzone_S.png"
+      },
+      "center_file": "source/row20_center.png"
+    },
+    {
+      "row": 21,
+      "date": "1998-01-25",
+      "title": "SUPER BOWL XXXII",
+      "season": 1997,
+      "venue": "Qualcomm Stadium",
+      "native_stadium_index": 24,
+      "source_prefix": "s24",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XXXII",
+      "away": "GB",
+      "home": "DEN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199801250den.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII",
+        "https://static.clubs.nfl.com/image/upload/packers/bkyqxjwniji7xsyoyhuf.pdf",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/32/r1024/32.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/32/r1024/32.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced authentic SB32 midfield graphic; period end-zone colours/layout reconstructed. Participant helmets, side event insignia and exact placement still need review.",
+      "endzones": [
+        {
+          "team": "GB",
+          "text": "PACKERS",
+          "background": "#203731",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#fb4f14"
+        }
+      ],
+      "center": "SB32",
+      "center_file": "source/sb32.png",
+      "endzone_files": {
+        "N": "source/row21_endzone_N.png",
+        "S": "source/row21_endzone_S.png"
+      }
+    },
+    {
+      "row": 22,
+      "date": "2000-01-30",
+      "title": "A YARD TOO SHORT",
+      "season": 1999,
+      "venue": "Georgia Dome",
+      "native_stadium_index": 1,
+      "source_prefix": "s01",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XXXIV",
+      "away": "STL",
+      "home": "TEN",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200001300oti.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXIV",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2021/LAR.pdf",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/34/r1024/34.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/34/r1024/34.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced authentic SB34 midfield graphic; period end-zone colours/layout reconstructed. Participant helmets, side event insignia and exact placement still need review.",
+      "endzones": [
+        {
+          "team": "LAR",
+          "text": "RAMS",
+          "background": "#ffd100",
+          "foreground": "#003594",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "TEN",
+          "text": "TITANS",
+          "background": "#4b92db",
+          "foreground": "#ffffff",
+          "outline": "#0c2340"
+        }
+      ],
+      "center": "SB34",
+      "center_file": "source/sb34.png",
+      "endzone_files": {
+        "N": "source/row22_endzone_N.png",
+        "S": "source/row22_endzone_S.png"
+      }
+    },
+    {
+      "row": 23,
+      "date": "2002-02-03",
+      "title": "VINATIERI STRIKES AGAIN",
+      "season": 2001,
+      "venue": "Louisiana Superdome",
+      "native_stadium_index": 17,
+      "source_prefix": "s17",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XXXVI",
+      "away": "STL",
+      "home": "NE",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200202030nwe.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVI",
+        "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2025/NE.pdf",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/36/r1024/36.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/36/r1024/36.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced authentic SB36 midfield graphic; period end-zone colours/layout reconstructed. Participant helmets, side event insignia and exact placement still need review.",
+      "endzones": [
+        {
+          "team": "LAR",
+          "text": "RAMS",
+          "background": "#003594",
+          "foreground": "#ffd100",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "SB36",
+      "center_file": "source/sb36.png",
+      "endzone_files": {
+        "N": "source/row23_endzone_N.png",
+        "S": "source/row23_endzone_S.png"
+      }
+    },
+    {
+      "row": 24,
+      "date": "2003-01-05",
+      "title": "THE BOTCHED SNAP",
+      "season": 2002,
+      "venue": "3Com Park at Candlestick Point",
+      "native_stadium_index": 25,
+      "source_prefix": "s25",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "NYG",
+      "home": "SF",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200301050sfo.htm"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Retail 2004 field helmet/wordmark/NFL PLAYOFFS paint reused, with conference Championship stamps removed for the actual wildcard/divisional round. No modern home field.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "SF"
+    },
+    {
+      "row": 25,
+      "date": "2004-01-11",
+      "title": "FOURTH AND TWENTY-SIX",
+      "season": 2003,
+      "venue": "Lincoln Financial Field",
+      "native_stadium_index": 21,
+      "source_prefix": "s21",
+      "source_kind": "retail",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "GB",
+      "home": "PHI",
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200401110phi.htm"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Retail 2004 field helmet/wordmark/NFL PLAYOFFS paint reused, with conference Championship stamps removed for the actual wildcard/divisional round. No modern home field.",
+      "endzones": [
+        {
+          "team": "PHI",
+          "text": "EAGLES",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        },
+        {
+          "team": "PHI",
+          "text": "EAGLES",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        }
+      ],
+      "center": "PHI"
+    },
+    {
+      "row": 26,
+      "date": "1999-01-17",
+      "title": "THE MISS",
+      "season": 1998,
+      "venue": "Hubert H. Humphrey Metrodome",
+      "native_stadium_index": 15,
+      "source_prefix": "s15",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "ATL",
+      "home": "MIN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+        "https://www.atlantafalcons.com/news/1998-nfc-championship-game-postgame-notes",
+        "https://www.nfl.com/news/1998-nfc-championship-09000d5d8060961f",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1998/r1024/MIN_1998%5Econf.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1998/r1024/MIN_1998%5Econf.png",
+      "art_status": "Period end zones and midfield identity cropped from game-specific playoff reference (creator-authored reconstruction); native quad placement approximate, no game-photo exactness claim.",
+      "endzones": [
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        },
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        }
+      ],
+      "center": "NFC_CHAMPIONSHIP_1998",
+      "endzone_files": {
+        "N": "source/row26_endzone_N.png",
+        "S": "source/row26_endzone_S.png"
+      },
+      "center_file": "source/row26_center.png"
+    },
+    {
+      "row": 27,
+      "date": "2008-02-03",
+      "title": "SUPER BOWL XLII: TYREE",
+      "season": 2007,
+      "venue": "University of Phoenix Stadium",
+      "native_stadium_index": 0,
+      "source_prefix": "s00",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLII",
+      "away": "NYG",
+      "home": "NE",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/42/r1024/42.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/42/r1024/42.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "NYG",
+          "text": "GIANTS",
+          "background": "#0b2265",
+          "foreground": "#ffffff",
+          "outline": "#a71930"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row27_endzone_N.png",
+        "S": "source/row27_endzone_S.png"
+      }
+    },
+    {
+      "row": 28,
+      "date": "2009-02-01",
+      "title": "SUPER BOWL XLIII: HOLMES",
+      "season": 2008,
+      "venue": "Raymond James Stadium",
+      "native_stadium_index": 27,
+      "source_prefix": "s27",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLIII",
+      "away": "PIT",
+      "home": "ARI",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/43/r1024/43.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/43/r1024/43.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "ARI",
+          "text": "CARDINALS",
+          "background": "#97233f",
+          "foreground": "#ffffff",
+          "outline": "#000000"
+        },
+        {
+          "team": "PIT",
+          "text": "STEELERS",
+          "background": "#ffb612",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row28_endzone_N.png",
+        "S": "source/row28_endzone_S.png"
+      }
+    },
+    {
+      "row": 29,
+      "date": "2012-02-05",
+      "title": "SUPER BOWL XLVI: SIDELINE",
+      "season": 2011,
+      "venue": "Lucas Oil Stadium",
+      "native_stadium_index": 11,
+      "source_prefix": "s11",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLVI",
+      "away": "NYG",
+      "home": "NE",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/46/r1024/46.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/46/r1024/46.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "NYG",
+          "text": "GIANTS",
+          "background": "#0b2265",
+          "foreground": "#ffffff",
+          "outline": "#a71930"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row29_endzone_N.png",
+        "S": "source/row29_endzone_S.png"
+      }
+    },
+    {
+      "row": 30,
+      "date": "2017-02-05",
+      "title": "SUPER BOWL LI: 28-3",
+      "season": 2016,
+      "venue": "NRG Stadium",
+      "native_stadium_index": 31,
+      "source_prefix": "s37",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "LI",
+      "away": "NE",
+      "home": "ATL",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/51/r1024/51.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/51/r1024/51.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "ATL",
+          "text": "FALCONS",
+          "background": "#a71930",
+          "foreground": "#ffffff",
+          "outline": "#000000"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row30_endzone_N.png",
+        "S": "source/row30_endzone_S.png"
+      }
+    },
+    {
+      "row": 31,
+      "date": "2022-11-13",
+      "title": "FOURTH AND EIGHTEEN",
+      "season": 2022,
+      "venue": "Highmark Stadium",
+      "native_stadium_index": 3,
+      "source_prefix": "s03",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "MIN",
+      "home": "BUF",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#00338d",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "BUF",
+          "text": "BILLS",
+          "background": "#00338d",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "BUF"
+    },
+    {
+      "row": 32,
+      "date": "2000-01-08",
+      "title": "MUSIC CITY MIRACLE",
+      "season": 1999,
+      "venue": "Adelphia Coliseum",
+      "native_stadium_index": 28,
+      "source_prefix": "s28",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "BUF",
+      "home": "TEN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle",
+        "https://gridiron-uniforms.com/fields/images/playoffs/1999/r1024/TEN_1999%5Ewc.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/1999/r1024/TEN_1999%5Ewc.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "TEN",
+          "text": "TITANS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#0c2340"
+        },
+        {
+          "team": "TEN",
+          "text": "TITANS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#0c2340"
+        }
+      ],
+      "center": "TEN",
+      "endzone_files": {
+        "N": "source/row32_endzone_N.png",
+        "S": "source/row32_endzone_S.png"
+      }
+    },
+    {
+      "row": 33,
+      "date": "2002-01-19",
+      "title": "THE TUCK RULE GAME",
+      "season": 2001,
+      "venue": "Foxboro Stadium",
+      "native_stadium_index": 16,
+      "source_prefix": "s16",
+      "source_kind": "retail",
+      "variant": "ns",
+      "stadium_note": "Foxboro Stadium is unavailable; retail Gillette is the closest Foxborough venue.",
+      "super_bowl": null,
+      "away": "OAK",
+      "home": "NE",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2001/r1024/NE_2001%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2001/r1024/NE_2001%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "NE",
+      "endzone_files": {
+        "N": "source/row33_endzone_N.png",
+        "S": "source/row33_endzone_S.png"
+      }
+    },
+    {
+      "row": 34,
+      "date": "2004-02-01",
+      "title": "SUPER BOWL XXXVIII: FINALE",
+      "season": 2003,
+      "venue": "Reliant Stadium",
+      "native_stadium_index": 31,
+      "source_prefix": "s37",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XXXVIII",
+      "away": "CAR",
+      "home": "NE",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/38/r1024/38.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/38/r1024/38.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "CAR",
+          "text": "PANTHERS",
+          "background": "#101820",
+          "foreground": "#0085ca",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row34_endzone_N.png",
+        "S": "source/row34_endzone_S.png"
+      }
+    },
+    {
+      "row": 35,
+      "date": "2010-02-07",
+      "title": "SUPER BOWL XLIV: AMBUSH",
+      "season": 2009,
+      "venue": "Sun Life Stadium",
+      "native_stadium_index": 14,
+      "source_prefix": "s14",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLIV",
+      "away": "NO",
+      "home": "IND",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/44/r1024/44.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/44/r1024/44.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "IND",
+          "text": "COLTS",
+          "background": "#003b7b",
+          "foreground": "#ffffff",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "NO",
+          "text": "SAINTS",
+          "background": "#d3bc8d",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row35_endzone_N.png",
+        "S": "source/row35_endzone_S.png"
+      }
+    },
+    {
+      "row": 36,
+      "date": "2010-12-19",
+      "title": "NEW MEADOWLANDS MIRACLE",
+      "season": 2010,
+      "venue": "New Meadowlands Stadium",
+      "native_stadium_index": 18,
+      "source_prefix": "s18",
+      "source_kind": "built",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "PHI",
+      "home": "NYG",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+        "https://gridiron-uniforms.com/fields/images/regular-season/NYG/r1024/NYG_2010-2012%5E1.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "2010 shared MetLife league-shield identity, rather than a later Giants-specific midfield mark; period end-zone paint remains inferred.",
+      "endzones": [
+        {
+          "team": "NYG",
+          "text": "GIANTS",
+          "background": "#0b2265",
+          "foreground": "#ffffff",
+          "outline": "#a71930"
+        },
+        {
+          "team": "NYG",
+          "text": "GIANTS",
+          "background": "#0b2265",
+          "foreground": "#ffffff",
+          "outline": "#a71930"
+        }
+      ],
+      "center": "NFL"
+    },
+    {
+      "row": 37,
+      "date": "2011-01-08",
+      "title": "BEAST QUAKE",
+      "season": 2010,
+      "venue": "Qwest Field",
+      "native_stadium_index": 26,
+      "source_prefix": "s26",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "NO",
+      "home": "SEA",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "SEA",
+          "text": "SEAHAWKS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#69be28"
+        },
+        {
+          "team": "SEA",
+          "text": "SEAHAWKS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#69be28"
+        }
+      ],
+      "center": "SEA"
+    },
+    {
+      "row": 38,
+      "date": "2012-01-14",
+      "title": "THE CATCH III",
+      "season": 2011,
+      "venue": "Candlestick Park",
+      "native_stadium_index": 25,
+      "source_prefix": "s25",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "NO",
+      "home": "SF",
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Catch_III",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2011/r1024/SF_2011%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2011/r1024/SF_2011%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "turf",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "SF",
+      "endzone_files": {
+        "N": "source/row38_endzone_N.png",
+        "S": "source/row38_endzone_S.png"
+      }
+    },
+    {
+      "row": 39,
+      "date": "2013-01-12",
+      "title": "MILE HIGH MIRACLE",
+      "season": 2012,
+      "venue": "Sports Authority Field at Mile High",
+      "native_stadium_index": 8,
+      "source_prefix": "s08",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "BAL",
+      "home": "DEN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2012/r1024/DEN_2012%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2012/r1024/DEN_2012%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "DEN",
+          "text": "BRONCOS",
+          "background": "turf",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "DEN",
+      "endzone_files": {
+        "N": "source/row39_endzone_N.png",
+        "S": "source/row39_endzone_S.png"
+      }
+    },
+    {
+      "row": 40,
+      "date": "2013-02-03",
+      "title": "SUPER BOWL XLVII: HOLD ON",
+      "season": 2012,
+      "venue": "Mercedes-Benz Superdome",
+      "native_stadium_index": 17,
+      "source_prefix": "s17",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLVII",
+      "away": "BAL",
+      "home": "SF",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/47/r1024/47.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/47/r1024/47.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "BAL",
+          "text": "RAVENS",
+          "background": "#241773",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "#aa0000",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row40_endzone_N.png",
+        "S": "source/row40_endzone_S.png"
+      }
+    },
+    {
+      "row": 41,
+      "date": "2015-01-11",
+      "title": "DEZ CAUGHT IT?",
+      "season": 2014,
+      "venue": "Lambeau Field",
+      "native_stadium_index": 10,
+      "source_prefix": "s10",
+      "source_kind": "retail",
+      "variant": "ad",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "DAL",
+      "home": "GB",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2014/r1024/GB_2014%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2014/r1024/GB_2014%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "GB",
+          "text": "GREEN BAY",
+          "background": "turf",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "GB",
+          "text": "PACKERS",
+          "background": "turf",
+          "foreground": "#ffb612",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "GB",
+      "endzone_files": {
+        "N": "source/row41_endzone_N.png",
+        "S": "source/row41_endzone_S.png"
+      }
+    },
+    {
+      "row": 42,
+      "date": "2015-02-01",
+      "title": "SUPER BOWL XLIX: BUTLER",
+      "season": 2014,
+      "venue": "University of Phoenix Stadium",
+      "native_stadium_index": 0,
+      "source_prefix": "s00",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "XLIX",
+      "away": "NE",
+      "home": "SEA",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/49/r1024/49.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/49/r1024/49.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        },
+        {
+          "team": "SEA",
+          "text": "SEAHAWKS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#69be28"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row42_endzone_N.png",
+        "S": "source/row42_endzone_S.png"
+      }
+    },
+    {
+      "row": 43,
+      "date": "2015-12-03",
+      "title": "MIRACLE IN MOTOWN",
+      "season": 2015,
+      "venue": "Ford Field",
+      "native_stadium_index": 9,
+      "source_prefix": "s09",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "GB",
+      "home": "DET",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "DET",
+          "text": "LIONS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#b0b7bc"
+        },
+        {
+          "team": "DET",
+          "text": "LIONS",
+          "background": "turf",
+          "foreground": "#ffffff",
+          "outline": "#b0b7bc"
+        }
+      ],
+      "center": "DET"
+    },
+    {
+      "row": 44,
+      "date": "2018-01-14",
+      "title": "MINNEAPOLIS MIRACLE",
+      "season": 2017,
+      "venue": "U.S. Bank Stadium",
+      "native_stadium_index": 15,
+      "source_prefix": "s15",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "NO",
+      "home": "MIN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds",
+        "https://www.canalstreetchronicles.com/2018/1/14/16887352/saints-vs-vikings-divisional-round-game-time-tv-radio-online-streaming-mobile-and-odds",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2017/r1024/MIN_2017%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2017/r1024/MIN_2017%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        },
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        }
+      ],
+      "center": "MIN",
+      "endzone_files": {
+        "N": "source/row44_endzone_N.png",
+        "S": "source/row44_endzone_S.png"
+      }
+    },
+    {
+      "row": 45,
+      "date": "2018-02-04",
+      "title": "SUPER BOWL LII: PHILLY",
+      "season": 2017,
+      "venue": "U.S. Bank Stadium",
+      "native_stadium_index": 15,
+      "source_prefix": "s15",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "LII",
+      "away": "PHI",
+      "home": "NE",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Philly_Special",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/52/r1024/52.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/52/r1024/52.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "PHI",
+          "text": "EAGLES",
+          "background": "#004c54",
+          "foreground": "#ffffff",
+          "outline": "#a5acaf"
+        },
+        {
+          "team": "NE",
+          "text": "PATRIOTS",
+          "background": "#002244",
+          "foreground": "#ffffff",
+          "outline": "#c60c30"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row45_endzone_N.png",
+        "S": "source/row45_endzone_S.png"
+      }
+    },
+    {
+      "row": 46,
+      "date": "2020-02-02",
+      "title": "SUPER BOWL LIV: WASP",
+      "season": 2019,
+      "venue": "Hard Rock Stadium",
+      "native_stadium_index": 14,
+      "source_prefix": "s14",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "LIV",
+      "away": "SF",
+      "home": "KC",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://www.nfl.com/",
+        "https://www.nfl.com/100/100_assets/assets/logos/nfl100.png",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/54/r1024/54.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/54/r1024/54.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced authentic NFL100 midfield graphic; period end-zone colours/layout reconstructed. Participant helmets, side event insignia and exact placement still need review.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "#aa0000",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "#ffb81c",
+          "foreground": "#e31837",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL100",
+      "center_file": "source/nfl100.png",
+      "endzone_files": {
+        "N": "source/row46_endzone_N.png",
+        "S": "source/row46_endzone_S.png"
+      }
+    },
+    {
+      "row": 47,
+      "date": "2022-01-23",
+      "title": "THIRTEEN SECONDS",
+      "season": 2021,
+      "venue": "GEHA Field at Arrowhead Stadium",
+      "native_stadium_index": 13,
+      "source_prefix": "s13",
+      "source_kind": "retail",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "BUF",
+      "home": "KC",
+      "sources": [
+        "https://en.wikipedia.org/wiki/13_seconds_game",
+        "https://gridiron-uniforms.com/fields/images/playoffs/2021/r1024/KC_2021%5Ediv.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/playoffs/2021/r1024/KC_2021%5Ediv.png",
+      "art_status": "Period end-zone paint cropped from game-specific playoff reference (creator-authored reconstruction). Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "turf",
+          "foreground": "#ffb81c",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "turf",
+          "foreground": "#ffb81c",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "KC",
+      "endzone_files": {
+        "N": "source/row47_endzone_N.png",
+        "S": "source/row47_endzone_S.png"
+      }
+    },
+    {
+      "row": 48,
+      "date": "2022-02-13",
+      "title": "SUPER BOWL LVI: DONALD",
+      "season": 2021,
+      "venue": "SoFi Stadium",
+      "native_stadium_index": 23,
+      "source_prefix": "s23",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "LVI",
+      "away": "LA",
+      "home": "CIN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://www.therams.com/news/rams-unveil-2021-alternate-jersey-iconic-throwback",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/56/r1024/56.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/56/r1024/56.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "LAR",
+          "text": "RAMS",
+          "background": "#003594",
+          "foreground": "#ffd100",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#101820",
+          "foreground": "#fb4f14",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row48_endzone_N.png",
+        "S": "source/row48_endzone_S.png"
+      }
+    },
+    {
+      "row": 49,
+      "date": "2022-12-17",
+      "title": "THE 33-POINT COMEBACK",
+      "season": 2022,
+      "venue": "U.S. Bank Stadium",
+      "native_stadium_index": 15,
+      "source_prefix": "s15",
+      "source_kind": "built",
+      "variant": "dd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": null,
+      "away": "IND",
+      "home": "MIN",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=regular-season",
+      "art_status": "Period colour/layout reconstruction; wordmarks and event insignia require photo review.",
+      "endzones": [
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        },
+        {
+          "team": "MIN",
+          "text": "VIKINGS",
+          "background": "#4f2683",
+          "foreground": "#ffffff",
+          "outline": "#ffc62f"
+        }
+      ],
+      "center": "MIN"
+    },
+    {
+      "row": 50,
+      "date": "2024-02-11",
+      "title": "SUPER BOWL LVIII: OVERTIME",
+      "season": 2023,
+      "venue": "Allegiant Stadium",
+      "native_stadium_index": 20,
+      "source_prefix": "s20",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; available model represents its retail or current configuration.",
+      "super_bowl": "LVIII",
+      "away": "SF",
+      "home": "KC",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://www.chiefs.com/super-bowl-lviii/",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://www.nfl.com/",
+        "https://gridiron-uniforms.com/fields/images/super-bowls/58/r1024/58.png"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/images/super-bowls/58/r1024/58.png",
+      "art_status": "Period end-zone paint cropped from game-specific Super Bowl reference (creator-authored reconstruction). Sourced NFL shield (retail many-star before 2008, official eight-star from 2008); period end-zone colours/layout reconstructed. Super Bowl event marks and exact placement remain unresolved.",
+      "endzones": [
+        {
+          "team": "SF",
+          "text": "49ERS",
+          "background": "#aa0000",
+          "foreground": "#b3995d",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "KC",
+          "text": "CHIEFS",
+          "background": "#ffb81c",
+          "foreground": "#e31837",
+          "outline": "#ffffff"
+        }
+      ],
+      "center": "NFL",
+      "endzone_files": {
+        "N": "source/row50_endzone_N.png",
+        "S": "source/row50_endzone_S.png"
+      }
+    },
+    {
+      "row": 51,
+      "date": "2025-10-16",
+      "title": "THE UNC BOWL",
+      "season": 2025,
+      "venue": "Paycor Stadium",
+      "native_stadium_index": 6,
+      "source_prefix": "s06",
+      "source_kind": "built",
+      "variant": "nd",
+      "stadium_note": "Same real building; retail Paul Brown bowl with existing modern venue art.",
+      "super_bowl": null,
+      "away": "PIT",
+      "home": "CIN",
+      "center": "CIN_white",
+      "pattern": "stripes",
+      "endzones": [
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#ffffff",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        },
+        {
+          "team": "CIN",
+          "text": "BENGALS",
+          "background": "#ffffff",
+          "foreground": "#101820",
+          "outline": "#ffffff"
+        }
+      ],
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/202510160cin.htm",
+        "https://static.clubs.nfl.com/image/upload/bengals/lo0qsm18bjy9nsyhglvc",
+        "https://www.bengals.com/photos/bengals-steelers-game-photos-thursday-night-football-2025"
+      ],
+      "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=view-team-rs&city=Cincinnati&name=Bengals&team_id=CIN",
+      "art_status": "Official Week 7 whiteout colours/layout; existing retail Bengals wordmark reused; fine tiger-stripe shapes reconstructed."
+    }
+  ]
+}

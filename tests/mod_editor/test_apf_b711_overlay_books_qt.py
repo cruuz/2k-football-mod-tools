@@ -147,7 +147,11 @@ class FineTuneQtTests(FacadeFixture):
 
     def test_failed_checks_keep_weight_edit_pending(self):
         p = self.panel; p.queue_edits.setChecked(True)
-        p.remove_button.click(); p.ratings[0].setValue(7); p.ratings_button.click()
+        self.assertEqual(p.formation_picker.currentData(), 62)
+        p.ratings[0].setValue(7); p.ratings_button.click()
+        p.remove_button.click()
+        self.assertEqual([r["formation"] for r in p._pending], [62, 62])
+        self.assertEqual(p.formation_picker.currentData(), 63)
         p.confirm_button.click()
         self.assertEqual(len(p._pending), 2)
         self.assertFalse(self.facade.session.modifications)

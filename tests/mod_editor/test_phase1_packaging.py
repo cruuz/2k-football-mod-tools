@@ -34,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc109"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc110"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -54,7 +54,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC109 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC110 — Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -70,7 +70,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC109 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC110 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -281,7 +281,14 @@ class ModStudioPackagingTests(unittest.TestCase):
         # desktop installation requirements; those diagnostics are not dependencies.
         install_readme = readme.split("\n## Local Windows CI\n", 1)[0]
         combined = launcher + "\n" + install_readme
-        self.assertIn("from PyQt5 import QtWidgets; import PIL; import mod_editor", launcher)
+        self.assertIn(
+            "from PyQt5 import QtWidgets; import PIL; import numpy; "
+            "import capstone; import unicorn; import mod_editor", launcher,
+        )
+        self.assertIn("packaging/requirements-studio.txt", launcher)
+        requirements = (ROOT / "packaging/requirements-studio.txt").read_text(encoding="utf-8")
+        for distribution in ("PyQt5", "Pillow", "numpy", "capstone", "unicorn"):
+            self.assertRegex(requirements, rf"(?m)^{distribution}==[^\s]+$")
         self.assertIn("python3 -m mod_editor --studio", combined)
         self.assertIn("python3-pyqt5", readme)
         self.assertNotIn("tkinter", combined.casefold())

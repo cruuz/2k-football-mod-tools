@@ -1,12 +1,14 @@
 """Abilities rules v2. EXPERIMENTAL / UNWITNESSED, every preset off.
 
 Use the shipped seven roster bits. Movement Speed is extended after BOTH
-native clamps; native move commands and charge consumption require their
-specific permission. The native special-move meter is confined to live ball
-carriers, including CPU carriers. No new timer, mutable allocation, roster
-save migration, simulated-game effect, or extra week is supplied. The editor
+native clamps; base move commands and the native charge meter remain available
+to every player by default. Explicit move locks can require stored permissions
+and confine the meter to live ball carriers, including CPU carriers. No new
+timer, mutable allocation, roster save migration, simulated-game effect, or
+extra week is supplied. The editor
 authors tiers separately. Five existing move flags gain capped live attribute
-bonuses for tiered players. Independent lock switches preserve v1 defaults.
+bonuses for tiered players. Move locks are opt-in; Speedster permission remains
+required by default.
 
 Reserve REQUESTS together with every other owner before installing any owner.
 The optional off-week is a ZERO-BASED regular-season row (0..17); None means
@@ -32,6 +34,8 @@ _UNSET = object()
 SPEEDSTER, RIGHT_STICK, JUKE = 0x20, 0x40, 0x80
 SPIN, TRUCK, HURDLE, STIFF_ARM = 0x200, 0x400, 0x800, 0x1000
 ABILITY_MASK = 0x1EE0
+DEFAULT_LOCKS = {"lock_right_stick": False, "lock_special_moves": False,
+                 "lock_speedster": True}
 LOCK_MASKS = {"lock_right_stick": RIGHT_STICK,
               "lock_special_moves": JUKE | SPIN | TRUCK | HURDLE | STIFF_ARM,
               "lock_speedster": SPEEDSTER}
@@ -78,7 +82,8 @@ SYMBOLS = {
 }
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail ignores stored ability flags. Patch: "
-    "optional locks require Speedster for speed above 99, each special move's "
+    "base moves and charge work for every player by default. Optional locks "
+    "require Speedster for speed above 99, each special move's "
     "ability, and Right-Stick Moves for stick moves. Tiered Juke, Stiff-Arm, "
     "Hurdle, Truck and Spin add 2/4/6 effective points to Agility, Strength, "
     "Jumping, Break Tackle and Pass Rush during live play, capped at 100. "
@@ -110,11 +115,11 @@ def _week(value):
 def _locks(**values):
     for key, value in values.items():
         _require(key in LOCK_MASKS and type(value) is bool, f"{key} must be Boolean")
-    return {key: values.get(key, True) for key in LOCK_MASKS}
+    return {key: values.get(key, DEFAULT_LOCKS[key]) for key in LOCK_MASKS}
 
 
-def code_for(code_va, abilities_off_week=None, *, lock_right_stick=True,
-             lock_special_moves=True, lock_speedster=True):
+def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
+             lock_special_moves=False, lock_speedster=True):
     _week(abilities_off_week)
     locks = _locks(lock_right_stick=lock_right_stick,
                    lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
@@ -317,7 +322,9 @@ def main():
     parser.add_argument("--output", type=Path, help="new XBE copy; omit to inspect")
     parser.add_argument("--off-week", type=int, default=None, help="zero-based regular-season row 0..17")
     for name in LOCK_MASKS:
-        parser.add_argument("--no-" + name.replace("_", "-"), action="store_true")
+        parser.add_argument("--" + name.replace("_", "-"),
+                            action=argparse.BooleanOptionalAction,
+                            default=DEFAULT_LOCKS[name])
     args = parser.parse_args()
     _require(args.source.stat().st_size <= 16 * 1024**2, "expected a bounded XBE, not a disc or pack")
     with args.source.open("rb") as source:
@@ -325,7 +332,7 @@ def main():
     if args.output is None:
         print(json.dumps(read_settings(payload), indent=2))
         return
-    locks = {name: not getattr(args, "no_" + name) for name in LOCK_MASKS}
+    locks = {name: getattr(args, name) for name in LOCK_MASKS}
     result, receipt = apply(payload, abilities_off_week=args.off_week, **locks)
     with args.output.resolve().open("xb") as output:
         output.write(result)

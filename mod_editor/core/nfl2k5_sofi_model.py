@@ -325,7 +325,12 @@ class SoFi(mm.MetLife):
             L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
             # The upper rows and corners are longer than the field-wall line.
             # Using lp.s there stretched the fan atlas several times wider.
-            vs = (loop[0].s + L) * q["v_per_m"]
+            # A bowl built in sector slices continues each band's phase from the slice before, so the fans run
+            # unbroken across the sector joins (restarting at the wall line's arc cut them mid-body at every join).
+            phases = self.__dict__.setdefault("_band_phase", {})
+            start = phases.get((standing, tuple(np.round(bot[0], 4))), loop[0].s)
+            vs = (start + L) * q["v_per_m"]
+            phases[(standing, tuple(np.round(bot[-1], 4)))] = start + float(L[-1])
             aisles = [L[i] + t * (L[i + 1] - L[i]) for i, t in cuts]
             edges = [0.0] + [e for a in aisles for e in (a - half, a + half)] + [L[-1]]
 
@@ -1274,7 +1279,9 @@ def adjust_digits(shape, sc, model):
             if mname.startswith("digit_playclock"):
                 zs = 1 if n % 2 == 0 else -1
                 side = -1 if mname.endswith("_L") else 1
-                centre = np.array([side * 0.9 * zs, 2.7, zs * (model.p["loop"]["L"] - 0.08)])
+                # L is the native tens material. Place its centre left along
+                # the same viewer-right vector used for the glyph corners.
+                centre = np.array([-side * 0.9 * zs, 2.7, zs * (model.p["loop"]["L"] - 0.08)])
                 _place_quad(P, UV, quad, centre, np.array([-zs, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]), 0.75, 1.1)
             else:
                 s_ = strips[n % 2]

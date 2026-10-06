@@ -1,4 +1,4 @@
-"""Native text reads for all 50 real rows, plus modern-mode isolation and guards."""
+"""Native text reads for all 51 rows, plus modern-mode isolation and guards."""
 import hashlib
 import importlib.util
 import json
@@ -57,6 +57,7 @@ class Native(unittest.TestCase):
     def setUpClass(cls):
         cls.resources, cls.context, cls.ids = disc_evidence(SOURCE)
         data = mm.Data.load()
+        cls.display_order = mm.display_order(data)
         with hs.Source(SOURCE) as src:
             main = cls.resources[5]
             templates = {key: src.get(mm.template_for(data.teams[key], mm._retail_descriptors(main))['filename'])
@@ -74,16 +75,20 @@ class Native(unittest.TestCase):
                           situ_chunk=self.collection[:32 + struct.unpack_from('<I', self.collection, 4)[0]],
                           extra_files=self.files)
 
-    def test_all_50_native_previews_name_callback_and_report_text(self):
+    def test_all_51_native_previews_name_callback_and_report_text(self):
         cpu = self.cpu()
         trace = []
         # Execute each patched report CALL and the native name load, then stop.
         cpu.stubs[0x127188] = lambda: cpu.ret(cpu.reg('edx'))
         cpu.stubs[0x1271C8] = lambda: cpu.ret(cpu.reg('ecx'))
         cpu.stubs[0x31855F] = lambda: cpu.ret(cpu.reg('ecx'))
+        self.assertEqual(len(v.rows()), 51)
+        self.assertEqual(set(self.display_order), set(range(51)))
         for row in v.rows():
             cpu.events.clear()
-            cpu.select(row['row'] - 1)
+            display_index = self.display_order.index(row['row'] - 1)
+            cpu.select(display_index)
+            self.assertEqual(cpu.r(0xBF1858), row['row'] - 1)
             self.assertEqual(cpu.r(0xE5FF80), 8)
             stadium = cpu.run(0x77460)
             untouched = cpu.read(stadium, 128)
@@ -117,7 +122,7 @@ class Native(unittest.TestCase):
                 self.assertEqual(cpu.text(0x2500000), modern)
                 self.assertEqual(cpu.text(cpu.run(0x318557)), modern)
                 self.assertEqual(cpu.read(stadium, 128), shared)
-            trace.append(dict(row=row['row'], venue=row['venue'], native_text=names,
+            trace.append(dict(row=row['row'], display_row=display_index + 1, venue=row['venue'], native_text=names,
                               presentation_location=location,
                               historical_classification=row['classification'], modern_modes=[0, 1, 4, 5, 6],
                               stadium_record_unchanged=True))
@@ -135,7 +140,7 @@ class Native(unittest.TestCase):
         cpu = self.cpu()
         cpu.select(14)
         original = cpu.text(cpu.r(cpu.run(0x77460)))
-        for index in (50, 0xFFFFFFFF, 0x80000000):
+        for index in (51, 0xFFFFFFFF, 0x80000000):
             cpu.w(0xBF1858, index)
             self.assertEqual(cpu.text(cpu.run(0x77540)), original)
         cpu.w(0xBF1858, 14)

@@ -872,8 +872,10 @@ class PlayCallingService:
                     book = donor
         return None
 
-    def context(self, session, team, side, *, book=None, preview_tendency=None):
+    def context(self, session, team, side, *, book=None, preview_tendency=None, pending=()):
         state = self.state(session)
+        for request in pending:
+            state, _ = self.apply(state, request, session.source.index_0a)
         selected = next((t for t in state.teams if t["team_index"] == team), state.teams[0])
         name = selected[side] if book is None else book
         if name not in state.books or state.sides.get(name) != side:
@@ -907,7 +909,7 @@ class PlayCallingService:
                 "donors": sorted(n for n in state.books if state.sides.get(n) == side), "formations": formations,
                 "categories": categories, "tendency": tendency, "preview_tendency": preview_tendency,
                 "users": [t["team_name"] for t in state.teams if t[side] == name],
-                "events": events}
+                "events": events, "pending_count": len(pending)}
 
     def predict(self, context, side, rows):
         state, model = context["state"], self.backend.model

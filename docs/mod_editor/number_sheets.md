@@ -1,7 +1,7 @@
 # Import number sheets 0-9
 
 Choose the physical uniform set in Uniforms & Equipment, then Import number
-sheet 0-9. Choose Jersey, Helmet, or Arm / shoulder, the layout, and Match
+sheet 0-9. Choose Jersey, Helmet, or Arm / shoulder, Detect layout from image, and Match
 retail size. The original game uses different sizes and different compressed
 budgets for individual digits, even within the same uniform.
 
@@ -65,8 +65,8 @@ broadcast camera. In-game appearance remains UNWITNESSED until played.
 
 Other equal cell sizes also work. Width must divide by the number of columns
 and height by the number of rows. The source must be a regular file no larger
-than 128 MiB or 16 million pixels. Automatic orientation identifies long rows
-or columns; select either grid layout explicitly.
+than 128 MiB or 16 million pixels. Automatic layout identifies all four
+square-cell templates above. Select a layout explicitly for other cell shapes.
 
 ## Why did some digits stay old, look larger, or bleed?
 

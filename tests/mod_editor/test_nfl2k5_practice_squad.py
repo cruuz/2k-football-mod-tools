@@ -281,12 +281,14 @@ class ExecutionTests(PatchTests):
         self.assertEqual(len(self.reserves()),11)
         self.assertEqual(self.word(self.team+52*4),players[0])
 
-    def test_real_cpu_gate_captures_twelve_cuts_and_saves_reload(self):
+    def test_real_cpu_gate_releases_twelve_cuts_and_saves_reload(self):
         for i in range(12): self.assertEqual(self.call(0xC3EE0,ecx=self.team,edx=self.take_fa()),1)
         self.assertEqual(self.byte(self.team+0x11c),65)
+        free_agents = self.word(self.root+0x38)
         self.call(0x2BFAA0,budget=8000000)
         self.assertEqual(self.byte(self.team+0x11c),53)
-        self.assertEqual(len(self.reserves()),12)
+        self.assertEqual(self.reserves(),())
+        self.assertEqual(self.word(self.root+0x38),free_agents+12)
         before=bytes(self.uc.mem_read(self.BASE,len(self.body)))
         self.call(0xC0730,ecx=self.root)
         saved=bytes(self.uc.mem_read(self.BASE,len(self.body)))
@@ -325,7 +327,7 @@ class ExecutionTests(PatchTests):
         for r,v in ((0xE576A0,1),(0xE576A4,7),(0xE576AC,32)): self.put(r,v)
         for i in range(32): self.put(0xE5786C+4*i,self.teams+500*i)
         self.uc.mem_write(0xE5775C,bytes(128)); self.uc.mem_write(0xE421E0,bytes(640))
-        self.test_real_cpu_gate_captures_twelve_cuts_and_saves_reload()
+        self.test_real_cpu_gate_releases_twelve_cuts_and_saves_reload()
 
     def test_twelve_survive_full_loader_serializer_and_rating(self):
         self.fill_twelve()

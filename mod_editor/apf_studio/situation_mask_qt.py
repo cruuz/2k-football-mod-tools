@@ -23,13 +23,13 @@ class SituationMaskPanel(QGroupBox):
         self.dependency=QLabel("Requires the matching situation patch installed and enabled. Gameplay UNWITNESSED.")
         self.dependency.setWordWrap(True);root.addWidget(self.dependency)
         label=QLabel('Twelve scrimmage buckets use actual down and distance; a separate two-point bucket applies to ordinary offense in the try phase. '
-                     'Formation weight = native weight x this bucket multiplier (0.25x to 4x). 1x restores the native weight. Higher multipliers increase relative weight; these are not percentages. If exclusions empty a draw, the game retains its original draw without multipliers. '
+                     'Multipliers (0.25x to 4x) weight both a formation’s contribution to its personnel category and its final formation draw. 1x restores native weights. Higher multipliers increase relative weight; these are not percentages. If exclusions empty a draw, the game retains every original candidate; final formation weights use the native fallback. '
                      'Exported builds include BASE and TU 1.1 patches; install the matching patch to enable them in game. '
                      'Undo or disabling this project option does not remove an installed patch. Remove it or install an empty mask, then restart the game.')
         label.setWordWrap(True);root.addWidget(label)
         self.bucket=QComboBox()
         for key,label in enumerate(KEY_LABELS): self.bucket.addItem(label,key)
-        for bucket in BUCKETS: self.bucket.addItem(f'{bucket.name} -> {KEY_LABELS[bucket_key(bucket)]}',bucket_key(bucket))
+        for bucket in BUCKETS: self.bucket.addItem(f'Shared sample: {bucket.name} -> {KEY_LABELS[bucket_key(bucket)]}',bucket_key(bucket))
         root.addWidget(self.bucket)
         self.request=QLabel();self.request.setWordWrap(True);root.addWidget(self.request)
         self.candidates=QTableWidget(0,6)
@@ -157,7 +157,7 @@ class SituationMaskPanel(QGroupBox):
             factor=weights.get(str(f['id']),1.)
             weight.setCurrentIndex(weight.findData(factor))
             weight.setAccessibleName(f"Formation multiplier for {f['name']} in {self.bucket.currentText()}")
-            weight.setToolTip('Stage a weight only for this book and live bucket. 1x removes the override. Install the matching v3 patch after confirming edits.')
+            weight.setToolTip('Stage a weight only for this book and live bucket. Shared coaching samples edit this same live bucket. 1x removes the override. Install the matching v4 patch after confirming edits.')
             weight.setAccessibleDescription(weight.toolTip())
             weight.currentIndexChanged.connect(lambda index,formation=f['id']:self.weight(formation,(.25,.5,1.,2.,4.)[index]))
             self.candidates.setCellWidget(i,4,weight)
