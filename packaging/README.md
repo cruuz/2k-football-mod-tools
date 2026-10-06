@@ -312,3 +312,25 @@ also calls the same scan against `runtime/Lib/site-packages` after copying the
 application, including NumPy's native extension and supporting DLLs. It cannot
 satisfy a missing Windows package with a Linux build-host install. Run the full
 runtime checks on the target platform for binary loading and GUI validation.
+
+Finished Studio artifacts also require an executable dependency check. The
+tarballs are portable application code; install `requirements-studio.txt`
+into their selected Python first. Windows Setup includes its private Python,
+NumPy extension and DLLs. On Linux the gate runs that Windows interpreter
+under Wine in a dedicated prefix and imports every scanned and declared
+runtime dependency, including QtWidgets. File presence alone does not pass.
+
+```bash
+python3 -m venv /tmp/studio-release-runtime
+/tmp/studio-release-runtime/bin/python -m pip install -r packaging/requirements-studio.txt
+python3 packaging/check_packaged_runtime.py Studio.tar.gz --python /tmp/studio-release-runtime/bin/python --receipt portable-runtime.json
+python3 packaging/check_packaged_runtime.py Studio-Setup.exe --receipt windows-runtime.json
+```
+
+Run the gate for both products and every finished archive/installer before
+release. It extracts the artifact into fresh scratch, checks imports and the
+real disc reader's refusal of an invalid image, and records the asset hash.
+Add `--disc /path/to/retail.xiso.iso` for a read-only 2K5 source-options probe.
+The Studio archive builder gates its finished output automatically. The
+Windows builder gates the assembled runtime before generating NSIS and prints
+the gate command for the compiled Setup executable.

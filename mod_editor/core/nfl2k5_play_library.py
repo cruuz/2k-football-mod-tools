@@ -363,6 +363,55 @@ def route_chain(name: str, depth_yd: float | None, side: int) -> Chain:
     return [start(3), *r.build(depth_yd if depth_yd is not None else r.default_depth, side)]
 
 
+def back_flat_chain(depth_yd: float | None, side: int, start_depth_cm: float,
+                    qb_drop_depth_cm: float) -> Chain:
+    """Keep a deep back's ordinary flat ahead of the QB's completed drop.
+
+    Kind 5 runs laterally at its starting depth. The conservative 1.75-yard
+    lead threshold identifies deep-flat risk; actual native lead also depends
+    on route flags and receiver state. Give those backs an ordinary upfield
+    leg to within the codec's one-foot precision of 1.5 yards behind the LOS,
+    then retain their flat. This does not use screen kind 9 or change a back
+    whose starting depth passes that conservative threshold.
+    """
+    chain = route_chain("Flat", depth_yd, side)
+    if start_depth_cm + 1.75 * YD <= qb_drop_depth_cm:
+        chain.insert(1, seg(0, (-1.5 * YD - start_depth_cm) / YD))
+    return chain
+
+
+def forward_back_flats(chains: Sequence, positions: Sequence[tuple[int, int]],
+                       position_codes: Sequence[int]) -> tuple[list[Chain], list[int]]:
+    """Normalize complete authored pass assignments, including older packs.
+
+    Only the generated Start->Flat contract is eligible. QB drop coordinates
+    use the same LOS-relative clamp as native 0x2f3d10. Unrelated routes,
+    shallow backs, wide receivers, tight ends and screen assignments retain
+    their exact authored nodes.
+    """
+    result = [list(chain) for chain in chains]
+    kinds = [code & 31 for code in position_codes]
+    qb_slot = next((s for s, kind in enumerate(kinds) if kind == QB), None)
+    if qb_slot is None or not any(n[0] == 6 for n in result[qb_slot]):
+        return result, []
+    qb_depth = min([positions[qb_slot][1]] +
+                   [n[1][2] for n in result[qb_slot] if n[0] == 4])
+    repaired = []
+    for slot, kind in enumerate(kinds):
+        chain = result[slot]
+        if (kind not in BACK_KINDS or len(chain) != 2 or
+                [n[0] for n in chain] != [1, 18] or
+                list(chain[0][1]) != [1, 3, 0, 0., 0., 0.] or
+                list(chain[1][1][:2]) != [5, 0] or chain[1][1][3] != 15 or
+                any(len(n) != 2 for n in chain)):
+            continue
+        depth = positions[slot][1]
+        if depth + 1.75 * YD <= qb_depth:
+            chain.insert(1, seg(0, (-1.5 * YD - depth) / YD))
+            repaired.append(slot)
+    return result, repaired
+
+
 def blocker_chain(style: str, side: int, run: bool) -> Chain:
     """style: 'straight' | 'left' | 'right' | 'pull-left' | 'pull-right' | 'pass'"""
     if not run or style == "pass":
@@ -722,6 +771,14 @@ def build_chains(spec: PlaySpec, scheme: str | None = None) -> list[Chain]:
         if spec.play_type == "reverse" and s == spec.reverse_slot:
             chains.append(reverse_receiver(side)); continue
         if a.kind == "route":
+            if a.route == "Flat" and k in BACK_KINDS and spec.play_type in ("pass", "pa_pass"):
+                # 0x2f3d10 clamps the LOS-relative drop against the current
+                # formation depth; a shotgun's encoded one-yard drop does
+                # not move a five-yard QB toward the LOS.
+                qb_depth = spec.positions[qb_slot][1]
+                if spec.play_type == "pass":
+                    qb_depth = min(qb_depth, (-1.0 if shotgun else -5.0) * YD)
+                chains.append(back_flat_chain(a.depth, side, spec.positions[s][1], qb_depth)); continue
             chains.append(route_chain(a.route or "Go", a.depth, side)); continue
         if a.kind == "lead":
             if spec.play_type == "sneak":

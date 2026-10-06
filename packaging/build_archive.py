@@ -62,6 +62,14 @@ def build(staged: pathlib.Path, top: str, out: pathlib.Path, epoch: int) -> str:
     digest = hashlib.sha256(out.read_bytes()).hexdigest()
     sidecar = out.with_name(out.name + ".sha256")
     sidecar.write_text(f"{digest}  {out.name}\n", encoding="utf-8", newline="\n")
+    if (staged / "mod_editor").is_dir():
+        # Probe the finished archive in the release interpreter, so staging
+        # cannot hide a missing dependency or a damaged application file.
+        packaging_dir = str(pathlib.Path(__file__).resolve().parent)
+        if packaging_dir not in sys.path:
+            sys.path.insert(0, packaging_dir)
+        from check_packaged_runtime import check_artifact
+        check_artifact(out, python=pathlib.Path(sys.executable))
     print(f"{out.name}  {out.stat().st_size} bytes  sha256={digest}")
     return digest
 

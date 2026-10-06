@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from collections import OrderedDict
 from dataclasses import asdict
 import hashlib
@@ -12,6 +13,7 @@ import os
 from pathlib import Path
 import stat
 import sys
+import zlib
 from typing import Any
 
 # The shipped Windows runtime is an embeddable CPython whose ._pth file
@@ -187,6 +189,51 @@ def generate_mips(rgba: bytes) -> list[palette_tools.MipLevel]:
     return result
 
 
+def prepared_mips(png_payload: bytes, rgba: bytes) -> tuple[list[palette_tools.MipLevel], list[tuple[int, int, int, int]]]:
+    """Accept bounded authored RGBA mip artwork, with exact colour reservations.
+
+    Ordinary PNGs retain the original box-filter path. The optional record can
+    carry only the five fixed helmet mip images, never indices, descriptors,
+    stored spans or external paths. Hashes bind the tail to the visible PNG.
+    """
+    require(len(rgba) == BASE_SIZE * BASE_SIZE * 4, 'base RGBA size mismatch')
+    reservation = palette_tools.png_palette_reservation(png_payload)
+    if reservation is None:
+        return generate_mips(rgba), []
+    require('preserve_mips' not in reservation,
+            'jersey mip preservation cannot be used for a live helmet')
+    locked = reservation['rgba']
+    if 'helmet_mips' not in reservation:
+        return generate_mips(rgba), locked
+    artwork = reservation['helmet_mips']
+    require(isinstance(artwork, dict) and
+            artwork.get('schema') == 'nfl2k5_helmet_mips/v1' and
+            artwork.get('base_rgba_sha256') == digest(rgba),
+            'authored helmet mip schema/base hash mismatch')
+    try:
+        encoded = base64.b64decode(artwork['tail_zlib'], validate=True)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ImportError('invalid authored helmet mip data') from exc
+    expected = (INDEX_CHAIN_BYTES - BASE_SIZE * BASE_SIZE) * 4
+    require(len(encoded) <= 96 * 1024, 'authored helmet mip stream exceeds its bound')
+    decoder = zlib.decompressobj()
+    try:
+        tail = decoder.decompress(encoded, expected + 1)
+    except zlib.error as exc:
+        raise ImportError('invalid authored helmet mip compression') from exc
+    require(len(tail) == expected and decoder.eof and not decoder.unused_data and
+            not decoder.unconsumed_tail and artwork.get('tail_sha256') == digest(tail),
+            'authored helmet mip tail is truncated, trailing, oversized or unpinned')
+    levels = [palette_tools.MipLevel(0, BASE_SIZE, BASE_SIZE, rgba)]
+    cursor = 0
+    for level, (width, height) in enumerate(MIP_DIMENSIONS[1:], 1):
+        count = width * height * 4
+        levels.append(palette_tools.MipLevel(level, width, height, tail[cursor:cursor + count]))
+        cursor += count
+    require(cursor == len(tail), 'authored helmet mip dimensions changed')
+    return levels, locked
+
+
 def parse_palette(video: bytes) -> list[tuple[int, int, int, int]]:
     return palette_tools.parse_palette(video, PALETTE_OFFSET)
 
@@ -284,7 +331,8 @@ def build_import(index_path: Path, compatibility_path: Path,
     index, template_span, template_decoded, template_info = load_template(
         index_path, target)
     png, png_payload, rgba = read_png(png_path)
-    mips = generate_mips(rgba)
+    mips, locked_colors = prepared_mips(png_payload, rgba)
+    authored_mip_tail = 'helmet_mips' in (palette_tools.png_palette_reservation(png_payload) or {})
     def candidate_decoded(
         candidate_palette: list[tuple[int, int, int, int]],
         candidate_levels: list[bytes],
@@ -310,6 +358,8 @@ def build_import(index_path: Path, compatibility_path: Path,
         stream_tag=target.stream_tag,
         offset_bits=target.offset_bits,
         max_encoded_size=target.stored_size,
+        quantizer=(lambda levels, maximum: palette_tools.quantize_levels(
+            levels, maximum, locked_colors=locked_colors)) if locked_colors else None,
     )
     palette = bounded.palette
     linear_levels = bounded.index_levels
@@ -414,7 +464,8 @@ def build_import(index_path: Path, compatibility_path: Path,
                 target.retail_exact_minimum_overlap_scratch_bytes,
         },
         "mips": {
-            "filter": "unpremultiplied_rgba_2x2_box_round_nearest",
+            "filter": ("authored_fixed_rgba_mips_with_exact_colour_reservations" if authored_mip_tail else
+                       "unpremultiplied_rgba_2x2_box_round_nearest"),
             "level_count": 6,
             "dimensions": [list(value) for value in MIP_DIMENSIONS],
             "linear_index_bytes": [len(value) for value in linear_levels],

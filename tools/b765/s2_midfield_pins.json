@@ -1,0 +1,760 @@
+{
+  "schema": "b765_s2_missing_midfield/v2",
+  "logo_rgba_sha256": {
+    "s08": "aefc30f5caca43d4e9ba1ba45338a6dc0340daee4f0338cf178a0f678945521b",
+    "s14": "593dda28883af856a5803e20cd45bfa4b18a1096570adff74ac4c60fa09f83ee",
+    "s22": "265df8933a33f527ff8ef39ff104b330bc4acec0a9f65800f9d768f818ea173c"
+  },
+  "bundles": {
+    "s08dd.iff": {
+      "scope_kind": "field",
+      "before_sha256": "56b622c49b774f940241e8c6ba1b06589a2ef89a1abbe8103d8abafdb4439cb6",
+      "after_sha256": "150946103f85d61c524b2206dd858f35d9634e71bd87a4bd99cfb94b548c4cfa",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 122624,
+        "padding": 13,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s08dr.iff": {
+      "scope_kind": "field",
+      "before_sha256": "6e97befcdb63c9dc522047c34c5fcc130e5866730e744f7f68d591133d6e7913",
+      "after_sha256": "6da78b26e326e759ebd81153fafa0160ff4587dcd70f9ea9a0777d55c0bbcf72",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 123631,
+        "padding": 15,
+        "alias_scratch": 2,
+        "scratch": 16
+      }
+    },
+    "s08ds.iff": {
+      "scope_kind": "field",
+      "before_sha256": "3d662e8fc3fb1977bb27274aef9305533d2060140b4c9e718bbd554869fa196a",
+      "after_sha256": "3f78ca162448f59886e1a9c5353ecdf4b5fdcd303fdfc9075108b144c43e84bb",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 20224,
+        "video": 404736,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 102726,
+        "padding": 4,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s08ad.iff": {
+      "scope_kind": "field",
+      "before_sha256": "70498cb7571eee496b5ab5e76df6e591c09d8da3f30abef4ed6036b5c33b5852",
+      "after_sha256": "358cb04924b2bed7c78e700683c7a33f34859fd0b3d727fa24ecae8896a58ad8",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 123363,
+        "padding": 1,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s08ar.iff": {
+      "scope_kind": "field",
+      "before_sha256": "bad608ff43a94b8f66a6fb121f4502b651fc6127f3b9814206f4fa0028969d2b",
+      "after_sha256": "9b6322610a3c109e24317d0ddf72c461a965e8dc40f2144e566fd33bd6a373d4",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 123753,
+        "padding": 14,
+        "alias_scratch": 1,
+        "scratch": 16
+      }
+    },
+    "s08as.iff": {
+      "scope_kind": "field",
+      "before_sha256": "c38e70ea6a8823e1abe2e23f20c8538a8f25d5ffa44096ad8a8c3cfa5cfc0ebe",
+      "after_sha256": "2ea2ec1a78e33a1fa2227d544dd0b73d2824ec053fab45e6813ffd571ae30f8a",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 20224,
+        "video": 404736,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 102744,
+        "padding": 8,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s08nd.iff": {
+      "scope_kind": "field",
+      "before_sha256": "1cc3b321c8dd5c026530be7b482047a9be36cfd1829e4f8f3fe9008a01e88de9",
+      "after_sha256": "e78c317b649a2d3d040152ea1c1a4e624bd4052fdb9f53a3a1fc03ed7233048e",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 122594,
+        "padding": 12,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s08nr.iff": {
+      "scope_kind": "field",
+      "before_sha256": "045114838b39cc3dd9cee8330ddf0b033e1433e16ee91c61ee77ede22719bbf2",
+      "after_sha256": "1ea7d59189270cd8c4abdada5cc538d2f48f6842c6855ae10e15dce4760769d3",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 22912,
+        "video": 421120,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 123631,
+        "padding": 15,
+        "alias_scratch": 2,
+        "scratch": 16
+      }
+    },
+    "s08ns.iff": {
+      "scope_kind": "field",
+      "before_sha256": "fd8e0d2073c7b47d257d9d83bacd75a907f9658dc278ebc72b1ce1301905655e",
+      "after_sha256": "7009cb76d34f203704bd8bd0a12b8373d2532b9eb817dd727fc9826ae637352e",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 20224,
+        "video": 404736,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 102637,
+        "padding": 7,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s14dd.iff": {
+      "scope_kind": "field",
+      "before_sha256": "a9d90332e5cf361b117c87d3a121b835d175515fdd2a6f16a07a9b1fb347384b",
+      "after_sha256": "0c8f0fa0bb443235c73a47dc731882ff300bee68f43c91e222cc073e1f816ebc",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          4.232652893066406,
+          4.575841064453125
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61312,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 221887,
+        "padding": 8,
+        "alias_scratch": 8,
+        "scratch": 16
+      }
+    },
+    "s14dr.iff": {
+      "scope_kind": "field",
+      "before_sha256": "524e514f03580dbf14348d77ea4a34e5c3a11f07daa259273f6116ab154b65ad",
+      "after_sha256": "665dcf5f88e58e6a2526c80a90789c4b828b6b9001e1ba9af04479ad4fb5d5fe",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          4.232652893066406,
+          4.575841064453125
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61312,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 222909,
+        "padding": 15,
+        "alias_scratch": 15,
+        "scratch": 16
+      }
+    },
+    "s14ds.iff": {
+      "scope_kind": "field",
+      "before_sha256": "6b1239583292c35c3bebf0f152202411de368914e495660433412c2630d43f9d",
+      "after_sha256": "dc8bef6dd919b33c38f2dd0f4c86646646ec637587037ef18c806d825ff9ad29",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          4.232652893066406,
+          4.575841064453125
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 58752,
+        "video": 538752,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 179193,
+        "padding": 2,
+        "alias_scratch": 0,
+        "scratch": 16
+      }
+    },
+    "s22dd.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "8ce89fd595a02c1638079e0b3fd23adbfa9491ec4e1e2dcecbad8b85024f47b0",
+      "after_sha256": "62c3cd09fbe88e6575aba85b543ce5e5399aac5912954a438bfc3813ecc7ae37",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 243490,
+        "padding": 11,
+        "alias_scratch": 1,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 447024,
+        "old_field_size": 245120,
+        "field_size": 271328,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22dr.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "4f7fedc06f9fb7f85fff8bed0ede774f81808f3d046a7a019fb1947f8cdc2069",
+      "after_sha256": "3b254d7cea9a50388975eed486d8d099e7dfb52d6623a03512cee454fa1fae3a",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 248565,
+        "padding": 8,
+        "alias_scratch": 0,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 456512,
+        "old_field_size": 254608,
+        "field_size": 280816,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22ds.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "1129ca03a96d19ccf6bb221f33fbbdb32c0157ce8a9b4e169778fa324b926256",
+      "after_sha256": "34d0a7a4450d5bc435171bd7e1b581e1abf8fd75d8584eb75841fc2165d14684",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 59264,
+        "video": 538752,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 213186,
+        "padding": 12,
+        "alias_scratch": 2,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 393360,
+        "old_field_size": 191456,
+        "field_size": 217664,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22ad.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "450dcba82096236120d9ef86a33ee82d3ae82ecca23865d45121673ae2d117b6",
+      "after_sha256": "1cb0299238ac5c32e231ebd389484f6c46a388db91fdf31f32df23711063dbb4",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 244219,
+        "padding": 13,
+        "alias_scratch": 3,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 447104,
+        "old_field_size": 245200,
+        "field_size": 271408,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22ar.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "1a875277f2af48ce458371d90c9e1917623d598935594b1bbcea39b6e7183e42",
+      "after_sha256": "f93eb191dba5ced5e305ad15a2b86c8d7f4e02dcf52188d1272c94af29266d71",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 248638,
+        "padding": 9,
+        "alias_scratch": 0,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 456576,
+        "old_field_size": 254672,
+        "field_size": 280880,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22as.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "8824a1a5972b8da47cfbf744f2b85f45f64b61b629418445e8ea7c931e554007",
+      "after_sha256": "a508c1af7cc8c8373a3869fb2bb5ce26e4a5f8ed2ec35272b192f295e849c802",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 59264,
+        "video": 538752,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 213278,
+        "padding": 5,
+        "alias_scratch": 0,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 393408,
+        "old_field_size": 191504,
+        "field_size": 217712,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22nd.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "781011bcb6e3cdadba0f41212dfb8d14e81c943586de819f602f834d69614602",
+      "after_sha256": "53a4959ce413ecb43ce7d948ea017fc006e2a0fdc8308816968967ba803a5f3a",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 243557,
+        "padding": 10,
+        "alias_scratch": 1,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 447024,
+        "old_field_size": 245120,
+        "field_size": 271328,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22nr.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "ff66c9bca60ad4d7c2327c571f3beb4d2426272e01c333ceb6c8434241d7437c",
+      "after_sha256": "5e74713be454b4e3b2ab9fa26ad8089a908fa5f32b4db6faf4a079b6c9e5833a",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 61952,
+        "video": 555136,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 248450,
+        "padding": 16,
+        "alias_scratch": 6,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 456512,
+        "old_field_size": 254608,
+        "field_size": 280816,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    },
+    "s22ns.iff": {
+      "scope_kind": "field_detail_prefix",
+      "before_sha256": "347b3ea2041932bc054fc123aa6140dacaff2bb403472ecb1ea69c6feb2de77c",
+      "after_sha256": "c6b18a4752e6cf3908561cfab2167accd13cdffba5bf314a0d0130206ced4b53",
+      "receipt": {
+        "added": true,
+        "native_size": [
+          256,
+          256
+        ],
+        "palette_cap": 256,
+        "half_detail": false,
+        "half_extents_m": [
+          5.08,
+          5.08
+        ],
+        "extra_video_padding": 128,
+        "existing_scene_preserved": true,
+        "system": 59264,
+        "video": 538752,
+        "encoder": "greedy",
+        "fill": "trailing",
+        "encoded": 213280,
+        "padding": 7,
+        "alias_scratch": 0,
+        "scratch": 16,
+        "allocation_loan": {
+          "old_stored": 175872,
+          "stored": 149664,
+          "loan": 26208,
+          "offset_bits": 15,
+          "encoded": 149654,
+          "expanded": 5,
+          "scratch": 0,
+          "alias_scratch": 0,
+          "decoded_identical": true
+        },
+        "scope_offset": 0,
+        "scope_size": 393344,
+        "old_field_size": 191440,
+        "field_size": 217648,
+        "detail_layer_span_identical": true,
+        "detail_normal_decoded_identical": true,
+        "outside_prefix_identical": true
+      }
+    }
+  }
+}

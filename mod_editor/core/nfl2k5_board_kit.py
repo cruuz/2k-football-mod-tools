@@ -884,9 +884,33 @@ def _renovated(data, name):
     stadium bytes: the 2026 venue art's repaint keeps the scene's structure)."""
     ml = _ml()
     try:
-        c = ml.bundle_scenes(data)["stadium"]
-        _rec, dec = ml._scene(data, c)
+        tx, inventory, ResourceRecord, _header, _writer = ml._tools()
+        pin = _pin(name)
+        class MetadataTextures:
+            def get(self, key):
+                return {"conversion_status": "not_requested"}
+        # Keep bundle_scenes' structural validation of every scene, including
+        # field/cityscape chunks. Pixel conversion failures never affected
+        # recognition; converting preview pixels here used to take minutes.
+        found = {}
+        for c in tx.parse_chunks(data, allow_trailing=True):
+            if c.kind != "SCNE":
+                continue
+            dec, _ = tx.decode_chunk(data, c)
+            record = ResourceRecord(outer_index=0, outer_id="", outer_size=len(data), chunk_index=c.index,
+                                    chunk_offset=c.offset, kind=c.kind, stored_size=c.stored_size,
+                                    word_08=c.system_bytes, word_0c=c.video_bytes, word_10=c.compression_magic,
+                                    word_14=c.overlap_scratch_bytes)
+            rec, *_ = inventory.parse_scene(c.index, record, dec, MetadataTextures())
+            if rec.get("name") in ml.SCENES:
+                # The original selector keeps the last chunk for each name.
+                found[rec["name"]] = (c, dec if rec["name"] == "stadium" else None)
+        sb.require({"field", "stadium"} <= set(found), "bundle lacks its field or stadium scene")
+        c, dec = found["stadium"]
+        sb.require(c.offset == pin["offset"] and tx.HEADER.size + c.stored_size == pin["length"],
+                   "stadium span differs from its pin")
         sc = sb.parse(dec, c.system_bytes)
+        sb.require(sc.name == "stadium", "pinned scene is not the stadium")
     except Exception:  # noqa: BLE001 - a scene the parser refuses is not the kit's
         return False
     names = {s.name for s in sc.shapes}
@@ -936,11 +960,12 @@ def read_receipt(source):
     return doc
 
 
-def bundle_states(source):
+def bundle_states(source, *, stop_after_foreign=None):
     """{bundle name: bundle_state} for every pinned venue's nine bundles."""
     ml = _ml()
     receipt = _venues_receipt(source)
     out = {}
+    foreign = 0
     with ml._outer_image()(str(source)) as archive:
         for venue in pinned_venues():
             for name in variants(venue):
@@ -948,6 +973,10 @@ def bundle_states(source):
                     out[name] = bundle_state(archive, name, receipt)
                 except (sb.ScneBuildError, ValueError, StopIteration):
                     out[name] = "foreign"
+                if out[name] == "foreign":
+                    foreign += 1
+                    if stop_after_foreign is not None and foreign >= stop_after_foreign:
+                        return out
     return out
 
 
@@ -974,9 +1003,16 @@ def verify(source, *, enabled=True):
 def check_request(source):
     """The build's quick check before any copy: the kit's stadium scenes are retail (the 2026 venue art may repaint
     them later in the build; the kit writes after it)."""
-    state = image_status(source)
-    sb.require(state in ("retail", "applied"), f"the renovated stadiums' packages are {state}; build from a supported "
-               "retail source")
+    rows = bundle_states(source, stop_after_foreign=6)
+    states = {"retail" if value == "venues" else value for value in rows.values()}
+    state = "retail" if not states else next(iter(states)) if len(states) == 1 else "mixed"
+    bad = sorted(name for name, value in rows.items() if value == "foreign")
+    sb.require(not bad and state in ("retail", "applied"),
+               "Modern stadium boards cannot use these modified stadium scenes: "
+               + ", ".join(bad[:6] or sorted(rows)[:6]) + ". "
+               "Choose your unmodified USA retail image, or turn off Modern stadium boards "
+               "to keep this project's stadium artwork. Recognized 2026 venue art can be "
+               "selected in Build options.")
     return dict(state=state)
 
 

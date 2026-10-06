@@ -56,6 +56,14 @@ def write_caption(is_image: bool, disc_caption: str = "Make disc with these chan
     return disc_caption if is_image else "Save patched executable…"
 
 
+def disc_next_steps(target: str | Path) -> str:
+    """Name the completed image and the roster/save steps shared by both builders."""
+    return (f"Next: in xemu, choose Machine > Load Disc and open {target}, "
+            "or click Play latest disc in xemu in Studio.\n"
+            "In the game, load the disc roster, then start a fresh franchise. "
+            "An existing franchise keeps its saved roster. For SOFTDRINK, set xemu System Memory to 128 MiB.")
+
+
 class Details(QWidget):
     """A collapsed section behind a "Details ▸" button.
 
@@ -248,5 +256,5 @@ def suggest_copy_name(source: str | Path, *, suffix: str = "modded") -> str:
 
 __all__ = [
     "DISCORD_HINT", "Details", "NOT_TESTED", "XEMU_LINE", "fix_hint", "plain_failure",
-    "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption",
+    "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption", "disc_next_steps",
 ]

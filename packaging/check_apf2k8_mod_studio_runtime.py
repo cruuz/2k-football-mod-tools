@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.105"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.106"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -212,6 +212,7 @@ TOOL_MODULES = (
     "apf_save_custom_team_appearance",
     "apf_stfs_roster_extract",
     "apf_stfs_roster_rehash",
+    "apf_vip_dump",
     "apf_scene",
     "apf_stadium_catalog_position_patch",
     "apf_stadium_catalog_position_verify",

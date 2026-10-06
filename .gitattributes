@@ -17,6 +17,9 @@
 *.png binary
 *.ico binary
 
+# Preserve the attributed source vector byte-for-byte for its provenance hash.
+data/nfl2k5_espn25_fields/source/sb25.svg binary
+
 # Frozen synthetic compatibility bytes must keep their exact archive hashes.
 tests/fixtures/modpack_legacy/*.2k5patch binary
 tests/fixtures/modpack_legacy/*.zlib binary

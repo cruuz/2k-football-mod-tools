@@ -18,6 +18,12 @@ from mod_editor.apf_studio.launcher import XeniaLauncher, XeniaSettings
 def synthetic_image(profile):
     image = bytearray(p.IMAGE_SIZE)
     image[:2] = b"MZ"
+    struct.pack_into('<I', image, 0x3C, 0x80)
+    struct.pack_into('<H', image, 0x86, 1)
+    at = 0x98
+    image[at:at + 8] = b'.XBMOVIE'
+    struct.pack_into('<3I', image, at + 8, 12, 0x032D6600, 0x200)
+    struct.pack_into('<I', image, at + 36, 0xC0000040)
     for site, block in ((p.HOOK, p.RETAIL_CAP), (p.QB_GATE, p.RETAIL_QB_GATE)):
         off = p.address(site, profile) - p.IMAGE_BASE
         image[off:off + len(block)] = block
@@ -215,7 +221,7 @@ class ChargeTests(unittest.TestCase):
         for profile in p.PROFILES:
             for state in range(8):
                 for unrelated in (0, 0xFE3FFFFF, 0x12345678 & ~0x1C00000):
-                    self.assertEqual(execute_feedback_leaf(p.PatchDocument(profile),
+                    self.assertEqual(execute_feedback_leaf(p.PatchDocument(profile, revision=3),
                                                           unrelated | state << 22),
                                      1 if state == 4 else 0)
 
@@ -276,7 +282,7 @@ class ChargeTests(unittest.TestCase):
             doc = p.PatchDocument(profile)
             payload = doc.as_toml().encode()
             self.assertEqual(p.parse_payload(payload), doc)
-            self.assertEqual(len(doc.words), 138)
+            self.assertEqual(len(doc.words), 717)
             self.assertEqual(len(dict(doc.words)), len(doc.words))
             self.assertEqual(len(p.trampoline(profile)), 76)
             self.assertEqual(len(p.feedback_trampoline(profile)), 28)
@@ -293,9 +299,9 @@ class ChargeTests(unittest.TestCase):
 
     def test_legacy_patch_remains_exactly_identifiable_for_upgrade_and_removal(self):
         for profile in p.PROFILES:
-            for revision, enabled in ((r, e) for r in (1, 2) for e in (False, True)):
+            for revision, enabled in ((r, e) for r in (1, 2, 3) for e in (False, True)):
                 legacy = p.PatchDocument(profile, enabled, revision=revision)
-                self.assertEqual(len(legacy.words), 20 if revision == 1 else 32)
+                self.assertEqual(len(legacy.words), {1: 20, 2: 32, 3: 138}[revision])
                 self.assertEqual(p.parse_payload(legacy.as_toml().encode()), legacy)
                 self.assertEqual(p.canonical_payload(legacy.as_toml().encode()), (profile, enabled))
                 self.assertNotEqual(legacy.as_toml(), p.PatchDocument(profile, enabled).as_toml())
@@ -350,7 +356,7 @@ class ChargeTests(unittest.TestCase):
             storage = root / "launch"
             (storage / "patches").mkdir(parents=True)
             for profile in p.PROFILES:
-                for revision in (1, 2):
+                for revision in (1, 2, 3):
                     legacy = p.PatchDocument(profile, True, revision).as_toml().encode()
                     output.write_bytes(legacy)
                     with self.assertRaisesRegex(ValueError, f"legacy revision {revision}"):
@@ -358,7 +364,9 @@ class ChargeTests(unittest.TestCase):
                     installed.write_bytes(legacy)
                     status = launcher.pass_fetch_status(kind="charge_abilities")["message"]
                     self.assertIn(f"revision {revision}", status)
-                    self.assertIn("beta 75 feedback bug" if revision == 1 else "Finesse move qualification bug", status)
+                    self.assertIn("beta 75 feedback bug" if revision == 1 else
+                                  "Finesse move qualification bug" if revision == 2 else
+                                  "discharge lost during native charge cleanup", status)
                     (storage / "patches" / p.FILENAME).write_bytes(legacy)
                     p.write_patch(p.PatchDocument(profile, True), output)
                     launcher.install_pass_fetch_patch(output, kind="charge_abilities", consent=True)

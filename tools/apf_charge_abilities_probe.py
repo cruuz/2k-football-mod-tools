@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import hashlib
+import os
 import struct
 import subprocess
 import tempfile
@@ -30,6 +31,12 @@ def load_owned_image(path):
     if hashlib.sha256(source).hexdigest() != EXPECTED_XEX_SHA256:
         raise ValueError("Owned XEX differs from the pinned BASE input")
     metadata = parse_xex_execution_metadata(source)
+    cached = os.environ.get("APF_RETAIL_DECODED_IMAGE")
+    if cached:
+        data = Path(cached).read_bytes()
+        if hashlib.sha256(data).hexdigest() != EXPECTED_DECODED_SHA256:
+            raise ValueError("Owned decoded image cache differs from the pinned BASE input")
+        return data, metadata
     root = Path(__file__).resolve().parents[1]
     vendor = root / "tools/vendor/XenonRecomp"
     archive = vendor / "build/XenonUtils/libXenonUtils.a"
@@ -88,6 +95,8 @@ class ChargeMachine(Machine):
         return patch.address(base, self.profile)
 
     def configure_player(self, tier, abilities=(), *, qb=False, passing=True):
+        self.put(STATE, 0)
+        self.put(STATE + 4, 0x350000)
         self.put(0x350000, 0x18000000)
         record = bytearray(0x150)
         record[18] = tier
@@ -137,7 +146,7 @@ class ChargeMachine(Machine):
         for reg, value in ((30, PLAYER), (31, STATE), (28, 0), (29, 0)):
             self.setreg(reg, value)
         delta = 0xE88 if self.updated else 0
-        self.call(0x848E7EF4 + delta, PLAYER, stop=0x848E7FB8 + delta, bound=300)
+        self.call(0x848E7EF4 + delta, PLAYER, stop=0x848E7FB8 + delta, bound=2_000)
         return (self.get(STATE + 0x1A8) >> 22) & 7
 
     def move_bonus(self, category):
@@ -157,11 +166,24 @@ class ChargeMachine(Machine):
         if discharge:
             self.call(self.site(0x848C4D70), PLAYER, bound=2_000)
         self.setreg(10, STATE)
+        self.setreg(29, PLAYER)  # native packet producer's current player
         self.setfpr(0, struct.unpack(">f", self.cpu.mem_read(STATE + 0x100, 4))[0])
         self.setfpr(28, 0.)
         self.setfpr(31, .5)
         self.setfpr(18, 1.)
-        self.call(va(0x84AA6044), stop=va(0x84AA6070), bound=100)
+        data_delta = 0x20 if self.updated else 0
+        self.setfpr(19, struct.unpack('>f', self.cpu.mem_read(0x82000AC0, 4))[0])
+        self.setfpr(21, struct.unpack('>f', self.cpu.mem_read(0x820C92F8 + data_delta, 4))[0])
+        # Two VMX128 position transports cannot affect the scalar timer/charge
+        # decisions. Skip those peripheral transports, then execute the native
+        # expiry, active-ripple and held-charge branch selection itself.
+        for site in (0x84AA6020, 0x84AA6030):
+            self.boundaries[va(site)] = lambda m, target=va(site) + 4: m.cpu.reg_write(m.r.UC_PPC_REG_PC, target)
+        try:
+            self.call(va(0x84AA601C), stop=va(0x84AA6070), bound=2_000)
+        finally:
+            for site in (0x84AA6020, 0x84AA6030):
+                del self.boundaries[va(site)]
         channel, timer = self.fpr(30), self.fpr(29)
         # Execute scalar packet writes and the medal bits. Vector/position
         # inputs are zero; they cannot affect the charge or timer bit fields.

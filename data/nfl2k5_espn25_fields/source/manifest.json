@@ -1,0 +1,1188 @@
+{
+  "assets": [
+    {
+      "file": "den_1968_1996.png",
+      "source": "https://static.clubs.nfl.com/image/upload/broncos/ykquxflucfe7wujj030n",
+      "page": "https://www.denverbroncos.com/uniforms/history",
+      "source_sha256": "d52355386f8b5e63160507b23a7e719e1ef368b6c23b0b6e549c70fb3d77f3fb",
+      "sha256": "4e8cd3f37ee15539b086f157a6835b9986e648f8124fac4a8368579a11777030",
+      "processing": "Crop team-supplied historical logo and remove connected outer solid background.",
+      "era": "1968-1996, official team history; fine 1993 variation not independently distinguished"
+    },
+    {
+      "file": "den_wordmark_1968_1996.png",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Denver_Broncos_wordmark_%281968_-_1996%29.png",
+      "sha256": "45249c2c87f229cd89d513a5e009d0a0a967dbb15f076637e8a1343257ad833c",
+      "processing": "Unmodified sourced graphic"
+    },
+    {
+      "file": "nfl_2008_source.png",
+      "source": "https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.png",
+      "page": "https://www.nfl.com/",
+      "sha256": "6b8162747a0a58998b342a3a351ba5efbe70cb6ce1350889db9656e74514b119",
+      "processing": "Unmodified official full-colour eight-star NFL shield."
+    },
+    {
+      "file": "nfl_2008.png",
+      "source": "nfl_2008_source.png",
+      "sha256": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",
+      "processing": "Crop transparent border, resize to fit 256x256 with transparency and original colours."
+    },
+    {
+      "file": "sb25.png",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Super_Bowl_XXV.svg",
+      "source_sha256": "a689e98d6bb066ddc92631945f4c6ed74c9cca1639cb2bf36b92d6f013a7c089",
+      "sha256": "19e1ded7316192392eeb993a8ce0f74a0801cc50d1d4ed433b3d9f9c3cf4d130",
+      "processing": "NFL-authored vector extracted from NFL PDF; Commons mirror identifies source and author. Rasterized at512px with Inkscape."
+    },
+    {
+      "file": "sb32.png",
+      "source": "https://static.clubs.nfl.com/image/upload/packers/bkyqxjwniji7xsyoyhuf.pdf",
+      "source_sha256": "5b77c328ce782c435f027929b21ae7203515d7404b78354bd38bcd5c98113157",
+      "sha256": "5e25faaf1d4cb612ca3c21aaa6081c56baa98d25d2bcfb5b9036697d5bf83280",
+      "processing": "Extract official Packers 2024 media guide PDF page457 (printed455), embedded Super Bowl XXXII logo,130x91. Remove connected outer white background; source raster resolution retained."
+    },
+    {
+      "file": "sb34.png",
+      "source": "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2021/LAR.pdf",
+      "source_sha256": "8bf1e6f2dbd7454d833ffa0b18b8c71965e32f1a3a0748e3d190945b08603cee",
+      "sha256": "9aeea8a326ed302273d9c5d97cb5024a6ea2b73dd5b9a146a58440ed888ccfee",
+      "processing": "Extract official Rams 2021 guide PDF page403 embedded summary header; crop Super Bowl XXXIV emblem, remove connected outer white fill; source is low resolution."
+    },
+    {
+      "file": "sb36.png",
+      "source": "https://static.www.nfl.com/image/upload/league/apps/league-site/media-guides/2025/NE.pdf",
+      "source_sha256": "a8a80e3c1b9945e5a83ebfaf463d47adcc9aa2ce98af2c8b4425ecc3ac722961",
+      "sha256": "3f861a3253574e4d0f447365ee34c487fc1e493a74e08abd95330599a8c798e0",
+      "processing": "Extract official Patriots 2025 guide PDF page281 embedded Super Bowl XXXVI emblem316x194; remove connected outer white fill."
+    },
+    {
+      "file": "nfl100.png",
+      "source": "https://www.nfl.com/100/100_assets/assets/logos/nfl100.png",
+      "source_sha256": "b02cca3eb0142067378c973cdcad584f11bb4700ff1eba55764fb158ca277d9c",
+      "sha256": "e5492f431984e885ba5e927e747a6716f39755ae3f078e3ac3714ca84b3dd41b",
+      "processing": "Unmodified transparent official NFL100 logo1674x770."
+    },
+    {
+      "file": "sb25.svg",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Super_Bowl_XXV.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Super_Bowl_XXV.svg",
+      "sha256": "da93e4a9d1bd685d8b1aab9fc7a90150e9e9e8a3c9fe2f4413338f78c7ba3442",
+      "processing": "Unmodified NFL-authored SVG extracted from NFL PDF, attribution preserved."
+    },
+    {
+      "file": "row03_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1971/r1024/KC_1971%5Ediv.png",
+      "source_sha256": "eaedb6499d726c13487bf98bc2f5bf1ec91b0323530105695a2ac68bf283244b",
+      "sha256": "f3c15f0bb902d97950f48de236c30a911012d60a5fbb03f0ef9ce09a0107fe14",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1971-12-25",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row03_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1971/r1024/KC_1971%5Ediv.png",
+      "source_sha256": "eaedb6499d726c13487bf98bc2f5bf1ec91b0323530105695a2ac68bf283244b",
+      "sha256": "aec7eafc5c01bc99a389e3b59c3098f0b045f3fb51d58ac61ddf3808e08a9e96",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1971-12-25",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row03_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1971/r1024/KC_1971%5Ediv.png",
+      "source_sha256": "eaedb6499d726c13487bf98bc2f5bf1ec91b0323530105695a2ac68bf283244b",
+      "sha256": "add4deaffc840b722d98c7bd91cb6286a165a8de922d160c601823e556f6f53e",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        410,
+        214,
+        615,
+        274
+      ],
+      "game_date": "1971-12-25",
+      "classification": "game-specific playoff reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row04_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1972/r1024/PIT_1972%5Ediv.png",
+      "source_sha256": "e7365363c6b9145261556c8a3f68eea15733a435f57caba4d924be9d8c86e4cb",
+      "sha256": "e109b337b8364015b9edc9410787e4a0a5fdb2fc19e20afb129a967dbe9087ca",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1972-12-23",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row04_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1972/r1024/PIT_1972%5Ediv.png",
+      "source_sha256": "e7365363c6b9145261556c8a3f68eea15733a435f57caba4d924be9d8c86e4cb",
+      "sha256": "a178d41eb5db399f9846447708569a7f87c442fbcd7b7cf42757a6f860d02ca9",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1972-12-23",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row04_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1972/r1024/PIT_1972%5Ediv.png",
+      "source_sha256": "e7365363c6b9145261556c8a3f68eea15733a435f57caba4d924be9d8c86e4cb",
+      "sha256": "b86a10f3569bd9f91f0ceed8c3a1a4ded49e5e3323ab25a19037d482b9cd4d3b",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        462,
+        206,
+        562,
+        278
+      ],
+      "game_date": "1972-12-23",
+      "classification": "game-specific playoff reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row06_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/regular-season/DAL/r1024/DAL_1979%5E1.png",
+      "source_sha256": "fe849ca59005be9ebee868a71ed0b9d0b12c0a884a488075e882d53473676dea",
+      "sha256": "a4de783fddd78f91073a7436abada3ba7051a02020c8e05912ef165b755ecf2d",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1979-12-16",
+      "classification": "inferred regular-season period reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row06_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/regular-season/DAL/r1024/DAL_1979%5E1.png",
+      "source_sha256": "fe849ca59005be9ebee868a71ed0b9d0b12c0a884a488075e882d53473676dea",
+      "sha256": "2acc161b38279f97e1f04218ecc94a575ed9ce633e72563a6ae5afeabe133b2a",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1979-12-16",
+      "classification": "inferred regular-season period reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row09_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1981/r1024/SF_1981%5Econf.png",
+      "source_sha256": "144df4572257d43a86a1ef2e4c3081f53d2c4b2606665504c2d2c35e60d332a6",
+      "sha256": "778c702aaf18b98fd3663cdba1568d48f241db9d560da834eae1bd2a75440672",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1982-01-10",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row09_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1981/r1024/SF_1981%5Econf.png",
+      "source_sha256": "144df4572257d43a86a1ef2e4c3081f53d2c4b2606665504c2d2c35e60d332a6",
+      "sha256": "20dae6541e87e3d80a7cd3e8829a1608a16667dd6fd4a302fb97c83ee7dd2361",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1982-01-10",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row09_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1981/r1024/SF_1981%5Econf.png",
+      "source_sha256": "144df4572257d43a86a1ef2e4c3081f53d2c4b2606665504c2d2c35e60d332a6",
+      "sha256": "0dcf00e16a79fdac977df59358af2a6b4dbca194a4bb969694f84e419ee42fe4",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        462,
+        206,
+        562,
+        278
+      ],
+      "game_date": "1982-01-10",
+      "classification": "game-specific playoff reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row11_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1986/r1024/CLE_1986%5Econf.png",
+      "source_sha256": "bfda6e3acced282e793d8aceb7a728c94f0dc4d71e96be22e4bf872d90b3a4d7",
+      "sha256": "c9fa1f2b428414637d6215dca913a5db6d2ca80f7e5f49536e3241a02c57ae38",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1987-01-11",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row11_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1986/r1024/CLE_1986%5Econf.png",
+      "source_sha256": "bfda6e3acced282e793d8aceb7a728c94f0dc4d71e96be22e4bf872d90b3a4d7",
+      "sha256": "ba9ef9f3aca98914aed5cbe829a0808405ea646412c28854132399a42c204113",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1987-01-11",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row14_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/23/r1024/23.png",
+      "source_sha256": "15f06481e35cb7627d5ec060025f914dfe6e6d7bfdf23eaf519ed22a686205ca",
+      "sha256": "887a4dff5d12f3573c79f8b62f791fe838bc650f7306712340715a2002f6fe0e",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1989-01-22",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row14_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/23/r1024/23.png",
+      "source_sha256": "15f06481e35cb7627d5ec060025f914dfe6e6d7bfdf23eaf519ed22a686205ca",
+      "sha256": "dd69cc073bec1f05027b508c8cbf9c6af937f3c33f35b78a3430ddc40e148f97",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1989-01-22",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row15_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/25/r1024/25.png",
+      "source_sha256": "1b5ae92351fd657dac65d9f7b903dcb0e98a13716a53bf71473f7542b273e99c",
+      "sha256": "a7e2700cd933518560624b003da064559db86b688be21c1fa8a768440f965f86",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1991-01-27",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row15_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/25/r1024/25.png",
+      "source_sha256": "1b5ae92351fd657dac65d9f7b903dcb0e98a13716a53bf71473f7542b273e99c",
+      "sha256": "dc0f4c49783ffa62b5bfb43999a78b618af6b9c0b3734d401ea6383a3b738dc0",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1991-01-27",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row18_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1992/r1024/BUF_1992%5Ewc.png",
+      "source_sha256": "51da093280678a8781513cd0bdfcb89c82f5f4735383b2dc50414b8e405996af",
+      "sha256": "c112679090ba3c8341ff7da3e1e2fb7e62e65a3302b1cd4f29c30d27fb53851e",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1993-01-03",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row18_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1992/r1024/BUF_1992%5Ewc.png",
+      "source_sha256": "51da093280678a8781513cd0bdfcb89c82f5f4735383b2dc50414b8e405996af",
+      "sha256": "634fbdfab33c53caee73ba232812c4e9ca743d11c872b544789a94c57406f703",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1993-01-03",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row18_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1992/r1024/BUF_1992%5Ewc.png",
+      "source_sha256": "51da093280678a8781513cd0bdfcb89c82f5f4735383b2dc50414b8e405996af",
+      "sha256": "834a0e19d205eee21a07031c0c4b91243f362972fdc5ec06aeebf18da330c148",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        485,
+        220,
+        541,
+        268
+      ],
+      "game_date": "1993-01-03",
+      "classification": "game-specific playoff reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row20_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/regular-season/BUF/r1024/BUF_1994-1998%5E1.png",
+      "source_sha256": "a41bf2b7494fe7d50db8c016496a1614f78c9f3a5b5354d008abb03046c88cbd",
+      "sha256": "c112679090ba3c8341ff7da3e1e2fb7e62e65a3302b1cd4f29c30d27fb53851e",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1997-09-21",
+      "classification": "inferred regular-season period reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row20_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/regular-season/BUF/r1024/BUF_1994-1998%5E1.png",
+      "source_sha256": "a41bf2b7494fe7d50db8c016496a1614f78c9f3a5b5354d008abb03046c88cbd",
+      "sha256": "634fbdfab33c53caee73ba232812c4e9ca743d11c872b544789a94c57406f703",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1997-09-21",
+      "classification": "inferred regular-season period reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row20_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/regular-season/BUF/r1024/BUF_1994-1998%5E1.png",
+      "source_sha256": "a41bf2b7494fe7d50db8c016496a1614f78c9f3a5b5354d008abb03046c88cbd",
+      "sha256": "834a0e19d205eee21a07031c0c4b91243f362972fdc5ec06aeebf18da330c148",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        485,
+        220,
+        541,
+        268
+      ],
+      "game_date": "1997-09-21",
+      "classification": "inferred regular-season period reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row21_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/32/r1024/32.png",
+      "source_sha256": "ca9d9303dfb6ee36f7fa24de4bd986f1b3d6b55093eed7f9feb15ab485b5e9cf",
+      "sha256": "21822f04efc28392230ee99ab305747bd3e5f09a45860c5f21a3bed9c331ee21",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1998-01-25",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row21_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/32/r1024/32.png",
+      "source_sha256": "ca9d9303dfb6ee36f7fa24de4bd986f1b3d6b55093eed7f9feb15ab485b5e9cf",
+      "sha256": "84da5c9e01dad05dcb7083ee951aae63ed160c1e6c48526e11edd7fe3fa750bb",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1998-01-25",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row22_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/34/r1024/34.png",
+      "source_sha256": "d901b087c6dfdbecf054c09e2d3ff09d05cee51d91fd60c7407fe130370cd391",
+      "sha256": "4eb6c71c40a82a1f8f5d5210322217bf02ab6d8ff6c2bb90045596c24816ee37",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2000-01-30",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row22_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/34/r1024/34.png",
+      "source_sha256": "d901b087c6dfdbecf054c09e2d3ff09d05cee51d91fd60c7407fe130370cd391",
+      "sha256": "79bb6f7a6f7e16e5823e383f874ba8dc3544baba4ea539f8a012f30da4d0f0fd",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2000-01-30",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row23_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/36/r1024/36.png",
+      "source_sha256": "0968b7010a6f5d5ddcd160b66670a4c114157afe7203599c0cff8d70659d2ca8",
+      "sha256": "355ccf53e403c233f397e94a49c000216f476fc28875c865ac5ddf291e38dbb6",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2002-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row23_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/36/r1024/36.png",
+      "source_sha256": "0968b7010a6f5d5ddcd160b66670a4c114157afe7203599c0cff8d70659d2ca8",
+      "sha256": "e40eb7d509c65bb693583eda0b341634e05ed7b38513c3d5f3ed43dbac95c375",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2002-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row26_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1998/r1024/MIN_1998%5Econf.png",
+      "source_sha256": "6de5d9fe1d803f2a4d99a4b44c236ee2d282dbd184760415ee9ccf18f00cd993",
+      "sha256": "65b0034bea84b28fe6f94d4b166015e7320249f1442992160fff12ad686c0402",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "1999-01-17",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row26_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1998/r1024/MIN_1998%5Econf.png",
+      "source_sha256": "6de5d9fe1d803f2a4d99a4b44c236ee2d282dbd184760415ee9ccf18f00cd993",
+      "sha256": "f51c54e5ca7a15fccbb0ec1c3b69dfa5397787246c6413ddb2bbc465daa5aeec",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "1999-01-17",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row26_center.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1998/r1024/MIN_1998%5Econf.png",
+      "source_sha256": "6de5d9fe1d803f2a4d99a4b44c236ee2d282dbd184760415ee9ccf18f00cd993",
+      "sha256": "f2c0011ee24b63ff23aaa1460852f890a6c08dccac9f2408f8c9975dba329add",
+      "processing": "Crop period midfield mark(s), remove green fill and boundary-connected yard-line pixels; retain bounded source layout, fit native center-logo quad.",
+      "crop": [
+        462,
+        206,
+        562,
+        278
+      ],
+      "game_date": "1999-01-17",
+      "classification": "game-specific playoff reference / authored reconstruction, native-quad placement approximate"
+    },
+    {
+      "file": "row27_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/42/r1024/42.png",
+      "source_sha256": "2f218a9d7f441f75dc08650c552c4758da5c35686cb886284ad8c3a1436117d1",
+      "sha256": "a200be78183df8f5aa9e6c17df604e18106af3e5887d5d4cf5209a652c1fea6c",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2008-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row27_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/42/r1024/42.png",
+      "source_sha256": "2f218a9d7f441f75dc08650c552c4758da5c35686cb886284ad8c3a1436117d1",
+      "sha256": "25c5d80fb696442ebe0b1eb115310a757498a650d50e0289bae602f09ef7715b",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2008-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row28_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/43/r1024/43.png",
+      "source_sha256": "c056a7e56c7d7aee3ee12aac426ad6aad45087462d1cfabf02106b42469aa567",
+      "sha256": "24a23f2cd6f329346803a7df853d189b714cf493b4c7e219cf9dd44bbb381b2a",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2009-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row28_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/43/r1024/43.png",
+      "source_sha256": "c056a7e56c7d7aee3ee12aac426ad6aad45087462d1cfabf02106b42469aa567",
+      "sha256": "55c4045010eb808020dbff51edea7b6deae3fe2e7f69d9141579a1013db5dc0a",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2009-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row29_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/46/r1024/46.png",
+      "source_sha256": "c2b4e3095863ef6014d17f6597829a2b6f56bbecda08a1cf3e73a8246895f065",
+      "sha256": "01014a66dfa53906922f29425d29919ae1c1ad616a15733059f49f48f0d62e7f",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2012-02-05",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row29_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/46/r1024/46.png",
+      "source_sha256": "c2b4e3095863ef6014d17f6597829a2b6f56bbecda08a1cf3e73a8246895f065",
+      "sha256": "3373f4fd5ec434312fb8f77eff46c98421947283bb873afceeefb6cbc86cbe16",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2012-02-05",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row30_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/51/r1024/51.png",
+      "source_sha256": "2e5bf4e18cf30e04fc9226d72a2110b982b56d3976e452695fbb10c0de8177c6",
+      "sha256": "8405405495d3995a5c44ac12f75ce5bc0ea77477f248fa89f76a2848650171e7",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2017-02-05",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row30_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/51/r1024/51.png",
+      "source_sha256": "2e5bf4e18cf30e04fc9226d72a2110b982b56d3976e452695fbb10c0de8177c6",
+      "sha256": "73e68031a0ca11ed0239e4d25bb6f983718ecaf5511f861c2312e766bda78b4b",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2017-02-05",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row32_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1999/r1024/TEN_1999%5Ewc.png",
+      "source_sha256": "14973cbeec477ad39173093d6f724191608682c16b2ae5f4597a507dd71783b8",
+      "sha256": "61a42d28f0e377978fcc7ce7c82d06ef70b067745494374fa70ce95a05f896d4",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2000-01-08",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row32_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/1999/r1024/TEN_1999%5Ewc.png",
+      "source_sha256": "14973cbeec477ad39173093d6f724191608682c16b2ae5f4597a507dd71783b8",
+      "sha256": "380e0e013a4f24e46a0dc560175b9f425f146073f7d09e557c21bc104795145b",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2000-01-08",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row33_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2001/r1024/NE_2001%5Ediv.png",
+      "source_sha256": "41e011725edc1c79896f0150f705e2580a27acc3c5827d638343f96f8f4cba3e",
+      "sha256": "30fe1ae29857d9e2995fed755ad70567d004765240f5e1c8dd1b51198cbab870",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2002-01-19",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row33_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2001/r1024/NE_2001%5Ediv.png",
+      "source_sha256": "41e011725edc1c79896f0150f705e2580a27acc3c5827d638343f96f8f4cba3e",
+      "sha256": "93c8fd44276757b1369f9b68ff8addbfcd658ac2658917b6b884fd43e12f0f1a",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2002-01-19",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row34_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/38/r1024/38.png",
+      "source_sha256": "27c10d2ac7347e74d2db20f533f00eab68d18b75babd935e085a714f9f95519f",
+      "sha256": "b14bb4d9937ee223cbe74eb4bd1c5970a7a183bb68c4f0a0880a91a7399e5999",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2004-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row34_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/38/r1024/38.png",
+      "source_sha256": "27c10d2ac7347e74d2db20f533f00eab68d18b75babd935e085a714f9f95519f",
+      "sha256": "4093e5d072c13de93b9452aa7217b834ee79f2808eab7084bad63d372de1bceb",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2004-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row35_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/44/r1024/44.png",
+      "source_sha256": "98f9d4bceb42550cd3afb4d2c7c50878af13d16e551f80dec6fe23d908752d86",
+      "sha256": "cb0c520d40447e951262695d4de67fc20cba5d96c3abea47634c859f27a7ccb7",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2010-02-07",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row35_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/44/r1024/44.png",
+      "source_sha256": "98f9d4bceb42550cd3afb4d2c7c50878af13d16e551f80dec6fe23d908752d86",
+      "sha256": "3581dc024173ed9158a1ce5048bf27d449e0c989535d60151588aca8bfa82186",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2010-02-07",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row38_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2011/r1024/SF_2011%5Ediv.png",
+      "source_sha256": "82f60ba7da1518bbcd1a14e82b2c7b00d4c9f13de6135b3299b8800baee09f22",
+      "sha256": "289845b1611c0a13e0cd11550da291da61e7282686fba0671cb8de16c15522d7",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2012-01-14",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row38_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2011/r1024/SF_2011%5Ediv.png",
+      "source_sha256": "82f60ba7da1518bbcd1a14e82b2c7b00d4c9f13de6135b3299b8800baee09f22",
+      "sha256": "c3573dc69e8079e9bd927f8aec5ef5440ccc93c2dfc396b29b1b0e76f2768969",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2012-01-14",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row39_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2012/r1024/DEN_2012%5Ediv.png",
+      "source_sha256": "411065a6cb5db7f44f63bb7fcc2578e301907e17246154441711b7d3646f0f8d",
+      "sha256": "f58582f43246e201bac463959c9e77d65037a7bcea07e01bcb223f8aafb3ed64",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2013-01-12",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row39_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2012/r1024/DEN_2012%5Ediv.png",
+      "source_sha256": "411065a6cb5db7f44f63bb7fcc2578e301907e17246154441711b7d3646f0f8d",
+      "sha256": "ea4eb7e856afb8c7f04c340f25d97094caf318737dcc3deb12a8b91c7124edc7",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2013-01-12",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row40_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/47/r1024/47.png",
+      "source_sha256": "8b680fe2984473fd36f52e09d5ef371eb94f4bd681ae9e693b93cea108f430d2",
+      "sha256": "a651c098b6b7af3d8d0db5a002ba2a3f9b934cb321657125ca3017c51e155c6d",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2013-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row40_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/47/r1024/47.png",
+      "source_sha256": "8b680fe2984473fd36f52e09d5ef371eb94f4bd681ae9e693b93cea108f430d2",
+      "sha256": "8a614473dc7da4b2e809c6c301612d1ca0214132b22f628b7fd21029896cd049",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2013-02-03",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row41_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2014/r1024/GB_2014%5Ediv.png",
+      "source_sha256": "16a50fecfa4186fedab520254656778d36e3d24004f9348dbaa9e924112f2883",
+      "sha256": "4c8792f87a516667c2354b8e9ef1bcf4f926d19532c9ffc80d08e52915fc5579",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2015-01-11",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row41_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2014/r1024/GB_2014%5Ediv.png",
+      "source_sha256": "16a50fecfa4186fedab520254656778d36e3d24004f9348dbaa9e924112f2883",
+      "sha256": "43fb0c5cff08a9b7456b5e4f6b17958e6936773692e67e7f430846bce01ed029",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2015-01-11",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row42_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/49/r1024/49.png",
+      "source_sha256": "8f0ff282e46d5f14b94660a1c29ab57de3f5b443f7b53119d8459ab45f3332e2",
+      "sha256": "098412ad8aa221c03fa2d17feba8a6efb17cf57feff85ad1439fa4ea72b9a56b",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2015-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row42_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/49/r1024/49.png",
+      "source_sha256": "8f0ff282e46d5f14b94660a1c29ab57de3f5b443f7b53119d8459ab45f3332e2",
+      "sha256": "bea9dc2c556e35af2d313e9d072b797dc683d18084c70e83f87d6bcc62202930",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2015-02-01",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row44_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2017/r1024/MIN_2017%5Ediv.png",
+      "source_sha256": "23734f93ddc612bb302c167c90376570f8ccf94caf699dbdf688e0d8962c0bd9",
+      "sha256": "c92cdf18a8a21b3de202e3b89f32cd488dfb88708ed2adc55636cbbb413616af",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2018-01-14",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row44_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2017/r1024/MIN_2017%5Ediv.png",
+      "source_sha256": "23734f93ddc612bb302c167c90376570f8ccf94caf699dbdf688e0d8962c0bd9",
+      "sha256": "1b293c6b04937cc4636d5cec77a6d07305ecd14454d0824463da771dfa9fc3c2",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2018-01-14",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row45_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/52/r1024/52.png",
+      "source_sha256": "c5dce0c4d62d8b12695b4f0d01c87d6eb0893060c156c491ee67b29f366c5735",
+      "sha256": "627fae2596925204839560e340a51f554ebd51e67c3aaee94df0a9165004f903",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2018-02-04",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row45_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/52/r1024/52.png",
+      "source_sha256": "c5dce0c4d62d8b12695b4f0d01c87d6eb0893060c156c491ee67b29f366c5735",
+      "sha256": "e993ec613694f9e76b4dc2bd7410d344e663639b301d62220fa581a67f81d7dd",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2018-02-04",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row46_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/54/r1024/54.png",
+      "source_sha256": "52cf4291431b62330e1b3235ef17cf71481bcf1f9752c9ed175e852e06cae701",
+      "sha256": "da1222e48ac1ae391c83c26ca863edfe9229b4dcf60da785d0920fb163b77283",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2020-02-02",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row46_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/54/r1024/54.png",
+      "source_sha256": "52cf4291431b62330e1b3235ef17cf71481bcf1f9752c9ed175e852e06cae701",
+      "sha256": "14b19a35816552db46fe53291fbf8ac12b7c9ca04b4b0cb01a6f7176ccd341f9",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2020-02-02",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row47_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2021/r1024/KC_2021%5Ediv.png",
+      "source_sha256": "ef4d204ec37b7ad7265994125a5da748356f16f63aa8665a141134ee6b18ce51",
+      "sha256": "6813b905e67e920dc0b4d145fb9dc30f5af786ca5cd6a7669f265ee2e567b4de",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        28,
+        28,
+        107,
+        458
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2022-01-23",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row47_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/playoffs/2021/r1024/KC_2021%5Ediv.png",
+      "source_sha256": "ef4d204ec37b7ad7265994125a5da748356f16f63aa8665a141134ee6b18ce51",
+      "sha256": "dba4ff0420a954a2b6c22f133ef8830f2f72d9ae389f15ef18658d40b12380aa",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        916,
+        28,
+        996,
+        458
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2022-01-23",
+      "classification": "game-specific playoff reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row48_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/56/r1024/56.png",
+      "source_sha256": "653bbe28c72ddcaf45513b5caed7f43ddf0b63ad858799f521da510e5c74f2b6",
+      "sha256": "2c8d077c83bd3363a8daee06565fe409024fd0412bc3fd77afc58cd28cab4a16",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2022-02-13",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row48_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/56/r1024/56.png",
+      "source_sha256": "653bbe28c72ddcaf45513b5caed7f43ddf0b63ad858799f521da510e5c74f2b6",
+      "sha256": "ba7f05ccb064912713b70ca999210eb0e7f9e8be360a79e5515073de8eab8ad2",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2022-02-13",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row50_endzone_N.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/58/r1024/58.png",
+      "source_sha256": "1ea0220838e3be279f7c6d8ae1d43d4745a6abb2797ef10de82fb26b5e038d3b",
+      "sha256": "911e23977aee3d90823857449ccd7238850cab4771c26b84ef53a0289c686048",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        40,
+        103,
+        118,
+        522
+      ],
+      "rotation_degrees": 90,
+      "game_date": "2024-02-11",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    },
+    {
+      "file": "row50_endzone_S.png",
+      "source": "https://gridiron-uniforms.com/fields/images/super-bowls/58/r1024/58.png",
+      "source_sha256": "1ea0220838e3be279f7c6d8ae1d43d4745a6abb2797ef10de82fb26b5e038d3b",
+      "sha256": "a947362a380a50c70925e07f7041ce6e594fe1010703cbdd38e2e5ce2db25725",
+      "processing": "Crop authored field-reference end zone, rotate into native split allocation; remove bright grass fill on ordinary turf references.",
+      "crop": [
+        906,
+        103,
+        984,
+        522
+      ],
+      "rotation_degrees": -90,
+      "game_date": "2024-02-11",
+      "classification": "game-specific Super Bowl reference / authored reconstruction, no game-photo exactness claim"
+    }
+  ]
+}

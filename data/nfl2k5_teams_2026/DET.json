@@ -4,7 +4,7 @@
  "name": "Detroit Lions",
  "asset_code": "09",
  "season": 2026,
- "status": "Phase B job d6 (2026-09-23). Sort: REDESIGNED (the April 2024 set: no black, new block numbers trimmed in silver, new sleeve stripes, DETROIT on the road chest, blue-white-blue helmet stripe, Honolulu blue facemask, the 2017 lion). Colours sourced; kit albedo INFERRED. Number glyphs: the retail silver-trimmed block glyphs (09H1, 09A2) recoloured; the 2024 font's clipped corners are not traced (open item).",
+ "status": "Phase B job d6 (2026-09-23). Sort: REDESIGNED (the April 2024 set: no black, new block numbers trimmed in silver, new sleeve stripes, DETROIT on the road chest, blue-white-blue helmet stripe, Honolulu blue facemask, the 2017 lion). Colours sourced; kit albedo INFERRED. u1 2026-10-05: complete current jersey and visible shoulder 0..9 numerals from primary Nike garment photo traces; original native registration and colour/outline recipes preserved. Photo traces are measured approximations, not licensed font files.",
  "sources": {
   "kit_rules": "https://en.wikipedia.org/w/index.php?title=Detroit_Lions&action=raw (Logos and uniforms: April 18, 2024 set; all-blue and all-white mainly worn)",
   "uniform_diagram": "https://en.wikipedia.org/wiki/Special:FilePath/Detroit_Lions_Uniforms_(2026).png (CC BY-SA)",
@@ -328,10 +328,1439 @@
     "colour": "blue"
    },
    "digits": {
-    "glyph_donor": "09H1",
+    "glyph_donor": "09H0",
     "fill": "white",
     "outline": "silver",
-    "outline_frac": 0.04
+    "outline_frac": 0.04,
+    "glyph_shapes": {
+     "0": {
+      "width": 50.9048,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5132,
+         0.3913
+        ],
+        [
+         0.0384,
+         11.5269
+        ],
+        [
+         0.0,
+         51.2258
+        ],
+        [
+         1.0361,
+         88.8126
+        ],
+        [
+         9.8842,
+         99.6158
+        ],
+        [
+         40.381,
+         100.0
+        ],
+        [
+         50.429,
+         89.3981
+        ],
+        [
+         50.1148,
+         50.6527
+        ],
+        [
+         50.9048,
+         11.1044
+        ],
+        [
+         40.5536,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         15.1502,
+         18.0922
+        ],
+        [
+         33.6683,
+         18.1248
+        ],
+        [
+         33.2243,
+         39.8675
+        ],
+        [
+         33.2661,
+         83.1202
+        ],
+        [
+         16.2428,
+         83.0147
+        ],
+        [
+         15.1133,
+         82.6953
+        ],
+        [
+         14.625,
+         44.5201
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 34.1554,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.5605,
+         0.2921
+        ],
+        [
+         0.0,
+         10.6096
+        ],
+        [
+         0.2601,
+         22.2664
+        ],
+        [
+         7.4281,
+         22.2465
+        ],
+        [
+         7.9691,
+         22.6608
+        ],
+        [
+         8.431,
+         81.4042
+        ],
+        [
+         0.9816,
+         81.6493
+        ],
+        [
+         0.8146,
+         99.3688
+        ],
+        [
+         34.1554,
+         100.0
+        ],
+        [
+         34.0412,
+         82.5058
+        ],
+        [
+         26.6027,
+         82.3185
+        ],
+        [
+         25.7858,
+         81.9133
+        ],
+        [
+         26.2921,
+         17.5214
+        ],
+        [
+         27.0056,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 56.4623,
+      "height": 100,
+      "contours": [
+       [
+        [
+         12.4851,
+         0.0
+        ],
+        [
+         1.8634,
+         10.8696
+        ],
+        [
+         1.1181,
+         26.9127
+        ],
+        [
+         17.7027,
+         27.2707
+        ],
+        [
+         17.889,
+         18.1355
+        ],
+        [
+         18.2617,
+         17.7541
+        ],
+        [
+         38.0142,
+         17.8519
+        ],
+        [
+         38.2006,
+         20.6427
+        ],
+        [
+         37.4552,
+         38.7355
+        ],
+        [
+         35.5917,
+         39.1517
+        ],
+        [
+         11.5533,
+         38.9677
+        ],
+        [
+         0.3727,
+         51.1548
+        ],
+        [
+         0.0,
+         63.2759
+        ],
+        [
+         0.0,
+         99.0539
+        ],
+        [
+         31.3058,
+         100.0
+        ],
+        [
+         55.5306,
+         99.6207
+        ],
+        [
+         55.1579,
+         70.746
+        ],
+        [
+         36.7098,
+         70.9905
+        ],
+        [
+         36.7098,
+         81.9848
+        ],
+        [
+         36.3371,
+         82.3662
+        ],
+        [
+         16.9573,
+         82.446
+        ],
+        [
+         16.2119,
+         82.0907
+        ],
+        [
+         16.2119,
+         69.233
+        ],
+        [
+         16.771,
+         56.7349
+        ],
+        [
+         42.6728,
+         56.8754
+        ],
+        [
+         55.3442,
+         43.9081
+        ],
+        [
+         56.0896,
+         12.7712
+        ],
+        [
+         56.4623,
+         10.8991
+        ],
+        [
+         46.3997,
+         0.1398
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 56.8142,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.2749,
+         0.5736
+        ],
+        [
+         0.0,
+         11.3281
+        ],
+        [
+         0.7534,
+         26.6211
+        ],
+        [
+         16.1756,
+         26.7941
+        ],
+        [
+         16.3466,
+         17.5191
+        ],
+        [
+         36.3398,
+         17.5191
+        ],
+        [
+         36.8336,
+         17.8787
+        ],
+        [
+         36.8336,
+         39.4424
+        ],
+        [
+         32.5096,
+         39.7952
+        ],
+        [
+         19.2462,
+         39.3513
+        ],
+        [
+         19.5944,
+         56.9296
+        ],
+        [
+         20.5693,
+         57.271
+        ],
+        [
+         36.9666,
+         57.7854
+        ],
+        [
+         37.7959,
+         82.5333
+        ],
+        [
+         35.1559,
+         82.8224
+        ],
+        [
+         18.2712,
+         82.1372
+        ],
+        [
+         17.6254,
+         70.0558
+        ],
+        [
+         2.6717,
+         69.4867
+        ],
+        [
+         3.3048,
+         88.3783
+        ],
+        [
+         12.5797,
+         99.1874
+        ],
+        [
+         46.0895,
+         100.0
+        ],
+        [
+         56.8142,
+         89.3798
+        ],
+        [
+         55.9722,
+         71.4419
+        ],
+        [
+         55.9279,
+         55.7437
+        ],
+        [
+         49.2107,
+         49.3775
+        ],
+        [
+         49.1727,
+         48.244
+        ],
+        [
+         55.2504,
+         42.7177
+        ],
+        [
+         55.9279,
+         41.3679
+        ],
+        [
+         56.1115,
+         10.907
+        ],
+        [
+         44.4245,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 57.6513,
+      "height": 100,
+      "contours": [
+       [
+        [
+         23.9288,
+         0.3214
+        ],
+        [
+         10.4247,
+         25.0628
+        ],
+        [
+         0.0,
+         48.1606
+        ],
+        [
+         3.9161,
+         68.3703
+        ],
+        [
+         5.1266,
+         68.6951
+        ],
+        [
+         26.5264,
+         69.0853
+        ],
+        [
+         30.3825,
+         69.4837
+        ],
+        [
+         30.7168,
+         81.7349
+        ],
+        [
+         23.2704,
+         81.8701
+        ],
+        [
+         24.234,
+         99.5663
+        ],
+        [
+         57.6513,
+         100.0
+        ],
+        [
+         56.938,
+         82.6703
+        ],
+        [
+         48.516,
+         82.2817
+        ],
+        [
+         48.1816,
+         70.0305
+        ],
+        [
+         56.8232,
+         69.6547
+        ],
+        [
+         56.5745,
+         51.7386
+        ],
+        [
+         49.8431,
+         51.654
+        ],
+        [
+         47.9073,
+         51.1721
+        ],
+        [
+         47.9073,
+         24.7535
+        ],
+        [
+         48.6737,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         29.4806,
+         27.6307
+        ],
+        [
+         29.8784,
+         51.0126
+        ],
+        [
+         16.6606,
+         51.0214
+        ],
+        [
+         16.1497,
+         49.9114
+        ],
+        [
+         22.3171,
+         38.1322
+        ],
+        [
+         28.2856,
+         27.8714
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 56.0518,
+      "height": 100,
+      "contours": [
+       [
+        [
+         1.4759,
+         0.1375
+        ],
+        [
+         0.1912,
+         43.2156
+        ],
+        [
+         10.2176,
+         54.69
+        ],
+        [
+         36.4827,
+         54.7414
+        ],
+        [
+         36.8601,
+         55.1042
+        ],
+        [
+         36.8601,
+         82.8686
+        ],
+        [
+         30.1592,
+         83.2319
+        ],
+        [
+         16.5586,
+         83.0322
+        ],
+        [
+         16.2124,
+         71.1157
+        ],
+        [
+         0.0,
+         70.6124
+        ],
+        [
+         0.2449,
+         88.8671
+        ],
+        [
+         10.0751,
+         99.6013
+        ],
+        [
+         44.3546,
+         100.0
+        ],
+        [
+         55.5732,
+         89.2687
+        ],
+        [
+         55.0158,
+         47.73
+        ],
+        [
+         44.2521,
+         36.834
+        ],
+        [
+         17.0585,
+         36.9935
+        ],
+        [
+         16.8073,
+         32.1553
+        ],
+        [
+         17.186,
+         18.729
+        ],
+        [
+         17.5484,
+         17.9741
+        ],
+        [
+         31.3351,
+         18.1688
+        ],
+        [
+         55.3532,
+         17.3479
+        ],
+        [
+         56.0518,
+         0.0
+        ],
+        [
+         18.2445,
+         0.4399
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 55.9207,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.3991,
+         0.1744
+        ],
+        [
+         1.1029,
+         11.088
+        ],
+        [
+         0.0,
+         54.0224
+        ],
+        [
+         0.0895,
+         88.53
+        ],
+        [
+         1.4218,
+         90.5456
+        ],
+        [
+         10.1238,
+         99.8218
+        ],
+        [
+         44.6236,
+         100.0
+        ],
+        [
+         55.6679,
+         89.2525
+        ],
+        [
+         55.3595,
+         52.3259
+        ],
+        [
+         44.2118,
+         41.4375
+        ],
+        [
+         16.9893,
+         41.6204
+        ],
+        [
+         16.7679,
+         39.0149
+        ],
+        [
+         17.4225,
+         18.291
+        ],
+        [
+         37.5567,
+         17.9284
+        ],
+        [
+         37.4977,
+         27.4436
+        ],
+        [
+         54.8333,
+         26.9707
+        ],
+        [
+         55.5714,
+         26.391
+        ],
+        [
+         55.9207,
+         10.7121
+        ],
+        [
+         45.1483,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6699,
+         59.537
+        ],
+        [
+         35.5018,
+         59.3964
+        ],
+        [
+         36.8116,
+         59.7338
+        ],
+        [
+         36.935,
+         82.8614
+        ],
+        [
+         36.5672,
+         83.2446
+        ],
+        [
+         16.6095,
+         82.8562
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 54.3452,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.0,
+         0.9531
+        ],
+        [
+         0.0,
+         27.7108
+        ],
+        [
+         16.3276,
+         27.8322
+        ],
+        [
+         16.2569,
+         18.7298
+        ],
+        [
+         16.6092,
+         18.3448
+        ],
+        [
+         34.4088,
+         18.2243
+        ],
+        [
+         34.639,
+         19.1446
+        ],
+        [
+         23.8923,
+         46.1257
+        ],
+        [
+         10.4574,
+         82.6859
+        ],
+        [
+         6.3935,
+         83.0265
+        ],
+        [
+         1.5621,
+         82.8389
+        ],
+        [
+         2.372,
+         99.5316
+        ],
+        [
+         29.103,
+         100.0
+        ],
+        [
+         39.2943,
+         99.7977
+        ],
+        [
+         38.4753,
+         82.9195
+        ],
+        [
+         28.4692,
+         83.1148
+        ],
+        [
+         28.2301,
+         82.009
+        ],
+        [
+         54.137,
+         15.8006
+        ],
+        [
+         53.993,
+         12.833
+        ],
+        [
+         54.3452,
+         12.4479
+        ],
+        [
+         53.921,
+         11.3492
+        ],
+        [
+         54.2822,
+         11.1496
+        ],
+        [
+         53.9621,
+         8.3745
+        ],
+        [
+         54.2977,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 55.9812,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.0369,
+         0.0
+        ],
+        [
+         0.6485,
+         10.9288
+        ],
+        [
+         0.0424,
+         41.7549
+        ],
+        [
+         5.4082,
+         47.956
+        ],
+        [
+         5.6202,
+         49.0706
+        ],
+        [
+         0.3391,
+         54.8174
+        ],
+        [
+         0.0,
+         56.3206
+        ],
+        [
+         0.551,
+         88.7954
+        ],
+        [
+         10.4986,
+         99.5386
+        ],
+        [
+         27.6769,
+         100.0
+        ],
+        [
+         44.8426,
+         99.9016
+        ],
+        [
+         55.9812,
+         89.1388
+        ],
+        [
+         55.214,
+         55.3629
+        ],
+        [
+         48.725,
+         49.006
+        ],
+        [
+         48.708,
+         48.2595
+        ],
+        [
+         55.0826,
+         41.3622
+        ],
+        [
+         55.3157,
+         10.5464
+        ],
+        [
+         44.9994,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6486,
+         58.1036
+        ],
+        [
+         36.8065,
+         58.2963
+        ],
+        [
+         36.993,
+         82.9388
+        ],
+        [
+         17.403,
+         83.1038
+        ],
+        [
+         16.6486,
+         82.7511
+        ]
+       ],
+       [
+        [
+         17.2292,
+         17.942
+        ],
+        [
+         37.1965,
+         17.9533
+        ],
+        [
+         37.082,
+         37.5624
+        ],
+        [
+         36.7684,
+         40.1852
+        ],
+        [
+         17.9243,
+         40.3297
+        ],
+        [
+         16.6104,
+         39.9924
+        ],
+        [
+         16.8859,
+         19.2585
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 56.1151,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5229,
+         0.7135
+        ],
+        [
+         0.0,
+         11.5056
+        ],
+        [
+         0.8552,
+         47.5659
+        ],
+        [
+         9.8828,
+         58.7167
+        ],
+        [
+         35.9046,
+         59.519
+        ],
+        [
+         36.1433,
+         82.5651
+        ],
+        [
+         33.4969,
+         82.8647
+        ],
+        [
+         16.6299,
+         82.2468
+        ],
+        [
+         16.2639,
+         70.167
+        ],
+        [
+         1.3249,
+         69.6575
+        ],
+        [
+         1.5206,
+         88.5478
+        ],
+        [
+         10.5442,
+         99.3207
+        ],
+        [
+         44.0316,
+         100.0
+        ],
+        [
+         55.001,
+         89.3364
+        ],
+        [
+         54.6801,
+         58.3563
+        ],
+        [
+         56.1151,
+         10.8612
+        ],
+        [
+         44.6819,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.2015,
+         17.632
+        ],
+        [
+         36.1925,
+         17.5524
+        ],
+        [
+         36.678,
+         17.9101
+        ],
+        [
+         36.1964,
+         41.1753
+        ],
+        [
+         35.7187,
+         41.5732
+        ],
+        [
+         19.0964,
+         41.323
+        ],
+        [
+         15.9606,
+         40.8871
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Barnes_back",
+      "raw_left_ratio": 0.4427767354596623,
+      "raw_right_ratio": 0.5645756457564576,
+      "leading_correction": 1.275079742322847
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jahmyr-gibbs-blue-detroit-lions-game-player-jersey_ss5_p-202120743+pv-3+u-tkgtxwncf5wvbddjwg9c+v-vw6tdrxuo8seh3q8kgzt.jpg?_hv=2&w=2000",
+       "source_image_sha256": "456ef0bef88ea9b6bd9c2bad248c3a850f58c6881a4f0c2dac01f9abe5908809",
+       "source_crop": [
+        730,
+        610,
+        1030,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         17.0
+        ],
+        [
+         290.0,
+         557.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.512962962962963,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.048747135782393376,
+       "removed_vertical_lean": -0.022590014328994115,
+       "normalized_width_height_ratio": 0.5090480000000001,
+       "outer_vertices": 10,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jared-goff-blue-detroit-lions-game-jersey_ss5_p-200422498+pv-1+u-mpt5s4cibk3eegrcncmx+v-vct3y534hqfbgcnieevk.png",
+       "source_image_sha256": "e48e018e6ae48457ab5e2e201f20cd516208cd9ee168ac4f05fb2cfced8271a1",
+       "source_crop": [
+        930,
+        690,
+        1110,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         24.0
+        ],
+        [
+         147.0,
+         489.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.2838709677419355,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04198642266824085,
+       "removed_vertical_lean": 0.019596759934237127,
+       "normalized_width_height_ratio": 0.341554,
+       "outer_vertices": 14,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        867,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         16.0
+        ],
+        [
+         316.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.023351648351648352,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.564623,
+       "outer_vertices": 29,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04819277108433735,
+       "removed_vertical_lean": -0.026282457251424952,
+       "normalized_width_height_ratio": 0.568142,
+       "outer_vertices": 30,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        575,
+        610,
+        845,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         18.0,
+         14.0
+        ],
+        [
+         253.0,
+         550.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.43843283582089554,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.05538869874973807,
+       "removed_vertical_lean": -0.021403167993765074,
+       "normalized_width_height_ratio": 0.5765129999999999,
+       "outer_vertices": 20,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-derrick-barnes-blue-detroit-lions-team-game-jersey_ss5_p-202084904+pv-3+u-v1vf1my9pljotxmw1wes+v-pthjhhvnamipdprc4sin.png?_hv=2&w=2000",
+       "source_image_sha256": "a29335d3ee049cc446abca42c11a2400e2e53b7044eb2a9ceec966219e010b15",
+       "source_crop": [
+        870,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         12.0,
+         16.0
+        ],
+        [
+         318.0,
+         558.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5645756457564576,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.026410901692011136,
+       "removed_vertical_lean": -0.013418061971602292,
+       "normalized_width_height_ratio": 0.560518,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        865,
+        620,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         13.0
+        ],
+        [
+         321.0,
+         553.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5648148148148148,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027265939973122294,
+       "removed_vertical_lean": -0.013400324021801262,
+       "normalized_width_height_ratio": 0.559207,
+       "outer_vertices": 19,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        865,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         321.0,
+         555.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5666666666666667,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03801668562760713,
+       "removed_vertical_lean": -0.04852144186935959,
+       "normalized_width_height_ratio": 0.5434519999999999,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-penei-sewell-blue-detroit-lions-game-jersey_ss5_p-200422548+pv-3+u-d0bassurpenwd1aiaa0x+v-niws3ogy9j8qob7ddbkx.jpg?_hv=2&w=2000",
+       "source_image_sha256": "c740f3ae297187fde405229861b9d2a17a5c674a17793417589ef0e046d9ed83",
+       "source_crop": [
+        865,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         318.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027472527472527472,
+       "removed_vertical_lean": -0.02271309122675652,
+       "normalized_width_height_ratio": 0.559812,
+       "outer_vertices": 18,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.053266975460727305,
+       "removed_vertical_lean": -0.008123045689830462,
+       "normalized_width_height_ratio": 0.561151,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    },
    "nameplate": {
     "glyph_donor": "09H5",
@@ -458,6 +1887,1441 @@
    "unif_color": {
     "facemask": "#0076B6",
     "turtleneck": "#0076B6"
+   },
+   "arm_digits": {
+    "glyph_donor": "09H0",
+    "fill": "white",
+    "outline": "silver",
+    "outline_frac": 0.04,
+    "glyph_shapes": {
+     "0": {
+      "width": 50.9048,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5132,
+         0.3913
+        ],
+        [
+         0.0384,
+         11.5269
+        ],
+        [
+         0.0,
+         51.2258
+        ],
+        [
+         1.0361,
+         88.8126
+        ],
+        [
+         9.8842,
+         99.6158
+        ],
+        [
+         40.381,
+         100.0
+        ],
+        [
+         50.429,
+         89.3981
+        ],
+        [
+         50.1148,
+         50.6527
+        ],
+        [
+         50.9048,
+         11.1044
+        ],
+        [
+         40.5536,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         15.1502,
+         18.0922
+        ],
+        [
+         33.6683,
+         18.1248
+        ],
+        [
+         33.2243,
+         39.8675
+        ],
+        [
+         33.2661,
+         83.1202
+        ],
+        [
+         16.2428,
+         83.0147
+        ],
+        [
+         15.1133,
+         82.6953
+        ],
+        [
+         14.625,
+         44.5201
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 34.1554,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.5605,
+         0.2921
+        ],
+        [
+         0.0,
+         10.6096
+        ],
+        [
+         0.2601,
+         22.2664
+        ],
+        [
+         7.4281,
+         22.2465
+        ],
+        [
+         7.9691,
+         22.6608
+        ],
+        [
+         8.431,
+         81.4042
+        ],
+        [
+         0.9816,
+         81.6493
+        ],
+        [
+         0.8146,
+         99.3688
+        ],
+        [
+         34.1554,
+         100.0
+        ],
+        [
+         34.0412,
+         82.5058
+        ],
+        [
+         26.6027,
+         82.3185
+        ],
+        [
+         25.7858,
+         81.9133
+        ],
+        [
+         26.2921,
+         17.5214
+        ],
+        [
+         27.0056,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 56.4623,
+      "height": 100,
+      "contours": [
+       [
+        [
+         12.4851,
+         0.0
+        ],
+        [
+         1.8634,
+         10.8696
+        ],
+        [
+         1.1181,
+         26.9127
+        ],
+        [
+         17.7027,
+         27.2707
+        ],
+        [
+         17.889,
+         18.1355
+        ],
+        [
+         18.2617,
+         17.7541
+        ],
+        [
+         38.0142,
+         17.8519
+        ],
+        [
+         38.2006,
+         20.6427
+        ],
+        [
+         37.4552,
+         38.7355
+        ],
+        [
+         35.5917,
+         39.1517
+        ],
+        [
+         11.5533,
+         38.9677
+        ],
+        [
+         0.3727,
+         51.1548
+        ],
+        [
+         0.0,
+         63.2759
+        ],
+        [
+         0.0,
+         99.0539
+        ],
+        [
+         31.3058,
+         100.0
+        ],
+        [
+         55.5306,
+         99.6207
+        ],
+        [
+         55.1579,
+         70.746
+        ],
+        [
+         36.7098,
+         70.9905
+        ],
+        [
+         36.7098,
+         81.9848
+        ],
+        [
+         36.3371,
+         82.3662
+        ],
+        [
+         16.9573,
+         82.446
+        ],
+        [
+         16.2119,
+         82.0907
+        ],
+        [
+         16.2119,
+         69.233
+        ],
+        [
+         16.771,
+         56.7349
+        ],
+        [
+         42.6728,
+         56.8754
+        ],
+        [
+         55.3442,
+         43.9081
+        ],
+        [
+         56.0896,
+         12.7712
+        ],
+        [
+         56.4623,
+         10.8991
+        ],
+        [
+         46.3997,
+         0.1398
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 56.8142,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.2749,
+         0.5736
+        ],
+        [
+         0.0,
+         11.3281
+        ],
+        [
+         0.7534,
+         26.6211
+        ],
+        [
+         16.1756,
+         26.7941
+        ],
+        [
+         16.3466,
+         17.5191
+        ],
+        [
+         36.3398,
+         17.5191
+        ],
+        [
+         36.8336,
+         17.8787
+        ],
+        [
+         36.8336,
+         39.4424
+        ],
+        [
+         32.5096,
+         39.7952
+        ],
+        [
+         19.2462,
+         39.3513
+        ],
+        [
+         19.5944,
+         56.9296
+        ],
+        [
+         20.5693,
+         57.271
+        ],
+        [
+         36.9666,
+         57.7854
+        ],
+        [
+         37.7959,
+         82.5333
+        ],
+        [
+         35.1559,
+         82.8224
+        ],
+        [
+         18.2712,
+         82.1372
+        ],
+        [
+         17.6254,
+         70.0558
+        ],
+        [
+         2.6717,
+         69.4867
+        ],
+        [
+         3.3048,
+         88.3783
+        ],
+        [
+         12.5797,
+         99.1874
+        ],
+        [
+         46.0895,
+         100.0
+        ],
+        [
+         56.8142,
+         89.3798
+        ],
+        [
+         55.9722,
+         71.4419
+        ],
+        [
+         55.9279,
+         55.7437
+        ],
+        [
+         49.2107,
+         49.3775
+        ],
+        [
+         49.1727,
+         48.244
+        ],
+        [
+         55.2504,
+         42.7177
+        ],
+        [
+         55.9279,
+         41.3679
+        ],
+        [
+         56.1115,
+         10.907
+        ],
+        [
+         44.4245,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 57.6513,
+      "height": 100,
+      "contours": [
+       [
+        [
+         23.9288,
+         0.3214
+        ],
+        [
+         10.4247,
+         25.0628
+        ],
+        [
+         0.0,
+         48.1606
+        ],
+        [
+         3.9161,
+         68.3703
+        ],
+        [
+         5.1266,
+         68.6951
+        ],
+        [
+         26.5264,
+         69.0853
+        ],
+        [
+         30.3825,
+         69.4837
+        ],
+        [
+         30.7168,
+         81.7349
+        ],
+        [
+         23.2704,
+         81.8701
+        ],
+        [
+         24.234,
+         99.5663
+        ],
+        [
+         57.6513,
+         100.0
+        ],
+        [
+         56.938,
+         82.6703
+        ],
+        [
+         48.516,
+         82.2817
+        ],
+        [
+         48.1816,
+         70.0305
+        ],
+        [
+         56.8232,
+         69.6547
+        ],
+        [
+         56.5745,
+         51.7386
+        ],
+        [
+         49.8431,
+         51.654
+        ],
+        [
+         47.9073,
+         51.1721
+        ],
+        [
+         47.9073,
+         24.7535
+        ],
+        [
+         48.6737,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         29.4806,
+         27.6307
+        ],
+        [
+         29.8784,
+         51.0126
+        ],
+        [
+         16.6606,
+         51.0214
+        ],
+        [
+         16.1497,
+         49.9114
+        ],
+        [
+         22.3171,
+         38.1322
+        ],
+        [
+         28.2856,
+         27.8714
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 56.0518,
+      "height": 100,
+      "contours": [
+       [
+        [
+         1.4759,
+         0.1375
+        ],
+        [
+         0.1912,
+         43.2156
+        ],
+        [
+         10.2176,
+         54.69
+        ],
+        [
+         36.4827,
+         54.7414
+        ],
+        [
+         36.8601,
+         55.1042
+        ],
+        [
+         36.8601,
+         82.8686
+        ],
+        [
+         30.1592,
+         83.2319
+        ],
+        [
+         16.5586,
+         83.0322
+        ],
+        [
+         16.2124,
+         71.1157
+        ],
+        [
+         0.0,
+         70.6124
+        ],
+        [
+         0.2449,
+         88.8671
+        ],
+        [
+         10.0751,
+         99.6013
+        ],
+        [
+         44.3546,
+         100.0
+        ],
+        [
+         55.5732,
+         89.2687
+        ],
+        [
+         55.0158,
+         47.73
+        ],
+        [
+         44.2521,
+         36.834
+        ],
+        [
+         17.0585,
+         36.9935
+        ],
+        [
+         16.8073,
+         32.1553
+        ],
+        [
+         17.186,
+         18.729
+        ],
+        [
+         17.5484,
+         17.9741
+        ],
+        [
+         31.3351,
+         18.1688
+        ],
+        [
+         55.3532,
+         17.3479
+        ],
+        [
+         56.0518,
+         0.0
+        ],
+        [
+         18.2445,
+         0.4399
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 55.9207,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.3991,
+         0.1744
+        ],
+        [
+         1.1029,
+         11.088
+        ],
+        [
+         0.0,
+         54.0224
+        ],
+        [
+         0.0895,
+         88.53
+        ],
+        [
+         1.4218,
+         90.5456
+        ],
+        [
+         10.1238,
+         99.8218
+        ],
+        [
+         44.6236,
+         100.0
+        ],
+        [
+         55.6679,
+         89.2525
+        ],
+        [
+         55.3595,
+         52.3259
+        ],
+        [
+         44.2118,
+         41.4375
+        ],
+        [
+         16.9893,
+         41.6204
+        ],
+        [
+         16.7679,
+         39.0149
+        ],
+        [
+         17.4225,
+         18.291
+        ],
+        [
+         37.5567,
+         17.9284
+        ],
+        [
+         37.4977,
+         27.4436
+        ],
+        [
+         54.8333,
+         26.9707
+        ],
+        [
+         55.5714,
+         26.391
+        ],
+        [
+         55.9207,
+         10.7121
+        ],
+        [
+         45.1483,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6699,
+         59.537
+        ],
+        [
+         35.5018,
+         59.3964
+        ],
+        [
+         36.8116,
+         59.7338
+        ],
+        [
+         36.935,
+         82.8614
+        ],
+        [
+         36.5672,
+         83.2446
+        ],
+        [
+         16.6095,
+         82.8562
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 54.3452,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.0,
+         0.9531
+        ],
+        [
+         0.0,
+         27.7108
+        ],
+        [
+         16.3276,
+         27.8322
+        ],
+        [
+         16.2569,
+         18.7298
+        ],
+        [
+         16.6092,
+         18.3448
+        ],
+        [
+         34.4088,
+         18.2243
+        ],
+        [
+         34.639,
+         19.1446
+        ],
+        [
+         23.8923,
+         46.1257
+        ],
+        [
+         10.4574,
+         82.6859
+        ],
+        [
+         6.3935,
+         83.0265
+        ],
+        [
+         1.5621,
+         82.8389
+        ],
+        [
+         2.372,
+         99.5316
+        ],
+        [
+         29.103,
+         100.0
+        ],
+        [
+         39.2943,
+         99.7977
+        ],
+        [
+         38.4753,
+         82.9195
+        ],
+        [
+         28.4692,
+         83.1148
+        ],
+        [
+         28.2301,
+         82.009
+        ],
+        [
+         54.137,
+         15.8006
+        ],
+        [
+         53.993,
+         12.833
+        ],
+        [
+         54.3452,
+         12.4479
+        ],
+        [
+         53.921,
+         11.3492
+        ],
+        [
+         54.2822,
+         11.1496
+        ],
+        [
+         53.9621,
+         8.3745
+        ],
+        [
+         54.2977,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 55.9812,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.0369,
+         0.0
+        ],
+        [
+         0.6485,
+         10.9288
+        ],
+        [
+         0.0424,
+         41.7549
+        ],
+        [
+         5.4082,
+         47.956
+        ],
+        [
+         5.6202,
+         49.0706
+        ],
+        [
+         0.3391,
+         54.8174
+        ],
+        [
+         0.0,
+         56.3206
+        ],
+        [
+         0.551,
+         88.7954
+        ],
+        [
+         10.4986,
+         99.5386
+        ],
+        [
+         27.6769,
+         100.0
+        ],
+        [
+         44.8426,
+         99.9016
+        ],
+        [
+         55.9812,
+         89.1388
+        ],
+        [
+         55.214,
+         55.3629
+        ],
+        [
+         48.725,
+         49.006
+        ],
+        [
+         48.708,
+         48.2595
+        ],
+        [
+         55.0826,
+         41.3622
+        ],
+        [
+         55.3157,
+         10.5464
+        ],
+        [
+         44.9994,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6486,
+         58.1036
+        ],
+        [
+         36.8065,
+         58.2963
+        ],
+        [
+         36.993,
+         82.9388
+        ],
+        [
+         17.403,
+         83.1038
+        ],
+        [
+         16.6486,
+         82.7511
+        ]
+       ],
+       [
+        [
+         17.2292,
+         17.942
+        ],
+        [
+         37.1965,
+         17.9533
+        ],
+        [
+         37.082,
+         37.5624
+        ],
+        [
+         36.7684,
+         40.1852
+        ],
+        [
+         17.9243,
+         40.3297
+        ],
+        [
+         16.6104,
+         39.9924
+        ],
+        [
+         16.8859,
+         19.2585
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 56.1151,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5229,
+         0.7135
+        ],
+        [
+         0.0,
+         11.5056
+        ],
+        [
+         0.8552,
+         47.5659
+        ],
+        [
+         9.8828,
+         58.7167
+        ],
+        [
+         35.9046,
+         59.519
+        ],
+        [
+         36.1433,
+         82.5651
+        ],
+        [
+         33.4969,
+         82.8647
+        ],
+        [
+         16.6299,
+         82.2468
+        ],
+        [
+         16.2639,
+         70.167
+        ],
+        [
+         1.3249,
+         69.6575
+        ],
+        [
+         1.5206,
+         88.5478
+        ],
+        [
+         10.5442,
+         99.3207
+        ],
+        [
+         44.0316,
+         100.0
+        ],
+        [
+         55.001,
+         89.3364
+        ],
+        [
+         54.6801,
+         58.3563
+        ],
+        [
+         56.1151,
+         10.8612
+        ],
+        [
+         44.6819,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.2015,
+         17.632
+        ],
+        [
+         36.1925,
+         17.5524
+        ],
+        [
+         36.678,
+         17.9101
+        ],
+        [
+         36.1964,
+         41.1753
+        ],
+        [
+         35.7187,
+         41.5732
+        ],
+        [
+         19.0964,
+         41.323
+        ],
+        [
+         15.9606,
+         40.8871
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Barnes_back",
+      "raw_left_ratio": 0.4427767354596623,
+      "raw_right_ratio": 0.5645756457564576,
+      "leading_correction": 1.275079742322847
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jahmyr-gibbs-blue-detroit-lions-game-player-jersey_ss5_p-202120743+pv-3+u-tkgtxwncf5wvbddjwg9c+v-vw6tdrxuo8seh3q8kgzt.jpg?_hv=2&w=2000",
+       "source_image_sha256": "456ef0bef88ea9b6bd9c2bad248c3a850f58c6881a4f0c2dac01f9abe5908809",
+       "source_crop": [
+        730,
+        610,
+        1030,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         17.0
+        ],
+        [
+         290.0,
+         557.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.512962962962963,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.048747135782393376,
+       "removed_vertical_lean": -0.022590014328994115,
+       "normalized_width_height_ratio": 0.5090480000000001,
+       "outer_vertices": 10,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jared-goff-blue-detroit-lions-game-jersey_ss5_p-200422498+pv-1+u-mpt5s4cibk3eegrcncmx+v-vct3y534hqfbgcnieevk.png",
+       "source_image_sha256": "e48e018e6ae48457ab5e2e201f20cd516208cd9ee168ac4f05fb2cfced8271a1",
+       "source_crop": [
+        930,
+        690,
+        1110,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         24.0
+        ],
+        [
+         147.0,
+         489.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.2838709677419355,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04198642266824085,
+       "removed_vertical_lean": 0.019596759934237127,
+       "normalized_width_height_ratio": 0.341554,
+       "outer_vertices": 14,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        867,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         16.0
+        ],
+        [
+         316.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.023351648351648352,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.564623,
+       "outer_vertices": 29,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04819277108433735,
+       "removed_vertical_lean": -0.026282457251424952,
+       "normalized_width_height_ratio": 0.568142,
+       "outer_vertices": 30,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        575,
+        610,
+        845,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         18.0,
+         14.0
+        ],
+        [
+         253.0,
+         550.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.43843283582089554,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.05538869874973807,
+       "removed_vertical_lean": -0.021403167993765074,
+       "normalized_width_height_ratio": 0.5765129999999999,
+       "outer_vertices": 20,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-derrick-barnes-blue-detroit-lions-team-game-jersey_ss5_p-202084904+pv-3+u-v1vf1my9pljotxmw1wes+v-pthjhhvnamipdprc4sin.png?_hv=2&w=2000",
+       "source_image_sha256": "a29335d3ee049cc446abca42c11a2400e2e53b7044eb2a9ceec966219e010b15",
+       "source_crop": [
+        870,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         12.0,
+         16.0
+        ],
+        [
+         318.0,
+         558.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5645756457564576,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.026410901692011136,
+       "removed_vertical_lean": -0.013418061971602292,
+       "normalized_width_height_ratio": 0.560518,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        865,
+        620,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         13.0
+        ],
+        [
+         321.0,
+         553.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5648148148148148,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027265939973122294,
+       "removed_vertical_lean": -0.013400324021801262,
+       "normalized_width_height_ratio": 0.559207,
+       "outer_vertices": 19,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        865,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         321.0,
+         555.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5666666666666667,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03801668562760713,
+       "removed_vertical_lean": -0.04852144186935959,
+       "normalized_width_height_ratio": 0.5434519999999999,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-penei-sewell-blue-detroit-lions-game-jersey_ss5_p-200422548+pv-3+u-d0bassurpenwd1aiaa0x+v-niws3ogy9j8qob7ddbkx.jpg?_hv=2&w=2000",
+       "source_image_sha256": "c740f3ae297187fde405229861b9d2a17a5c674a17793417589ef0e046d9ed83",
+       "source_crop": [
+        865,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         318.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027472527472527472,
+       "removed_vertical_lean": -0.02271309122675652,
+       "normalized_width_height_ratio": 0.559812,
+       "outer_vertices": 18,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.053266975460727305,
+       "removed_vertical_lean": -0.008123045689830462,
+       "normalized_width_height_ratio": 0.561151,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    }
   },
   "away": {
@@ -750,10 +3614,1439 @@
     "colour": "white"
    },
    "digits": {
-    "glyph_donor": "09A2",
+    "glyph_donor": "09A0",
     "fill": "blue",
     "outline": "silver",
-    "outline_frac": 0.04
+    "outline_frac": 0.04,
+    "glyph_shapes": {
+     "0": {
+      "width": 50.9048,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5132,
+         0.3913
+        ],
+        [
+         0.0384,
+         11.5269
+        ],
+        [
+         0.0,
+         51.2258
+        ],
+        [
+         1.0361,
+         88.8126
+        ],
+        [
+         9.8842,
+         99.6158
+        ],
+        [
+         40.381,
+         100.0
+        ],
+        [
+         50.429,
+         89.3981
+        ],
+        [
+         50.1148,
+         50.6527
+        ],
+        [
+         50.9048,
+         11.1044
+        ],
+        [
+         40.5536,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         15.1502,
+         18.0922
+        ],
+        [
+         33.6683,
+         18.1248
+        ],
+        [
+         33.2243,
+         39.8675
+        ],
+        [
+         33.2661,
+         83.1202
+        ],
+        [
+         16.2428,
+         83.0147
+        ],
+        [
+         15.1133,
+         82.6953
+        ],
+        [
+         14.625,
+         44.5201
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 34.1554,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.5605,
+         0.2921
+        ],
+        [
+         0.0,
+         10.6096
+        ],
+        [
+         0.2601,
+         22.2664
+        ],
+        [
+         7.4281,
+         22.2465
+        ],
+        [
+         7.9691,
+         22.6608
+        ],
+        [
+         8.431,
+         81.4042
+        ],
+        [
+         0.9816,
+         81.6493
+        ],
+        [
+         0.8146,
+         99.3688
+        ],
+        [
+         34.1554,
+         100.0
+        ],
+        [
+         34.0412,
+         82.5058
+        ],
+        [
+         26.6027,
+         82.3185
+        ],
+        [
+         25.7858,
+         81.9133
+        ],
+        [
+         26.2921,
+         17.5214
+        ],
+        [
+         27.0056,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 56.4623,
+      "height": 100,
+      "contours": [
+       [
+        [
+         12.4851,
+         0.0
+        ],
+        [
+         1.8634,
+         10.8696
+        ],
+        [
+         1.1181,
+         26.9127
+        ],
+        [
+         17.7027,
+         27.2707
+        ],
+        [
+         17.889,
+         18.1355
+        ],
+        [
+         18.2617,
+         17.7541
+        ],
+        [
+         38.0142,
+         17.8519
+        ],
+        [
+         38.2006,
+         20.6427
+        ],
+        [
+         37.4552,
+         38.7355
+        ],
+        [
+         35.5917,
+         39.1517
+        ],
+        [
+         11.5533,
+         38.9677
+        ],
+        [
+         0.3727,
+         51.1548
+        ],
+        [
+         0.0,
+         63.2759
+        ],
+        [
+         0.0,
+         99.0539
+        ],
+        [
+         31.3058,
+         100.0
+        ],
+        [
+         55.5306,
+         99.6207
+        ],
+        [
+         55.1579,
+         70.746
+        ],
+        [
+         36.7098,
+         70.9905
+        ],
+        [
+         36.7098,
+         81.9848
+        ],
+        [
+         36.3371,
+         82.3662
+        ],
+        [
+         16.9573,
+         82.446
+        ],
+        [
+         16.2119,
+         82.0907
+        ],
+        [
+         16.2119,
+         69.233
+        ],
+        [
+         16.771,
+         56.7349
+        ],
+        [
+         42.6728,
+         56.8754
+        ],
+        [
+         55.3442,
+         43.9081
+        ],
+        [
+         56.0896,
+         12.7712
+        ],
+        [
+         56.4623,
+         10.8991
+        ],
+        [
+         46.3997,
+         0.1398
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 56.8142,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.2749,
+         0.5736
+        ],
+        [
+         0.0,
+         11.3281
+        ],
+        [
+         0.7534,
+         26.6211
+        ],
+        [
+         16.1756,
+         26.7941
+        ],
+        [
+         16.3466,
+         17.5191
+        ],
+        [
+         36.3398,
+         17.5191
+        ],
+        [
+         36.8336,
+         17.8787
+        ],
+        [
+         36.8336,
+         39.4424
+        ],
+        [
+         32.5096,
+         39.7952
+        ],
+        [
+         19.2462,
+         39.3513
+        ],
+        [
+         19.5944,
+         56.9296
+        ],
+        [
+         20.5693,
+         57.271
+        ],
+        [
+         36.9666,
+         57.7854
+        ],
+        [
+         37.7959,
+         82.5333
+        ],
+        [
+         35.1559,
+         82.8224
+        ],
+        [
+         18.2712,
+         82.1372
+        ],
+        [
+         17.6254,
+         70.0558
+        ],
+        [
+         2.6717,
+         69.4867
+        ],
+        [
+         3.3048,
+         88.3783
+        ],
+        [
+         12.5797,
+         99.1874
+        ],
+        [
+         46.0895,
+         100.0
+        ],
+        [
+         56.8142,
+         89.3798
+        ],
+        [
+         55.9722,
+         71.4419
+        ],
+        [
+         55.9279,
+         55.7437
+        ],
+        [
+         49.2107,
+         49.3775
+        ],
+        [
+         49.1727,
+         48.244
+        ],
+        [
+         55.2504,
+         42.7177
+        ],
+        [
+         55.9279,
+         41.3679
+        ],
+        [
+         56.1115,
+         10.907
+        ],
+        [
+         44.4245,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 57.6513,
+      "height": 100,
+      "contours": [
+       [
+        [
+         23.9288,
+         0.3214
+        ],
+        [
+         10.4247,
+         25.0628
+        ],
+        [
+         0.0,
+         48.1606
+        ],
+        [
+         3.9161,
+         68.3703
+        ],
+        [
+         5.1266,
+         68.6951
+        ],
+        [
+         26.5264,
+         69.0853
+        ],
+        [
+         30.3825,
+         69.4837
+        ],
+        [
+         30.7168,
+         81.7349
+        ],
+        [
+         23.2704,
+         81.8701
+        ],
+        [
+         24.234,
+         99.5663
+        ],
+        [
+         57.6513,
+         100.0
+        ],
+        [
+         56.938,
+         82.6703
+        ],
+        [
+         48.516,
+         82.2817
+        ],
+        [
+         48.1816,
+         70.0305
+        ],
+        [
+         56.8232,
+         69.6547
+        ],
+        [
+         56.5745,
+         51.7386
+        ],
+        [
+         49.8431,
+         51.654
+        ],
+        [
+         47.9073,
+         51.1721
+        ],
+        [
+         47.9073,
+         24.7535
+        ],
+        [
+         48.6737,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         29.4806,
+         27.6307
+        ],
+        [
+         29.8784,
+         51.0126
+        ],
+        [
+         16.6606,
+         51.0214
+        ],
+        [
+         16.1497,
+         49.9114
+        ],
+        [
+         22.3171,
+         38.1322
+        ],
+        [
+         28.2856,
+         27.8714
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 56.0518,
+      "height": 100,
+      "contours": [
+       [
+        [
+         1.4759,
+         0.1375
+        ],
+        [
+         0.1912,
+         43.2156
+        ],
+        [
+         10.2176,
+         54.69
+        ],
+        [
+         36.4827,
+         54.7414
+        ],
+        [
+         36.8601,
+         55.1042
+        ],
+        [
+         36.8601,
+         82.8686
+        ],
+        [
+         30.1592,
+         83.2319
+        ],
+        [
+         16.5586,
+         83.0322
+        ],
+        [
+         16.2124,
+         71.1157
+        ],
+        [
+         0.0,
+         70.6124
+        ],
+        [
+         0.2449,
+         88.8671
+        ],
+        [
+         10.0751,
+         99.6013
+        ],
+        [
+         44.3546,
+         100.0
+        ],
+        [
+         55.5732,
+         89.2687
+        ],
+        [
+         55.0158,
+         47.73
+        ],
+        [
+         44.2521,
+         36.834
+        ],
+        [
+         17.0585,
+         36.9935
+        ],
+        [
+         16.8073,
+         32.1553
+        ],
+        [
+         17.186,
+         18.729
+        ],
+        [
+         17.5484,
+         17.9741
+        ],
+        [
+         31.3351,
+         18.1688
+        ],
+        [
+         55.3532,
+         17.3479
+        ],
+        [
+         56.0518,
+         0.0
+        ],
+        [
+         18.2445,
+         0.4399
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 55.9207,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.3991,
+         0.1744
+        ],
+        [
+         1.1029,
+         11.088
+        ],
+        [
+         0.0,
+         54.0224
+        ],
+        [
+         0.0895,
+         88.53
+        ],
+        [
+         1.4218,
+         90.5456
+        ],
+        [
+         10.1238,
+         99.8218
+        ],
+        [
+         44.6236,
+         100.0
+        ],
+        [
+         55.6679,
+         89.2525
+        ],
+        [
+         55.3595,
+         52.3259
+        ],
+        [
+         44.2118,
+         41.4375
+        ],
+        [
+         16.9893,
+         41.6204
+        ],
+        [
+         16.7679,
+         39.0149
+        ],
+        [
+         17.4225,
+         18.291
+        ],
+        [
+         37.5567,
+         17.9284
+        ],
+        [
+         37.4977,
+         27.4436
+        ],
+        [
+         54.8333,
+         26.9707
+        ],
+        [
+         55.5714,
+         26.391
+        ],
+        [
+         55.9207,
+         10.7121
+        ],
+        [
+         45.1483,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6699,
+         59.537
+        ],
+        [
+         35.5018,
+         59.3964
+        ],
+        [
+         36.8116,
+         59.7338
+        ],
+        [
+         36.935,
+         82.8614
+        ],
+        [
+         36.5672,
+         83.2446
+        ],
+        [
+         16.6095,
+         82.8562
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 54.3452,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.0,
+         0.9531
+        ],
+        [
+         0.0,
+         27.7108
+        ],
+        [
+         16.3276,
+         27.8322
+        ],
+        [
+         16.2569,
+         18.7298
+        ],
+        [
+         16.6092,
+         18.3448
+        ],
+        [
+         34.4088,
+         18.2243
+        ],
+        [
+         34.639,
+         19.1446
+        ],
+        [
+         23.8923,
+         46.1257
+        ],
+        [
+         10.4574,
+         82.6859
+        ],
+        [
+         6.3935,
+         83.0265
+        ],
+        [
+         1.5621,
+         82.8389
+        ],
+        [
+         2.372,
+         99.5316
+        ],
+        [
+         29.103,
+         100.0
+        ],
+        [
+         39.2943,
+         99.7977
+        ],
+        [
+         38.4753,
+         82.9195
+        ],
+        [
+         28.4692,
+         83.1148
+        ],
+        [
+         28.2301,
+         82.009
+        ],
+        [
+         54.137,
+         15.8006
+        ],
+        [
+         53.993,
+         12.833
+        ],
+        [
+         54.3452,
+         12.4479
+        ],
+        [
+         53.921,
+         11.3492
+        ],
+        [
+         54.2822,
+         11.1496
+        ],
+        [
+         53.9621,
+         8.3745
+        ],
+        [
+         54.2977,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 55.9812,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.0369,
+         0.0
+        ],
+        [
+         0.6485,
+         10.9288
+        ],
+        [
+         0.0424,
+         41.7549
+        ],
+        [
+         5.4082,
+         47.956
+        ],
+        [
+         5.6202,
+         49.0706
+        ],
+        [
+         0.3391,
+         54.8174
+        ],
+        [
+         0.0,
+         56.3206
+        ],
+        [
+         0.551,
+         88.7954
+        ],
+        [
+         10.4986,
+         99.5386
+        ],
+        [
+         27.6769,
+         100.0
+        ],
+        [
+         44.8426,
+         99.9016
+        ],
+        [
+         55.9812,
+         89.1388
+        ],
+        [
+         55.214,
+         55.3629
+        ],
+        [
+         48.725,
+         49.006
+        ],
+        [
+         48.708,
+         48.2595
+        ],
+        [
+         55.0826,
+         41.3622
+        ],
+        [
+         55.3157,
+         10.5464
+        ],
+        [
+         44.9994,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6486,
+         58.1036
+        ],
+        [
+         36.8065,
+         58.2963
+        ],
+        [
+         36.993,
+         82.9388
+        ],
+        [
+         17.403,
+         83.1038
+        ],
+        [
+         16.6486,
+         82.7511
+        ]
+       ],
+       [
+        [
+         17.2292,
+         17.942
+        ],
+        [
+         37.1965,
+         17.9533
+        ],
+        [
+         37.082,
+         37.5624
+        ],
+        [
+         36.7684,
+         40.1852
+        ],
+        [
+         17.9243,
+         40.3297
+        ],
+        [
+         16.6104,
+         39.9924
+        ],
+        [
+         16.8859,
+         19.2585
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 56.1151,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5229,
+         0.7135
+        ],
+        [
+         0.0,
+         11.5056
+        ],
+        [
+         0.8552,
+         47.5659
+        ],
+        [
+         9.8828,
+         58.7167
+        ],
+        [
+         35.9046,
+         59.519
+        ],
+        [
+         36.1433,
+         82.5651
+        ],
+        [
+         33.4969,
+         82.8647
+        ],
+        [
+         16.6299,
+         82.2468
+        ],
+        [
+         16.2639,
+         70.167
+        ],
+        [
+         1.3249,
+         69.6575
+        ],
+        [
+         1.5206,
+         88.5478
+        ],
+        [
+         10.5442,
+         99.3207
+        ],
+        [
+         44.0316,
+         100.0
+        ],
+        [
+         55.001,
+         89.3364
+        ],
+        [
+         54.6801,
+         58.3563
+        ],
+        [
+         56.1151,
+         10.8612
+        ],
+        [
+         44.6819,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.2015,
+         17.632
+        ],
+        [
+         36.1925,
+         17.5524
+        ],
+        [
+         36.678,
+         17.9101
+        ],
+        [
+         36.1964,
+         41.1753
+        ],
+        [
+         35.7187,
+         41.5732
+        ],
+        [
+         19.0964,
+         41.323
+        ],
+        [
+         15.9606,
+         40.8871
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Barnes_back",
+      "raw_left_ratio": 0.4427767354596623,
+      "raw_right_ratio": 0.5645756457564576,
+      "leading_correction": 1.275079742322847
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jahmyr-gibbs-blue-detroit-lions-game-player-jersey_ss5_p-202120743+pv-3+u-tkgtxwncf5wvbddjwg9c+v-vw6tdrxuo8seh3q8kgzt.jpg?_hv=2&w=2000",
+       "source_image_sha256": "456ef0bef88ea9b6bd9c2bad248c3a850f58c6881a4f0c2dac01f9abe5908809",
+       "source_crop": [
+        730,
+        610,
+        1030,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         17.0
+        ],
+        [
+         290.0,
+         557.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.512962962962963,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.048747135782393376,
+       "removed_vertical_lean": -0.022590014328994115,
+       "normalized_width_height_ratio": 0.5090480000000001,
+       "outer_vertices": 10,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jared-goff-blue-detroit-lions-game-jersey_ss5_p-200422498+pv-1+u-mpt5s4cibk3eegrcncmx+v-vct3y534hqfbgcnieevk.png",
+       "source_image_sha256": "e48e018e6ae48457ab5e2e201f20cd516208cd9ee168ac4f05fb2cfced8271a1",
+       "source_crop": [
+        930,
+        690,
+        1110,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         24.0
+        ],
+        [
+         147.0,
+         489.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.2838709677419355,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04198642266824085,
+       "removed_vertical_lean": 0.019596759934237127,
+       "normalized_width_height_ratio": 0.341554,
+       "outer_vertices": 14,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        867,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         16.0
+        ],
+        [
+         316.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.023351648351648352,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.564623,
+       "outer_vertices": 29,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04819277108433735,
+       "removed_vertical_lean": -0.026282457251424952,
+       "normalized_width_height_ratio": 0.568142,
+       "outer_vertices": 30,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        575,
+        610,
+        845,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         18.0,
+         14.0
+        ],
+        [
+         253.0,
+         550.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.43843283582089554,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.05538869874973807,
+       "removed_vertical_lean": -0.021403167993765074,
+       "normalized_width_height_ratio": 0.5765129999999999,
+       "outer_vertices": 20,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-derrick-barnes-blue-detroit-lions-team-game-jersey_ss5_p-202084904+pv-3+u-v1vf1my9pljotxmw1wes+v-pthjhhvnamipdprc4sin.png?_hv=2&w=2000",
+       "source_image_sha256": "a29335d3ee049cc446abca42c11a2400e2e53b7044eb2a9ceec966219e010b15",
+       "source_crop": [
+        870,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         12.0,
+         16.0
+        ],
+        [
+         318.0,
+         558.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5645756457564576,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.026410901692011136,
+       "removed_vertical_lean": -0.013418061971602292,
+       "normalized_width_height_ratio": 0.560518,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        865,
+        620,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         13.0
+        ],
+        [
+         321.0,
+         553.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5648148148148148,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027265939973122294,
+       "removed_vertical_lean": -0.013400324021801262,
+       "normalized_width_height_ratio": 0.559207,
+       "outer_vertices": 19,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        865,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         321.0,
+         555.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5666666666666667,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03801668562760713,
+       "removed_vertical_lean": -0.04852144186935959,
+       "normalized_width_height_ratio": 0.5434519999999999,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-penei-sewell-blue-detroit-lions-game-jersey_ss5_p-200422548+pv-3+u-d0bassurpenwd1aiaa0x+v-niws3ogy9j8qob7ddbkx.jpg?_hv=2&w=2000",
+       "source_image_sha256": "c740f3ae297187fde405229861b9d2a17a5c674a17793417589ef0e046d9ed83",
+       "source_crop": [
+        865,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         318.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027472527472527472,
+       "removed_vertical_lean": -0.02271309122675652,
+       "normalized_width_height_ratio": 0.559812,
+       "outer_vertices": 18,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.053266975460727305,
+       "removed_vertical_lean": -0.008123045689830462,
+       "normalized_width_height_ratio": 0.561151,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    },
    "nameplate": {
     "glyph_donor": "09A5",
@@ -877,6 +5170,1441 @@
    "unif_color": {
     "facemask": "#0076B6",
     "turtleneck": "#0076B6"
+   },
+   "arm_digits": {
+    "glyph_donor": "09A0",
+    "fill": "blue",
+    "outline": "silver",
+    "outline_frac": 0.04,
+    "glyph_shapes": {
+     "0": {
+      "width": 50.9048,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5132,
+         0.3913
+        ],
+        [
+         0.0384,
+         11.5269
+        ],
+        [
+         0.0,
+         51.2258
+        ],
+        [
+         1.0361,
+         88.8126
+        ],
+        [
+         9.8842,
+         99.6158
+        ],
+        [
+         40.381,
+         100.0
+        ],
+        [
+         50.429,
+         89.3981
+        ],
+        [
+         50.1148,
+         50.6527
+        ],
+        [
+         50.9048,
+         11.1044
+        ],
+        [
+         40.5536,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         15.1502,
+         18.0922
+        ],
+        [
+         33.6683,
+         18.1248
+        ],
+        [
+         33.2243,
+         39.8675
+        ],
+        [
+         33.2661,
+         83.1202
+        ],
+        [
+         16.2428,
+         83.0147
+        ],
+        [
+         15.1133,
+         82.6953
+        ],
+        [
+         14.625,
+         44.5201
+        ]
+       ]
+      ]
+     },
+     "1": {
+      "width": 34.1554,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.5605,
+         0.2921
+        ],
+        [
+         0.0,
+         10.6096
+        ],
+        [
+         0.2601,
+         22.2664
+        ],
+        [
+         7.4281,
+         22.2465
+        ],
+        [
+         7.9691,
+         22.6608
+        ],
+        [
+         8.431,
+         81.4042
+        ],
+        [
+         0.9816,
+         81.6493
+        ],
+        [
+         0.8146,
+         99.3688
+        ],
+        [
+         34.1554,
+         100.0
+        ],
+        [
+         34.0412,
+         82.5058
+        ],
+        [
+         26.6027,
+         82.3185
+        ],
+        [
+         25.7858,
+         81.9133
+        ],
+        [
+         26.2921,
+         17.5214
+        ],
+        [
+         27.0056,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "2": {
+      "width": 56.4623,
+      "height": 100,
+      "contours": [
+       [
+        [
+         12.4851,
+         0.0
+        ],
+        [
+         1.8634,
+         10.8696
+        ],
+        [
+         1.1181,
+         26.9127
+        ],
+        [
+         17.7027,
+         27.2707
+        ],
+        [
+         17.889,
+         18.1355
+        ],
+        [
+         18.2617,
+         17.7541
+        ],
+        [
+         38.0142,
+         17.8519
+        ],
+        [
+         38.2006,
+         20.6427
+        ],
+        [
+         37.4552,
+         38.7355
+        ],
+        [
+         35.5917,
+         39.1517
+        ],
+        [
+         11.5533,
+         38.9677
+        ],
+        [
+         0.3727,
+         51.1548
+        ],
+        [
+         0.0,
+         63.2759
+        ],
+        [
+         0.0,
+         99.0539
+        ],
+        [
+         31.3058,
+         100.0
+        ],
+        [
+         55.5306,
+         99.6207
+        ],
+        [
+         55.1579,
+         70.746
+        ],
+        [
+         36.7098,
+         70.9905
+        ],
+        [
+         36.7098,
+         81.9848
+        ],
+        [
+         36.3371,
+         82.3662
+        ],
+        [
+         16.9573,
+         82.446
+        ],
+        [
+         16.2119,
+         82.0907
+        ],
+        [
+         16.2119,
+         69.233
+        ],
+        [
+         16.771,
+         56.7349
+        ],
+        [
+         42.6728,
+         56.8754
+        ],
+        [
+         55.3442,
+         43.9081
+        ],
+        [
+         56.0896,
+         12.7712
+        ],
+        [
+         56.4623,
+         10.8991
+        ],
+        [
+         46.3997,
+         0.1398
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "3": {
+      "width": 56.8142,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.2749,
+         0.5736
+        ],
+        [
+         0.0,
+         11.3281
+        ],
+        [
+         0.7534,
+         26.6211
+        ],
+        [
+         16.1756,
+         26.7941
+        ],
+        [
+         16.3466,
+         17.5191
+        ],
+        [
+         36.3398,
+         17.5191
+        ],
+        [
+         36.8336,
+         17.8787
+        ],
+        [
+         36.8336,
+         39.4424
+        ],
+        [
+         32.5096,
+         39.7952
+        ],
+        [
+         19.2462,
+         39.3513
+        ],
+        [
+         19.5944,
+         56.9296
+        ],
+        [
+         20.5693,
+         57.271
+        ],
+        [
+         36.9666,
+         57.7854
+        ],
+        [
+         37.7959,
+         82.5333
+        ],
+        [
+         35.1559,
+         82.8224
+        ],
+        [
+         18.2712,
+         82.1372
+        ],
+        [
+         17.6254,
+         70.0558
+        ],
+        [
+         2.6717,
+         69.4867
+        ],
+        [
+         3.3048,
+         88.3783
+        ],
+        [
+         12.5797,
+         99.1874
+        ],
+        [
+         46.0895,
+         100.0
+        ],
+        [
+         56.8142,
+         89.3798
+        ],
+        [
+         55.9722,
+         71.4419
+        ],
+        [
+         55.9279,
+         55.7437
+        ],
+        [
+         49.2107,
+         49.3775
+        ],
+        [
+         49.1727,
+         48.244
+        ],
+        [
+         55.2504,
+         42.7177
+        ],
+        [
+         55.9279,
+         41.3679
+        ],
+        [
+         56.1115,
+         10.907
+        ],
+        [
+         44.4245,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "4": {
+      "width": 57.6513,
+      "height": 100,
+      "contours": [
+       [
+        [
+         23.9288,
+         0.3214
+        ],
+        [
+         10.4247,
+         25.0628
+        ],
+        [
+         0.0,
+         48.1606
+        ],
+        [
+         3.9161,
+         68.3703
+        ],
+        [
+         5.1266,
+         68.6951
+        ],
+        [
+         26.5264,
+         69.0853
+        ],
+        [
+         30.3825,
+         69.4837
+        ],
+        [
+         30.7168,
+         81.7349
+        ],
+        [
+         23.2704,
+         81.8701
+        ],
+        [
+         24.234,
+         99.5663
+        ],
+        [
+         57.6513,
+         100.0
+        ],
+        [
+         56.938,
+         82.6703
+        ],
+        [
+         48.516,
+         82.2817
+        ],
+        [
+         48.1816,
+         70.0305
+        ],
+        [
+         56.8232,
+         69.6547
+        ],
+        [
+         56.5745,
+         51.7386
+        ],
+        [
+         49.8431,
+         51.654
+        ],
+        [
+         47.9073,
+         51.1721
+        ],
+        [
+         47.9073,
+         24.7535
+        ],
+        [
+         48.6737,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         29.4806,
+         27.6307
+        ],
+        [
+         29.8784,
+         51.0126
+        ],
+        [
+         16.6606,
+         51.0214
+        ],
+        [
+         16.1497,
+         49.9114
+        ],
+        [
+         22.3171,
+         38.1322
+        ],
+        [
+         28.2856,
+         27.8714
+        ]
+       ]
+      ]
+     },
+     "5": {
+      "width": 56.0518,
+      "height": 100,
+      "contours": [
+       [
+        [
+         1.4759,
+         0.1375
+        ],
+        [
+         0.1912,
+         43.2156
+        ],
+        [
+         10.2176,
+         54.69
+        ],
+        [
+         36.4827,
+         54.7414
+        ],
+        [
+         36.8601,
+         55.1042
+        ],
+        [
+         36.8601,
+         82.8686
+        ],
+        [
+         30.1592,
+         83.2319
+        ],
+        [
+         16.5586,
+         83.0322
+        ],
+        [
+         16.2124,
+         71.1157
+        ],
+        [
+         0.0,
+         70.6124
+        ],
+        [
+         0.2449,
+         88.8671
+        ],
+        [
+         10.0751,
+         99.6013
+        ],
+        [
+         44.3546,
+         100.0
+        ],
+        [
+         55.5732,
+         89.2687
+        ],
+        [
+         55.0158,
+         47.73
+        ],
+        [
+         44.2521,
+         36.834
+        ],
+        [
+         17.0585,
+         36.9935
+        ],
+        [
+         16.8073,
+         32.1553
+        ],
+        [
+         17.186,
+         18.729
+        ],
+        [
+         17.5484,
+         17.9741
+        ],
+        [
+         31.3351,
+         18.1688
+        ],
+        [
+         55.3532,
+         17.3479
+        ],
+        [
+         56.0518,
+         0.0
+        ],
+        [
+         18.2445,
+         0.4399
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "6": {
+      "width": 55.9207,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.3991,
+         0.1744
+        ],
+        [
+         1.1029,
+         11.088
+        ],
+        [
+         0.0,
+         54.0224
+        ],
+        [
+         0.0895,
+         88.53
+        ],
+        [
+         1.4218,
+         90.5456
+        ],
+        [
+         10.1238,
+         99.8218
+        ],
+        [
+         44.6236,
+         100.0
+        ],
+        [
+         55.6679,
+         89.2525
+        ],
+        [
+         55.3595,
+         52.3259
+        ],
+        [
+         44.2118,
+         41.4375
+        ],
+        [
+         16.9893,
+         41.6204
+        ],
+        [
+         16.7679,
+         39.0149
+        ],
+        [
+         17.4225,
+         18.291
+        ],
+        [
+         37.5567,
+         17.9284
+        ],
+        [
+         37.4977,
+         27.4436
+        ],
+        [
+         54.8333,
+         26.9707
+        ],
+        [
+         55.5714,
+         26.391
+        ],
+        [
+         55.9207,
+         10.7121
+        ],
+        [
+         45.1483,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6699,
+         59.537
+        ],
+        [
+         35.5018,
+         59.3964
+        ],
+        [
+         36.8116,
+         59.7338
+        ],
+        [
+         36.935,
+         82.8614
+        ],
+        [
+         36.5672,
+         83.2446
+        ],
+        [
+         16.6095,
+         82.8562
+        ]
+       ]
+      ]
+     },
+     "7": {
+      "width": 54.3452,
+      "height": 100,
+      "contours": [
+       [
+        [
+         0.0,
+         0.9531
+        ],
+        [
+         0.0,
+         27.7108
+        ],
+        [
+         16.3276,
+         27.8322
+        ],
+        [
+         16.2569,
+         18.7298
+        ],
+        [
+         16.6092,
+         18.3448
+        ],
+        [
+         34.4088,
+         18.2243
+        ],
+        [
+         34.639,
+         19.1446
+        ],
+        [
+         23.8923,
+         46.1257
+        ],
+        [
+         10.4574,
+         82.6859
+        ],
+        [
+         6.3935,
+         83.0265
+        ],
+        [
+         1.5621,
+         82.8389
+        ],
+        [
+         2.372,
+         99.5316
+        ],
+        [
+         29.103,
+         100.0
+        ],
+        [
+         39.2943,
+         99.7977
+        ],
+        [
+         38.4753,
+         82.9195
+        ],
+        [
+         28.4692,
+         83.1148
+        ],
+        [
+         28.2301,
+         82.009
+        ],
+        [
+         54.137,
+         15.8006
+        ],
+        [
+         53.993,
+         12.833
+        ],
+        [
+         54.3452,
+         12.4479
+        ],
+        [
+         53.921,
+         11.3492
+        ],
+        [
+         54.2822,
+         11.1496
+        ],
+        [
+         53.9621,
+         8.3745
+        ],
+        [
+         54.2977,
+         0.0
+        ]
+       ]
+      ],
+      "holes": []
+     },
+     "8": {
+      "width": 55.9812,
+      "height": 100,
+      "contours": [
+       [
+        [
+         11.0369,
+         0.0
+        ],
+        [
+         0.6485,
+         10.9288
+        ],
+        [
+         0.0424,
+         41.7549
+        ],
+        [
+         5.4082,
+         47.956
+        ],
+        [
+         5.6202,
+         49.0706
+        ],
+        [
+         0.3391,
+         54.8174
+        ],
+        [
+         0.0,
+         56.3206
+        ],
+        [
+         0.551,
+         88.7954
+        ],
+        [
+         10.4986,
+         99.5386
+        ],
+        [
+         27.6769,
+         100.0
+        ],
+        [
+         44.8426,
+         99.9016
+        ],
+        [
+         55.9812,
+         89.1388
+        ],
+        [
+         55.214,
+         55.3629
+        ],
+        [
+         48.725,
+         49.006
+        ],
+        [
+         48.708,
+         48.2595
+        ],
+        [
+         55.0826,
+         41.3622
+        ],
+        [
+         55.3157,
+         10.5464
+        ],
+        [
+         44.9994,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.6486,
+         58.1036
+        ],
+        [
+         36.8065,
+         58.2963
+        ],
+        [
+         36.993,
+         82.9388
+        ],
+        [
+         17.403,
+         83.1038
+        ],
+        [
+         16.6486,
+         82.7511
+        ]
+       ],
+       [
+        [
+         17.2292,
+         17.942
+        ],
+        [
+         37.1965,
+         17.9533
+        ],
+        [
+         37.082,
+         37.5624
+        ],
+        [
+         36.7684,
+         40.1852
+        ],
+        [
+         17.9243,
+         40.3297
+        ],
+        [
+         16.6104,
+         39.9924
+        ],
+        [
+         16.8859,
+         19.2585
+        ]
+       ]
+      ]
+     },
+     "9": {
+      "width": 56.1151,
+      "height": 100,
+      "contours": [
+       [
+        [
+         9.5229,
+         0.7135
+        ],
+        [
+         0.0,
+         11.5056
+        ],
+        [
+         0.8552,
+         47.5659
+        ],
+        [
+         9.8828,
+         58.7167
+        ],
+        [
+         35.9046,
+         59.519
+        ],
+        [
+         36.1433,
+         82.5651
+        ],
+        [
+         33.4969,
+         82.8647
+        ],
+        [
+         16.6299,
+         82.2468
+        ],
+        [
+         16.2639,
+         70.167
+        ],
+        [
+         1.3249,
+         69.6575
+        ],
+        [
+         1.5206,
+         88.5478
+        ],
+        [
+         10.5442,
+         99.3207
+        ],
+        [
+         44.0316,
+         100.0
+        ],
+        [
+         55.001,
+         89.3364
+        ],
+        [
+         54.6801,
+         58.3563
+        ],
+        [
+         56.1151,
+         10.8612
+        ],
+        [
+         44.6819,
+         0.0
+        ]
+       ]
+      ],
+      "holes": [
+       [
+        [
+         16.2015,
+         17.632
+        ],
+        [
+         36.1925,
+         17.5524
+        ],
+        [
+         36.678,
+         17.9101
+        ],
+        [
+         36.1964,
+         41.1753
+        ],
+        [
+         35.7187,
+         41.5732
+        ],
+        [
+         19.0964,
+         41.323
+        ],
+        [
+         15.9606,
+         40.8871
+        ]
+       ]
+      ]
+     }
+    },
+    "glyph_height": 62,
+    "glyph_center": [
+     31.5,
+     32
+    ],
+    "registration": "as_authored",
+    "glyph_provenance": {
+     "method": "Complete 0..9 measured photo traces of current Nike team jerseys sold by official club shops, accessed 2026-10-05. No marketing font used. Horizontal tilt and vertical lean flattened; measured repeated-digit perspective calibration applied only to leading numerals.",
+     "limitation": "Photo-derived outlines approximate printed contours; they are not exact licensed jersey-font files. Product camera perspective and print shadows limit precision. Existing native fill/outline colours, outline fractions and registration retained.",
+     "repeated_digit_calibration": {
+      "image": "Barnes_back",
+      "raw_left_ratio": 0.4427767354596623,
+      "raw_right_ratio": 0.5645756457564576,
+      "leading_correction": 1.275079742322847
+     },
+     "glyphs": {
+      "0": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jahmyr-gibbs-blue-detroit-lions-game-player-jersey_ss5_p-202120743+pv-3+u-tkgtxwncf5wvbddjwg9c+v-vw6tdrxuo8seh3q8kgzt.jpg?_hv=2&w=2000",
+       "source_image_sha256": "456ef0bef88ea9b6bd9c2bad248c3a850f58c6881a4f0c2dac01f9abe5908809",
+       "source_crop": [
+        730,
+        610,
+        1030,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         17.0
+        ],
+        [
+         290.0,
+         557.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.512962962962963,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.048747135782393376,
+       "removed_vertical_lean": -0.022590014328994115,
+       "normalized_width_height_ratio": 0.5090480000000001,
+       "outer_vertices": 10,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "1": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jared-goff-blue-detroit-lions-game-jersey_ss5_p-200422498+pv-1+u-mpt5s4cibk3eegrcncmx+v-vct3y534hqfbgcnieevk.png",
+       "source_image_sha256": "e48e018e6ae48457ab5e2e201f20cd516208cd9ee168ac4f05fb2cfced8271a1",
+       "source_crop": [
+        930,
+        690,
+        1110,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         24.0
+        ],
+        [
+         147.0,
+         489.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.2838709677419355,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04198642266824085,
+       "removed_vertical_lean": 0.019596759934237127,
+       "normalized_width_height_ratio": 0.341554,
+       "outer_vertices": 14,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "2": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        867,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         13.0,
+         16.0
+        ],
+        [
+         316.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.023351648351648352,
+       "removed_vertical_lean": 0.0,
+       "normalized_width_height_ratio": 0.564623,
+       "outer_vertices": 29,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "3": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-brian-branch-blue-detroit-lions-game-jersey_ss5_p-201037459+pv-3+u-xckxvkhlexqyuxvfrunh+v-vvpheoujq1pwe7epfjry.jpg?_hv=2&w=2000",
+       "source_image_sha256": "5e50d3606f58e75e5b4ed1dab871f8563b8ec9d7f828671d9ce64bcb05cadfe9",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.04819277108433735,
+       "removed_vertical_lean": -0.026282457251424952,
+       "normalized_width_height_ratio": 0.568142,
+       "outer_vertices": 30,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "4": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        575,
+        610,
+        845,
+        1180
+       ],
+       "raw_ink_bounds": [
+        [
+         18.0,
+         14.0
+        ],
+        [
+         253.0,
+         550.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.43843283582089554,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.05538869874973807,
+       "removed_vertical_lean": -0.021403167993765074,
+       "normalized_width_height_ratio": 0.5765129999999999,
+       "outer_vertices": 20,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "5": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-derrick-barnes-blue-detroit-lions-team-game-jersey_ss5_p-202084904+pv-3+u-v1vf1my9pljotxmw1wes+v-pthjhhvnamipdprc4sin.png?_hv=2&w=2000",
+       "source_image_sha256": "a29335d3ee049cc446abca42c11a2400e2e53b7044eb2a9ceec966219e010b15",
+       "source_crop": [
+        870,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         12.0,
+         16.0
+        ],
+        [
+         318.0,
+         558.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5645756457564576,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.026410901692011136,
+       "removed_vertical_lean": -0.013418061971602292,
+       "normalized_width_height_ratio": 0.560518,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "6": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-jack-campbell-white-detroit-lions-white-game-jersey_ss5_p-201037465+pv-3+u-brnnfkwngidv16kwdwgm+v-2eiwqw03u3pceb8pjs0l.jpg?_hv=2&w=2000",
+       "source_image_sha256": "d47846231463f29cd028a1dd37ed327f74a3d2bf7db1e7fe671287cb1fa107d3",
+       "source_crop": [
+        865,
+        620,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         16.0,
+         13.0
+        ],
+        [
+         321.0,
+         553.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5648148148148148,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027265939973122294,
+       "removed_vertical_lean": -0.013400324021801262,
+       "normalized_width_height_ratio": 0.559207,
+       "outer_vertices": 19,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "7": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        865,
+        615,
+        1205,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         15.0
+        ],
+        [
+         321.0,
+         555.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5666666666666667,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.03801668562760713,
+       "removed_vertical_lean": -0.04852144186935959,
+       "normalized_width_height_ratio": 0.5434519999999999,
+       "outer_vertices": 24,
+       "counter_count": 0,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "8": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-penei-sewell-blue-detroit-lions-game-jersey_ss5_p-200422548+pv-3+u-d0bassurpenwd1aiaa0x+v-niws3ogy9j8qob7ddbkx.jpg?_hv=2&w=2000",
+       "source_image_sha256": "c740f3ae297187fde405229861b9d2a17a5c674a17793417589ef0e046d9ed83",
+       "source_crop": [
+        865,
+        615,
+        1200,
+        1190
+       ],
+       "raw_ink_bounds": [
+        [
+         15.0,
+         16.0
+        ],
+        [
+         318.0,
+         556.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.5611111111111111,
+       "leading_digit_width_calibration": 1.0,
+       "removed_horizontal_tilt": 0.027472527472527472,
+       "removed_vertical_lean": -0.02271309122675652,
+       "normalized_width_height_ratio": 0.559812,
+       "outer_vertices": 18,
+       "counter_count": 2,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      },
+      "9": {
+       "source_image_url": "https://fanatics.frgimages.com/detroit-lions/mens-nike-aidan-hutchinson-blue-detroit-lions-game-jersey_ss5_p-200422555+pv-3+u-xmmm7qtnd3tu6dt7t3en+v-8tgddurya1d9lmcbq8xl.jpg?_hv=2&w=2000",
+       "source_image_sha256": "60c7398c5e96325dc4514d417f1d4ec0542f5cb16c62ae936c3656e429f840c2",
+       "source_crop": [
+        585,
+        605,
+        850,
+        1170
+       ],
+       "raw_ink_bounds": [
+        [
+         14.0,
+         16.0
+        ],
+        [
+         247.0,
+         549.0
+        ]
+       ],
+       "raw_width_height_ratio": 0.4371482176360225,
+       "leading_digit_width_calibration": 1.275079742322847,
+       "removed_horizontal_tilt": 0.053266975460727305,
+       "removed_vertical_lean": -0.008123045689830462,
+       "normalized_width_height_ratio": 0.561151,
+       "outer_vertices": 17,
+       "counter_count": 1,
+       "source_kind": "Primary official club shop Nike garment photo; measured trace, not a licensed font outline",
+       "trace_tolerance_source_pixels": 1.4,
+       "photo_resolution": [
+        2000,
+        2000
+       ]
+      }
+     }
+    }
    }
   }
  },

@@ -8,6 +8,11 @@ For starting play recipes, the eight scheme presets and independent CPU books,
 read the [Book Identity walkthrough](docs/mod_editor/apf2k8_book_identity_walkthrough.md).
 It is also available from **Playbooks → Book Identity → How this works**.
 
+The bundled [VIP save reader](docs/mod_editor/apf_vip_format.md) exports a
+profile to JSON without changing the save. Proven fields and unknown values
+are labeled separately. [Per-team CPU VIPs](docs/mod_editor/apf_vip_cpu_design.md)
+remain research; no team assignment patch is included.
+
 ## Install
 
 APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow**.
@@ -87,7 +92,7 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.105`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.106`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.

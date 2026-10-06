@@ -52,6 +52,16 @@
       "selector": "bengals",
       "template": "h-06-1988-bengals-1.iff"
     },
+    "bengals_2025": {
+      "abbreviation": "CIN",
+      "asset_code": "06",
+      "city": "Cincinnati",
+      "nickname": "Bengals",
+      "retail_same_season": null,
+      "season": 2025,
+      "selector": "bengals",
+      "template": "h-06-1988-bengals-1.iff"
+    },
     "bills_1999": {
       "abbreviation": "BUF",
       "asset_code": "03",
@@ -439,6 +449,16 @@
       "nickname": "Steelers",
       "retail_same_season": null,
       "season": 2008,
+      "selector": "steelers",
+      "template": "h-22-1995-steelers-0.iff"
+    },
+    "steelers_2025": {
+      "abbreviation": "PIT",
+      "asset_code": "22",
+      "city": "Pittsburgh",
+      "nickname": "Steelers",
+      "retail_same_season": null,
+      "season": 2025,
       "selector": "steelers",
       "template": "h-22-1995-steelers-0.iff"
     },

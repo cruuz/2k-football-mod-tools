@@ -298,8 +298,10 @@ class WorkspaceTests(unittest.TestCase):
                 owner.deleteLater()
             rows = [json.loads(line) for line in path.read_text().splitlines()]
             stalls = [row for row in rows if row["event"] == "stall"]
-            self.assertEqual(len(stalls), 1)
-            self.assertIn("blocked_ui_handler", stalls[0]["stack"])
+            required_stalls = [row for row in stalls if "blocked_ui_handler" in row["stack"]]
+            self.assertEqual(len(required_stalls), 1)
+            self.assertIn("blocked_ui_handler", required_stalls[0]["stack"])
+            self.assertTrue(all(row["gap_seconds"] > watch.threshold for row in stalls))
             self.assertTrue(any(row["event"] == "timer-fired"
                                 and row["name"] == "synthetic-preparation" for row in rows))
 

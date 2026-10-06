@@ -8,6 +8,7 @@ import csv
 import datetime as dt
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -71,7 +72,7 @@ class MomentsTests(unittest.TestCase):
 
     def test_schema_and_count(self):
         self.assertEqual(self.doc["schema"], 1)
-        self.assertLessEqual(len(self.moments), 25)
+        self.assertEqual(len(self.moments), 26)
         self.assertEqual(len({m["id"] for m in self.moments}), len(self.moments))
 
     def test_noah_five_and_the_miss_lead_the_list(self):
@@ -345,10 +346,13 @@ class SpeedSourceTests(unittest.TestCase):
 
 class RegenerationTests(unittest.TestCase):
     def test_generator_reproduces_the_data(self):
-        needed = (build.DEFAULT_INPUTS / "play_by_play_2007.csv.gz", build.DEFAULT_RETAIL / "vc_53450030" / "0")
+        inputs = Path(os.environ.get("NFL2K5_ESPN25_INPUTS", str(build.DEFAULT_INPUTS)))
+        needed = (inputs / "play_by_play_2007.csv.gz", inputs / "play_by_play_2025.csv.gz",
+                  inputs / "roster_weekly_2025.csv", build.DEFAULT_RETAIL / "vc_53450030" / "0")
         if not all(p.exists() for p in needed):
             raise unittest.SkipTest("private inputs (nflverse downloads, retail game) are not on this machine")
-        result = subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_espn25_more_moments_build.py"), "--check"],
+        result = subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_espn25_more_moments_build.py"),
+                                 "--inputs", str(inputs), "--check"],
                                 capture_output=True, text=True, timeout=900)
         self.assertEqual(result.returncode, 0, result.stderr[-2000:])
         self.assertIn("reproduce exactly", result.stdout)

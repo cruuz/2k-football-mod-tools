@@ -53,6 +53,12 @@ if HAVE_UNICORN:
             team = self.run(0x61C50 if side == 1 else 0x61C60)
             key = self.text(self.r(self.r(team + 0x110) + 4))
             historical = self.r(0xE5FF80) == 8 or self.r(team + 0x128) == 4
+            if self.r(0xE5FF80) == 8:
+                count, base, ordinal = self.r(0xC8F0D8), self.r(0xC8F0D4), self.r(0xBF1858)
+                if base and ordinal < count <= sb.MOMENT_COUNT:
+                    season = self.r(base + ordinal * 0x6C + (0x20 if side else 0x1C))
+                    if sb.MODERN_FIRST_SEASON <= season <= sb.MODERN_LAST_SEASON:
+                        historical = False
             return ('E2R-' if historical else '') + key + '-pb.iff'
 
         def load_books(self):
@@ -230,11 +236,13 @@ class NativeStockBooks(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sb.apply(bytes(bad))
 
-    def test_all_100_moment_sides_load_release_reenter(self):
+    def test_all_102_moment_sides_load_release_reenter(self):
         cpu = MomentBooksCPU(self.payload, self.resources, self.context, self.ids, books=self.books,
               situ_chunk=self.collection[:32 + struct.unpack_from('<I', self.collection, 4)[0]], extra_files=self.files)
         categories = 0
-        for i in (*range(50), 0, 49, 14):
+        count = mm.RETAIL_COUNT + len(self.data.moments)
+        self.assertEqual(count, sb.MOMENT_COUNT)
+        for i in (*range(count), 0, count - 1, 14):
             cpu.events.clear()
             cpu.select(i)
             cpu.w(0xE5FF80, 8)
@@ -246,8 +254,8 @@ class NativeStockBooks(unittest.TestCase):
             cpu.run(0x20C3C0)
             self.assertTrue(all(r['pointers_after'] == 0 for r in cpu.releases))
             self.trace['moments'].append(dict(row=i+1, loads=cpu.book_loads[-2:], released=2))
-        self.assertEqual(len(cpu.book_loads), 106)
-        print('PROVED OFFLINE moment sides=100 + 6 reentry, categories=', categories, flush=True)
+        self.assertEqual(len(cpu.book_loads), 2 * (count + 3))
+        print(f'PROVED OFFLINE moment sides={2 * count} + 6 reentry, categories=', categories, flush=True)
 
     def test_all_32_current_franchises_keep_modern_names_and_loads(self):
         cpu = BooksCPU(self.payload, self.resources, self.context, self.ids, books=self.books)

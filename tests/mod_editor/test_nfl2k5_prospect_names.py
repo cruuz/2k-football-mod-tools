@@ -311,7 +311,8 @@ class CaveShapeTests(unittest.TestCase):
         self.assertEqual(struct.unpack_from("<I", cave, pn.BOUNDARY_IMM_OFFSET)[0], pn.SHIPPED_BOUNDARY - pn.OBJ_OFF)
         self.assertIn(pn.RETAIL_HOOK, cave)                                       # the retail add edx,0x2454 survives inside
         self.assertEqual(cave[-6:], b"\xba" + struct.pack("<I", pn.NUMBER_AUDIO_ID) + b"\xc3")
-        self.assertEqual(pn.NUMBER_AUDIO_ID, 9100)
+        self.assertEqual(pn.NUMBER_AUDIO_ID, 9101)
+        self.assertEqual(pn.LEGACY_NUMBER_AUDIO_ID, 9100)
         self.assertEqual(pn.RETAIL_AUDIO_BASE, 9300)
         for boundary in (pn.STRINGS_START, pn.STRINGS_END, pn.SHIPPED_BOUNDARY):
             self.assertEqual(pn._cave_boundary(pn.cave_bytes(boundary)), boundary)
@@ -320,6 +321,11 @@ class CaveShapeTests(unittest.TestCase):
                 pn.cave_bytes(bad)
         self.assertIsNone(pn._cave_boundary(pn.RETAIL_HOST))
         self.assertIsNone(pn._cave_boundary(cave[:-1] + b"\x90"))
+        legacy = pn.cave_bytes(pn.SHIPPED_BOUNDARY, number_audio_id=pn.LEGACY_NUMBER_AUDIO_ID)
+        self.assertEqual(pn._cave_boundary(legacy), pn.SHIPPED_BOUNDARY)
+        self.assertEqual([i for i, (a, b) in enumerate(zip(legacy, cave)) if a != b], [22])
+        with self.assertRaises(pn.ProspectNamesError):
+            pn.cave_bytes(pn.SHIPPED_BOUNDARY, number_audio_id=9999)
         self.assertEqual(pn.HOST_VA, 0xB4A70)
         self.assertEqual(pn.HOST_VA + pn.HOST_SIZE, 0xB4A8B)                      # up to the routine's `ret 8`
         from mod_editor.core import nfl2k5_penalties as pen
@@ -551,6 +557,114 @@ class RetailXbeTests(unittest.TestCase):
     def _off(self, va: int) -> int:
         return pn._offset(self.retail, va)
 
+    def _legacy(self, boundary=pn.SHIPPED_BOUNDARY) -> bytes:
+        patched, _ = pn.xbe_apply(self.retail, boundary)
+        legacy = bytearray(patched)
+        host = self._off(pn.HOST_VA)
+        legacy[host:host + pn.HOST_SIZE] = pn.cave_bytes(boundary, number_audio_id=pn.LEGACY_NUMBER_AUDIO_ID)
+        text = next(s for s in _sections(patched) if s.index == 0)
+        legacy[text.header_offset + 36:text.header_offset + 56] = section_digest(bytes(legacy), text)
+        return bytes(legacy)
+
+    def test_legacy_upgrade_preserves_boundary_and_only_changes_cue_and_digest(self) -> None:
+        legacy = self._legacy()
+        self.assertEqual((pn.xbe_status(legacy), pn.xbe_boundary(legacy)), ("applied", pn.SHIPPED_BOUNDARY))
+        fixed, receipt = pn.xbe_apply(legacy, pn.SHIPPED_BOUNDARY)
+        self.assertEqual(fixed, self.patched)
+        self.assertEqual(receipt["upgraded_from"], "legacy_9100")
+        host = self._off(pn.HOST_VA)
+        text = next(s for s in _sections(legacy) if s.index == 0)
+        changed = {i for i, (a, b) in enumerate(zip(legacy, fixed)) if a != b}
+        self.assertIn(host + 22, changed)
+        self.assertLessEqual(changed, {host + 22} | set(range(text.header_offset + 36, text.header_offset + 56)))
+        self.assertEqual(fixed[host:host + pn.HOST_SIZE], pn.cave_bytes(pn.SHIPPED_BOUNDARY))
+        self.assertEqual(pn.xbe_apply(fixed, pn.SHIPPED_BOUNDARY)[0], fixed)
+        with self.assertRaises(pn.ProspectNamesError):
+            pn.xbe_apply(legacy, pn.SHIPPED_BOUNDARY + 2)
+        custom = self._legacy(pn.STRINGS_START)
+        upgraded, _ = pn.xbe_apply(custom, pn.STRINGS_START)
+        self.assertEqual(pn.xbe_boundary(upgraded), pn.STRINGS_START)
+        tampered = bytearray(legacy)
+        tampered[host + 21] ^= 1
+        self.assertEqual(pn.xbe_status(bytes(tampered)), "foreign")
+        with self.assertRaises(pn.ProspectNamesError):
+            pn.xbe_apply(bytes(tampered), pn.SHIPPED_BOUNDARY)
+
+    def test_build_upgrades_the_legacy_generator_cave(self) -> None:
+        fixed, receipt = tt._apply_all(self._legacy(), None, catch_slider=False, prospect_names="modern")
+        self.assertEqual(fixed, self.patched)
+        self.assertEqual(receipt["prospect_names_patch"]["upgraded_from"], "legacy_9100")
+
+    @unittest.skipUnless(HAVE_UNICORN and HAVE_RETAIL, "pinned retail roster, SPCI and Unicorn required")
+    def test_native_generated_rookies_resolve_their_actual_number_after_the_jersey_roll(self) -> None:
+        """Full native generator and cue lookup/resolver, with real retail SPCI and synthetic RAM.
+
+        No native leaf is substituted. Playback is outside this bounded instruction test.
+        """
+        from tests.nfl2k5_supersim_draft_fixture import Machine, retail_roster
+
+        with pn._rost._outer_image()(RETAIL_EXTRACTION) as archive:
+            entry = archive.entries[3]
+            spci = archive.read(entry.virtual_offset + 0x240E90, 0x4D00)
+        self.assertEqual(hashlib.sha256(spci).hexdigest(),
+                         "87ba7b8de47d0181d1c26c33ca8f6a314a3fa5a42e40718dca57ae4eda22a2af")
+        self.assertEqual(tuple(spci[0x64:0x67]), (0, 1, 1), "exactly two native cue tables")
+        available = set(struct.unpack_from("<1396H", spci, 0x78)) | set(struct.unpack_from("<2044H", spci, 0x1BCC))
+        self.assertIn(pn.LEGACY_NUMBER_AUDIO_ID, available)
+        self.assertNotIn(pn.NUMBER_AUDIO_ID, available)
+        body, _ = pn.apply_body(retail_roster(), pn.load_rows("modern")[0])
+        snapshots = []
+        for payload, expected in ((self._legacy(), pn.LEGACY_NUMBER_AUDIO_ID),
+                                  (self.patched, pn.NUMBER_AUDIO_ID)):
+            machine = Machine(payload, trace_writes=False)
+            machine.uc.mem_write(machine.ARENA + 0x300, body)
+            machine.fixup_roster(machine.ARENA + 0x340)
+            spci_base = machine.ARENA + 0x140000
+            relocated = bytearray(spci)
+            for field in (0x54, 0x58, 0x5C, 0x60, 0x68, 0x6C, 0x1BBC, 0x1BC0):
+                relative = struct.unpack_from("<I", relocated, field)[0]
+                if relative:
+                    struct.pack_into("<I", relocated, field, spci_base + field + relative - 1)
+            machine.uc.mem_write(spci_base, bytes(relocated))
+            machine.put(0xB34814, spci_base)  # Non-null bank handle; no playback/output is requested.
+            machine.put(0xB3481C, spci_base + 0x50)
+            for kind in range(1, 10):
+                self.assertEqual(machine.call(0xDB370, ecx=0xB34814, edx=pn.NUMBER_AUDIO_ID,
+                                              args=(0, kind, 0)), 0)
+            self.assertEqual(machine.call(0xDB370, ecx=0xB34814, edx=pn.LEGACY_NUMBER_AUDIO_ID,
+                                          args=(0, 6, 0)), 1)
+            player, cue_slot, team = (machine.ARENA + offset for offset in (0x100000, 0x100100, 0x101000))
+            machine.uc.mem_write(team, bytes(500))
+            rows = []
+            for position in range(17):
+                with self.subTest(cue=expected, position=position):
+                    machine.seed(9)  # Native PRNG draw selects the replacement surname Fant.
+                    machine.uc.mem_write(player, bytes(84))
+                    machine.uc.mem_write(player + 0x35, bytes((position,)))
+                    machine.call(0x2BE6F0, ecx=player, edx=position, budget=1000000)
+                    self.assertEqual(bytes(machine.uc.mem_read(machine.get(player + 0x14), 10)), "Fant\0".encode("utf-16-le"))
+                    pbp = struct.unpack("<H", bytes(machine.uc.mem_read(player + 4, 2)))[0]
+                    jersey = (machine.get(player + 0x20) >> 3) & 0x7F
+                    self.assertEqual(pbp, expected)
+                    self.assertGreater(jersey, 0)
+                    machine.put(cue_slot, pbp)
+                    machine.call(0x67150, edx=pbp, args=(0, 0, cue_slot, player))
+                    self.assertEqual(machine.get(cue_slot), 9100 if expected == 9100 else 9000 + jersey)
+                    # Native team assignment changes the rolled number to its position's minimum.
+                    # The sentinel survives assignment; the resolver must read the later live number.
+                    machine.call(0x2BD260, ecx=player, edx=team, args=(0,))
+                    assigned_jersey = (machine.get(player + 0x20) >> 3) & 0x7F
+                    self.assertEqual(struct.unpack("<H", bytes(machine.uc.mem_read(player + 4, 2)))[0], expected)
+                    machine.put(cue_slot, pbp)
+                    machine.call(0x67150, edx=pbp, args=(0, 0, cue_slot, player))
+                    self.assertEqual(machine.get(cue_slot), 9100 if expected == 9100 else 9000 + assigned_jersey)
+                    record = bytearray(machine.uc.mem_read(player, 84))
+                    record[4:6] = b"\0\0"
+                    rows.append((jersey, assigned_jersey, bytes(record)))
+            snapshots.append(rows)
+            self.assertEqual(machine.leaves, [])
+        self.assertEqual(snapshots[0], snapshots[1], "all generated fields outside the commentary word remain identical")
+
     def test_status_apply_idempotent_boundary_and_foreign(self) -> None:
         self.assertEqual(pn.xbe_status(self.retail), "retail")
         self.assertIsNone(pn.xbe_boundary(self.retail))
@@ -734,7 +848,7 @@ class RetailXbeTests(unittest.TestCase):
         retained, replaced = layout.retained[0], layout.replaced[0]
         self.assertEqual((retained, pn.RETAIL_LASTS[retained], replaced), (0, "Smith", 17))
         last_retained, first_replaced = layout.retained[-1], layout.replaced[-1]
-        # patched: below the boundary keeps 9300 + index, at or above it stores 9100
+        # patched: below the boundary keeps 9300 + index, at or above it stores the absent cue 9101
         self.assertEqual(self._run_hook(self.patched, pool.entries[retained][1], retained), 9300 + retained)
         self.assertEqual(self._run_hook(self.patched, pool.entries[last_retained][1], last_retained), 9300 + last_retained)
         self.assertEqual(self._run_hook(self.patched, pool.entries[replaced][1], replaced), pn.NUMBER_AUDIO_ID)

@@ -1,7 +1,7 @@
 """PROVED OFFLINE mechanisms: moment-specific rules, composed over the modern owners.
 
 Immutable profiles are indexed only when mode is 8 and the selected ordinal is
-0..49. Saved displaced instructions preserve the modern owners outside that
+0..50. Saved displaced instructions preserve the modern owners outside that
 domain. Recognizers use a sealed underlying view, never an unverified jump.
 DESIGN: graphics, historical contact/replay semantics and lab acceptance.
 """
@@ -24,7 +24,10 @@ BUILD_CAPTION = UI_LABEL = "Anniversary rules by season"
 CODE_SIZE, DATA_SIZE, RO_SIZE = 2048, 16, 2176
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
             (OWNER, "read_only", RO_SIZE, 16))
-WRAPPERS, PROFILES, SAVED = 384, 0, 1600
+WRAPPERS, PROFILES, SAVED = 384, 0, 1632
+SAVED_STRIDE = 12
+PROFILE_COUNT = 51
+LEGACY_PROFILE_SHA256 = "db5ee784c18f00af8ba842dc26dac33f863ec537a336fa578f7db22e347075cd"
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -35,7 +38,7 @@ def require(ok, message):
 
 def profiles():
     rows = json.loads((ROOT / "data/nfl2k5_era_rules.json").read_text())["mappings"]
-    require(len(rows) == 50 and [r["row"] for r in rows] == list(range(1, 51)), "era profile ordinal table")
+    require(len(rows) == PROFILE_COUNT and [r["row"] for r in rows] == list(range(1, PROFILE_COUNT + 1)), "era profile ordinal table")
     out = bytearray()
     kinds = {"none": 0, "sudden_death": 1, "modified_sudden_death_first_TD_ends": 2, "both_possessions": 3}
     for row in rows:
@@ -107,11 +110,17 @@ JUMPS = {"regular_tie", "no_ot", "try_points", "def_interception", "def_recovery
          "try_ai", "fair_catch", "fair_spot", "penalty_finish", "coin_choose", "coin_winner_result", "clock_huddle"}
 
 
-def code_for(owned, saved):
+def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
     from . import nfl2k5_overtime as ot, nfl2k5_coin_defer as coin, nfl2k5_kick_rules as kr
     va, state = owned["code"]["va"], owned["data"]["va"]
     symbols = dict(code=va, profiles=owned["read_only"]["va"] + PROFILES, state=state, native_ot_check=ot.cave_labels()["ot_check"])
     core = bytearray(assembly.CODE)
+    if profile_data is not None:
+        # The sealed v0.4 table used 50 profiles and sixteen-byte displaced slots.
+        require(len(profile_data) == 1600 and hashlib.sha256(profile_data).hexdigest() == LEGACY_PROFILE_SHA256,
+                "foreign legacy era profiles")
+        limit = core.index(bytes.fromhex("83f833")) + 2
+        core[limit] = 50
     for offset, kind, symbol, value in assembly.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", core, offset)[0]
         if kind == 2:
@@ -249,10 +258,11 @@ def code_for(owned, saved):
     body = a.assemble()
     require(WRAPPERS + len(body) <= CODE_SIZE, "era wrappers exceed allocation")
     result = bytes(core).ljust(WRAPPERS, b"\xcc") + body
-    constants = bytearray(profiles())
-    require(len(constants) == SAVED, "era profile table layout")
+    constants = bytearray(profiles() if profile_data is None else profile_data)
+    require(len(constants) == (SAVED if profile_data is None else 1600), "era profile table layout")
     for raw in saved:
-        constants.extend(raw.ljust(16, b"\0"))
+        require(len(raw) <= saved_stride, "era displaced instruction budget")
+        constants.extend(raw.ljust(saved_stride, b"\0"))
     require(len(constants) <= RO_SIZE, "era saved-site budget")
     for name, site, size, dispatch in specs():
         opcode = b"\xe9" if dispatch in JUMPS else b"\xe8"
@@ -312,8 +322,13 @@ def _underlying_view(payload):
     if body == b"\xcc" * CODE_SIZE:
         require(constants == bytes(RO_SIZE), "foreign dormant era constants")
         return payload
-    saved = [constants[SAVED + i * 16:SAVED + i * 16 + size] for i, (_n, _va, size, _d) in enumerate(specs())]
-    expected, expected_ro, edits = code_for(owned, saved)
+    limit = assembly.CODE.index(bytes.fromhex("83f833")) + 2
+    legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
+    saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
+    saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
+             for i, (_n, _va, size, _d) in enumerate(specs())]
+    expected, expected_ro, edits = code_for(owned, saved, profile_data=constants[:1600] if legacy else None,
+                                            saved_stride=stride)
     require(body == expected and constants == expected_ro, "foreign era rules code, profiles or displaced-site table")
     states = {"underlying" if image.read(site, len(raw)) == raw else
               "applied" if image.read(site, len(after)) == after else "foreign"
@@ -364,7 +379,7 @@ def status(payload):
                 body = image.read(owned["code"]["va"], CODE_SIZE)
                 if body != b"\xcc" * CODE_SIZE:
                     for i, (_name, site, size, _dispatch) in enumerate(specs()):
-                        require(image.read(site, size) == image.read(owned["read_only"]["va"] + SAVED + i * 16, size),
+                        require(image.read(site, size) == image.read(owned["read_only"]["va"] + SAVED + i * SAVED_STRIDE, size),
                                 "foreign disabled era hook")
             return "retail"
         _prerequisites(base)
@@ -380,7 +395,18 @@ def apply(payload, *, enabled=True):
         result = underlying_view(payload)
         return result, dict(status="retail", owner=OWNER)
     if before == "applied":
-        return payload, dict(status="already_applied", owner=OWNER, changed_bytes=0)
+        image = XbeImage(payload)
+        owned = places(payload)
+        if image.read(owned["read_only"]["va"], SAVED) == profiles():
+            return payload, dict(status="already_applied", owner=OWNER, changed_bytes=0)
+        # Restore only validated era sites, then install the expanded table in the same allocation.
+        payload = underlying_view(payload)
+        clear = bytearray(payload)
+        for kind, padding in (("code", b"\xcc"), ("read_only", b"\0")):
+            region = owned[kind]
+            clear[region["raw"]:region["raw"] + region["size"]] = padding * region["size"]
+        space._seal_scaleout(clear, space._read_scale_directory(payload))
+        payload = _seal(clear)
     _prerequisites(payload)
     owned = places(payload)
     require(owned is not None, "reserve era rules in the complete owner union")
@@ -395,7 +421,7 @@ def apply(payload, *, enabled=True):
         buffer[at:at + len(raw)] = raw
     result = _seal(buffer)
     require(status(result) == "applied", "era rules postcondition")
-    return result, dict(status="applied", owner=OWNER, classification="PROVED OFFLINE", profiles=50,
+    return result, dict(status="applied", owner=OWNER, classification="PROVED OFFLINE", profiles=PROFILE_COUNT,
                         hooks=len(edits), changed_bytes=sum(a != b for a, b in zip(payload, result)), profile_sha256=hashlib.sha256(profiles()).hexdigest(), runtime_witnessed=False)
 
 
@@ -403,6 +429,6 @@ def routing_info(payload):
     """DESIGN: stable metadata for the later field/uniform routing owner; no art writes."""
     owned = places(payload)
     require(owned is not None and status(payload) == "applied", "era routing is not installed")
-    return dict(mode_va=0xE5FF80, required_mode=8, ordinal_va=0xBF1858, count=50,
+    return dict(mode_va=0xE5FF80, required_mode=8, ordinal_va=0xBF1858, count=PROFILE_COUNT,
                 profiles_va=owned["read_only"]["va"] + PROFILES, stride=32,
                 season_offset=20, season_bytes=2, super_bowl_offset=28, super_bowl_bytes=4)

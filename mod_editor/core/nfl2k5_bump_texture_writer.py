@@ -1210,8 +1210,15 @@ def _build_replacement_span(
                                     level.width, level.height, 1) for level in levels)
         chain += palette_bytes(colours)
     else:
+        def storage_bgra(rgba: bytes) -> bytes:
+            # A8R8G8B8 is a little-endian packed word: its stored bytes are B,G,R,A. PNGs and the independent
+            # texture decoder use R,G,B,A. Grayscale synthetic patterns concealed this channel-order error.
+            bgra = bytearray(rgba)
+            bgra[0::4], bgra[2::4] = rgba[2::4], rgba[0::4]
+            return bytes(bgra)
+
         chain = b"".join(
-            swizzle_2d(level.rgba, level.width, level.height, BUMP_BYTES_PER_PIXEL)
+            swizzle_2d(storage_bgra(level.rgba), level.width, level.height, BUMP_BYTES_PER_PIXEL)
             for level in levels
         )
     _require(
@@ -1239,7 +1246,9 @@ def _build_replacement_span(
     if (chunk.stored_size - len(encoded) > scratch
             or minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(rebuilt_decoded)) > scratch):
         from nfl_vc_lz_fill import fill_stream
-        encoded, _expanded = fill_stream(encoded, rebuilt_decoded, chunk.stored_size, slack=min(scratch, 16))
+        # Leave room for a flag prefetch inside the original loader allowance. Using all 16 bytes of the common
+        # retail allowance as tail slack can require 17 bytes when the last token crosses a flag group.
+        encoded, _expanded = fill_stream(encoded, rebuilt_decoded, chunk.stored_size, slack=min(scratch, 8))
     _require(chunk.stored_size - len(encoded) <= scratch
              and minimum_vc_lz_overlap_scratch(encoded, chunk.stored_size, len(rebuilt_decoded)) <= scratch,
              "Bump map cannot fit with the retail loader scratch allowance")

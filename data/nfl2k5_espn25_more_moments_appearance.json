@@ -15491,6 +15491,614 @@
     "source": "headshot_2026",
     "dreads": 0
    }
+  ],
+  "bengals_2025": [
+   {
+    "name": "Joe Flacco",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jake Browning",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Chase Brown",
+    "tone": 2,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Tahj Brooks",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Samaje Perine",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Ja'Marr Chase",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Tee Higgins",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Andrei Iosivas",
+    "tone": 1,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Mitchell Tinsley",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Charlie Jones",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Jermaine Burton",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Drew Sample",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Noah Fant",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Tanner Hudson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Cam Grandy",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Orlando Brown",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Amarius Mims",
+    "tone": 5,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Cody Ford",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Dalton Risner",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jalen Rivers",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Dylan Fairchild",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Lucas Patrick",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Ted Karras",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "William Wagner",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Joseph Ossai",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Shemar Stewart",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Myles Murphy",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Cameron Sample",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Trey Hendrickson",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Isaiah Foskey",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Tedarrell Slaton",
+    "tone": 5,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "B.J. Hill",
+    "tone": 5,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Kris Jenkins",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Mike Pennel",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "McKinnley Jackson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Jordan Jefferson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Barrett Carter",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Oren Burks",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Shaka Heyward",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Logan Wilson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Demetrius Knight Jr.",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Daxton Hill",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "DJ Turner II",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Josh Newton",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "D.J. Ivey",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Marco Wilson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Cam Taylor-Britt",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Geno Stone",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Tycen Anderson",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jordan Battle",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "PJ Jules",
+    "tone": 5,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Evan McPherson",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Ryan Rehkow",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   }
+  ],
+  "steelers_2025": [
+   {
+    "name": "Aaron Rodgers",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Mason Rudolph",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jaylen Warren",
+    "tone": 3,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Kenneth Gainwell",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Kaleb Johnson",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Connor Heyward",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "DK Metcalf",
+    "tone": 5,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Roman Wilson",
+    "tone": 1,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Ben Skowronek",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Scott Miller",
+    "tone": 2,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Calvin Austin III",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Isaiah Hodgins",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Ke'Shawn Williams",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Pat Freiermuth",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jonnu Smith",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Darnell Washington",
+    "tone": 5,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Broderick Jones",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Troy Fautanu",
+    "tone": 2,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Calvin Anderson",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Isaac Seumalo",
+    "tone": 1,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Mason McCormick",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Spencer Anderson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Andrus Peat",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Zach Frazier",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Christian Kuntz",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Ryan McCollum",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Cameron Heyward",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Esezi Otomewo",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Keeanu Benton",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Derrick Harmon",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Yahya Black",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Daniel Ekuale",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Logan Lee",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Alex Highsmith",
+    "tone": 2,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "T.J. Watt",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Nick Herbig",
+    "tone": 1,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jack Sawyer",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "DeMarvin Leal",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Cole Holcomb",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Patrick Queen",
+    "tone": 3,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Payton Wilson",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Carson Bruener",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Darius Slay",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Joey Porter Jr.",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Jalen Ramsey",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Brandin Echols",
+    "tone": 4,
+    "dreads": 1,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "James Pierre",
+    "tone": 5,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "DeShon Elliott",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Juan Thornhill",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Chuck Clark",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Jabrill Peppers",
+    "tone": null,
+    "source": "none; template generic appearance unverified"
+   },
+   {
+    "name": "Chris Boswell",
+    "tone": 0,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   },
+   {
+    "name": "Corliss Waitman",
+    "tone": 4,
+    "dreads": 0,
+    "source": "v0.4 main roster exact name; generic head/appearance offline only"
+   }
   ]
  }
 }

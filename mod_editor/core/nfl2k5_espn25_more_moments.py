@@ -4,7 +4,7 @@ Retail has 25 moments: 108-byte SITU records in situation.iff (pack 0, outer 22)
 franchise name and season. The select handler 20CB30 finds each side's team-season with 20BD80 in the roster's
 historic list (75 entries of 16 bytes) and loads its one-team roster file with 2D17B0 into a spare slot.
 
-This option (job m1 of the moments wave) adds up to 25 moments whose team-seasons have their own new files:
+This option (job m1 of the moments wave) adds up to 26 moments whose team-seasons have their own new files:
 - situation.iff: the 25 retail records keep every value and string (their field-relative pointers move with the
   string pool), the new records follow, the count becomes 25 + N. The sibling chunks (MRKS, LAYT, TXTR) are
   kept byte for byte. Pack 0 grows by whole blocks (nfl2k5_resource_growth) and its disc node moves to the end.
@@ -20,7 +20,7 @@ This option (job m1 of the moments wave) adds up to 25 moments whose team-season
   (20C695), the announcer line (20C4A1: no retail line for rows 26 and up, whose speech ids belong to other lines),
   and the details screen's venue line (the call of 77460 at 2C5A71): a new row shows its real venue (the data's
   "stadium" text) while the game keeps using the stand-in stadium record for everything else.
-  Rows 1 to 32 keep the saved dword (bits 25 to 31 were never used by retail); rows 33 to 50 use a session dword
+  Physical rows 1 to 32 keep the saved dword (bits 25 to 31 were never used by retail); rows 33 to 51 use a session dword
   that is never saved, so no save changes shape. The reward loop stays on the original 25.
 
 Measured (m1, v7 lab run): the main heap has 16 MB free at the Anniversary list and 128 KB after game setup, so
@@ -54,8 +54,8 @@ TEAMS_DIR = ROOT / "data/nfl2k5_espn25_more_teams"
 APPEARANCE_JSON = ROOT / "data/nfl2k5_espn25_more_moments_appearance.json"   # beta 76.3; beside the generated data
 
 OWNER = "nfl2k5_espn25_more_moments"
-CODE_SIZE = 2560          # hooks, the moment team table (50 entries), the venue table (25) and the texts
-DATA_SIZE = 16            # the session dword for rows 33 to 50, then spare zero bytes
+CODE_SIZE = 2560          # existing owner: 50 teams, 26 venues, texts, display helpers and 64-byte order map
+DATA_SIZE = 16            # the session dword for rows 33 to 51, then spare zero bytes (the layout does not grow)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 # beta 76.3 (25th Anniversary QC, Noah 10/2: "Player faces on stats after plays are totally wrong and random",
 # "you made Chris hogan black", "not seeing star player icons"). A team file's photo id keys the post-play portrait
@@ -63,19 +63,20 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 # historic no-photo range (no portrait, no live face: the generic head for his skin tone).
 NOPHOTO_BASE = 7100
 STAR_MIN_OVERALL = 90          # the main roster's star rule (nfl2k5_player_tags.STAR_MIN_OVERALL)
-UI_LABEL = "25th Anniversary: 25 more moments"
-BUILD_CAPTION = "25 more ESPN 25th Anniversary moments with their own team-seasons"
+UI_LABEL = "25th Anniversary: more moments"
+BUILD_CAPTION = "Chronological ESPN 25th Anniversary moments with their own team-seasons"
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: the ESPN 25th Anniversary mode has 25 moments. Patch: up to 25 more "
-    "(rows 26 to 50), each with its own real team-seasons, situation, stadium and uniforms. The retail 25 moments "
-    "and every retail historic team stay as they are. The details screen shows each new moment's real venue name; the "
-    "game plays it in the closest stadium on the disc. Completed marks for rows 26 to 32 are saved like retail; rows "
-    "33 to 50 remember a win until the console is switched off. New rows have no announcer introduction. Historic "
+    "EXPERIMENTAL / UNWITNESSED. Retail: the ESPN 25th Anniversary mode has 25 moments. Patch: up to 26 more "
+    "(physical rows 26 to 51), each with its own real team-seasons, situation, stadium and uniforms. The menu lists all moments by date; physical identities "
+    "and existing completion marks stay stable. Every retail historic team stays as it is. The details screen shows each new moment's real venue name; the "
+    "game plays it in the closest stadium on the disc. The original moments and seven added moments save their "
+    "completion marks; the remaining added moments remember a win until the console is switched off. New moments "
+    "have no announcer introduction. Historic "
     "and moment teams that wore a franchise's current uniform keep its retail look on a spare style, so 2026 team "
     "art shows only on the current teams.")
 
 RETAIL_COUNT = 25
-MAX_NEW = 25
+MAX_NEW = 26
 MAX_TEAMS = 50                       # two new team-seasons per moment at most
 MOMENT_BASE = 0x10000
 SITU_OUTER = 22
@@ -87,6 +88,10 @@ TABLE_OFFSET = 0x100                 # the moment team table inside the code all
 STAR_OFFSET = TABLE_OFFSET - 28   # the C1030 star copy, just before the table (beta 76.3)
 VENUE_OFFSET = TABLE_OFFSET + 16 * MAX_TEAMS   # one text pointer per new row (0: the stand-in's own name)
 NAMES_OFFSET = VENUE_OFFSET + 4 * MAX_NEW      # the franchise names, then the venue texts (UTF-16)
+DISPLAY_OFFSET, DISPLAY_MAP_OFFSET = 0x980, 0x9C0
+DISPLAY_MAP_SIZE = 64
+LEGACY_MAX_NEW = 25
+LEGACY_NAMES_OFFSET = VENUE_OFFSET + 4 * LEGACY_MAX_NEW
 MAX_VENUE = 40                       # characters of a venue text
 
 SYMBOLS = dict(name_equal=0x30CF0, search_resume=0x20BD86, historic_load=0x2D17B0, after_set=0x20C6A8,
@@ -99,6 +104,23 @@ HOOKS = (
     ("mark_set", 0x20C695, "8b0d5818bf00b801000000d3e00905cc18bf00", "mark_set", "jmp"),
     ("venue", 0x2C5A71, "e8ea19dbff", "venue_name", "call"),
 )
+DISPLAY_HOOKS = (
+    ("display_caption", 0x20C353, "e8e8390c00", "display_caption"),
+    ("display_select", 0x20CB45, "e8f6310c00", "display_select"),
+    ("display_return", 0x20C2F5, "8b155818bf00", "display_return"),
+)
+# Physical identities of the original 25 are the profile's saved-bit and speech identities. Sorting the
+# presentation rather than the records preserves those identities, including already completed moments.
+RETAIL_DATES = (
+    "December 31, 1967", "November 17, 1968", "December 25, 1971", "December 23, 1972",
+    "December 21, 1974", "December 16, 1979", "December 7, 1980", "January 2, 1982",
+    "January 10, 1982", "October 2, 1983", "January 11, 1987", "September 20, 1987",
+    "November 8, 1987", "January 22, 1989", "January 27, 1991", "January 4, 1992",
+    "October 4, 1992", "January 3, 1993", "October 17, 1994", "September 21, 1997",
+    "January 25, 1998", "January 30, 2000", "February 3, 2002", "January 5, 2003", "January 11, 2004",
+)
+RETAIL_STADIUMS = (10, 20, 13, 22, 20, 7, 25, 14, 25, 29, 30, 6, 23, 14, 27, 8, 8, 3, 13, 3,
+                   24, 1, 17, 25, 21)
 COUNT_VA, COUNT_RETAIL = 0x20C340, "b819000000c3"
 # beta 76.3: C1030 (Load Historic Team's per-player import) copies a team-file record into a spare roster record field
 # by field and never copies +0x52/+0x53, so a star tag (+0x53 bit 0) in a team file never reached the record the star
@@ -114,6 +136,7 @@ GUARDS = (
     (0x20BD80, 0x65, "the historic (name, season) search 20BD80"),
     (0x20C110, 0x5C, "the list enter event (loads the saved marks)"),
     (0x20C250, 0x98, "the list context load and the reward loop"),
+    (0x20C2F0, 0x12, "the list's restored selected row"),
     (0x20C340, 0x70, "the count, caption and completion callbacks"),
     (0x20C3C0, 0x35, "the details exit event (team release)"),
     (0x20C400, 0xB0, "the details enter event and the announcer line"),
@@ -130,6 +153,7 @@ GUARD_SHA256 = {
     0x20bd80: "d81fd0421d9f73396e3f60857037281146cb77f326876388009bec3d983322b9",
     0x20c110: "3fd5644ad672872597aba3e408dcdd950d649b3551c3d5213ff928c4862c074f",
     0x20c250: "7efb6e40464362dfb9ec86457ffd963955a4a06c3f0079850208f0df87fe758f",
+    0x20c2f0: "24f06afd7b45143cbafa4153c738cfae20fafe5ad416fa71a519366222e9047c",
     0x20c340: "053943d7a96fe96687e569137b540d2ccb0e325af9f933bf1fd9f1aa693c14ee",
     0x20c3c0: "3fc93f51da734cbea1eaa24cf02b3824c424ab5a5a9e3449817aaef22be39fbc",
     0x20c400: "9b9f2162b13f55caf8f25a9bb22f6401facfe6be36ae6a1aaebf930fb62ee81b",
@@ -327,9 +351,9 @@ class Data:
         keys = [(t["selector"], t["season"]) for t in self.teams.values()]
         require(len(set(keys)) == len(keys), "two team_keys name the same franchise and season")
         need = strings_bytes(self)
-        require(need <= CODE_SIZE - NAMES_OFFSET,
+        require(need <= DISPLAY_OFFSET - NAMES_OFFSET,
                 f"the franchise names and venue texts need {need} bytes; the owned code holds "
-                f"{CODE_SIZE - NAMES_OFFSET}")
+                f"{DISPLAY_OFFSET - NAMES_OFFSET}")
 
     def _validate_roster(self, key):
         rows = self.rosters[key]
@@ -452,7 +476,7 @@ def compile_situ(retail_collection, data, main_rost, *, named=False):
         body.extend(rec)
         rows.append(strings)
     if named:
-        require(len(rows) == 50, "the named text profile needs all 50 moments")
+        require(len(rows) in (50, 51), "the named text profile needs the original 50 moments")
         for row, authored in zip(rows, named_previews()):
             for field, offset in sc.TEXT.items():
                 row[offset] = authored["text"][field]
@@ -652,9 +676,26 @@ def strings_bytes(data):
     return names_bytes(data.teams) + sum(2 * (len(v) + 1) for v in {v for v in venues(data) if v})
 
 
+def display_order(data):
+    """Chronological display ordinal -> stable physical SITU/mark/speech identity (zero based)."""
+    dates = [*RETAIL_DATES, *(m["date"] for m in data.moments)]
+    def key(i):
+        match = re.fullmatch(r"([A-Z][a-z]+) (\d{1,2}), (\d{4})", _date_ok(dates[i]))
+        return (int(match[3]), MONTHS.index(match[1]) + 1, int(match[2]), i)
+    return tuple(sorted(range(len(dates)), key=key))
+
+
+def display_inventory(data):
+    """Read-only menu inventory with display rows, physical rows, dates and authored IDs."""
+    return [dict(display_row=d + 1, physical_row=i + 1,
+                 date=RETAIL_DATES[i] if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["date"],
+                 id=f"retail_{i + 1}" if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["id"])
+            for d, i in enumerate(display_order(data))]
+
+
 def probe_data():
-    """The fixed table for owner-union probes (the reservations manifest, the allocator gates): 25 rows with venue
-    texts and 50 team-seasons under 20 distinct 15-character franchise names, which fills the whole owned code
+    """The fixed table for owner-union probes (the reservations manifest, the allocator gates): 26 rows with venue
+    texts and 50 team-seasons under 20 distinct 15-character franchise names, which fills the owned text
     allocation. The executable owner reads only each team-season's franchise, season and asset code, the row count
     and the venue texts, so these probes do not depend on the moments data that ships in data/."""
     teams = {}
@@ -662,9 +703,10 @@ def probe_data():
         key = f"probe_{k:02d}"
         teams[key] = dict(team_key=key, selector=f"probefranchs{k % 20:03d}", season=1950 + k,
                           asset_code=f"{k % 32:02d}")
-    # 20 names of 15 characters (640 bytes), 24 venue texts of 14 and one of 21 (764 bytes): 1,404 bytes, all of it.
-    texts = [f"Probe Venue {i:02d}" for i in range(MAX_NEW - 1)] + ["Probe Venue Row Fifty"]
-    moments = [dict(id=f"probe_row_{RETAIL_COUNT + 1 + i}", stadium=texts[i]) for i in range(MAX_NEW)]
+    # 20 names of 15 characters (640 bytes), 25 venue texts of 11 and one of 15 (632 bytes): 1,272 text bytes.
+    texts = [f"ProbeVnu {i:02d}" for i in range(MAX_NEW - 1)] + ["Probe Row Fifty"]
+    moments = [dict(id=f"probe_row_{RETAIL_COUNT + 1 + i}", stadium=texts[i], date="January 1, 2026")
+               for i in range(MAX_NEW)]
     return Data(moments, teams, {})
 
 
@@ -781,11 +823,13 @@ def template_for(team, descriptors):
 
 # ------------------------------------------------------------------------------------------------ the executable
 
-def code_for(code_va, data_va, entries, venue_texts=()):
+def code_for(code_va, data_va, entries, venue_texts=(), *, order=None, legacy=False):
     """The owned code: hooks, the moment team table at +0x100, the venue table (one text pointer per new row, 0 for
     none) after it, then the franchise names and the venue texts."""
     require(len(entries) <= MAX_TEAMS, "too many team-seasons for the table")
-    require(len(venue_texts) <= MAX_NEW, "too many rows for the venue table")
+    venue_capacity = LEGACY_MAX_NEW if legacy else MAX_NEW
+    names_offset = LEGACY_NAMES_OFFSET if legacy else NAMES_OFFSET
+    require(len(venue_texts) <= venue_capacity, "too many rows for the venue table")
     symbols = dict(SYMBOLS, table=code_va + TABLE_OFFSET, team_count=len(entries), session=data_va,
                    venue_table=code_va + VENUE_OFFSET, venue_count=len(venue_texts))
     result = bytearray(assembly.CODE)
@@ -796,7 +840,7 @@ def code_for(code_va, data_va, entries, venue_texts=()):
         struct.pack_into("<I", result, offset, target & 0xFFFFFFFF)
     require(len(result) <= STAR_OFFSET, "hook code exceeds its space before the star copy")
     result = result.ljust(STAR_OFFSET, b"\xcc") + star_code(code_va + STAR_OFFSET)
-    names, cursor = {}, NAMES_OFFSET
+    names, cursor = {}, names_offset
     blob = bytearray()
     table = bytearray()
     for _key, _file, entry, selector, _ident in entries:
@@ -817,9 +861,24 @@ def code_for(code_va, data_va, entries, venue_texts=()):
             blob.extend(text.encode("utf-16le") + b"\0\0")
         venue_table.extend(struct.pack("<I", code_va + texts[text]))
     result.extend(table.ljust(16 * MAX_TEAMS, b"\0"))
-    result.extend(venue_table.ljust(4 * MAX_NEW, b"\0"))
-    require(len(result) == NAMES_OFFSET, "owned code layout")
+    result.extend(venue_table.ljust(4 * venue_capacity, b"\0"))
+    require(len(result) == names_offset, "owned code layout")
     result.extend(blob)
+    if not legacy:
+        require(len(result) <= DISPLAY_OFFSET, "the moment team table and texts exceed the owned code")
+        result.extend(b"\xcc" * (DISPLAY_OFFSET - len(result)))
+        helper = bytearray(assembly.DISPLAY_CODE)
+        symbols = dict(display_map=code_va + DISPLAY_MAP_OFFSET, record_get=0x2CFD40, display_selected=data_va + 4)
+        for offset, kind, symbol, value in assembly.DISPLAY_RELOCATIONS:
+            target = symbols[symbol] + value + struct.unpack_from("<i", helper, offset)[0]
+            if kind == 2:
+                target -= code_va + DISPLAY_OFFSET + offset
+            struct.pack_into("<I", helper, offset, target & 0xFFFFFFFF)
+        require(len(helper) <= DISPLAY_MAP_OFFSET - DISPLAY_OFFSET, "display helper budget")
+        result.extend(helper.ljust(DISPLAY_MAP_OFFSET - DISPLAY_OFFSET, b"\xcc"))
+        order = tuple(range(RETAIL_COUNT + len(venue_texts))) if order is None else tuple(order)
+        require(len(order) <= DISPLAY_MAP_SIZE and set(order) == set(range(len(order))), "display order permutation")
+        result.extend(bytes(order).ljust(DISPLAY_MAP_SIZE, b"\xff"))
     require(len(result) <= CODE_SIZE, "the moment team table and texts exceed the owned code")
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
@@ -832,9 +891,10 @@ def star_code(va):
     return code
 
 
-def test_code(data_va):
+def test_code(data_va, code_va=None):
     """20C390: (mask >> index) & 1, the saved dword for rows 1 to 32, the session dword for 33 to 50."""
-    code = bytes.fromhex("83f920" "7307" "a1cc18bf00" "eb05") + b"\xa1" + struct.pack("<I", data_va) + \
+    code = (b"\x0f\xb6\x89" + struct.pack("<I", code_va + DISPLAY_MAP_OFFSET)) if code_va is not None else b""
+    code += bytes.fromhex("83f920" "7307" "a1cc18bf00" "eb05") + b"\xa1" + struct.pack("<I", data_va) + \
         bytes.fromhex("d3e8" "83e001" "c3")
     return code.ljust(32, b"\x90")
 
@@ -846,7 +906,7 @@ def announcer_guard():
     return bytes(code).ljust(31, b"\x90")
 
 
-def sites(code_va, data_va, total):
+def sites(code_va, data_va, total, *, legacy=False):
     """(label, va, retail bytes, patched bytes) for every in-place edit."""
     out = []
     for label, va, retail, entry, kind in HOOKS:
@@ -857,8 +917,13 @@ def sites(code_va, data_va, total):
     out.append(("count", COUNT_VA, bytes.fromhex(COUNT_RETAIL), bytes((0xB8, total, 0, 0, 0, 0xC3))))
     star = b"\xe9" + struct.pack("<i", code_va + STAR_OFFSET - STAR_VA - 5)
     out.append(("star_copy", STAR_VA, bytes.fromhex(STAR_RETAIL), star.ljust(len(STAR_RETAIL) // 2, b"\xcc")))
-    out.append(("mark_test", TEST_VA, bytes.fromhex(TEST_RETAIL), test_code(data_va)))
+    out.append(("mark_test", TEST_VA, bytes.fromhex(TEST_RETAIL), test_code(data_va, None if legacy else code_va)))
     out.append(("announcer", ANNOUNCER_VA, bytes.fromhex(ANNOUNCER_RETAIL), announcer_guard()))
+    if not legacy:
+        for label, va, retail, entry in DISPLAY_HOOKS:
+            target = code_va + DISPLAY_OFFSET + assembly.DISPLAY_LABELS[entry]
+            before = bytes.fromhex(retail)
+            out.append((label, va, before, (b"\xe8" + struct.pack("<i", target - va - 5)).ljust(len(before), b"\x90")))
     return out
 
 
@@ -885,7 +950,7 @@ def guard_digests(payload):
     return {va: _guard_digest(image, va, size, sites(0, 0, RETAIL_COUNT)) for va, size, _ in GUARDS}
 
 
-def _recognize(payload, data):
+def _recognize(payload, data, *, legacy=False):
     from . import nfl2k5_moment_venues as historical_venues
     payload = historical_venues.underlying(payload)
     layout = space.layout(payload)
@@ -893,13 +958,14 @@ def _recognize(payload, data):
     entries = table_entries(data) if data is not None else []
     total = RETAIL_COUNT + (len(data.moments) if data is not None else 0)
     owned = allocations(payload) if any(a["owner"] == OWNER for a in layout["allocations"]) else None
-    edits = sites(owned[0]["va"], owned[1]["va"], total) if owned else sites(0, 0, total)
+    edits = sites(owned[0]["va"], owned[1]["va"], total, legacy=legacy) if owned else sites(0, 0, total, legacy=legacy)
     states = set()
     expected = earlier = None
     if owned and data is not None:
         code, dat = owned
         body = image.read(code["va"], CODE_SIZE)
-        expected = code_for(code["va"], dat["va"], entries, venues(data))
+        expected = code_for(code["va"], dat["va"], entries, venues(data),
+                            order=None if legacy else display_order(data), legacy=legacy)
         # beta 76.0-76.2 installed the same code without the star copy (int3 there) and left the C1030 site retail
         earlier = expected[:STAR_OFFSET] + b"\xcc" * (TABLE_OFFSET - STAR_OFFSET) + expected[TABLE_OFFSET:]
     for label, va, before, after in edits:
@@ -929,14 +995,29 @@ def status(payload, data=None):
         return "foreign"
 
 
-def apply(payload, data=None):
+def legacy_status(payload, data):
+    """Strict v0.4 recognition against an explicitly supplied original authored profile."""
+    try:
+        require(len(data.moments) <= LEGACY_MAX_NEW, "legacy profile exceeds 25 additional moments")
+        return _recognize(payload, data, legacy=True)
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, OSError):
+        return "foreign"
+
+
+def apply(payload, data=None, *, legacy_data=None):
     """Install on a clean base, or replay an installed copy unchanged."""
     data = Data.load() if data is None else data
-    state = _recognize(payload, data)
+    try:
+        state = _recognize(payload, data)
+    except MoreMomentsError:
+        require(legacy_data is not None and legacy_status(payload, legacy_data) == "applied",
+                "foreign moments configuration; native upgrade requires an exact legacy profile")
+        state = "legacy"
     entries = table_entries(data)
     total = RETAIL_COUNT + len(data.moments)
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False, label=UI_LABEL, rows=total,
-                  team_seasons=len(entries), rx_bytes=CODE_SIZE, rw_bytes=DATA_SIZE, save_growth=0)
+                  team_seasons=len(entries), rx_bytes=CODE_SIZE, rw_bytes=DATA_SIZE, save_growth=0,
+                  display_order=list(display_order(data)), physical_order_preserved=True)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     if space.status(payload) == "retail":
@@ -945,7 +1026,24 @@ def apply(payload, data=None):
         allocations(payload)
         allocated, receipt = payload, {}
     code, dat = allocations(allocated)
-    result, _ = space.install_code(allocated, OWNER, code_for(code["va"], dat["va"], entries, venues(data)))
+    desired_code = code_for(code["va"], dat["va"], entries, venues(data), order=display_order(data))
+    if state == "legacy":
+        # Recognition above checks every hook, every owned byte and the allocator's union seal. The upgrade
+        # changes this owner's existing bytes only, retaining all allocation addresses and other owner bodies.
+        buffer = bytearray(allocated)
+        buffer[code["raw"]:code["raw"] + CODE_SIZE] = desired_code
+        if space.is_scaleout(allocated):
+            space._seal_scaleout(buffer, space._read_scale_directory(allocated))
+        else:
+            requests = space._read_directory(allocated)
+            buffer[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                requests, space._code_bytes(buffer, requests))
+        for section in _sections(buffer):
+            buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
+        result = bytes(buffer)
+        require(space.status(result) == "applied", "legacy owner reseal failed")
+    else:
+        result, _ = space.install_code(allocated, OWNER, desired_code)
     image = XbeImage(result)
     buffer = bytearray(result)
     edits = sites(code["va"], dat["va"], total)
@@ -956,7 +1054,7 @@ def apply(payload, data=None):
         buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
     result = bytes(buffer)
     require(_recognize(result, data) == "applied", "25 more moments postcondition failed")
-    return result, dict(common, status="applied", allocation=receipt,
+    return result, dict(common, status="upgraded" if state == "legacy" else "applied", allocation=receipt,
         changed_bytes=sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
         file_growth=len(result) - len(payload), before_sha256=sha(payload), after_sha256=sha(result),
         edits=[dict(label=name, va=hex(va), size=len(before), before=before.hex(), after=after.hex())
@@ -1179,6 +1277,33 @@ def apply_to_image(path, *, data=None, one_pool=False, named=False):
                 named_previews=named)
 
 
+def _historical_stadiums(data):
+    """Known physical-row venue alternatives, bound to the shipped field catalog's dated moments.
+
+    Reading the JSON directly preserves this executable owner's import closure. Arbitrary stadium words are
+    never masked: each actual word must equal its original index or this catalog's exact dated alternative.
+    """
+    path = ROOT / "data/nfl2k5_espn25_fields.json"
+    if not path.is_file():
+        return {}
+    doc = _read_json(path)
+    require(isinstance(doc, dict) and doc.get("schema") == "nfl2k5_espn25_fields/v1",
+            "foreign Anniversary field catalog")
+    rows = doc.get("moments")
+    require(isinstance(rows, list) and all(isinstance(r, dict) for r in rows)
+            and [r.get("row") for r in rows] == list(range(1, 52)),
+            "foreign Anniversary field physical order")
+    result = {}
+    for i, row in enumerate(rows[:RETAIL_COUNT + len(data.moments)]):
+        value = row.get("native_stadium_index")
+        require(type(value) is int and 0 <= value < 82, "foreign historical stadium index")
+        date = RETAIL_DATES[i] if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["date"]
+        iso = datetime.datetime.strptime(_date_ok(date), "%B %d, %Y").date().isoformat()
+        if row.get("date") == iso and (i < RETAIL_COUNT or row.get("title") == data.moments[i - RETAIL_COUNT]["title"]):
+            result[i] = value
+    return result
+
+
 def situ_rows(collection, data):
     """'applied' when a grown situation.iff holds the retail 25 rows (values and texts) and exactly the data's rows."""
     count = RETAIL_COUNT + len(data.moments)
@@ -1189,16 +1314,23 @@ def situ_rows(collection, data):
     if sc.u32(body, 64) != count or sha(collection[first_len:]) != RETAIL_SIBLINGS_SHA256:
         return "foreign"
     rows, values = [], []
+    historical = _historical_stadiums(data)
     for i in range(count):
         record = body[sc.RECORDS + i * sc.STRIDE:sc.RECORDS + (i + 1) * sc.STRIDE]
         rows.append([sc.utf16(body, sc.rel(body, sc.RECORDS + i * sc.STRIDE + p)) for p in sc.POINTERS])
         masked = bytearray(record)
+        original = RETAIL_STADIUMS[i] if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["stadium_index"]
+        stadium = sc.u32(record, 0x10)
+        if stadium not in (original, historical.get(i, original)):
+            return "foreign"
+        # Restore only the checked venue word for the existing full retail situation-value hash.
+        struct.pack_into("<I", masked, 0x10, original)
         for p in sc.POINTERS + KIT_FIELDS:
             masked[p:p + 4] = bytes(4)
         values.append(bytes(masked))
     if sha(json.dumps([r[4:] for r in rows[:RETAIL_COUNT]]).encode()) != "ded9e4c02882ef9e32d90dfb6efc991803624b5c4725730fc6dc434467f76ce2":
         return "foreign"
-    known_named = count == 50 and all(
+    known_named = count in (50, 51) and all(
         all(rows[i][list(sc.POINTERS).index(offset)] == authored["text"][field]
             for field, offset in sc.TEXT.items()) for i, authored in enumerate(named_previews()))
     if ((sha(json.dumps(rows[:RETAIL_COUNT]).encode()) != RETAIL_ROW_TEXT_SHA256 and not known_named)
@@ -1217,7 +1349,7 @@ def named_image_status(path):
         with hs.Source(path) as src:
             collection = src.get(identity=SITU_ID)
         body = collection[32:32 + sc.u32(collection, 4)]
-        if sc.u32(body, 64) != 50:
+        if sc.u32(body, 64) not in (50, 51):
             return "retail"
         for i, row in enumerate(named_previews()):
             for field, offset in sc.TEXT.items():

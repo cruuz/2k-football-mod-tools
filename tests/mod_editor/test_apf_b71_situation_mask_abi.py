@@ -6,10 +6,10 @@ from tests.mod_editor.test_apf_playcall_patch import SyntheticMachine,MASK64
 from mod_editor.core import apf2k8_situation_mask as m
 
 class MaskMachine(SyntheticMachine):
-    def __init__(self,profile,category,excluded,phase=4,*,version=1,overrides=None,row_hook=False):
+    def __init__(self,profile,category,excluded,phase=4,*,version=1,overrides=None,row_hook=False,component=False,weights=None):
         super().__init__()
         self.profile,self.category=profile,category
-        self.version,self.row_hook=version,row_hook
+        self.version,self.row_hook,self.component=version,row_hook,component
         self.f={0:0xFFF0010203040506,13:0x4001234501020304}
         self.fpscr=0x9F83A12B
         self.original_f=self.f.copy();self.original_fpscr=self.fpscr
@@ -24,7 +24,8 @@ class MaskMachine(SyntheticMachine):
         self.put(state+0x28,int.from_bytes(struct.pack('>f',731.52),'big'),4)
         self.add(m.RECEIPT_START,bytes(m.RECEIPT_LIMIT-m.RECEIPT_START))
         policies={'O-ManBlock':[[] for _ in range(12)]};policies['O-ManBlock'][8]=excluded
-        self.add(m.DATA_START,m.encode_data(policies,overrides or {} if version==2 else None))
+        self.add(m.DATA_START,m.encode_data(policies,overrides or {} if version>=2 else None,
+                                         weights if version>=3 else None, version=version))
         for i,value in enumerate('O-ManBlock'.encode('utf-16-be')):self.put(self.book+0x30+i,value,1)
         for i,(form,cat) in enumerate(((2,6),(14,6),(24,6),(30,3))):self.record(i,[0],cat,form)
         self.put(self.master+0x44+6*16+4,10,1)
@@ -40,13 +41,17 @@ class MaskMachine(SyntheticMachine):
         if row_hook:
             self.r[29]=self.master+0x44+6*16
             self.r[11]=0xFEDCBA98000000C6
+        if component:
+            self.r[29],self.r[28],self.r[31],self.r[21],self.r[26]=self.book,self.master+0x44+6*16,self.master+0x244+14*184,0,10
+            self.f.update({1:2.,30:0.})
+            self.original_f=self.f.copy()
         self.original_buffer=bytes(self.get(self.r[1]+wo+i,1) for i in range(160))
     def get(self,address,size):return super().get(address&0xFFFFFFFF,size)
     def put(self,address,value,size):return super().put(address&0xFFFFFFFF,value,size)
     def run(self):
         code,hooks=m.assemble(self.profile,self.version)
         words={m.CODE_START+i:int.from_bytes(code[i:i+4], 'big') for i in range(0,len(code),4)}
-        hook,entry=hooks[2 if self.row_hook else 0 if self.category else 1]
+        hook,entry=hooks[3 if self.component else 2 if self.row_hook else 0 if self.category else 1]
         self.hook=hook
         self.before = self.r.copy(); original_cr = self.cr
         outside = {a:v for a,v in self.mem.items() if not 0x10000 <= a < 0x11000}
@@ -79,6 +84,9 @@ class MaskMachine(SyntheticMachine):
                     self.f[0]=struct.unpack('>f',struct.pack('>f',self.f[0]-self.f[13]))[0]
                     self.fpscr ^= 0x82000000  # make restoration observable
                 elif w==0xFC000210:self.f[0]=abs(self.f[0])
+                elif w==0xEC210372:self.f[1]=struct.unpack('>f',struct.pack('>f',self.f[1]*self.f[13]))[0]
+                elif w==m.COMPONENT_ORIGINAL:
+                    self.cr=(self.cr&~0xF0)|((8 if self.f[1]<self.f[30] else 4 if self.f[1]>self.f[30] else 2)<<4)
                 else:raise AssertionError(f'Unsupported floating instruction {w:08x}')
             elif op == 36:
                 self.put((self.r[ra]+imm)&MASK64,self.r[rt],4)
@@ -131,16 +139,17 @@ class MaskMachine(SyntheticMachine):
             else:raise AssertionError(f'Unsupported opcode {op}')
             pc=nextpc
         else:raise AssertionError('Cave exceeded bounded instruction budget')
-        assert self.cr==original_cr
-        assert self.f==self.original_f
+        assert self.cr==((original_cr&~0xF0)|0x40 if self.component else original_cr)
+        assert {i:v for i,v in self.f.items() if not self.component or i!=1}=={i:v for i,v in self.original_f.items() if not self.component or i!=1}
         assert self.fpscr==self.original_fpscr
         assert (self.lr,self.ctr)==self.original_control
         count_reg=24 if self.category else 27
         for r in range(32):
-            if r not in ((11,) if self.row_hook else (5,count_reg)):assert self.r[r]==self.before[r],(r,hex(self.r[r]),hex(self.before[r]))
-        if not self.row_hook:assert self.r[5]==(3 if self.category else 1)
+            if r not in (() if self.component else (11,) if self.row_hook else (5,count_reg)):assert self.r[r]==self.before[r],(r,hex(self.r[r]),hex(self.before[r]))
+        if not self.row_hook and not self.component:assert self.r[5]==(3 if self.category else 1)
         writable=((0x10000,0x11000),(m.RECEIPT_START,m.RECEIPT_LIMIT))
         assert all(self.mem[a]==v for a,v in outside.items() if not any(lo<=a<hi for lo,hi in writable))
+        if self.component:return self.f[1]
         if self.row_hook:return self.r[11]
         pointer=self.before[1]+(0x110 if self.category else 0xF0)
         base,stride=(0x44,16) if self.category else (0x244,184)
@@ -148,6 +157,22 @@ class MaskMachine(SyntheticMachine):
 
 
 class AbiTests(unittest.TestCase):
+    def test_v4_component_leaf_full_width_registers_and_guarded_floating_change(self):
+        for profile in m.PROFILES:
+            for key, phase, expected in ((8,4,8.),(7,4,2.),(12,3,8.),(8,2,2.)):
+                weights={'O-ManBlock':[{} for _ in range(13)]};weights['O-ManBlock'][key]={'14':4.}
+                machine=MaskMachine(profile,True,[],phase,version=4,component=True,weights=weights)
+                self.assertEqual(machine.run(),expected)
+            for corrupt in ((m.DATA_START+4,3),(m.DATA_START+16+288+4,0xFFFFFFFF),
+                            (m.DATA_START+16+288+12,0x7FC00000)):
+                weights={'O-ManBlock':[{} for _ in range(13)]};weights['O-ManBlock'][8]={'14':4.}
+                machine=MaskMachine(profile,True,[],version=4,component=True,weights=weights)
+                machine.put(*corrupt,4)
+                self.assertEqual(machine.run(),2.)
+            for reg,value in ((21,0x40000),(26,25)):
+                machine=MaskMachine(profile,True,[],version=4,component=True,weights=weights)
+                machine.r[reg]=value
+                self.assertEqual(machine.run(),2.)
     def test_full_registers_cr_fprs_fpscr_stack_and_guarded_writes(self):
         for profile in m.PROFILES:
             for category in (False,True):

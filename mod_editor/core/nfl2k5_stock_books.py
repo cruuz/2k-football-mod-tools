@@ -1,7 +1,9 @@
 """PROVED OFFLINE mechanism: isolated retail franchise books for historical sides.
 
 The default-book decision runs separately for each match team. Mode 8 or category
-4 bypasses saved/custom selections. A bounded, exact franchise lookup copies a
+4 bypasses saved/custom selections. Anniversary sides from 2005 onward use their
+franchise's current book; older or unavailable seasons use the preserved bank.
+A bounded, exact franchise lookup copies a
 NUL-terminated alias into the existing 32-wide-character buffer. No team pointer,
 shared label or cached game state is modified. DESIGN: rendered-game acceptance.
 """
@@ -40,15 +42,45 @@ def aliases():
     return rows
 
 
-def code_for(va):
+MODERN_FIRST_SEASON, MODERN_LAST_SEASON = 2005, 2030
+MOMENT_COUNT = 51
+
+
+def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT):
+    require(type(moment_limit) is int and moment_limit in (50, MOMENT_COUNT), "unsupported Anniversary moment limit")
     a = _Asm(va)
     a.b("8bd8")                         # EBX = match team (displaced)
+    if modern_moments:
+        a.b("85db")
+        a.j32("0f84", "retail")
     a.b("833d80ffe50008")               # mode == Anniversary
-    a.j32("0f84", "stock")
-    a.b("85db")
-    a.j32("0f84", "retail")
+    a.j32("0f84", "moment" if modern_moments else "stock")
+    if not modern_moments:
+        a.b("85db")
+        a.j32("0f84", "retail")
     a.b("83bb2801000004")               # this side's category, never the opponent's
     a.j32("0f85", "retail")
+    if modern_moments:
+        a.j32("e9", "stock")
+        a.label("moment")
+        # 2CFD00 binds the live SITU rows/count. 20CB30 stores the selected
+        # ordinal and reads home +20 / away +1c. The formatter's own argument
+        # [EBP+8] is 1 for home, 0 for away. Do not infer an era from a title,
+        # roster pointer or the other side. Invalid/unloaded tables stay stock.
+        a.b("833dd4f0c80000")
+        a.j8("74", "stock")
+        a.b("833dd8f0c800" + bytes([moment_limit]).hex())
+        a.j8("77", "stock")
+        a.b("8b0d5818bf003b0dd8f0c800")
+        a.j8("73", "stock")
+        a.call(0x2CFD40)
+        a.b("85c0")
+        a.j8("74", "stock")
+        a.b("8b4d0885c90f95c10fb6c98b44881c")
+        a.b("2d" + struct.pack("<I", MODERN_FIRST_SEASON).hex())
+        a.b("83f8" + bytes([MODERN_LAST_SEASON - MODERN_FIRST_SEASON]).hex())
+        a.j8("77", "stock")
+        a.j32("e9", "default")
     a.label("stock")
     a.b("85db")
     a.j32("0f84", "retail")
@@ -108,17 +140,41 @@ def _recognize(payload):
     actual = image.read(SITE, len(RETAIL))
     state = "retail" if actual == RETAIL else "applied" if owned and actual == hook(owned["va"]) else "foreign"
     if owned:
-        expected = (b"\xcc" * CODE_SIZE, code_for(owned["va"])) if state == "retail" else (code_for(owned["va"]),)
-        require(image.read(owned["va"], CODE_SIZE) in expected, "foreign stock resolver body")
+        current = code_for(owned["va"])
+        previous = (code_for(owned["va"], modern_moments=False),
+                    code_for(owned["va"], moment_limit=50))
+        expected = (b"\xcc" * CODE_SIZE, current, *previous) if state == "retail" else (current, *previous)
+        installed = image.read(owned["va"], CODE_SIZE)
+        require(installed in expected, "foreign stock resolver body")
+        if state == "applied" and installed in previous:
+            state = "needs_fix"
     # Pin the complete formatter, normalizing only the owned decision.
     body = bytearray(image.read(0x628D0, 0x170))
     body[SITE - 0x628D0:SITE - 0x628D0 + len(RETAIL)] = RETAIL
     require(hashlib.sha256(body).hexdigest() == FORMATTER_SHA256, "foreign default book formatter")
+    for va, size, digest in MOMENT_GUARDS:
+        actual_digest = hashlib.sha256(image.read(va, size)).hexdigest()
+        if actual_digest != digest and va == 0x20CB43:
+            # Chronological Anniversary selection owns a call inside this
+            # reader window. Normalize it only after its complete hooks and
+            # generated body have passed that owner's exact recognizer.
+            from . import nfl2k5_espn25_more_moments as moments
+            require(moments.status(payload) == "applied", "foreign Anniversary display reader")
+            code, data = moments.allocations(payload)
+            edits = moments.sites(code["va"], data["va"], MOMENT_COUNT)
+            actual_digest = moments._guard_digest(image, va, size, edits)
+        require(actual_digest == digest,
+                "foreign native moment table reader")
     require(state != "foreign", "foreign stock resolver hook")
     return state
 
 
 FORMATTER_SHA256 = "b1c5fcbd35e743d9d172d5fd8072ed2bafde6548a22da99b8a7474743deb33d5"
+MOMENT_GUARDS = (
+    (0x2CFD00, 0x20, "c913e67e94778fd703278c689761a0987c36b3cb00eecf97a94f23a8b82f0c0c"),
+    (0x2CFD40, 0x15, "7f3be8f6f9f97aaacbe7155caaca6bfcbda8b967352a84d7e12e2d61ca746b80"),
+    (0x20CB43, 0x20, "318a575180b1048b70d1b5f36dc58128c2269c131dc5d63c5ed7be53c786b5cb"),
+)
 
 
 def status(payload):
@@ -139,7 +195,24 @@ def apply(payload, *, enabled=True):
         payload, _ = space.apply(payload, REQUESTS)
     owned = allocation(payload)
     if enabled:
-        payload, _ = space.install_code(payload, OWNER, code_for(owned["va"]))
+        image = XbeImage(payload)
+        if image.read(owned["va"], CODE_SIZE) in (code_for(owned["va"], modern_moments=False),
+                                                code_for(owned["va"], moment_limit=50)):
+            # Only this owner admits this exact checked version transition.
+            # The generic allocator still refuses arbitrary filled-code edits.
+            buffer = bytearray(payload)
+            buffer[owned["raw"]:owned["raw"] + CODE_SIZE] = code_for(owned["va"])
+            _, _, requests = space._validate(payload)
+            if space.is_scaleout(payload):
+                space._seal_scaleout(buffer, requests)
+            else:
+                buffer[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                    requests, space._code_bytes(buffer, requests))
+                for section in _sections(buffer):
+                    buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
+            payload = bytes(buffer)
+        else:
+            payload, _ = space.install_code(payload, OWNER, code_for(owned["va"]))
     image = XbeImage(payload)
     out = bytearray(payload)
     at = image.offset(SITE, len(RETAIL))
@@ -149,6 +222,7 @@ def apply(payload, *, enabled=True):
     result = bytes(out)
     require(status(result) == desired, "stock book resolver read-back failed")
     return result, dict(status=desired, owner=OWNER, classification="PROVED OFFLINE", runtime_witnessed=False,
+                        upgraded_moment_routing=before == "needs_fix" and enabled,
                         changed_bytes=sum(a != b for a, b in zip(original, result)) + len(result) - len(original))
 
 

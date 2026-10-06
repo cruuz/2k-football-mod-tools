@@ -79,8 +79,8 @@ if [[ "${1:-}" == "--update-check" ]]; then
     exec "$studio_python" -B -s -c 'import mod_editor; import mod_editor.__main__; import mod_editor.gui.studio_qt; print(mod_editor.__version__)'
 fi
 
-if ! "$studio_python" -c 'from PyQt5 import QtWidgets; import PIL; import mod_editor' >"$studio_log" 2>&1; then
-    show_studio_error "A required application component is missing. Restore the Python runtime and its PyQt5 and Pillow packages, then reopen 2K5 Mod Studio.\n\nDetails were saved to: $studio_log"
+if ! "$studio_python" -c 'from PyQt5 import QtWidgets; import PIL; import numpy; import capstone; import unicorn; import mod_editor' >"$studio_log" 2>&1; then
+    show_studio_error "A required application component is missing. Install the Studio packages in this Python runtime, then reopen 2K5 Mod Studio. Run: \"$studio_python\" -m pip install -r \"$portable_root/packaging/requirements-studio.txt\".\n\nDetails were saved to: $studio_log"
     exit 1
 fi
 

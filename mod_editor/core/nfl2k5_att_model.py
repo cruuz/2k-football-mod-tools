@@ -888,7 +888,7 @@ def adjust_digits(shape, sc, model):
                 zs = 1 if n % 2 == 0 else -1
                 side = -1 if mname.endswith("_L") else 1
                 wall_z = model.p["loop"]["zn"] if zs > 0 else model.p["loop"]["zs"]
-                centre = np.array([side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
+                centre = np.array([-side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
                 sm._place_quad(P, UV, quad, centre, np.array([-zs, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]), 0.75, 1.1)
             else:
                 s_ = strips[n % 2]

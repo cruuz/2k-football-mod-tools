@@ -1,5 +1,18 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.106 - beta 76.5
+
+Thanks to Urianus for the APF reports. New behavior is proved offline on BASE and TU 1.1; rendered effects and CPU playcalling still need his gameplay check. Export matching revision 4 patches and restart Xenia.
+
+- Situation formation multipliers now affect the native personnel-category contribution as well as the final formation lottery. Uniformly scaling a category can therefore change its chance of being selected.
+- Live Call Preview uses queued edits before Confirm, rejects stale worker results, and restores the prior preview when edits are discarded.
+- Openers, first-and-10 and first-and-long are labeled shared samples of the actual first-down >7-yard policy row; they are not independent native records.
+- Charged abilities revision 4 latches the qualified move's second-level discharge before native cleanup clears consumed state. Qualification follows the actual spin/juke/power/stop ability; partial charge and unqualified moves retain level 1. The bounded latch preserves existing gameplay fields and requires BASE/TU-specific export.
+- The packaged read-only VIP reader losslessly decodes raw/Xenia/STFS inputs, 76 directly supported stored UI fields, and the game's four supplementary percentages. Unknown meanings remain marked; no tendency writer or signature claim is supplied. See the [VIP field map](apf_vip_format.md).
+- The standalone VIP reader resolves its sibling decoder from its own tools directory in embedded runtimes. Parser/output behavior stays lossless and read-only; shipped-tool import checks passed.
+- Native CPU VIP attachment and the defensive-line lane mechanism are documented for future work. Per-team VIP assignment and the reported DL failure remain unresolved; neither ships a gameplay patch here.
+- Shared portable dependency diagnostics and finished-artifact import checks include the APF package.
+
 ## 0.1.0-alpha.105 - beta 76.4
 
 - Version aligned with this release; no APF 2K8 changes ship here.

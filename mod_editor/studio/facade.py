@@ -1011,7 +1011,7 @@ class Nfl2k5StudioFacade:
         Build stay tied to an older (or nonexistent) project build. The page's own
         finished copy is what they want to run."""
 
-        image = Path(image)
+        image = Path(image).expanduser().absolute()
         if not image.is_file() or image.is_symlink():
             raise ValidationError(f"The built copy is not a regular file: {image}")
         with self._lock:

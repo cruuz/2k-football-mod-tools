@@ -3623,37 +3623,59 @@ def _item_progress(message, done, total):
     print('NFL2K5_BUILD_ITEM ' + json.dumps(dict(message=message, done=done, total=total)), flush=True)
 
 
-def compile_dependencies(index: int, edits: list[dict[str, Any]]) -> list[int]:
+def compile_dependency_groups(edits: list[dict[str, Any]]) -> dict[int, list[int]]:
+    """Index physical TSET/scene compilation units once for the whole build."""
+    geometries = {int(re.search(r"\.c(\d{4})\.", row["target"]).group(1))
+                  for row in edits if row["kind"] == CRIB_SCENE_GEOMETRY_KIND}
+    groups = {}
+    independent = {"torso", "sleeve", "pants", "live_helmet", "live_number_nameplate",
+                   "team_select", "live_face", "create_team_field_art", P8_TEXTURE_KIND,
+                   SCOREBUG_TEXTURE_KIND, CRIB_TEAM_PHOTO_KIND, CRIB_STANDALONE_TEXTURE_KIND,
+                   "player_portrait"}
+    result = {}
+    for index, edit in enumerate(edits):
+        kind = edit["kind"]
+        if kind == UNIFORM_EQUIPMENT_KIND:
+            key = (kind, *str(edit["asset_id"]).split(":")[1:3])
+        elif kind in {STADIUM_TEXTURE_KIND, STADIUM_GEOMETRY_KIND}:
+            key = ("stadium", str(edit["target"]).rsplit(".texture", 1)[0])
+        elif kind in {CRIB_SCENE_TEXTURE_KIND, CRIB_SCENE_GEOMETRY_KIND}:
+            chunk = (int(re.search(r"\.c(\d{4})\.", edit["target"]).group(1))
+                     if kind == CRIB_SCENE_GEOMETRY_KIND
+                     else crib_scene_adapter.TARGETS[edit["selector"]][1])
+            key = ("crib", chunk if chunk in geometries else None)
+        elif kind in independent:
+            result[index] = [index]
+            continue
+        else:
+            continue
+        # Every index in a shared unit points to the same ordered list, keeping
+        # memory linear even when thousands of edits belong to one scene.
+        unit = groups.setdefault(key, [])
+        unit.append(index)
+        result[index] = unit
+    return result
+
+
+def compile_dependencies(index: int, edits: list[dict[str, Any]], groups=None) -> list[int]:
     """The physical compilation unit. Shared TSET/scene edits invalidate together."""
-    edit = edits[index]
-    kind = edit["kind"]
-    if kind == UNIFORM_EQUIPMENT_KIND:
-        group = str(edit["asset_id"]).split(":")[1:3]
-        return [n for n, row in enumerate(edits) if row["kind"] == kind
-                and str(row["asset_id"]).split(":")[1:3] == group]
-    if kind in {STADIUM_TEXTURE_KIND, STADIUM_GEOMETRY_KIND}:
-        scene = (str(edit["target"]).rsplit(".texture", 1)[0]
-                 if kind == STADIUM_TEXTURE_KIND else str(edit["target"]))
-        return [n for n, row in enumerate(edits)
-                if row["kind"] in {STADIUM_TEXTURE_KIND, STADIUM_GEOMETRY_KIND}
-                and str(row["target"]).rsplit(".texture", 1)[0] == scene]
-    if kind in {CRIB_SCENE_TEXTURE_KIND, CRIB_SCENE_GEOMETRY_KIND}:
-        geometries = {int(re.search(r"\.c(\d{4})\.", row["target"]).group(1)): n
-                      for n, row in enumerate(edits) if row["kind"] == CRIB_SCENE_GEOMETRY_KIND}
-        chunk = (int(re.search(r"\.c(\d{4})\.", edit["target"]).group(1))
-                 if kind == CRIB_SCENE_GEOMETRY_KIND else crib_scene_adapter.TARGETS[edit["selector"]][1])
-        geometry = geometries.get(chunk)
-        textures = [n for n, row in enumerate(edits) if row["kind"] == CRIB_SCENE_TEXTURE_KIND
-                    and ((crib_scene_adapter.TARGETS[row["selector"]][1] == chunk)
-                         if geometry is not None else
-                         (crib_scene_adapter.TARGETS[row["selector"]][1] not in geometries))]
-        return sorted(textures + ([geometry] if geometry is not None else []))
-    if kind in {"torso", "sleeve", "pants", "live_helmet", "live_number_nameplate",
-                "team_select", "live_face", "create_team_field_art", P8_TEXTURE_KIND,
-                SCOREBUG_TEXTURE_KIND, CRIB_TEAM_PHOTO_KIND, CRIB_STANDALONE_TEXTURE_KIND,
-                "player_portrait"}:
-        return [index]
-    return []
+    return (compile_dependency_groups(edits) if groups is None else groups).get(index, [])
+
+
+def project_edit_indices(edits):
+    """Index original edit labels for written-span verification without N² scans."""
+    exact, targets = {}, {}
+    for index, row in enumerate(edits):
+        exact.setdefault(canonical_json(row), []).append(index)
+        target = row.get("asset_id", row.get("selector", row.get("target")))
+        if target is not None:
+            targets.setdefault(target, []).append(index)
+    def indices(recorded):
+        found = set(exact.get(canonical_json(recorded), ()))
+        for row in recorded.get("edits", []):
+            found.update(targets.get(row.get("target"), ()))
+        return sorted(found)
+    return indices
 
 
 def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
@@ -3671,6 +3693,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     use_compile_cache: bool = True) \
         -> PreparedProject:
     input_pins = pin_project_inputs(project)
+    dependency_groups = compile_dependency_groups(project.value["edits"])
     cache = CompileCache(None if not use_compile_cache or historical_import_reports is not None
                          or os.environ.get("NFL2K5_DISABLE_COMPILE_CACHE") == "1"
                          else compile_cache_root or project.path.parent / ".nfl2k5-compile-cache")
@@ -3885,7 +3908,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         for edit_index, edit in enumerate(project.value["edits"]):
             _item_progress('Preparing ' + project_edit_label(edit, edit_index), edit_index, len(project.value['edits']))
-            with _naming_project_edits(project, compile_dependencies(edit_index, project.value["edits"]) or [edit_index]):
+            if edit_index in cached_handled:
+                continue
+            if (edit["kind"] == CRIB_SCENE_TEXTURE_KIND
+                    and crib_scene_adapter.TARGETS[str(edit["selector"])][1] in geometry_scene_by_chunk):
+                # The geometry row owns this unit and composes all its textures.
+                continue
+            with _naming_project_edits(project, compile_dependencies(edit_index, project.value["edits"], dependency_groups) or [edit_index]):
                 kind = edit["kind"]
                 if kind == model_project.KIND:
                     continue
@@ -3893,9 +3922,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     continue
                 effective_edit = edit
                 effective_input_hashes: dict[str, str | None] | None = None
-                if edit_index in cached_handled:
-                    continue
-                dependencies = compile_dependencies(edit_index, project.value["edits"])
+                dependencies = compile_dependencies(edit_index, project.value["edits"], dependency_groups)
                 cache_key = None
                 cached = None
                 if dependencies and cache.root is not None and not (parallel_imports is not None and kind in independent_kinds):
@@ -6347,11 +6374,10 @@ def verify_written(project_path: Path, source_path: Path, output_path: Path,
         ranges = []
         changed = 0
         offsets = hashlib.sha256()
+        edit_indices = project_edit_indices(project.value["edits"])
         for edit in sorted(manifest["edits"], key=lambda row: row["target"]["absolute_span_offset"]):
             recorded = edit["project_edit"]
-            targets = {row.get("target") for row in recorded.get("edits", [])}
-            indices = [i for i, row in enumerate(project.value["edits"])
-                       if row == recorded or row.get("asset_id", row.get("selector", row.get("target"))) in targets]
+            indices = edit_indices(recorded)
             with _naming_project_edits(project, indices):
                 target, replacement = edit["target"], edit["replacement"]
                 pack = output_entries[target["pack_path"].casefold()]

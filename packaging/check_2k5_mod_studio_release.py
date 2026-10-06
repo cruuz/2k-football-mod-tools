@@ -320,6 +320,13 @@ REVIEWED_ICON_SHA256 = (
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
 SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "5442dd0db8eeac3ba269401c3e9c94a9bf492cfcf153f0f325361e17294e80fd"
 
+# Anniversary paint is authored or cropped from publicly sourced references.
+# Retail wordmarks/shields/scenes are read from the user's disc at compile time
+# and are not included here. This separate, immutable catalog grants no general
+# PNG exception, even inside the Anniversary art directory.
+ANNIVERSARY_FIELD_PNG_CATALOG = "packaging/nfl2k5_espn25_field_pngs.json"
+ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "bd57194fa4708fe8c5c45b5dcdcbe4c9195594dc1094247038675871495c0378"
+
 
 def _scorebug_template_pngs(root: Path) -> dict:
     catalog = root / SCOREBUG_TEMPLATE_PNG_CATALOG
@@ -337,16 +344,35 @@ def _scorebug_template_pngs(root: Path) -> dict:
 
 
 def _validate_scorebug_template_png(path: Path, relative: str, info, contract: dict) -> None:
+    _validate_reviewed_png(path, relative, info, contract, "scorebar")
+
+
+def _anniversary_field_pngs(root: Path) -> dict:
+    catalog = root / ANNIVERSARY_FIELD_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(128 * 1024 + 1)
+    if (len(data) > 128 * 1024
+            or hashlib.sha256(data).hexdigest() != ANNIVERSARY_FIELD_PNG_CATALOG_SHA256):
+        raise ReleaseCheckError("reviewed Anniversary PNG catalog hash changed")
+    document = json.loads(data)
+    if document.get("schema") != "nfl2k5_espn25_field_pngs/v1":
+        raise ReleaseCheckError("reviewed Anniversary PNG catalog schema changed")
+    return document["files"]
+
+
+def _validate_reviewed_png(path: Path, relative: str, info, contract: dict, label: str) -> None:
     import struct
     if info.st_size != contract["size"] or info.st_size > 512 * 1024:
-        raise ReleaseCheckError(f"reviewed scorebar PNG size changed: {relative}")
+        raise ReleaseCheckError(f"reviewed {label} PNG size changed: {relative}")
     with path.open("rb") as stream:
         data = stream.read(info.st_size + 1)
     if (hashlib.sha256(data).hexdigest() != contract["sha256"]
             or data[:16] != b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR"
             or len(data) < 24
             or struct.unpack_from(">II", data, 16) != (contract["width"], contract["height"])):
-        raise ReleaseCheckError(f"reviewed scorebar PNG identity changed: {relative}")
+        raise ReleaseCheckError(f"reviewed {label} PNG identity changed: {relative}")
 
 # Reject only the two known workstation prefixes.  Build the strings from
 # fragments so this allowlisted checker does not contain the private paths it
@@ -581,7 +607,9 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     reviewed_metadata_count = 0
     reviewed_icon_count = 0
     reviewed_scorebug_png_count = 0
+    reviewed_anniversary_png_count = 0
     scorebug_pngs = _scorebug_template_pngs(release_root)
+    anniversary_pngs = _anniversary_field_pngs(release_root)
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
@@ -656,6 +684,12 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             seen_files.add(relative)
             total_bytes += info.st_size
             continue
+        if relative in anniversary_pngs:
+            _validate_reviewed_png(path, relative, info, anniversary_pngs[relative], "Anniversary")
+            reviewed_anniversary_png_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         if suffix in FORBIDDEN_SUFFIXES:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
         if suffix not in ALLOWED_SUFFIXES and path.name.casefold() not in ALLOWED_SUFFIXLESS_NAMES:
@@ -722,6 +756,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         "reviewed_metadata_file_count": reviewed_metadata_count,
         "reviewed_icon_count": reviewed_icon_count,
         "reviewed_scorebug_template_png_count": reviewed_scorebug_png_count,
+        "reviewed_anniversary_field_png_count": reviewed_anniversary_png_count,
         "private_generated_inventories_included": False,
         "retail_payloads_included": False,
         "symlinks_included": False,

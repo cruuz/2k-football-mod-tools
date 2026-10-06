@@ -164,13 +164,13 @@ def depth_ranks(depth_csv: Path, team: str, since: str | None = None) -> dict[st
     return best
 
 
-def pbp_for(last: str, jersey: int, retail_lasts: dict[str, int], bank: dict[str, int]) -> tuple[int, str]:
-    key = norm(last)
-    if key in retail_lasts:
-        return retail_lasts[key], "retail player cue"
+def pbp_for(last: str, jersey: int, bank: dict[str, int]) -> tuple[int, str]:
+    # Retail-player ordinals can insert that player's given name. The verified generic bank
+    # supplies surname-only clips and already excludes ambiguous or unrecorded entries.
+    key = rr.commentary_surname(last)
     if key in bank:
         return bank[key], "recorded surname bank"
-    return rr.PBP_NUMBER_FALLBACK, "announces the jersey number"
+    return rr.number_commentary_id(jersey), "announces the jersey number"
 
 
 def ordered_document(document: dict, placeholder: str, name_order: list[int]) -> dict:
@@ -511,13 +511,7 @@ def build(args) -> int:
         assigned[p.index] = r
     record_by_index = {p.index: p for p in records}
     # announcer cues
-    from mod_editor.core.nfl2k5_prospect_names import RETAIL_AUDIO_BASE, RETAIL_LASTS
-    bank = {norm(s): RETAIL_AUDIO_BASE + i for i, s in enumerate(RETAIL_LASTS)}
-    retail_lasts: dict[str, int] = {}
-    team_ids = {p.index for p in records}
-    for p in doc.players:
-        if p.pool == "primary" and p.last and p.index not in team_ids:
-            retail_lasts.setdefault(norm(p.last), p.record.values["pbp_id"])
+    bank = rr.recorded_surname_ids()
     faces = json.loads(Path(args.faces).read_text(encoding="utf-8")) if args.faces else {}
     colleges_norm = {norm(c): i for i, c in enumerate(doc.colleges) if c}
     # per-position depth order inside the written document (by code)
@@ -570,7 +564,8 @@ def build(args) -> int:
         rec.set("depth_rank", rank)
         rec.set("depth_side", min(rr.DEPTH_SIDE_FOR_RANK.get(rank, rank), rr.DEPTH_ROW_CAP))
         rec.set("body", body_for(weight))
-        pbp, cue = pbp_for(last, jersey, retail_lasts, bank)
+        # Match the full source surname before the game's display buffer shortens it.
+        pbp, cue = pbp_for(source_names(r)[1], jersey, bank)
         rec.set("pbp_id", pbp)
         face = faces.get(r["gsis_id"], {})
         if "photo_id" in face:

@@ -1,0 +1,1583 @@
+{
+  "moments": [
+    {
+      "id": "the_miss",
+      "title": "THE MISS",
+      "date": "January 17, 1999",
+      "history": "Gary Anderson missed a late field goal with Minnesota leading 27-20 in the NFC Championship Game. Chris Chandler took Atlanta from its own 29 and found Terance Mathis for the tying touchdown with 49 seconds left. Morten Andersen later kicked the winning field goal in overtime. The Falcons beat the Vikings 30-27 at the Metrodome and reached Super Bowl XXXIII.",
+      "goal": "Rally Chris Chandler's Falcons, then win with Morten Andersen.",
+      "stadium": "Hubert H. Humphrey Metrodome",
+      "stadium_index": 15,
+      "stadium_note": "The real building (the retail H. H. H. Metrodome).",
+      "away": "falcons_1998",
+      "home": "vikings_1998",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 20,
+        "home": 27
+      },
+      "final_score": {
+        "away": 30,
+        "home": 27
+      },
+      "quarter": 4,
+      "clock": "2:07",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "ATL 29",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 70,
+      "kits": {
+        "away": 1,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+        "https://www.atlantafalcons.com/news/1998-nfc-championship-game-postgame-notes",
+        "https://www.nfl.com/news/1998-nfc-championship-09000d5d8060961f"
+      ],
+      "evidence": "Situation from the cited sources (1998 has no nflverse play-by-play). Timeouts are in no source: 3 and 3 is INFERRED. Sources differ on the kick (38 yards: NFL.com and the Falcons; 39 yards: Wikipedia, which also has the clock stopped at 2:11 before the kick and the ball wide with 2:07 left); the Falcons' drive of 71 yards from their 29 with 2:07 left agrees in all of them."
+    },
+    {
+      "id": "helmet_catch",
+      "title": "SUPER BOWL XLII: TYREE",
+      "date": "February 3, 2008",
+      "history": "Super Bowl XLII: Eli Manning took over at the Giants' 17, down 14-10 with 2:39 left. On third-and-five he escaped New England's pass rush and found David Tyree, who pinned the ball against his helmet for a 32-yard gain. Manning then hit Plaxico Burress for a 13-yard touchdown with 35 seconds left. New York won 17-14, ending the Patriots' unbeaten season.",
+      "goal": "Find David Tyree with Eli Manning and win Super Bowl XLII.",
+      "stadium": "University of Phoenix Stadium",
+      "stadium_index": 38,
+      "stadium_note": "Super Bowl XLII was at University of Phoenix Stadium, Glendale AZ; index 38 is the game's own 'Super Bowl 2008' site in Arizona. Fallback 0 (Arizona Stadium) if a Super Bowl site misbehaves.",
+      "away": "giants_2007",
+      "home": "patriots_2007",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 10,
+        "home": 14
+      },
+      "final_score": {
+        "away": 17,
+        "home": 14
+      },
+      "quarter": 4,
+      "clock": "1:15",
+      "down": 3,
+      "distance": 5,
+      "ball_on": "NYG 44",
+      "timeouts": {
+        "away": 2,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "nflverse play_by_play_2007: game_id 2007_21_NYG_NE, play_id 3651"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Super Bowl XLII: New England was the designated home team and wore navy jerseys with silver pants; New York wore white jerseys with grey pants. Retail Giants style 0 is a 2004 stand-in, not the 2005 road redesign. Sources: https://en.wikipedia.org/wiki/Super_Bowl_XLII ; https://www.giants.com/photos/super-bowl-xlii-photos-giants-vs-patriots-10513572"
+    },
+    {
+      "id": "toe_tap",
+      "title": "SUPER BOWL XLIII: HOLMES",
+      "date": "February 1, 2009",
+      "history": "Super Bowl XLIII: Larry Fitzgerald's long touchdown put Arizona ahead 23-20. Ben Roethlisberger answered with an 88-yard Pittsburgh drive, repeatedly finding Santonio Holmes. Holmes caught the winning six-yard pass in the back corner of the end zone with both feet down and 35 seconds left. The Steelers won 27-23 at Raymond James Stadium for their sixth title.",
+      "goal": "Find Santonio Holmes with Ben Roethlisberger to win Super Bowl XLIII.",
+      "stadium": "Raymond James Stadium",
+      "stadium_index": 27,
+      "stadium_note": "Raymond James Stadium, Tampa: the retail 'Tampa Bay Stadium' is the Buccaneers' 2004 home, the same building under its unlicensed name.",
+      "away": "steelers_2008",
+      "home": "cardinals_2008",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 20,
+        "home": 23
+      },
+      "final_score": {
+        "away": 27,
+        "home": 23
+      },
+      "quarter": 4,
+      "clock": "0:42",
+      "down": 2,
+      "distance": 6,
+      "ball_on": "ARZ 6",
+      "timeouts": {
+        "away": 0,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 66,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+        "nflverse play_by_play_2008: game_id 2008_21_PIT_ARI, play_id 3912"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "The Cardinals' 2005 redesign is not on the disc; their 2004 uniform (index 0) is the closest."
+    },
+    {
+      "id": "manningham",
+      "title": "SUPER BOWL XLVI: SIDELINE",
+      "date": "February 5, 2012",
+      "history": "Super Bowl XLVI: Eli Manning took over at New York's 12 with the Patriots ahead 17-15 and 3:46 left. Mario Manningham made a 38-yard catch along the left sideline, keeping both feet in bounds. Ahmad Bradshaw finished the drive with a six-yard touchdown run with 57 seconds remaining. The Giants held off Tom Brady and won 21-17 at Lucas Oil Stadium.",
+      "goal": "Find Mario Manningham with Eli Manning and win Super Bowl XLVI.",
+      "stadium": "Lucas Oil Stadium",
+      "stadium_index": 11,
+      "stadium_note": "Lucas Oil Stadium, Indianapolis (opened 2008) is not on the disc; the RCA Dome it replaced, in the same city, stands in.",
+      "away": "giants_2011",
+      "home": "patriots_2011",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 15,
+        "home": 17
+      },
+      "final_score": {
+        "away": 21,
+        "home": 17
+      },
+      "quarter": 4,
+      "clock": "3:46",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "NYG 12",
+      "timeouts": {
+        "away": 1,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI",
+        "nflverse play_by_play_2011: game_id 2011_21_NYG_NE, play_id 3542"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Timeouts: New England's failed challenge on this very play cost a timeout, so the start state is the one before it (Giants 1, Patriots 3)."
+    },
+    {
+      "id": "comeback_28_3",
+      "title": "SUPER BOWL LI: 28-3",
+      "date": "February 5, 2017",
+      "history": "Super Bowl LI: Tom Brady's Patriots trailed Atlanta 28-3 in the third quarter. Dont'a Hightower forced a crucial Matt Ryan fumble, Julian Edelman made a diving catch, and James White scored the tying touchdown before a two-point conversion. White's two-yard run ended overtime. New England won 34-28 at NRG Stadium after scoring 31 unanswered points.",
+      "goal": "Rally Tom Brady from 28-3 down and win Super Bowl LI with James White.",
+      "stadium": "NRG Stadium",
+      "stadium_index": 31,
+      "stadium_note": "NRG Stadium, Houston: the retail 'Reliant Stadium' is the same building under its 2004 name.",
+      "away": "patriots_2016",
+      "home": "falcons_2016",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 3,
+        "home": 28
+      },
+      "final_score": {
+        "away": 34,
+        "home": 28
+      },
+      "quarter": 3,
+      "clock": "8:31",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "NE 25",
+      "timeouts": {
+        "away": 3,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "nflverse play_by_play_2016: game_id 2016_21_NE_ATL, play_id 2523"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Starts at the Patriots' first snap after the 28-3 touchdown, 8:31 of the 3rd quarter (m1 stores the real clock; the retail list never went past 5:00)."
+    },
+    {
+      "id": "fourth_and_18",
+      "title": "FOURTH AND EIGHTEEN",
+      "date": "November 13, 2022",
+      "history": "Kirk Cousins took over at Minnesota's 24 with Buffalo ahead 27-23. Facing fourth-and-18 later in the drive, Cousins found Justin Jefferson, who reached over Cam Lewis for a one-handed 32-yard catch. Eric Kendricks then recovered Josh Allen's goal-line fumble for a touchdown. Patrick Peterson's overtime interception sealed Minnesota's 33-30 win at Highmark Stadium.",
+      "goal": "Find Justin Jefferson with Kirk Cousins and beat Josh Allen's Bills.",
+      "stadium": "Highmark Stadium",
+      "stadium_index": 3,
+      "stadium_note": "Highmark Stadium, Orchard Park: the retail 'Ralph Wilson Stadium' is the same building under its 2004 name.",
+      "away": "vikings_2022",
+      "home": "bills_2022",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 23,
+        "home": 27
+      },
+      "final_score": {
+        "away": 33,
+        "home": 30
+      },
+      "quarter": 4,
+      "clock": "3:26",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "MIN 24",
+      "timeouts": {
+        "away": 1,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 38,
+      "kits": {
+        "away": 0,
+        "home": 4
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season",
+        "nflverse play_by_play_2022: game_id 2022_10_MIN_BUF, play_id 3831"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Bills kit 4 ('1976 - 1983 Uniform': white helmet, royal blue) is the closest to their 2021 uniforms."
+    },
+    {
+      "id": "music_city_miracle",
+      "title": "MUSIC CITY MIRACLE",
+      "date": "January 8, 2000",
+      "history": "Steve Christie put Buffalo ahead 16-15 with 16 seconds left in the AFC Wild Card game. On the kickoff, Lorenzo Neal handed the ball to Frank Wycheck, whose cross-field lateral reached Kevin Dyson. Dyson raced 75 yards for the winning touchdown. Officials upheld the lateral after replay, and Steve McNair's Titans won 22-16 at Adelphia Coliseum.",
+      "goal": "Return Steve Christie's kickoff with Frank Wycheck and Kevin Dyson.",
+      "stadium": "Adelphia Coliseum",
+      "stadium_index": 28,
+      "stadium_note": "Adelphia Coliseum, Nashville: the retail 'Titans Coliseum' is the same building under its 2004 name.",
+      "away": "bills_1999",
+      "home": "titans_1999",
+      "user_side": "home",
+      "possession": "away",
+      "score_now": {
+        "away": 16,
+        "home": 15
+      },
+      "final_score": {
+        "away": 16,
+        "home": 22
+      },
+      "quarter": 4,
+      "clock": "0:16",
+      "down": 0,
+      "distance": 10,
+      "ball_on": "BUF 30",
+      "timeouts": {
+        "away": 0,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 40,
+      "kits": {
+        "away": 2,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle",
+        "nflverse play_by_play_1999: game_id 1999_18_BUF_TEN, play_id 3930"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "A kickoff start: the Bills kick off (retail convention: the kicker's own 30) and the user returns it. Time of day from the 11:30 a.m. CST kickoff (the 1999 play-by-play has no wall-clock time)."
+    },
+    {
+      "id": "tuck_rule",
+      "title": "THE TUCK RULE GAME",
+      "date": "January 19, 2002",
+      "history": "Tom Brady lost the ball with New England trailing Oakland 13-10, but replay applied the tuck rule and changed the fumble to an incomplete pass. Adam Vinatieri then made a 45-yard tying field goal through the snow. Brady led another drive in overtime, and Vinatieri's 23-yard kick gave the Patriots a 16-13 divisional playoff victory at Foxboro Stadium.",
+      "goal": "Lead Tom Brady through the snow and win with Adam Vinatieri.",
+      "stadium": "Foxboro Stadium",
+      "stadium_index": 16,
+      "stadium_note": "Foxboro Stadium was replaced in 2002 by Gillette Stadium, built next door; the retail 'Gillette Stadium' stands in.",
+      "away": "raiders_2001",
+      "home": "patriots_2001",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 13,
+        "home": 10
+      },
+      "final_score": {
+        "away": 13,
+        "home": 16
+      },
+      "quarter": 4,
+      "clock": "2:06",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "NE 46",
+      "timeouts": {
+        "away": 2,
+        "home": 0
+      },
+      "weather": "heavy snow",
+      "time_of_day": "night",
+      "temperature": 25,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game",
+        "nflverse play_by_play_2001: game_id 2001_19_OAK_NE, play_id 3606"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "The play-by-play weather reads 'Snow throughout game, 3-5 inches expected, 25 F', kickoff 8:00 p.m.: heavy snow, night."
+    },
+    {
+      "id": "super_bowl_shootout",
+      "title": "SUPER BOWL XXXVIII: FINALE",
+      "date": "February 1, 2004",
+      "history": "Super Bowl XXXVIII: Jake Delhomme found Ricky Proehl for a touchdown to tie Carolina and New England at 29. John Kasay's kickoff went out of bounds, giving Tom Brady the ball at his own 40. Brady moved the Patriots into range, and Adam Vinatieri made a 41-yard field goal with four seconds left. New England beat the Panthers 32-29 at Reliant Stadium.",
+      "goal": "Answer Jake Delhomme with Tom Brady and win Super Bowl XXXVIII.",
+      "stadium": "Reliant Stadium",
+      "stadium_index": 31,
+      "stadium_note": "Reliant Stadium, Houston: the real venue (the retail 'Reliant Stadium').",
+      "away": "panthers_2003",
+      "home": "patriots_2003",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 22,
+        "home": 29
+      },
+      "final_score": {
+        "away": 29,
+        "home": 32
+      },
+      "quarter": 4,
+      "clock": "2:43",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "CAR 20",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+        "nflverse play_by_play_2003: game_id 2003_21_CAR_NE, play_id 4078"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "The user plays Carolina's tying drive, a different finish from the retail VINATIERI STRIKES AGAIN. Night: kickoff 5:25 p.m. CST (the 2003 wall-clock field reads as local time)."
+    },
+    {
+      "id": "ambush",
+      "title": "SUPER BOWL XLIV: AMBUSH",
+      "date": "February 7, 2010",
+      "history": "Super Bowl XLIV: Drew Brees and the Saints trailed Peyton Manning's Colts 10-6 at halftime. Thomas Morstead opened the second half with a surprise onside kick, and Chris Reis recovered for New Orleans. Brees led the comeback, while Tracy Porter's late interception return clinched a 31-17 Saints victory at Sun Life Stadium, their first Super Bowl title.",
+      "goal": "Recover Thomas Morstead's onside kick and win Super Bowl XLIV with Drew Brees.",
+      "stadium": "Sun Life Stadium",
+      "stadium_index": 37,
+      "stadium_note": "Sun Life Stadium, Miami Gardens: index 37 is the game's own 'Super Bowl 2007' Miami site, the same building as the retail Pro Player Stadium (fallback 14).",
+      "away": "saints_2009",
+      "home": "colts_2009",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 6,
+        "home": 10
+      },
+      "final_score": {
+        "away": 31,
+        "home": 17
+      },
+      "quarter": 3,
+      "clock": "15:00",
+      "down": 0,
+      "distance": 10,
+      "ball_on": "NO 30",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 60,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "nflverse play_by_play_2009: game_id 2009_21_NO_IND, play_id 1944"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "A kickoff start: the Saints kick off the second half, so the onside kick is the user's call."
+    },
+    {
+      "id": "new_meadowlands_miracle",
+      "title": "NEW MEADOWLANDS MIRACLE",
+      "date": "December 19, 2010",
+      "history": "Michael Vick's Eagles trailed the Giants 31-10 in the fourth quarter. Vick found Brent Celek, ran for a touchdown and hit Jeremy Maclin to tie the game. With 14 seconds left, Matt Dodge punted to DeSean Jackson. Jackson recovered his muff, broke through and returned the punt 65 yards for a touchdown as time expired. Philadelphia won 38-31 at New Meadowlands Stadium.",
+      "goal": "Rally Michael Vick's Eagles and finish with DeSean Jackson.",
+      "stadium": "New Meadowlands Stadium",
+      "stadium_index": 18,
+      "stadium_note": "New Meadowlands Stadium (now MetLife Stadium) replaced Giants Stadium next door in 2010; the retail 'Giants Stadium' stands in.",
+      "away": "eagles_2010",
+      "home": "giants_2010",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 10,
+        "home": 31
+      },
+      "final_score": {
+        "away": 38,
+        "home": 31
+      },
+      "quarter": 4,
+      "clock": "8:09",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "PHI 25",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 33,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+        "nflverse play_by_play_2010: game_id 2010_15_PHI_NYG, play_id 3357"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)"
+    },
+    {
+      "id": "beast_quake",
+      "title": "BEAST QUAKE",
+      "date": "January 8, 2011",
+      "history": "Drew Brees had brought New Orleans within four points of Seattle in the NFC Wild Card game. Marshawn Lynch then took Matt Hasselbeck's handoff and broke tackle after tackle, including a stiff-arm of Tracy Porter, on a 67-yard touchdown run. Seattle held on for a 41-36 win at Qwest Field. Lynch's run became known as Beast Quake.",
+      "goal": "Break loose with Marshawn Lynch and beat Drew Brees' Saints.",
+      "stadium": "Qwest Field",
+      "stadium_index": 26,
+      "stadium_note": "Qwest Field, Seattle: the real venue under its 2011 name.",
+      "away": "saints_2010",
+      "home": "seahawks_2010",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 30,
+        "home": 34
+      },
+      "final_score": {
+        "away": 36,
+        "home": 41
+      },
+      "quarter": 4,
+      "clock": "4:20",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "SEA 33",
+      "timeouts": {
+        "away": 1,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 40,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake",
+        "nflverse play_by_play_2010: game_id 2010_18_NO_SEA, play_id 4250"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Starts on the snap before Lynch's run (1st and 10 at the Seattle 33, 4:20 left)."
+    },
+    {
+      "id": "catch_three",
+      "title": "THE CATCH III",
+      "date": "January 14, 2012",
+      "history": "Drew Brees found Jimmy Graham for a long touchdown that put New Orleans ahead 32-29 with 1:37 left. Alex Smith answered, taking San Francisco downfield with big throws to Vernon Davis. Davis caught Smith's 14-yard touchdown pass with nine seconds remaining, giving the 49ers a 36-32 divisional playoff win at Candlestick Park and a place in the NFC title game.",
+      "goal": "Find Vernon Davis with Alex Smith to win at Candlestick Park.",
+      "stadium": "Candlestick Park",
+      "stadium_index": 25,
+      "stadium_note": "Candlestick Park: the retail 'San Francisco Park' is the same building under its 2004 name.",
+      "away": "saints_2011",
+      "home": "49ers_2011",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 32,
+        "home": 29
+      },
+      "final_score": {
+        "away": 32,
+        "home": 36
+      },
+      "quarter": 4,
+      "clock": "1:32",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "SF 15",
+      "timeouts": {
+        "away": 1,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 62,
+      "kits": {
+        "away": 0,
+        "home": 3
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Catch_III",
+        "nflverse play_by_play_2011: game_id 2011_19_NO_SF, play_id 4741"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "49ers kit 3 ('1964 - 1995 Uniform') is the closest to the 2009-era look."
+    },
+    {
+      "id": "mile_high_miracle",
+      "title": "MILE HIGH MIRACLE",
+      "date": "January 12, 2013",
+      "history": "Joe Flacco's Ravens trailed Denver 35-28 with time running out in their AFC divisional playoff. On third down, Flacco threw deep to Jacoby Jones, who got behind Rahim Moore for a 70-yard touchdown with 31 seconds left. Corey Graham later intercepted Peyton Manning, and Justin Tucker's field goal in the second overtime gave Baltimore a 38-35 victory.",
+      "goal": "Find Jacoby Jones with Joe Flacco and beat Peyton Manning's Broncos.",
+      "stadium": "Sports Authority Field at Mile High",
+      "stadium_index": 8,
+      "stadium_note": "Sports Authority Field at Mile High: the retail 'INVESCO Field' is the same building under its 2004 name.",
+      "away": "ravens_2012",
+      "home": "broncos_2012",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 28,
+        "home": 35
+      },
+      "final_score": {
+        "away": 38,
+        "home": 35
+      },
+      "quarter": 4,
+      "clock": "1:09",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "BAL 23",
+      "timeouts": {
+        "away": 0,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 13,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle",
+        "nflverse play_by_play_2012: game_id 2012_19_BAL_DEN, play_id 4187"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "The Ravens team-season is the Super Bowl XLVII roster (one file serves both Ravens moments)."
+    },
+    {
+      "id": "goal_line_stand",
+      "title": "SUPER BOWL XLVII: HOLD ON",
+      "date": "February 3, 2013",
+      "history": "Super Bowl XLVII: Colin Kaepernick brought San Francisco back after Baltimore built a 28-6 lead. The 49ers reached the Ravens' seven-yard line on their final drive, down 34-29. Ray Lewis and the Baltimore defense held through four plays, including three throws toward Michael Crabtree. After a deliberate safety, Joe Flacco's Ravens finished a 34-31 win.",
+      "goal": "Stop Colin Kaepernick with Ray Lewis and win Super Bowl XLVII.",
+      "stadium": "Mercedes-Benz Superdome",
+      "stadium_index": 17,
+      "stadium_note": "Mercedes-Benz Superdome: the retail 'Louisiana Super Dome' is the same building under its 2004 name.",
+      "away": "ravens_2012",
+      "home": "49ers_2012",
+      "user_side": "away",
+      "possession": "home",
+      "score_now": {
+        "away": 34,
+        "home": 29
+      },
+      "final_score": {
+        "away": 34,
+        "home": 31
+      },
+      "quarter": 4,
+      "clock": "2:39",
+      "down": 1,
+      "distance": 7,
+      "ball_on": "BAL 7",
+      "timeouts": {
+        "away": 3,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 3
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+        "nflverse play_by_play_2012: game_id 2012_21_BAL_SF, play_id 3960"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Defensive moment: the user is Baltimore on defense; the 49ers have the ball."
+    },
+    {
+      "id": "dez_caught_it",
+      "title": "DEZ CAUGHT IT?",
+      "date": "January 11, 2015",
+      "history": "Tony Romo faced fourth-and-two with Dallas trailing Green Bay 26-21 in the divisional playoff. Dez Bryant leaped for Romo's deep pass and reached toward the goal line as he fell. Replay overturned the catch under the rule then in force. Aaron Rodgers and the Packers ran out the clock, leaving Dallas with a 26-21 loss at Lambeau Field.",
+      "goal": "Find Dez Bryant with Tony Romo and change the finish at Lambeau Field.",
+      "stadium": "Lambeau Field",
+      "stadium_index": 10,
+      "stadium_note": "Lambeau Field: the real venue.",
+      "away": "cowboys_2014",
+      "home": "packers_2014",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 21,
+        "home": 26
+      },
+      "final_score": {
+        "away": 21,
+        "home": 26
+      },
+      "quarter": 4,
+      "clock": "4:42",
+      "down": 4,
+      "distance": 2,
+      "ball_on": "GB 32",
+      "timeouts": {
+        "away": 2,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "afternoon",
+      "temperature": 24,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs",
+        "nflverse play_by_play_2014: game_id 2014_19_DAL_GB, play_id 3578"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Starts on the 4th and 2 that was ruled incomplete; the user gets to finish the drive."
+    },
+    {
+      "id": "butler_goal_line",
+      "title": "SUPER BOWL XLIX: BUTLER",
+      "date": "February 1, 2015",
+      "history": "Super Bowl XLIX: Tom Brady put New England ahead 28-24 with a touchdown pass to Julian Edelman. Russell Wilson moved Seattle to the Patriots' one-yard line after Jermaine Kearse's juggling catch and a Marshawn Lynch run. Malcolm Butler jumped Wilson's pass toward Ricardo Lockette for an interception with 20 seconds left. New England held on to win 28-24.",
+      "goal": "Intercept Russell Wilson with Malcolm Butler to win Super Bowl XLIX.",
+      "stadium": "University of Phoenix Stadium",
+      "stadium_index": 38,
+      "stadium_note": "University of Phoenix Stadium, Glendale AZ, also hosted Super Bowl XLII; index 38 is the game's own 'Super Bowl 2008' Arizona site (fallback 0).",
+      "away": "patriots_2014",
+      "home": "seahawks_2014",
+      "user_side": "away",
+      "possession": "home",
+      "score_now": {
+        "away": 28,
+        "home": 24
+      },
+      "final_score": {
+        "away": 28,
+        "home": 24
+      },
+      "quarter": 4,
+      "clock": "0:26",
+      "down": 2,
+      "distance": 1,
+      "ball_on": "NE 1",
+      "timeouts": {
+        "away": 2,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+        "nflverse play_by_play_2014: game_id 2014_21_NE_SEA, play_id 4205"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Defensive moment: the user is New England on defense from Seattle's final drive."
+    },
+    {
+      "id": "miracle_in_motown",
+      "title": "MIRACLE IN MOTOWN",
+      "date": "December 3, 2015",
+      "history": "Aaron Rodgers and Green Bay trailed Detroit 23-21 when a penalty gave the Packers one untimed down. Rodgers escaped the rush and launched a 61-yard pass into the end zone. Tight end Richard Rodgers rose above the crowd to make the touchdown catch. Green Bay won 27-23 at Ford Field, completing a comeback from a 20-point deficit in the third quarter.",
+      "goal": "Launch Aaron Rodgers' last pass to Richard Rodgers and stun Detroit.",
+      "stadium": "Ford Field",
+      "stadium_index": 9,
+      "stadium_note": "Ford Field, Detroit: the real venue.",
+      "away": "packers_2015",
+      "home": "lions_2015",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 21,
+        "home": 23
+      },
+      "final_score": {
+        "away": 27,
+        "home": 23
+      },
+      "quarter": 4,
+      "clock": "0:23",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "GB 21",
+      "timeouts": {
+        "away": 0,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown",
+        "nflverse play_by_play_2015: game_id 2015_13_GB_DET, play_id 4143"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)"
+    },
+    {
+      "id": "minneapolis_miracle",
+      "title": "MINNEAPOLIS MIRACLE",
+      "date": "January 14, 2018",
+      "history": "Drew Brees had helped New Orleans take a 24-23 lead with 25 seconds left. Case Keenum moved Minnesota upfield, then threw to Stefon Diggs along the right sideline. Marcus Williams missed the tackle, Diggs stayed in bounds and ran for a 61-yard touchdown as time expired. The Vikings won 29-24 at U.S. Bank Stadium and advanced to the NFC Championship Game.",
+      "goal": "Find Stefon Diggs with Case Keenum and win on the final play.",
+      "stadium": "U.S. Bank Stadium",
+      "stadium_index": 15,
+      "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
+      "away": "saints_2017",
+      "home": "vikings_2017",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 24,
+        "home": 23
+      },
+      "final_score": {
+        "away": 24,
+        "home": 29
+      },
+      "quarter": 4,
+      "clock": "0:25",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "MIN 25",
+      "timeouts": {
+        "away": 1,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "nflverse play_by_play_2017: game_id 2017_19_NO_MIN, play_id 4372"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)"
+    },
+    {
+      "id": "philly_special",
+      "title": "SUPER BOWL LII: PHILLY",
+      "date": "February 4, 2018",
+      "history": "Super Bowl LII: Philadelphia faced fourth-and-goal at New England's one with 38 seconds left in the first half. Nick Foles moved out of the shotgun, Corey Clement took the snap and handed to Trey Burton, and Burton threw a touchdown to Foles. The Philly Special helped the Eagles beat Tom Brady's Patriots 41-33 at U.S. Bank Stadium for their first Super Bowl title.",
+      "goal": "Throw Trey Burton's pass to Nick Foles and win Super Bowl LII.",
+      "stadium": "U.S. Bank Stadium",
+      "stadium_index": 15,
+      "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
+      "away": "eagles_2017",
+      "home": "patriots_2017",
+      "user_side": "away",
+      "possession": "away",
+      "score_now": {
+        "away": 15,
+        "home": 12
+      },
+      "final_score": {
+        "away": 41,
+        "home": 33
+      },
+      "quarter": 2,
+      "clock": "0:38",
+      "down": 4,
+      "distance": 1,
+      "ball_on": "NE 1",
+      "timeouts": {
+        "away": 2,
+        "home": 1
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Philly_Special",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+        "nflverse play_by_play_2017: game_id 2017_21_PHI_NE, play_id 2053"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Starts on the 4th and goal of the Philly Special, 38 seconds before halftime."
+    },
+    {
+      "id": "jet_chip_wasp",
+      "title": "SUPER BOWL LIV: WASP",
+      "date": "February 2, 2020",
+      "history": "Super Bowl LIV: Patrick Mahomes' Chiefs trailed San Francisco 20-10 in the fourth quarter. On third-and-15, Mahomes found Tyreek Hill for 44 yards on Jet Chip Wasp. Travis Kelce and Damien Williams then caught touchdown passes, and Williams added a late touchdown run. Kansas City scored 21 unanswered points and beat the 49ers 31-20 at Hard Rock Stadium.",
+      "goal": "Find Tyreek Hill with Patrick Mahomes and win Super Bowl LIV.",
+      "stadium": "Hard Rock Stadium",
+      "stadium_index": 37,
+      "stadium_note": "Hard Rock Stadium, Miami Gardens: index 37 is the game's own 'Super Bowl 2007' Miami site, the same building as the retail Pro Player Stadium (fallback 14).",
+      "away": "49ers_2019",
+      "home": "chiefs_2019",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 20,
+        "home": 10
+      },
+      "final_score": {
+        "away": 20,
+        "home": 31
+      },
+      "quarter": 4,
+      "clock": "8:53",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "KC 17",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 64,
+      "kits": {
+        "away": 3,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "nflverse play_by_play_2019: game_id 2019_21_SF_KC, play_id 2854"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)"
+    },
+    {
+      "id": "thirteen_seconds",
+      "title": "THIRTEEN SECONDS",
+      "date": "January 23, 2022",
+      "history": "Josh Allen found Gabe Davis for a touchdown to put Buffalo ahead 36-33 with 13 seconds left. Patrick Mahomes completed passes to Tyreek Hill and Travis Kelce, setting up Harrison Butker's tying field goal as regulation expired. Kansas City won the overtime toss, and Mahomes found Kelce for the winning touchdown in a 42-36 AFC divisional playoff victory.",
+      "goal": "Use Patrick Mahomes' final 13 seconds to force overtime and beat Buffalo.",
+      "stadium": "GEHA Field at Arrowhead Stadium",
+      "stadium_index": 13,
+      "stadium_note": "Arrowhead Stadium: the real venue.",
+      "away": "bills_2021",
+      "home": "chiefs_2021",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 36,
+        "home": 33
+      },
+      "final_score": {
+        "away": 36,
+        "home": 42
+      },
+      "quarter": 4,
+      "clock": "0:13",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "KC 25",
+      "timeouts": {
+        "away": 1,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 37,
+      "kits": {
+        "away": 4,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/13_seconds_game",
+        "nflverse play_by_play_2021: game_id 2021_20_BUF_KC, play_id 4062"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Bills kit 4 ('1976 - 1983 Uniform') is the closest to their 2021 uniforms."
+    },
+    {
+      "id": "donald_fourth_down",
+      "title": "SUPER BOWL LVI: DONALD",
+      "date": "February 13, 2022",
+      "history": "Super Bowl LVI: Matthew Stafford found Cooper Kupp for a touchdown to put Los Angeles ahead 23-20 with 1:25 left. Joe Burrow moved Cincinnati to the Rams' 49. Aaron Donald helped stop Samaje Perine on third-and-one, then pressured Burrow into an incomplete fourth-down pass. The Rams won 23-20 at SoFi Stadium after Donald ended the Bengals' final chance.",
+      "goal": "Stop Joe Burrow with Aaron Donald and win Super Bowl LVI.",
+      "stadium": "SoFi Stadium",
+      "stadium_index": 39,
+      "stadium_note": "SoFi Stadium, Inglewood: index 39 is the game's own 'Super Bowl Future' Los Angeles site.",
+      "away": "rams_2021",
+      "home": "bengals_2021",
+      "user_side": "away",
+      "possession": "home",
+      "score_now": {
+        "away": 23,
+        "home": 20
+      },
+      "final_score": {
+        "away": 23,
+        "home": 20
+      },
+      "quarter": 4,
+      "clock": "1:25",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "CIN 25",
+      "timeouts": {
+        "away": 3,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 4,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+        "nflverse play_by_play_2021: game_id 2021_22_LA_CIN, play_id 3855"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Defensive moment: the user is the Rams on defense. Rams kit 4 ('1978 - 1979 Uniform', royal blue and yellow) is the closest to their 2020 look."
+    },
+    {
+      "id": "comeback_33",
+      "title": "THE 33-POINT COMEBACK",
+      "date": "December 17, 2022",
+      "history": "Kirk Cousins and Minnesota trailed Indianapolis 33-0 at halftime. Cousins threw four second-half touchdown passes, including Dalvin Cook's 64-yard catch and run. A two-point pass to T.J. Hockenson tied the game at 36. Greg Joseph kicked the winning field goal in overtime, giving the Vikings a 39-36 victory and the NFL's largest comeback at U.S. Bank Stadium.",
+      "goal": "Rally Kirk Cousins from 33-0 down and win with Greg Joseph.",
+      "stadium": "U.S. Bank Stadium",
+      "stadium_index": 15,
+      "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
+      "away": "colts_2022",
+      "home": "vikings_2022",
+      "user_side": "home",
+      "possession": "away",
+      "score_now": {
+        "away": 33,
+        "home": 0
+      },
+      "final_score": {
+        "away": 36,
+        "home": 39
+      },
+      "quarter": 3,
+      "clock": "15:00",
+      "down": 0,
+      "distance": 10,
+      "ball_on": "IND 30",
+      "timeouts": {
+        "away": 3,
+        "home": 3
+      },
+      "weather": "clear",
+      "time_of_day": "day",
+      "temperature": 70,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season",
+        "nflverse play_by_play_2022: game_id 2022_15_IND_MIN, play_id 2149"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "A kickoff start: the Colts kick off the second half. The Vikings team-season is the week 10 roster shared with FOURTH AND EIGHTEEN."
+    },
+    {
+      "id": "overtime_in_vegas",
+      "title": "SUPER BOWL LVIII: OVERTIME",
+      "date": "February 11, 2024",
+      "history": "Super Bowl LVIII: Patrick Mahomes led Kansas City to Harrison Butker's tying field goal with three seconds left. Both teams then possessed the ball under the playoff overtime rule. Jake Moody put San Francisco ahead, but Mahomes drove 75 yards and found Mecole Hardman for the winning touchdown. The Chiefs beat the 49ers 25-22 in overtime at Allegiant Stadium in Las Vegas.",
+      "goal": "Find Mecole Hardman with Patrick Mahomes to win Super Bowl LVIII in overtime.",
+      "stadium": "Allegiant Stadium",
+      "stadium_index": 36,
+      "stadium_note": "Allegiant Stadium, Las Vegas, has no counterpart on the disc; index 36 is the game's own indoor 'Super Bowl 2006' site.",
+      "away": "49ers_2023",
+      "home": "chiefs_2023",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 19,
+        "home": 16
+      },
+      "final_score": {
+        "away": 22,
+        "home": 25
+      },
+      "quarter": 4,
+      "clock": "1:53",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "KC 25",
+      "timeouts": {
+        "away": 2,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 70,
+      "kits": {
+        "away": 3,
+        "home": 0
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "nflverse play_by_play_2023: game_id 2023_22_SF_KC, play_id 3769"
+      ],
+      "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
+      "notes": "Starts in regulation (overtime starts are not proved): the Chiefs' tying drive."
+    }
+  ],
+  "teams": {
+    "49ers_2011": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2012": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2019": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "49ers_2023": {
+      "abbreviation": "SF",
+      "asset_code": "25",
+      "city": "San Francisco",
+      "nickname": "49ers",
+      "retail_same_season": null,
+      "season": 2023,
+      "selector": "49ers",
+      "template": "h-25-2003-49ers-0.iff"
+    },
+    "bengals_2021": {
+      "abbreviation": "CIN",
+      "asset_code": "06",
+      "city": "Cincinnati",
+      "nickname": "Bengals",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "bengals",
+      "template": "h-06-1988-bengals-1.iff"
+    },
+    "bills_1999": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 1999,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "bills_2021": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "bills_2022": {
+      "abbreviation": "BUF",
+      "asset_code": "03",
+      "city": "Buffalo",
+      "nickname": "Bills",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "bills",
+      "template": "h-03-1990-bills-2.iff"
+    },
+    "broncos_2012": {
+      "abbreviation": "DEN",
+      "asset_code": "08",
+      "city": "Denver",
+      "nickname": "Broncos",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "broncos",
+      "template": "h-08-1998-broncos-0.iff"
+    },
+    "cardinals_2008": {
+      "abbreviation": "ARZ",
+      "asset_code": "00",
+      "city": "Arizona",
+      "nickname": "Cardinals",
+      "retail_same_season": null,
+      "season": 2008,
+      "selector": "cardinals",
+      "template": "h-00-1975-cardinals-3.iff"
+    },
+    "chiefs_2019": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "chiefs_2021": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "chiefs_2023": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2023,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff"
+    },
+    "colts_2009": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2009,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff"
+    },
+    "colts_2022": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff"
+    },
+    "cowboys_2014": {
+      "abbreviation": "DAL",
+      "asset_code": "07",
+      "city": "Dallas",
+      "nickname": "Cowboys",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "cowboys",
+      "template": "h-07-1992-cowboys-2.iff"
+    },
+    "eagles_2010": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff"
+    },
+    "eagles_2017": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff"
+    },
+    "falcons_1998": {
+      "abbreviation": "ATL",
+      "asset_code": "01",
+      "city": "Atlanta",
+      "nickname": "Falcons",
+      "retail_same_season": "h-01-1998-falcons-1.iff",
+      "season": 1998,
+      "selector": "falcons",
+      "template": "h-01-1998-falcons-1.iff"
+    },
+    "falcons_2016": {
+      "abbreviation": "ATL",
+      "asset_code": "01",
+      "city": "Atlanta",
+      "nickname": "Falcons",
+      "retail_same_season": null,
+      "season": 2016,
+      "selector": "falcons",
+      "template": "h-01-1998-falcons-1.iff"
+    },
+    "giants_2007": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2007,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "giants_2010": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "giants_2011": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff"
+    },
+    "lions_2015": {
+      "abbreviation": "DET",
+      "asset_code": "09",
+      "city": "Detroit",
+      "nickname": "Lions",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "lions",
+      "template": "h-09-1991-lions-3.iff"
+    },
+    "packers_2014": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff"
+    },
+    "packers_2015": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff"
+    },
+    "panthers_2003": {
+      "abbreviation": "CAR",
+      "asset_code": "04",
+      "city": "Carolina",
+      "nickname": "Panthers",
+      "retail_same_season": "h-04-2003-panthers-0.iff",
+      "season": 2003,
+      "selector": "panthers",
+      "template": "h-04-2003-panthers-0.iff"
+    },
+    "patriots_2001": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": "h-16-2001-patriots-0.iff",
+      "season": 2001,
+      "selector": "patriots",
+      "template": "h-16-2001-patriots-0.iff"
+    },
+    "patriots_2003": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": "h-16-2003-patriots-0.iff",
+      "season": 2003,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2007": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2007,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2011": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2014": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2016": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2016,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "patriots_2017": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff"
+    },
+    "raiders_2001": {
+      "abbreviation": "OAK",
+      "asset_code": "20",
+      "city": "Oakland",
+      "nickname": "Raiders",
+      "retail_same_season": null,
+      "season": 2001,
+      "selector": "raiders",
+      "template": "h-20-1983-raiders-0.iff"
+    },
+    "rams_2021": {
+      "abbreviation": "STL",
+      "asset_code": "23",
+      "city": "Los Angeles",
+      "nickname": "Rams",
+      "retail_same_season": null,
+      "season": 2021,
+      "selector": "rams",
+      "template": "h-23-1999-rams-2.iff"
+    },
+    "ravens_2012": {
+      "abbreviation": "BAL",
+      "asset_code": "02",
+      "city": "Baltimore",
+      "nickname": "Ravens",
+      "retail_same_season": null,
+      "season": 2012,
+      "selector": "ravens",
+      "template": "h-02-2000-ravens-0.iff"
+    },
+    "saints_2009": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2009,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2010": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2011": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "saints_2017": {
+      "abbreviation": "NO",
+      "asset_code": "17",
+      "city": "New Orleans",
+      "nickname": "Saints",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "saints",
+      "template": "h-17-2000-saints-2.iff"
+    },
+    "seahawks_2010": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff"
+    },
+    "seahawks_2014": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff"
+    },
+    "steelers_2008": {
+      "abbreviation": "PIT",
+      "asset_code": "22",
+      "city": "Pittsburgh",
+      "nickname": "Steelers",
+      "retail_same_season": null,
+      "season": 2008,
+      "selector": "steelers",
+      "template": "h-22-1995-steelers-0.iff"
+    },
+    "titans_1999": {
+      "abbreviation": "TEN",
+      "asset_code": "28",
+      "city": "Tennessee",
+      "nickname": "Titans",
+      "retail_same_season": "h-28-1999-titans-0.iff",
+      "season": 1999,
+      "selector": "titans",
+      "template": "h-28-1999-titans-0.iff"
+    },
+    "vikings_1998": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": "h-15-1998-vikings-0.iff",
+      "season": 1998,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    },
+    "vikings_2017": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    },
+    "vikings_2022": {
+      "abbreviation": "MIN",
+      "asset_code": "15",
+      "city": "Minnesota",
+      "nickname": "Vikings",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "vikings",
+      "template": "h-15-1998-vikings-0.iff"
+    }
+  }
+}

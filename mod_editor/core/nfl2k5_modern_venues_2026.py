@@ -301,7 +301,7 @@ def _rgba(data):
         return np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
 
 
-def resample(rgba, width, height):
+def resample(rgba, width, height, *, smooth=False):
     """RGBA uint8 array resized to (height, width, 4), premultiplied so clear edges do not darken."""
     import numpy as np
     from PIL import Image
@@ -310,7 +310,7 @@ def resample(rgba, width, height):
     a = rgba.astype(np.float64) / 255.0
     pre = np.concatenate([a[..., :3] * a[..., 3:4], a[..., 3:4]], axis=-1)
     down = width <= rgba.shape[1] and height <= rgba.shape[0]
-    method = Image.Resampling.BOX if down else Image.Resampling.BICUBIC
+    method = Image.Resampling.LANCZOS if smooth else (Image.Resampling.BOX if down else Image.Resampling.BICUBIC)
     channels = [np.asarray(Image.fromarray(np.float32(pre[..., c])).resize((width, height), method), dtype=np.float64)
                 for c in range(4)]
     out = np.stack(channels, axis=-1).clip(0.0, 1.0)
@@ -543,6 +543,11 @@ def load_art(root):
             require(rgba.shape[:2] == (height, width), f"{path}: item {key}: the PNG is {rgba.shape[1]}x{rgba.shape[0]}, "
                     f"the manifest says {width}x{height}")
             master = None
+            native_from_master = raw.get("native_from_master", False)
+            require(type(native_from_master) is bool,
+                    f"{path}: item {key}: native_from_master must be a boolean")
+            require(not native_from_master or (raw.get("master") and raw.get("master_sha256")),
+                    f"{path}: item {key}: native_from_master needs a hash-pinned master")
             if raw.get("master"):
                 candidate = (base / raw["master"]).resolve()
                 if candidate.is_file():
@@ -550,6 +555,8 @@ def load_art(root):
                         require(sha(candidate.read_bytes()) == raw["master_sha256"],
                                 f"{path}: item {key}: {raw['master']} differs from its manifest SHA-256")
                     master = str(candidate)
+            require(not native_from_master or master is not None,
+                    f"{path}: item {key}: the selected master is missing")
             rects = raw.get("rects")
             if rects is None and scene == "stadium" and layer == "full":
                 rects = slots.get(key)
@@ -557,11 +564,67 @@ def load_art(root):
                 rects = [list(map(int, r)) for r in rects]
                 require(rects and _rects_ok(rects, width, height), f"{path}: item {key}: rects must lie inside {width}x{height}")
             items.append(dict(scene=scene, key=key, layer=layer, size=[width, height], rgba=rgba, master=master,
-                              rects=rects, sha256=raw["sha256"], source="team"))
+                              rects=rects, sha256=raw["sha256"], source="team",
+                              **(dict(native_from_master=True, master_sha256=raw["master_sha256"])
+                                 if native_from_master else {})))
         require(items, f"{path}: the manifest has no items")
         digest = sha(json.dumps([[i["scene"], i["key"], i["layer"], i["sha256"], i["rects"]] for i in items],
                                 sort_keys=True).encode("utf-8"))
-        out[prefix] = dict(prefix=prefix, team=doc.get("team"), manifest=str(path), digest=digest, items=items)
+        selected = [[i["scene"], i["key"], i["master_sha256"]]
+                    for i in items if i.get("native_from_master")]
+        if selected:
+            digest = sha(json.dumps([digest, selected], sort_keys=True).encode("utf-8"))
+        placement = doc.get("mercedes_midfield_scale", 1.0)
+        require(type(placement) in (int, float) and 0.5 <= placement <= 2.0,
+                f"{path}: mercedes_midfield_scale must be a number from 0.5 to 2.0")
+        require(placement == 1.0 or prefix == "s01", f"{path}: midfield placement belongs to Mercedes-Benz s01")
+        if placement != 1.0:
+            digest = sha(json.dumps([digest, placement]).encode("utf-8"))
+        placement_xz = doc.get("midfield_scale_xz")
+        if placement_xz is not None:
+            require(prefix == "s27" and isinstance(placement_xz, list) and len(placement_xz) == 2
+                    and all(type(v) in (int, float) and 1.0 <= v <= 2.0 for v in placement_xz),
+                    f"{path}: midfield_scale_xz needs two reviewed s27 scale values from 1.0 to 2.0")
+            placement_xz = list(map(float, placement_xz))
+            digest = sha(json.dumps([digest, "midfield_scale_xz", placement_xz]).encode("utf-8"))
+        endzone_turf = doc.get("endzone_turf_from_field", False)
+        require(type(endzone_turf) is bool, f"{path}: endzone_turf_from_field must be a boolean")
+        if endzone_turf:
+            require(prefix in {"s27", "s29"}, f"{path}: field turf donor is reviewed only for s27/s29")
+            required = set(FIELD_KEYS[:-1] if prefix == "s27" else FIELD_KEYS[:3])
+            require(required <= {i["key"] for i in items if i["scene"] == "field"},
+                    f"{path}: field turf donor needs " +
+                    ("all six end-zone panels" if prefix == "s27" else "all three shared North end-zone panels"))
+            digest = sha((digest + ":endzone_turf_from_field").encode("ascii"))
+        midfield = doc.get("add_missing_midfield", False)
+        require(type(midfield) is bool, f"{path}: add_missing_midfield must be a boolean")
+        if midfield:
+            from . import nfl2k5_midfield_art as midfield_art
+            require(prefix in midfield_art.HALF_EXTENTS, f"{path}: missing midfield placement is not reviewed for {prefix}")
+            require(any(i["scene"] == "field" and i["key"] == "center_logo" for i in items),
+                    f"{path}: add_missing_midfield needs center_logo art")
+            digest = sha((digest + ":add_missing_midfield").encode("ascii"))
+        split_endzones = doc.get("split_shared_endzones", False)
+        require(type(split_endzones) is bool, f"{path}: split_shared_endzones must be a boolean")
+        if split_endzones:
+            from . import nfl2k5_split_endzone_art as endzone_art
+            require(prefix in endzone_art.VENUES, f"{path}: end-zone split is not reviewed for {prefix}")
+            supplied = {i["key"] for i in items if i["scene"] == "field"}
+            require(set(FIELD_KEYS[:-1]) <= supplied,
+                    f"{path}: split_shared_endzones needs all six end-zone panels")
+            digest = sha((digest + ":split_shared_endzones").encode("ascii"))
+        prefix_loan = doc.get("field_prefix_loan", False)
+        require(type(prefix_loan) is bool, f"{path}: field_prefix_loan must be a boolean")
+        if prefix_loan:
+            from . import nfl2k5_split_endzone_art as endzone_art
+            require(split_endzones and prefix in endzone_art.LOAN_VENUES,
+                    f"{path}: field_prefix_loan needs a reviewed independent-end venue")
+            digest = sha((digest + ":field_prefix_loan").encode("ascii"))
+        out[prefix] = dict(prefix=prefix, team=doc.get("team"), manifest=str(path), digest=digest, items=items,
+                           mercedes_midfield_scale=placement, add_missing_midfield=midfield,
+                           split_shared_endzones=split_endzones, field_prefix_loan=prefix_loan,
+                           **(dict(midfield_scale_xz=placement_xz) if placement_xz is not None else {}),
+                           **(dict(endzone_turf_from_field=True) if endzone_turf else {}))
     return dict(venues=out, skipped=skipped, root=str(Path(root)), league=load_league_marks(root))
 
 
@@ -728,10 +791,14 @@ def plan_venue(prefix, art, bundles, league=None):
             key = item["key"]
             if key not in materials:
                 require(item.get("kind") != "field-logo", f"{prefix}: missing event field logo {key}")
+                if key == "center_logo" and art and art.get("add_missing_midfield"):
+                    notes.append("center_logo: the explicit manifest option adds the reviewed midfield overlay")
+                    continue
                 notes.append(f"{key}: this venue has no {key} texture (uncovered)")
                 continue
             index = materials[key]
-            if key.startswith("endzone_S_") and materials.get(key.replace("_S_", "_N_")) == index:
+            if (key.startswith("endzone_S_") and materials.get(key.replace("_S_", "_N_")) == index
+                    and not (art and art.get("split_shared_endzones"))):
                 notes.append(f"{key}: both end zones share one texture in this venue; the north art is used at both ends")
                 continue
             target = field_rows[index]
@@ -815,7 +882,139 @@ def plan_venue(prefix, art, bundles, league=None):
     for p in planned:
         rec, dec = decoded["dd"][p["dd"]["scene"]]
         base[(p["dd"]["scene"], p["dd"]["index"])] = read_texture(dec, rec, p8_rows(rec)[p["dd"]["index"]])
-    return dict(prefix=prefix, items=planned, notes=notes, uncovered=uncovered, base=base)
+    result = dict(prefix=prefix, items=planned, notes=notes, uncovered=uncovered, base=base)
+    if art and art.get("midfield_scale_xz"):
+        result["midfield_scale_xz"] = art["midfield_scale_xz"]
+    if art and art.get("endzone_turf_from_field"):
+        result["endzone_turf_from_field"] = True
+    if art and art.get("split_shared_endzones"):
+        result["split_shared_endzones"] = True
+    if art and art.get("field_prefix_loan"):
+        result["field_prefix_loan"] = True
+    if art and art.get("add_missing_midfield"):
+        result["missing_midfield"] = next(i for i in art["items"] if i["scene"] == "field" and i["key"] == "center_logo")
+    return result
+
+
+def _endzone_painter(name, plan, base):
+    """A full-resolution painter shared by fixed-span and prefix-loan routes."""
+    tx = _tools()[0]
+    def painter(decoded, system, video):
+        raw = tx.HEADER.pack(b"SCNE", len(decoded), system, video, 0, 0, 0, 0) + decoded
+        chunk = tx.parse_chunks(raw, allow_trailing=True)[0]
+        rec, check = _mm()._scene(raw, chunk)
+        require(check == decoded, "independent-end raw scene readback differs")
+        return paint_scene(decoded, rec, name[:3], code_of(name), plan, base, cap=256)
+    return painter
+
+
+def _split_shared_endzones(span, name, plan, base):
+    """Separate paint before weather/colour processing only when explicitly selected."""
+    if not plan.get("split_shared_endzones"):
+        return span, None
+    from . import nfl2k5_split_endzone_art as endzone_art
+    painter = _endzone_painter(name, plan, base)
+    return endzone_art.split_span(span, name, painter=painter)
+
+
+def field_prefix_loan_prefixes(art_root):
+    """Explicit source-manifest selections needing full normals in the final pass."""
+    return tuple(sorted(prefix for prefix, art in load_art(art_root)["venues"].items()
+                        if art.get("field_prefix_loan")))
+
+
+def field_normal_loan_prefixes(art_root):
+    """WAS's explicit clean donor keeps full surface detail within its bundle."""
+    art = load_art(art_root)
+    return tuple(prefix for prefix in ("s29",)
+                 if art["venues"].get(prefix, {}).get("endzone_turf_from_field"))
+
+
+def _prepare_field_prefix(data, name, plan, base, *, settings=None):
+    """Surface the selected field before fitting six complete painted textures.
+
+    Restore the retail end-zone samples before weather transfer and the outside
+    palette before its colour-link mask is evaluated. Snow's white outside
+    palette must not acquire the green pre-surface's extra vertex tint. Only the
+    normal's measured lossless storage savings fund the larger SCNE. Every
+    default route returns its original bytes.
+    """
+    if not plan.get("field_prefix_loan"):
+        return data, None
+    from . import nfl2k5_split_endzone_art as endzone_art
+    from . import nfl2k5_modern_surfaces as surfaces
+    from . import nfl2k5_scne_builder as sb
+    from . import nfl2k5_usbank_model as um
+    require(plan.get("split_shared_endzones") and name[:3] in endzone_art.LOAN_VENUES,
+            "field prefix allocation has not been reviewed for " + name[:3])
+    mm, tx = _mm(), _tools()[0]
+    surfaced, surface_receipt = surfaces.surface_bundle(data, name, indoor=name[:3] == "s09", colour_settings=settings,
+                                                        preserve_full_normal=True, full_detail=True)
+    old_chunk = mm.bundle_scenes(data)["field"]
+    old_decoded, _ = tx.decode_chunk(data, old_chunk)
+    original = sb.parse(old_decoded, old_chunk.system_bytes, secondary=True)
+    chunk = mm.bundle_scenes(surfaced)["field"]
+    rec, decoded = mm._scene(surfaced, chunk)
+    scene = sb.parse(decoded, chunk.system_bytes, secondary=True)
+    restored, indices = bytearray(decoded), set()
+    for (old_north, old_south), (north, south) in zip(endzone_art.pairs(original), endzone_art.pairs(scene)):
+        for old_material, material in ((old_north, north), (old_south, south)):
+            index = material.texture
+            if index in indices:
+                continue
+            old, target = original.textures[old_material.texture], scene.textures[index]
+            require((old.width, old.height, old.mips) == (target.width, target.height, target.mips),
+                    "pre-surface changed an end-zone allocation")
+            pix, pal = struct.unpack_from("<II", target.record, 4)
+            restored[chunk.system_bytes + pix:chunk.system_bytes + pix + len(old.pixels)] = old.pixels
+            restored[chunk.system_bytes + pal:chunk.system_bytes + pal + 1024] = old.palette
+            indices.add(index)
+    # Material-colour turf borrows the existing outside texture during the
+    # surface pass. Restore both original links and colour words so colour's
+    # field/outside mask and vertex shading see their ordinary inputs. The final
+    # surface pass borrows the same texture again, after colour has run once.
+    material_rows = {m["name"]: m for m in rec["materials"]}
+    texture_rows = {int(t["index"]): t for t in rec["embedded_textures"]}
+    for name_key in ("color_premipped", "grass_outside_premipped"):
+        old_material = original.materials[original.material_index(name_key)]
+        material = material_rows[name_key]
+        at = material["record_offset"]
+        restored[at + 0x14:at + 0x1C] = old_material.record[0x14:0x1C]
+        target = None if old_material.texture is None else texture_rows[old_material.texture]["descriptor_offset"]
+        struct.pack_into("<i", restored, at + 0x30, 0 if target is None else target - (at + 0x30) + 1)
+    old_outside = original.materials[original.material_index("grass_outside_premipped")].texture
+    outside = old_outside
+    if old_outside is not None:
+        old, target = original.textures[old_outside], scene.textures[outside]
+        require((old.width, old.height, old.mips) == (target.width, target.height, target.mips),
+                "pre-surface changed the outside allocation")
+        pal = struct.unpack_from("<I", target.record, 8)[0]
+        restored[chunk.system_bytes + pal:chunk.system_bytes + pal + 1024] = old.palette
+    restored_span, restore_fit = um.fit_keep_scratch(restored, chunk.system_bytes, chunk.video_bytes,
+                                                   mm.scene_span(surfaced, chunk))
+    surfaced = surfaced[:chunk.offset] + restored_span + surfaced[chunk.end_offset:]
+    prepared, receipt = endzone_art.split_bundle(surfaced, name, painter=_endzone_painter(name, plan, base))
+    # The normal surface step still owns divots and Fldd. Keep their current
+    # graded bytes until that final pass, which processes them once.
+    end = receipt["scope_size"]
+    prepared = prepared[:end] + data[end:]
+    return prepared, dict(receipt, pre_surface=surface_receipt,
+                          restored_weather_texture_indices=sorted(indices),
+                          restored_outside_palette_index=outside,
+                          restored_surface_materials=["color_premipped", "grass_outside_premipped"],
+                          restore_weather_fit=restore_fit)
+
+
+def _append_missing_midfield(span, name, plan):
+    """The explicit manifest opt-in; every unselected span is an exact no-op."""
+    item = plan.get("missing_midfield")
+    if item is None:
+        return span, None
+    from . import nfl2k5_midfield_art as midfield_art
+    if name[:3] == midfield_art.LOAN_PREFIX:
+        return span, None  # PIT's explicit option runs after the final surface writer.
+    logo = _art_at(item, 256, 256)
+    return midfield_art.append_span(span, name, logo)
 
 
 def variant_index(plan_item, code, rec):
@@ -841,14 +1040,14 @@ def variant_index(plan_item, code, rec):
 
 def _art_at(item, width, height):
     """The item's art at a texture size: the native PNG, or its 4x master (else the native) resampled."""
-    if (width, height) == tuple(item["size"]):
+    if (width, height) == tuple(item["size"]) and not item.get("native_from_master"):
         return item["rgba"]
     if item.get("master"):
         from PIL import Image
         import numpy as np
         with Image.open(item["master"]) as image:
             master = np.asarray(image.convert("RGBA"), dtype=np.uint8)
-        return resample(master, width, height)
+        return resample(master, width, height, smooth=bool(item.get("native_from_master")))
     return resample(item["rgba"], width, height)
 
 
@@ -931,7 +1130,7 @@ def clean_turf(rgba, neighbours=()):
     return result
 
 
-def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours=()):
+def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours=(), endzone_base=None):
     """One texture of one bundle: the authored dry-day art carried to this bundle's look.
 
     ``base`` is the retail dry-day texture (resized to this bundle's size), ``current`` the retail texture of
@@ -947,7 +1146,8 @@ def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours
         # 2004 marks filled in (clean_turf): rain and snow turf stay exactly retail (and compress like it), and
         # no old letters show through paint painted at less than full alpha.
         paint, _fits = mm.weather_transfer(base, current, art, snow=False)
-        return mm.composite_over(clean_turf(current, neighbours) if item["scene"] == "field" else current, paint)
+        background = (endzone_base if endzone_base is not None else clean_turf(current, neighbours)) if item["scene"] == "field" else current
+        return mm.composite_over(background, paint)
     sx, sy = width / item["size"][0], height / item["size"][1]
     rects = item.get("rects") or [[0, 0, item["size"][0], item["size"][1]]]
     result = (current if canvas is None else canvas).copy()
@@ -958,6 +1158,44 @@ def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours
         piece, _fits = mm.weather_transfer(base, current, art, region=(y0, y1, x0, x1), snow=snow)
         result[y0:y1, x0:x1] = piece[y0:y1, x0:x1]
     return result
+
+
+def scale_existing_midfield(out, rec, prefix, scale_xz):
+    """Move only eight floats of Tampa Bay's private four-vertex centre quad.
+
+    The original centre/UV/draw ownership is checked before each write; callers
+    rebuilding from retail or repairing a pinned native field cannot compound
+    an already applied scale. Shape bounds cover the whole field and stay exact.
+    """
+    from . import nfl2k5_scne_builder as builder
+    from . import nfl2k5_sofi_model as stadium_model
+    require(prefix == "s27" and isinstance(scale_xz, (list, tuple)) and len(scale_xz) == 2
+            and all(type(v) in (int, float) and 1.0 <= v <= 2.0 for v in scale_xz),
+            "Existing midfield placement needs reviewed s27 x/z scales from 1.0 to 2.0")
+    import struct
+    shape = stadium_model._field_shape(rec, "D_graphic_overlays")
+    ids = stadium_model._submesh_vertices(rec, out, shape, "center_logo")
+    require(len(ids) == 4, "Existing midfield overlay must use exactly four vertices")
+    for sub in rec["submeshes"]:
+        if sub["shape_index"] == shape["index"] and sub["material_name"] != "center_logo":
+            start = sub["command_offset"]
+            words = bytes(out[start:start + 4*sub["primary_command_word_count"]])
+            others = {i for _mode, indices in builder.decode_words(words) for i in indices}
+            require(not others.intersection(ids), "Midfield vertices are shared with another draw")
+    stream = stadium_model._stream(shape, 0)
+    positions = []
+    for index in sorted(ids):
+        at = stream["offset"] + stream["stride"]*index
+        x, y, z = struct.unpack_from("<3f", out, at)
+        require(abs(abs(x)-423.2652893066406) < .01 and abs(abs(z)-457.5841064453125) < .01
+                and abs(y) < .01, "Existing midfield quad differs from the reviewed original placement")
+        positions.append((at, x, z))
+    ranges = []
+    for at, x, z in positions:
+        struct.pack_into("<f", out, at, x*scale_xz[0])
+        struct.pack_into("<f", out, at+8, z*scale_xz[1])
+        ranges.extend([(at, at+4), (at+8, at+12)])
+    return ranges
 
 
 def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
@@ -973,6 +1211,12 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
     rows = p8_rows(rec)
     endzones = {key: read_texture(decoded, rec, rows[index])
                 for key, index in rows_by_material(rec).items() if key.startswith("endzone_")} if scene == "field" else {}
+    turf_donor = None
+    if scene == "field" and plan.get("endzone_turf_from_field"):
+        require(prefix in {"s27", "s29"}, "Field turf donor belongs to reviewed s27/s29 end zones")
+        index = rows_by_material(rec).get("color_premipped")
+        require(index is not None, "Field turf donor texture is missing")
+        turf_donor = clean_turf(read_texture(decoded, rec, rows[index]))
     receipt = dict(scene=scene, textures=[], skipped=[], palette_cap=cap)
     groups = {}
     for item in plan["items"]:
@@ -999,13 +1243,20 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
             layered = compose(item, dry, current, _art_at(item, width, height), code[1],
                               cls=(target or {}).get("class"), canvas=canvas,
                               neighbours=tuple(a for key, a in endzones.items()
-                                               if key != item["key"] and key.rsplit("_", 1)[0] == item["key"].rsplit("_", 1)[0]))
+                                               if key != item["key"] and key.rsplit("_", 1)[0] == item["key"].rsplit("_", 1)[0]),
+                              endzone_base=(resample(turf_donor, width, height)
+                                            if turf_donor is not None and item["key"].startswith("endzone_") else None))
             canvas = layered
             applied.append(dict(key=item["key"], source=item.get("source", "team"), layer=item["layer"],
                                 mark=item.get("mark")))
         colours = mm.write_p8(edited, system, row, canvas, cap)
         receipt["textures"].append(dict(key=applied[-1]["key"], texture=index, size=[width, height], items=applied,
                                         palette_entries=colours))
+    if scene == "field" and plan.get("midfield_scale_xz"):
+        receipt["midfield_position_ranges"] = scale_existing_midfield(edited, rec, prefix, plan["midfield_scale_xz"])
+        receipt["midfield_scale_xz"] = list(plan["midfield_scale_xz"])
+    if turf_donor is not None:
+        receipt["endzone_background"] = "cleaned same-variant color_premipped; source texture unchanged"
     return bytes(edited), receipt
 
 
@@ -1015,10 +1266,21 @@ def modern_scene_span(data, chunk, prefix, code, plan, base):
     tx = _tools()[0]
     rec, decoded = mm._scene(data, chunk)
     span = mm.scene_span(data, chunk)
+    split_receipt = None
+    if rec.get("name") == "field":
+        span, split_receipt = _split_shared_endzones(span, prefix + code + ".iff", plan, base)
+        if split_receipt and split_receipt.get("added"):
+            return span, dict(split_receipt["paint"], refit=True, split_endzones=split_receipt)
     attempts = []
-    for cap in mm.PALETTE_CAPS:
+    for cap in ((256,) if plan.get("split_shared_endzones") else mm.PALETTE_CAPS):
         edited, receipt = paint_scene(decoded, rec, prefix, code, plan, base, cap=cap)
+        if split_receipt is not None:
+            receipt["split_endzones"] = split_receipt
         if edited == decoded:
+            if rec.get("name") == "field":
+                span, midfield = _append_missing_midfield(span, prefix + code + ".iff", plan)
+                if midfield is not None:
+                    receipt["midfield"] = midfield
             return span, dict(receipt, refit=False)
         try:
             rebuilt, info = mm.fit_span(span, edited)
@@ -1028,6 +1290,10 @@ def modern_scene_span(data, chunk, prefix, code, plan, base):
         check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
         require(check == edited, f"{prefix}{code} {rec.get('name')}: refit read-back differs")
         require(rebuilt[:32] == span[:32], f"{prefix}{code} {rec.get('name')}: the refit changed the retail wrapper")
+        if rec.get("name") == "field":
+            rebuilt, midfield = _append_missing_midfield(rebuilt, prefix + code + ".iff", plan)
+            if midfield is not None:
+                receipt["midfield"] = midfield
         return rebuilt, dict(receipt, refit=True, fit_attempts=attempts, **info)
     raise ModernVenuesError(f"{prefix}{code} {rec.get('name')} does not fit its span: " + " | ".join(attempts))
 
@@ -1036,19 +1302,30 @@ def modern_bundle(data, name, plan, base):
     """(modern bundle bytes, edits) for one retail venue bundle."""
     mm = _mm()
     prefix, code = name[:3], code_of(name)
+    original_data = data
+    data, prefix_receipt = _prepare_field_prefix(data, name, plan, base)
     out = bytearray(data)
     edits = []
     scenes_used = {i["dd"]["scene"] for i in plan["items"]}
+    if plan.get("missing_midfield") is not None:
+        scenes_used.add("field")
     for scene, chunk in sorted(bundle_scenes(data).items(), key=lambda kv: kv[1].offset):
         if scene not in scenes_used:
             continue
         before = mm.scene_span(data, chunk)
-        after, receipt = modern_scene_span(data, chunk, prefix, code, plan, base)
+        if scene == "field" and prefix_receipt is not None:
+            after = before
+            receipt = dict(prefix_receipt.get("paint") or {}, refit=True, split_endzones=prefix_receipt)
+        else:
+            after, receipt = modern_scene_span(data, chunk, prefix, code, plan, base)
         require(len(after) == len(before), f"{name} {scene}: refit escaped its allocation")
-        if after == before:
+        if after == before and not (scene == "field" and prefix_receipt is not None):
             continue
         out[chunk.offset:chunk.offset + len(before)] = after
-        edits.append(dict(kind=scene, offset=chunk.offset, size=len(before), retail=sha(before), applied=sha(after),
+        offset, size = ((0, prefix_receipt["scope_size"]) if scene == "field" and prefix_receipt is not None
+                        else (chunk.offset, len(before)))
+        edits.append(dict(kind=scene, offset=offset, size=size,
+                          retail=sha(original_data[offset:offset + size]), applied=sha(bytes(out[offset:offset + size])),
                           detail={k: v for k, v in receipt.items() if k != "weather_fit"}))
     return bytes(out), edits
 
@@ -1060,23 +1337,36 @@ def combined_bundle(retail, graded, name, plan, base, *, outer_index, settings=N
     tx = _tools()[0]
     require(len(retail) == len(graded), "combined bundle changed allocation")
     prefix, code = name[:3], code_of(name)
+    original_retail = retail
+    retail, prefix_receipt = _prepare_field_prefix(retail, name, plan, base, settings=settings)
     out = bytearray(graded)
     edits = []
+    if prefix_receipt is not None:
+        end = prefix_receipt["scope_size"]
+        out[:end] = retail[:end]
     scenes_used = {i["dd"]["scene"] for i in plan["items"]}
+    if plan.get("missing_midfield") is not None:
+        scenes_used.add("field")
     for scene, chunk in sorted(bundle_scenes(retail).items(), key=lambda kv: kv[1].offset):
         if scene not in scenes_used:
             continue
         before = mm.scene_span(retail, chunk)
         if scene == "field":
+            if prefix_receipt is not None:
+                template, split_receipt = before, prefix_receipt
+            else:
+                template, split_receipt = _split_shared_endzones(before, name, plan, base)
             attempts = []
-            for cap in mm.PALETTE_CAPS:
+            for cap in ((256,) if plan.get("split_shared_endzones") else mm.PALETTE_CAPS):
                 def painter(span, field_chunk, cap=cap):
                     rec, decoded = mm._scene(span, field_chunk)
                     return paint_scene(decoded, rec, prefix, code, plan, base, cap=cap)
                 try:
-                    after, detail = colour.modern_field_scene(before, outer_index=outer_index, settings=settings,
-                                                              painter=painter)
+                    after, detail = colour.modern_field_scene(template, outer_index=outer_index, settings=settings,
+                                                              painter=None if split_receipt and split_receipt.get("added") else painter)
                     detail = dict(detail, palette_cap=cap, fit_attempts=attempts)
+                    if split_receipt is not None:
+                        detail["split_endzones"] = split_receipt
                     break
                 except (tx.TxtrError, ValueError) as exc:
                     attempts.append(f"{cap} colours: {exc}")
@@ -1086,9 +1376,16 @@ def combined_bundle(retail, graded, name, plan, base, *, outer_index, settings=N
             require(graded[chunk.offset:chunk.offset + len(before)] == before,
                     f"{name} {scene}: the colour grade touched a scene it does not own")
             after, detail = modern_scene_span(retail, chunk, prefix, code, plan, base)
+        if scene == "field":
+            after, midfield = _append_missing_midfield(after, name, plan)
+            if midfield is not None:
+                detail["midfield"] = midfield
         require(len(after) == len(before), f"{name} {scene}: combined scene escaped its allocation")
         out[chunk.offset:chunk.offset + len(before)] = after
-        edits.append(dict(kind=scene, offset=chunk.offset, size=len(before), retail=sha(before), applied=sha(after),
+        offset, size = ((0, prefix_receipt["scope_size"]) if scene == "field" and prefix_receipt is not None
+                        else (chunk.offset, len(before)))
+        edits.append(dict(kind=scene, offset=offset, size=size,
+                          retail=sha(original_retail[offset:offset + size]), applied=sha(bytes(out[offset:offset + size])),
                           detail={k: v for k, v in detail.items() if k != "weather_fit"}))
     return bytes(out), edits
 

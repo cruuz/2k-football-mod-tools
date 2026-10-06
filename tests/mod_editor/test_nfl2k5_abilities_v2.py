@@ -29,6 +29,26 @@ except ImportError:
 
 
 class AssignmentTests(unittest.TestCase):
+    def test_assignment_and_masked_undo_preserve_unedited_commentary(self):
+        raw = bytearray(league_body(53))
+        for player in rr.load_body(bytes(raw)).players:
+            struct.pack_into("<H", raw, player.offset + rr.FIELD_BY_NAME["pbp_id"].offset, 0)
+        before = bytes(raw)
+        doc = rr.load_body(before)
+        self.assertEqual(doc.to_body(), before)
+        plan = editor.plan_auto_assign(doc, top_n=4)
+        editor.apply_plan(doc, plan, require_fresh=True)
+        after = doc.to_body()
+        self.assertNotEqual(after, before)
+        owned = {player.offset + lane for player in doc.players for lane in (82, 83)}
+        self.assertTrue(all(i in owned for i, (a, b) in enumerate(zip(before, after)) if a != b))
+        self.assertTrue(all(player.record.get("pbp_id") == 0 for player in doc.players))
+        editor.apply_plan(doc, plan, reverse=True)
+        self.assertEqual(doc.to_body(normalise_commentary=False), before)
+        self.assertEqual(doc.to_body(), before)
+        editor.apply_plan(doc, plan)
+        self.assertEqual(doc.to_body(), after)
+
     def test_tier_masks_preserve_every_neighbor_value(self):
         for low, high, tier in itertools.product((0, 0x1f, 0xff), range(256), range(4)):
             raw = bytes(82) + bytes((low, high))

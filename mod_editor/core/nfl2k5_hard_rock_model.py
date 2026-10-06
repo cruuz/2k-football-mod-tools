@@ -955,7 +955,7 @@ def adjust_digits(shape, sc, model):
                 zs = 1 if n % 2 == 0 else -1
                 side = -1 if mname.endswith("_L") else 1
                 wall_z = model.p["loop"]["zs"] if zs > 0 else model.p["loop"]["zn"]
-                centre = np.array([side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
+                centre = np.array([-side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
                 sm._place_quad(P, UV, quad, centre, np.array([-zs, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]), 0.75, 1.1)
             else:
                 s_ = strips[n % 2]
@@ -1264,8 +1264,11 @@ def team_field_art(art_root):
     venue = art["venues"].get(VENUE)
     if venue is None:
         return {}
-    return {item["key"]: np.asarray(item["rgba"]) for item in venue["items"]
-            if item.get("scene") == "field" and item.get("key") in TEAM_FIELD}
+    from . import nfl2k5_midfield_art as midfield_art
+    result = midfield_art.TeamField({item["key"]: np.asarray(item["rgba"]) for item in venue["items"]
+                                   if item.get("scene") == "field" and item.get("key") in TEAM_FIELD})
+    result.add_missing_midfield = venue.get("add_missing_midfield", False)
+    return result
 
 
 def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False):
@@ -1446,9 +1449,13 @@ def field_span(bundle, name, *, team=None, colour_settings=None, outer_index=0):
                 rec, dec = ml._scene(bundle, chunk)
                 after, detail = ml.fit_span(span, paint_field(dec, rec, chunk.system_bytes, weather, team=team, cap=cap,
                                                               half=half))
+            midfield = None
+            if getattr(team, "add_missing_midfield", False):
+                from . import nfl2k5_midfield_art as midfield_art
+                after, midfield = midfield_art.append_span(after, name, team["center_logo"])
             sb.require(len(after) == len(span), f"{name}: the field escaped its span")
             return after, dict(palette_cap=cap, half_detail=half, fit_attempts=attempts, colour=colour_settings is not None,
-                               team_art=sorted(team or {}),
+                               team_art=sorted(team or {}), midfield=midfield,
                                **{k: v for k, v in (detail or {}).items() if k in ("encoder", "fill", "padding_bytes")})
         except (tx.TxtrError, ValueError) as exc:
             attempts.append(f"{rung}: {exc}")

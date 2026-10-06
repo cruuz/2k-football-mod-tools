@@ -344,10 +344,12 @@ class Catalog:
                     raise Espn25Error("jersey: expected 0..99") from exc
         require(seen, "CSV has no player rows")
         document = self.roster_document(moment, side)  # isolated; partial codec errors never escape
-        receipt = rr.import_csv(document, value, delimiter=",")
+        # Historic CSV owns only its declared fields and name pool. The
+        # commentary word stays protected; defer the generic save normalizer.
+        receipt = rr.import_csv(document, value, delimiter=",", normalise_commentary=False)
         require(not receipt["log"] and receipt["rows"] == len(seen), "CSV refused: " + "; ".join(receipt["log"]))
         index = self.binding(moment, side)["outer"]
-        raw = self.resource(index)[:32] + document.to_body()
+        raw = self.resource(index)[:32] + document.to_body(normalise_commentary=False)
         self.validate_roster(index, raw)
         return raw, receipt
 

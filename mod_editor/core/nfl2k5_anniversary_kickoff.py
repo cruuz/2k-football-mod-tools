@@ -87,6 +87,14 @@ SAVE_ENTRIES = 8
 SAVE_ENTRY = 4 + 88
 
 GATE_CMP = b"\x83\x3d" + struct.pack("<I", MODE_VA) + bytes((ANNIVERSARY_MODE,))   # cmp dword [MODE], 8
+MODERN_MOMENT = 50                 # physical identity of the 2025 Unc Bowl; menu order is mapped separately
+MOMENT_VA = 0xBF1858
+ERA_TEST_OFFSET = CODE_SIZE - 48
+# Return ZF set for a historical Anniversary row, clear for every other game.
+# EAX and the caller's flags survive the surrounding pushfd/popfd trampoline.
+ERA_TEST = (b'\x50\xa1' + struct.pack('<I', MODE_VA) + b'\x83\xf8\x08\x75\x11'
+            + b'\x83\x3d' + struct.pack('<I', MOMENT_VA) + bytes((MODERN_MOMENT,))
+            + b'\x75\x05\xb8\x09\x00\x00\x00\x83\xf8\x08\x58\xc3')
 KICK_FLAGS_KEY = "_kick_flags"     # forwards entry: the dynamic kickoff's state byte (E1 reads the kicking direction)
 
 
@@ -420,10 +428,30 @@ def _patch_pointers(code, labels, tables):
     return bytes(buf)
 
 
-def build_code(code_va, data_va, forwards, touchback, tables, *, e1=False):
+def build_code(code_va, data_va, forwards, touchback, tables, *, e1=False, legacy=False):
     code, labels = code_for(code_va, data_va, forwards, touchback, tables, e1=e1)
     require(labels["k_launch"] == code_va, "the first trampoline must open the allocation")
-    return _patch_pointers(code, labels, tables), labels
+    code = _patch_pointers(code, labels, tables)
+    if not legacy:
+        require(len(code.rstrip(b'\xcc')) <= ERA_TEST_OFFSET, 'modern Anniversary condition exceeds owner space')
+        buf = bytearray(code)
+        cursor = 0
+        tests = 0
+        while (at := code.find(GATE_CMP, cursor, labels['shadow_kickoff']-code_va)) >= 0:
+            buf[at:at+7] = b'\xe8' + struct.pack('<i', ERA_TEST_OFFSET - at - 5) + b'\x90\x90'
+            cursor = at + 7
+            tests += 1
+        require(tests == 26, 'Anniversary condition count differs')
+        buf[ERA_TEST_OFFSET:ERA_TEST_OFFSET+len(ERA_TEST)] = ERA_TEST
+        code = bytes(buf)
+    return code, labels
+
+
+def _gate_test(image, raw, at, owner_va):
+    if raw == GATE_CMP:
+        return True
+    wanted = b'\xe8' + struct.pack('<i', owner_va + ERA_TEST_OFFSET - at - 5) + b'\x90\x90'
+    return raw == wanted and image.read(owner_va + ERA_TEST_OFFSET, len(ERA_TEST)) == ERA_TEST
 
 
 # --------------------------------------------------------------------------------------------- sites
@@ -463,7 +491,7 @@ def _kickoff_view(image, lo, hi, name, va, original):
     if not lo <= t < hi:
         return None
     body = _read(image, t, 17)
-    if body[:1] != b"\x9c" or body[1:8] != GATE_CMP or body[8:11] != b"\x74\x06\x9d" or body[11] != 0xE9 or body[16] != 0x9D:
+    if body[:1] != b"\x9c" or not _gate_test(image, body[1:8], t+1, lo) or body[8:11] != b"\x74\x06\x9d" or body[11] != 0xE9 or body[16] != 0x9D:
         return None
     forward = t + 16 + struct.unpack_from("<i", body, 12)[0]
     if lo <= forward < hi:
@@ -489,7 +517,7 @@ def _fmul_view(image, lo, hi, va):
     if not lo <= t < hi:
         return None
     body = _read(image, t, 26)
-    if body[:1] != b"\x9c" or body[1:8] != GATE_CMP or body[8:11] != b"\x74\x08\x9d" or body[11:13] != b"\xd8\x0d" \
+    if body[:1] != b"\x9c" or not _gate_test(image, body[1:8], t+1, lo) or body[8:11] != b"\x74\x08\x9d" or body[11:13] != b"\xd8\x0d" \
             or body[17] != 0xC3 or body[18] != 0x9D or body[19:21] != b"\xd8\x0d" or body[25] != 0xC3:
         return None
     return b"\xd8\x0d" + body[13:17]
@@ -503,7 +531,7 @@ def _touchback_view(image, lo, hi, va):
     if not lo <= t < hi:
         return None
     body = _read(image, t, 24)
-    if body[:1] != b"\x9c" or body[1:8] != GATE_CMP or body[8:11] != b"\x74\x06\x9d" or body[11] != 0xE9 \
+    if body[:1] != b"\x9c" or not _gate_test(image, body[1:8], t+1, lo) or body[8:11] != b"\x74\x06\x9d" or body[11] != 0xE9 \
             or body[16] != 0x9D or body[17:19] != b"\xd8\x0d" or body[23] != 0xC3:
         return None
     forward = t + 16 + struct.unpack_from("<i", body, 12)[0]
@@ -644,7 +672,7 @@ def status(payload):
             except AnniversaryKickoffError:
                 continue
             expected, labels = build_code(code["va"], data["va"], forwards, touchback, tables, e1=e1)
-            if body != expected:
+            if body not in (expected, build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, legacy=True)[0]):
                 continue
             for label, va, before, after in _site_edits(base, labels):
                 if image.read(va, len(after)) != after:
@@ -668,7 +696,8 @@ def installed_blocking(payload):
             tables = _tables_from_code(body, code["va"], e1)
         except AnniversaryKickoffError:
             continue
-        if build_code(code["va"], data["va"], forwards, touchback, tables, e1=e1)[0] == body:
+        if body in tuple(build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, legacy=old)[0]
+                         for old in (False, True)):
             return e1
     return None
 
@@ -725,7 +754,36 @@ def apply(payload, tables, *, blocking=False):
         require(installed_blocking(payload) is blocking,
                 "an installed 25th Anniversary gate has the other return-blocking setting; rebuild from base")
         require(installed_tables(payload) == tables, "an installed 25th Anniversary gate carries different disc data; rebuild")
-        return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+        code, data = _owned(payload)
+        if payload[code['raw']+ERA_TEST_OFFSET:code['raw']+ERA_TEST_OFFSET+len(ERA_TEST)] == ERA_TEST:
+            return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+        # Exact legacy code was recognized above. Keep every hook address and
+        # table pointer, including era_rules' wrappers, and replace only tests.
+        from . import nfl2k5_era_rules as era
+        view = era.underlying_view(payload)
+        base = _ungated(view, gate_views(view))
+        forwards, touchback = _forwards(base)
+        old, _ = build_code(code['va'], data['va'], forwards, touchback, tables, e1=blocking, legacy=True)
+        new, _ = build_code(code['va'], data['va'], forwards, touchback, tables, e1=blocking)
+        buf = bytearray(payload)
+        edits = []
+        for at, (before, after) in enumerate(zip(old, new)):
+            if before != after:
+                require(buf[code['raw']+at] == before, 'foreign legacy Anniversary condition')
+                buf[code['raw']+at] = after
+                edits.append(code['raw']+at)
+        if space.is_scaleout(payload):
+            space._seal_scaleout(buf, space._read_scale_directory(payload))
+        else:
+            requests = space._validate(payload)[2]
+            buf[space.DIRECTORY:space._directory_end(requests)] = space._directory(requests, space._code_bytes(buf, requests))
+        for section in _sections(buf):
+            buf[section.header_offset+36:section.header_offset+56] = section_digest(buf, section)
+        result = bytes(buf)
+        require(status(result) == 'applied' and _kickoff().status(result) == 'applied'
+                and _kick_rules().status(result) == 'applied', 'modern Anniversary gate upgrade postcondition')
+        return result, dict(common, status='upgraded', modern_moment=MODERN_MOMENT,
+                            changed_bytes=sum(a!=b for a,b in zip(payload,result)), owned_changed_offsets=edits)
     _prerequisites(payload)
     forwards, touchback = _forwards(payload)
     image = XbeImage(payload)

@@ -1,10 +1,9 @@
-"""Coach's Desk Practice Squad destination. EXPERIMENTAL / UNWITNESSED.
+"""Retire the incomplete Coach's Desk Practice Squad destination.
 
-Clones the Team Rosters sheet with Active/Reserves pages and a single move
-plus Cancel. Uses the shipped native transactions, including salary and slot
-repair. No poaching, protection, new save fields, or global roster callbacks.
-Reserve REQUESTS with the entire selected allocator union before applying.
-Tables are immutable RX content within the 4096-byte budget; state is RW.
+The original sealed callbacks/tables remain for compatibility, while the desk
+points to the existing Schedule/Practice/Crib table. Final cuts release to FA.
+Reserve REQUESTS with the selected allocator union on a fresh build. Native
+repairs of installed screens change only the caller/menu pointer and digests.
 """
 from __future__ import annotations
 
@@ -24,11 +23,11 @@ CODE_SIZE = 4096
 DATA_SIZE = 256
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: Coach's Desk has no reserve list or move actions. "
-    "Patch: Practice Squad replaces The Crib on Coach's Desk with Active and Reserves "
-    "pages, Demote and Promote. Keep up to 53 active players. Larger reserves "
-    "require the separate roster growth patch and a migrated save. "
-    "Trophy Room remains on the main menu. CPU poaching and protection are off."
+    "Retail: Franchise has no practice-squad phase. Patch: Removes the incomplete "
+    "Practice Squad destination and restores The Crib on Coach's Desk. Final cuts "
+    "release players to free agency. Existing reserve ownership and save storage "
+    "are preserved; use the Studio save tools for those reserves. Modern practice "
+    "squad eligibility and CPU signings are unavailable. Offline checked; gameplay unwitnessed."
 )
 TEMPLATES = {"descriptor": (0x555098, 48), "frame": (0x555070, 40),
              "sheet": (0x554C70, 320), "active_page": (0x554B58, 280),
@@ -192,7 +191,7 @@ def _owned_state(payload):
         _require(pointer in (original_pointer, prior_pointer), "screen hook with empty allocation")
         return "retail", code, data
     expected, labels = code_for(payload, code["va"], data["va"])
-    _require(blob == expected and pointer == struct.pack("<I", labels["menu"]),
+    _require(blob == expected and pointer in (struct.pack("<I", labels["menu"]), prior_pointer),
              "mixed/foreign Practice Squad screen code, tables or pointer")
     return "applied", code, data
 
@@ -217,16 +216,25 @@ def status(payload):
 
 
 def apply(payload):
+    original = payload
     state = status(payload)
     _require(state != "foreign", "foreign/mixed Practice Squad screen; refusing")
     _require(ps.status(payload) == pr.status(payload) == fp.status(payload) == "applied",
              "apply practice squads, Franchise Practice and practice reserves first")
+    payload, storage_receipt = ps.apply(payload)
     common = {"owner": OWNER, "experimental": True, "runtime_witnessed": False,
+              "screen_removed": True, "automatic_preseason_reserves": False,
+              "storage_compatibility": storage_receipt,
               "code_capacity": CODE_SIZE, "runtime_state_bytes": DATA_SIZE,
               "poaching": False, "protection": False, "save_growth": 0,
               "active_limit": 53, "reserve_limit": 12, "total_limit": 65}
     if state == "applied":
-        return payload, {**common, "already_applied": True, "changed_bytes": 0, "edits": []}
+        code, data = allocations(payload)
+        _, labels = code_for(payload, code["va"], data["va"])
+        result, receipt = rdata.apply(payload, [("retire_practice_squad_menu", fp.COACH_DESK_ROWS_PTR_VA,
+            struct.pack("<I", labels["menu"]), struct.pack("<I", fp.NEW_ROW_VA))], OWNER)
+        return result, {**common, **receipt, "already_applied": result == original,
+                        "changed_bytes": sum(a != b for a, b in zip(original, result))}
     if space.status(payload) == "retail":
         allocated, allocation_receipt = space.apply(payload, REQUESTS, scaleout=True)
     else:
@@ -235,10 +243,10 @@ def apply(payload):
     code, data = allocations(allocated)
     blob, labels = code_for(allocated, code["va"], data["va"])
     result, code_receipt = space.install_code(allocated, OWNER, blob)
-    before = struct.pack("<I", fp.NEW_ROW_VA)
-    after = struct.pack("<I", labels["menu"])
-    result, receipt = rdata.apply(result, [("practice_squad_menu", fp.COACH_DESK_ROWS_PTR_VA,
-                                           before, after)], OWNER)
+    # Franchise Practice already installed the complete Schedule/Practice/Crib
+    # table. Keep that pointer; the old screen allocation remains a sealed ABI
+    # for saves and prerequisite validators, with no navigation entry.
+    receipt = {"edits": []}
     _require(status(result) == "applied", "Practice Squad screen postcondition failed")
     return result, {**common, **receipt, "already_applied": False,
                     "allocation": allocation_receipt, "code_install": code_receipt,
@@ -246,7 +254,7 @@ def apply(payload):
                     "immutable_bytes": labels["content_end"] - code["va"] - len(assembly.CODE),
                     "labels": {k: hex(v) for k, v in labels.items()},
                     "reservations": space.reservations(result),
-                    "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload),
-                    "file_growth": len(result) - len(payload),
-                    "before_sha256": hashlib.sha256(payload).hexdigest(),
+                    "changed_bytes": sum(a != b for a, b in zip(original, result)) + len(result) - len(original),
+                    "file_growth": len(result) - len(original),
+                    "before_sha256": hashlib.sha256(original).hexdigest(),
                     "after_sha256": hashlib.sha256(result).hexdigest()}

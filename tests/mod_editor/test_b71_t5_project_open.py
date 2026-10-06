@@ -213,6 +213,60 @@ class BuildTests(unittest.TestCase):
             self.assertFalse(late.exists())
             self.assertEqual(project.read_bytes(),b'unchanged project')
 
+    def test_cancel_keeps_pipe_readers_as_the_only_pipe_owners(self):
+        from mod_editor.core.nfl2k5_build_service import SubprocessBuildCommandRunner
+        with tempfile.TemporaryDirectory() as folder:
+            ready = Path(folder) / 'ready'
+            script = ("import pathlib,sys,time; print('stdout',flush=True); "
+                      "print('stderr',file=sys.stderr,flush=True); "
+                      "pathlib.Path(sys.argv[1]).touch(); time.sleep(30)")
+            def cancel():
+                if ready.exists():
+                    raise BuildCancelled('original cancel')
+            # The old teardown called communicate while two drain threads
+            # already owned and closed the same descriptors, masking Cancel.
+            with patch.object(subprocess.Popen, 'communicate',
+                              side_effect=OSError(9, 'reader already closed pipe')):
+                with self.assertRaisesRegex(BuildCancelled, 'original cancel'):
+                    SubprocessBuildCommandRunner().run(
+                        [sys.executable, '-c', script, str(ready)], ROOT, poll=cancel)
+
+    @unittest.skipUnless(sys.platform.startswith('linux'), 'POSIX process-group teardown')
+    def test_reader_owned_group_is_stopped_after_direct_child_exits(self):
+        from unittest.mock import Mock
+        from mod_editor.core import nfl2k5_build_service as service
+        process = Mock(pid=12345)
+        process.poll.return_value = 0
+        process.wait.return_value = 0
+        with patch.object(service.os, 'killpg') as kill:
+            service.SubprocessBuildCommandRunner._stop_process_group(
+                process, pipes_drained_by_readers=True)
+        kill.assert_called_once_with(process.pid, service.signal.SIGTERM)
+        process.wait.assert_called_once_with(timeout=3)
+        process.communicate.assert_not_called()
+
+    def test_windows_job_teardown_leaves_pipes_to_the_readers(self):
+        from unittest.mock import Mock
+        from mod_editor.core import nfl2k5_build_service as service
+        process = Mock()
+        process.poll.return_value = 0
+        process.wait.return_value = 0
+        group = Mock()
+        group.active_process_count.return_value = 0
+        self.assertTrue(service.stop_windows_process_group(
+            process, group, pipes_drained_by_readers=True))
+        process.wait.assert_called_once_with(timeout=service.PROCESS_STOP_GRACE_SECONDS)
+        process.communicate.assert_not_called()
+        group.terminate.assert_called_once_with()
+        group.close.assert_called_once_with()
+
+    def test_reader_start_failure_preserves_original_error_and_stops_child(self):
+        from mod_editor.core.nfl2k5_build_service import SubprocessBuildCommandRunner
+        with patch.object(threading.Thread, 'start', side_effect=RuntimeError('reader unavailable')):
+            with self.assertRaisesRegex(RuntimeError, 'reader unavailable'):
+                SubprocessBuildCommandRunner().run(
+                    [sys.executable, '-c', 'import time; time.sleep(30)'], ROOT)
+
     def test_progress_cancel_is_not_swallowed(self):
         from mod_editor.core.nfl2k5_build_service import _emit, BuildStage
         def cancelled(event):

@@ -127,7 +127,10 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             "selected template descriptor layout differs from compatible class")
 
     clean_width, clean_height, clean_rgba, clean_png_sha = legacy.read_rgba_png(clean_png)
+    clean_payload = clean_png.read_bytes()
+    require(sha256_bytes(clean_payload) == clean_png_sha, "clean PNG changed before palette metadata was read")
     clean_mips = legacy.generate_mips(clean_rgba, clean_width, clean_height)
+    clean_mips, locked_colors = legacy.preserve_reserved_mips(clean_mips,legacy.png_palette_reservation(clean_payload))
     if mud_png is not None:
         require(mud_mode == "identity",
                 "--mud-png cannot be combined with a derived non-identity mud mode")
@@ -185,6 +188,8 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
         stream_tag=target.stream_tag,
         offset_bits=target.offset_bits,
         max_encoded_size=target.stored_size,
+        quantizer=(lambda levels,maximum:legacy.quantize_levels(levels,maximum,locked_colors=locked_colors)) if locked_colors else None,
+        minimum_palette_limit=next(n for n in reversed(legacy._BOUNDED_PALETTE_LIMITS) if n>=len(locked_colors)) if locked_colors else 2,
     )
     clean_palette = bounded.palette
     index_levels = bounded.index_levels

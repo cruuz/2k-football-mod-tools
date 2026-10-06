@@ -1801,6 +1801,34 @@
         "https://operations.nfl.com/media/nppjkdp1/2023-record-and-fact-book.pdf"
       ],
       "super_bowl_number": 58
+    },
+    {
+      "row": 51,
+      "id": "NFL_2025_regular",
+      "classification": "INFERRED",
+      "season": 2025,
+      "postseason": false,
+      "two_point_try": true,
+      "kickoff_yard": 35,
+      "free_kick_touchback_yard": 35,
+      "scrimmage_touchback_yard": 20,
+      "pat_kick_snap_yard": 15,
+      "two_point_snap_yard": 2,
+      "defensive_try_return": true,
+      "overtime": "both_possessions",
+      "overtime_minutes": 10,
+      "postseason_continues": false,
+      "kickoff_fair_catch_to_25": false,
+      "dynamic_kickoff": true,
+      "coin_toss_defer": true,
+      "incidental_facemask_5_yards": false,
+      "goalposts": "end line",
+      "hash_width_feet": 18.5,
+      "pass_contact": "five-yard restriction",
+      "sources": [
+        "https://operations.nfl.com/media/ntif5hxb/2025-nfl-rulebook-final.pdf"
+      ],
+      "super_bowl_number": 0
     }
   ],
   "retail_sites": {

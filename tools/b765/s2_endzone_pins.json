@@ -1,0 +1,1228 @@
+{
+  "schema": "b765_s2_independent_endzones/v1",
+  "source_rgba_sha256": {
+    "endzone_N_L": "8ee137d502989bc751faa5a237e2a920d521fbd9b678a27232c543325fdec972",
+    "endzone_N_M": "7e82f905a3c5168ef952058850e0f1cd070420d4e403250ffb4263b743088e8c",
+    "endzone_N_R": "208fa2ff83695c1e716ef4adda3d1eebb8c6c3a78372fdae3e6a9c7e88a8c308",
+    "endzone_S_L": "4f8a6bd4ccd8df3e5cd079fdd998368e04aeda835fd1fcae955562adef7cc4b7",
+    "endzone_S_M": "6b70a600d2b8459e404a035788730396fbfe394b45b431bd09a346124db6e70d",
+    "endzone_S_R": "c1d01f6bc4e55f6b4c1d75a3541c68322c0625490b213144ebf5e9cca695f13d"
+  },
+  "bundles": {
+    "s37dd.iff": {
+      "before_sha256": "f1b4654996753e75e81eef2f300b0fb2aa36f6f5eac2b49fa15a9b0e49eeeb36",
+      "after_sha256": "1d5a8bb6ae97e81ba0670b7ceaa2d1bceab7d98771b9015b4f0ae543d6cee01e",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37dd.iff",
+        "before_sha256": "94a92128998f50b1c99a4dab9b089b6220728d714711c14dac169dabcdc3502a",
+        "after_sha256": "8d0dc7bd0ae61801b71d9f7c9cef3aad75778cd540b19ced7ed76dd812c82d6e",
+        "field_before_sha256": "f1b4654996753e75e81eef2f300b0fb2aa36f6f5eac2b49fa15a9b0e49eeeb36",
+        "field_after_sha256": "1d5a8bb6ae97e81ba0670b7ceaa2d1bceab7d98771b9015b4f0ae543d6cee01e",
+        "scope_offset": 0,
+        "scope_size": 235216,
+        "outside_field_identical": true,
+        "outside_field_sha256": "e96a145662e09e1ea74eea26a605f82a317a6f79669a3796140e53d1b7e9484c",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173239,
+          "padding": 12,
+          "alias_scratch": 6,
+          "scratch": 16
+        }
+      }
+    },
+    "s37dr.iff": {
+      "before_sha256": "bc9fe199b4989282a11d30a5120ebd565283e614ae9da2015de8420ced642f2f",
+      "after_sha256": "5ba6776b25f91a5af192e6029a551ea1fe94e2bba68bc9905ee64237131626c6",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37dr.iff",
+        "before_sha256": "d9cde9d4aa9d6e773fc8fb56cacab127ccbc922ed85c7a14f18d466ea8e5b615",
+        "after_sha256": "d2157e0ba7be065e374cd869f6f8d7be0cbac27a0ef717389f33c0fbed537943",
+        "field_before_sha256": "bc9fe199b4989282a11d30a5120ebd565283e614ae9da2015de8420ced642f2f",
+        "field_after_sha256": "5ba6776b25f91a5af192e6029a551ea1fe94e2bba68bc9905ee64237131626c6",
+        "scope_offset": 0,
+        "scope_size": 236576,
+        "outside_field_identical": true,
+        "outside_field_sha256": "704f8157dff88e35bc85d60426df4753fd7f97cc51326321ad043091d45ce275",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173239,
+          "padding": 15,
+          "alias_scratch": 9,
+          "scratch": 16
+        }
+      }
+    },
+    "s37ds.iff": {
+      "before_sha256": "9551c9dee6c2f020e54059f63063b91d3a558de9ed0ef1a378aa67ffd70419ad",
+      "after_sha256": "2269e3766229cbaee7abd7c625d437b7624d555a7416cfdfeeeaaa4905510c21",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37ds.iff",
+        "before_sha256": "8f849085a0ed6761a1f78f2bce7b1e33ef6196df3e49fbda3fe37a46babca392",
+        "after_sha256": "8d7ccba2476e90aee5398837ce2c4d594579663484f61a2833745b2c8ba3deb6",
+        "field_before_sha256": "9551c9dee6c2f020e54059f63063b91d3a558de9ed0ef1a378aa67ffd70419ad",
+        "field_after_sha256": "2269e3766229cbaee7abd7c625d437b7624d555a7416cfdfeeeaaa4905510c21",
+        "scope_offset": 0,
+        "scope_size": 236160,
+        "outside_field_identical": true,
+        "outside_field_sha256": "6739462adff41d817fe14ab4895c1b8db7ce489acd8b088019876ecfb32c8bde",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 58752,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 172111,
+          "padding": 16,
+          "alias_scratch": 10,
+          "scratch": 16
+        }
+      }
+    },
+    "s37ad.iff": {
+      "before_sha256": "5818b250d156e821d8c28b2c891511176a6e856e5cfd587ec153b5898cc6b684",
+      "after_sha256": "27741673dbd9a87b4bfff2afe74882e4a1fe08124f0ef0cd72d75e34382ee5c2",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37ad.iff",
+        "before_sha256": "61a643e19c4f9196d5cf92c94c52d16023c9893314cec242a9359768ce4da161",
+        "after_sha256": "b308eff3037b6af9dfc1e6c552535c796bdb45c4619d0b5e13ffc8e153e34390",
+        "field_before_sha256": "5818b250d156e821d8c28b2c891511176a6e856e5cfd587ec153b5898cc6b684",
+        "field_after_sha256": "27741673dbd9a87b4bfff2afe74882e4a1fe08124f0ef0cd72d75e34382ee5c2",
+        "scope_offset": 0,
+        "scope_size": 235280,
+        "outside_field_identical": true,
+        "outside_field_sha256": "f41804c66c9e49cba6517d13c8e4b06d33fe1ee4294674a23fb2baaa65f2cb51",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173302,
+          "padding": 4,
+          "alias_scratch": 0,
+          "scratch": 16
+        }
+      }
+    },
+    "s37ar.iff": {
+      "before_sha256": "b351afeebf7c2ce8368805bf3eaac6cd1a9b66c92e6b639816f9e8323d2037eb",
+      "after_sha256": "2c5068f1d05f90b22a8508e65ec9280861fe26c12833cd7c3c2b41e15e78482e",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37ar.iff",
+        "before_sha256": "f6b0214fe86ea9bfda15e6905fcba32416aec8e321c381aed598f3ab70d3f10e",
+        "after_sha256": "51b354a50a46145dc99b31040b2a9d460e607ed91ee69dde01788f9c22f2103e",
+        "field_before_sha256": "b351afeebf7c2ce8368805bf3eaac6cd1a9b66c92e6b639816f9e8323d2037eb",
+        "field_after_sha256": "2c5068f1d05f90b22a8508e65ec9280861fe26c12833cd7c3c2b41e15e78482e",
+        "scope_offset": 0,
+        "scope_size": 236640,
+        "outside_field_identical": true,
+        "outside_field_sha256": "7265398caaaeb493c99bf8da5740ff0da96588ce915841a8debc385a264a649f",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173302,
+          "padding": 14,
+          "alias_scratch": 8,
+          "scratch": 16
+        }
+      }
+    },
+    "s37as.iff": {
+      "before_sha256": "f673ec5c2286d31d2d426362678ecdfdbaaafdcafd28d2c20be3899082039e39",
+      "after_sha256": "9ef27f0292f94b1a80e7b4deac452a255b1f109b9893ece2e1e355f815bcf0a6",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37as.iff",
+        "before_sha256": "2a7552bc131a5ef290486305654b6ce6e315d957d0c83579db2721d6f7fc4d85",
+        "after_sha256": "ca1614c770e8f9256c6f72e89060eeb51e6d434afb6cbac84f7fa113d6056a00",
+        "field_before_sha256": "f673ec5c2286d31d2d426362678ecdfdbaaafdcafd28d2c20be3899082039e39",
+        "field_after_sha256": "9ef27f0292f94b1a80e7b4deac452a255b1f109b9893ece2e1e355f815bcf0a6",
+        "scope_offset": 0,
+        "scope_size": 236208,
+        "outside_field_identical": true,
+        "outside_field_sha256": "1d26bf5f907ff124e58468945909056117ead2422bd7b53946a6b5aa27e3d9da",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 58752,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 172149,
+          "padding": 16,
+          "alias_scratch": 11,
+          "scratch": 16
+        }
+      }
+    },
+    "s37nd.iff": {
+      "before_sha256": "9db04ccff83bab78b304c781f6e4b20e5755a4009f55e0372025d14bd8c8525c",
+      "after_sha256": "c16b11652d574ac586969d5f4e6a91d1d96ee988f762dd7de7cd3a4a6e2b0219",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37nd.iff",
+        "before_sha256": "4cf34698b7b60c8e7b00401a4650cc41451e7b014f7217b592f84abc7a78218f",
+        "after_sha256": "359db73f4ece9d7a4248f8e3f4161993cc0788c8572e045a5f6ef02fe5e01070",
+        "field_before_sha256": "9db04ccff83bab78b304c781f6e4b20e5755a4009f55e0372025d14bd8c8525c",
+        "field_after_sha256": "c16b11652d574ac586969d5f4e6a91d1d96ee988f762dd7de7cd3a4a6e2b0219",
+        "scope_offset": 0,
+        "scope_size": 235216,
+        "outside_field_identical": true,
+        "outside_field_sha256": "8bfad6dd495afff018c7e25787722233a6337ed9e37235a864075bc02b29ec79",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173235,
+          "padding": 12,
+          "alias_scratch": 6,
+          "scratch": 16
+        }
+      }
+    },
+    "s37nr.iff": {
+      "before_sha256": "8c2ea40153b7258d4e33956b382b2cb81b85a2e451e7412a5e5e28b7c53ab0e7",
+      "after_sha256": "95e94c3a3435b1763b9dbb2436d2816964d1a91d02fee65c97648015fd2d24fa",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37nr.iff",
+        "before_sha256": "018f851da02e9b98c4ea78dd9197a0db7f93029bdec01576fe9c92788e458495",
+        "after_sha256": "444c990a0b24b24a4127c5d8d587ef67b2f83258173ba63fb6dd15f46da25097",
+        "field_before_sha256": "8c2ea40153b7258d4e33956b382b2cb81b85a2e451e7412a5e5e28b7c53ab0e7",
+        "field_after_sha256": "95e94c3a3435b1763b9dbb2436d2816964d1a91d02fee65c97648015fd2d24fa",
+        "scope_offset": 0,
+        "scope_size": 236576,
+        "outside_field_identical": true,
+        "outside_field_sha256": "c128b0ff78495f50a62c62ece5ceb28330f3c9898f424dbd2bfa2bcfdfbf657f",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 61312,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 173235,
+          "padding": 15,
+          "alias_scratch": 9,
+          "scratch": 16
+        }
+      }
+    },
+    "s37ns.iff": {
+      "before_sha256": "8bbda22de130eecdd75159de63f6265ccdb57b4c083d50867f53ca504009aba7",
+      "after_sha256": "93a20a06734a7659f73bcec597f568e36ec217a85c0754855acbf0568fe10e3f",
+      "payload_sha256": {
+        "endzone_N_L": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+        "endzone_N_M": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+        "endzone_N_R": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+        "endzone_S_L": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+        "endzone_S_M": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+        "endzone_S_R": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027"
+      },
+      "receipt": {
+        "name": "s37ns.iff",
+        "before_sha256": "f29df6e1ff412b2711bbbad473fe1d72c46bd98a5d5fce4df8cc72cb8001396e",
+        "after_sha256": "7cbb960f25a98198a7ee8cae6de91277adb4b0827d103fe9ff343ea62d8cdf8b",
+        "field_before_sha256": "8bbda22de130eecdd75159de63f6265ccdb57b4c083d50867f53ca504009aba7",
+        "field_after_sha256": "93a20a06734a7659f73bcec597f568e36ec217a85c0754855acbf0568fe10e3f",
+        "scope_offset": 0,
+        "scope_size": 236160,
+        "outside_field_identical": true,
+        "outside_field_sha256": "fb4756c8d0660f5956bda46d416dc55c7c9253e0b255472ee3e46210f58b2929",
+        "studio_native_payload_exact": true,
+        "detail": {
+          "added": true,
+          "links": [
+            {
+              "material": "endzone_S_L",
+              "original_texture": 1,
+              "appended_texture": 11,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_M",
+              "original_texture": 2,
+              "appended_texture": 12,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            },
+            {
+              "material": "endzone_S_R",
+              "original_texture": 3,
+              "appended_texture": 13,
+              "size": [
+                256,
+                128
+              ],
+              "mips": 5
+            }
+          ],
+          "existing_scene_preserved": true,
+          "paint": {
+            "textures": [
+              {
+                "key": "endzone_N_L",
+                "texture": 1,
+                "studio_payload_sha256": "d0592fcb3f267e34d795b65a49d36c63afa4e93ffebd325ac025979dfb887fa0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_M",
+                "texture": 2,
+                "studio_payload_sha256": "0d3a074acee0a30006befa8f336408b67d1c3df7bbbc6c8cde527cd6f395f917",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_N_R",
+                "texture": 3,
+                "studio_payload_sha256": "bd1dcc3514816154be47fd6454261449452e3c1b644cfc91f5311fc15616f568",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_L",
+                "texture": 11,
+                "studio_payload_sha256": "10ff7f956e0f44a3e6f907870cd80f0be8ebac6cdb99895563ada83c899e653f",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_M",
+                "texture": 12,
+                "studio_payload_sha256": "05f264262f4d8fe66f0f7a2767d6391829da3a8a7faf59720d9c95d0ebb68fe0",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              },
+              {
+                "key": "endzone_S_R",
+                "texture": 13,
+                "studio_payload_sha256": "fa3b340c151735d78b85dc6d9433dbc5d902617b2364df061948552286e1d027",
+                "size": [
+                  256,
+                  128
+                ],
+                "mips": 5
+              }
+            ],
+            "palette_cap": 256
+          },
+          "extra_video_padding": 4096,
+          "system": 58752,
+          "video": 559104,
+          "fit_attempts": [],
+          "encoder": "greedy",
+          "fill": "trailing",
+          "encoded": 172107,
+          "padding": 16,
+          "alias_scratch": 10,
+          "scratch": 16
+        }
+      }
+    }
+  }
+}

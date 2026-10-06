@@ -56,7 +56,7 @@ class PublicTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("as"), "GNU as is not available for development-template reproduction")
     def test_assembly_template_is_reproducible(self):
         # Apple's assembler does not implement GNU --32 and MinGW's emits COFF; runtime never needs as.
-        from _gnu_elf32_as import gnu_elf32_as
+        from tests.mod_editor._gnu_elf32_as import gnu_elf32_as
         if not gnu_elf32_as():
             self.skipTest("template reproduction requires GNU i386 as producing ELF32")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_practice_squad_screen_assemble.py"), "--check"], check=True)
@@ -88,17 +88,21 @@ class PatchTests(unittest.TestCase):
         self.assertFalse(self.receipt["runtime_witnessed"])
         self.assertFalse(self.receipt["poaching"])
         self.assertFalse(self.receipt["protection"])
+        self.assertTrue(self.receipt["screen_removed"])
+        self.assertFalse(self.receipt["automatic_preseason_reserves"])
         self.assertEqual(len(self.patched), 12300288)
         for s in _sections(self.patched):
             self.assertEqual(s.stored_digest, section_digest(self.patched, s))
 
-    def test_composed_menu_clones_binding_columns_and_main_menu_crib(self):
+    def test_retired_screen_restores_desk_crib_and_preserves_main_menu_crib(self):
         rows = fp.read_rows(self.patched)
         self.assertEqual(len(rows), 13)
-        self.assertEqual([r["label"] for r in rows[:6]],
-                         ["Schedule", "Playoff Schedule", "Super Bowl Schedule", "Off-Season Schedule", "Practice", "Practice Squad"])
-        self.assertEqual([r["label"] for r in rows[6:12]],
-                         ["Front Office", "Gameplan", "ESPN.com", "Features", "Options", "Quit"])
+        self.assertEqual([r["label"] for r in rows[:5]],
+                         ["Schedule", "Playoff Schedule", "Super Bowl Schedule", "Off-Season Schedule", "Practice"])
+        self.assertEqual([r["label"] for r in rows[5:12]],
+                         ["Front Office", "Gameplan", "ESPN.com", "The Crib|TM|", "Features", "Options", "Quit"])
+        self.assertNotIn("Practice Squad", [r["label"] for r in rows])
+        self.assertEqual(self.image.read(fp.COACH_DESK_ROWS_PTR_VA, 4), struct.pack("<I", fp.NEW_ROW_VA))
         self.assertEqual(rows[4]["activate"], hex(fp.ROW_CALLBACK_VA))
         old_rows = fp.read_rows(self.base)
         self.assertEqual([r["visibility"] for r in rows[:4]], [r["visibility"] for r in old_rows[:4]])
@@ -124,7 +128,7 @@ class PatchTests(unittest.TestCase):
             before = bytearray(old.read(section.start, section.raw_size))
             if section.start <= fp.COACH_DESK_ROWS_PTR_VA < section.end:
                 off = fp.COACH_DESK_ROWS_PTR_VA - section.start
-                before[off:off+4] = struct.pack("<I", self.labels["menu"])
+                before[off:off+4] = struct.pack("<I", fp.NEW_ROW_VA)
             if section.name == ".XTLID":
                 # Allocator's existing loader-logo relocation is independent.
                 continue
@@ -157,10 +161,9 @@ class PatchTests(unittest.TestCase):
                 self.assertEqual(bytes(data), before)
         allocated, _ = space.apply(self.base, screen.REQUESTS)
         code, data = screen.allocations(allocated)
-        mixed, _ = space.install_code(allocated, screen.OWNER, screen.code_for(allocated, code["va"], data["va"])[0])
-        self.assertEqual(screen.status(mixed), "foreign")
-        with self.assertRaises(ValueError):
-            screen.apply(mixed)
+        compatible, _ = space.install_code(allocated, screen.OWNER, screen.code_for(allocated, code["va"], data["va"])[0])
+        self.assertEqual(screen.status(compatible), "applied")
+        self.assertEqual(screen.apply(compatible)[0], compatible)
         wrong_union, _ = space.apply(self.base, (("unrelated", "code", 16, 16),))
         with self.assertRaisesRegex(ValueError, "union"):
             screen.apply(wrong_union)
@@ -181,10 +184,32 @@ class PatchTests(unittest.TestCase):
         result, receipt = screen.apply(self.base)
         recorder.observe(screen, "apply", self.base, result, receipt)
         spans = recorder.finish(result)
-        for va, size in ((fp.COACH_DESK_ROWS_PTR_VA, 4), (self.code["va"], screen.CODE_SIZE),
-                         (self.data["va"], screen.DATA_SIZE)):
+        for va, size in ((self.code["va"], screen.CODE_SIZE), (self.data["va"], screen.DATA_SIZE)):
             self.assertTrue(any(r["owner"] == screen.OWNER and int(r["start"], 0) <= va
                                 and int(r["end"], 0) >= va + size for r in spans), hex(va))
+
+    def test_legacy_screen_and_automatic_cuts_upgrade_without_losing_owner_bytes(self):
+        cut = next(site for site in ps.sites() if site.va == 0x2BFA6E)
+        legacy, _ = screen.rdata.apply(self.patched, [
+            ("legacy_menu", fp.COACH_DESK_ROWS_PTR_VA, struct.pack("<I", fp.NEW_ROW_VA),
+             struct.pack("<I", self.labels["menu"])),
+            ("legacy_cut", cut.va, cut.retail, cut.patched)], "legacy fixture")
+        self.assertEqual(screen.status(legacy), "applied")
+        fixed, receipt = screen.apply(legacy)
+        self.assertEqual(fixed, self.patched)
+        self.assertGreater(receipt["changed_bytes"], 0)
+        self.assertEqual(self.image.read(cut.va, cut.size), cut.retail)
+        self.assertEqual(screen.apply(fixed)[0], fixed)
+
+    def test_legacy_prerequisites_without_screen_also_disable_automatic_cuts(self):
+        cut = next(site for site in ps.sites() if site.va == 0x2BFA6E)
+        legacy, _ = screen.rdata.apply(self.base, [
+            ("legacy_cut", cut.va, cut.retail, cut.patched)], "legacy prerequisite fixture")
+        self.assertEqual(screen.status(legacy), "retail")
+        fixed, receipt = screen.apply(legacy)
+        self.assertEqual(fixed, self.patched)
+        self.assertFalse(receipt["automatic_preseason_reserves"])
+        self.assertGreater(receipt["storage_compatibility"]["changed_bytes"], 0)
 
 
 if __name__ == "__main__":

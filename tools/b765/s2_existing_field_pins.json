@@ -1,0 +1,2376 @@
+{
+  "schema": "b765_s2_existing_field_paint/v1",
+  "selected": {
+    "s27": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R",
+      "endzone_S_L",
+      "endzone_S_M",
+      "endzone_S_R"
+    ],
+    "s29": [
+      "endzone_N_L",
+      "endzone_N_M",
+      "endzone_N_R"
+    ]
+  },
+  "source_rgba_sha256": {
+    "s27": {
+      "endzone_N_L": "447e74b83978b964f2115483dd32519a4d4a52f484586ad13071881e9d31ea7c",
+      "endzone_N_M": "5c162f44f81bae290198706fdbfcfe1997b2a46651befe32c8a9ea8962be7cac",
+      "endzone_N_R": "473f2067805ddf0e7a8398021b69d5bdc937ba0e3b0239d3cceb498897542711",
+      "endzone_S_L": "447e74b83978b964f2115483dd32519a4d4a52f484586ad13071881e9d31ea7c",
+      "endzone_S_M": "5c162f44f81bae290198706fdbfcfe1997b2a46651befe32c8a9ea8962be7cac",
+      "endzone_S_R": "473f2067805ddf0e7a8398021b69d5bdc937ba0e3b0239d3cceb498897542711"
+    },
+    "s29": {
+      "endzone_N_L": "74e950e21436b05ed2b64a4adc4c54938e064cabf1fd96ff5635736b1f813e89",
+      "endzone_N_M": "0aa5e68d5e2c4103937a298c6aa89852aa597069e20dc0a5afd917fca6523c6e",
+      "endzone_N_R": "58dc6d1e67b3c8427e41bf12c6fd1c161aafb7228737cfbc0bafa22443ffc6dc"
+    }
+  },
+  "bundles": {
+    "s27dd.iff": {
+      "before_sha256": "dbf60c2f64de08c3b48b97c8a771f3d5a9004845c1a7ddcc6fe46f1efe6c6fe2",
+      "after_sha256": "7460550c4055da5bb1ab6c6010ce7f96d2d6a2ee44dfa5c34246707d195a9ded",
+      "payload_sha256": {
+        "endzone_N_L": "1a719e2bf7288497f4ddcae2f5bacfe0bb2284cf9d5677c0c5dd214d8fa65d61",
+        "endzone_N_M": "6968ca664aee9c8cce53f1b17bd8c752f6f9c9cd80a7546e238a5aac7dac16bc",
+        "endzone_N_R": "25eb8e84dfb3f2849196e21a83acaf6758e5b2a0daebdbfc662fe5d7972abe81",
+        "endzone_S_L": "1a719e2bf7288497f4ddcae2f5bacfe0bb2284cf9d5677c0c5dd214d8fa65d61",
+        "endzone_S_M": "6968ca664aee9c8cce53f1b17bd8c752f6f9c9cd80a7546e238a5aac7dac16bc",
+        "endzone_S_R": "25eb8e84dfb3f2849196e21a83acaf6758e5b2a0daebdbfc662fe5d7972abe81"
+      },
+      "receipt": {
+        "name": "s27dd.iff",
+        "before_sha256": "38874f35f0c54dcef960c41455c3aa63721efc5f09053a86ea4eefdf9562295f",
+        "after_sha256": "a7b5255d75e560f8e0dc95e5018030b3c02f9e58ee85017eae18879b6fad661f",
+        "field_before_sha256": "dbf60c2f64de08c3b48b97c8a771f3d5a9004845c1a7ddcc6fe46f1efe6c6fe2",
+        "field_after_sha256": "7460550c4055da5bb1ab6c6010ce7f96d2d6a2ee44dfa5c34246707d195a9ded",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 323600,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "8a9b6b2aebe8a86341d4d679f5d91c493c310a8d5f9bb50a4b01a8a3f72d97ac",
+        "outside_decoded_scope_sha256": "eeb3fb217f7f65e89d1180d0a9a6dc3b250daecadd5d4bdb706792e1ffac1c95",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "1a719e2bf7288497f4ddcae2f5bacfe0bb2284cf9d5677c0c5dd214d8fa65d61",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "6968ca664aee9c8cce53f1b17bd8c752f6f9c9cd80a7546e238a5aac7dac16bc",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "25eb8e84dfb3f2849196e21a83acaf6758e5b2a0daebdbfc662fe5d7972abe81",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "1a719e2bf7288497f4ddcae2f5bacfe0bb2284cf9d5677c0c5dd214d8fa65d61",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "6968ca664aee9c8cce53f1b17bd8c752f6f9c9cd80a7546e238a5aac7dac16bc",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "25eb8e84dfb3f2849196e21a83acaf6758e5b2a0daebdbfc662fe5d7972abe81",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27dr.iff": {
+      "before_sha256": "530d72ff55f16041e79af6023ac1ab042da04f1131bfb8440e36fcc6c288e37e",
+      "after_sha256": "464072386770ddde1a934b2b181e03a918e9b3eac6b92e02adf16f86d24ca0a3",
+      "payload_sha256": {
+        "endzone_N_L": "979eef20a0a2756ed9e95b10e7c948efdf4da94c1551f084175ab3f64fdfae39",
+        "endzone_N_M": "04f9227914eb5e9c36389c2bef593344eba13476d6543de20996046506662c5e",
+        "endzone_N_R": "743e9bcdb9ec01ab4f9000f9fff424c8a04d1adb70dd928ab923153c1771f666",
+        "endzone_S_L": "2ae64f369a781b6b26eadd54ddd1d6fe035c4b091aef87de09b9e68b03b900f4",
+        "endzone_S_M": "3688149676de41cafc917f782d1bde190910569b7ec64706c02318bacbe02a36",
+        "endzone_S_R": "badb616baca313db9ec721f8804877830eabc49f1c3763f0d148adad3b96a6bb"
+      },
+      "receipt": {
+        "name": "s27dr.iff",
+        "before_sha256": "8cd29b631fa86563fdadfbd199ecf94aa890cfb794aa3431c2cc118b05db07b4",
+        "after_sha256": "d3ce4167d84bfa218d16e24ef87a1c1d8f5257b7ee37c8406a74fb7116210edf",
+        "field_before_sha256": "530d72ff55f16041e79af6023ac1ab042da04f1131bfb8440e36fcc6c288e37e",
+        "field_after_sha256": "464072386770ddde1a934b2b181e03a918e9b3eac6b92e02adf16f86d24ca0a3",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 310496,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "15dd268aff56cd3f0430f4ff86c3903d48ed8dae5f43f52cf6ec147ca4fe0dfe",
+        "outside_decoded_scope_sha256": "00238f04373e67cfb1cec0afb05bd6ec97e8e6cee8ff417af2dfb19b0b4b46ce",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "979eef20a0a2756ed9e95b10e7c948efdf4da94c1551f084175ab3f64fdfae39",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "04f9227914eb5e9c36389c2bef593344eba13476d6543de20996046506662c5e",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "743e9bcdb9ec01ab4f9000f9fff424c8a04d1adb70dd928ab923153c1771f666",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "2ae64f369a781b6b26eadd54ddd1d6fe035c4b091aef87de09b9e68b03b900f4",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "3688149676de41cafc917f782d1bde190910569b7ec64706c02318bacbe02a36",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "badb616baca313db9ec721f8804877830eabc49f1c3763f0d148adad3b96a6bb",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27ds.iff": {
+      "before_sha256": "f4f8a2302885eddb4aca19b2ae7deedd202f8931e9fdbd7a7b575723f93a089a",
+      "after_sha256": "78b60af2bb38b35bc9b8b0aa8b856d9e177ecc85fc5ab3e731947e1ed7a6e949",
+      "payload_sha256": {
+        "endzone_N_L": "e0ebdeb9681c18d849b13a4dd99191c240868f07a1c614f8d46dc8ce46bac240",
+        "endzone_N_M": "e6543977e612bee886bff0e3dd4ad4429ca9099fa3ce9d366bf94e4c1f9dd6e7",
+        "endzone_N_R": "ff467a03f5077a43e5d88f934befa6960a51c5ed090a336e654a87b51a9fe1cc",
+        "endzone_S_L": "5833bc0acb4508052d8b661204a064ba3ee2e4aba4dba840d72c73e4bbc5adfa",
+        "endzone_S_M": "278a9043807fcd1fc941b599ad3a22df92ebca8785a53bc5f726da204dbc06c6",
+        "endzone_S_R": "0b176a23792d35cf529350d8d3c20c734b6d8c9e82acb2592ba458417348312c"
+      },
+      "receipt": {
+        "name": "s27ds.iff",
+        "before_sha256": "d238f387f30533630175d442cb56bbee818658379b0b039a6c44e76274c5d915",
+        "after_sha256": "4347572a6a40ae017d9050707fbc15d065b68198d902e1ff50521f7ba366f700",
+        "field_before_sha256": "f4f8a2302885eddb4aca19b2ae7deedd202f8931e9fdbd7a7b575723f93a089a",
+        "field_after_sha256": "78b60af2bb38b35bc9b8b0aa8b856d9e177ecc85fc5ab3e731947e1ed7a6e949",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 266656,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "930f37c1b73aa4c2d615e159bced893ff67ba10a09be0230cd6bc34e1b9a0934",
+        "outside_decoded_scope_sha256": "ccf2089e85c8ca4d034f8ffc79e496ede42cf31ce16682df1c96bfb95995fbe7",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e0ebdeb9681c18d849b13a4dd99191c240868f07a1c614f8d46dc8ce46bac240",
+            "range": [
+              71936,
+              116608
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e6543977e612bee886bff0e3dd4ad4429ca9099fa3ce9d366bf94e4c1f9dd6e7",
+            "range": [
+              116608,
+              161280
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "ff467a03f5077a43e5d88f934befa6960a51c5ed090a336e654a87b51a9fe1cc",
+            "range": [
+              161280,
+              205952
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "5833bc0acb4508052d8b661204a064ba3ee2e4aba4dba840d72c73e4bbc5adfa",
+            "range": [
+              205952,
+              250624
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "278a9043807fcd1fc941b599ad3a22df92ebca8785a53bc5f726da204dbc06c6",
+            "range": [
+              250624,
+              295296
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "0b176a23792d35cf529350d8d3c20c734b6d8c9e82acb2592ba458417348312c",
+            "range": [
+              295296,
+              339968
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27ad.iff": {
+      "before_sha256": "f9a40c4d030d42969d70be92f728ef4e97f99a7080d62deafcb2576db209c451",
+      "after_sha256": "582dc0a503993af33238efcb0921fff7958e8731e8bbcd6356dbd7bec45630ce",
+      "payload_sha256": {
+        "endzone_N_L": "67a4d1f2709f42d782e257988717265587c072b3eb693caa306b0cd41d54213a",
+        "endzone_N_M": "780991f7488fa956a59aacc1723bfa38a2c617aae16bd93d02451e1a033f22dd",
+        "endzone_N_R": "db4eb25b9402ae746ed0eb1c586a48c78f7a3b8bf401106fda328df3e8503b99",
+        "endzone_S_L": "67a4d1f2709f42d782e257988717265587c072b3eb693caa306b0cd41d54213a",
+        "endzone_S_M": "780991f7488fa956a59aacc1723bfa38a2c617aae16bd93d02451e1a033f22dd",
+        "endzone_S_R": "db4eb25b9402ae746ed0eb1c586a48c78f7a3b8bf401106fda328df3e8503b99"
+      },
+      "receipt": {
+        "name": "s27ad.iff",
+        "before_sha256": "50c44623c5e47b2d6368ef0b636e7eceea5923f79098781ed4584b96113b82a3",
+        "after_sha256": "ef99e9caf746bc5bd66bd21894d0ec66db78df97530108f7467c7af549f61314",
+        "field_before_sha256": "f9a40c4d030d42969d70be92f728ef4e97f99a7080d62deafcb2576db209c451",
+        "field_after_sha256": "582dc0a503993af33238efcb0921fff7958e8731e8bbcd6356dbd7bec45630ce",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 323680,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "1fa3a2d521e9f09322e5b45f2f53ec504d51bfe0355fd7f64b04072cde2cba34",
+        "outside_decoded_scope_sha256": "6175065c593fd301ac8f4cf44020864a5c2c7f9dc4b72389264b62b8ae666b3c",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "67a4d1f2709f42d782e257988717265587c072b3eb693caa306b0cd41d54213a",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "780991f7488fa956a59aacc1723bfa38a2c617aae16bd93d02451e1a033f22dd",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "db4eb25b9402ae746ed0eb1c586a48c78f7a3b8bf401106fda328df3e8503b99",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "67a4d1f2709f42d782e257988717265587c072b3eb693caa306b0cd41d54213a",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "780991f7488fa956a59aacc1723bfa38a2c617aae16bd93d02451e1a033f22dd",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "db4eb25b9402ae746ed0eb1c586a48c78f7a3b8bf401106fda328df3e8503b99",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27ar.iff": {
+      "before_sha256": "a343c9a7f6b76338250d7c288656434c2af0ba59d94c31dd6f0da2bf0058e620",
+      "after_sha256": "5a69f241e7d1f1ad2c054e4974febcfe767a1d82878eea820664a87e364cb758",
+      "payload_sha256": {
+        "endzone_N_L": "d2ea13433f8ffad96bff856931a22db6324aceca351c2a1594867cf7b873bbf1",
+        "endzone_N_M": "f88d1f5014a01c23ffc16c46f6f157f7e26e9df2bf963d4b69034dec2e93b8a1",
+        "endzone_N_R": "60fe4675739b259e633b45fb9e101d0227408a931b76b25482d2cb4b5901a446",
+        "endzone_S_L": "43763572c77478b46381b1759861d556e4336b700999cc362eb4f3c799c221d6",
+        "endzone_S_M": "d6be4e3f5b93eb4f3869ab21ecfbdc7233588f7fcdb383ffa11469f1104a8eea",
+        "endzone_S_R": "12a063caa62206b63b86b6e99e64e53a5e5e60c91fc59e7205b1623de86b1f91"
+      },
+      "receipt": {
+        "name": "s27ar.iff",
+        "before_sha256": "50e1b8cd227281795e9d7ac492c81dccb359d3a1236e22d4a95ae1982b234560",
+        "after_sha256": "23004d6ee9e99fac3ed0744c4d722ab345fcfeff861e57298ee76c3d6040c642",
+        "field_before_sha256": "a343c9a7f6b76338250d7c288656434c2af0ba59d94c31dd6f0da2bf0058e620",
+        "field_after_sha256": "5a69f241e7d1f1ad2c054e4974febcfe767a1d82878eea820664a87e364cb758",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 310576,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "17a036a60aa12f9e4c45ebec9c7e653c8d6848b89c298774a6f42032325efcc3",
+        "outside_decoded_scope_sha256": "f5944b731883fafdba7b4cf10f313e5417b47db06d07d2be6e541577cd8ce469",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d2ea13433f8ffad96bff856931a22db6324aceca351c2a1594867cf7b873bbf1",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f88d1f5014a01c23ffc16c46f6f157f7e26e9df2bf963d4b69034dec2e93b8a1",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "60fe4675739b259e633b45fb9e101d0227408a931b76b25482d2cb4b5901a446",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "43763572c77478b46381b1759861d556e4336b700999cc362eb4f3c799c221d6",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d6be4e3f5b93eb4f3869ab21ecfbdc7233588f7fcdb383ffa11469f1104a8eea",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "12a063caa62206b63b86b6e99e64e53a5e5e60c91fc59e7205b1623de86b1f91",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27as.iff": {
+      "before_sha256": "15dc705ffbdf19fc23077d43ce9720e7d00aa788f33d179236047f5e6681693f",
+      "after_sha256": "33fa1af2aea22b9e06abf507c1ab11b068a221de24460490b723eda455015cfc",
+      "payload_sha256": {
+        "endzone_N_L": "bcdec7d0b971833b95e13e504312f4becb72444428ed23452660f3599a464215",
+        "endzone_N_M": "e771ef69c0329f4239e7c80479371d70e470707a3f95144989df6daa19ba45ea",
+        "endzone_N_R": "767e49c6a827db6a4ab0170e2648770599ff0b1a2abb31a628c7acde972b3e3c",
+        "endzone_S_L": "38a86d7d295fa962c4862b7dc520fa51dbb5000686b7e427c93b1d1fbea70770",
+        "endzone_S_M": "41efa768a9397c3e5c63ee7b8d60aa62a86d0b62cc0438b583d8593ba0bc043c",
+        "endzone_S_R": "bf6afff37219c1dcdeda94e49a2149c1900ec9b78911e678b9314c7c8f3b0ea5"
+      },
+      "receipt": {
+        "name": "s27as.iff",
+        "before_sha256": "a10ca55a77be5642e2dfe492f45b7b0ac56a9e308e43fe05747cbb550e8ebbd9",
+        "after_sha256": "98ca86f7670c2b626815bbe8bb8b90962f056606a6c0e158f1c43e2b7085f3b9",
+        "field_before_sha256": "15dc705ffbdf19fc23077d43ce9720e7d00aa788f33d179236047f5e6681693f",
+        "field_after_sha256": "33fa1af2aea22b9e06abf507c1ab11b068a221de24460490b723eda455015cfc",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 266704,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "c5b5c3cc9bc752edfbce92c2f2b3228c616a1423356f0a214b8275298dda8bed",
+        "outside_decoded_scope_sha256": "96c601ef05141196c31cb71e9ccf1c6ea2b21ac075200fd7ed0e2eb02bc1b5e0",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "bcdec7d0b971833b95e13e504312f4becb72444428ed23452660f3599a464215",
+            "range": [
+              71936,
+              116608
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e771ef69c0329f4239e7c80479371d70e470707a3f95144989df6daa19ba45ea",
+            "range": [
+              116608,
+              161280
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "767e49c6a827db6a4ab0170e2648770599ff0b1a2abb31a628c7acde972b3e3c",
+            "range": [
+              161280,
+              205952
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "38a86d7d295fa962c4862b7dc520fa51dbb5000686b7e427c93b1d1fbea70770",
+            "range": [
+              205952,
+              250624
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "41efa768a9397c3e5c63ee7b8d60aa62a86d0b62cc0438b583d8593ba0bc043c",
+            "range": [
+              250624,
+              295296
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "bf6afff37219c1dcdeda94e49a2149c1900ec9b78911e678b9314c7c8f3b0ea5",
+            "range": [
+              295296,
+              339968
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27nd.iff": {
+      "before_sha256": "96b0155e67ba607d3f503d34749094c29a4583a6ada29904e86da1df35b098c9",
+      "after_sha256": "d784e21696a2396e7abe8dd85f36ba5f34985b00b5795d465d4ede7a614ae1db",
+      "payload_sha256": {
+        "endzone_N_L": "f5b7754285659f42ae03b9e4c24509520d2e52b4b09ef538f671baed506d4235",
+        "endzone_N_M": "17422930679a50659d65a0ff3b200a9ba3bc589cde61fe7c7e60b2fac0fdb7bd",
+        "endzone_N_R": "b2a391dc2e52a7aa507c6af6e11792d1a14ffd10caf95a41470e90968e984e45",
+        "endzone_S_L": "f5b7754285659f42ae03b9e4c24509520d2e52b4b09ef538f671baed506d4235",
+        "endzone_S_M": "17422930679a50659d65a0ff3b200a9ba3bc589cde61fe7c7e60b2fac0fdb7bd",
+        "endzone_S_R": "b2a391dc2e52a7aa507c6af6e11792d1a14ffd10caf95a41470e90968e984e45"
+      },
+      "receipt": {
+        "name": "s27nd.iff",
+        "before_sha256": "dc1f252dbdc6b23eaf6d50d1eb477902630784dddd7fffab7e9318acce2c8102",
+        "after_sha256": "cadb185d6b0d3c335cea626eca04c82e20bfed00dd92420c0f057049be9eef0e",
+        "field_before_sha256": "96b0155e67ba607d3f503d34749094c29a4583a6ada29904e86da1df35b098c9",
+        "field_after_sha256": "d784e21696a2396e7abe8dd85f36ba5f34985b00b5795d465d4ede7a614ae1db",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 323600,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "1a57c3d1981d6b0bbf39651448fa3036a2d84b0a0ecb0ba7580e94f779b97ba6",
+        "outside_decoded_scope_sha256": "20d4e198b9f28cbf945dee9b70371e8b0c17435bc0d9221bba5a40c227717a28",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f5b7754285659f42ae03b9e4c24509520d2e52b4b09ef538f671baed506d4235",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "17422930679a50659d65a0ff3b200a9ba3bc589cde61fe7c7e60b2fac0fdb7bd",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "b2a391dc2e52a7aa507c6af6e11792d1a14ffd10caf95a41470e90968e984e45",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f5b7754285659f42ae03b9e4c24509520d2e52b4b09ef538f671baed506d4235",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "17422930679a50659d65a0ff3b200a9ba3bc589cde61fe7c7e60b2fac0fdb7bd",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "b2a391dc2e52a7aa507c6af6e11792d1a14ffd10caf95a41470e90968e984e45",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27nr.iff": {
+      "before_sha256": "3c0594a2af629aceec250f3c240499b8add84989058689ac8df7539f1b3bc6e2",
+      "after_sha256": "931070b9f91e43a1185832475525a86c7d4052534dd189f06161300f064d1667",
+      "payload_sha256": {
+        "endzone_N_L": "b6e97bbf60a73995f968c874cfb54c0598f25495acf1afcd613a1a376ac14237",
+        "endzone_N_M": "62436c72c148d9dd7bdd7c6b7ad25fa5e2ae497480d91aa3503606d908dd1ca3",
+        "endzone_N_R": "afc5b83b9b178fb9da33911c7a940eb4d46bfef39845fc028042703edaf5746b",
+        "endzone_S_L": "e4e072f3cd410f3e822dc5d6ab7c64f960230bf83b9d3b85ef550207394df27b",
+        "endzone_S_M": "b55013c0c982093e6ef948e38e4d2af7997d05ad5328e7f8bf718bcdaaec0105",
+        "endzone_S_R": "1b0ccad1e01273eb5924a518db55cf53bc1f0613e1e471d8c7edd0bd79c41757"
+      },
+      "receipt": {
+        "name": "s27nr.iff",
+        "before_sha256": "eef96b73a41070ebca07d4758c0adde04f6b524bf9e29be0a370ff951066a565",
+        "after_sha256": "7eaf690509d261b845d2b5f5d993d57bca9de7552dd23611295e28898c898b82",
+        "field_before_sha256": "3c0594a2af629aceec250f3c240499b8add84989058689ac8df7539f1b3bc6e2",
+        "field_after_sha256": "931070b9f91e43a1185832475525a86c7d4052534dd189f06161300f064d1667",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 310496,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "7cdcad211ec1746072231d0b6bf7306250dadee79ab9e4bcdfb38712fe6fa871",
+        "outside_decoded_scope_sha256": "2f3b05411a889104fc201b9eefbbcb9f0ddbf275ec2ed63a2883ac8f7cce5278",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "b6e97bbf60a73995f968c874cfb54c0598f25495acf1afcd613a1a376ac14237",
+            "range": [
+              74496,
+              119168
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "62436c72c148d9dd7bdd7c6b7ad25fa5e2ae497480d91aa3503606d908dd1ca3",
+            "range": [
+              119168,
+              163840
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "afc5b83b9b178fb9da33911c7a940eb4d46bfef39845fc028042703edaf5746b",
+            "range": [
+              163840,
+              208512
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e4e072f3cd410f3e822dc5d6ab7c64f960230bf83b9d3b85ef550207394df27b",
+            "range": [
+              208512,
+              253184
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "b55013c0c982093e6ef948e38e4d2af7997d05ad5328e7f8bf718bcdaaec0105",
+            "range": [
+              253184,
+              297856
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "1b0ccad1e01273eb5924a518db55cf53bc1f0613e1e471d8c7edd0bd79c41757",
+            "range": [
+              297856,
+              342528
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s27ns.iff": {
+      "before_sha256": "b1c990cf763cba59314f345a7a2625f7e1d0b1b5caeb307827e869c3be6a887f",
+      "after_sha256": "1b57974992ab63483aab55c2b42f249b66269a96a112d34c5ef48ca6996a46d1",
+      "payload_sha256": {
+        "endzone_N_L": "f659e6fc94fe69dd889b6ad4991bb4e11cc48ffffbcc7168b5ab38b9bb834549",
+        "endzone_N_M": "e9e69c717efa9feb61f5fc8b41d3164750de3ff05574f00c6f77eedc939564d1",
+        "endzone_N_R": "3220d52b8c40a1aecfc96a04b9614002cca8c316a2df376b853a9ddc00ee1724",
+        "endzone_S_L": "09b45cb840467af3c5a895361cf8d096f5ccab795daeff34efede8f8befd3f85",
+        "endzone_S_M": "f4e895ca3e5f7666ac1d71f3da9ad8fc2f90fefa28250c18c145172fcd5ea81e",
+        "endzone_S_R": "721051636afbe5899213f8a0c1f01d2f1a027ca708b54d9cc76c4ad363942137"
+      },
+      "receipt": {
+        "name": "s27ns.iff",
+        "before_sha256": "619ffc29dccbda4fda8ad132bcbf90a8a5ef6e6eb60c1e2b9d5857a049408dd2",
+        "after_sha256": "3d26dd392a0f4a1e32cbd9e616c19e97386493eb2f925d2c06fc828cdadd29a1",
+        "field_before_sha256": "b1c990cf763cba59314f345a7a2625f7e1d0b1b5caeb307827e869c3be6a887f",
+        "field_after_sha256": "1b57974992ab63483aab55c2b42f249b66269a96a112d34c5ef48ca6996a46d1",
+        "scope_kind": "field",
+        "scope_offset": 0,
+        "scope_size": 266640,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "43be6186ecd73fe148e36a113821885cd8238be1fa289fb28856c4f7aa75f521",
+        "outside_decoded_scope_sha256": "f37f0220cd6e2984f3a0de404b72491283f450fd76c3b295ecc95a5d09aa8c96",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": true,
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f659e6fc94fe69dd889b6ad4991bb4e11cc48ffffbcc7168b5ab38b9bb834549",
+            "range": [
+              71936,
+              116608
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e9e69c717efa9feb61f5fc8b41d3164750de3ff05574f00c6f77eedc939564d1",
+            "range": [
+              116608,
+              161280
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "3220d52b8c40a1aecfc96a04b9614002cca8c316a2df376b853a9ddc00ee1724",
+            "range": [
+              161280,
+              205952
+            ]
+          },
+          {
+            "material": "endzone_S_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "09b45cb840467af3c5a895361cf8d096f5ccab795daeff34efede8f8befd3f85",
+            "range": [
+              205952,
+              250624
+            ]
+          },
+          {
+            "material": "endzone_S_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f4e895ca3e5f7666ac1d71f3da9ad8fc2f90fefa28250c18c145172fcd5ea81e",
+            "range": [
+              250624,
+              295296
+            ]
+          },
+          {
+            "material": "endzone_S_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "721051636afbe5899213f8a0c1f01d2f1a027ca708b54d9cc76c4ad363942137",
+            "range": [
+              295296,
+              339968
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing-full",
+          "padding_bytes": 0,
+          "alias_scratch": 1,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": [
+          1.49,
+          1.88
+        ],
+        "midfield_position_ranges": [
+          [
+            47520,
+            47524
+          ],
+          [
+            47528,
+            47532
+          ],
+          [
+            47532,
+            47536
+          ],
+          [
+            47540,
+            47544
+          ],
+          [
+            47544,
+            47548
+          ],
+          [
+            47552,
+            47556
+          ],
+          [
+            47556,
+            47560
+          ],
+          [
+            47564,
+            47568
+          ]
+        ],
+        "midfield_position_sha256": "a1911657b3cd9cb950770872a5bac5c41ccb539db5d2f65e7e4b9607ec4fa51e"
+      }
+    },
+    "s29dd.iff": {
+      "before_sha256": "73698c5090b6f866a753cfe9b7c8ff878fd8b43d74328a8ba480cc19dc8eb9a9",
+      "after_sha256": "dc5df8aa81a96b82fafb728b6dc12abf09b283b49e5c90d417e48a865b505f4a",
+      "payload_sha256": {
+        "endzone_N_L": "5f1aeeb7d8825ba6bfc4126626fd7c6d35aa95bef778d5382b539ab19bcfde50",
+        "endzone_N_M": "fee9cf04b1cc80ab125e38eb399333b5f0daf1d94512d264117787292aad9df4",
+        "endzone_N_R": "e9636b2c03b28deacd69ac5b6e8528b41a1a105a294a14ad2ee505acefef804e"
+      },
+      "receipt": {
+        "name": "s29dd.iff",
+        "before_sha256": "29e942bd0fc1f91ae7240bb27470b61b2828053f7f4b7d8089f0ca06c5018a38",
+        "after_sha256": "a2faff6b475ebdd9d96979a83259bb89461a3d747accae9e286ad5cabb997c79",
+        "field_before_sha256": "8a67baf237ec744337f1c981627de1a13ba8a9c87fead8fee6f9e062b43054fe",
+        "field_after_sha256": "0cc22369e4084d825539b910adf8a69c75fcc95dd5cb5fdc260efc0676479b0a",
+        "scope_before_sha256": "73698c5090b6f866a753cfe9b7c8ff878fd8b43d74328a8ba480cc19dc8eb9a9",
+        "scope_after_sha256": "dc5df8aa81a96b82fafb728b6dc12abf09b283b49e5c90d417e48a865b505f4a",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 415440,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "b92b187dec665a495206a69ac1a38000cedd34f6608f130f36df5dbe58f328df",
+        "outside_decoded_scope_sha256": "be1c57ceb8ee13c580385a0c9e6c6f184e3af0d3012f66a11d7d2ebae2002108",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 9,
+            "alias_scratch": 3,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 415440,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 213536,
+          "field_size": 215216,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "5f1aeeb7d8825ba6bfc4126626fd7c6d35aa95bef778d5382b539ab19bcfde50",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "fee9cf04b1cc80ab125e38eb399333b5f0daf1d94512d264117787292aad9df4",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "e9636b2c03b28deacd69ac5b6e8528b41a1a105a294a14ad2ee505acefef804e",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 9,
+          "alias_scratch": 3,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29dr.iff": {
+      "before_sha256": "384187db9f7102070ff616c9cf9a60ab0623d97df0dfdf57dbe988e724084092",
+      "after_sha256": "7d4719ae8cf6c4c672bc77c2d5cf6ef02f325105c1f2f9df314dceeb1fbee427",
+      "payload_sha256": {
+        "endzone_N_L": "66f85a15a8fc4e49e31bb4f7182550889c0f8c57b41180d9e57d1ff8df1720f3",
+        "endzone_N_M": "d66c0c864ed2c98f8b4c958e8b537721937bdb649616235ad1b3d4d902ec8d06",
+        "endzone_N_R": "d815ec613f8a3ccb80b2bfa91ff22e8e39633e5e2e3b9ca38ef5e58b150e79ee"
+      },
+      "receipt": {
+        "name": "s29dr.iff",
+        "before_sha256": "e68fd63fe4dca3b1f84067bfc220d2ea6e37e803d43f306f7749f011e45d3bb1",
+        "after_sha256": "48a40ce4abca91d4132af9ea64179eaae3d2b161a4452ed58c6b311a1c4c1fd7",
+        "field_before_sha256": "a6f4317c73c549cab873f200bf8d9cc5bec55de2dcc443e0093c2ff16007280f",
+        "field_after_sha256": "fa866741253d2bd72675d2360d15db853fcb36d344e7bcbc332f28f1d0d4a760",
+        "scope_before_sha256": "384187db9f7102070ff616c9cf9a60ab0623d97df0dfdf57dbe988e724084092",
+        "scope_after_sha256": "7d4719ae8cf6c4c672bc77c2d5cf6ef02f325105c1f2f9df314dceeb1fbee427",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 419632,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "cff18969863033d2ae59450ff5e1374ea47b66ec9c729773f6cff504d4c43b4d",
+        "outside_decoded_scope_sha256": "5056e11632f10226ed2bd6756c718728768bc1314fe1ebce0d1e4ad01e7b1012",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 16,
+            "alias_scratch": 8,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 419632,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 217728,
+          "field_size": 219408,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "66f85a15a8fc4e49e31bb4f7182550889c0f8c57b41180d9e57d1ff8df1720f3",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d66c0c864ed2c98f8b4c958e8b537721937bdb649616235ad1b3d4d902ec8d06",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d815ec613f8a3ccb80b2bfa91ff22e8e39633e5e2e3b9ca38ef5e58b150e79ee",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 16,
+          "alias_scratch": 8,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29ds.iff": {
+      "before_sha256": "48af28119ea9d27e37c1d11f21943f91b6679d981e456b5a563f5f372021524f",
+      "after_sha256": "c7992ea091db2ae27def1a2af92d2dc9e2e9cbbd50613e422c042d509afab202",
+      "payload_sha256": {
+        "endzone_N_L": "8d223222365b05e2f239c4a3520f78b04221457e44e16955fb864ada8e5bb010",
+        "endzone_N_M": "a4d64851ce8ecf53b23267ca522942d9180669acd1f1743d2a2197652409e4e6",
+        "endzone_N_R": "ecbcd2d71010efa66aaed45f1d82aa75558bea7e4671b7b52bed22b73f4b5818"
+      },
+      "receipt": {
+        "name": "s29ds.iff",
+        "before_sha256": "ab6a2af86b9a741e49e873085a5c38241816e58a2f55f2335babe635d1c99e9c",
+        "after_sha256": "5f09944997713187f4df3ea0860a5155138d27098cbf1595f24613390d381f19",
+        "field_before_sha256": "f80ed728c71b6e963c7d610baae268e3d2fc994fa2f30a660c469484ac150fb2",
+        "field_after_sha256": "a19e3b4755d1682e7f993b3820272bafb93046512fa52881e57b6acae2217e75",
+        "scope_before_sha256": "48af28119ea9d27e37c1d11f21943f91b6679d981e456b5a563f5f372021524f",
+        "scope_after_sha256": "c7992ea091db2ae27def1a2af92d2dc9e2e9cbbd50613e422c042d509afab202",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 377168,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "82f0ae16ac06ebb105ff234520a73a424d6749b771d2142fdc1f7610684d5321",
+        "outside_decoded_scope_sha256": "de8b3edca9f3d2950cfef5b2d3a9d41a4f41012efb01a11a0f0f5159351c6d01",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "optimal",
+            "fill": "trailing",
+            "padding_bytes": 0,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 377168,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 175264,
+          "field_size": 176944,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "8d223222365b05e2f239c4a3520f78b04221457e44e16955fb864ada8e5bb010",
+            "range": [
+              71424,
+              116096
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "a4d64851ce8ecf53b23267ca522942d9180669acd1f1743d2a2197652409e4e6",
+            "range": [
+              116096,
+              160768
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "ecbcd2d71010efa66aaed45f1d82aa75558bea7e4671b7b52bed22b73f4b5818",
+            "range": [
+              160768,
+              205440
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "optimal",
+          "fill": "trailing",
+          "padding_bytes": 0,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29ad.iff": {
+      "before_sha256": "dd486fa7cd32d45ce6e0ba9c71ec3f4dd2722412480f31f86181a044371b267c",
+      "after_sha256": "450181af226bc2c2aca232dabb6f62c4b635d6de374de2e313b536ccd7df9881",
+      "payload_sha256": {
+        "endzone_N_L": "7fa2fe9997ac1d0b0ea02405091f33d30a24425f8836b3fc0efc68f67599345a",
+        "endzone_N_M": "1c3506073955774f00cec834deceb6fdaa7c8c932761bdd1b17730c4951ee266",
+        "endzone_N_R": "a024d7d67bfef4595a910a9933140caccf47908fee2c79d9f920fd515658afd8"
+      },
+      "receipt": {
+        "name": "s29ad.iff",
+        "before_sha256": "4ad845b12b9ac95ca104ec4ae945ce303b119e05c40168e891a4de79b0fb633f",
+        "after_sha256": "5f1d228c4b4cfbf14c596c0f18a9befcc79d772eeea61be077c2454073be784e",
+        "field_before_sha256": "32dc18a575c6ca43581738ff2441030e1c367c4662de161f0eec01e8c7c5bc74",
+        "field_after_sha256": "f8883c8ca4e1e734fabb49443d94912490986d8bf19f8f3abd98a007140c6ca9",
+        "scope_before_sha256": "dd486fa7cd32d45ce6e0ba9c71ec3f4dd2722412480f31f86181a044371b267c",
+        "scope_after_sha256": "450181af226bc2c2aca232dabb6f62c4b635d6de374de2e313b536ccd7df9881",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 415504,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "051b38bcaf318e184eb9b9fc642111c25ab6dc3773498a655d1d82881d7de558",
+        "outside_decoded_scope_sha256": "740829d46655ab99011282ef25a212a0ae9fa1d67106960496915d2020ac560d",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 13,
+            "alias_scratch": 7,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 415504,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 213600,
+          "field_size": 215280,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "7fa2fe9997ac1d0b0ea02405091f33d30a24425f8836b3fc0efc68f67599345a",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "1c3506073955774f00cec834deceb6fdaa7c8c932761bdd1b17730c4951ee266",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "a024d7d67bfef4595a910a9933140caccf47908fee2c79d9f920fd515658afd8",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 13,
+          "alias_scratch": 7,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29ar.iff": {
+      "before_sha256": "a48074e95c9efc530b8338f066c621d411c2b1851d2267a468bc2b387a29e415",
+      "after_sha256": "f903befcf0f644e2fe7e2cdfa955cd430ef1ad5c0a4284151b36304b3004a142",
+      "payload_sha256": {
+        "endzone_N_L": "98b3cc82a19c0942c13465abf4ec8158336467fa7ebe8233a75d947278fa9d90",
+        "endzone_N_M": "2757f759756818d75f8a8e4e398ff99672a7ae571374595b07a046a6158ba410",
+        "endzone_N_R": "11d3c299f8bca154943f0b2627258008bdedec6834f6a3a4cbd3b7800416920d"
+      },
+      "receipt": {
+        "name": "s29ar.iff",
+        "before_sha256": "2cab2e2f96881dd78a089249ce5d0d8a42d9d038995c00a6d799d5715300cc90",
+        "after_sha256": "a2bd016b51f46e132ce4b37c78fc7ae754402ff0b8446f2a06be091ff60013ea",
+        "field_before_sha256": "df319e132494d1647d7638f9bc04a494dce3bdbd321596c75f058c4a961bdbb1",
+        "field_after_sha256": "3420b15d4415c405ce1b0fb7ccfbf10cc147eca8e1e0535d68f4383d2a520ac9",
+        "scope_before_sha256": "a48074e95c9efc530b8338f066c621d411c2b1851d2267a468bc2b387a29e415",
+        "scope_after_sha256": "f903befcf0f644e2fe7e2cdfa955cd430ef1ad5c0a4284151b36304b3004a142",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 419712,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "5c50af471376ef3866d6c7b85b045577563237357c9a089db128637e9b20f37f",
+        "outside_decoded_scope_sha256": "09c995a1bc56368ec8dc963890c846cf309a6689a9acdb2378f5ace7534761e9",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 5,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 419712,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 217808,
+          "field_size": 219488,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "98b3cc82a19c0942c13465abf4ec8158336467fa7ebe8233a75d947278fa9d90",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "2757f759756818d75f8a8e4e398ff99672a7ae571374595b07a046a6158ba410",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "11d3c299f8bca154943f0b2627258008bdedec6834f6a3a4cbd3b7800416920d",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 5,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29as.iff": {
+      "before_sha256": "957b1064db3d01a79b79763e6c18b22869f494e3a320c0fdf3abfa453149bb75",
+      "after_sha256": "6733d15f8cf585813c8628a53ab89a1e1a8d813c564938df1b034a91d227bcc5",
+      "payload_sha256": {
+        "endzone_N_L": "13cb70dadde54da5a5a15d194b1db868768612f34ffe24d0068d804afd4a41ec",
+        "endzone_N_M": "2815331750067ddcbc357f2204c9f69a9df2075fd970d38daf84219b3b82af4b",
+        "endzone_N_R": "d3f8905a2b21f079095a3e44b29013edcc026c7f14f1a99b829ef26cb17a0469"
+      },
+      "receipt": {
+        "name": "s29as.iff",
+        "before_sha256": "55ddef616af0e549134f24f9c13d17b5ac100220eb3185276fbbda5874310997",
+        "after_sha256": "e50854909e863bdf7c9b3fa899f76ec21b1fd91ef398cf53d8fcee6f117b503b",
+        "field_before_sha256": "faba349168aec58aecbb72668f4009d332df43b7ee3b12e059f5d0a19c6e9ea8",
+        "field_after_sha256": "71522a7224104f5d3805dcf5b73d68efc4c10bf759322516069bb28c31c957ed",
+        "scope_before_sha256": "957b1064db3d01a79b79763e6c18b22869f494e3a320c0fdf3abfa453149bb75",
+        "scope_after_sha256": "6733d15f8cf585813c8628a53ab89a1e1a8d813c564938df1b034a91d227bcc5",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 377216,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "9d5338210480c81c7dde0ae30f5f13312481b3031edbb0e48834d60d8f513940",
+        "outside_decoded_scope_sha256": "f36361d8effaf69fedf629d5c702e1bfb81920cd51c9eff0c0e1e8879a6d9ec7",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "optimal",
+            "fill": "trailing",
+            "padding_bytes": 7,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 377216,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 175312,
+          "field_size": 176992,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "13cb70dadde54da5a5a15d194b1db868768612f34ffe24d0068d804afd4a41ec",
+            "range": [
+              71424,
+              116096
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "2815331750067ddcbc357f2204c9f69a9df2075fd970d38daf84219b3b82af4b",
+            "range": [
+              116096,
+              160768
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d3f8905a2b21f079095a3e44b29013edcc026c7f14f1a99b829ef26cb17a0469",
+            "range": [
+              160768,
+              205440
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "optimal",
+          "fill": "trailing",
+          "padding_bytes": 7,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29nd.iff": {
+      "before_sha256": "4152f659b85af85e5e698fb79cda1d07105b2baf8f4ed8c6165f05171d612c28",
+      "after_sha256": "66082e78584f44fef22d9edf0df10cf3b5ab8c8e983649c3af3b6395b0b07924",
+      "payload_sha256": {
+        "endzone_N_L": "53c131791066a8bf51480614bce7be52f7fcf6b5fe138af8f79612f07c234dbf",
+        "endzone_N_M": "cdb0fef731392e6eadf672ce404f2ea99fb08275190ea3d8b4349d658c5e3c20",
+        "endzone_N_R": "f5b4e5d9c5bdd699819ac11458af819863b1d9bdb534dd30055954cb39d36ee5"
+      },
+      "receipt": {
+        "name": "s29nd.iff",
+        "before_sha256": "0442cdf53357095fa5a2e2c410d975ace0c1b70f9483e058df268f737d043ae9",
+        "after_sha256": "d4b18478c6a9a2630da402d47acf4ac5bd0d4e9cc521f5ed8bc2887ae2a9c17f",
+        "field_before_sha256": "795e7b50a5abe01b021897c6254dd0503ad9cb124e0dd085a275fd55119f4c61",
+        "field_after_sha256": "3bba29f6a573e9a1af79eac34d555efb8178c5b9d772f2c2db9e5f7f78bbc13c",
+        "scope_before_sha256": "4152f659b85af85e5e698fb79cda1d07105b2baf8f4ed8c6165f05171d612c28",
+        "scope_after_sha256": "66082e78584f44fef22d9edf0df10cf3b5ab8c8e983649c3af3b6395b0b07924",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 415440,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "b4fc7dd97f433f31e774a129c2db4c3941827c2b40f6ea566ad1e49597ad9368",
+        "outside_decoded_scope_sha256": "44b6b0b871c4dbcaae626eb4ac317f508a965be180d3462cd1a89b7ef4312287",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 10,
+            "alias_scratch": 4,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 415440,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 213536,
+          "field_size": 215216,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "53c131791066a8bf51480614bce7be52f7fcf6b5fe138af8f79612f07c234dbf",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "cdb0fef731392e6eadf672ce404f2ea99fb08275190ea3d8b4349d658c5e3c20",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "f5b4e5d9c5bdd699819ac11458af819863b1d9bdb534dd30055954cb39d36ee5",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 10,
+          "alias_scratch": 4,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29nr.iff": {
+      "before_sha256": "66c93559e25c28e402669b78bbd49f4ecb452e5b2b1068135ec13e6a4f655cd5",
+      "after_sha256": "d55e1cf93045b6af02c1033d09d8e0e250c9acdef6eedd1bfbf928aa7e67ef56",
+      "payload_sha256": {
+        "endzone_N_L": "d58d62fe4f83905fafb986a1ae9c0165f06c65cccd84edaaacd2236f2349b6c9",
+        "endzone_N_M": "1fd9b91dfd7f69ef9da6601509c662ca3757657ac4bd40be57c709fb26a4d02a",
+        "endzone_N_R": "72babf1aab912765ad146b8e7952368b263b81e858ce1116c54b1de137f01a2d"
+      },
+      "receipt": {
+        "name": "s29nr.iff",
+        "before_sha256": "da3064ad5bb13af27d9e988b97540637e5b46933347fb15277cf88b9c1d1817e",
+        "after_sha256": "1d4c8382d3c75579b45e26a568452aa7aecd00e96e42a5fea3fea3f5326ad02f",
+        "field_before_sha256": "843a09d33049f283d9b233f472667506d60623f936e5e4b71baf0c1298110440",
+        "field_after_sha256": "2062d285d55be5750c250d74f83acceeed9f76f3bbffa31df1be489ba07e309a",
+        "scope_before_sha256": "66c93559e25c28e402669b78bbd49f4ecb452e5b2b1068135ec13e6a4f655cd5",
+        "scope_after_sha256": "d55e1cf93045b6af02c1033d09d8e0e250c9acdef6eedd1bfbf928aa7e67ef56",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 419632,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "63e1d801607c3b2cda3358d9c7dbb3a66bcf8d704cc5457e4b3beceabb06a613",
+        "outside_decoded_scope_sha256": "ad4f8f0a083a87902626df6242ca51ef43768397edb12284d279559a9f299d79",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "greedy",
+            "fill": "trailing",
+            "padding_bytes": 16,
+            "alias_scratch": 8,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 419632,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 217728,
+          "field_size": 219408,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "d58d62fe4f83905fafb986a1ae9c0165f06c65cccd84edaaacd2236f2349b6c9",
+            "range": [
+              73984,
+              118656
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "1fd9b91dfd7f69ef9da6601509c662ca3757657ac4bd40be57c709fb26a4d02a",
+            "range": [
+              118656,
+              163328
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "72babf1aab912765ad146b8e7952368b263b81e858ce1116c54b1de137f01a2d",
+            "range": [
+              163328,
+              208000
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "greedy",
+          "fill": "trailing",
+          "padding_bytes": 16,
+          "alias_scratch": 8,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    },
+    "s29ns.iff": {
+      "before_sha256": "e23f563d1192d609d788775384fe9699a6f462697d4f315b3cbcb2e22c9ffeac",
+      "after_sha256": "74d8e5e174e4a5d89c24f631f44ffb870f085b82d5fcc5023fe62172b43adb6b",
+      "payload_sha256": {
+        "endzone_N_L": "2a903a96025292572bc1482376ac2d6b40c0c574d18190950af0a83f30fe45b0",
+        "endzone_N_M": "b1bc803029029ff87ca14787fa5795629306b1d3ec2c8e23feee0682dcb845c1",
+        "endzone_N_R": "6762ae0b18e4723a353278565d04f3de6c2301d564c418537871cbca87d544ab"
+      },
+      "receipt": {
+        "name": "s29ns.iff",
+        "before_sha256": "6cdf07cda278a983e99b7016e86261f35479b8dc22baf8eea4eba1239b9efb71",
+        "after_sha256": "bdc4ab44a0c549687d9da257c0645ca0bc2f0416b0f0ffb9a7eee55cbf8da8f2",
+        "field_before_sha256": "dff08237fb816cc1aecada725eaa8f4fc3301ba1e19e24fd2b6f497ffdf03b9c",
+        "field_after_sha256": "2ede17601414dd85025ad5f0403e06bc04a2e94ecff2716f69aa7e02ed6366a7",
+        "scope_before_sha256": "e23f563d1192d609d788775384fe9699a6f462697d4f315b3cbcb2e22c9ffeac",
+        "scope_after_sha256": "74d8e5e174e4a5d89c24f631f44ffb870f085b82d5fcc5023fe62172b43adb6b",
+        "scope_kind": "field_detail_prefix",
+        "scope_offset": 0,
+        "scope_size": 377152,
+        "outside_scope_identical": true,
+        "outside_scope_sha256": "2b234b9ded2ed80d971707a062691103b1060c2d3353245b5132a3667de2f64d",
+        "outside_decoded_scope_sha256": "791bfc9edbf9f2c2a1eab3b2da960446d695d65ceebb0ab3c38d69b0fad7bec2",
+        "studio_native_payload_exact": true,
+        "wrapper_identical": false,
+        "wrapper_scratch_and_decoded_sizes_identical": true,
+        "allocation_loan": {
+          "paint": {
+            "encoder": "optimal",
+            "fill": "trailing",
+            "padding_bytes": 16,
+            "alias_scratch": 0,
+            "scratch_bytes": 16
+          },
+          "allocation_loan": {
+            "old_stored": 175872,
+            "stored": 174192,
+            "loan": 1680,
+            "offset_bits": 15,
+            "encoded": 149654,
+            "expanded": 19001,
+            "scratch": 0,
+            "alias_scratch": 0,
+            "decoded_identical": true
+          },
+          "scope_offset": 0,
+          "scope_size": 377152,
+          "scope_kind": "field_detail_prefix",
+          "old_field_size": 175248,
+          "field_size": 176928,
+          "detail_layer_span_identical": true,
+          "detail_normal_decoded_identical": true,
+          "outside_prefix_identical": true
+        },
+        "textures": [
+          {
+            "material": "endzone_N_L",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "2a903a96025292572bc1482376ac2d6b40c0c574d18190950af0a83f30fe45b0",
+            "range": [
+              71424,
+              116096
+            ]
+          },
+          {
+            "material": "endzone_N_M",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "b1bc803029029ff87ca14787fa5795629306b1d3ec2c8e23feee0682dcb845c1",
+            "range": [
+              116096,
+              160768
+            ]
+          },
+          {
+            "material": "endzone_N_R",
+            "size": [
+              256,
+              128
+            ],
+            "mips": 5,
+            "payload_sha256": "6762ae0b18e4723a353278565d04f3de6c2301d564c418537871cbca87d544ab",
+            "range": [
+              160768,
+              205440
+            ]
+          }
+        ],
+        "fit": {
+          "encoder": "optimal",
+          "fill": "trailing",
+          "padding_bytes": 16,
+          "alias_scratch": 0,
+          "scratch_bytes": 16
+        },
+        "midfield_scale_xz": null,
+        "midfield_position_ranges": [],
+        "midfield_position_sha256": null
+      }
+    }
+  },
+  "midfield_scale_xz": {
+    "s27": [
+      1.49,
+      1.88
+    ]
+  },
+  "endzone_turf_from_field": {
+    "s27": true,
+    "s29": true
+  }
+}

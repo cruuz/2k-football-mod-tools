@@ -31,6 +31,7 @@ SHEET_LAYOUTS = (
     ("Five columns, two rows: 0-4 above 5-9", "grid_5x2"),
     ("Two columns, five rows: 0 1, then 2 3", "grid_2x5"),
 )
+SHEET_LAYOUT_CHOICES = (("Detect layout from image (recommended)", "auto"), *SHEET_LAYOUTS)
 SHEET_HELP = (
     "Use a 640x64 transparent PNG with ten 64x64 cells in digit order. "
     "A 64x640 column, 320x128 grid or 128x320 grid also works. "
@@ -133,12 +134,22 @@ def split_digit_sheet(
         raise ValidationError(f"Could not read that digit-sheet image: {exc}") from exc
     chosen = orientation
     if chosen == "auto":
-        if max(image.size) < 5 * min(image.size):
+        # The documented sheets have square cells. Detect grids as well as
+        # strips before considering the older long non-square strip fallback.
+        layouts = {"horizontal": (10, 1), "vertical": (1, 10),
+                   "grid_5x2": (5, 2), "grid_2x5": (2, 5)}
+        square = [key for key, (columns, rows) in layouts.items()
+                  if image.width % columns == 0 and image.height % rows == 0
+                  and image.width // columns == image.height // rows]
+        if square:
+            chosen = square[0]
+        elif max(image.size) >= 5 * min(image.size):
+            chosen = "horizontal" if image.width >= image.height else "vertical"
+        else:
             raise ValidationError(
                 f"Cannot infer the layout of a {image.width}x{image.height} sheet. "
                 "Choose its row, column or grid layout explicitly. " + SHEET_HELP
             )
-        chosen = "horizontal" if image.width >= image.height else "vertical"
     columns, rows = {"horizontal": (10, 1), "vertical": (1, 10),
                      "grid_5x2": (5, 2), "grid_2x5": (2, 5)}[chosen]
     if image.width % columns or image.height % rows:
@@ -199,4 +210,4 @@ def split_digit_sheet(
     return tuple(outputs)
 
 
-__all__ = ["DigitSheetPng", "MAX_SHEET_BYTES", "SHEET_LAYOUTS", "SHEET_HELP", "split_digit_sheet"]
+__all__ = ["DigitSheetPng", "MAX_SHEET_BYTES", "SHEET_LAYOUTS", "SHEET_LAYOUT_CHOICES", "SHEET_HELP", "split_digit_sheet"]

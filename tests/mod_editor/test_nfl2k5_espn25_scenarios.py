@@ -50,6 +50,28 @@ class AuthoringTests(unittest.TestCase):
         self.assertTrue(e.resolve_plan(changed, json.loads(json.dumps(plan)))[1])
         self.assertEqual(c.resource(113), before)
 
+    def test_historic_csv_jersey_preserves_protected_commentary(self):
+        c = self.catalog
+        before = c.resource(113)
+        raw, _ = c.import_csv(0, 'away', 'pool,index,jersey\nprimary,0,12\n')
+        changed = updated(c, {113: raw})
+        old_player = c.roster_document(0, 'away').players[0]
+        new_player = changed.roster_document(0, 'away').players[0]
+        self.assertEqual(new_player.record.values['jersey'], 12)
+        self.assertEqual(new_player.record.values['pbp_id'], old_player.record.values['pbp_id'])
+        mask = e.roster_mask(before, c.manifest['rosters']['113'])
+        self.assertTrue(all(not ((a ^ b) & ~m) for a, b, m in zip(before, raw, mask)))
+        self.assertEqual(c.resource(113), before)
+
+    def test_historic_csv_still_refuses_commentary_tampering(self):
+        raw, _ = self.catalog.import_csv(0, 'away', 'pool,index,jersey\nprimary,0,12\n')
+        tampered = bytearray(raw)
+        # Native player +0x04 is the protected two-byte commentary word.
+        at = 32 + self.catalog.manifest['rosters']['113']['primary_table'] + 4
+        tampered[at] ^= 1
+        with self.assertRaisesRegex(e.Espn25Error, 'protected field'):
+            self.catalog.validate_roster(113, bytes(tampered))
+
     def test_csv_noop_byte_identity(self):
         value = self.catalog.export_csv(0, 'away')
         raw, receipt = self.catalog.import_csv(0, 'away', value)

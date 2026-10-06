@@ -11,6 +11,66 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-76.5 — 2026-10-06
+
+2K5 is **v1.0-RC110** and APF is **0.1.0-alpha.106**. The SOFTDRINK pack target is
+**2K28 v0.5**. These changes have offline/native proof and reviewed machine
+captures where described. Noah's gameplay and audio checks remain pending.
+The full details and limits are in the [2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md)
+and [APF changelog](docs/mod_editor/apf2k8_mod_studio_changelog.md).
+
+- Commentary selects recorded surnames or jersey numbers, and generated prospects follow their final assigned number. Thanks to Skittleology and SOFTDRINKTV.
+- The dated free-agent pool grows from 239 to 377, including 18 quarterbacks; new ratings remain labeled estimates.
+- Every dated free-agent refresh restores the original 155 real import/Create Player vacancies inside the existing roster size. Every new vacancy has private name buffers; native boot, save/load, all 51 moments and 102 book sides passed offline checks.
+- Free agents receive sourced generic appearance and absent photo selectors checked against the known face and portrait catalogs; no bespoke likenesses are promised.
+- Free-agent refreshes and commentary repairs compose while preserving each writer's declared scope.
+- Historical roster imports and ability assignment/undo preserve unrelated commentary words; final Studio builds and saves still repair commentary identities.
+- Historical Catalog CSV edits also defer commentary normalization within their protected byte scope; unrelated commentary edits still refuse.
+- Complete roster transfers carry the selected face, shape and portrait art, including Lamar's disc appearance. Thanks to Coach Edwards.
+- Facemask shell fitting preserves the cage's clearance from the face; close-up gameplay still needs review.
+- Patriots shoulder bands meet at their native seam, with revised numbers and facemask colour. Thanks to davidhbui.
+- Chargers numbers use the modern italic family; ARI, CIN, DEN, DET, HOU, MIA, MIN and TEN receive authored modern digit families. Photo-derived contours remain approximations.
+- Giants logo mip1 receives a bounded filter correction; the reported moving wobble remains unconfirmed.
+- Crowd atlas phase continues across adjoining sectors in 135 stadium variants; reviewed AT&T and State Farm machine frames do not establish animation or every angle.
+- Atlanta gains the fused ATL/Falcons end stencil and side words, with one antialiased reduction and an estimated larger midfield footprint.
+- Denver receives its missing midfield overlay with full native artwork; the roughly 10-yard footprint remains an estimate.
+- Miami daytime receives the midfield overlay at the existing afternoon/night placement; the other six variants stay byte-identical.
+- Pittsburgh receives a full-resolution midfield overlay, including snow, using a lossless allocation loan that preserves the full normal map.
+- Houston gains separate TEXANS/HOUSTON black ends, the white bull and the black/white field H; footprints and end assignment remain estimates.
+- Detroit gains distinct LIONS/DETROIT ends from reviewed contours, using a lossless normal-map allocation loan without reducing native panels.
+- Cleveland gains distinct BROWNS/CLEVELAND white/orange paint on turf, removing obsolete helmets and brown fill while retaining full native panels.
+- Tampa Bay receives the reviewed red/white/black turf lettering and flags, with an estimated larger midfield footprint.
+- Washington gains burgundy/gold COMMANDERS paint and current-W helmet overlays on clean turf; a lossless 1,680-byte allocation loan preserves full normal detail.
+- Stadium play-clock digits put tens and ones in the correct positions across 153 variants. Thanks to nwostar.
+- Base spin, truck and juke inputs are enabled by default while ability bonuses remain; move locks stay explicit options. Thanks to Ju3tin.
+- Risky deep HB flats gain an upfield route leg, and a guarded ruling repair preserves backward throws while preventing the stock near-forward miscall. Thanks to Smuzz.
+- Modern Anniversary sides load their current franchise books; older moments retain stock books. Thanks to Ju3tin.
+- The modern-book resolver includes the 51st Unc Bowl row and composes with chronological selection; exact earlier resolver code upgrades without changing its allocation.
+- Anniversary has 51 chronological moments, including the Unc Bowl, with dedicated fields and explicit period-art, uniform and venue approximations.
+- The two new 2025 Anniversary teams disclose 32 unresearched template appearances among 106 players; the appearance audit checks that exact fallback set.
+- Coach's Desk loses the incomplete Practice Squad entry; native final cuts release players to free agency, and Studio upgrades old hooks while preserving legacy reserve compatibility.
+- Valid customized SOFTDRINK recipes, including Windows CRLF, normalize before expensive work. Thanks to IanD and Ju3tin.
+- Portable launchers check every dependency, disc recognition avoids an unnecessary NumPy import, and packaged runtimes receive import checks. Thanks to GoldenTiger.
+- Source checkouts no longer carry an absolute link to a machine-local retail extraction; native validation uses explicit read-only inputs.
+- Offline stadium diagnostics work without SciPy or Numba; those packages remain optional accelerators. Direct Anniversary test runs now include the appearance and star-copy QC classes.
+- Canceling a build waits for its pipe readers without a second reader closing the same streams, preserving the cancellation result.
+- Packaged checks and stadium repair/audit reports write explicit LF text on Linux and Windows.
+- Large builds avoid repeated scans and show steady elapsed progress. Coach Edwards' original project is still needed to check his own reported slowdown.
+- Unsupported stadium-board inputs fail before compilation with filenames and a remedy. Thanks to Coach Edwards.
+- Digit import detects supported strip and grid layouts while preserving digit order. Thanks to Coach Edwards.
+- Share explains [Install SOFTDRINK 2K28 in 5 steps](docs/mod_editor/install_softdrink_2k28.md), the completed image and fresh-franchise loading. Thanks to GoldenTiger, 57k, SKILLZY, Demaster41403, JamilTheTrueKing, GoldenArc and jay.
+- APF revision 4 situation weights affect personnel-category contributions and formation selection. Native checks cover BASE and TU 1.1; gameplay awaits Urianus.
+- APF Live Call Preview includes pending edits, and shared first-down samples are labeled.
+- APF charged discharge preserves the qualified move's second-level effect through native cleanup. Matching patch profiles and a Xenia restart remain required.
+- APF's VIP reader is lossless and read-only; CPU VIP assignment remains research.
+- The standalone VIP reader finds its sibling decoder when launched through an embedded runtime.
+
+Modern practice-squad management is deferred pending allocator migration and
+contract/history ledgers. CER's post-playcall hang, SharkMagick's exact WR TD
+graphic and APF DL behavior remain unresolved. Minnesota's first-position-only
+horn binding remains unfinished. No canned weekly highlights or new Noah
+gameplay witness are claimed.
+
 ## beta-46 — 2026-08-15
 
 **The two broken Beta 45 Playbooks actions are repaired, and the raw WR3↔TE

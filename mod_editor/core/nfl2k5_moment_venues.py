@@ -1,4 +1,4 @@
-"""Moment-only venue text. Shared stadium records and gameplay getters stay intact.
+"""Moment-only venue text and dedicated Anniversary stadium bundle aliases.
 
 The names retain the audit's INFERRED historical classification. Native readers
 and isolation are checked offline; rendered presentation remains a lab check.
@@ -18,6 +18,7 @@ from .nfl2k5_draft_ai import _Asm
 OWNER = "nfl2k5_moment_venues"
 BUILD_CAPTION = UI_LABEL = "Historical Anniversary venue names"
 CODE_SIZE, TABLE = 2304, 256
+FILENAME_HOOK = ("filename", 0x62C96, bytes.fromhex("668974240c"))
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 DATA = Path(__file__).resolve().parents[2] / "data/nfl2k5_moment_venues.json"
 # Preview: after m1's record/cell getter, before native wide-string formatting.
@@ -45,10 +46,12 @@ def rows():
     require([r["row"] for r in result] == list(range(1, 51)), "venue ordinal table")
     require(all(isinstance(r["venue"], str) and r["venue"].isascii()
                 and 0 < len(r["venue"]) <= 64 and "\0" not in r["venue"] for r in result), "venue names")
-    return result
+    return result + [dict(row=51, date="2025-10-16", venue="Paycor Stadium",
+                         classification="PFR / official gamebook", sources=[
+                             "https://www.pro-football-reference.com/boxscores/202510160cin.htm"])]
 
 
-def code_for(va, spans=None):
+def code_for(va, spans=None, *, legacy=False):
     spans = spans or [dict(va=va, size=CODE_SIZE, owner_offset=0)]
     require(spans[0]["size"] >= TABLE + 200, "venue entry/table must be contiguous")
 
@@ -73,7 +76,7 @@ def code_for(va, spans=None):
         a.b("a164fee5009c52")
         a.b("833d80ffe50008")
         a.j32("0f85", label + "_done")
-        a.b("8b155818bf0083fa32")
+        a.b("8b155818bf0083fa" + ("32" if legacy else "33"))
         a.j32("0f83", label + "_done")
         a.b("8d0495" + struct.pack("<I", va + TABLE - offset).hex())
         a.label(label + "_done")
@@ -85,16 +88,17 @@ def code_for(va, spans=None):
     b = _Asm(va + 128)
     b.b("9c52" "833d80ffe50008")
     b.j32("0f85", "done")
-    b.b("8b155818bf0083fa32")
+    b.b("8b155818bf0083fa" + ("32" if legacy else "33"))
     b.j32("0f83", "done")
     b.b("8b0495" + struct.pack("<I", va + TABLE).hex())
     b.label("done")
     b.b("5a9dc3")
     body.extend(b.assemble())
     body.extend(b"\xcc" * (TABLE - len(body)))
-    body.extend(bytes(50 * 4))
+    selected = rows()[:50] if legacy else rows()
+    body.extend(bytes(len(selected) * 4))
     texts = {}
-    for i, row in enumerate(rows()):
+    for i, row in enumerate(selected):
         name = row["venue"]
         if name not in texts:
             raw = (name + "\0").encode("utf-16le")
@@ -104,9 +108,29 @@ def code_for(va, spans=None):
             texts[name] = address(len(body), len(raw))
             body.extend(raw)
         struct.pack_into("<I", body, TABLE + 4 * i, texts[name])
-    require(len(body) <= CODE_SIZE, "venue text budget")
+    if not legacy:
+        # Preserve the normal suffix and all physical stadium reads. Only mode 8
+        # and a valid physical SITU row receive a00..a50 aliases. Stale ordinals
+        # cannot affect Quick Game or franchise. The helper stays wholly inside
+        # the last owned span; the 2304-byte owner does not grow or move.
+        start = (len(body) + 15) & ~15
+        require(address(start, 112) is not None, "filename helper crosses owned spans")
+        body.extend(b"\xcc" * (start - len(body)))
+        f = _Asm(address(start, 112))
+        f.b("9c60" "833d80ffe50008")
+        f.j32("0f85", "filename_done")
+        f.b("a15818bf00" "83f833")
+        f.j32("0f83", "filename_done")
+        f.b("66c705d006b3006100" "31d2" "b90a000000" "f7f1")
+        f.b("6683c030" "66a3d206b300" "6683c230" "668915d406b300")
+        f.label("filename_done")
+        f.b("619d668974240c")
+        f.jmp_abs(FILENAME_HOOK[1] + len(FILENAME_HOOK[2]))
+        labels["filename"] = address(start, 112) - va
+        body.extend(f.assemble())
+    require(len(body) <= CODE_SIZE, "venue text/filename budget")
     edits = []
-    for label, site, before in HOOKS:
+    for label, site, before in HOOKS + (() if legacy else (FILENAME_HOOK,)):
         opcode = b"\xe8" if label in ("report", "presentation") else b"\xe9"
         edits.append((site, before, (opcode + struct.pack("<i", va + labels[label] - site - 5)).ljust(len(before), b"\x90")))
     return bytes(body).ljust(CODE_SIZE, b"\xcc"), edits
@@ -128,6 +152,12 @@ def _recognize(payload):
     states = {"retail" if image.read(site, len(before)) == before else
               "applied" if owned and image.read(site, len(after)) == after else "foreign"
               for site, before, after in edits}
+    if states not in ({"retail"}, {"applied"}) and owned:
+        old, old_edits = code_for(owned["va"], owned["spans"], legacy=True)
+        if (all(image.read(site, len(after)) == after for site, _, after in old_edits)
+                and image.read(FILENAME_HOOK[1], len(FILENAME_HOOK[2])) == FILENAME_HOOK[2]
+                and b"".join(image.read(r["va"], r["size"]) for r in owned["spans"]) == old):
+            return "legacy"
     require(states in ({"retail"}, {"applied"}), "foreign/mixed venue hooks")
     state = next(iter(states))
     if owned:
@@ -149,7 +179,7 @@ def underlying(payload):
     if state == "retail":
         return payload
     out, image = bytearray(payload), XbeImage(payload)
-    for _label, site, before in HOOKS:
+    for _label, site, before in HOOKS + (FILENAME_HOOK,):
         at = image.offset(site, len(before))
         out[at:at + len(before)] = before
     return seal(out)
@@ -173,6 +203,20 @@ def apply(payload, *, enabled=True):
     owned = allocation(payload)
     body, edits = code_for(owned["va"], owned["spans"])
     if enabled:
+        if before == "legacy":
+            # _recognize has proved every byte of the old owner. Retire that
+            # body before using the allocator's ordinary same-body guard.
+            _, _, requests = space._validate(payload)
+            cleared, image = bytearray(payload), XbeImage(payload)
+            for part in owned["spans"]:
+                at = image.offset(part["va"], part["size"])
+                cleared[at:at + part["size"]] = b"\xcc" * part["size"]
+            if space.is_scaleout(payload):
+                space._seal_scaleout(cleared, requests)
+            else:
+                cleared[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                    requests, space._code_bytes(cleared, requests))
+            payload = seal(cleared)
         payload, _ = space.install_code(payload, OWNER, body)
     out, image = bytearray(payload), XbeImage(payload)
     for site, retail, installed in edits:
@@ -180,6 +224,6 @@ def apply(payload, *, enabled=True):
         out[at:at + len(retail)] = installed if enabled else retail
     result = seal(out)
     require(status(result) == desired, "venue read-back failed")
-    return result, dict(status=desired, owner=OWNER, rows=50, runtime_witnessed=False,
+    return result, dict(status=desired, owner=OWNER, rows=51, dedicated_field_aliases=True, runtime_witnessed=False,
                         data_sha256=hashlib.sha256(DATA.read_bytes()).hexdigest(),
                         changed_bytes=sum(a != b for a, b in zip(original, result)))

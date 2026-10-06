@@ -486,7 +486,15 @@ def roster_pool(inputs: Inputs, team_spec: dict) -> tuple[list[dict], str]:
         rows = [r for r in inputs.rows(f"roster_weekly_{season}.csv")
                 if r["team"] in club_codes(club) and str(r["week"]) == str(week) and r["status"] in keep_weekly]
         require(rows, f"{team_spec['key']}: no weekly roster rows for {club} week {week}")
-        return rows, f"roster_weekly_{season}.csv week {week} (ACT and INA)"
+        # Some game books list 52 people; retain a sourced same-week practice reserve to fill the engine's 53 slots.
+        reserves = team_spec.get("practice_reserves", [])
+        for name in reserves:
+            hits = [r for r in inputs.rows(f"roster_weekly_{season}.csv")
+                    if r["team"] in club_codes(club) and str(r["week"]) == str(week)
+                    and r["status"] == "DEV" and ascii_name(r["full_name"]) == name]
+            require(len(hits) == 1, f"{team_spec['key']}: practice reserve {name} lacks unique same-week evidence")
+            rows.append(hits[0])
+        return rows, f"roster_weekly_{season}.csv week {week} (ACT and INA)" + (f"; explicit practice reserves: {reserves}" if reserves else "")
     rows = [r for r in inputs.rows(f"roster_{season}.csv") if r["team"] in club_codes(club) and r["status"] == "ACT"]
     require(rows, f"{team_spec['key']}: no season roster rows")
     return rows, f"roster_{season}.csv (ACT)"

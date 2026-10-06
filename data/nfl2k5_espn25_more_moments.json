@@ -1098,6 +1098,50 @@
       ],
       "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
       "notes": "Starts in regulation (overtime starts are not proved): the Chiefs' tying drive."
+    },
+    {
+      "id": "unc_bowl",
+      "title": "THE UNC BOWL",
+      "date": "October 16, 2025",
+      "history": "Forty-one-year-old Aaron Rodgers and forty-year-old Joe Flacco traded touchdowns on Thursday night. Rodgers hit Pat Freiermuth for a 68-yard score to put Pittsburgh ahead 31-30 with 2:21 left. Flacco answered with completions to Ja'Marr Chase and Tee Higgins, setting up Evan McPherson's winning 36-yard field goal with seven seconds remaining. Cincinnati won 33-31.",
+      "goal": "Lead Flacco and the Bengals downfield to beat Rodgers and the Steelers.",
+      "stadium": "Paycor Stadium",
+      "stadium_index": 6,
+      "stadium_note": "Retail Paul Brown Stadium geometry: same physical venue renamed Paycor; dedicated White Bengal field.",
+      "away": "steelers_2025",
+      "home": "bengals_2025",
+      "user_side": "home",
+      "possession": "home",
+      "score_now": {
+        "away": 31,
+        "home": 30
+      },
+      "final_score": {
+        "away": 31,
+        "home": 33
+      },
+      "quarter": 4,
+      "clock": "2:15",
+      "down": 1,
+      "distance": 10,
+      "ball_on": "CIN 30",
+      "timeouts": {
+        "away": 3,
+        "home": 2
+      },
+      "weather": "clear",
+      "time_of_day": "night",
+      "temperature": 60,
+      "kits": {
+        "away": 0,
+        "home": 0
+      },
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/202510160cin.htm",
+        "https://static.www.nfl.com/image/upload/v1760689149/gamecenter/f7326a3b-311e-11f0-b670-ae1250fadad1.pdf",
+        "https://www.bengals.com/news/white-bengal-2025-thursday-night-football-pittsburgh-steelers"
+      ],
+      "evidence": "PFR indexed boxscore verifies date,venue,final score,scoring and QB totals. Full PFR request403; official NFL gamebook verifies starters,first scrimmage snap,weather,timeouts and drive. Ratings are estimates from the existing season model. Offline only."
     }
   ]
 }

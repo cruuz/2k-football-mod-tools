@@ -527,6 +527,7 @@ def _drain_windows_job(group: WindowsProcessGroup) -> int | None:
 def stop_windows_process_group(
     process: "subprocess.Popen[str] | subprocess.Popen[bytes]",
     group: WindowsProcessGroup | None,
+    *, pipes_drained_by_readers: bool = False,
 ) -> bool:
     """Stop a child and its descendants through the job object; report success.
 
@@ -540,6 +541,7 @@ def stop_windows_process_group(
     surface its own product error; the job handle is always released here.
     """
 
+    finish_process = process.wait if pipes_drained_by_readers else process.communicate
     if group is None:
         # No job: only the direct child is reachable.  Stop it and report on the
         # same evidence the POSIX path uses -- an observed survivor, never merely
@@ -549,14 +551,14 @@ def stop_windows_process_group(
         except OSError:
             pass
         try:
-            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+            finish_process(timeout=PROCESS_STOP_GRACE_SECONDS)
         except (subprocess.TimeoutExpired, OSError):
             pass
         return process.poll() is not None
     try:
         group.terminate()
         try:
-            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+            finish_process(timeout=PROCESS_STOP_GRACE_SECONDS)
         except (subprocess.TimeoutExpired, OSError):
             pass
         count = _drain_windows_job(group)
@@ -611,6 +613,7 @@ class SubprocessBuildCommandRunner:
                 f"Check that Python is installed and try again ({exc})."
             ) from exc
         group = adopt_process_group(process, was_suspended=suspended)
+        readers = []
         try:
             # Drain both pipes while the owning worker polls cancellation.
             # The old heartbeat noticed Cancel but communicate() kept waiting.
@@ -618,10 +621,13 @@ class SubprocessBuildCommandRunner:
             lines = queue.Queue()
             outputs = [[], []]
             def drain(stream, number):
-                for line in stream:
-                    outputs[number].append(line)
-                    if number == 0:
-                        lines.put(line)
+                try:
+                    for line in stream:
+                        outputs[number].append(line)
+                        if number == 0:
+                            lines.put(line)
+                finally:
+                    stream.close()
             readers = [threading.Thread(target=drain, args=(stream, n), daemon=True)
                        for n, stream in enumerate((process.stdout, process.stderr))]
             for reader in readers:
@@ -645,7 +651,31 @@ class SubprocessBuildCommandRunner:
         except BaseException:
             # The backend owns only paths below our staging directory.  Stop its
             # whole process group before that directory is removed.
-            self._stop_process_group(process, group)
+            self._stop_process_group(
+                process, group, pipes_drained_by_readers=any(
+                    reader.ident is not None for reader in readers
+                )
+            )
+            # The readers retain exclusive ownership of stdout and stderr;
+            # teardown only waits for the child. Rejoin them before returning
+            # control to the staging cleanup or surfacing the original cancel.
+            for reader in readers:
+                if reader.ident is not None:
+                    reader.join(timeout=PROCESS_STOP_GRACE_SECONDS)
+            if any(reader.is_alive() for reader in readers):
+                if not platform_compat.IS_WINDOWS:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                for reader in readers:
+                    if reader.ident is not None:
+                        reader.join(timeout=PROCESS_STOP_GRACE_SECONDS)
+                if any(reader.is_alive() for reader in readers):
+                    raise Nfl2k5BuildError(
+                        "The ISO builder still has an active output reader; "
+                        "no output was published."
+                    )
             raise
         # The backend has exited and its pipes are drained.  POSIX leaves the
         # group alone on this path and always has; Windows has one extra thing
@@ -658,31 +688,35 @@ class SubprocessBuildCommandRunner:
     def _stop_process_group(
         process: subprocess.Popen[str],
         group: WindowsProcessGroup | None = None,
+        *, pipes_drained_by_readers: bool = False,
     ) -> None:
         if platform_compat.IS_WINDOWS:
             # Deliberately ahead of the "direct child already exited" shortcut
             # below: on Windows the job can still hold descendants the exited
             # launcher started, and those are what would keep writing into the
             # staging directory we are about to remove.
-            if not stop_windows_process_group(process, group):
+            if not stop_windows_process_group(
+                process, group, pipes_drained_by_readers=pipes_drained_by_readers
+            ):
                 raise Nfl2k5BuildError(
                     "The ISO builder left a background process that could not be "
                     "stopped. Sign out or restart Windows before building again; "
                     "no output was published."
                 )
             return
-        if process.poll() is not None:
+        if process.poll() is not None and not pipes_drained_by_readers:
             return
+        finish_process = process.wait if pipes_drained_by_readers else process.communicate
         try:
             os.killpg(process.pid, signal.SIGTERM)
-            process.communicate(timeout=3)
+            finish_process(timeout=3)
         except (ProcessLookupError, subprocess.TimeoutExpired):
             if process.poll() is None:
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-                process.communicate()
+                finish_process()
 
 
 def _emit(progress: BuildProgress | None, stage: BuildStage,
@@ -1676,37 +1710,56 @@ class Nfl2k5BuildService:
         """Report a quiet subprocess, including copy bytes, without pipe flooding."""
         if progress is None:
             return self.runner.run(command, ROOT)
+        started = time.monotonic()
+        stage = BuildStage.VERIFYING if command[2] == "verify" else BuildStage.BUILDING
+        activity = {"message": ("Checking project changes" if stage == BuildStage.VERIFYING
+                                else "Preparing project changes"), "done": 0, "total": 0}
+        def pulse():
+            copied = staged.stat().st_size if staged.exists() else 0
+            if stage == BuildStage.BUILDING and 0 < copied < size:
+                activity.update(message="Copying disc image", done=copied, total=size)
+            elif activity["message"] == "Copying disc image":
+                activity.update(message="Checking project changes", done=0, total=0)
+            elapsed = int(time.monotonic() - started)
+            _emit(progress, stage, activity["done"], activity["total"],
+                  f'{activity["message"]} ({elapsed // 60}:{elapsed % 60:02d} elapsed)')
         if isinstance(self.runner, SubprocessBuildCommandRunner):
-            last = [0.0]
+            last = [started]
             def report_line(line):
                 if line.startswith('NFL2K5_BUILD_ITEM '):
                     try:
                         row = json.loads(line.split(' ', 1)[1])
-                        _emit(progress, BuildStage.BUILDING, row['done'], row['total'], row['message'])
+                        activity.update(message=row['message'], done=row['done'], total=row['total'])
+                        _emit(progress, stage, row['done'], row['total'], row['message'])
+                        last[0] = time.monotonic()
                     except (KeyError, TypeError, ValueError):
                         pass
+                elif line.startswith('NFL2K5_BUILD_PHASE '):
+                    phase = line.split()[1]
+                    message = {"source_validation": "Compiling project textures",
+                               "compile": "Checking project textures against the source",
+                               "bind_source": "Copying disc image",
+                               "copy": "Checking written project changes",
+                               "write_spans": "Saving project receipts",
+                               "artifacts_and_directory": "Checking disc bytes",
+                               "full_identity_check": "Saving the build receipt"}.get(phase)
+                    if message:
+                        activity.update(message=message, done=0, total=0)
+                        _emit(progress, stage, 0, 0, message)
+                        last[0] = time.monotonic()
             def poll():
                 from .nfl2k5_project_fit import check_cancelled
                 check_cancelled(progress)
-                if time.monotonic() - last[0] >= 0.25:
+                if time.monotonic() - last[0] >= 1.0:
                     last[0] = time.monotonic()
-                    copied = staged.stat().st_size if staged.exists() else 0
-                    if 0 < copied < size:
-                        _emit(progress, BuildStage.BUILDING, copied, size, 'Copying disc image')
+                    pulse()
             return self.runner.run(command, ROOT, poll=poll, line_sink=report_line)
         stopped = threading.Event()
         failures = []
         def heartbeat():
             while not stopped.wait(1.0):
                 try:
-                    copied = staged.stat().st_size if staged.exists() else 0
-                    copying = 0 < copied < size
-                    message = ("Copying disc image" if copying
-                               else "Preparing project changes (reusing cached compiles where available)" if copied == 0
-                               else "Checking project changes")
-                    _emit(progress, BuildStage.BUILDING, copied if copying else 1,
-                          size if copying else 4,
-                          message)
+                    pulse()
                 except BaseException as exc:
                     failures.append(exc)
                     return
@@ -1746,6 +1799,62 @@ class Nfl2k5BuildService:
         return source
 
     @staticmethod
+    def _project_document(source_path: Path) -> tuple[Path, dict]:
+        """Read an editable recipe; whitespace is not authored game data."""
+        def unique_fields(pairs):
+            fields = {}
+            for key, value in pairs:
+                if key in fields:
+                    raise ValidationError(
+                        f"The build recipe repeats the field '{key}'. Save the project again, "
+                        "or extract fresh SOFTDRINK sources."
+                    )
+                fields[key] = value
+            return fields
+        try:
+            path, payload = _read_regular_snapshot(
+                source_path, "mod project", MAX_PROJECT_BYTES)
+            value = json.loads(payload, object_pairs_hook=unique_fields)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValidationError(
+                "The build recipe cannot be read. Save the project again, or "
+                "extract the SOFTDRINK sources into a new folder."
+            ) from exc
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"schema", "purpose", "edits"}
+            or value.get("schema") != PROJECT_SCHEMA
+            or not isinstance(value.get("purpose"), str)
+            or not value["purpose"]
+            or not isinstance(value.get("edits"), list)
+            or len(value["edits"]) > 25_000
+            or any(not isinstance(edit, dict) or not isinstance(edit.get("kind"), str)
+                   for edit in value["edits"])
+        ):
+            raise ValidationError(
+                "The selected file is not a Studio artwork build recipe. "
+                "Select SOFTDRINK-league-project.json from the extracted sources, "
+                "or save the open project again."
+            )
+        return path, value
+
+    def preflight_project(self, project) -> dict:
+        """Check recipe shape before indexing, compiling textures or copying a disc."""
+        with tempfile.TemporaryDirectory(prefix="2k5-recipe-check-") as folder:
+            path, _ = self._project_path(project, Path(folder))
+            document = json.loads(path.read_bytes())
+            if document["edits"]:
+                from tools.nfl2k5_visual_mod_project import read_project
+                try:
+                    read_project(path)
+                except ValueError as exc:
+                    raise ValidationError(
+                        f"The artwork recipe needs attention before building: {exc}. "
+                        "Save the project again or extract fresh SOFTDRINK sources."
+                    ) from exc
+            return document
+
+    @staticmethod
     def _project_path(
         project: Path | str | CanonicalProjectWriter, stage: Path,
     ) -> tuple[Path, bool]:
@@ -1765,26 +1874,7 @@ class Nfl2k5BuildService:
                     "The open project wrote its build recipe to an unexpected location."
                 )
             source_path = destination
-        try:
-            path, payload = _read_regular_snapshot(
-                source_path, "mod project", MAX_PROJECT_BYTES)
-            value = json.loads(payload)
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ValidationError("The mod project is not valid JSON") from exc
-        canonical = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
-        if (
-            payload != canonical
-            or not isinstance(value, dict)
-            or set(value) != {"schema", "purpose", "edits"}
-            or value.get("schema") != PROJECT_SCHEMA
-            or not isinstance(value.get("purpose"), str)
-            or not value["purpose"]
-            or not isinstance(value.get("edits"), list)
-            or not value["edits"]
-        ):
-            raise ValidationError(
-                "The mod project is not a canonical 2K5 Mod Studio build recipe."
-            )
+        path, value = Nfl2k5BuildService._project_document(source_path)
         needs_audio_safety = any(
             isinstance(edit, dict)
             and isinstance(edit.get("kind"), str)

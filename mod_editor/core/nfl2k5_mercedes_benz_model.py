@@ -1306,7 +1306,7 @@ def adjust_digits(shape, sc, model):
                 zs = 1 if n % 2 == 0 else -1
                 side = -1 if mname.endswith("_L") else 1
                 wall_z = model.p["loop"]["zs"] if zs > 0 else model.p["loop"]["zn"]
-                centre = np.array([side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
+                centre = np.array([-side * 0.9 * zs, 2.7, zs * (wall_z - 0.08)])
                 sm._place_quad(P, UV, quad, centre, np.array([-zs, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]), 0.75, 1.1)
             else:
                 s_ = strips[n % 2]
@@ -1567,6 +1567,44 @@ def remap_grass_uv(out, rec):
     return changed
 
 
+class TeamFieldArt(dict):
+    """Native field pixels plus explicit, optional placement from a reviewed manifest."""
+    midfield_scale = 1.0
+
+
+def scale_midfield(out, rec, scale):
+    """Scale only the four private midfield overlay positions about the field centre.
+
+    The quad's original dimensions are pinned; UVs, draw commands, yard marks,
+    shape bounds and every other vertex remain unchanged. Calling on a field with
+    unrelated or already moved positions refuses, rather than multiplying again.
+    """
+    if scale == 1.0:
+        return []
+    sb.require(0.5 <= scale <= 2.0, "midfield scale is outside the reviewed range")
+    g = sm._field_shape(rec, "D_graphic_overlays")
+    ids = sm._submesh_vertices(rec, out, g, "center_logo")
+    sb.require(len(ids) == 4, "midfield overlay must use exactly four vertices")
+    for sub in rec["submeshes"]:
+        if sub["shape_index"] == g["index"] and sub["material_name"] != "center_logo":
+            words = bytes(out[sub["command_offset"]:sub["command_offset"] + 4*sub["primary_command_word_count"]])
+            others={i for _mode,indices in sb.decode_words(words) for i in indices}
+            sb.require(not others.intersection(ids), "midfield vertices are shared with another field draw")
+    st0 = sm._stream(g, 0)
+    sites=[];positions=[]
+    for i in sorted(ids):
+        at=st0["offset"]+st0["stride"]*i
+        x,y,z=struct.unpack_from("<3f",out,at)
+        sb.require(abs(abs(x)-423.2652893066406)<0.01 and abs(abs(z)-457.5841064453125)<0.01
+                   and abs(y)<0.01, "the midfield quad differs from the supported s01 placement")
+        positions.append((at,x,z))
+        sites.extend([(at,at+4),(at+8,at+12)])
+    for at,x,z in positions:
+        struct.pack_into("<f",out,at,x*scale)
+        struct.pack_into("<f",out,at+8,z*scale)
+    return sites
+
+
 def team_field_art(art_root):
     """{material: RGBA} of the Falcons' field art in a league art root (``<root>/<team dir>/venue`` for prefix s01), or
     {} when the root has none."""
@@ -1577,8 +1615,10 @@ def team_field_art(art_root):
     venue = art["venues"].get(VENUE)
     if venue is None:
         return {}
-    return {item["key"]: np.asarray(item["rgba"]) for item in venue["items"]
-            if item.get("scene") == "field" and item.get("key") in TEAM_FIELD}
+    result = TeamFieldArt({item["key"]: np.asarray(mv._art_at(item, *item["size"])) for item in venue["items"]
+                          if item.get("scene") == "field" and item.get("key") in TEAM_FIELD})
+    result.midfield_scale = venue.get("mercedes_midfield_scale", 1.0)
+    return result
 
 
 def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False):
@@ -1605,6 +1645,7 @@ def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False
     if STADIUM_LOGO in rows:
         row = rows[STADIUM_LOGO]
         ml.write_p8(out, system, row, np.zeros((int(row["height"]), int(row["width"]), 4), np.uint8), maximum=cap)
+    midfield_scale = getattr(team, "midfield_scale", 1.0)
     team = dict(team or {})
     split = any(k in team for k in SOUTH_ENDZONE)
     detail = sm._half_detail if half else (lambda a: a)
@@ -1619,6 +1660,7 @@ def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False
     if split:
         split_endzones(out, rec, system, team, over_grass, weather, cap, detail=detail)
     remap_grass_uv(out, rec)
+    scale_midfield(out, rec, midfield_scale)
     return bytes(out)
 
 

@@ -1,5 +1,52 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC110, beta 76.5: SOFTDRINK repairs and reliable Studio builds
+
+These fixes have offline/native proof and reviewed machine captures where stated. Noah has not supplied a new gameplay witness. Load the new disc roster and start a fresh franchise for roster changes; old saves retain embedded records.
+
+- Commentary now uses a verified recorded surname or the player's jersey-number cue instead of the recorded “double zero” ordinal. Newly generated prospects follow their final assigned number through native fallback. Thanks to Skittleology and SOFTDRINKTV for the reports; live audio still needs a listening check.
+- The dated SOFTDRINK free-agent pool grows from 239 to 377, including 18 quarterbacks. New real-player ratings are labeled estimates on the existing scale.
+- Every dated free-agent refresh restores the original 155 real import/Create Player vacancies for retail Anniversary, added moments, historic Quick Game and ordinary Create Player by inserting 140 blank primary records into verified unused name-pool space. All 377 free agents, 380 draft records, old player identities and fixed arena/save geometry remain. The 280 new name buffers are private, so editing one player cannot rename another. Native boot, Create Player edits, roster save/load, all 51 moments and 102 playbook sides passed offline checks; Noah still needs a gameplay check.
+- Free-agent refreshes preserve existing commentary words until the final number repair, so the two fixes compose within their declared roster scopes on an earlier disc.
+- Historical roster imports and ability assignment/undo preserve unrelated commentary fields. Commentary repair follows identity changes and the final Studio build/save pass; bounded appearance, rating and ability edits keep their own byte scopes.
+- Historical Catalog CSV imports defer commentary normalization while their strict protected-byte mask is active. Jersey/name changes keep unrelated commentary exact, and tampering still refuses. Final Studio saves retain their commentary repair.
+- Free agents use sourced generic appearance and absent photo selectors that avoid known face/portrait collisions. Existing sourced portraits are retained; these are generic heads, not new bespoke likenesses. Noah still needs to check the loaded roster and fresh-franchise models.
+- Complete roster export/import now carries validated selected face, shape and portrait assets, preserving Lamar's chosen disc art when transferring to another project. Thanks to Coach Edwards; the reported screen itself was not reproduced.
+- Modern facemasks keep their cage away from the face instead of flattening it during shell fitting. Native geometry and helmet collection checks prove the new clearance; coin-toss and replay views still need Noah's check.
+- Patriots shoulder bands meet across their native seam, with updated number artwork and facemask colour. Thanks to davidhbui; the full font remains a photo-derived approximation.
+- Chargers jersey and helmet number artwork uses the modern italic family. Arizona, Cincinnati, Denver, Detroit, Houston, Miami, Minnesota and Tennessee receive the authored modern base digit families. Minnesota's first-position-only horn binding remains unfinished.
+- Giants helmet-logo mip1 receives a bounded filter refinement while base pixels, coarse levels, palette, UVs and shell stay exact. The moving “wobble” is unconfirmed; this small texture change is not claimed to resolve it.
+- SoFi-derived crowds retain atlas phase across adjacent sectors. All 135 repaired variants have zero complete active-column join discontinuities in native checks. AT&T day/night and State Farm machine frames were reviewed; animated crowds, occlusion and remaining geometry candidates still need gameplay review.
+- Atlanta gains the fused ATL/Falcons end stencil and side words, with one antialiased reduction and an estimated larger midfield footprint.
+- Denver receives its missing midfield overlay with full native artwork; the roughly 10-yard footprint remains an estimate.
+- Miami daytime receives the midfield overlay at the existing afternoon/night placement; the other six variants stay byte-identical.
+- Pittsburgh receives a full-resolution midfield overlay, including snow, using a lossless allocation loan that preserves the full normal map.
+- Houston gains separate TEXANS/HOUSTON black ends, the white bull and the black/white field H; footprints and end assignment remain estimates.
+- Detroit gains distinct LIONS/DETROIT ends from reviewed contours, using a lossless normal-map allocation loan without reducing native panels.
+- Cleveland gains distinct BROWNS/CLEVELAND white/orange paint on turf, removing obsolete helmets and brown fill while retaining full native panels.
+- Tampa Bay receives the reviewed red/white/black turf lettering and flags, with an estimated larger midfield footprint.
+- Washington gains burgundy/gold COMMANDERS paint and current-W helmet overlays on clean turf; a lossless 1,680-byte allocation loan preserves full normal detail.
+- All 32 home teams were audited across 288 variants: the field-art repair alone changes 75 inputs across nine teams and leaves 213 byte-for-byte unchanged. Native texture resolution and palette capacity are retained, with unselected pixels, full normal detail and stadium suffixes checked. Placements and primary-reference coverage retain their stated estimates; moving-camera minification and gameplay still need Noah. The inherited transparent Washington wall fascia remains unresolved geometry work.
+- On-field play-clock digit positions put tens and ones in the correct order across 153 variants. Thanks to nwostar; this fixes the geometry, while a timer/scorebug counting defect was not established.
+- Base spin, truck and juke inputs are enabled by default for ordinary players while stored ability bonuses remain. Existing recipes can explicitly opt into move locks. Thanks to Ju3tin; Basic Training and animation playback await a gameplay check.
+- Risky deep HB flats gain an upfield leg before lateral motion: 740 assignments across 33 modified books. A separate guarded ruling fix preserves true backward throws while preventing the stock near-forward miscall. Thanks to Smuzz; the exact reported seven-of-ten sequence was unavailable.
+- Modern Anniversary sides load their current franchise books for Coach Suggestions and manual selection; older sides retain the stock bank. Thanks to Ju3tin. This makes modern sets available without promising a shotgun percentage.
+- The modern-book guard accepts all 51 rows, including the Unc Bowl, and verifies the chronological selection hook before composing with it. Exact earlier 50-row resolver code upgrades in its existing allocation; malformed counts and foreign hooks still refuse.
+- Anniversary displays 51 moments in date order while old physical identities and completion marks stay attached. The Unc Bowl adds 2025 Pittsburgh at Cincinnati at Q4 2:15; all moments have dedicated fields. Period placement, unavailable venue models and the Unc uniform remain explicit approximations.
+- The new 2025 Pittsburgh and Cincinnati teams include 32 unresearched template appearances among 106 players, labeled explicitly in the catalog. The QC audit checks that exact fallback set and the earlier catalog's bound; a direct test-file run now loads all QC classes.
+- The incomplete Practice Squad entry is removed from Coach's Desk and native final preseason cuts release players to free agency. Studio upgrades installed legacy hooks and keeps existing reserve ownership/save compatibility. Modern practice-squad management is deferred because allocator migration and contract/history ledgers are required; the reported draft detour remains unlocalized.
+- Customized SOFTDRINK recipes accept valid formatting, including Windows CRLF, and normalize privately before expensive work. Thanks to IanD and Ju3tin; recipe/schema safety checks remain.
+- Portable launchers check every required dependency. Disc recognition avoids an unnecessary NumPy import; finished archives and Windows runtimes receive executable import checks. Thanks to GoldenTiger; his particular package/platform was unknown.
+- Source checkouts no longer carry an absolute link to Noah's local retail extraction. Native validation uses explicit read-only inputs, and lean checks do not inherit that machine-specific path.
+- Offline stadium audit and render tools work with the Studio dependency set. SciPy and Numba remain optional accelerators in a separate authoring requirements file; they are not required to launch or build with Studio.
+- Canceling a build leaves pipe draining to its existing readers, then waits and joins them with bounds. The cancellation result survives instead of being replaced by a closed-stream error; direct teardown and Windows Job behavior remain covered.
+- Packaged runtime checks and stadium repair/audit reports write explicit LF text on Linux and Windows.
+- Large builds avoid repeated cache/project scans and display steady elapsed progress during quiet phases. A 9,500-edit synthetic production-path comparison kept identical output; Coach Edwards' original project is still needed for its own performance check.
+- Unsupported modern stadium-board inputs fail early with filenames and a remedy, before texture compilation. Thanks to Coach Edwards; his exact six-hour source was unavailable.
+- Digit import detects supported row, column and 0–4/5–9 grids by default and preserves digit order. The actual pack Rams artwork imports identically from strip/grid layouts; Coach Edwards' original failing sheet was unavailable.
+- Share offers one five-step SOFTDRINK install path, names the completed image, registers its absolute path and explains disc-roster/fresh-franchise loading. Thanks to GoldenTiger, 57k, SKILLZY, Demaster41403, JamilTheTrueKing, GoldenArc and jay for setup reports. See [Install SOFTDRINK 2K28](install_softdrink_2k28.md).
+- CER's post-playcall hang and SharkMagick's exact WR TD graphic remain unresolved. No readiness bypass, speculative stat remap or new canned weekly highlight is included.
+
 ## v1.0 RC109, beta 76.4: running backs, free-agent portraits and stadium crowds
 
 - **PROVED OFFLINE:** SPECIAL personnel no longer assigns RB2 to normal shotgun and spread formations just because they were classified as third-down formations. Those formations use regular RB1. 3DRB shows the lead rank order; it does not add a down-conditional substitution rule.

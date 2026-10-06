@@ -615,7 +615,8 @@ def _dependency_warnings() -> tuple[str, ...]:
     environment["PYTHONNOUSERSITE"] = "1"
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     missing: list[str] = []
-    for module, label in (("PyQt5", "PyQt5"), ("PIL", "Pillow")):
+    for module, label in (("PyQt5.QtWidgets", "PyQt5"), ("PIL.Image", "Pillow"),
+                          ("numpy", "NumPy"), ("capstone", "Capstone"), ("unicorn", "Unicorn")):
         result = subprocess.run(
             [sys.executable, "-c", f"import {module}"],
             env=environment,
@@ -626,21 +627,27 @@ def _dependency_warnings() -> tuple[str, ...]:
         )
         if result.returncode != 0:
             missing.append(label)
-    optional = subprocess.run(
-        [sys.executable, "-c", "import capstone; assert capstone.__version__ == '5.0.7'"],
-        env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL, check=False,
-    )
-    patch_warning = (() if optional.returncode == 0 else (
-        "Pass-fetch patch export needs Capstone 5.0.7 in the runtime Python. "
-        "Install capstone==5.0.7 to enable the verified export; book editing remains available.",))
-    if not missing:
-        return patch_warning
-    return (
-        "The app was installed, but it cannot open until these system Python packages are present: "
-        + ", ".join(missing)
-        + ". On Linux Mint/Ubuntu run: sudo apt install python3 python3-pyqt5 python3-pil",
-    )
+    warnings: list[str] = []
+    if missing:
+        command = shlex.join([sys.executable, "-m", "pip", "install", "-r",
+                              str(Path(__file__).with_name("requirements-studio.txt"))])
+        warnings.append(
+            "The app was installed. Its selected Python still needs these Studio packages: "
+            + ", ".join(missing)
+            + ". Run: " + command
+        )
+    if "Capstone" not in missing:
+        verified_capstone = subprocess.run(
+            [sys.executable, "-c", "import capstone; assert capstone.__version__ == '5.0.7'"],
+            env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, check=False,
+        )
+        if verified_capstone.returncode != 0:
+            warnings.append(
+                "Pass-fetch patch export needs Capstone 5.0.7 in the runtime Python. "
+                "Install capstone==5.0.7 to enable the verified export; book editing remains available."
+            )
+    return tuple(warnings)
 
 
 def install(

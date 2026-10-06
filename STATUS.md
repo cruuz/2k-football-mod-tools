@@ -1,4 +1,14 @@
-# 2K5 Mod Studio — v1.0 RC109 Release Status
+# 2K5 Mod Studio — v1.0 RC110 Release Status
+
+## Beta 76.5 (RC110 / APF alpha.106, 2026-10-06): SOFTDRINK repairs and Studio builds
+
+- SOFTDRINK 2K28 v0.5 repairs commentary numbers, expands free agents from 239 to 377, improves sourced generic appearance and complete roster/face transfers, and corrects facemask clearance, crowd joins, field clocks and risky checkdown routes.
+- Field-art repairs cover Atlanta, Denver, Miami day, Pittsburgh, Houston, Detroit, Cleveland, Tampa Bay and Washington. All 32 teams were audited; the field-art repair alone changes 75 of 288 home inputs and leaves 213 byte-identical. Full-resolution art uses lossless allocation where needed; placement estimates and moving-camera checks remain explicit.
+- The dated free agents and historic import options compose with 155 real import/Create Player vacancies, 280 private name buffers, all 377 free agents and 380 draft records preserved inside the existing arena/save size. Native boot, name edits, save/load and all 51 Anniversary imports passed offline checks; gameplay still needs Noah.
+- Anniversary has 51 chronological moments, including the Unc Bowl, with dedicated period fields and explicit art/venue approximations. The incomplete Practice Squad screen is removed; native final cuts and legacy reserve compatibility remain.
+- The modern-book resolver handles the 51st row and composes with chronological selection. Historical imports and ability assignment/undo preserve unrelated commentary fields until the final Studio repair pass.
+- Studio accepts valid customized recipes, checks dependencies and stadium sources early, handles large projects with steady progress, imports supported digit grids, and explains the five-step SOFTDRINK install path.
+- APF fixes situation weighting and charged discharge in revision 4, and adds a read-only VIP reader. These changes have offline/native evidence; no new Noah gameplay witness is claimed. Reported post-playcall hangs, WR TD graphics, APF DL behavior and modern practice-squad management remain unresolved.
 
 ## Beta 76.4 (RC109, 2026-10-03): running backs and stadium crowds
 

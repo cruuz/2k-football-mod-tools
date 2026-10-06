@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-This guide is for **0.1.0-alpha.105, beta 76.4**. On Windows, install from the release
+This guide is for **0.1.0-alpha.106, beta 76.5**. On Windows, install from the release
 Setup.exe. The studio reads your original game and writes a separate modded folder.
 Share the project, which contains your edits; keep game files and private caches local.
 
@@ -365,6 +365,25 @@ other teams, players, and the destination's other uniform selectors. It does
 not transfer jersey, shoulder or pants asset choices or artwork from the
 project. davidhbui's saved jersey/shoulder asset choices therefore remain in
 the destination; this action does not claim to replace his whole uniform.
+
+### Inspect an APF VIP save
+
+The archive includes a read-only command-line reader. From the extracted Studio
+folder, run:
+
+```sh
+python3 tools/apf_vip_dump.py /path/to/Main.USR --output /new/path/vip.json
+```
+
+Use `python` instead of `python3` if that is your Python command. A Xenia save
+folder containing one `.USR` and its metadata header is also accepted. The
+reader can extract a supported `.USR` from a hash-checked Xbox 360 STFS package;
+it does not authenticate the console signature. Existing outputs are refused.
+
+The [field map](apf_vip_format.md) distinguishes proven labels from opaque
+values and structural hypotheses. The [CPU assignment design](apf_vip_cpu_design.md)
+records the native opponent-profile path and the remaining work for per-team
+profiles. VIP tendency editing and a per-team patch are not available.
 
 ### Keep PS3 roster uniform work during import
 

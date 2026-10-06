@@ -12,7 +12,21 @@ committed.
 {"schema": 1, "moments": [ {...}, ... ]}
 ```
 
-The moments go in list order: the first becomes row 26. There are 25 at most, 50 rows in all. Each moment:
+The moments retain stable physical identities in list order: the first is physical row 26. There are 26 at most,
+51 rows in all, with at most 50 distinct team-seasons. The menu sorts all 51 by date using `display_order(data)`;
+it translates only list captions, selection and completion tests. The original SITU rows, saved completion
+bits, announcer IDs and engine-selected physical row remain stable. `display_inventory(data)` exposes both
+one-based display and physical rows. Returning from details restores the original display selection.
+
+The executable keeps the existing 2,560-byte code and 16-byte data allocations. The team table remains at
+code +0x100, venue cells at +0x420 (26 cells), and strings at +0x488, bounded by +0x980 (1,272 text bytes).
+Display helpers occupy +0x980..+0x9A7; the 64-byte permutation occupies +0x9C0..+0xA00. Data +0 holds the
+session completion dword and +4 the selected display row. New physical row 51 uses session bit 18. Strict
+native upgrade requires an explicitly supplied original profile through `apply(..., legacy_data=...)`; foreign
+hooks or cave bytes are refused. The allocator addresses and every other game owner's code remain unchanged.
+This is offline/native support; gameplay remains unwitnessed.
+
+Each moment:
 
 | Field | Value | Engine encoding (SITU record) |
 | --- | --- | --- |
@@ -95,3 +109,34 @@ plus these:
   unless columns named as in `nfl2k5_espn25_scenarios.APPEARANCE` are present.
 - **Announcer name calls.** When a player is also in the retail 2004 roster (same name and birth date), the engine
   reuses his announcer name call and photo.
+
+## Native v0.4 file-set repair
+
+`tools/b765/a1_repair.py` upgrades copies of `0`, `F` and `default.xbe`. The original v0.4 disc and the retail source
+are opened read only. No complete disc image is rewritten. A typical local run is:
+
+```sh
+python3 tools/b765/a1_repair.py --input-dir EXTRACTED_V04_FILES --output-dir OWNED_OUTPUT --field-cache OWNED_CACHE
+```
+
+The three input files must match the script's exact v0.4 SHA-256 pins. An integrated file set requires an explicit
+`--accepted-input-hashes` JSON manifest with exactly `0`, `F` and `default.xbe` hashes. The prior `a1_receipt.json`
+is accepted as that manifest for replay; changed bytes require a new explicit manifest. Inputs and outputs must be
+different directories, and an existing output can only be reused when its bytes already agree.
+
+The repair preserves the fifty original physical situation IDs, all forty-eight pre-existing team files and their
+translated archive directory extents. It appends the fifty-first situation, team files with native identities
+224/225, and separate field aliases. The new Pittsburgh and Cincinnati teams each contain fifty-three players
+and use the existing v0.4 spare styles 6/8; Cincinnati's retail 2004 style does not reproduce the 2025 White Bengal
+uniform. Main roster bytes are preserved. Physical moment 51 starts with Cincinnati's first scrimmage snap,
+first-and-ten at its own 30 with 2:15 remaining. Subsequent live kickoffs use the modern helper from the kicking
+team's own 35; all earlier Anniversary moments keep the original kickoff rules.
+
+The receipt records before/after hashes, archive preservation ranges, exact XBE ownership ranges, unchanged
+allocation addresses and unrelated owner bodies, the display-to-physical order, and the field compiler receipt.
+A second pure repair must produce identical `0`, `F` and XBE bytes before any output is written. These are offline
+checks and do not establish a gameplay witness.
+
+The optional field cache is keyed by the complete art/catalog/compiler context, Python/Pillow/NumPy versions,
+all source callback hashes and each situation's field variant. Every cache hit revalidates the source and generated
+alias hashes. A changed input uses a new key; an altered cache artifact is refused.

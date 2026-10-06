@@ -39,7 +39,7 @@ class DataTests(unittest.TestCase):
         personnel = rows(12, {'6': 10})
         weights = rows()
         for profile in mask.PROFILES:
-            data = mask.encode_data(exclusions, personnel, weights)
+            data = mask.encode_data(exclusions, personnel, weights, version=3)
             self.assertEqual(mask.decode_data(data, include_weights=True), (exclusions, personnel, weights))
             patch = mask.SituationPatch(profile, data)
             self.assertEqual(patch.receipt['schema'], 'apf2k8_situation_mask/v3')
@@ -81,7 +81,8 @@ class DataTests(unittest.TestCase):
         original = model.situation_candidates(fixture.book, fixture.master, s)
         changed = model.situation_candidates(fixture.book, fixture.master, s,
                                             formation_multipliers={'0': 4.})
-        self.assertEqual([c['category_weight'] for c in original], [c['category_weight'] for c in changed])
+        for before, after in zip(original, changed):
+            self.assertEqual(after['category_weight'], model.f32(before['category_weight'] * (4 if after['category'] == 6 else 1)))
         for before, after in zip(original, changed):
             factor = 4. if after['formation'] == 0 else 1.
             self.assertEqual(after['formation_multiplier'], factor)
@@ -134,6 +135,26 @@ class WeightInstallTests(InstallTests):
         super().setUp()
         self.payload = mask.SituationPatch(mask.PROFILES[0], mask.encode_data({}, {}, rows())).as_toml().encode()
         self.source.write_bytes(self.payload)
+
+    def test_v3_install_refused_but_existing_patch_can_be_replaced_or_removed(self):
+        from mod_editor.apf_studio import launcher
+        legacy = mask.SituationPatch(mask.PROFILES[0], mask.encode_data({}, {}, rows(), version=3)).as_toml().encode()
+        self.source.write_bytes(legacy)
+        with self.assertRaisesRegex(launcher.LaunchError, 'export revision 4'):
+            self.launcher.install_pass_fetch_patch(self.source, kind='situations', consent=True)
+        installed = self.settings.patches_folder / transport.FILENAME
+        installed.parent.mkdir(parents=True, exist_ok=True)
+        installed.write_bytes(legacy)
+        status = self.launcher.pass_fetch_status(kind='situations')
+        self.assertTrue(status['installed'])
+        self.assertIn('personnel weights unchanged', status['message'])
+        self.source.write_bytes(self.payload)
+        result = self.launcher.install_pass_fetch_patch(self.source, kind='situations', consent=True)
+        self.assertTrue(result['installed'] and result['enabled'])
+        self.assertIn('revision 4', result['message'])
+        installed.write_bytes(legacy)
+        self.launcher.remove_pass_fetch_patch(kind='situations')
+        self.assertFalse(installed.exists())
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)

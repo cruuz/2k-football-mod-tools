@@ -42,7 +42,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parents[1]
 MASTER = 4
@@ -136,10 +136,17 @@ def load(path: Path) -> np.ndarray:
         return np.asarray(image.convert("RGBA"), dtype=np.float32) / 255.0
 
 
-def save(array: np.ndarray, path: Path) -> str:
+def save(array: np.ndarray, path: Path, *, digit_registration: str | None = None) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = (np.clip(array, 0.0, 1.0) * 255.0 + 0.5).astype(np.uint8)
-    Image.fromarray(data, "RGBA").save(path, optimize=False, compress_level=9)
+    options = {}
+    if digit_registration is not None:
+        if digit_registration not in {"retail", "as_authored"}:
+            raise ValueError("unknown digit registration")
+        metadata = PngImagePlugin.PngInfo()
+        metadata.add_text("nfl2k5_digit_registration", digit_registration)
+        options["pnginfo"] = metadata
+    Image.fromarray(data, "RGBA").save(path, optimize=False, compress_level=9, **options)
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -189,9 +196,19 @@ def rect_coverage(shape, x0: float, y0: float, x1: float, y1: float) -> np.ndarr
 def polygon_coverage(shape, points, supersample: int = 8) -> np.ndarray:
     """Anti-aliased polygon coverage by supersampled rasterisation."""
     h, w = shape
-    image = Image.new("L", (w * supersample, h * supersample), 0)
-    ImageDraw.Draw(image).polygon([(x * supersample, y * supersample) for x, y in points], fill=255)
-    return np.asarray(image.resize((w, h), Image.BOX), dtype=np.float32) / 255.0
+    # BOX reduction has no footprint outside a pixel's own supersampled block. An integer-aligned crop therefore
+    # produces identical coverage and makes triangle-clipped art practical without allocating a full 16K canvas.
+    x0 = max(0, math.floor(min(x for x, _y in points)) - 1)
+    y0 = max(0, math.floor(min(y for _x, y in points)) - 1)
+    x1 = min(w, math.ceil(max(x for x, _y in points)) + 1)
+    y1 = min(h, math.ceil(max(y for _x, y in points)) + 1)
+    result = np.zeros((h, w), dtype=np.float32)
+    if x1 <= x0 or y1 <= y0:
+        return result
+    image = Image.new("L", ((x1-x0) * supersample, (y1-y0) * supersample), 0)
+    ImageDraw.Draw(image).polygon([((x-x0) * supersample, (y-y0) * supersample) for x, y in points], fill=255)
+    result[y0:y1, x0:x1] = np.asarray(image.resize((x1-x0, y1-y0), Image.BOX), dtype=np.float32) / 255.0
+    return result
 
 
 def mark_coverage(mask_png: Path, shape, center, width: float, rotate: float = 0.0, height: float | None = None,
@@ -932,6 +949,32 @@ def inline_native(spec: Spec, g: dict, master: np.ndarray) -> np.ndarray:
     return native
 
 
+def render_polygon_glyph(shape: dict, canvas_shape, *, height: float, center) -> np.ndarray:
+    """Rasterize a traced flat digit with explicit outer contours and holes.
+
+    Coordinates use the shape's own units; ``height`` and ``center`` use master pixels. The same height/centre
+    can be shared by all ten glyphs, so a new font never inherits ten different retail registration boxes.
+    """
+    width, units = float(shape["width"]), float(shape["height"])
+    if not (0 < width <= units * 2 and units > 0 and height > 0):
+        raise ValueError("invalid traced digit dimensions")
+    contours = shape.get("contours", ())
+    if not contours:
+        raise ValueError("a traced digit needs an outer contour")
+    ss = 4
+    canvas = Image.new("L", (canvas_shape[1] * ss, canvas_shape[0] * ss))
+    drawing = ImageDraw.Draw(canvas)
+    scale = height / units
+    origin = (float(center[0]) - width * scale / 2, float(center[1]) - height / 2)
+    for paths, colour in ((contours, 255), (shape.get("holes", ()), 0)):
+        for points in paths:
+            if len(points) < 3 or any(len(p) != 2 or not all(math.isfinite(float(v)) for v in p) for p in points):
+                raise ValueError("invalid traced digit contour")
+            drawing.polygon([((origin[0] + float(x) * scale) * ss,
+                              (origin[1] + float(y) * scale) * ss) for x, y in points], fill=colour)
+    return np.asarray(canvas.resize(canvas_shape[::-1], Image.BOX), dtype=np.float32) / 255.0
+
+
 def author_glyphs(spec: Spec, kit: dict, retail: Path, name: str, fill_key: str) -> np.ndarray:
     """Numbers and name letters. The glyph shapes come from the donor set's retail glyphs, or, for a team with a new
     number font, from a font file fitted to the retail glyph boxes (``font``). Optional outlines (``outline``,
@@ -947,11 +990,19 @@ def author_glyphs(spec: Spec, kit: dict, retail: Path, name: str, fill_key: str)
     o1 = float(g.get("outline_frac", 0.0)) if g.get("outline") else 0.0
     o2 = float(g.get("outline2_frac", 0.0)) if g.get("outline2") else 0.0
     font = g.get("font")
-    if font and (name.startswith("digit_") or name == "nameplate"):
+    shapes = g.get("glyph_shapes") if name.startswith("digit_") else None
+    if shapes and font:
+        raise ValueError("choose a font file or traced glyph shapes")
+    if (font or shapes) and (name.startswith("digit_") or name == "nameplate"):
         if name == "nameplate":
             letter_h = 24.0 * MASTER                                  # the retail cap height (rows 4..27)
             fill = font_name_strip(font, g["glyph_donor"], cov, (o1 + o2) * letter_h)
             glyph_h = letter_h
+        elif shapes:
+            glyph_h = float(g["glyph_height"]) * MASTER
+            center = [float(v) * MASTER for v in g["glyph_center"]]
+            fill = render_polygon_glyph(shapes[name.rsplit("_", 1)[1]], cov.shape,
+                                        height=glyph_h / (1 + 2 * (o1 + o2)), center=center)
         else:
             fill = render_font_glyph(font, name.rsplit("_", 1)[1], cov, o1 + o2)
         outside = ndimage.distance_transform_edt(fill < 0.5)
@@ -1557,7 +1608,8 @@ def cmd_author(args) -> int:
         m = out / "master4x" / set_selector / f"{name}.png"
         n = out / "retail" / set_selector / f"{name}.png"
         row = {"set": set_selector, "name": name, "kind": kind, "retail": str(n.relative_to(out)),
-               "retail_size": [native.shape[1], native.shape[0]], "retail_sha256": save(native, n),
+               "retail_size": [native.shape[1], native.shape[0]],
+               "retail_sha256": save(native, n, digit_registration=extra.get("digit_registration")),
                "master": str(m.relative_to(out)), "master_size": [master.shape[1], master.shape[0]],
                "master_sha256": save(master, m)}
         row.update(extra)
@@ -1602,7 +1654,8 @@ def cmd_author(args) -> int:
                     raise SystemExit(f"{sel} {name}: donor {donor} is {donor_size}, target is {ref_size}")
                 master = author_glyphs(spec, kit_f, retail, name, "_glyphs")
                 native = inline_native(spec, blocks[fam], master) if blocks[fam].get("inline") else None
-                emit(sel, name, master, "live_number_nameplate", native=native, family=fam, digit=digit)
+                emit(sel, name, master, "live_number_nameplate", native=native, family=fam, digit=digit,
+                     **({"digit_registration": blocks[fam]["registration"]} if blocks[fam].get("registration") else {}))
         emit(sel, "nameplate", author_glyphs(spec, kit, retail, "nameplate", "nameplate"), "live_number_nameplate",
              family="nameplate", digit=None)
         emit(sel, "team-select_unif_256", author_card_general(spec, kit, retail, "team-select_unif_256", marks)

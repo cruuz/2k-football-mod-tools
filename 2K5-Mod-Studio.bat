@@ -4,7 +4,7 @@ rem 2K5 Mod Studio - Windows launcher.
 rem
 rem Mirrors tools/launch_2k5_mod_studio.sh: it runs from this script's own
 rem folder (the application root, which may contain spaces), checks that
-rem Python 3, PyQt5, and Pillow are importable, shows a friendly message and
+rem Python 3 and all Studio runtime packages are importable, shows a friendly message and
 rem pauses if not, and otherwise starts "python -m mod_editor --studio".
 
 set "STUDIO_NAME=2K5 Mod Studio"
@@ -25,7 +25,7 @@ if not defined PY_CMD (
     echo.
     echo Python 3 was not found. Install Python 3 from https://www.python.org/downloads/
     echo and enable "Add python.exe to PATH", then run:
-    echo     pip install PyQt5 Pillow
+    echo     python -m pip install -r "%~dp0packaging\requirements-studio.txt"
     echo.
     pause
     exit /b 1
@@ -35,12 +35,12 @@ set "PYTHONDONTWRITEBYTECODE=1"
 set "PYTHONNOUSERSITE=1"
 set "PYTHONPATH=%~dp0"
 
-%PY_CMD% -c "from PyQt5 import QtWidgets; import PIL; import mod_editor" >nul 2>nul
+%PY_CMD% -c "from PyQt5 import QtWidgets; import PIL; import numpy; import capstone; import unicorn; import mod_editor" >nul 2>nul
 if errorlevel 1 (
     echo %STUDIO_NAME% could not start.
     echo.
-    echo A required component ^(PyQt5 or Pillow^) is missing. Install both with:
-    echo     pip install PyQt5 Pillow
+    echo A Studio runtime package is missing. Install the packages with:
+    echo     %PY_CMD% -m pip install -r "%~dp0packaging\requirements-studio.txt"
     echo.
     pause
     exit /b 1

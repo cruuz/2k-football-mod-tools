@@ -36,6 +36,19 @@ class PanelTests(unittest.TestCase):
         self.panel.deleteLater()
         self.app.processEvents()
 
+    def test_rosters_and_build_default_move_locks_are_off(self):
+        expected = dict(lock_right_stick=False, lock_special_moves=False, lock_speedster=True)
+        self.assertEqual(self.panel.lock_settings(), expected)
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        build = BuildPanel()
+        try:
+            self.assertEqual(build.abilities_lock_settings(), expected)
+            build.abilities_check.setChecked(True)
+            self.assertEqual(build.abilities_lock_settings(), expected)
+        finally:
+            build.deleteLater()
+            self.app.processEvents()
+
     def test_select_load_is_read_only_and_manual_changes_join_shared_undo(self):
         before = self.document.to_body()
         self.panel.set_player(self.document.players[1])

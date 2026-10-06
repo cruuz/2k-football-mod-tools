@@ -15,6 +15,8 @@ NOTICE.md
 docs/mod_editor/APF2K8_STATUS.md
 docs/mod_editor/apf2k8_full_shell_all_team_gate.json
 docs/mod_editor/apf_b661_cpu_book_control.md
+docs/mod_editor/apf_vip_format.md
+docs/mod_editor/apf_vip_cpu_design.md
 docs/mod_editor/apf2k8_full_shell_visual_gate.json
 docs/mod_editor/apf2k8_logo_surface_ownership.md
 docs/mod_editor/apf2k8_retail_crest_channel_audit.json
@@ -171,6 +173,7 @@ tools/apf_save_custom_team_appearance.py
 tools/apf_save_playbook_assignments.py
 tools/apf_stfs_roster_extract.py
 tools/apf_stfs_roster_rehash.py
+tools/apf_vip_dump.py
 docs/research/apf_stfs_rehash.md
 tools/apf_scene.py
 tools/apf_stadium_catalog_position_patch.py
@@ -314,3 +317,5 @@ docs/research/apf_b71_fourth_down.md
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+
+packaging/check_packaged_runtime.py

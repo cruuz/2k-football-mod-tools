@@ -51,7 +51,7 @@ class Books(unittest.TestCase):
         self.assertNotIn('qb_spy',recipe)
         paths=[Path(p.replace('<stack>',str(ROOT))) for p in recipe['playbook_packs']]
         events=[];PipelineTests().run_build(list(reversed(paths)),events)
-        self.assertEqual(events,[[pk.OFFENSE_SCHEMA]*32,[pk.DEFENSE_SCHEMA]*32,'menus','scoring'])
+        self.assertEqual(events,['forward_pass_ruling',[pk.OFFENSE_SCHEMA]*32,[pk.DEFENSE_SCHEMA]*32,'menus','scoring'])
     def test_research_counts_sum_and_unavailable_not_zero(self):
         data=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']
         for team,row in data.items():

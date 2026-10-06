@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC109 — Getting Started (beta 76.4)
+# 2K5 Mod Studio v1.0 RC110 — Getting Started (beta 76.5)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -1302,6 +1302,14 @@ have a **…** button that opens a searchable list: the play-by-play ids this ro
 jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
 players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
 back by name and play-by-play index, so a community backup restores here.
+
+**Moving a roster between projects.** Open the source disc and choose **Tools ▾ → Export complete
+roster with faces…**. Open the destination disc, choose **Tools ▾ → Load complete roster with
+faces…**, then export roster edits for Build or save a disc copy. The transfer carries the complete
+player roster, face textures, head shapes and portraits. A CSV, `.PlayerData` backup or Xbox save
+contains player fields but does not contain the disc's face artwork; copying its photo number alone
+can select a different person's face in another project. The source and destination need matching
+player and team capacities. This transfer is proved offline and has no gameplay witness yet.
 
 **Writing.** Your source is never touched.
 

@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack, platform_compat
-from mod_editor.gui.ux_text import XEMU_LINE, Details
+from mod_editor.gui.ux_text import XEMU_LINE, Details, disc_next_steps
 from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -131,8 +131,8 @@ class SharePanel(QWidget):
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Export a mod file (.2k5patch) for someone with a compatible copy of the game. "
-            "It contains changes rather than a full disc."
+            "To play SOFTDRINK 2K28, click Install SOFTDRINK 2K28 below. "
+            "Choose your unmodified game image, the downloaded .2k5patch file, then where to save the new image."
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
@@ -224,11 +224,14 @@ class SharePanel(QWidget):
         self.export_status.setWordWrap(True)
         create_layout.addWidget(self.export_status)
         quick_layout.addWidget(self.export_details)
-        layout.addWidget(quick)
 
-        apply_box = QGroupBox("Install a friend's mod")
+        apply_box = QGroupBox("Install SOFTDRINK 2K28")
         apply_layout = QVBoxLayout(apply_box)
+        self.install_hint = QLabel("Select the .2k5patch file itself. Keep it as downloaded; you do not need to extract it or choose a folder.")
+        self.install_hint.setWordWrap(True)
+        apply_layout.addWidget(self.install_hint)
         self.install_softdrink_button = QPushButton("Install SOFTDRINK 2K28")
+        self.install_softdrink_button.setObjectName("primaryButton")
         self.install_softdrink_button.setToolTip("Choose your clean Xbox ISO and the finished pack, then save a playable XISO.")
         self.install_softdrink_button.clicked.connect(self.install_softdrink)
         apply_layout.addWidget(self.install_softdrink_button)
@@ -266,6 +269,7 @@ class SharePanel(QWidget):
         self.apply_status.setWordWrap(True)
         apply_layout.addWidget(self.apply_status)
         layout.addWidget(apply_box)
+        layout.addWidget(quick)
 
         self.progress_label = QLabel("")
         layout.addWidget(self.progress_label)
@@ -468,10 +472,10 @@ class SharePanel(QWidget):
         """One action: choose source, pack and destination; verification is part of apply."""
         if self.busy:
             return
-        source, _ = QFileDialog.getOpenFileName(self, "Choose your clean ESPN NFL 2K5 USA Xbox image", "", IMAGE_FILTER)
+        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image", "", IMAGE_FILTER)
         if not source:
             return
-        pack_path, _ = QFileDialog.getOpenFileName(self, "Choose the SOFTDRINK 2K28 pack", "", PACK_FILTER)
+        pack_path, _ = QFileDialog.getOpenFileName(self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)", "", PACK_FILTER)
         if not pack_path:
             return
         self.load_pack(Path(pack_path))
@@ -480,9 +484,11 @@ class SharePanel(QWidget):
         if self._pack.manifest.raw.get("format") != 3:
             self._notify("error", "Choose a file pack", "This installer needs the SOFTDRINK format-3 pack. Older packs use the controls below.")
             return
-        target, _ = QFileDialog.getSaveFileName(self, "Save SOFTDRINK 2K28", str(Path(source).with_name("SOFTDRINK 2K28.xiso.iso")), IMAGE_FILTER)
+        target, _ = QFileDialog.getSaveFileName(self, "3 of 3: Save the new SOFTDRINK 2K28 image", str(Path(source).with_name("SOFTDRINK 2K28.xiso.iso")), IMAGE_FILTER)
         if not target:
             return
+        if not Path(target).suffix:
+            target += ".xiso.iso"
         self.source_field.setText(source)
         self.target_field.setText(target)
         self.start_file_install()
@@ -732,7 +738,9 @@ class SharePanel(QWidget):
         self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}." + extra)
         self._check_state = None
         self.disc_written.emit(str(target["path"]))
-        self._notify("info", "Disc ready", f"{target['path']}\n\nOpen it in xemu. " + XEMU_LINE + extra)
+        next_steps = disc_next_steps(target["path"])
+        self.apply_status.setText(self.apply_status.text() + "\n" + next_steps)
+        self._notify("info", "Disc ready", f"{target['path']}\n\n{next_steps}\n\n" + XEMU_LINE + extra)
 
     def _apply_failed(self, message: str) -> None:
         self.apply_status.setText(f"Couldn't make the disc: {message}")

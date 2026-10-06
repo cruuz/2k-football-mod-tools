@@ -589,5 +589,54 @@ class RetailTests(unittest.TestCase):
         self.assertEqual({c: v[0] for c, v in found.items()}, {c: v[0] for c, v in target["variants"].items()})
 
 
+class ReviewedMasterTests(unittest.TestCase):
+    def test_native_bitmap_remains_authoritative_by_default(self):
+        import numpy as np
+        native = _solid(8, 4, (15, 25, 35))
+        item = dict(size=[8,4],rgba=native,master="not-read.png")
+        self.assertIs(mv._art_at(item,8,4),native)
+
+    def test_selected_master_reaches_mercedes_field_loader(self):
+        from mod_editor.core import nfl2k5_mercedes_benz_model as mb
+        import numpy as np
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            _art_root(root,prefix="s01",items=[("field","endzone_N_M","overlay",_solid(8,4,(1,2,3)))])
+            manifest=root/"TEAM/venue/manifest.json"
+            doc=json.loads(manifest.read_text())
+            row=doc["items"][0]
+            master=_solid(64,32,(240,220,200))
+            row.update(native_from_master=True,master_sha256=_png(manifest.parent/row["master"],master))
+            manifest.write_text(json.dumps(doc))
+            loaded=mb.team_field_art(root)["endzone_N_M"]
+            self.assertTrue(np.array_equal(loaded,_solid(8,4,(240,220,200))))
+            first=mv.load_art(root)["venues"]["s01"]["digest"]
+            row["master_sha256"]=_png(manifest.parent/row["master"],_solid(64,32,(210,220,200)))
+            manifest.write_text(json.dumps(doc))
+            self.assertNotEqual(first,mv.load_art(root)["venues"]["s01"]["digest"])
+
+    def test_selected_master_refuses_missing_pin_missing_file_and_wrong_flag(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            _art_root(root,prefix="s01",items=[("field","endzone_N_M","overlay",_solid(8,4,(1,2,3)))])
+            manifest=root/"TEAM/venue/manifest.json"
+            doc=json.loads(manifest.read_text());row=doc["items"][0]
+            for flag,pin in [(True,None),(True,"0"*64),(1,"0"*64)]:
+                row["native_from_master"]=flag
+                if pin is None:row.pop("master_sha256",None)
+                else:row["master_sha256"]=pin
+                manifest.write_text(json.dumps(doc))
+                with self.assertRaises(mv.ModernVenuesError):mv.load_art(root)
+
+    def test_premultiplied_reduction_keeps_colour_at_transparent_edge(self):
+        import numpy as np
+        master=_solid(64,32,(0,0,0),alpha=0)
+        master[:,16:48]=(220,20,40,255)
+        reduced=mv.resample(master,8,4,smooth=True)
+        partial=(reduced[...,3]>0)&(reduced[...,3]<255)
+        self.assertTrue(partial.any())
+        self.assertTrue(np.all(np.abs(reduced[partial,:3].astype(int)-[220,20,40])<=1))
+
+
 if __name__ == "__main__":
     unittest.main()

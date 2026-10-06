@@ -16,10 +16,11 @@ class ChargeAbilitiesDialog(QDialog):
         self.setWindowTitle("Charged abilities")
         self.resize(640, 340)
         root = QVBoxLayout(self)
-        note = QLabel("Revision 3; EXPERIMENTAL; gameplay UNWITNESSED. Charged abilities allow level 2 at any medal tier. "
+        note = QLabel("Revision 4; EXPERIMENTAL; gameplay UNWITNESSED. Charged abilities allow level 2 at any medal tier. "
                       "Finesse and Finesse and Power qualify both spin and juke, alongside Cyclone for spin and Ankle Breaker for juke. "
                       "Power and Finesse and Power qualify stiff arm and shoulder charge, alongside Arms of Steel and Battering Ram. "
-                      "The ring and discharge follow charge level; medal stars stay the same. Players without a charged ability stop at level 1. "
+                      "The ring follows charge level. Discharge keeps the level earned for the executed move after charge cleanup; "
+                      "a player lacking that move's ability shows level 1. Medal stars stay the same. Players without a charged ability stop at level 1. "
                       "Stop on a Dime keeps its own requirement. QBs without Laser Arm or Rocket Arm still cannot charge in passing mode.")
         note.setWordWrap(True)
         root.addWidget(note)
@@ -51,7 +52,7 @@ class ChargeAbilitiesDialog(QDialog):
         self.status = QLabel()
         self.status.setWordWrap(True)
         root.addWidget(self.status)
-        help_text = QLabel("Installing replaces a recognized revision 1 or 2 patch and enables Xenia's patch setting, including other enabled patches. "
+        help_text = QLabel("Installing replaces a recognized revision 1, 2 or 3 patch and enables Xenia's patch setting, including other enabled patches. "
                           "Restart Xenia after installing or removing. Removing also clears this session's Build option; "
                           "the retail executable stays unchanged.")
         help_text.setWordWrap(True)

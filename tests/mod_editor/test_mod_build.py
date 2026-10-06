@@ -19,6 +19,22 @@ from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
 
 
 class ModBuildTests(unittest.TestCase):
+    def test_dated_free_agents_are_selected_for_softdrink_build_inputs(self):
+        from mod_editor.core import nfl2k5_roster_records as records
+        source = {"fr_free_agents": {"date": "2026-09-29", "selected": 236,
+                                     "source": "roster_2026.csv"},
+                  "free_agent_pool": [{} for _ in range(239)]}
+        for modern, pooled, selected in ((True, True, True), (False, True, False),
+                                         (True, False, False)):
+            plan = mod_build.BuildPlan("source", "target", roster_edits="edits.json",
+                                       season_2026=modern, position_pools=pooled)
+            with mock.patch.object(records, "read_edits", return_value=source), \
+                 mock.patch.object(records, "apply", return_value={"log": []}) as apply:
+                mod_build._apply_roster_history(plan, "target", {"steps": []}, lambda *args: None)
+            authored = apply.call_args.args[1]
+            self.assertEqual(authored.get("modern_free_agents") == "2026-10-05", selected)
+        self.assertNotIn("modern_free_agents", source)
+
     def test_colour_receipt_is_published_with_the_disc_and_stale_receipts_are_removed(self):
         from mod_editor.core import nfl2k5_modern_color as colour
         settings = colour.default_settings()
