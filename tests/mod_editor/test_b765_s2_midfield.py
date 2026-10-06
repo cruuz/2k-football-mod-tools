@@ -86,7 +86,7 @@ class Contract(unittest.TestCase):
                 repair.prepare_art(source, output)
             proof = json.loads((output / "midfield_source_scope.json").read_text())
             self.assertEqual({row["file"] for row in proof["files"] if not row["unchanged"]},
-                             {"DEN/venue/manifest.json", "MIA/venue/manifest.json", "PIT/venue/manifest.json"})
+                             {str(Path(team) / "venue" / "manifest.json") for team in ("DEN", "MIA", "PIT")})
             self.assertEqual((source / "ATL/venue/manifest.json").read_bytes(),
                              (output / "ATL/venue/manifest.json").read_bytes())
             for team in ("DEN", "MIA", "PIT", "ATL"):
