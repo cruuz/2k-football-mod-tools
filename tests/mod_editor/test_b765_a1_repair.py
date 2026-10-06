@@ -14,7 +14,7 @@ from unittest.mock import patch
 from tools.b765 import a1_repair as repair
 
 
-SCRATCH = Path('/home/noah/2k-worktrees/.b765-scratch/a1')
+SCRATCH = Path(os.environ.get('B765_A1_SCRATCH', '/nonexistent/b765-a1'))
 
 
 class StrictInputTests(unittest.TestCase):

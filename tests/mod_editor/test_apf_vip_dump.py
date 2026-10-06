@@ -15,8 +15,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 import apf_vip_dump as subject  # noqa: E402
 
-PRIVATE_BASE_PE = Path(os.environ.get(
-    "APF_VIP_BASE_PE", "/home/noah/2k-worktrees/.b765-scratch/d3/charge_base.pe"))
+PRIVATE_BASE_PE = Path(os.environ.get("APF_VIP_BASE_PE", "/nonexistent/apf_vip_base.pe"))
 BASE_PE_SHA256 = "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
 
 

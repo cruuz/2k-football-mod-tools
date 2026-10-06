@@ -35,10 +35,10 @@ that execution.
 
 The BASE flat PE used for these traces has SHA-256
 `cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf`,
-image base `0x82000000`. The serializer receipt and disassembly are private
-job evidence under `/home/noah/2k-worktrees/.b765-scratch/d4/`:
-`vip_serializer_native.json`, `vip_serializer_disassembly.txt`, and
-`vip_signature_report.md`. The 13 native cases cover actual and synthetic
+image base `0x82000000`. The serializer receipt and disassembly
+(`vip_serializer_native.json`, `vip_serializer_disassembly.txt`,
+`vip_signature_report.md`) are kept with the maintainers' private research
+evidence, not in this repository. The 13 native cases cover actual and synthetic
 full-payload round trips into slots 0, 7, 8 and 11, canaries, untouched bank
 records and refusal boundaries.
 
