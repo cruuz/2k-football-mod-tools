@@ -1,4 +1,5 @@
 """Archive relocation and preservation checks for Anniversary-only additions."""
+import os
 from pathlib import Path
 import struct
 import sys
@@ -92,7 +93,7 @@ class ArchiveTests(unittest.TestCase):
 
 class SituationTests(unittest.TestCase):
     def test_v04_extension_preserves_fifty_rows_and_all_sibling_chunks(self):
-        scratch = Path('/home/noah/2k-worktrees/.b765-scratch/a1')
+        scratch = Path(os.environ.get('B765_A1_SCRATCH', '/nonexistent/b765-a1'))
         if not (scratch/'situation.iff').exists() or not (scratch/'main.resource').exists():
             self.skipTest('private extracted v0.4 resources required')
         old = (scratch/'situation.iff').read_bytes()
