@@ -95,7 +95,7 @@ class SetupTests(unittest.TestCase):
     def test_completed_image_registration_survives_cwd_changes(self):
         import tempfile
         with tempfile.TemporaryDirectory() as temporary:
-            folder = Path(temporary)
+            folder = Path(temporary).resolve()
             disc = folder / "new.iso"
             disc.write_bytes(b"synthetic")
             original = Path.cwd()

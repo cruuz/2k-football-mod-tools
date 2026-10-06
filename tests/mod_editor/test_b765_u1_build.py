@@ -79,7 +79,7 @@ class ProjectOverlay(unittest.TestCase):
 
     def test_native_merge_refuses_overlap_before_writes(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             (root / "one.span").write_bytes(b"abcd")
             patch = dict(offset=0, length=4, before_sha256=build.sha(b"old!"),
                          after_sha256=build.sha(b"abcd"), replacement="one.span")
@@ -92,7 +92,7 @@ class ProjectOverlay(unittest.TestCase):
 
     def test_native_merge_pins_bytes(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             (root / "one.span").write_bytes(b"abcd")
             patch = dict(offset=0, length=4, before_sha256=build.sha(b"old!"),
                          after_sha256=build.sha(b"abcd"), replacement="one.span")
@@ -104,7 +104,7 @@ class ProjectOverlay(unittest.TestCase):
 
     def test_native_merge_refuses_symlinked_replacement_parent(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             (root / "one.span").write_bytes(b"abcd")
             try:
                 (root / "linked").symlink_to(root, target_is_directory=True)
@@ -120,7 +120,7 @@ class ProjectOverlay(unittest.TestCase):
 
     def test_native_merge_preserves_existing_manifest_without_partial_binaries(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             (root / "one.span").write_bytes(b"abcd")
             patch = dict(offset=0, length=4, before_sha256=build.sha(b"old!"),
                          after_sha256=build.sha(b"abcd"), replacement="one.span")
@@ -136,7 +136,7 @@ class ProjectOverlay(unittest.TestCase):
 
     def test_native_merge_is_idempotent(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             (root / "one.span").write_bytes(b"abcd")
             patch = dict(offset=0, length=4, before_sha256=build.sha(b"old!"),
                          after_sha256=build.sha(b"abcd"), replacement="one.span")

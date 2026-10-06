@@ -34,7 +34,7 @@ class RecipePreflightTests(unittest.TestCase):
 
     def test_legacy_source_bundle_format_normalizes_without_changing_custom_edits(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             png = root / "my custom art.png"
             png.write_bytes(b"user art")
             authored = document([dict(kind="p8_texture", asset_id="p8:17:0", png=png.name)])
@@ -49,7 +49,7 @@ class RecipePreflightTests(unittest.TestCase):
 
     def test_real_source_bundle_roundtrip_writes_backend_accepted_custom_recipe(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             png = root / "original.png"
             png.write_bytes(b"original user art")
             project = root / "project.json"
@@ -74,7 +74,7 @@ class RecipePreflightTests(unittest.TestCase):
 
     def test_invalid_envelope_refuses_before_source_index_or_build(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             project = root / "wrong.json"
             project.write_text('{"schema": "wrong", "edits": []}')
             plan = mod_build.BuildPlan(str(root / "unread.iso"), str(root / "output.iso"))
@@ -111,7 +111,7 @@ class RecipePreflightTests(unittest.TestCase):
                 destination.write_text(json.dumps(document(), indent=1))
                 return destination
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             source, target = root / "source.iso", root / "built.iso"
             synthetic_disc(source)
             service = Nfl2k5BuildService()
@@ -169,7 +169,7 @@ class BoardPreflightTests(unittest.TestCase):
 
     def test_foreign_source_refuses_before_recipe_plan_and_texture_work(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             source, target = root / "source.iso", root / "out.iso"
             synthetic_disc(source)
             boards = mock.Mock()
