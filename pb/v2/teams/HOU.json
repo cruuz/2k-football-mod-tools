@@ -1,0 +1,550 @@
+{
+ "team": "HOU",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "McVay/Patriots structured passing",
+ "staff": "Nick Caley",
+ "family": "mcvay",
+ "feature": "WR1",
+ "key_players": "Nico Collins; C.J. Stroud",
+ "depth_step": 2,
+ "tendencies": {
+  "shotgun_pct": 61.78,
+  "pistol_pct": 0.0,
+  "play_action_pct": 22.84,
+  "motion_pct": 53.99,
+  "personnel": {
+   "11": 720,
+   "21": 50,
+   "12": 86,
+   "22": 8,
+   "20": 6,
+   "other": 198,
+   "01": 1,
+   "13": 9
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Doubles",
+   "Gun Trey",
+   "Singleback Doubles",
+   "Gun Bunch"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Singleback Wing",
+   "Gun Ace Wing"
+  ]
+ },
+ "boost": {
+  "Dagger": 5,
+  "Double Post": 1,
+  "Drive": 2,
+  "Duo": 2,
+  "Levels": 3,
+  "Mills": 2,
+  "Outside Zone": 2,
+  "PA Boot": 4,
+  "Smash": 1,
+  "Yankee": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Dagger",
+   "name": "X Dagger",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Dig",
+      15
+     ],
+     "W2": [
+      "route",
+      "Seam",
+      15
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Levels",
+   "name": "Levels Over",
+   "overrides": {
+    "routes": {
+     "S3": [
+      "route",
+      "Over",
+      9
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Quick Outs",
+   "name": "HOU Quick Outs",
+   "overrides": {
+    "depth_step": 3.0,
+    "reads": [
+     "S2",
+     "S1",
+     "W2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Bench",
+   "name": "HOU Bench",
+   "overrides": {
+    "depth_step": 3.0,
+    "reads": [
+     "W1",
+     "S2",
+     "S1",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Smash",
+   "name": "HOU Smash",
+   "overrides": {
+    "depth_step": 3.0,
+    "reads": [
+     "W2",
+     "S1",
+     "W1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Slant Flat",
+   "name": "HOU Slant Flat",
+   "overrides": {
+    "depth_step": 3.0,
+    "reads": [
+     "W1",
+     "W2",
+     "S1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Bunch",
+   "concept": "Double Slants",
+   "name": "HOU Double Slants",
+   "overrides": {
+    "depth_step": 3.0,
+    "reads": [
+     "S3",
+     "W1",
+     "S1",
+     "S2"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.houstontexans.com/team/coaches-roster/)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.23 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "Quick Outs",
+    "name": "HOU Quick Outs",
+    "overrides": {
+     "depth_step": 3.0,
+     "reads": [
+      "S2",
+      "S1",
+      "W2",
+      "W1"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.0% (league 18.8)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Bench",
+    "name": "HOU Bench",
+    "overrides": {
+     "depth_step": 3.0,
+     "reads": [
+      "W1",
+      "S2",
+      "S1",
+      "B"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.0% (league 18.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Smash",
+    "name": "HOU Smash",
+    "overrides": {
+     "depth_step": 3.0,
+     "reads": [
+      "W2",
+      "S1",
+      "W1",
+      "S2"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.0% (league 18.8)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Slant Flat",
+    "name": "HOU Slant Flat",
+    "overrides": {
+     "depth_step": 3.0,
+     "reads": [
+      "W1",
+      "W2",
+      "S1",
+      "S2"
+     ]
+    },
+    "reason": "targets SLANT 8.3% (league 6.1)"
+   },
+   {
+    "formation": "Gun Bunch",
+    "concept": "Double Slants",
+    "name": "HOU Double Slants",
+    "overrides": {
+     "depth_step": 3.0,
+     "reads": [
+      "S3",
+      "W1",
+      "S1",
+      "S2"
+     ]
+    },
+    "reason": "targets SLANT 8.3% (league 6.1)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 98.2%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   0,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   2,
+   4
+  ],
+  "Gun Trey": [
+   3,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   1,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   3,
+   2,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   3,
+   1,
+   4
+  ],
+  "Gun Split Backs": [
+   2,
+   2,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   4
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   2,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "Gun Ace Wing": [
+   1,
+   0,
+   1
+  ]
+ }
+}

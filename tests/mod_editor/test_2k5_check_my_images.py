@@ -14,10 +14,17 @@ actually sees, which are the result dialog and the reason the button is off.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import ast
 import json
 import os
-from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
@@ -207,6 +214,9 @@ class DialogTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def _window(self, rows: tuple[object, ...]) -> tuple[StudioMainWindow, _CheckFacade]:
+        report = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not report.exists():
+            self.skipTest(f"Missing asset: {report}")
         facade = _CheckFacade(rows)
         window = StudioMainWindow(eager_pages=True, facade=facade, offer_recovery=False)
         # Previews decode off-thread; leaving them running past teardown makes

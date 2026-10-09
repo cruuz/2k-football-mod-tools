@@ -134,7 +134,8 @@ class LightRigTests(unittest.TestCase):
             self.assertEqual(len(rig["lights"]), counts[name], name)
             for channel in rig["ambient"]:
                 self.assertTrue(0.5 <= channel <= 1.0)
-            self.assertTrue(0.3 <= rig["ambient_intensity"] <= 0.6)
+            # W1: the rain rig carries the wet-white ambient lift (0.70 at full strength, about 0.52 at the default)
+            self.assertTrue(0.3 <= rig["ambient_intensity"] <= (0.75 if name == "rain" else 0.6))
             for colour, intensity in rig["lights"]:
                 self.assertTrue(all(0.0 <= c <= 1.0 for c in colour))
                 self.assertTrue(0.15 <= intensity <= 2.0, name)
@@ -149,7 +150,7 @@ class LightRigTests(unittest.TestCase):
         patched, receipt = mc.apply(payload)
         self.assertEqual(mc.xbe_status(patched), "applied")
         self.assertEqual(receipt["state"], "applied")
-        self.assertEqual(len(receipt["edits"]), len(mc.LIGHT_TABLES))
+        self.assertEqual(len(receipt["edits"]), len(mc.LIGHT_TABLES) + 1, "seven rigs and the rain fog row")
         self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(payload, patched)))
         again, again_receipt = mc.apply(patched)
         self.assertEqual(again, patched); self.assertEqual(again_receipt["edits"], [])
@@ -170,8 +171,69 @@ class LightRigTests(unittest.TestCase):
         self.assertEqual(mc.xbe_status(bytes(broken)), "foreign")
         with self.assertRaises(ValueError):
             mc.apply(bytes(broken))
-        self.assertEqual(len(mc.reservations(patched)), len(mc.LIGHT_TABLES))
+        self.assertEqual(len(mc.reservations(patched)), len(mc.LIGHT_TABLES) + 1)
         mc.verify(patched); mc.verify(payload, enabled=False)
+
+
+def _ambient(table):
+    """Ambient the engine adds to every surface (c5): trunc(255 c) / 255 x intensity, per channel (cave model, W1)."""
+    intensity = struct.unpack_from("<f", table, 0x10)[0]
+    return tuple(int(min(1.0, struct.unpack_from("<f", table, 4 * i)[0]) * 255) / 255.0 * intensity for i in range(3))
+
+
+class WetWhiteTests(unittest.TestCase):
+    """W1 (beta 77): rain must leave a sideline-facing white jersey white, not grey, and the rain fog must not eat the
+    Broadcast camera's players. The retail rain rig lights nothing that faces a sideline, so only ambient reaches it."""
+
+    @unittest.skipUnless(XBE and XBE.is_file(), "retail executable not available")
+    def test_rain_ambient_lift_is_neutral_and_other_rigs_are_unchanged(self):
+        image = mc.XbeImage(XBE.read_bytes())
+        retail = image.read(0x4e7830, mc.TABLE_SIZE)
+        retail_c5 = _ambient(retail)
+        new_c5 = _ambient(mc.modern_table(retail))
+        self.assertGreater(min(new_c5), 0.47, "sideline-facing white texel 0.92 x 2 x D0 stays above about 0.86")
+        self.assertLess(max(new_c5) - min(new_c5), 0.03, "neutral, not the retail pink")
+        self.assertGreater(min(new_c5), max(retail_c5) * 1.2)
+        # the three rain lights and their directions are what v0.5 carried
+        new = mc.modern_table(retail)
+        for i in range(3):
+            self.assertEqual(new[0x30 + 0x40 * i:0x40 + 0x40 * i], retail[0x30 + 0x40 * i:0x40 + 0x40 * i], "directions")
+
+    def test_rain_fog_row_default_blend_and_restore(self):
+        retail = mc.RETAIL_FOG
+        default = mc.modern_fog()
+        density_lo, density_hi, start, end = struct.unpack_from("<4f", default)
+        self.assertEqual(default[:8], retail[:8], "density flag floats unchanged")
+        self.assertEqual(default[16:], retail[16:], "fog colour unchanged")
+        self.assertEqual((start, end), (5000.0, 13500.0))
+        full_fog = mc.modern_fog(full())
+        self.assertEqual(struct.unpack_from("<2f", full_fog, 8), (7000.0, 21000.0))
+        none = full(); none["values"]["master.strength"] = 0.0
+        self.assertEqual(mc.modern_fog(none), retail)
+        off = mc.default_settings(); off["enabled"]["rig_rain"] = False
+        self.assertEqual(mc.modern_fog(off), retail)
+        self.assertEqual(mc.sha(retail), mc.RAIN_FOG[3])
+
+    @unittest.skipUnless(XBE and XBE.is_file(), "retail executable not available")
+    def test_fog_row_apply_verify_restore_and_foreign(self):
+        payload = XBE.read_bytes()
+        patched, receipt = mc.apply(payload)
+        image = mc.XbeImage(patched)
+        self.assertEqual(image.read(mc.RAIN_FOG[1], mc.FOG_SIZE), mc.modern_fog())
+        self.assertIn("rain_fog", [e["label"] for e in receipt["edits"]])
+        restored, _ = mc.apply(patched, enabled=False)
+        self.assertEqual(restored, payload)
+        broken = bytearray(patched); broken[image.offset(mc.RAIN_FOG[1] + 8, 4)] ^= 1
+        self.assertEqual(mc.xbe_status(bytes(broken)), "foreign")
+        # the dry-weather haze row beside it and the snow row are not ours
+        for va in (0xA867F0, 0xA86818):
+            self.assertEqual(image.read(va, 20), mc.XbeImage(payload).read(va, 20))
+        changed = [i for i, (a, b) in enumerate(zip(payload, patched)) if a != b]
+        ranges = [(image.offset(va, size), image.offset(va, size) + size) for va, size in
+                  [(v, mc.TABLE_SIZE) for _n, v, _d in mc.LIGHT_TABLES] + [(mc.RAIN_FOG[1], mc.FOG_SIZE)]]
+        sections = {s.header_offset + 36 for s in mc._sections(patched)}
+        for i in changed:
+            self.assertTrue(any(a <= i < b for a, b in ranges) or any(h <= i < h + 20 for h in sections), hex(i))
 
 
 class BundleStateTests(unittest.TestCase):

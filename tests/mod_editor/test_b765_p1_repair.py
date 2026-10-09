@@ -3,7 +3,14 @@
 Small synthetic XBE fixtures exercise the scope writer without retail data.
 The optional actual v0.4 check uses a private extraction, never bundled bytes.
 """
+
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import hashlib
 import os
 import struct

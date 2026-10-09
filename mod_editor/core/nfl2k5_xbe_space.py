@@ -469,6 +469,41 @@ def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
     return result, {"status": "applied", "edits": [{"label": owner, "va": hex(a["va"]), "size": a["size"]}]}
 
 
+def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
+    """Append late-placed owners to an installed, sealed v3 image (b77-f4: the native repair path).
+
+    ``apply`` treats an installed request set as immutable. A *late* owner (``LATE_OWNERS``) is placed after every
+    other owner, so adding one cannot move an existing allocation; this function proves that (every old allocation
+    must be byte-for-byte the same row), checks the new rows sit in unreserved padding, and reseals the directory,
+    the section descriptors and their digests. Anything else (an owner that is not late, a duplicate, a legacy-format
+    image, no room) refuses and leaves the payload untouched.
+    """
+
+    _require(is_scaleout(payload), "a late owner can only be appended to a sealed scale-out image")
+    _, _, current = _validate(payload)
+    new = _requests(extra)
+    new = [r for r in new if r != LOGO_REQUEST]
+    _require(new and all(r[0] in LATE_OWNERS for r in new), "only late owners can be appended to an installed image")
+    taken = {(o, k) for o, k, _s, _a in current}
+    _require(not any((o, k) in taken for o, k, _s, _a in new), "owner already allocated in this image")
+    wanted = _requests(list(current) + new)
+    before, after = _scale_allocations(current), _scale_allocations(wanted)
+    _require(all(row in after for row in before), "appending the owner would move an existing allocation")
+    added = [row for row in after if row not in before]
+    _require(added and all(row["owner"] in LATE_OWNERS for row in added), "unexpected allocation change")
+    buf = bytearray(payload)
+    for row in added:
+        content = buf[row["raw"]:row["raw"] + row["size"]]
+        pad = b"\xcc" if row["kind"] == "code" else b"\0"
+        _require(content == pad * row["size"], "the new owner's span is not unreserved padding")
+    _seal_scaleout(buf, wanted)
+    result = bytes(buf)
+    _require(status(result) == "applied", "appended allocation postcondition failed")
+    _require(_read_scale_directory(result) == wanted, "appended allocation directory differs")
+    return result, {"status": "applied", "changed_bytes": count_differing_bytes(payload, result),
+                    "allocations": added, "existing_allocations_unchanged": True}
+
+
 def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = None) -> dict:
     """Pinned mapping/ownership proof and byte-granular reference inventory.
 
@@ -579,6 +614,22 @@ MAX_REQUEST_BYTES = 96 * PAGE
 MYCAREER_M3_STATE_OWNER = "nfl2k5_my_career_m3"
 # b76-k1: placed after every other scale-out owner (see _scale_allocations).
 LATE_OWNER = "nfl2k5_k128"
+# b77-f4: more late owners, placed in this order after every other owner (K128 first, so its address never moves).
+# A late owner can also be appended to an installed, sealed image with extend_scaleout() without moving anything.
+# b77-v1b: the period goalposts owner is placed after them the same way (i1: after F4 and F4b, the order the native
+# repairs append them to the v0.5 directory), so adding it moves no other owner's address.
+# b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
+LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
+               "nfl2k5_period_goalposts", "nfl2k5_honors")
+# b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
+# reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
+# placement does not depend on which other owners are present.
+# Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
+TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"))
+# b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
+# bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
+# + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
+GAP_OWNERS = (("nfl2k5_honors", "code"),)
 MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
@@ -618,6 +669,9 @@ def dormant_union():
     from . import nfl2k5_widescreen_menus as widescreen_menus
     from . import nfl2k5_team_logo_swap as team_logo_swap
     from . import nfl2k5_k128 as k128
+    from . import nfl2k5_letter_grades as letter_grades  # b77-f4
+    from . import nfl2k5_period_goalposts as period  # b77-v1b
+    from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -631,7 +685,10 @@ def dormant_union():
             + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS
             + widescreen_menus.REQUESTS
             + team_logo_swap.REQUESTS
-            + k128.REQUESTS)
+            + k128.REQUESTS
+            + letter_grades.REQUESTS
+            + period.REQUESTS
+            + honors.REQUESTS)
 
 
 def is_scaleout(payload):
@@ -704,8 +761,8 @@ def _scale_allocations(requests):
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
     # sprite scorebug included, so adding it to a union moves no other owner's address.
-    late = [r for r in requests if r[0] == LATE_OWNER]
-    requests = [r for r in requests if r[0] != LATE_OWNER]
+    late = sorted((r for r in requests if r[0] in LATE_OWNERS), key=lambda r: (LATE_OWNERS.index(r[0]), r))
+    requests = [r for r in requests if r[0] not in LATE_OWNERS]
     extra = [r for r in requests if r[0] == MYCAREER_M3_STATE_OWNER]
     _require(not extra or extra == [(MYCAREER_M3_STATE_OWNER, "data", PAGE, 16)],
              "MyCareer M3 state has a fixed 4096-byte reservation")
@@ -716,6 +773,9 @@ def _scale_allocations(requests):
         # moves after the established RX owners, preserving their addresses.
         requests = [(o, k, 1408 if (o, k) == sprite[:2] else s, a) for o, k, s, a in requests]
     promoted = next((r for r in requests if r[0:2] == ("nfl2k5_my_career", "code") and r[2] > 8192), None)
+    tail = [r for r in late if (r[0], r[1]) in TAIL_OWNERS]
+    gap_reqs = [r for r in late if (r[0], r[1]) in GAP_OWNERS] if promoted else []
+    late = [r for r in late if r not in tail and r not in gap_reqs]
     if promoted:
         requests = [(o, k, 8192 if (o, k) == promoted[:2] else s, a) for o, k, s, a in requests]
     out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
@@ -747,7 +807,15 @@ def _scale_allocations(requests):
     if promoted:
         # The old footprint participates in packing but is not an allocation.
         # Old directories still decode with the unmodified 8192-byte request.
+        footprint = next(a for a in out if (a["owner"], a["kind"]) == promoted[:2])
         out = [a for a in out if (a["owner"], a["kind"]) != promoted[:2]]
+        cursor = footprint["va"]
+        for owner, kind, size, align in sorted(gap_reqs, key=lambda r: GAP_OWNERS.index((r[0], r[1]))):
+            at = (cursor + align - 1) & -align
+            _require(at + size <= footprint["va"] + footprint["size"], f"no room for {owner} in the MyCareer footprint")
+            out.append(dict(owner=owner, kind=kind, size=size, align=align, va=at,
+                            raw=footprint["raw"] + at - footprint["va"], owner_offset=0))
+            cursor = at + size
         r = next(r for r in regions if r["kind"] == "code")
         owner, kind, size, align = promoted
         at = (cursors[r["va"]] + align - 1) & -align
@@ -776,6 +844,23 @@ def _scale_allocations(requests):
                 break
         else:
             _require(False, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+    # b77-i1: the tail owners' code sits at the top of the reserved legacy RX pages, top-down in TAIL_OWNERS order. The
+    # place depends only on the region end, so adding or removing any other owner (the venue table, a late owner) moves
+    # none of them, and adding them moves nobody; the venue table below stays under them.
+    tail_rows, tops = [], {}
+    legacy = {"code": (_scale_regions()[2], _scale_regions()[0]), "data": (_scale_regions()[1],)}
+    for owner, kind, size, align in sorted(tail, key=lambda r: TAIL_OWNERS.index((r[0], r[1]))):
+        for r in legacy[kind]:
+            top = tops.get(r["va"], r["va"] + r["size"])
+            at = (top - size) & -align
+            floor = max((a["va"] + a["size"] for a in out if r["va"] <= a["va"] < r["va"] + r["size"]), default=r["va"])
+            if at >= floor:
+                tail_rows.append(dict(owner=owner, kind=kind, size=size, align=align,
+                                      va=at, raw=r["raw"] + at - r["va"], owner_offset=0))
+                tops[r["va"]] = at
+                break
+        else:
+            _require(False, f"no legacy RX tail room for {owner}")
     # E2P3's small text owner can use the already reserved legacy RX tails.
     # Keep every established owner at its original address. Its serializer
     # explicitly handles split spans and never splits a UTF-16 string.
@@ -788,7 +873,7 @@ def _scale_allocations(requests):
             end = max((a["va"] + a["size"] for a in out
                        if r["va"] <= a["va"] < r["va"] + r["size"]), default=r["va"])
             at = (end + 15) & -16
-            take = min(remaining, r["va"] + r["size"] - at)
+            take = min(remaining, tops.get(r["va"], r["va"] + r["size"]) - at)
             if take > 0:
                 out.append(dict(owner=venue[0][0], kind="code", size=take, align=16,
                                 va=at, raw=r["raw"] + at - r["va"], owner_offset=owner_offset))
@@ -801,6 +886,10 @@ def _scale_allocations(requests):
         r = next(r for r in _scale_regions() if r["kind"] == "data" and r["va"] <= MYCAREER_M3_STATE_VA < r["va"] + r["size"])
         out.append(dict(owner=MYCAREER_M3_STATE_OWNER, kind="data", size=PAGE, align=16,
                         va=MYCAREER_M3_STATE_VA, raw=r["raw"] + MYCAREER_M3_STATE_VA - r["va"], owner_offset=0))
+    for row in tail_rows:
+        _require(all(not (a["va"] < row["va"] + row["size"] and row["va"] < a["va"] + a["size"]) for a in out),
+                 f"legacy RX tail owner {row['owner']} overlaps another owner")
+    out.extend(tail_rows)
     out.append(dict(owner=DIRECTORY_OWNER, kind="read_only", size=PAGE, align=PAGE,
                     va=SCALE_DIRECTORY_VA, raw=SCALE_DIRECTORY))
     return out

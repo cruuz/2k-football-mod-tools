@@ -652,7 +652,9 @@ def rate_player(row: Mapping, stats: SeasonStats, reference: Reference, *, honor
     """Ratings for one player row. Returns (28 ratings, basis).
 
     Row keys used: ``position`` (2K5 code), ``gsis_id`` (joins the statistics; empty = no statistics),
-    ``weight``, ``birth_date`` (YYYY-MM-DD), ``years_pro``, ``draft_number`` (optional, rookie prior),
+    ``weight``, ``birth_date`` (YYYY-MM-DD), ``years_pro`` (COMPLETED seasons, nflverse ``years_exp``, rookie = 0 --
+    not the roster record's field, whose rookie is 1: convert with ``nfl2k5_roster_records.accrued_seasons``),
+    ``draft_number`` (optional, rookie prior),
     ``depth`` (1-based, the fallback for linemen when no starts or snaps data exist).
     ``honors``: optional level for this player: "AP1", "AP2" or "PB" (floors the value percentile).
     ``anchor``: optional retail 2004 ratings of the same player (a dict of the 28), for physicals and style.

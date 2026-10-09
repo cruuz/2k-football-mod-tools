@@ -125,7 +125,7 @@
         45.3
        ]
       ],
-      "colour": "white"
+      "colour": "silver"
      },
      {
       "polygon": [
@@ -144,6 +144,27 @@
        [
         16.7,
         48.3
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        15.74,
+        45.3
+       ],
+       [
+        122.0,
+        45.3
+       ],
+       [
+        122.0,
+        47
+       ],
+       [
+        16.28,
+        47
        ]
       ],
       "colour": "white"
@@ -251,7 +272,7 @@
         109.3
        ]
       ],
-      "colour": "white"
+      "colour": "silver"
      },
      {
       "polygon": [
@@ -272,7 +293,7 @@
         112.3
        ]
       ],
-      "colour": "white"
+      "colour": "silver"
      },
      {
       "polygon": [
@@ -312,6 +333,27 @@
        [
         108.74,
         120.3
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "polygon": [
+       [
+        112.26,
+        109.3
+       ],
+       [
+        6.0,
+        109.3
+       ],
+       [
+        6.0,
+        111
+       ],
+       [
+        111.72,
+        111
        ]
       ],
       "colour": "white"
@@ -3340,9 +3382,9 @@
       "colour": "blue",
       "center": [
        161,
-       90.5
+       101.1
       ],
-      "width": 40
+      "width": 51
      }
     ]
    },
@@ -7108,5 +7150,18 @@
     ]
    }
   }
+ },
+ "u2b_b77": {
+  "job": "b77 u2b (sonnet-5.5), 2026-10-08",
+  "checked_against": "detroitlions.com 2026 galleries: week 1 vs NO (blue home: #39 and #16 sleeves and numbers), week 2 at BUF (white road: #25 frontal with the DETROIT wordmark, #5, #55)",
+  "changes": {
+   "away.torso.detroit": "DETROIT wordmark 51 px wide at centre y 101.1 (was 40 wide at y 90.5): 0.62 front-number heights wide and 0.09 above the number on the week 2 photo (v0.5: 0.49 wide, 0.17 above)",
+   "home.sleeve": "the two silver sleeve stripes now meet through one thin white line (the photos show a continuous silver band with white lines, no blue gap between the stripes; v0.5 had a 1.7 row blue gap and white lines on both sides of it)"
+  },
+  "unchanged_because_right": [
+   "home all-blue pants and socks (week 1), white numbers with silver trim",
+   "road white pants and socks, blue numbers with silver trim, blue sleeve stripes with silver lines",
+   "silver helmet with blue stripes, blue facemask"
+  ]
  }
 }

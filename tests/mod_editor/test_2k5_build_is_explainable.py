@@ -251,6 +251,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
             source.write_bytes(b"base")
             plan = build.BuildPlan(str(source), str(target), position_pools=True, depth_roles=True,
                                    playbook_packs=("offense.2k5book", "defense.2k5book", "defense.2k5book"))
+            # b77 E3: these packs are SimpleNamespace stand-ins; the early pack-fit check needs real packs and books.
             with patch.object(build.tt, "is_disc_image", return_value=True), \
                  patch.object(build.tt, "write_copy", return_value={}), \
                  patch.object(build, "_core_module", side_effect=modules.get), \
@@ -259,6 +260,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                  patch.object(build, "_write_xbe_bytes"), \
                  patch.object(build, "inspect", return_value={}), \
                  patch.object(build, "_check_playbook_scoring", return_value={"synthetic": True}), \
+                 patch.object(build, "check_playbook_pack_fit", return_value=None), \
                  patch("mod_editor.core.xdvdfs_compact.finish_private", return_value={"output_bytes": 4}), \
                  patch("mod_editor.core.nfl2k5_disc_extents.validate_image", return_value={"synthetic": True}):
                 receipt = build._build(plan)

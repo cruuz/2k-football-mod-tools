@@ -68,6 +68,12 @@ def completion(receipt):
                                if row not in named and row.get("message")))
     if legacy:
         message += "\n\n" + "\n".join(legacy)
+    # Sentences a step wants the person to read on the finished disc (b77 e4: the stadiums the modern boards left as
+    # they were); a step that has nothing to say adds nothing.
+    notes = list(dict.fromkeys(str(line) for step in receipt.get("steps", []) or () if isinstance(step, dict)
+                               for line in step.get("user_notes", ()) or ()))
+    if notes:
+        message += "\n\n" + "\n".join(notes)
     return title, message
 
 

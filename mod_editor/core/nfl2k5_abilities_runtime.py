@@ -10,6 +10,17 @@ authors tiers separately. Five existing move flags gain capped live attribute
 bonuses for tiered players. Move locks are opt-in; Speedster permission remains
 required by default.
 
+g2 (beta 77): star-only moves. The roster star tag (record word bit 0x0100, the star under a player) plus the
+ability tier (Unranked, Star, Superstar, X-Factor) select one of eight access levels from a four-entry table in the
+owner (``tier_grants``). The flag reader adds that level's grant bits (0x01..0x10) to the permissions it returns;
+they are never stored in a roster (all sixteen bits at record +0x52 are assigned) and never counted against a tier's
+flag capacity. Three optional rules put grant bits into the required mask of a command class, so only players whose
+level holds them can use it: ``right_stick_stars_only`` (the right stick: lateral flicks, stutter-step and stop-short
+flicks, the click hurdle), ``charge_stars_only`` (the charge-up meter of live ball carriers) and
+``button_moves_stars_only`` (every other mapped ball-carrier command). All default off; with all off the owner
+behaves as in beta 76.5. CPU carriers follow the same rules as human ones. Speedster and the tier bonuses are
+unchanged.
+
 Reserve REQUESTS together with every other owner before installing any owner.
 The optional off-week is a ZERO-BASED regular-season row (0..17); None means
 no off-week. Rebuild from a supported base to change installed configuration.
@@ -39,6 +50,44 @@ DEFAULT_LOCKS = {"lock_right_stick": False, "lock_special_moves": False,
 LOCK_MASKS = {"lock_right_stick": RIGHT_STICK,
               "lock_special_moves": JUKE | SPIN | TRUCK | HURDLE | STIFF_ARM,
               "lock_speedster": SPEEDSTER}
+# Star access. Grant bits live in the low byte of the permission word the flag reader returns (the record's own
+# 0x1F depth-lock bits are masked out there, so these positions are free in the returned word).
+GRANT_STICK, GRANT_STOP, GRANT_HURDLE, GRANT_CHARGE, GRANT_BUTTON = 0x01, 0x02, 0x04, 0x08, 0x10
+GRANT_MASK = 0x1F
+# Access level name -> grant bits. Every starred record also holds GRANT_BUTTON (used only by the optional
+# button-moves rule); a level only chooses which right-stick and charge-up powers the star has.
+ACCESS_LEVELS = {
+    "none": 0,
+    "charge": GRANT_CHARGE,
+    "flicks": GRANT_STICK,
+    "flicks_charge": GRANT_STICK | GRANT_CHARGE,
+    "stick": GRANT_STICK | GRANT_STOP,
+    "stick_charge": GRANT_STICK | GRANT_STOP | GRANT_CHARGE,
+    "stick_hurdle": GRANT_STICK | GRANT_STOP | GRANT_HURDLE,
+    "full": GRANT_STICK | GRANT_STOP | GRANT_HURDLE | GRANT_CHARGE,
+}
+ACCESS_LABELS = {
+    "none": "No right-stick moves or charge-ups",
+    "charge": "Charge-ups only",
+    "flicks": "Stick juke flicks only",
+    "flicks_charge": "Stick juke flicks and charge-ups",
+    "stick": "Stick flicks, stutter-step and stop short",
+    "stick_charge": "Stick flicks, stutter-step, stop short and charge-ups",
+    "stick_hurdle": "All stick moves including the hurdle",
+    "full": "Everything: all stick moves, hurdle and charge-ups",
+}
+# One level per class of starred player, indexed by ability tier: 0 Unranked (star tag only), 1 Star, 2 Superstar, 3 X-Factor.
+STAR_CLASSES = ("Starred, no ability tier", "Star tier", "Superstar tier", "X-Factor tier")
+DEFAULT_STAR_ACCESS = ("flicks_charge", "stick_charge", "full", "full")
+DEFAULT_STARS = {"right_stick_stars_only": False, "charge_stars_only": False, "button_moves_stars_only": False,
+                 "star_access": DEFAULT_STAR_ACCESS}
+# Grant bits each right-stick command needs when the rule is on. The stick-flick numbers come from the game's own
+# decoder: 0x24/0x28 up (stutter-step), 0x25/0x29 left and 0x27/0x2B right (jukes), 0x26/0x2A down (stop short);
+# 0x1A is the click of the right stick (hurdle).
+STICK_GRANTS = {0x1A: GRANT_STICK | GRANT_HURDLE,
+                **{c: GRANT_STICK | GRANT_STOP for c in (0x24, 0x26, 0x28, 0x2A)},
+                **{c: GRANT_STICK for c in (0x25, 0x27, 0x29, 0x2B)}}
+TABLE_FIRST_COMMAND, TABLE_ENTRIES = 0x18, 20     # move_masks holds one word per command 0x18..0x2B
 # Effective-attribute table indices differ from on-disc byte order.
 EFFECTS = {
     "juke": (1, JUKE, "Agility"),
@@ -55,6 +104,12 @@ MOVE_MASKS = {
     **{command: JUKE | RIGHT_STICK for command in range(0x24, 0x2C)},
     0x5C: JUKE, 0x5D: JUKE,
 }
+# The two "stars only" classes. A command is a right-stick move when its mask holds RIGHT_STICK (the hurdle is the
+# right-stick CLICK); the other twelve mapped commands are button moves (face buttons, triggers, bumpers, and the
+# CPU/derived juke, spin and stiff-arm commands that never come from the stick).
+STICK_COMMANDS = tuple(sorted(c for c, m in MOVE_MASKS.items() if m & RIGHT_STICK))
+BUTTON_COMMANDS = tuple(sorted(c for c, m in MOVE_MASKS.items() if not m & RIGHT_STICK))
+assert len(STICK_COMMANDS) == 9 and len(BUTTON_COMMANDS) == 12
 # Direct call PCs from a byte-granular E8/E9 scan of retail .text. Zero means
 # outside the researched five-move contract, so never authorize consumption.
 CONSUMERS = {
@@ -93,6 +148,12 @@ HELP_TEXT = (
     "abilities off. Author tiers and abilities on the Rosters Abilities page. "
     "Tiered players with excess stored abilities receive no stored permissions "
     "or bonuses until corrected. Unranked legacy flags retain v1 permissions. "
+    "Optional star rules use the roster star tag and the ability tier: "
+    "right-stick moves (stick flicks, stutter-step, stop short, the stick-click "
+    "hurdle), charge-ups and button moves (spin, truck, stiff-arm, button jukes) "
+    "can each be limited to starred players, and each class of star (no tier, "
+    "Star, Superstar, X-Factor) chooses which of those powers it has. CPU players "
+    "follow the same rules. Speedster and the tier bonuses are unchanged. "
     "No simulated-game effects or guaranteed outcomes."
 )
 
@@ -118,24 +179,169 @@ def _locks(**values):
     return {key: values.get(key, DEFAULT_LOCKS[key]) for key in LOCK_MASKS}
 
 
-def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
-             lock_special_moves=False, lock_speedster=True):
-    _week(abilities_off_week)
-    locks = _locks(lock_right_stick=lock_right_stick,
-                   lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
-    blob = bytearray(assembly.CODE)
+def _stars(**values):
+    for key, value in values.items():
+        _require(key in DEFAULT_STARS, f"unknown star rule {key}")
+        if key == "star_access":
+            _require(isinstance(value, (tuple, list)) and len(value) == 4 and all(v in ACCESS_LEVELS for v in value),
+                     "star_access must name one access level for each of the four star classes")
+        else:
+            _require(type(value) is bool, f"{key} must be Boolean")
+    out = {key: values.get(key, DEFAULT_STARS[key]) for key in DEFAULT_STARS}
+    out["star_access"] = tuple(out["star_access"])
+    return out
+
+
+def _relocate(blob, code_va, relocations=None):
     symbols = {"code": code_va, **SYMBOLS}
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    for offset, kind, symbol, value in (assembly.RELOCATIONS if relocations is None else relocations):
         target = symbols[symbol] + value + struct.unpack_from("<I", blob, offset)[0]
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
+
+
+def _star_classes(blob, stars):
+    """Install the star rules into a relocated template: the 20 command words, the seven descriptor-family masks
+    the initializer falls back to, the 0x5C/0x5D juke immediate, the tier grant table and (charge rule) the charge
+    gate."""
+    labels = assembly.LABELS
+    stick, button = stars["right_stick_stars_only"], stars["button_moves_stars_only"]
+    table = labels["move_masks"]
+    for command, base in MOVE_MASKS.items():
+        if TABLE_FIRST_COMMAND <= command < TABLE_FIRST_COMMAND + TABLE_ENTRIES:
+            at = table + 2 * (command - TABLE_FIRST_COMMAND)
+            word = struct.unpack_from("<H", blob, at)[0]
+            _require(word == base, "abilities move table differs from the declared command masks")
+            extra = (STICK_GRANTS[command] if stick else 0) if base & RIGHT_STICK else (GRANT_BUTTON if button else 0)
+            struct.pack_into("<H", blob, at, word | extra)
+    families = labels["families"]
+    for index in range(7):
+        at = families + 8 * index + 4
+        mask = struct.unpack_from("<I", blob, at)[0]
+        _require(mask and not mask & GRANT_MASK, "abilities descriptor-family table differs from the template")
+        if mask & RIGHT_STICK:
+            extra = (GRANT_STICK | (GRANT_HURDLE if mask & HURDLE else 0)) if stick else 0
+        else:
+            extra = GRANT_BUTTON if button else 0
+        struct.pack_into("<I", blob, at, mask | extra)
+    at = labels["mask_juke"]
+    _require(blob[at] == 0xBF and struct.unpack_from("<I", blob, at + 1)[0] == JUKE,
+             "abilities juke mask immediate differs from the template")
+    struct.pack_into("<I", blob, at + 1, JUKE | (GRANT_BUTTON if button else 0))
+    at = labels["tier_grants"]
+    _require(bytes(blob[at:at + 4]) == bytes(4), "abilities tier grant table differs from the template")
+    blob[at:at + 4] = bytes(ACCESS_LEVELS[name] | GRANT_BUTTON for name in stars["star_access"])
+    if stars["charge_stars_only"]:
+        # The retail charge policy is replaced, for live ball carriers only, by "the carrier's access level holds
+        # the charge-up grant". Four one-byte/one-immediate edits in maintain(); consume() keeps retail behaviour.
+        head = labels["maintain_head"] + 5            # je maintain_yes after unlocked_moves
+        _require(blob[head] == 0x74, "abilities maintain head differs from the template")
+        blob[head:head + 2] = b"\x90\x90"
+        at = labels["maintain_carrier"] + 5           # jnc maintain_clear after carrier: non-carriers keep retail charge
+        _require(blob[at] == 0x73, "abilities maintain carrier branch differs from the template")
+        displacement = labels["maintain_yes"] - (at + 2)
+        _require(0 <= displacement < 128, "abilities maintain layout differs from the template")
+        blob[at + 1] = displacement
+        at = labels["maintain_test"]                  # test eax, 0x1e80 (any move permission) -> the charge grant
+        _require(blob[at] == 0xA9 and struct.unpack_from("<I", blob, at + 1)[0] == 0x1E80,
+                 "abilities maintain permission test differs from the template")
+        struct.pack_into("<I", blob, at + 1, GRANT_CHARGE)
+        at = labels["maintain_state"]                 # jne maintain_yes after the state test: skip the per-move check
+        _require(blob[at] == 0x75, "abilities maintain state branch differs from the template")
+        blob[at] = 0xEB
+
+
+def _read_stars(content):
+    """The star rules a template-shaped owner carries, or None when its bytes are not this template's."""
+    labels = assembly.LABELS
+    try:
+        words = struct.unpack_from("<%dH" % TABLE_ENTRIES, content, labels["move_masks"])
+        grants = content[labels["tier_grants"]:labels["tier_grants"] + 4]
+        by_value = {v: k for k, v in ACCESS_LEVELS.items()}
+        names = tuple(by_value[g & ~GRANT_BUTTON] for g in grants)
+    except (KeyError, struct.error):
+        return None
+    return {"right_stick_stars_only": bool(words[0x1A - TABLE_FIRST_COMMAND] & GRANT_STICK),
+            "charge_stars_only": content[labels["maintain_head"] + 5] == 0x90,
+            "button_moves_stars_only": bool(words[0x1B - TABLE_FIRST_COMMAND] & GRANT_BUTTON),
+            "star_access": names}
+
+
+def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
+             lock_special_moves=False, lock_speedster=True, right_stick_stars_only=False,
+             charge_stars_only=False, button_moves_stars_only=False, star_access=DEFAULT_STAR_ACCESS):
+    _week(abilities_off_week)
+    locks = _locks(lock_right_stick=lock_right_stick,
+                   lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
+    stars = _stars(right_stick_stars_only=right_stick_stars_only, charge_stars_only=charge_stars_only,
+                   button_moves_stars_only=button_moves_stars_only, star_access=star_access)
+    _require(not (stars["charge_stars_only"] and (locks["lock_right_stick"] or locks["lock_special_moves"])),
+             "charge_stars_only replaces the charge policy of the two move locks: turn both locks off")
+    blob = bytearray(assembly.CODE)
+    _relocate(blob, code_va)
     struct.pack_into("<i", blob, assembly.LABELS["config"],
                      -1 if abilities_off_week is None else abilities_off_week)
     struct.pack_into("<I", blob, assembly.LABELS["unlocked_mask"],
                      sum(LOCK_MASKS[key] for key, locked in locks.items() if not locked))
+    _star_classes(blob, stars)
     blob.extend(b"\xcc" * (CODE_SIZE - len(blob)))
     return bytes(blob), {name: code_va + offset for name, offset in assembly.LABELS.items()}
+
+
+# The beta 76.5 / SOFTDRINK v0.5 owner template (what tools/b77/g2_repair.py upgrades). Hooks, tables and every
+# function from `carrier` on are byte-identical to the current template (same labels); only the flag reader, the
+# 1-byte `permissions`/`unlocked_moves` shift and the new grant table differ, so the repair rewrites just the
+# owner's own allocation. LEGACY_V05_SHA256 pins the whole 1344-byte owner of the shipped v0.5 disc.
+LEGACY_V05_CODE = bytes.fromhex(
+    "31c085c9746183f9ff745c833d00000000ff741f833da076e500027516833da476e50008750da1000000003b05b476e5"
+    "0074320fb7415225e01e00005352510fb65153c1ea0674198a923605000089c385db740dfeca78078d4bff21cbebf131"
+    "c0595a5bc331c0c3e893ffffff0b0508050000c3a10805000025c01e00003dc01e0000c331f631d28d430183f801763b"
+    "8b73108d460183f801762c8b530c8d420183f8017623833db802e6000e751ca100fce5004083f8017611483918750c83"
+    "7b1c017506f9c331f631d2f8c38b0283f8ff741a83f80377136bc02c8b8060b9a90083f808740783f80a7402f8c3f9c3"
+    "31ff83f95c741683f95d741183e91883f91377080fb73c4d00000000c3bf80000000c385f6741583a690000000fcc746"
+    "4400000000c74648000080bf85d27404836218fbc3e83affffff7443e843ffffff733e8b4b3ce81dffffff89c5a94000"
+    "0000750525fff7ffffa9801e000074218b869000000083e00383f80175118b0ee87bffffff85ff740821fd39fd7502f9"
+    "c3e88dfffffff8c3e8a8ffffffe8f2feffff732de834ffffff73268b4a1ce84dffffff85ff741a8b4b3ce8b9feffff21"
+    "f839f8740cc7421c00000000e852ffffffc351ff742408e8fcffffff599c6083ec0cd91c24c7442404a4707d3fe886fe"
+    "ffffa92000000074270fb6413683e86483f81b771b83c06489442408db442408d80d04000000d9542404d80c24d91c24"
+    "8b042485c078133d0000807f730c3b442404760b8b442404eb0231c0890424d9042483c40c619dc20400e8fcffffff9c"
+    "60e842ffffff619dc39c6089cbe836ffffff619d8b410c8b781c89fae9fcffffff9c6089cbe81afeffff7377e85cfeff"
+    "ff73708b6c24148b0e83f95d77093b2c8df067ad00742b8b4a1c83f95d77093b2c8df067ad00741abfd0040000b90700"
+    "00003b2f740783c708e2f7eb368b7f04eb05e839feffff85ff74288b4b3ce8a5fdffff21f839f8741ac7442414ecf450"
+    "00c70600000000c7421c00000000e830feffff619d53565789cfe9fcffffff9c6089cbe83dfeffff730c619da180ffe5"
+    "00e9fcffffff619dc39c6089cbe823feffff73f2619d8b41108b8890000000e9fcffffff9c6089cbe847fdffff7451e8"
+    "50fdffff73588b442424bf00000000b90f0000003b07740783c708e2f7eb3f8b6f0485ed74388b0e83f95d77318b048d"
+    "f067ad003968047525e882fdffff85ff741c8b4b3ce8eefcffff21f839f8750e619d568b7110d94644e9fcffffffe880"
+    "fdffff619dc35251ff74240ce8790000009c608b4c24248b542428833db802e6000e755d83fa12775889d6e840fcffff"
+    "668504751005000074470fb64153c1e806743e83ec0889442404d91c248b042485c07e273d0000803f7320db442404d8"
+    "0d0c050000d80424d91c24813c240000803f7607c704240000803fd9042483c408619d8d642408c2040083ec088b4130"
+    "e9fcffffffccccccffffffff0ad7233c001000104008000200028000800000008000800080000004c000c000c000c000"
+    "c000c000c000c000cbd218000000000081df18000000000043771e0000000000a77b1e0000000000d019230000000000"
+    "a008290080082900651d290000000000d1bb2d00c0bb2d0008c82d00f0c72d0098cf2d0070cf2d00fc6d3000e06d3000"
+    "1785300000000000c7d23000a0d23000aced3000000000004279310000000000480153000010000008cb510040080000"
+    "f80053008002000064105300000400005c0f5300c000000034015300800000002001530080020000000000000ad7a33c"
+    "000080000010000800000000000000000000000000000000000400000000000000000000000207020407"
+)
+LEGACY_V05_RELOCATIONS = ((13, 1, 'code', 1064), (39, 1, 'code', 1064), (74, 1, 'code', 0), (111, 1, 'code', 0), (117, 1, 'code', 0), (264, 1, 'code', 1072), (456, 2, 'retail_attribute', 0), (514, 1, 'code', 1064), (571, 2, 'retail_decode', 0), (665, 1, 'code', 0), (827, 1, 'code', 1112), (964, 1, 'code', 0), (1009, 1, 'code', 0), (605, 2, 'retail_account', 0), (747, 2, 'retail_initialize_tail', 0), (770, 2, 'retail_generate_tail', 0), (800, 2, 'retail_ai_tail', 0), (906, 2, 'retail_consume_tail', 0), (1057, 2, 'retail_attribute_tail', 0))
+LEGACY_V05_LABELS = {'ai_ready': 777, 'attribute': 918, 'attribute_body': 1050, 'attribute_done': 1041, 'attribute_load': 1035, 'carrier': 132, 'carrier_bad_state': 199, 'carrier_bad_steer': 201, 'carrier_no': 203, 'clear_charge': 275, 'clear_done': 308, 'clear_request': 300, 'code_end': 1338, 'config': 1064, 'consume': 804, 'consume_allowed': 896, 'consume_denied': 910, 'consume_find': 836, 'consume_found': 847, 'consumers': 1112, 'decode': 570, 'dispatch': 585, 'effect_masks': 1296, 'effect_step': 1292, 'effective': 0, 'effective_done': 103, 'effective_read': 51, 'effective_zero': 101, 'families': 1232, 'filter': 392, 'filter_done': 449, 'generate': 751, 'generate_denied': 774, 'initialize': 609, 'initialize_check': 695, 'initialize_done': 739, 'initialize_family': 664, 'initialize_family_found': 685, 'initialize_find': 674, 'initialize_mask': 690, 'initialize_steer': 647, 'instructions_end': 1061, 'maintain': 309, 'maintain_any': 345, 'maintain_clear': 385, 'maintain_yes': 383, 'mask_done': 268, 'mask_juke': 269, 'move_mask': 240, 'move_masks': 1072, 'permissions': 104, 'running': 205, 'running_no': 236, 'running_yes': 238, 'speed': 450, 'speed_bound': 528, 'speed_load': 559, 'speed_store': 556, 'speed_zero': 554, 'tier_count': 80, 'tier_done': 97, 'tier_limits': 1334, 'tier_overfull': 95, 'unlocked_mask': 1288, 'unlocked_moves': 116}
+LEGACY_V05_SHA256 = "2caea89c9171fcd0490791bd37b4e3a3d57418c3dbd48a879d287e0857371e13"
+LEGACY_V05_VA = 0x14DA000
+
+
+def legacy_code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
+                    lock_special_moves=False, lock_speedster=True):
+    """The v0.5 owner bytes for the same settings (no star rules existed)."""
+    _week(abilities_off_week)
+    locks = _locks(lock_right_stick=lock_right_stick,
+                   lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
+    blob = bytearray(LEGACY_V05_CODE)
+    _relocate(blob, code_va, LEGACY_V05_RELOCATIONS)
+    struct.pack_into("<i", blob, LEGACY_V05_LABELS["config"], -1 if abilities_off_week is None else abilities_off_week)
+    struct.pack_into("<I", blob, LEGACY_V05_LABELS["unlocked_mask"],
+                     sum(LOCK_MASKS[key] for key, locked in locks.items() if not locked))
+    blob.extend(b"\xcc" * (CODE_SIZE - len(blob)))
+    return bytes(blob), {name: code_va + offset for name, offset in LEGACY_V05_LABELS.items()}
 
 
 def sites(labels):
@@ -154,7 +360,8 @@ def allocation(payload):
     return found[0]
 
 
-def _inspect(payload):
+def _inspect_revision(payload):
+    """(state, settings, revision). revision is "retail", "star-gate" (this template) or "beta-76.5" (the v0.5 reader)."""
     _require(isinstance(payload, (bytes, bytearray)) and len(payload) >= 4096, "truncated abilities XBE")
     layout = space.layout(payload)  # checks every section digest and allocation seal
     image = XbeImage(payload)
@@ -167,7 +374,8 @@ def _inspect(payload):
                  f"foreign abilities dependency at {va:#x}")
     present = any(a["owner"] == OWNER for a in layout["allocations"])
     state = "retail"
-    settings = {"abilities_off_week": None, **_locks()}
+    revision = "retail"
+    settings = {"abilities_off_week": None, **_locks(), **_stars()}
     labels = {name: 0 for name in HOOKS}
     if present:
         a = allocation(payload)
@@ -177,13 +385,39 @@ def _inspect(payload):
             settings["abilities_off_week"] = _week(None if value == -1 else value)
             mask = struct.unpack_from("<I", content, assembly.LABELS["unlocked_mask"])[0]
             settings.update({key: not bool(mask & bits) for key, bits in LOCK_MASKS.items()})
-            expected, labels = code_for(a["va"], **settings)
-            _require(content == expected, "foreign abilities code/table/configuration")
+            stars = _read_stars(content)
+            expected = None
+            if stars is not None:
+                try:
+                    expected, labels = code_for(a["va"], **{**settings, **stars})
+                except AbilitiesError:
+                    expected = None
+            if expected is not None and content == expected:
+                settings.update(stars)
+                revision = "star-gate"
+            else:
+                # The beta 76.5 template has no star rules (it behaves like this one with all of them off).
+                legacy, labels = legacy_code_for(a["va"], **{k: v for k, v in settings.items() if k not in DEFAULT_STARS})
+                _require(content == legacy, "foreign abilities code/table/configuration")
+                revision = "beta-76.5"
             state = "applied"
     for name, va, before, after in sites(labels):
         _require(image.read(va, len(before)) == (after if state == "applied" else before),
                  f"mixed/foreign abilities hook: {name}")
+    return state, settings, revision
+
+
+def _inspect(payload):
+    state, settings, _revision = _inspect_revision(payload)
     return state, settings
+
+
+def revision(payload):
+    """retail | star-gate | beta-76.5 | foreign."""
+    try:
+        return _inspect_revision(payload)[2]
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
+        return "foreign"
 
 
 def status(payload):
@@ -195,8 +429,8 @@ def status(payload):
 
 def read_settings(payload):
     try:
-        state, settings = _inspect(payload)
-        return {"status": state, **settings, "model_version": MODEL_VERSION,
+        state, settings, rev = _inspect_revision(payload)
+        return {"status": state, **settings, "model_version": MODEL_VERSION, "revision": rev,
                 "experimental": True, "runtime_witnessed": False}
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
         return {"status": "foreign", "experimental": True, "runtime_witnessed": False}
@@ -212,7 +446,8 @@ def reservations(payload):
 
 
 def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
-          lock_special_moves=_UNSET, lock_speedster=_UNSET):
+          lock_special_moves=_UNSET, lock_speedster=_UNSET, right_stick_stars_only=_UNSET,
+          charge_stars_only=_UNSET, button_moves_stars_only=_UNSET, star_access=_UNSET):
     """Install both phases; omitted replay option retains the installed week.
 
     An explicit None removes the week only on a clean base. Configuration
@@ -226,6 +461,10 @@ def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
                            lock_special_moves=lock_special_moves, lock_speedster=lock_speedster).items():
         if value is not _UNSET:
             wanted[key] = _locks(**{key: value})[key]
+    for key, value in dict(right_stick_stars_only=right_stick_stars_only, charge_stars_only=charge_stars_only,
+                           button_moves_stars_only=button_moves_stars_only, star_access=star_access).items():
+        if value is not _UNSET:
+            wanted[key] = _stars(**{key: value})[key]
     receipt = dict(owner=OWNER, **wanted, model_version=MODEL_VERSION,
                    experimental=True, runtime_witnessed=False, changed_bytes=0, edits=[])
     if state == "applied":
@@ -325,6 +564,11 @@ def main():
         parser.add_argument("--" + name.replace("_", "-"),
                             action=argparse.BooleanOptionalAction,
                             default=DEFAULT_LOCKS[name])
+    for name in ("right_stick_stars_only", "charge_stars_only", "button_moves_stars_only"):
+        parser.add_argument("--" + name.replace("_", "-"), action=argparse.BooleanOptionalAction,
+                            default=DEFAULT_STARS[name])
+    parser.add_argument("--star-access", default=",".join(DEFAULT_STAR_ACCESS),
+                        help="four access levels (starred no tier, Star, Superstar, X-Factor): " + ", ".join(ACCESS_LEVELS))
     args = parser.parse_args()
     _require(args.source.stat().st_size <= 16 * 1024**2, "expected a bounded XBE, not a disc or pack")
     with args.source.open("rb") as source:
@@ -332,7 +576,9 @@ def main():
     if args.output is None:
         print(json.dumps(read_settings(payload), indent=2))
         return
-    locks = {name: getattr(args, name) for name in LOCK_MASKS}
+    locks = {name: getattr(args, name) for name in (*LOCK_MASKS, "right_stick_stars_only", "charge_stars_only",
+                                                    "button_moves_stars_only")}
+    locks["star_access"] = tuple(args.star_access.split(","))
     result, receipt = apply(payload, abilities_off_week=args.off_week, **locks)
     with args.output.resolve().open("xb") as output:
         output.write(result)

@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import csv
 from dataclasses import dataclass, replace
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 from types import SimpleNamespace
 import tempfile
@@ -179,6 +186,9 @@ class AudioReplacementPackTests(unittest.TestCase):
         return assets
 
     def test_legacy_v1_ordered_id_set_stays_rc14_compatible(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_audo_import_capacity.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         report = json.loads(CAPACITY_REPORT.read_bytes())
         synthetic_assets = []
         for row in report["records"]:

@@ -1,0 +1,590 @@
+{
+ "team": "NYJ",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Reich West Coast vertical blend",
+ "staff": "Frank Reich",
+ "family": "west_coast",
+ "feature": "WR1",
+ "key_players": "Garrett Wilson; Breece Hall",
+ "depth_step": 0,
+ "node_cap_note": "b77 p48o: old-generator defense pack 1,638 nodes + kickoff returns 78 must fit 3,500 after the offense (max 1,784): NYJ skips the three sets with their own personnel or alignment (Gun Empty Y, Gun Split Pro, Pistol Strong) and keeps two of the three core gadgets (no toss Reverse); the shared cap is 1,820",
+ "keep_in_menu": {
+  "I-Form Pro": [
+   "Flea Flicker"
+  ],
+  "Singleback Doubles": [
+   "End Around"
+  ]
+ },
+ "tendencies": {
+  "shotgun_pct": 73.14,
+  "pistol_pct": 4.27,
+  "play_action_pct": 17.78,
+  "motion_pct": 62.93,
+  "personnel": {
+   "12": 175,
+   "11": 680,
+   "21": 62,
+   "other": 69,
+   "22": 20,
+   "13": 3
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Doubles",
+   "Gun Trey",
+   "Singleback Doubles",
+   "Gun Doubles Tight"
+  ],
+  "avoid": [
+   "Gun Empty Y",
+   "Gun Split Pro",
+   "Pistol Strong"
+  ],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Doubles Tight",
+   "Singleback Wing",
+   "Weak I",
+   "I-Form Twins",
+   "Split Backs",
+   "Gun Empty Bunch",
+   "Strong I Twins"
+  ]
+ },
+ "boost": {
+  "Bubble Screen": 1,
+  "Dagger": 3,
+  "Double Post": 1,
+  "Drive": 4,
+  "Mesh": 3,
+  "Mills": 1,
+  "RB Screen": 4,
+  "Slant Flat": 2,
+  "Smash": 1,
+  "Snag": 2,
+  "Spacing": 2,
+  "Stick": 2,
+  "Texas": 1
+ },
+ "preference_shift": {
+  "PA Boot": 1,
+  "PA Crossers": 1,
+  "PA Dagger": 1
+ },
+ "signature": [
+  {
+   "formation": "Gun Doubles",
+   "concept": "Smash",
+   "name": "Smash Wheel",
+   "overrides": {
+    "routes": {
+     "B": [
+      "route",
+      "Back Wheel"
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Flood",
+   "name": "Trips Sail",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Sail",
+      12
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Quick Outs",
+   "name": "NYJ Quick Outs",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "W2",
+     "S2",
+     "S1",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Bench",
+   "name": "NYJ Bench",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "B",
+     "W1",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Smash",
+   "name": "NYJ Smash",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S2",
+     "S1",
+     "W1",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Curl Flat",
+   "name": "NYJ Curl Flat",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S1",
+     "W1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Hank",
+   "name": "NYJ Hank",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S2",
+     "W2",
+     "B",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Comebacks",
+   "name": "NYJ Comebacks",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S1",
+     "B",
+     "W1",
+     "S2"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.newyorkjets.com/team/coaches-roster/frank-reich)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 6.93 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Weak I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Empty Bunch": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  },
+  "Strong I Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "Quick Outs",
+    "name": "NYJ Quick Outs",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "W2",
+      "S2",
+      "S1",
+      "W1"
+     ]
+    },
+    "reason": "targets QUICK OUT 24.5% (league 18.8)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Bench",
+    "name": "NYJ Bench",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "B",
+      "W1",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "targets QUICK OUT 24.5% (league 18.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Smash",
+    "name": "NYJ Smash",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S2",
+      "S1",
+      "W1",
+      "W2"
+     ]
+    },
+    "reason": "targets QUICK OUT 24.5% (league 18.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Curl Flat",
+    "name": "NYJ Curl Flat",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S1",
+      "W1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 22.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Hank",
+    "name": "NYJ Hank",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S2",
+      "W2",
+      "B",
+      "S1"
+     ]
+    },
+    "reason": "targets HITCH/CURL 22.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Comebacks",
+    "name": "NYJ Comebacks",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S1",
+      "B",
+      "W1",
+      "S2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 22.6% (league 18.3)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 99.1%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   3,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   2,
+   4
+  ],
+  "Gun Trey": [
+   2,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   3,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   2,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   0,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   3,
+   4
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "Weak I": [
+   4,
+   2,
+   4
+  ],
+  "I-Form Twins": [
+   2,
+   2,
+   4
+  ],
+  "Split Backs": [
+   2,
+   2,
+   4
+  ],
+  "Gun Empty Bunch": [
+   0,
+   0,
+   0
+  ],
+  "Strong I Twins": [
+   2,
+   2,
+   4
+  ]
+ }
+}

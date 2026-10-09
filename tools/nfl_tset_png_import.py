@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import base64
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import os
@@ -486,6 +486,45 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
     return palette
 
 
+def rebuild_authored_tset_span(template_span: bytes, decoded: bytes, png_payload: bytes):
+    """Preserve an author's optional loader allocation without changing texture data.
+
+    A wet-palette repair can retain a larger allocation from an earlier clean
+    import. The PNG can carry that minimum for byte-exact source rebuilding.
+    The compressor still computes and enforces the actual loader minimum.
+    The author cannot change descriptors, lengths, or the compressed stream.
+    """
+    offset, found = 8, None
+    while offset + 12 <= len(png_payload):
+        size = struct.unpack_from('>I', png_payload, offset)[0]
+        kind = png_payload[offset + 4:offset + 8]
+        data = png_payload[offset + 8:offset + 8 + size]
+        if kind == b'tEXt' and data.startswith(b'nfl2k5_tset_allocation\0'):
+            require(found is None and len(data) <= 1024,
+                    'duplicate or oversized PNG TSET allocation')
+            found = data.split(b'\0', 1)[1]
+        offset += size + 12
+    if found is None:
+        return rebuild_compressed_chunk_fixed_span(template_span, decoded)
+    try:
+        doc = json.loads(found.decode('ascii'))
+    except (UnicodeError, ValueError) as exc:
+        raise ImportError('invalid PNG TSET allocation') from exc
+    require(isinstance(doc, dict) and doc.get('schema') == 'nfl2k5_tset_allocation/v1',
+            'PNG TSET allocation schema mismatch')
+    fields = list(HEADER.unpack_from(template_span))
+    floor = doc.get('minimum_overlap_scratch_bytes')
+    require(fields[0] == b'TSET' and type(floor) is int and
+            0 <= floor <= (fields[1] + 15) // 16 * 16 and floor % 16 == 0,
+            'PNG TSET allocation must be an aligned minimum within the stored span')
+    original = fields[5]
+    fields[5] = max(original, floor)
+    span, info = rebuild_compressed_chunk_fixed_span(
+        HEADER.pack(*fields) + template_span[HEADER.size:], decoded)
+    return span, replace(info, original_overlap_scratch_bytes=original,
+                         overlap_scratch_changed=info.rebuilt_overlap_scratch_bytes != original)
+
+
 def png_palette_reservation(payload: bytes) -> dict | None:
     """Read an opt-in exact-colour reservation from an already validated PNG.
 
@@ -781,6 +820,15 @@ def derive_mud_palette(clean: list[tuple[int, int, int, int]], mode: str) \
         return [
             ((red * 3 + 2) // 5, (green * 3 + 2) // 5,
              (blue * 3 + 2) // 5, alpha)
+            for red, green, blue, alpha in clean
+        ]
+    if mode == "wet_93":
+        # W1 (beta 77): retail jersey, sleeve and pants mud twins are a gentle wet/dirty darkening (a white away jersey
+        # 252 -> 236, 0.936; coloured kits 0.95 to 1.0; white pants 0.89), not the 60 percent that equipment twins use.
+        # The mud textures are only loaded in rain and snow, so 0.6 turned every white jersey grey in the wet.
+        return [
+            ((red * 93 + 50) // 100, (green * 93 + 50) // 100,
+             (blue * 93 + 50) // 100, alpha)
             for red, green, blue, alpha in clean
         ]
     raise ImportError(f"unsupported mud palette mode {mode}")
@@ -1219,7 +1267,7 @@ def main() -> int:
     parser.add_argument("--inventory", required=True, type=Path)
     parser.add_argument("--clean-png", required=True, type=Path)
     parser.add_argument("--mud-png", type=Path)
-    parser.add_argument("--mud-mode", choices=("identity", "darken_60"),
+    parser.add_argument("--mud-mode", choices=("identity", "darken_60", "wet_93"),
                         default="identity")
     parser.add_argument("--output-span", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)

@@ -588,6 +588,23 @@ def decorate(out: np.ndarray, spec: Spec, items: list, marks: Path | None, part:
         elif "polygon" in item:
             paint(colour, polygon_coverage(shape, [(x * MASTER, y * MASTER) for x, y in item["polygon"]]), shade,
                   item.get("shade_sigma", 3.0))
+        elif "bands" in item:
+            # a partition of polygon bands painted in one pass (job b77 u1, the Patriots' yoke stripes): each band is
+            # many non-overlapping pieces whose coverages add up exactly, and neighbouring bands blend into each
+            # other, never through the jersey colour, so no seam or dark fringe shows between pieces or bands
+            covs, colours = [], []
+            for band in item["bands"]:
+                cov = np.zeros(shape, np.float32)
+                for points in band["polygons"]:
+                    cov += polygon_coverage(shape, [(x * MASTER, y * MASTER) for x, y in points])
+                covs.append(np.clip(cov, 0.0, 1.0))
+                colours.append(spec.colour(band["colour"]))
+            total = np.clip(sum(covs), 0.0, 1.0)
+            weight = np.maximum(sum(covs), 1e-6)
+            rgb = sum(c[..., None] * col[None, None, :3] for c, col in zip(covs, colours)) / weight[..., None]
+            a = total[..., None]
+            out[..., :3] = out[..., :3] * (1 - a) + rgb * a
+            out[..., 3:4] = out[..., 3:4] * (1 - a) + a
         elif "mark" in item and item["mark"].startswith("@"):
             # an official league or maker mark ("@nfl_shield", "@nike_swoosh"): the pinned master, never a team file
             cx, cy = anchor_centre(part, item["at"]) if "at" in item else item["center"]
@@ -619,7 +636,9 @@ def decorate(out: np.ndarray, spec: Spec, items: list, marks: Path | None, part:
                     logo = logo.rotate(float(item["rotate"]), resample=Image.BICUBIC, expand=True)
                     logo = logo.crop(logo.getbbox())
                 width = item["width"] * MASTER
-                _place_logo(out, logo, centre, width, width * logo.height / logo.width, rotate=False)
+                # ``height`` (retail px, optional): the box for textures whose texels are not square on the model
+                height = float(item["height"]) * MASTER if item.get("height") else width * logo.height / logo.width
+                _place_logo(out, logo, centre, width, height, rotate=False)
     return out
 
 
@@ -667,7 +686,10 @@ def author_torso(spec: Spec, kit: dict, retail: Path, marks: Path) -> np.ndarray
     mark = t.get("chest_mark")
     if mark:
         path = marks / spec.data["marks"][mark["mark"]]
-        cov = mark_coverage(path, shape, (mark["center"][0] * MASTER, mark["center"][1] * MASTER), mark["width"] * MASTER)
+        # ``height`` (retail px, optional): the torso's chest texels are 0.275 cm across and 0.25 cm down, so a mark
+        # may give its box to keep true proportions on the model (job b77 u1)
+        cov = mark_coverage(path, shape, (mark["center"][0] * MASTER, mark["center"][1] * MASTER), mark["width"] * MASTER,
+                            height=float(mark["height"]) * MASTER if mark.get("height") else None)
         over(out, spec.colour(mark["colour"]), cov)
     # ``sleeve_swooshes`` ({"colour"}): the maker's swoosh, drawn on the sleeves (author_sleeve), not on the retail
     # maker spots of the shoulder tops (TORSO_SLEEVE_MARKS), which stay the plain jersey
@@ -1097,9 +1119,20 @@ def _old_decals(ref: np.ndarray, boxes: dict, erase_box: bool = False) -> tuple[
     return mask, found
 
 
-def _place_logo(canvas: np.ndarray, logo: Image.Image, centre, max_w: float, max_h: float, rotate: bool) -> None:
+def decal_flip(facing: str, mark_faces: str = "right") -> bool:
+    """Whether the lower (left-side) decal is the mark flipped horizontally: the head must sit at the texture's left
+    (the front: u grows toward the rear on both islands) for "front", at the right for "rear"."""
+    return facing != "image" and ((facing == "front") != (mark_faces == "left"))
+
+
+def _place_logo(canvas: np.ndarray, logo: Image.Image, centre, max_w: float, max_h: float, rotate: bool,
+                flip_h: bool = False, flip_v: bool = False) -> None:
     """Composite an RGBA logo (straight alpha) into a master canvas, fitted inside max_w x max_h at ``centre``."""
     logo = logo.crop(logo.getbbox())
+    if flip_h:
+        logo = logo.transpose(Image.FLIP_LEFT_RIGHT)
+    if flip_v:
+        logo = logo.transpose(Image.FLIP_TOP_BOTTOM)
     if rotate:
         logo = logo.rotate(180)
     s = min(max_w / logo.width, max_h / logo.height)
@@ -1109,6 +1142,41 @@ def _place_logo(canvas: np.ndarray, logo: Image.Image, centre, max_w: float, max
     region = canvas[y0:y0 + h, x0:x0 + w]
     a = arr[: region.shape[0], : region.shape[1], 3:4]
     region[..., :3] = region[..., :3] * (1 - a) + arr[: region.shape[0], : region.shape[1], :3] * a
+
+
+_HELMET_GEOMETRY: list = [None]
+HELMET_WRAP_DIR = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_helmet_wraps"
+
+
+def use_helmet_geometry(path: Path | str | None) -> None:
+    """The head export (JSON with ``HI_HELMET_C``: pos, uv, tris) that ``helmet.side_logo`` projects its logos through.
+    Read only; game-derived, so it comes from the user's own disc and never from the repository."""
+    _HELMET_GEOMETRY[0] = None if path is None else Path(path)
+
+
+def _apply_side_logo(out: np.ndarray, spec: Spec, side_logo: dict, marks: Path | None) -> np.ndarray:
+    """``helmet.side_logo`` {"mark", "centre": [z, y], "width", "angle", "facing", "layout": {"right": {"box": ...},
+    "left": {...}}, "wrap": name of a mask in data/nfl2k5_helmet_wraps} on the shell C art (``helmet02``): the old side
+    logos (their ``layout`` boxes, native texels) are erased and the mark is painted where the real helmet wears it,
+    seen from the side (tools/b77/sh1_helmet.py: the Seahawks' hawk faces the REAR on both sides)."""
+    import importlib.util
+    geometry = _HELMET_GEOMETRY[0]
+    if geometry is None:
+        raise SystemExit("helmet.side_logo needs the head export: pass --helmet-geometry (use_helmet_geometry)")
+    name = "b77_sh1_helmet"
+    if name not in sys.modules:
+        module_spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / "b77" / "sh1_helmet.py")
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[name] = module
+        module_spec.loader.exec_module(module)
+    sh1 = sys.modules[name]
+    pm = sh1.posmap(geometry, out.shape[0])
+    mark = sh1.prepare_mark((marks or Path(".")) / spec.data["marks"][side_logo["mark"]])
+    wrap = sh1.load_wrap(HELMET_WRAP_DIR / f"{side_logo['wrap']}.png") if side_logo.get("wrap") else None
+    placement = {"centre": side_logo["centre"], "width": side_logo["width"], "angle": side_logo["angle"],
+                 "facing": side_logo.get("facing", "rear")}
+    sh1.apply_master(out, pm, mark, side_logo["layout"], placement, wrap=wrap)
+    return out
 
 
 def author_helmet(spec: Spec, kit: dict, retail: Path, family: str, marks: Path | None = None) -> np.ndarray:
@@ -1174,9 +1242,38 @@ def author_helmet(spec: Spec, kit: dict, retail: Path, family: str, marks: Path 
         with Image.open((marks or Path(".")) / spec.data["marks"][decal["mark"]]) as image:
             logo = image.convert("RGBA")
         scale = float(decal.get("scale", 1.0))
+        facing = decal.get("facing", "image")
+        if facing not in ("image", "front", "rear"):
+            raise SystemExit("helmet.decal.facing is image, front or rear")
+        mark_faces = decal.get("mark_faces", "right")
+        if mark_faces not in ("left", "right"):
+            raise SystemExit("helmet.decal.mark_faces is left or right")
+        # "image" (the default, text and unmirrored logos): the same picture on both sides, so a mark that faces right
+        # points to the rear on the left side and to the front on the right side. "front"/"rear": the head points that
+        # way on BOTH sides (u grows toward the rear on both islands; the upper island is the lower one flipped
+        # vertically), which a team that mirrors its logo needs (job sh1)
+        flip_h = decal_flip(facing, mark_faces)
         for name, (cx, cy, w, h) in found.items():
-            _place_logo(out, logo, (cx * MASTER, cy * MASTER), w * MASTER * scale, h * MASTER * scale,
-                        rotate=(name == "upper"))
+            if facing == "image":
+                _place_logo(out, logo, (cx * MASTER, cy * MASTER), w * MASTER * scale, h * MASTER * scale,
+                            rotate=(name == "upper"))
+            else:
+                _place_logo(out, logo, (cx * MASTER, cy * MASTER), w * MASTER * scale, h * MASTER * scale,
+                            rotate=False, flip_h=flip_h, flip_v=(name == "upper"))
+    if hs.get("atlas_decal"):
+        import importlib.util
+        name = "b77_uni_helmet"
+        if name not in sys.modules:
+            ms = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / "b77" / "uni_helmet.py")
+            module = importlib.util.module_from_spec(ms)
+            sys.modules[name] = module
+            ms.loader.exec_module(module)
+        ad = hs["atlas_decal"]
+        with Image.open((marks or Path(".")) / spec.data["marks"][ad["mark"]]) as image:
+            logo = image.convert("RGBA")
+        out = sys.modules[name].apply_decal(out, logo, ad, spec.colour(hs["shell"]), family)[0]
+    elif hs.get("side_logo") and family == "helmet02":
+        out = _apply_side_logo(out, spec, hs["side_logo"], marks)
     # keep the retail alpha exactly (decal cutouts, reflection weight)
     out[..., 3] = np.asarray(Image.fromarray(ref[..., 3]).resize(up.shape[1::-1], Image.NEAREST), dtype=np.float32)
     return out
@@ -1582,6 +1679,8 @@ def cmd_author(args) -> int:
     if getattr(args, "uniform_marks", None):
         # the official NFL shield and swoosh masters (pinned), recorded with the art they went into
         manifest["uniform_marks"] = use_uniform_marks(args.uniform_marks)
+    if getattr(args, "helmet_geometry", None):
+        use_helmet_geometry(args.helmet_geometry)
 
     keep_retail: list[tuple[str, ...]] = [()]      # the current kit's ``keep_retail`` name prefixes
     file_masters: list[dict] = [{}]                # the current kit's ``files`` (texture name -> master PNG)
@@ -2001,10 +2100,14 @@ def cmd_venue(args) -> int:
     return 0
 
 
-def darken_mud(path: Path, out: Path) -> str:
-    """The retail ``darken_60`` rule for an equipment mud twin: 60 percent brightness, alpha kept."""
+BODY_MUD_GAIN = 0.93  # W1: jersey, sleeve and pants mud twins (retail white jersey 0.936); equipment keeps 0.6
+
+
+def darken_mud(path: Path, out: Path, gain: float = 0.6) -> str:
+    """The retail ``darken_60`` rule for an equipment mud twin: 60 percent brightness, alpha kept. Body textures
+    (jersey, sleeve, pants) pass BODY_MUD_GAIN: their mud twins are only loaded in rain and snow."""
     rgba = load(path)
-    rgba[..., :3] *= 0.6
+    rgba[..., :3] *= gain
     return save(rgba, out)
 
 
@@ -2023,7 +2126,7 @@ def cmd_project(args) -> int:
         kind = item["kind"]
         if kind in ("torso", "sleeve", "pants"):
             edits.append({"kind": kind, "asset_code": code, "side": side_code, "variant": variant,
-                          "clean_png": png, "mud_png": None, "mud_mode": "darken_60"})
+                          "clean_png": png, "mud_png": None, "mud_mode": "wet_93"})  # W1: body mud twins are 0.93, not 0.6
         elif kind == "live_helmet":
             edits.append({"kind": kind, "asset_code": code, "side": side_code, "variant": variant,
                           "family": item["family"], "png": png})
@@ -2205,7 +2308,7 @@ def cmd_pack(args) -> int:
                     continue
                 add(master, target(clean[0], file), "uniforms", label)
                 mud = out / "mud" / sel / f"{name}_mud.png"
-                darken_mud(master, mud)
+                darken_mud(master, mud, BODY_MUD_GAIN if kind in ("torso", "pants", "sleeve") else 0.6)
                 add(mud, target(clean[0] + "_mud", file), "uniforms", label + " (mud)")
             elif kind == "live_helmet":
                 add(master, target(item["family"], file), "uniforms", label)
@@ -2384,6 +2487,7 @@ def main(argv=None) -> int:
                                            "masters (pinned; needed by collar_shield, sleeve_swooshes, the pants "
                                            "swoosh and @ marks)")
     a.add_argument("--equipment", help="exported equipment PNGs (tset_<outer>_<chunk>_<index>_<name>.png)")
+    a.add_argument("--helmet-geometry", help="the head export JSON (HI_HELMET_C: pos, uv, tris) for helmet.side_logo recipes")
     a.add_argument("--outer-home", type=int, default=0)
     a.add_argument("--outer-away", type=int, default=0)
     a.add_argument("--out", required=True)

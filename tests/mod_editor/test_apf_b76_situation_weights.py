@@ -1,7 +1,14 @@
 """A3 format, project lifecycle, live mappings and consent transport."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import struct
 import tempfile
-from pathlib import Path
 import unittest
 
 from mod_editor.core import apf2k8_situation_mask as mask

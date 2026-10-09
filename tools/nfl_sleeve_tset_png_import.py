@@ -239,6 +239,8 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             "selected template inter-palette gap differs from compatible class")
 
     clean_width, clean_height, clean_rgba, clean_png_sha = read_rgba_png(clean_png)
+    clean_payload = clean_png.read_bytes()
+    require(sha256_bytes(clean_payload) == clean_png_sha, "clean PNG changed before allocation metadata was read")
     clean_mips = generate_mips(clean_rgba, clean_width, clean_height)
 
     if mud_png is not None:
@@ -330,8 +332,8 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             ] == template_gap,
             "target system/descriptors/inter-palette gap changed")
 
-    rebuilt_span, rebuild_info = rebuild_compressed_chunk_fixed_span(
-        template_span, rebuilt_decoded_bytes
+    rebuilt_span, rebuild_info = legacy.rebuild_authored_tset_span(
+        template_span, rebuilt_decoded_bytes, clean_payload
     )
     expected_rebuilt_header = list(target.complete_header)
     expected_rebuilt_header[5] = rebuild_info.rebuilt_overlap_scratch_bytes
@@ -576,7 +578,7 @@ def main() -> int:
     parser.add_argument("--target-variant", required=True, type=int)
     parser.add_argument("--clean-png", required=True, type=Path)
     parser.add_argument("--mud-png", type=Path)
-    parser.add_argument("--mud-mode", choices=("identity", "darken_60"), default="identity")
+    parser.add_argument("--mud-mode", choices=("identity", "darken_60", "wet_93"), default="identity")
     parser.add_argument("--output-span", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--preview-dir", required=True, type=Path)

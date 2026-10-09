@@ -154,10 +154,15 @@ included in your installed build.
 
 ## Can the CPU go for it more often on fourth down?
 
-**CPU fourth downs and first downs (experimental)** offers **Retail**, **Modern** and
-**Aggressive** in Build and Gameplay > Game Fixes. Retail is the preset default. It changes
-fourth-down policy and first-down targeting. Offline policy checks pass; in-game outcomes
-remain experimental and unwitnessed for untested situations.
+**CPU fourth downs, two-point tries and overtime (experimental)** offers **Retail**,
+**Modern**, **Aggressive** and **Modern 2** in Build and Gameplay > Game Fixes. Retail is the
+Basic preset default; the Advanced and Experimental presets use Modern 2. Modern changes
+fourth-down policy and first-down targeting. Modern 2 adds a fourth-down table taken from
+published analytics (the ESPN Analytics chart and the nfl4th model) that also reads the score
+and clock, the modern overtime rules (a team behind by a touchdown on its last possession
+never punts or kicks), a modern two-point chart and more varied defensive coverage calls.
+The sources and every threshold are in `nfl2k5_cpu_decisions_modern2_sources.json`. Offline
+policy checks pass; in-game outcomes remain experimental and unwitnessed.
 
 ## Does Slow-QB acceleration make the CPU scramble more often?
 

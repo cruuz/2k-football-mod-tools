@@ -153,12 +153,12 @@ class PlanTests(unittest.TestCase):
             edits_path = root/'edits.json'
             edits_path.write_text(json.dumps({'schema': records.EDITS_SCHEMA, 'edits': []}), encoding='utf-8')
             receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
-            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026'])
+            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026','commentary_final'])  # i1: b77-c2 final commentary pass
             self.assertEqual(names.image_status(target), 'applied')
             # u3: five teams' runs plus Washington's old label nickname; the XBE key paths installed once.
-            self.assertEqual(len(receipt['steps'][-1]['runs']), 6)
-            self.assertEqual([t['team'] for t in receipt['steps'][-1]['teams']], [7, 8, 22, 23, 25])
-            self.assertEqual((receipt['steps'][-1]['xbe']['status'], xbe['state']), ('applied', 'applied'))
+            self.assertEqual(len(receipt['steps'][-2]['runs']), 6)
+            self.assertEqual([t['team'] for t in receipt['steps'][-2]['teams']], [7, 8, 22, 23, 25])
+            self.assertEqual((receipt['steps'][-2]['xbe']['status'], xbe['state']), ('applied', 'applied'))
             self.assertEqual(names.image_status(fixture.path), 'retail')
             def conflicting(path, *args, **kwargs):
                 with records._outer_image()(path) as archive:

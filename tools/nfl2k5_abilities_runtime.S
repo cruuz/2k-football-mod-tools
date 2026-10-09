@@ -11,52 +11,55 @@
 .extern retail_initialize_tail, retail_generate_tail, retail_ai_tail, retail_consume_tail
 .extern retail_attribute_tail
 
-/* ECX=record -> EAX=known flags. No entity/render/controller side effects. */
+/* ECX=record -> EAX=known flags (0x1EE0 bits) plus the star's access grants (0x01..0x10). No entity/render/
+ * controller side effects; ECX, EDX and EBX are preserved. Invalid records and the off-week return 0.
+ * g2 (beta 77): a record carrying the cosmetic star (+0x53 bit 0) is granted tier_grants[ability tier], a
+ * small set of permission bits the Studio's star-gate commands can require: 1 right-stick flicks, 2 stutter
+ * step / stop short, 4 hurdle, 8 charge-up, 0x10 button moves. They are never stored in the roster (the 16 bits
+ * at +0x52 are all assigned) and never counted against a tier's flag capacity. */
 effective:
-    xor eax, eax
-    test ecx, ecx
-    jz effective_done
-    cmp ecx, -1
-    je effective_done
-    cmp dword ptr [config], -1
+    lea eax, [ecx+1]
+    shr eax, 1
+    jz effective_zero
+    mov eax, [config]
+    cmp eax, -1
     je effective_read
     cmp dword ptr [0xe576a0], 2
     jne effective_read
     cmp dword ptr [0xe576a4], 8
     jne effective_read
-    mov eax, [config]
     cmp eax, [0xe576b4]
     je effective_zero
 effective_read:
     movzx eax, word ptr [ecx+0x52]
-    and eax, 0x1ee0
+    and ax, 0x1ee0
     /* Tier0 is legacy v1. Explicit tiers with excess flags fail closed. */
     push ebx
     push edx
-    push ecx
     movzx edx, byte ptr [ecx+0x53]
     shr edx, 6
-    jz tier_done
     mov dl, byte ptr [tier_limits+edx]
     mov ebx, eax
 tier_count:
     test ebx, ebx
     jz tier_done
+    shr ebx, 1
+    jnc tier_count
     dec dl
-    js tier_overfull
-    lea ecx, [ebx-1]
-    and ebx, ecx
-    jmp tier_count
-tier_overfull:
+    jns tier_count
     xor eax, eax
 tier_done:
-    pop ecx
+    movzx edx, byte ptr [ecx+0x53]
+    shr edx, 1
+    jnc grant_done
+    shr edx, 5
+    or al, byte ptr [tier_grants+edx]
+grant_done:
     pop edx
     pop ebx
     ret
 effective_zero:
     xor eax, eax
-effective_done:
     ret
 
 /* Stored abilities and unlocked permissions are deliberately separate.
@@ -69,10 +72,11 @@ permissions:
 /* ZF=both move locks disabled: keep the full retail charge policy. */
 unlocked_moves:
     mov eax, [unlocked_mask]
-    and eax, 0x1ec0
-    cmp eax, 0x1ec0
+    and ax, 0x1ec0
+    cmp ax, 0x1ec0
     ret
 
+.balign 4, 0xcc
 /* EBX=entity. CF=live attached carrier; ESI=state/0, EDX=steer/0.
  * Match the actual 1CE280 chain: [ball] is holder, holder+1C is kind. */
 carrier:
@@ -165,8 +169,10 @@ clear_done:
 /* EBX=entity -> CF=may generate charge. Also remove stale active permission.
  * Meter policy explicitly live-carrier-only. No controller-owned timer. */
 maintain:
+maintain_head:
     call unlocked_moves
     je maintain_yes
+maintain_carrier:
     call carrier
     jnc maintain_clear
     mov ecx, [ebx+0x3c]
@@ -176,11 +182,13 @@ maintain:
     jnz maintain_any
     and eax, 0xfffff7ff  /* hurdle requires stick permission too */
 maintain_any:
+maintain_test:
     test eax, 0x1e80
     jz maintain_clear
     mov eax, [esi+0x90]
     and eax, 3
     cmp eax, 1
+maintain_state:
     jne maintain_yes
     mov ecx, [esi]
     call move_mask
@@ -509,4 +517,6 @@ effect_masks:
     .word 0,0x80,0x1000,0x800,0,0,0,0,0,0,0,0,0x400,0,0,0,0,0,0x200
 tier_limits:
     .byte 7,2,4,7
+tier_grants:
+    .byte 0,0,0,0
 code_end:

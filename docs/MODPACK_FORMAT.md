@@ -1,5 +1,32 @@
 # `.2k5patch` formats and operation registry
 
+## Rebuild the portable sources
+
+After extracting and materializing a pack's sources, the headless equivalent of
+Studio's **Make my disc** with **Include SOFTDRINK league artwork** is:
+
+```sh
+python3 tools/nfl2k5_modpack.py build-sources \
+  --recipe /path/to/sources/SOFTDRINK-build-recipe.json \
+  --source /path/to/retail.xiso.iso --out /path/to/new-build.xiso.iso \
+  --receipt /path/to/build-receipt.json
+```
+
+This calls `modpack_sources.build_plan` and `modpack_sources.build_project`, the
+same functions used by the Build panel. Installation uses the pack's finished
+file operations. A successful installation does not establish that the source
+recipe reproduces the installed image; release proofs must report both paths.
+
+Body texture PNGs may carry one `tEXt` entry named `nfl2k5_tset_allocation`:
+`{"schema":"nfl2k5_tset_allocation/v1","minimum_overlap_scratch_bytes":5984}`.
+It preserves a previous authored loader allocation when a later palette repair
+needs less scratch. The minimum must be a nonnegative multiple of 16 no larger
+than the stored span rounded up to 16. The compressor still computes and
+enforces its own minimum, including the in-place overlap guard. This metadata
+cannot change pixels, descriptors, compression or span sizes. PNGs without it
+keep the existing behavior. Older Studio versions ignore this metadata, so
+exact source rebuilding needs a version that supports it.
+
 ## Format 3: finished SOFTDRINK game files (Beta 76)
 
 Format 3 is a separate file-content contract. Formats 1 and 2 remain unchanged.
@@ -96,8 +123,13 @@ Apply opens the source read-only, verifies all required files, then writes a
 unique temporary sibling in 1 MiB blocks. It verifies reconstructed file hashes,
 reparses the written XDVDFS tree, reads every output file back for SHA-256, and
 hashes the whole output. Only then, after closing all image and ZIP handles,
-does it atomically rename. Source timestamps/size/descriptor identity must stay
-stable during installation. Source/output and pack/output aliases are refused,
+does it atomically rename. File details of the source (timestamps, creation time,
+attributes) are not content and never refuse an installation, check or proof: OneDrive,
+antivirus and indexers rewrite them under an open file, and on Windows st_ctime is the
+creation time. Content is what is pinned: every source byte used is covered by the pack's
+SHA-256 values, so changed source bytes refuse even when size, mtime and file ID are
+restored. The apply receipt lists the details that moved in `source_metadata_changed`.
+Source/output and pack/output aliases are refused,
 including hard links. In-place application is forbidden. Failed or cancelled
 transactions remove their temporary files and preserve existing destinations.
 Space is checked for one full output image, even where zero blocks stay sparse.

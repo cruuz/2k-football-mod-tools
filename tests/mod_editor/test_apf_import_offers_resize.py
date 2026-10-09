@@ -6,9 +6,16 @@ shipped GUI so an off-size PNG is prepared via ``image_fit``, not refused.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import ast
 import unittest
-from pathlib import Path
 
 from mod_editor.core.image_fit import FIT_MODES, fit_image
 

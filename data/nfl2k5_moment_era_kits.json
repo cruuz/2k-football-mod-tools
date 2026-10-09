@@ -1,0 +1,245 @@
+{
+  "schema": "b77/a5k/native-parts/v1",
+  "mode": "approved_trades",
+  "items": [
+    {
+      "id": "G1",
+      "team": "NE",
+      "code": "16",
+      "style": 11,
+      "label": [
+        2017,
+        2017
+      ],
+      "retail_pair": [
+        2004,
+        1
+      ],
+      "kits": {
+        "H": "16A12",
+        "A": "16A12"
+      },
+      "parts": {
+        "helmet": "16H12"
+      },
+      "chunks": {
+        "11": "helmet",
+        "12": "helmet",
+        "5": "helmet",
+        "6": "helmet",
+        "7": "helmet",
+        "8": "helmet",
+        "9": "helmet",
+        "10": "helmet"
+      },
+      "moments": [
+        [
+          "philly_special",
+          "home"
+        ]
+      ],
+      "repack_prefix": true,
+      "repack_suffix": true,
+      "unif_donor": "helmet"
+    },
+    {
+      "id": "G1b",
+      "team": "PHI",
+      "code": "21",
+      "style": 14,
+      "label": [
+        2017,
+        2017
+      ],
+      "retail_pair": [
+        2004,
+        2
+      ],
+      "kits": {
+        "H": "21H0",
+        "A": "21H0"
+      },
+      "moments": [
+        [
+          "philly_special",
+          "away"
+        ]
+      ],
+      "repack_prefix": true,
+      "repack_suffix": true,
+      "parts": {
+        "socks": "21H14"
+      },
+      "chunks": {
+        "4": "socks"
+      },
+      "atlas": {
+        "donor": "socks",
+        "boxes": [
+          "sock",
+          "sock_low"
+        ],
+        "format": "A8R8G8B8",
+        "reason": "exact green-jersey and black-white sock union needs 316 colours; existing native truecolor format retains every mip"
+      }
+    },
+    {
+      "id": "G2",
+      "team": "NO",
+      "code": "17",
+      "style": 6,
+      "label": [
+        2006,
+        2016
+      ],
+      "retail_pair": [
+        1975,
+        1976
+      ],
+      "kits": {
+        "H": "17H0",
+        "A": "17A0"
+      },
+      "parts": {
+        "pants": "retail_17A1"
+      },
+      "chunks": {
+        "2": "pants"
+      },
+      "atlas": {
+        "donor": "pants",
+        "boxes": [
+          "pants"
+        ],
+        "format": "A8R8G8B8",
+        "reason": "exact donor pixel union exceeds a single P8 palette; existing native truecolor format retains all mips"
+      },
+      "moments": [
+        [
+          "ambush",
+          "away"
+        ],
+        [
+          "catch_three",
+          "away"
+        ]
+      ],
+      "repack_prefix": true,
+      "repack_suffix": true
+    },
+    {
+      "id": "G3",
+      "team": "BAL",
+      "code": "02",
+      "style": 1,
+      "label": [
+        2008,
+        2025
+      ],
+      "retail_pair": [
+        1997,
+        1999
+      ],
+      "kits": {
+        "H": "02H4",
+        "A": "02A4"
+      },
+      "parts": {
+        "pants": "02A1",
+        "socks": "02H3"
+      },
+      "chunks": {
+        "2": "pants",
+        "4": "socks"
+      },
+      "atlas": {
+        "format": "A8R8G8B8",
+        "reason": "exact donor pixel union exceeds a single P8 palette; existing native truecolor format retains all mips",
+        "overlays": [
+          {
+            "donor": "pants",
+            "boxes": [
+              "pants"
+            ]
+          },
+          {
+            "donor": "socks",
+            "boxes": [
+              "sock",
+              "sock_low"
+            ]
+          }
+        ]
+      },
+      "moments": [
+        [
+          "goal_line_stand",
+          "away"
+        ],
+        [
+          "mile_high_miracle",
+          "away"
+        ]
+      ],
+      "repack_prefix": true,
+      "repack_suffix": true
+    },
+    {
+      "id": "G4",
+      "team": "PIT",
+      "code": "22",
+      "style": 4,
+      "label": [
+        2025,
+        2025
+      ],
+      "retail_pair": [
+        1961,
+        1962
+      ],
+      "kits": {
+        "H": "22H0",
+        "A": "22H0"
+      },
+      "moments": [
+        [
+          "unc_bowl",
+          "away"
+        ]
+      ],
+      "repack_prefix": true,
+      "repack_suffix": true,
+      "parts": {
+        "numerals": "22H4"
+      },
+      "chunks": {
+        "13": "numerals",
+        "14": "numerals",
+        "15": "numerals",
+        "16": "numerals",
+        "17": "numerals",
+        "18": "numerals",
+        "19": "numerals",
+        "20": "numerals",
+        "21": "numerals",
+        "22": "numerals",
+        "23": "numerals",
+        "24": "numerals",
+        "25": "numerals",
+        "26": "numerals",
+        "27": "numerals",
+        "28": "numerals",
+        "29": "numerals",
+        "30": "numerals",
+        "31": "numerals",
+        "32": "numerals"
+      }
+    }
+  ],
+  "existing_companion": {
+    "moment": "unc_bowl",
+    "side": "home",
+    "team": "CIN",
+    "style": 5
+  }
+}

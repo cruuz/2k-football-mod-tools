@@ -67,7 +67,7 @@ supported fields.
 |---|---|
 | `pool,index` | Required read-only identity |
 | `first,last,jersey,position` | Existing 53 player records |
-| `years_pro,height,weight,hand` | Existing roster codec; inches/pounds for measurements |
+| `years_pro,height,weight,hand` | Existing roster codec; inches/pounds for measurements; `years_pro` counts the season in progress (rookie = 1, printed R) |
 | All 28 exported rating columns | 0..100, using existing field names |
 | `skin,face,body,dreads,eye_black,helmet,face_mask,face_shield,mouthpiece,turtleneck,sleeves,neck_roll` | Existing appearance codec |
 | `left_glove,right_glove,left_wrist,right_wrist,left_elbow,right_elbow,left_shoe,right_shoe` | Existing equipment codec |

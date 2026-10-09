@@ -208,10 +208,11 @@ def venues():
         require(row["look"] in LOOKS and LOOKS[row["look"]]["family"] == row["surface"],
                 f"{prefix}: look {row['look']} does not match surface {row['surface']}")
         require(row.get("sources"), f"{prefix}: every venue cites its surface")
-        seen = row.get("broadcast")
-        if seen is not None:
-            require(seen.get("light") in ("day", "afternoon", "night", "dome") and len(seen.get("rgb") or ()) == 3
-                    and seen.get("source"), f"{prefix}: a broadcast measurement needs a light, an RGB and a source")
+        for key in ("broadcast", "design"):
+            seen = row.get(key)
+            if seen is not None:
+                require(seen.get("light") in ("day", "afternoon", "night", "dome") and len(seen.get("rgb") or ()) == 3
+                        and seen.get("source"), f"{prefix}: a {key} target needs a light, an RGB and a source")
     return rows
 
 
@@ -387,9 +388,11 @@ def target_rgb(look, cls):
 def venue_target(prefix, look, cls):
     """The broadcast target of one venue's surface under one light: the look's, scaled per channel by the venue's own
     measured 2026 broadcast when the table has one (its ratio to the look at the light it was measured under carries
-    to the venue's other lights)."""
+    to the venue's other lights). A venue row may carry a ``design`` target of the same shape that replaces its measured
+    broadcast (Allegiant, Beta 77 pass 4: the measurement stays in the row as the evidence)."""
     target = target_rgb(look, cls)
-    seen = venues()[prefix].get("broadcast")
+    row = venues()[prefix]
+    seen = row.get("design") or row.get("broadcast")
     if not seen:
         return target
     base = target_rgb(look, seen["light"])

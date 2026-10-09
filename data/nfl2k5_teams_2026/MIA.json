@@ -79,18 +79,18 @@
       "colour": "orange",
       "center": [
        161,
-       93.5
+       93.0
       ],
-      "width": 24
+      "width": 52
      },
      {
       "mark": "dolphins_fill",
       "colour": "white",
       "center": [
        161,
-       93.5
+       93.0
       ],
-      "width": 24
+      "width": 52
      },
      {
       "mark": "miami",
@@ -130,8 +130,12 @@
     "base_colour": "white",
     "stripe": [
      [
+      "orange",
+      3
+     ],
+     [
       "jersey_aqua",
-      5
+      14
      ],
      [
       "orange",
@@ -3233,18 +3237,18 @@
       "colour": "orange",
       "center": [
        161,
-       93.5
+       93.0
       ],
-      "width": 24
+      "width": 52
      },
      {
       "mark": "dolphins_fill",
       "colour": "jersey_aqua",
       "center": [
        161,
-       93.5
+       93.0
       ],
-      "width": 24
+      "width": 52
      },
      {
       "mark": "miami",
@@ -3289,7 +3293,11 @@
      ],
      [
       "white",
-      2
+      14
+     ],
+     [
+      "orange",
+      3
      ]
     ],
     "swoosh_colour": "white"
@@ -7625,5 +7633,20 @@
    "Reese Taylor"
   ],
   "note": "2K5 skin tone 0 (lightest) to 5 (darkest) and dreadlocks, by eye from the official 2026 headshots (INFERRED). Michael Taaffe has no nflverse headshot; his official roster photo (miamidolphins.com og:image, white backdrop keyed) stands in."
+ },
+ "u2c_b77": {
+  "job": "b77 u2c (sonnet-5.5), 2026-10-08",
+  "checked_against": "miamidolphins.com 2026 game day photos: preseason wk3 vs ATL (aqua home), wk1 at LV and wk2 at SF (white road)",
+  "changes": {
+   "home.torso and away.torso dolphins_shadow/dolphins_fill": "Dolphins chest wordmark widened from 24 to 52 px and moved to centre y 93 (photo: preseason wk3 vs ATL #40 home, wk1 at LV #18 road: wordmark about 0.42 of the front-number pair width, directly above the number; v0.5 was about half that)",
+   "home.pants.stripe": "aqua 5 / orange 3 px  ->  orange 3 / aqua 14 / orange 3 px (photo: wide aqua band edged with thin orange lines on the white pants, about 7 cm)",
+   "away.pants.stripe": "orange 3 / white 2 px  ->  orange 3 / white 14 / orange 3 px (photo wk1 at LV: wide white band edged in orange on the aqua pants)"
+  },
+  "unchanged_because_right": [
+   "jersey colours, numbers and outline",
+   "sleeve logos",
+   "socks (aqua)",
+   "helmet"
+  ]
  }
 }

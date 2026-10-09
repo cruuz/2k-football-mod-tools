@@ -355,9 +355,9 @@
             "at": "chest_logo",
             "offset": [
               0,
-              -1.5
+              12.6
             ],
-            "width": 44
+            "width": 41
           },
           {
             "mark": "wm_baltimore",
@@ -392,20 +392,55 @@
       },
       "pants": {
         "base_colour": "white",
-        "stripe": [
-          [
-            "midnight_purple",
-            9
-          ],
-          [
-            "gold",
-            2
-          ]
-        ],
-        "swoosh_colour": "black"
+        "stripe": [],
+        "swoosh_colour": "black",
+        "decorations": [
+          {
+            "polygon": [
+              [
+                132.5,
+                0
+              ],
+              [
+                152.5,
+                0
+              ],
+              [
+                146.0,
+                256
+              ],
+              [
+                139.0,
+                256
+              ]
+            ],
+            "colour": "midnight_purple"
+          },
+          {
+            "polygon": [
+              [
+                359.5,
+                0
+              ],
+              [
+                379.5,
+                0
+              ],
+              [
+                373.0,
+                256
+              ],
+              [
+                366.0,
+                256
+              ]
+            ],
+            "colour": "midnight_purple"
+          }
+        ]
       },
       "socks": {
-        "colour": "white"
+        "colour": "jersey_purple"
       },
       "digits": {
         "glyph_donor": "02X0",
@@ -718,9 +753,9 @@
             "at": "chest_logo",
             "offset": [
               0,
-              -1.5
+              10.8
             ],
-            "width": 52
+            "width": 49
           },
           {
             "mark": "wm_ravens",
@@ -754,18 +789,53 @@
         "art_shift_rows": 5
       },
       "pants": {
-        "base_colour": "jersey_purple",
-        "stripe": [
-          [
-            "black",
-            9
-          ],
-          [
-            "light_purple",
-            3
-          ]
-        ],
-        "swoosh_colour": "white"
+        "base_colour": "black",
+        "stripe": [],
+        "swoosh_colour": "white",
+        "decorations": [
+          {
+            "polygon": [
+              [
+                136.5,
+                0
+              ],
+              [
+                148.5,
+                0
+              ],
+              [
+                145.0,
+                256
+              ],
+              [
+                140.0,
+                256
+              ]
+            ],
+            "colour": "light_purple"
+          },
+          {
+            "polygon": [
+              [
+                363.5,
+                0
+              ],
+              [
+                375.5,
+                0
+              ],
+              [
+                372.0,
+                256
+              ],
+              [
+                367.0,
+                256
+              ]
+            ],
+            "colour": "light_purple"
+          }
+        ]
       },
       "socks": {
         "colour": "white"
@@ -1163,5 +1233,25 @@
   },
   "sources_uw": {
     "sleeve_swoosh_2026": "u1/teams/BAL/refs/img_nextflight/Purple_Shoulder_Badge.jpg (baltimoreravens.com 2026 Next Flight uniform photo): the swoosh sits right above the shoulder badge"
+  },
+  "u2a_b77": {
+    "job": "b77 u2a (sonnet-5.5), 2026-10-08",
+    "checked_against": "baltimoreravens.com 2026 game action galleries: week 4 vs TEN (purple jersey, white pants), week 1 at IND (white jersey, black pants)",
+    "changes": {
+      "home.torso RAVENS wordmark": "width 44 to 41 px and moved down 14 rows (offset y -1.5 to +12.6): 0.56 digit heights wide (photo #40: 178 px of a 312 px number) sitting 0.04 above the number; v0.5 floated 0.21 above it",
+      "home.socks": "white to jersey_purple: purple socks in every 2026 home frame (weeks 4 vs TEN, e.g. #89 and #71)",
+      "home.pants stripe": "straight 9 px midnight purple plus 2 px gold line replaced by a tapering talon stripe (20 px at the waist to 7 px at the cuff, midnight purple, no gold): the 2026 photos show a wide purple block at the hip tapering to a thin line and no gold",
+      "away.torso BALTIMORE wordmark": "width 52 to 49 px and moved down 12 rows (offset y -1.5 to +10.8): 0.65 digit heights wide (photo #4: 167 px of 258) sitting about 0.03 above the number",
+      "away.pants": "purple pants with a black and light-purple stripe replaced by black pants with a thin purple talon stripe (12 px at the waist to 5 px at the cuff): the road kit wore black pants at IND in week 1 and purple pants were not worn in weeks 1-4"
+    },
+    "not_done": "purple (road) and black (home) armhole piping and the longer collar feather barbs seen on the 2026 jerseys; see the u2a report",
+    "unchanged_because_right": [
+      "RAVENS/BALTIMORE letter shapes and spacing",
+      "purple jersey and white jersey colours",
+      "sleeve shield patches",
+      "helmet: black shell, purple double centre stripe, logo",
+      "white road socks",
+      "number colours"
+    ]
   }
 }

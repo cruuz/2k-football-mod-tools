@@ -63,9 +63,11 @@ class WeatherDialog(QDialog):
         layout.addLayout(buttons)
         self.preset_button = QPushButton("Milder outdoor climate (+2 °F, authored)")
         self.preset_button.setToolTip("A sensitivity example for the retail NFL home rows, not measured modern climate data. One Undo restores the prior draft.")
+        self.rain_button = QPushButton("Less frequent rain (sourced)")
+        self.rain_button.setToolTip("Cuts the precipitation chance in rain-climate cells toward the real-world outdoor rate (PFF, 2009-17: 16.4 percent of outdoor games had rain). Snow cells and roofed rows are untouched. One Undo restores the prior draft.")
         self.undo_button = QPushButton("Undo")
         self.save_button = QPushButton("Save build edits…")
-        for button in (self.preset_button, self.undo_button, self.save_button):
+        for button in (self.preset_button, self.rain_button, self.undo_button, self.save_button):
             buttons.addWidget(button)
         self.status = QLabel()
         self.status.setWordWrap(True)
@@ -73,6 +75,7 @@ class WeatherDialog(QDialog):
         self.stadium.currentIndexChanged.connect(self._show_values)
         self.month.currentIndexChanged.connect(self._show_values)
         self.preset_button.clicked.connect(self._preset)
+        self.rain_button.clicked.connect(self._less_rain)
         self.undo_button.clicked.connect(self._undo)
         self.save_button.clicked.connect(self._save)
         try:
@@ -85,7 +88,7 @@ class WeatherDialog(QDialog):
             self._show_values()
         except (OSError, ValueError) as exc:
             self.status.setText(f"Cannot open this climate table: {exc}. Choose a supported USA disc or extracted game folder.")
-            for widget in (self.stadium, self.month, *self.fields.values(), self.preset_button,
+            for widget in (self.stadium, self.month, *self.fields.values(), self.preset_button, self.rain_button,
                            self.undo_button, self.save_button):
                 widget.setEnabled(False)
 
@@ -116,6 +119,10 @@ class WeatherDialog(QDialog):
 
     def _preset(self):
         self.draft.milder_outdoor_preset()
+        self._show_values()
+
+    def _less_rain(self):
+        self.draft.less_rain_preset()
         self._show_values()
 
     def _undo(self):

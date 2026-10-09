@@ -12,6 +12,17 @@ division winners and four other teams with the retail comparator. No recorded
 speech is edited.
 
 See ASTRA_PLAYOFF_PICTURE_REPORT.md for addresses, evidence and display checks.
+
+2026-10-08 (beta 77, job S7): Noah saw SportsCenter still showing the old format on the v0.5 disc.  Native
+emulation of the real executable on a final-week seven-seed league (tools/b77/s7_sportscenter_probe.py) found
+that the first-team-out sticker still sat on the 7th row, i.e. on the seventh SEED; the three descriptor
+sites in ``sites()`` move it to the 8th row's Clinched cell.  Three more SportsCenter leftovers compare the
+LAST PLAYED WEEK (FUN_0015df10), an accessor the season-length sweeps never listed: the show banner's round
+names, the sticker's final-week text and the primetime card's "Playoffs" line.  They are 18-week values, so
+they are ``week_sites()`` and only part of ``active_sites(xbe)`` when the season_length group is applied.
+They deliberately do NOT live in the season_length group: the calendar engine (and every reader of an older
+disc) requires that whole group to be uniformly retail or applied, so growing it would make every already
+built executable "foreign".
 """
 from __future__ import annotations
 
@@ -199,12 +210,72 @@ def sites() -> tuple[Site, ...]:
         Site("picture_obsolete_bye", 0x3687E8, bytes.fromhex("eb06"), bytes.fromhex("7606")),
         Site("recap_obsolete_bye_label", 0x220DD6, bytes.fromhex("eb36"), bytes.fromhex("7636")),
         Site("recap_obsolete_bye_script", 0x221001, bytes.fromhex("eb5b"), bytes.fromhex("745b")),
+        # SportsCenter show_playoff_picture widget descriptors (12 bytes each: widget key, kind, rank; 41 entries
+        # from 0x50F8E0).  Retail labels the 7th row, the first team OUT of a twelve-team field, with the dynamic
+        # sticker widget 0x7362B270 (kind 5: "On The Bubble" / "Better Luck Next Year").  With seven seeds that row
+        # is a qualifier, so the label moves to the Clinched cell of the 8th row (widget 0x133D3780, kind 4 -> 5,
+        # a cell the game always left blank), and the old sticker widget becomes a blank rank-7 status cell
+        # (kind 5 -> 4, rank 0 -> 7: the status formatter blanks every rank >= 7).
+        Site("bubble_label_on_first_out", 0x50FAB8, struct.pack("<I", 5), struct.pack("<I", 4)),
+        Site("retired_bubble_sticker_kind", 0x50FAC4, struct.pack("<I", 4), struct.pack("<I", 5)),
+        Site("retired_bubble_sticker_rank", 0x50FAC8, struct.pack("<I", 7), struct.pack("<I", 0)),
         _text("picture_rule_banner", 0xEAEA9C, "If the playoffs started today:", "7 seeds: #1 bye; 2v7 3v6 4v5"),
         _text("picture_only_bye", 0xEB997C, "Home Field Adv.", "#1 Seed / Bye"),
         _text("recap_only_bye", 0xE87D9C, "Home Field Adv.", "#1 Seed / Bye"),
         _text("afc_seeds", 0xEB9054, "AFC Wild Card", "AFC: 7 Seeds"),
         _text("nfc_seeds", 0xEB90FC, "NFC Wild Card", "NFC: 7 Seeds"),
     )
+
+
+TEASER_TABLE_VA = 0x2CF604
+_TEASER_CASES = (0x2CF4CE, 0x2CF4F1, 0x2CF514, 0x2CF514, 0x2CF514, 0x2CF5DE)
+TEASER_BLOCK_RETAIL = bytes.fromhex("33c081c404010000c38bffcef42c00f1f42c0014f52c0014f52c00def52c00")
+TEASER_BLOCK_PATCHED = (b"\x90" * (TEASER_TABLE_VA - 0x2CF601)
+                        + b"".join(struct.pack("<I", case) for case in _TEASER_CASES)
+                        + b"\x90" * (0x2CF620 - TEASER_TABLE_VA - 4 * len(_TEASER_CASES)))
+
+
+def week_sites() -> tuple[Site, ...]:
+    """SportsCenter sites keyed on the last played week; 18-week values (patched) over the 17-week retail ones."""
+    return (
+        # cb_002cd430 add eax,-0x11 -> -0x12: the banner's round table starts at the Wild Card row (row 18)
+        Site("show_banner_round_base", 0x2CD456, b"\xee", b"\xef"),
+        # cb_00220c50 cmp eax,0x10 -> 0x11: "Better Luck Next Year" once the last regular week is played
+        Site("picture_bubble_last_week", 0x220E8E, b"\x11", b"\x10"),
+        # cb_002641c0 cmp eax,0x10 -> 0x11: the primetime card's NEXT WEEK line reads "Playoffs"
+        Site("primetime_next_week_playoffs", 0x264233, b"\x11", b"\x10"),
+        # Week-label audit (2026-10-08, S7 second pass).  Three more places named a round or a teaser week for 17
+        # regular weeks.  The two round-name switches index a 5-entry table from the postseason row minus the Wild
+        # Card row; the 18-week Wild Card row is 18, so the base is -0x12 (row 17 = Week 18 falls through to the
+        # default text instead of "Wild Card"):
+        #   FUN_00358bf0 lea eax,[ecx-0x11]: header of the by-week schedule browser
+        #   FUN_0024c8a0 lea eax,[edi-0x11]: label of a team with no game that week (idle in a playoff round / bye)
+        Site("week_browser_header_round_base", 0x358C8D, b"\xee", b"\xef"),
+        Site("idle_team_label_round_base", 0x24C8C8, b"\xee", b"\xef"),
+        # SportsCenter menu teaser FUN_002cf4b0 (indexed by weeks played - 12, five Playoff Picture lines).  The
+        # Picture airs after weeks 13..18 now (window rows 12..17), so the teaser for the NEXT show runs after weeks
+        # 12..17: six cases.  The 5-entry jump table has no room for a sixth, so the dispatch moves: the bound is 5,
+        # out-of-range jumps to the shared epilogue at 0x2CF4EA (the caller ignores the return value), and the new
+        # 6-entry table lives in the old default block + table bytes (0x2CF601..0x2CF61F, all inside this function).
+        # weeks played 12 -> "first look", 13 -> "updated look", 14/15/16 -> "who will clinch in Week N", 17 -> final.
+        Site("teaser_dispatch_bound", 0x2CF4C0, b"\x05", b"\x04"),
+        Site("teaser_default_target", 0x2CF4C3, struct.pack("<I", 0x2CF4EA - 0x2CF4C7), struct.pack("<I", 0x2CF601 - 0x2CF4C7)),
+        Site("teaser_table_pointer", 0x2CF4CA, struct.pack("<I", TEASER_TABLE_VA), struct.pack("<I", 0x2CF60C)),
+        Site("teaser_table", 0x2CF601, TEASER_BLOCK_PATCHED, TEASER_BLOCK_RETAIL),
+    )
+
+
+def season_weeks(xbe: bytes) -> int | None:
+    """17 or 18 regular weeks, or None when the season_length group is neither retail nor applied."""
+    state = season.group_status(xbe, "season_length")
+    return 18 if state == "applied" else 17 if state == "retail" else None
+
+
+def active_sites(xbe: bytes) -> tuple[Site, ...]:
+    """The presentation sites that apply to this executable: the week-keyed ones only for 18 regular weeks."""
+    weeks = season_weeks(xbe)
+    _require(weeks is not None, "season_length is neither retail nor applied")
+    return sites() + (week_sites() if weeks == 18 else ())
 
 
 def _state(xbe: bytes, site: Site, sections) -> str:
@@ -221,12 +292,12 @@ def status(xbe: bytes) -> str:
     """Retail/applied/foreign; a partial presentation patch fails closed."""
     try:
         sections = _sections(xbe)
-        states = {_state(xbe, site, sections) for site in sites()}
+        states = {_state(xbe, site, sections) for site in active_sites(xbe)}
         result = states.pop() if len(states) == 1 else "foreign"
         if result == "applied" and season.group_status(xbe, "playoffs_14") != "applied":
             return "foreign"
         return result
-    except (ValueError, IndexError, struct.error):
+    except (ValueError, IndexError, struct.error):  # PlayoffPictureError is a ValueError
         return "foreign"
 
 
@@ -236,15 +307,16 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
              "apply playoffs_14 before playoff presentation")
     state = status(xbe)
     _require(state != "foreign", "presentation sites are foreign or partially patched")
+    chosen = active_sites(xbe)
     receipt: dict[str, object] = {"status": "applied", "seeds_per_conference": 7,
-        "wild_card_games": 6, "tree_games": 13, "changed_bytes": 0,
+        "wild_card_games": 6, "tree_games": 13, "changed_bytes": 0, "regular_weeks": season_weeks(xbe),
         "sections_repinned": [], "runtime_verified": False, "audio_modified": False}
     if state == "applied":
         return bytes(xbe), receipt
     sections = _sections(xbe)
     out = bytearray(xbe)
     touched = set()
-    for site in sites():
+    for site in chosen:
         off = season._offset(xbe, site.va, sections)
         section = _section_for_offset(sections, off)
         _require(off + site.size <= section.raw_offset + section.raw_size, "site crosses section")
@@ -258,7 +330,7 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
     _require(status(patched) == "applied", "presentation post-apply verification failed")
     receipt["changed_bytes"] = sum(a != b for a, b in zip(xbe, patched))
     receipt["sections_repinned"] = sorted(touched)
-    receipt["sites"] = [{"label": s.label, "va": hex(s.va), "size": s.size} for s in sites()]
+    receipt["sites"] = [{"label": s.label, "va": hex(s.va), "size": s.size} for s in chosen]
     return patched, receipt
 
 

@@ -14,6 +14,7 @@ from mod_editor.core import nfl2k5_playbook_pack as packs
 from mod_editor.core import nfl2k5_play_intents as intents
 from mod_editor.core import nfl2k5_qb_spy_runtime as spy
 from mod_editor.core import nfl2k5_screen_timing as timing
+from mod_editor.core import nfl2k5_playbook_lint as lint
 from pb.defense.verify import IMAGE, OuterImage, BOOK_ENTRIES
 
 
@@ -23,6 +24,10 @@ def certify_screens(raw, pack):
     assert screens
     declared = [p for p in book.plays if 'screen' in p.name.casefold()]
     assert {p.index for p in declared} == {p.replace_index for p in screens}
+    # b77 p13: the screen back must start 2+ yd in front of the QB's set point, so a back
+    # aligned at -7 yd gets a 9 yd drop instead of level D's 7 (never retail's exact 10).
+    back_depth = {v.play: v.positions[lint.screen_receiver(v)][1] for v in lint.resource_views(raw)
+                  if lint.screen_receiver(v) is not None}
     for p in declared:
         chains = timing._chains(book, p)
         holds = [ch[timing._hold_index(ch)] for ch in chains[1:6]
@@ -31,7 +36,8 @@ def certify_screens(raw, pack):
         moves = [n for n in chains[0] if n.op == 4]
         passes = [n for n in chains[0] if n.op == 6]
         assert len(moves)==len(passes)==1
-        assert abs(moves[0].operands[2]+7*timing.codec.YD_CM)<.001
+        drop = -moves[0].operands[2] / timing.codec.YD_CM
+        assert abs(drop - lint.screen_drop_yd(back_depth[p.index], 7.0)) < .001
         assert abs(passes[0].operands[5]-.6)<.001
     assert not timing._requests(book, 'D')[0]
     return book, len(screens)

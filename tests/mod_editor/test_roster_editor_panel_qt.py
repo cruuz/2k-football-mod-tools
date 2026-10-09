@@ -713,8 +713,9 @@ class ShellPlacementTests(unittest.TestCase):
     def test_the_studio_offers_the_rosters_row_and_its_page(self) -> None:
         from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
 
-        if not (ROOT / "reports" / "assets").exists():
-            self.skipTest("Studio shell requires the private uniform catalog under reports/assets")
+        report = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not report.exists():
+            self.skipTest(f"Missing asset: {report}")
         window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
         try:
             rows = [window.navigation.item(i).text().strip() for i in range(window.navigation.count())]

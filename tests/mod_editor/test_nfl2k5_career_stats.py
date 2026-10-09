@@ -1,9 +1,16 @@
 """Counter semantics, hostile inputs, pool transactions and retail round-trips."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from dataclasses import replace
 import datetime as dt
 from decimal import Decimal
 import hashlib
-from pathlib import Path
 import struct
 import tempfile
 import unittest

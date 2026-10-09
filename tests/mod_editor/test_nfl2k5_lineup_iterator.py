@@ -1,8 +1,15 @@
 """PROVED OFFLINE: native iterator exhaustion and exact old-profile upgrade."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import hashlib
 import struct
 import unittest
-from pathlib import Path
 
 from mod_editor.core import nfl2k5_lineup_iterator as code
 from mod_editor.core import nfl2k5_position_pools as pools

@@ -12,8 +12,11 @@ for _entry in (_Path(__file__).resolve().parents[2], _Path(__file__).resolve().p
         sys.path.insert(0, str(_entry))
 
 import pathlib
+import shutil
 import struct
+import tempfile
 import unittest
+from unittest import mock
 
 from mod_editor.core import nfl2k5_formation_play_writer as w
 from mod_editor.core import nfl2k5_play_codec as codec
@@ -122,6 +125,18 @@ class LibraryUnitTests(unittest.TestCase):
 
 @unittest.skipUnless(_has_cache(), "private 2K5 cache missing")
 class PlayAuthorIntegrationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        temporary = tempfile.TemporaryDirectory(prefix="play-author-index-")
+        cls.addClassCleanup(temporary.cleanup)
+        # Keep the generated SQLite sidecar in fixture-owned storage while
+        # continuing to read the original game packs without changing them.
+        inventory = pathlib.Path(temporary.name) / INVENTORY.name
+        shutil.copyfile(INVENTORY, inventory)
+        patch = mock.patch.object(sys.modules[__name__], "INVENTORY", inventory)
+        patch.start()
+        cls.addClassCleanup(patch.stop)
+
     def test_personnel_group_written_for_a_two_back_gun_set(self):
         # HB + HB2 (RB2 instead of the FB): no stock group fields it, so the mix is written
         # into the unused "Jacks" group and the formation points at that group.

@@ -2,7 +2,7 @@
   "backend": {
     "module": "mod_editor/core/nfl2k5_cpu_money_downs.py",
     "operation": "write",
-    "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern --output new-money-downs.xbe"
+    "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern2 --output new-money-downs.xbe"
   },
   "classification": "offline-writer-proved",
   "evidence": [
@@ -12,22 +12,28 @@
     "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
     "tests/nfl2k5_cpu_money_downs_native.py",
     "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
-    "tools/nfl2k5_cpu_money_downs.S"
+    "tools/nfl2k5_cpu_money_downs.S",
+    "docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json",
+    "tools/nfl2k5_cpu_money_downs_m2.S",
+    "tools/b77/p9_repair.py",
+    "tools/b77/p9_harness.py",
+    "tests/mod_editor/test_nfl2k5_cpu_money_downs_m2.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. Retail in every preset; explicit Modern or Aggressive selection. Shared product integration is specified in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. Retail in Basic; Modern 2 in Advanced and Experimental; explicit Modern, Aggressive or Modern 2 selection. Shared product integration is specified in WIRING.md."
   },
   "id": "nfl2k5.gameplay.cpu_money_downs",
   "input_constraints": [
     "Pinned USA XBE or verified composed input; reserve the complete allocator union before installation. Mixed or foreign bytes refuse before mutation.",
-    "CPU offense, ordinary phase 4. Fourth-down table applies in regulation; third/fourth passing preferences retain native eligibility and scoring.",
+    "CPU offense, ordinary phase 4. Fourth-down table applies in regulation; third/fourth passing preferences retain native eligibility and scoring. Modern 2 also reads the score, the clock and the overtime owner's possession byte and replaces the two-point chart.",
     "Primary route preference requires an explicit first read and supported straight or straight-then-lateral route. Unsupported scripts keep retail weights.",
     "Target bonus follows native viability and threshold checks. Better short targets can still win. No forced catch or conversion.",
-    "Select Retail, Modern or Aggressive on a verified base; changing an installed level requires rebuilding."
+    "Select Retail, Modern, Aggressive or Modern 2 on a verified base; changing an installed level requires rebuilding, except the native repair that upgrades the SOFTDRINK 2K28 v0.5 Modern bytes to Modern 2.",
+    "Modern 2 keeps retail inside the CPU's own 20 yard line for ordinary game states and for any state outside the published tables; its thresholds are digitized or derived from published analytics (see the sources file) and are not fitted to this engine's conversion rates."
   ],
   "portme": [
     "Apply protected dispatcher, BuildPlan, three-level UI, packaging and capability-registry wiring in WIRING.md; regenerate the production cave manifest.",
@@ -41,21 +47,33 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed.",
-    "evidence": ["ASTRA_CPU_MONEY_DOWNS_REPORT.md", "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json"]
+    "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed. Modern 2: the real dispatcher, commit and try routines replay on a real book over grids of fourth-down, two-point and overtime states; defensive coverage variety is measured under the same fixture. No game, emulator or played-game result exists.",
+    "evidence": [
+      "ASTRA_CPU_MONEY_DOWNS_REPORT.md",
+      "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
+      "docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json"
+    ]
   },
   "selectors": {
-    "fields": [{"name": "cpu_money_downs", "required": true, "allowed": "retail | modern | aggressive; retail in Basic, Advanced and Experimental"}],
-    "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line."
+    "fields": [
+      {
+        "name": "cpu_money_downs",
+        "required": true,
+        "allowed": "retail | modern | aggressive | modern2; retail in Basic, modern2 in Advanced and Experimental"
+      }
+    ],
+    "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line. Modern 2: a wider fourth-down table from published analytics that reads score and clock, the modern overtime rules, a modern two-point chart and more varied defensive coverage calls."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
-    "hash_pins": ["73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"],
-    "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); 2048 RX bytes, immutable constants, zero runtime state.",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); Modern 2 adds 206E70 (5), 20B1A4 (5), 20B6DD (5), 20AA1F (1) and 20AC4E (1); 2048 RX bytes, immutable constants, zero runtime state.",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Opt-in fourth-down attempts and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
+  "summary": "Opt-in fourth-down attempts, a sourced fourth-down, two-point and overtime policy (Modern 2) and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
   "surface": "gameplay_tuning_sliders",
-  "title": "CPU fourth downs and first downs (experimental, unwitnessed)",
+  "title": "CPU fourth downs, two-point tries and overtime (experimental, unwitnessed)",
   "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"
 }

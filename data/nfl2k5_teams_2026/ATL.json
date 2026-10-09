@@ -74,9 +74,10 @@
      "colour": "white",
      "center": [
       161,
-      92.5
+      107.35
      ],
-     "width": 56
+     "width": 38,
+     "height": 6.8
     },
     "sleeve_swooshes": {
      "colour": "white"
@@ -191,9 +192,10 @@
      "colour": "black",
      "center": [
       161,
-      92.5
+      105.85
      ],
-     "width": 56
+     "width": 38.5,
+     "height": 6.3
     },
     "sleeve_swooshes": {
      "colour": "jersey_red"
@@ -722,5 +724,21 @@
     ]
    }
   }
+ },
+ "u2a_b77": {
+  "job": "b77 u2a (sonnet-5.5), 2026-10-08",
+  "checked_against": "atlantafalcons.com 2026 galleries: week 2 vs CAR (red home: game photos and locker room), week 1 at PIT and week 3 at GB (white road, white and black pants)",
+  "changes": {
+   "home.torso.chest_mark": "FALCONS wordmark 38 x 6.8 px at centre y 107.35 (was 56 x 6.75 at y 92.5): 0.54 front-number heights wide (locker room #0: 272 px against a 505 px number, calibrated on the digit height of the render) and about 0.04 above the number; the traced mark is stretched to the real letter proportions (aspect 5.6, f_056 frontal)",
+   "away.torso.chest_mark": "Atlanta wordmark 38.5 x 6.3 px at centre y 105.85 (was 56 wide at y 92.5): 0.545 number heights wide (week 1 #5, calibrated on the digit height of the render), gap about 0.06"
+  },
+  "unchanged_because_right": [
+   "pants stripe total 20 px (measured 21)",
+   "black road pants (worn week 3; white pants worn week 1 are the other 2026 option)",
+   "red home socks, white road socks",
+   "falcon sleeve logos",
+   "helmet",
+   "number font and colours"
+  ]
  }
 }

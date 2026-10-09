@@ -2880,6 +2880,58 @@ class Nfl2k5StudioFacade:
                 inspector.index.archive, entry, record.chunk_offset, record.raw_size
             )
 
+    def project_softdrink_book_set(self) -> dict[str, object]:
+        """Report bundled pairs selected for Build, without reading game data.
+
+        Partial pairs in a manually edited list are reported as incomplete.
+        Generic SOFTDRINK packs are independent of this selection.
+        """
+        from mod_editor.core.mod_build import softdrink_book_paths
+
+        with self._lock:
+            names = {Path(path).name for path in
+                     self._require_session().build_settings.get("playbook_packs", ())}
+            per_team = {}
+            for team in playbook_pack.TEAM_BOOKS:
+                pair = softdrink_book_paths((team,))
+                present = sum(path.name in names for path in pair)
+                per_team[team] = ("classic", "incomplete", "modern")[present]
+            modern = tuple(team for team, value in per_team.items() if value == "modern")
+            classic = tuple(team for team, value in per_team.items() if value == "classic")
+            incomplete = tuple(team for team, value in per_team.items() if value == "incomplete")
+            return {"modern_count": len(modern), "classic_count": len(classic),
+                    "modern_teams": modern, "classic_teams": classic,
+                    "incomplete_teams": incomplete, "per_team": per_team}
+
+    def set_softdrink_book_set(self, teams: Iterable[str] | None = None) -> dict[str, object]:
+        """Select modern pairs for exactly these teams; None selects all 32.
+
+        An empty iterable selects all classic. Preserve other pack entries in
+        their existing slots where possible, and always in their original order.
+        Only playbook_packs changes; historic_stock_books is independent.
+        """
+        from mod_editor.core.mod_build import softdrink_book_paths
+
+        targets = playbook_pack.TEAM_BOOKS if teams is None else teams
+        selected = softdrink_book_paths(targets)  # Validate before mutating the project.
+        managed_names = {path.name for path in softdrink_book_paths(playbook_pack.TEAM_BOOKS)}
+        with self._lock:
+            session = self._require_session()
+            state = session.build_settings
+            remaining = iter(map(str, selected))
+            paths = []
+            for path in state.get("playbook_packs", ()):
+                if Path(path).name in managed_names:
+                    replacement = next(remaining, None)
+                    if replacement is not None:
+                        paths.append(replacement)
+                else:
+                    paths.append(path)
+            paths.extend(remaining)
+            state["playbook_packs"] = paths
+            session.set_build_settings(state)
+            return self.project_softdrink_book_set()
+
     def install_playbook_pack(
         self,
         pack: playbook_pack.PlaybookPack | Path | str,

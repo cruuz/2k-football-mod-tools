@@ -680,6 +680,67 @@ NUMERIC_LIMITS: dict[str, tuple[int, int]] = {
 }
 
 
+# --------------------------------------------------------------------------------------------- experience
+# beta 77 (job f12, Noah 2026-10-07: "players are rookies when they are actually 2nd year ... guys drafted in 2026
+# say 0 years").  The game's years pro (+0x25 bits 0-4) counts the seasons a player is IN, the current one included:
+# a rookie stores 1, a second-year player 2.  Proof, all read from the shipped executable and the retail roster:
+#   * the Player Card's YRS PRO line (0x145DA0) prints "R" for exactly the stored value 1 and the number for every
+#     other value (so a stored 0 prints "0"); the "Years Pro:R" card (0x347422) and the roster list (0x6E0D8) agree;
+#   * retail 2004: Fitzgerald, Eli Manning and Rivers (2004 draft) store 1, Brady (2000) 5, Favre (1991) 14, Rice 20,
+#     and no club or free agent stores 0;
+#   * the class generator copies a template whose years pro is 1; the Postseason rollover (0x47220, from 0x247B40)
+#     adds 1 to every allocated non-prospect; the Preseason aging (0xE63F0) applies curve[y] - curve[y-1] for the
+#     stored y; the rookie predicate behind the Rookie of the Year filters and Rookie Watch (0x1137F0) is y < 2;
+#   * the career-stat history keeps the k-th pro season in slot k, so the CURRENT season is slot y and the last
+#     completed season is slot y - 1 (retail Brady, y = 5, has slots 1..4).
+# nflverse `years_exp` (and every NFL "experience" column) counts COMPLETED seasons: a rookie is 0.  Writing it
+# straight into the record made every 2026 draftee read 0, every 2025 draftee read R, and every veteran one year low.
+ROOKIE_YEARS_PRO = 1
+YEARS_PRO_MAX = 31                        # the field is five bits
+
+
+def years_pro_from_years_exp(years_exp: Any) -> int:
+    """nflverse ``years_exp`` / NFL accrued seasons (rookie 0) -> the game's years pro (rookie 1).
+
+    An empty value is refused, not read as a rookie: nflverse leaves ``years_exp`` blank when it does not know (its 1998,
+    1999 and 2001 roster files have none), and reading those blanks as rookies would put whole rosters on R.  A negative or
+    non-numeric value is refused too; the field saturates at 31."""
+
+    if years_exp is None or (isinstance(years_exp, str) and not years_exp.strip()):
+        raise RosterRecordError("years of experience is empty (unknown, not a rookie): the caller must supply it")
+    try:
+        value = int(float(years_exp))
+    except (TypeError, ValueError):
+        raise RosterRecordError(f"years of experience {years_exp!r} is not a number") from None
+    _require(value >= 0, f"years of experience {value} is negative")
+    return min(YEARS_PRO_MAX, value + ROOKIE_YEARS_PRO)
+
+
+def years_pro_for_season(season: int, entry_year: int) -> int:
+    """The game's years pro in ``season`` for a player who entered the league in ``entry_year`` (rookie year = 1)."""
+
+    _require(entry_year <= season, f"entry year {entry_year} is after season {season}")
+    return min(YEARS_PRO_MAX, season - entry_year + ROOKIE_YEARS_PRO)
+
+
+def accrued_seasons(years_pro: int) -> int:
+    """The inverse view: completed seasons (the nflverse / CBA convention) for a stored years pro."""
+
+    return max(0, int(years_pro) - ROOKIE_YEARS_PRO)
+
+
+def years_pro_label(years_pro: int) -> str:
+    """What the Player Card prints: ``R`` for a rookie (stored 1), the stored number otherwise."""
+
+    return "R" if int(years_pro) == ROOKIE_YEARS_PRO else str(int(years_pro))
+
+
+def is_rookie_years_pro(years_pro: int) -> bool:
+    """The game's own rookie predicate (0x1137F0, behind Rookie of the Year and Rookie Watch): stored value < 2."""
+
+    return int(years_pro) <= ROOKIE_YEARS_PRO
+
+
 # --------------------------------------------------------------------------------------------- fields
 @dataclass(frozen=True)
 class Field:
@@ -757,7 +818,8 @@ FIELDS: tuple[Field, ...] = (
     _f("unknown_20_high", 0x20, 4, 22, 10, "Unknown +0x22/+0x23 high", "an 8-bit field at bits 22-29 plus two flag bits"),
     _f("contract_remaining", 0x24, 1, 0, 4, "Years Remaining"),
     _f("unknown_24_high", 0x24, 1, 4, 4, "Unknown +0x24 bits 4-7", "Finn's 36Unk"),
-    _f("years_pro", 0x25, 1, 0, 5, "Years Pro"),
+    _f("years_pro", 0x25, 1, 0, 5, "Years Pro",
+       "seasons in the league, this one included: 1 = rookie (the card prints R), 2 = second year; not nflverse years_exp"),
     _f("unknown_25_high", 0x25, 1, 5, 3, "Unknown +0x25 bits 5-7"),
     _f("contract_type", 0x26, 1, 0, 4, "Contract Type"),
     _f("contract_bonus", 0x26, 1, 4, 4, "Signing Bonus"),
@@ -2911,6 +2973,9 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     _require(isinstance(document.get("moves", []), list), "the roster-edits moves must be a list")
     _require(isinstance(document.get("special_teams", []), list),
              "the roster-edits special_teams must be a list")
+    if "qb_throw_power" in document:
+        from . import nfl2k5_qb_throw_power
+        nfl2k5_qb_throw_power.normalise_directive(document["qb_throw_power"])
     return dict(document)
 
 
@@ -3125,8 +3190,9 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
 
 #: Team record: the year pair of uniform styles 1..14 (u16 first, u16 last), the pair Team Select's CURRENT UNIFORM
 #: labels a style with (0xE3530: style 0 "Current Uniform"; a pair with first != last and last < 1900 reads
-#: "%d Alternate %d", other unequal pairs "%d - %d Uniform", equal pairs "%d Uniform"); 0xE2A90 treats a zero
-#: pair as no style, so the table must stay a gapless prefix.
+#: "%d  Alternate %d", other unequal pairs "%d - %d Uniform", equal pairs "%d Uniform"); 0xE2A90 treats a zero
+#: pair as no style. The four Team Select handlers skip a zero pair (job u3s, Unicorn on the v0.5 executable), so
+#: the game does not need a gapless table; the spare styles of job m1 rely on their zero pair in this roster.
 TEAM_UNIFORM_YEARS = 0x15A
 TEAM_UNIFORM_STYLES = 14
 
@@ -3134,10 +3200,13 @@ TEAM_UNIFORM_STYLES = 14
 def apply_team_uniform_years(body: bytearray, teams: Sequence[TeamRecord], entries: Sequence[Mapping[str, Any]],
                              log: list[str]) -> int:
     """Team-record edits from a roster-edits document's ``teams`` list: {"team_index": n (the record ordinal),
-    "team": retail abbreviation (a cross-check; optional), "uniform_years": {"<style 1..14>": [first, last]}}.
-    Only a style that already exists (non-zero pair) is relabelled, and only to a non-zero pair, so the set of
-    selectable styles is unchanged. Returns the pairs written (job u7: the Rams' 2026 alternates read
-    "2026 Alternate 1..3")."""
+    "team": retail abbreviation (a cross-check; optional), "uniform_years": {"<style 1..14>": [first, last]},
+    "enable_styles": [style, ...] (optional)}.
+    A style that already exists (non-zero pair) is relabelled, only to a non-zero pair. A style with a zero pair is
+    written only when ``enable_styles`` names it: that makes a style selectable whose kits and Team Select art the
+    disc already carries (job u3s: the retail kits past the table, the Bengals' 6 and 7 and the Jets' 7; the plan
+    checks the disc, ``nfl2k5_uniform_slots.validate_plan``). Returns the pairs written (job u7: the Rams' 2026
+    alternates read "2026  Alternate 1..3")."""
 
     written = 0
     by_index = {team.index: team for team in teams}
@@ -3151,6 +3220,11 @@ def apply_team_uniform_years(body: bytearray, teams: Sequence[TeamRecord], entri
         if expected and expected != team.abbreviation:
             log.append(f"teams: record {team.index} is {team.abbreviation!r}, the edit names {expected!r}; skipped")
             continue
+        enable = entry.get("enable_styles") or []
+        if not (isinstance(enable, (list, tuple)) and all(type(s) is int and 1 <= s <= TEAM_UNIFORM_STYLES
+                                                          for s in enable)):
+            log.append(f"teams {team.abbreviation}: enable_styles {enable!r} is not a list of styles 1..14; skipped")
+            continue
         for style_text, pair in dict(entry.get("uniform_years") or {}).items():
             style = int(style_text)
             if not 1 <= style <= TEAM_UNIFORM_STYLES or not (isinstance(pair, (list, tuple)) and len(pair) == 2):
@@ -3159,9 +3233,10 @@ def apply_team_uniform_years(body: bytearray, teams: Sequence[TeamRecord], entri
             first, last = (int(v) for v in pair)
             at = team.offset + TEAM_UNIFORM_YEARS + 4 * (style - 1)
             current = struct.unpack_from("<HH", body, at)
-            if current == (0, 0) or not (0 <= first <= 0xFFFF and 0 <= last <= 0xFFFF) or (first, last) == (0, 0):
-                log.append(f"teams {team.abbreviation}: style {style} is {current}; only an existing style is "
-                           f"relabelled, to a non-zero pair (got {pair!r})")
+            if (current == (0, 0) and style not in enable) or not (0 <= first <= 0xFFFF and 0 <= last <= 0xFFFF) \
+                    or (first, last) == (0, 0):
+                log.append(f"teams {team.abbreviation}: style {style} is {current}; only an existing style (or one "
+                           f"named in enable_styles) is written, to a non-zero pair (got {pair!r})")
                 continue
             struct.pack_into("<HH", body, at, first, last)
             written += 1
@@ -3830,6 +3905,31 @@ def recorded_surname_ids() -> dict[str, int]:
     return {last: ids[0] for last, ids in candidates.items() if len(ids) == 1}
 
 
+# beta 77 (job c2): the ids that mean "no usable recorded call yet" -- zero, the legacy double-zero cue, the absent
+# live-number sentinel and the retail selections without a recorded clip.  commentary_id() replaces exactly these.
+PBP_REPLACED = frozenset({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK}) | PBP_UNRECORDED_NAMES
+
+
+def commentary_id(last: str, jersey: int, current: int, *, surname_ids: Mapping[str, int] | None = None,
+                  sync_numbers: bool = True) -> int:
+    """The play-by-play id a populated record should carry: c1's rules as one pure function.
+
+    * ``current`` in PBP_REPLACED (0, 9100 "double zero", 9101, the unrecorded retail names) becomes the exact
+      recorded generic surname cue when the surname has one, else the explicit number call 9000 + jersey;
+    * with ``sync_numbers`` an explicit number call (9000..9099) follows the stored uniform number;
+    * every other selection (a recorded retail name, a surname-bank cue) is kept.
+
+    The jersey must be 0..99: a real #0 player is called by the recorded "zero" clip 9000, never "double zero".
+    """
+    if current in PBP_REPLACED:
+        bank = recorded_surname_ids() if surname_ids is None else surname_ids
+        found = bank.get(commentary_surname(last))
+        return found if found is not None else number_commentary_id(jersey)
+    if sync_numbers and PBP_NUMBER_BASE <= current < PBP_NUMBER_BASE + 100:
+        return number_commentary_id(jersey)
+    return current
+
+
 def normalise_player_commentary(player: Player, surname_ids: Mapping[str, int] | None = None, *,
                                sync_numbers: bool = False) -> bool:
     """Repair only pbp_id, for populated player records; preserve explicit name selections.
@@ -3842,13 +3942,9 @@ def normalise_player_commentary(player: Player, surname_ids: Mapping[str, int] |
     if not (player.first or player.last) or "*" in player.first + player.last:
         return False
     old = player.record.values["pbp_id"]
-    if old in ({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK} | PBP_UNRECORDED_NAMES):
-        bank = recorded_surname_ids() if surname_ids is None else surname_ids
-        new = bank.get(commentary_surname(player.last))
-        if new is None:
-            new = number_commentary_id(player.record.values["jersey"])
-    elif sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100:
-        new = number_commentary_id(player.record.values["jersey"])
+    if old in PBP_REPLACED or (sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100):
+        new = commentary_id(player.last, player.record.values["jersey"], old,
+                            surname_ids=surname_ids, sync_numbers=sync_numbers)
     else:
         return False
     player.record.set("pbp_id", new)
@@ -3885,6 +3981,18 @@ def repair_commentary_body(body: bytes, *, base: int = 0,
                         "outside_scope_identical": True}
 
 
+def repair_commentary_resource(resource: bytes) -> tuple[bytes, dict[str, Any]]:
+    """repair_commentary_body() for a complete ROST resource: the 0x20-byte wrapper is kept byte for byte.
+
+    This is the final commentary pass for the one-team historic and Anniversary rosters (beta 77, job c2): their writers
+    own names, jerseys and appearance, and defer the play-by-play word, which then never met a final pass.  Only the
+    little-endian u16 at record +0x04 of populated players can change; the size and every other byte are identical.
+    """
+    _require(len(resource) > RESOURCE_HEADER_SIZE and resource[:4] == b"ROST", "not a ROST resource")
+    body, receipt = repair_commentary_body(resource[RESOURCE_HEADER_SIZE:])
+    return resource[:RESOURCE_HEADER_SIZE] + body, receipt
+
+
 def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
     """play-by-play id -> label, from the roster's own records plus the two proved id ranges."""
 
@@ -3904,7 +4012,7 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
             out[pbp] = " / ".join(labels[:4]) + (f" (+{len(labels) - 4})" if len(labels) > 4 else "")
     for number in range(100):
         out.setdefault(PBP_NUMBER_BASE + number, f"#{number:02d} (jersey-number call-out)")
-    out[PBP_DOUBLE_ZERO] = "Double zero (recorded 00 cue)"
+    out[PBP_DOUBLE_ZERO] = "Double zero (recorded 00 clip; SOFTDRINK builds retire it: the live number is called)"
     out.setdefault(PBP_NUMBER_FALLBACK, "(announce the jersey number)")
     for index, surname in enumerate(RETAIL_LASTS):
         out.setdefault(RETAIL_AUDIO_BASE + index, f"{surname} (recorded surname bank)")
@@ -4244,7 +4352,7 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
             continue
         if wanted_teams and not wanted_teams.intersection(player.teams):
             continue
-        if rookies_only and player.record.values["years_pro"] != 0:
+        if rookies_only and not is_rookie_years_pro(player.record.values["years_pro"]):
             continue
         if condition is not None and not condition[1](player.record.get(condition[0]), condition[2]):
             continue
@@ -4277,7 +4385,8 @@ def global_edit_apply(document: RosterDocument, preview: Sequence[Mapping[str, A
 
 # --------------------------------------------------------------------------------------------- passes
 def advance_years_pro(document: RosterDocument, players: Sequence[Player] | None = None) -> int:
-    """Finn's Tools > Auto-update > Advance year."""
+    """Finn's Tools > Auto-update > Advance year: +1 years pro, the same step the game's Postseason rollover takes
+    (a rookie, stored 1, becomes 2).  Career-stat history is untouched."""
 
     field = FIELD_BY_NAME["years_pro"]
     count = 0
@@ -4511,6 +4620,13 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
                 findings.append({"level": "warning", "player": player.display, "check": "season age",
                                  "detail": f"age {age} on September 1, {document.reference_year} is outside "
                                            f"{MIN_AGE}..{MAX_AGE}; review the birth date and source season"})
+        if (record.values["years_pro"] == 0 and player.pool == "primary" and record.values["player_type"] & FLAG_NFL_PLAYER
+                and (player.offset in document.free_agents
+                     or any(document.teams[t].is_club for t in player.teams))):
+            findings.append({"level": "warning", "player": player.display, "check": "years pro",
+                             "detail": "0 years pro prints as 0 on the card; the game's rookie is 1 (it prints R) and "
+                                       "retail never stores 0 on a club or free agent. nflverse years_exp counts "
+                                       "completed seasons: add 1 (years_pro_from_years_exp)"})
         if record.values["headless"]:
             findings.append({"level": "error", "player": player.display, "check": "headless",
                              "detail": "+0x0C bit 7 is set; this model renders without a head "
@@ -4586,10 +4702,13 @@ __all__ = [
     "CREATE_PLAYER_TEMPLATE_DEFAULT", "CREATE_PLAYER_TEMPLATE_MAX", "RETAIL_CREATE_PLAYER_TEMPLATES",
     "apply_template", "create_player_templates", "read_templates", "templates_for_position",
     "PORTRAIT_REPORT", "PBP_NUMBER_BASE", "PBP_NUMBER_FALLBACK", "pbp_name_index", "portrait_index",
+    "ROOKIE_YEARS_PRO", "YEARS_PRO_MAX", "accrued_seasons", "is_rookie_years_pro", "years_pro_for_season",
+    "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
     "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
     "import_csv", "load_body", "load_image", "load_save", "read_edits", "read_utf16z",
     "resource_status", "restore_measurements", "save_document", "sign_save", "status",
     "validate", "validate_name", "verify_extra",
+    "PBP_REPLACED", "commentary_id", "repair_commentary_body", "repair_commentary_resource",
 ]

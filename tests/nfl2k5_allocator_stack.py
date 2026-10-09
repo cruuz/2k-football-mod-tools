@@ -49,6 +49,9 @@ from mod_editor.core import nfl2k5_anniversary_kickoff as anniversary_kickoff
 from mod_editor.core import nfl2k5_widescreen_menus as widescreen_menus
 from mod_editor.core import nfl2k5_team_logo_swap as team_logo_swap
 from mod_editor.core import nfl2k5_k128 as k128
+from mod_editor.core import nfl2k5_letter_grades as letter_grades  # b77-f4
+from mod_editor.core import nfl2k5_period_goalposts as period  # b77-v1b
+from mod_editor.core import nfl2k5_honors as honors  # b77-f5
 
 
 # Historical v1 footprint: S5 relocates its larger RX owner after the scale
@@ -82,6 +85,9 @@ REQUESTS += widescreen_menus.REQUESTS
 # install, so it only reserves here.
 REQUESTS += team_logo_swap.REQUESTS
 REQUESTS += k128.REQUESTS  # b76-k1
+REQUESTS += letter_grades.REQUESTS  # b77-f4
+REQUESTS += period.REQUESTS  # b77-v1b
+REQUESTS += honors.REQUESTS  # b77-f5
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -132,7 +138,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
               (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}), (weather_haze, {}),
               (coin_defer, {}), (decided_clock, {}), (cpu_scrambles, {}),
-              (arena_growth, dict(created_teams_extra=2)), (historic_quick_game, {}), (more_moments.Probe, {}), (k128, dict(roster_heap=True)))
+              (arena_growth, dict(created_teams_extra=2)), (historic_quick_game, {}), (more_moments.Probe, {}), (k128, dict(roster_heap=True)), (letter_grades, {}), (period, {}), (honors, {}))
 
 
 def compose(payload, *, reverse=False, scaleout=False, extra_requests=(), read_option_diagnostic=False):

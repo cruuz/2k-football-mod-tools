@@ -166,14 +166,28 @@ class BuildPlanTests(unittest.TestCase):
         receipt = mod_build.build(mod_build.BuildPlan(str(fixture.image), str(target), espn25_plan=str(path)),
                                   lambda message, *_: messages.append(message))
         step = next(row for row in receipt["steps"] if row["step"] == "espn25_plan")
-        self.assertEqual(receipt["steps"][-1]["step"], "espn25_plan", "the plan is the last pass")
+        self.assertEqual([row["step"] for row in receipt["steps"][-2:]],
+                         ["espn25_plan", "commentary_final"],
+                         "c2 finalizes commentary after the plan's roster edits")
         self.assertFalse(step["already_applied"])
         self.assertEqual(receipt["result"]["espn25_plan"], "applied")
         self.assertEqual(receipt["plan"]["espn25_plan"], str(path))
         self.assertIn("Applying ESPN Anniversary edits", messages)
-        self.assertEqual(espn.status(target, plan), "applied")
+        # c2 runs after the plan and finalizes the pbp_id words. Verify the whole
+        # composed resource, including the user's edits, against both passes.
+        outputs, _ = espn.resolve_plan(fixture.catalog, plan)
+        with espn.rr._outer_image()(target) as archive:
+            for index, expected in outputs.items():
+                if index != 22:
+                    expected, _ = espn.rr.repair_commentary_resource(expected)
+                entry = archive.entries[index]
+                self.assertEqual(archive.read(entry.virtual_offset, entry.size), expected)
         self.assertEqual(espn.status(fixture.image, plan), "ready", "the source is never written")
-        self.assertEqual(mod_build.inspect(target)["espn25_plan"], "available")
+        # This invented manifest pins the original zero commentary ids. A plan
+        # pinned before another roster writer ran must still fail closed.
+        with self.assertRaisesRegex(espn.Espn25Error, "protected field"):
+            espn.status(target, plan)
+        self.assertEqual(mod_build.inspect(target)["espn25_plan"], "foreign")
         # a failing final pass discards the disposable output instead of publishing it
         second = fixture.directory / "second.iso"
         with mock.patch.object(espn, "apply_to_image", side_effect=espn.Espn25Error("injected")):

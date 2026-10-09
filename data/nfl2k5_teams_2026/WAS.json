@@ -266,7 +266,7 @@
     "collar_trim": [
      {
       "colour": "burgundy",
-      "width": 8
+      "width": 13
      }
     ]
    },
@@ -299,7 +299,19 @@
     "swoosh_colour": "burgundy"
    },
    "socks": {
-    "colour": "burgundy"
+    "colour": "white",
+    "stripes": [
+     {
+      "colour": "burgundy",
+      "y": 33,
+      "height": 4
+     },
+     {
+      "colour": "gold",
+      "y": 37,
+      "height": 6
+     }
+    ]
    },
    "digits": {
     "glyph_donor": "29A0",
@@ -648,5 +660,9 @@
     ]
    }
   }
+ },
+ "u2d_b77": {
+  "away": "socks burgundy to white with a burgundy-over-gold band about 55 to 70 percent down the calf (club week 1 at PHI photos #85 and #14), V collar trim 8 to 13 px (the burgundy V in the photos is about 1.6x v0.5). Home kit checked against week 3 vs SEA (burgundy pants variant) and week 2/4 white pants: pants stripe white-gold-burgundy equal bands already matches on white pants; unchanged",
+  "native_repair_note": "the Studio equipment writer scrambles two-band socks (u3b finding): the native repair keeps the v0.5 burgundy socks on 29A0 and the striped white socks wait for the writer fix (redo after writer fix)"
  }
 }

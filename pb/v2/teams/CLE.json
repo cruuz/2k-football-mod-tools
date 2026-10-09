@@ -1,0 +1,608 @@
+{
+ "team": "CLE",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Monken vertical and gap blend",
+ "staff": "Todd Monken / Travis Switzer",
+ "family": "vertical",
+ "feature": "TE1",
+ "key_players": "Harold Fannin Jr.; Quinshon Judkins",
+ "depth_step": 0,
+ "tendencies": {
+  "shotgun_pct": 67.32,
+  "pistol_pct": 2.24,
+  "play_action_pct": 22.0,
+  "motion_pct": 49.51,
+  "personnel": {
+   "12": 428,
+   "11": 453,
+   "21": 14,
+   "other": 78,
+   "13": 41,
+   "02": 7,
+   "22": 1,
+   "10": 5,
+   "01": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Trey",
+   "Gun Doubles",
+   "Singleback Doubles",
+   "Gun Trips"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Ace Wing",
+   "Gun Ace",
+   "Pistol Ace",
+   "Ace Jumbo",
+   "Singleback Wing",
+   "Gun Empty Bunch",
+   "Gun Split Pro"
+  ]
+ },
+ "boost": {
+  "Counter": 2,
+  "Dagger": 4,
+  "Double Post": 2,
+  "Four Verticals": 2,
+  "Mills": 2,
+  "Out and Up": 1,
+  "PA Boot Leak": 1,
+  "PA Shot": 2,
+  "Post Corner": 1,
+  "Stick": 1,
+  "TE Screen": 1,
+  "Y Cross": 5
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Singleback Ace",
+   "concept": "Y Cross",
+   "name": "Y Cross Post",
+   "overrides": {
+    "routes": {
+     "S1": [
+      "route",
+      "Skinny Post",
+      12
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Heavy Wing",
+   "concept": "Counter",
+   "name": "Wing Counter",
+   "overrides": {
+    "direction": "weak"
+   }
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Mesh Wheel",
+   "name": "CLE Mesh Wheel",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "W2",
+     "B",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Texas",
+   "name": "CLE Texas",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S2",
+     "W1",
+     "S1",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Dagger",
+   "name": "CLE Dagger",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S2",
+     "B",
+     "S1",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Mills",
+   "name": "CLE Mills",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "B",
+     "W1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Levels",
+   "name": "CLE Levels",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "W1",
+     "S2",
+     "S1",
+     "B"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.clevelandbrowns.com/news/browns-finalize-the-2026-coaching-staff)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 6.81 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Queens": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Pistol Ace": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace Long"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Bunch": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  },
+  "Gun Split Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Mesh Wheel",
+    "name": "CLE Mesh Wheel",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "W2",
+      "B",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "targets SWING 8.1% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Texas",
+    "name": "CLE Texas",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S2",
+      "W1",
+      "S1",
+      "B"
+     ]
+    },
+    "reason": "targets SWING 8.1% (league 5.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Dagger",
+    "name": "CLE Dagger",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S2",
+      "B",
+      "S1",
+      "W1"
+     ]
+    },
+    "reason": "targets IN/DIG 11.3% (league 8.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Mills",
+    "name": "CLE Mills",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "B",
+      "W1",
+      "S2"
+     ]
+    },
+    "reason": "targets IN/DIG 11.3% (league 8.8)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Levels",
+    "name": "CLE Levels",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "W1",
+      "S2",
+      "S1",
+      "B"
+     ]
+    },
+    "reason": "targets IN/DIG 11.3% (league 8.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 68.9%"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 26.6%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   4,
+   0,
+   4
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   2,
+   1,
+   0
+  ],
+  "Gun Trey": [
+   2,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   3,
+   0,
+   1
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   3,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   3
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   1,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Gun Ace Wing": [
+   1,
+   0,
+   1
+  ],
+  "Gun Ace": [
+   4,
+   0,
+   1
+  ],
+  "Pistol Ace": [
+   1,
+   1,
+   2
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Wing": [
+   0,
+   3,
+   0
+  ],
+  "Gun Empty Bunch": [
+   2,
+   0,
+   0
+  ],
+  "Gun Split Pro": [
+   1,
+   4,
+   1
+  ]
+ }
+}

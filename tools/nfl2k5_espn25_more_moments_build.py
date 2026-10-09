@@ -108,6 +108,44 @@ def require(ok, message):
         raise BuildError(message)
 
 
+# f12: how the game's years pro is derived for a roster row.
+ROSTER_YEARS_BASIS = "roster years_exp"
+PLAYERS_YEARS_BASIS = ("players.csv: season minus the earlier of draft_year and rookie_season, plus 1 "
+                       "(this roster file has no years_exp for the player)")
+
+
+def players_entry_years(rows: list[dict]) -> dict[str, int]:
+    """gsis_id -> the year the player entered the league, from nflverse players.csv: the earlier of his draft year and
+    the season of his first game."""
+    found: dict[str, int] = {}
+    for row in rows:
+        gsis = (row.get("gsis_id") or "").strip()
+        years = [int(float(row[c])) for c in ("draft_year", "rookie_season") if (row.get(c) or "").strip() not in ("", "NA")]
+        if gsis and years:
+            found[gsis] = min(years)
+    return found
+
+
+def years_pro_for(row: dict, season: int, entry_years: dict[str, int]) -> tuple[int, str]:
+    """(the game's years pro, where it came from) for one roster row.
+
+    The game counts the season in progress (a rookie is 1 and the card prints R); nflverse ``years_exp`` counts completed
+    seasons (a rookie is 0), so the usual answer is ``years_exp + 1``.  nflverse's annual roster files for 1998, 1999 and
+    2001 carry no ``years_exp`` (nor ``entry_year``) for all but a handful of rows; for those the entry year comes from
+    players.csv.  Measured on the 44 team-seasons here whose roster files do carry ``years_exp`` (2,332 players), that
+    rule reproduces them exactly for all 1,683 drafted players and for 595 of 649 undrafted ones; the 54 misses are
+    undrafted veterans, undercounted by 1 to 5 seasons, because the NFL counts a year in camp or on a practice squad
+    that players.csv does not see.  A player on a roster has entered the league by then, so an entry year after the
+    season is read as the season itself (a rookie)."""
+
+    value = row.get("years_exp")
+    if value is not None and str(value).strip() not in ("", "NA"):
+        return rr.years_pro_from_years_exp(value), ROSTER_YEARS_BASIS
+    gsis = (row.get("gsis_id") or "").strip()
+    require(gsis in entry_years, f"{row.get('full_name')} ({season}): no years_exp in the roster file and no entry year in players.csv")
+    return rr.years_pro_for_season(season, min(entry_years[gsis], season)), PLAYERS_YEARS_BASIS
+
+
 def sha_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -751,10 +789,15 @@ def finish_rows(key, spec, players, jerseys, stats, ctx):
         hit = retail.anchor(ascii_name(p["first"]), ascii_name(p["last"]), r.get("birth_date", ""), p["position"])
         lefty = (hit is not None and hit["hand"] == 0) or ascii_name(r["full_name"]) in ctx["left_handed"]
         hand = "Left" if lefty and p["position"] in ("QB", "K", "P") else "Right"
+        sourced = ctx["handedness"].get(f"{p['first']} {p['last']}|{p['position']}")      # b77 a2: sourced hand wins
+        if sourced:
+            hand = sourced
         college = retail.college(r.get("college", ""))
         weight = int(float(r.get("weight") or 0)) or 200
         height = int(float(r.get("height") or 0)) or 72
-        years = max(0, min(31, int(float(r.get("years_exp") or 0))))
+        # the game's years pro counts the season in progress (rookie = 1, the card prints R); nflverse years_exp
+        # counts completed seasons (rookie = 0). f12: write the former, in the moment's own season.
+        years, years_basis = years_pro_for(r, spec["season"], ctx["entry_years"])
         values = {"pool": "primary", "index": i, "first": p["first"], "last": p["last"], "position": p["position"],
                   "jersey": p["jersey"], "college": college, **{k: p["ratings"][k] for k in rr.RATING_BYTE_ORDER},
                   "depth": p["depth"], "height": height, "weight": max(150, min(405, weight)),
@@ -765,11 +808,13 @@ def finish_rows(key, spec, players, jerseys, stats, ctx):
                            "position_source": p["position_source"], "role_fill": p["role_fill"],
                            "in_moment_game_pbp": p["in_game"], "added_from_season_roster": p["added"],
                            "jersey_source": p["jersey_source"], "name_note": p["name_note"],
-                           "hand_basis": ("retail 2004 identity" if hit and hit["hand"] == 0 else "left-handed list")
+                           "hand_basis": "sourced (b77 a2 handedness)" if sourced else
+                           ("retail 2004 identity" if hit and hit["hand"] == 0 else "left-handed list")
                            if hand == "Left" else "default right",
                            "college_basis": "main college table" if college else "not in the table (template keeps its own)",
                            "retail_identity": p.get("retail_identity"),
-                           "ratings_basis": p.get("rating_basis") or p.get("retail_slot")})
+                           "ratings_basis": p.get("rating_basis") or p.get("retail_slot"),
+                           **({} if years_basis == ROSTER_YEARS_BASIS else {"years_pro_basis": years_basis})})
     return out_rows, provenance
 
 
@@ -897,8 +942,9 @@ def generate(spec_path: Path, inputs_dir: Path, retail_dir: Path, out_dir: Path,
                         found[row["gsis_id"]][number] += 1
         return {pid: [n for n, _ in sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))] for pid, c in found.items()}
     ctx = {"inputs": inputs, "retail": retail, "reference": reference, "season_stats": season_stats,
-           "season_numbers": season_numbers,
+           "season_numbers": season_numbers, "entry_years": players_entry_years(inputs.rows("players.csv")),
            "left_handed": set(spec.get("left_handed", {}).get("names", [])),
+           "handedness": dict(spec.get("handedness", {}).get("answers", {})),
            "display_names": {k: tuple(v) for k, v in spec.get("display_names", {}).get("names", {}).items()}}
     teams_out, manifest_teams, csv_files = {}, {}, {}
     for key in sorted(spec["teams"]):
@@ -949,6 +995,8 @@ def generate(spec_path: Path, inputs_dir: Path, retail_dir: Path, out_dir: Path,
     for name, text in csv_files.items():
         files[f"{TEAMS_DIR}/{name}"] = text
     manifest = {"schema": "nfl2k5.espn25.more_teams.manifest.v1", "evidence": EVIDENCE, "generator": "tools/nfl2k5_espn25_more_moments_build.py",
+                "years_pro_convention": "game_rookie_1",
+                "years_pro_convention_note": "years pro counts the season in progress (rookie = 1, the card prints R): nflverse years_exp (rookie = 0) plus 1",
                 "spec_sha256": sha_file(spec_path), "forty_sources_sha256": sha_file(forty_path), "ratings_model": rm.MODEL_VERSION,
                 "sources": {"nflverse": {"url": "https://github.com/nflverse/nflverse-data/releases", "licence": "CC-BY-4.0",
                                          "attribution": "nflverse contributors", "files": dict(sorted(inputs.used.items()))},

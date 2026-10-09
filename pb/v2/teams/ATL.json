@@ -1,0 +1,570 @@
+{
+ "team": "ATL",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Stefanski zone and play action",
+ "staff": "Kevin Stefanski / Tommy Rees",
+ "family": "wide_zone",
+ "feature": "HB1",
+ "key_players": "Bijan Robinson; Kyle Pitts Sr.",
+ "depth_step": 1,
+ "tendencies": {
+  "shotgun_pct": 80.5,
+  "pistol_pct": 33.04,
+  "play_action_pct": 19.97,
+  "motion_pct": 66.8,
+  "personnel": {
+   "21": 96,
+   "12": 388,
+   "11": 471,
+   "13": 72,
+   "22": 5,
+   "other": 4
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Pistol Doubles",
+   "Pistol Ace",
+   "Pistol Strong",
+   "Gun Doubles Tight",
+   "Gun Trey",
+   "Gun Trips",
+   "Gun Doubles",
+   "I-Form Pro"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Pistol Strong"
+  ]
+ },
+ "boost": {
+  "Counter": 1,
+  "Dagger": 1,
+  "Draw": 1,
+  "Drive": 2,
+  "Outside Zone": 6,
+  "PA Boot": 5,
+  "PA Boot Leak": 2,
+  "RB Screen": 3,
+  "Sail": 1,
+  "Texas": 1,
+  "Y Cross": 1,
+  "Yankee": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Mesh Wheel",
+   "name": "ATL Mesh Wheel",
+   "overrides": {
+    "depth_step": 2.3333333333333335,
+    "reads": [
+     "S2",
+     "B",
+     "W2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Texas",
+   "name": "ATL Texas",
+   "overrides": {
+    "depth_step": 2.3333333333333335,
+    "reads": [
+     "B",
+     "W1",
+     "S1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bench",
+   "name": "ATL Bench",
+   "overrides": {
+    "depth_step": 2.3333333333333335,
+    "reads": [
+     "S1",
+     "B",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Scissors",
+   "name": "ATL Scissors",
+   "overrides": {
+    "depth_step": 2.3333333333333335,
+    "reads": [
+     "S2",
+     "B",
+     "W1",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Strong",
+   "concept": "Counter",
+   "name": "Pistol Counter Weak",
+   "overrides": {
+    "direction": "weak",
+    "depth_step": 1
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Mesh",
+   "name": "Mesh Wheel",
+   "overrides": {
+    "routes": {
+     "B": [
+      "route",
+      "Back Wheel"
+     ]
+    },
+    "depth_step": 2.3333333333333335,
+    "reads": [
+     "W2",
+     "S2",
+     "B",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "Outside Zone",
+   "name": "Wide Zone Weak",
+   "overrides": {
+    "direction": "weak",
+    "depth_step": 1
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.atlantafalcons.com/team/coaches-roster/tommy-rees)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.69 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Straight": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Strong": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Mesh Wheel",
+    "name": "ATL Mesh Wheel",
+    "overrides": {
+     "depth_step": 2.3333333333333335,
+     "reads": [
+      "S2",
+      "B",
+      "W2",
+      "S1"
+     ]
+    },
+    "reason": "targets SWING 8.2% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Texas",
+    "name": "ATL Texas",
+    "overrides": {
+     "depth_step": 2.3333333333333335,
+     "reads": [
+      "B",
+      "W1",
+      "S1",
+      "S2"
+     ]
+    },
+    "reason": "targets SWING 8.2% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Bench",
+    "name": "ATL Bench",
+    "overrides": {
+     "depth_step": 2.3333333333333335,
+     "reads": [
+      "S1",
+      "B",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets DEEP OUT 9.3% (league 7.4, small lean)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Scissors",
+    "name": "ATL Scissors",
+    "overrides": {
+     "depth_step": 2.3333333333333335,
+     "reads": [
+      "S2",
+      "B",
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "targets CORNER 4.9% (league 4.1, small lean)"
+   },
+   {
+    "formation": "Pistol Strong",
+    "concept": "Counter",
+    "name": "Pistol Counter Weak",
+    "overrides": {
+     "direction": "weak",
+     "depth_step": 1
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Mesh",
+    "name": "Mesh Wheel",
+    "overrides": {
+     "routes": {
+      "B": [
+       "route",
+       "Back Wheel"
+      ]
+     },
+     "depth_step": 2.3333333333333335,
+     "reads": [
+      "W2",
+      "S2",
+      "B",
+      "S1"
+     ]
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   },
+   {
+    "formation": "I-Form Pro",
+    "concept": "Outside Zone",
+    "name": "Wide Zone Weak",
+    "overrides": {
+     "direction": "weak",
+     "depth_step": 1
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 77.4%"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 14.0%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   4,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   3,
+   4
+  ],
+  "Gun Trey": [
+   1,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   1,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   1
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   1,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   0,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   3,
+   4
+  ],
+  "Gun Split Backs": [
+   2,
+   0,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   4,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   2,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   0,
+   4,
+   0
+  ],
+  "Pistol Strong": [
+   2,
+   1,
+   2
+  ]
+ }
+}

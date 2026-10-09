@@ -135,13 +135,18 @@ from . import nfl2k5_era_rules as era_rules_patch
 from . import nfl2k5_anniversary_kickoff as anniversary_kickoff_patch  # b76-vb3
 from . import nfl2k5_widescreen_menus as widescreen_menus_patch  # b76-vb3 D2
 from . import nfl2k5_team_logo_swap as team_logo_swap_patch  # b76-pf P1
+from . import nfl2k5_period_goalposts as period_goalposts_patch  # b77-v1b
 from . import nfl2k5_k128 as k128_patch  # b76-k1
+from . import nfl2k5_letter_grades as letter_grades_patch  # b77-f4
+from . import nfl2k5_honors as honors_patch  # b77-f5
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
 from . import nfl2k5_resource_load_guard as resource_load_guard_patch  # b76-dn
+from . import nfl2k5_name_keyboard as name_keyboard_patch  # b77-k1
 from . import nfl2k5_penalties as penalties_patch
 from . import nfl2k5_uniform_choice as uniform_choice_patch
 from . import nfl2k5_kick_laces as kick_laces_patch
+from . import nfl2k5_punter_holder as punter_holder_patch
 from . import nfl2k5_franchise_practice as franchise_practice_patch
 from . import nfl2k5_prospect_names as prospect_names_patch
 from . import nfl2k5_player_star as player_star_patch
@@ -835,10 +840,12 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "the1wam_lineman_rating": lineman_rating_patch.status(payload),
         "xemu_display_list_fix": display_list_patch.status(payload),
         "resource_load_guard": resource_load_guard_patch.status(payload),
+        "name_keyboard": name_keyboard_patch.status(payload),
         "penalties": penalties_patch.status(payload),
         "uniform_choice": uniform_choice_patch.status(payload),
         "uniform_choice_mode": uniform_choice_patch.applied_mode(payload),
         "kick_laces": kick_laces_patch.status(payload),
+        "punter_holder": punter_holder_patch.status(payload),
         "franchise_practice": franchise_practice_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
         "player_star": player_star_patch.status(payload),
@@ -969,10 +976,12 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "the1wam_lineman_rating": lineman_rating_patch.status(payload),
         "xemu_display_list_fix": display_list_patch.status(payload),
         "resource_load_guard": resource_load_guard_patch.status(payload),
+        "name_keyboard": name_keyboard_patch.status(payload),
         "penalties": penalties_patch.status(payload),
         "uniform_choice": uniform_choice_patch.status(payload),
         "uniform_choice_mode": uniform_choice_patch.applied_mode(payload),
         "kick_laces": kick_laces_patch.status(payload),
+        "punter_holder": punter_holder_patch.status(payload),
         "franchise_practice": franchise_practice_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
         "player_star": player_star_patch.status(payload),
@@ -1234,11 +1243,21 @@ R62_RUNTIME_KEYS += ("widescreen_menus",)
 # practice facility's team-logo sub-option on disc images; None = decide from the plan).
 R62_SPACE_KEYS += ("team_logo_swap",)
 R62_RUNTIME_KEYS += ("team_logo_swap",)
+# b77-v1b: the period goalposts (30 ft uprights for pre-2014 moments), an allocator owner that rides with the modern goalposts
+# on disc images (None = decide from the plan).
+R62_SPACE_KEYS += ("period_goalposts",)
+R62_RUNTIME_KEYS += ("period_goalposts",)
 # b76-vb3 E1: the kickoff return blocking rule, carried by the 25th Anniversary gate (no allocation of its own).
 R62_RUNTIME_KEYS += ("kickoff_return_blocking",)
 # b76-k1: 128 MB memory on stock xemu (K128) and the roster block in the extra heap (an allocator owner).
 R62_SPACE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")
 R62_RUNTIME_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")
+# b77-f4: letter grades in Franchise (an allocator owner, placed after K128).
+R62_SPACE_KEYS += ("letter_grades",)
+R62_RUNTIME_KEYS += ("letter_grades",)
+# b77-f5: Player Card honors page (an allocator owner, placed after the letter grades).
+R62_SPACE_KEYS += ("honors_page",)
+R62_RUNTIME_KEYS += ("honors_page",)
 
 def _r62_options(values):
     return {key: values[key] for key in R62_RUNTIME_KEYS}
@@ -1309,7 +1328,7 @@ def _deferred_r62_options(values, defer):
             "read_option_intent_table": None, "my_career_setup": None, "kickoff_return_blocking": False}
 
 
-def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, k128_memory=False, k128_roster_heap=False, k128_early=False, kickoff_return_blocking=False):
+def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, kickoff_return_blocking=False):
     _validate_lever_flags(momentum_collisions, read_option_runtime, franchise_2026_rules,
                           senior_bowl, guardian_overlay, guardian_everyone_practice,
                           my_career, crib_reclaim, screen_hooks, modern_naming, reserves_16, franchise_autosave, coverage_trail, franchise_edit_player,
@@ -1324,6 +1343,7 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
              "anniversary_kickoff_tables must be the disc's retail special-teams tables or None")
     _require(widescreen_menus is None or type(widescreen_menus) is bool, "widescreen_menus must be boolean or None")
     _require(team_logo_swap is None or type(team_logo_swap) is bool, "team_logo_swap must be boolean or None")
+    _require(period_goalposts is None or type(period_goalposts) is bool, "period_goalposts must be boolean or None")
     _require(type(kickoff_return_blocking) is bool, "kickoff_return_blocking must be boolean")
     # E1 rides with the 25th Anniversary gate (None: the build decides the gate later, from the source)
     _require(not kickoff_return_blocking or anniversary_kickoff is not False,
@@ -1331,6 +1351,8 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
     _validate_lever_flags(k128_memory, k128_roster_heap, k128_early)
     _require(k128_memory or not k128_roster_heap, "The roster heap needs the 128 MB memory option (K128)")
     _require(k128_memory or not k128_early, "The bigger graphics memory needs the 128 MB memory option (K128)")
+    _validate_lever_flags(letter_grades)  # b77-f4
+    _validate_lever_flags(honors_page)  # b77-f5
     decided_clock_patch.encode_options(margin=decided_clock_margin,
                                        seconds=decided_clock_seconds)
     _require(type(cpu_scrambles) is str and cpu_scrambles in ("retail", "modern"),
@@ -1356,8 +1378,8 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
         my_career_patch.read_setup(my_career_setup)   # legacy prepared-save route; None = generic in-game creation
 
 
-def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, k128_memory=False, k128_roster_heap=False, k128_early=False):
-    _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early)
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False):
+    _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, period_goalposts=period_goalposts, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early, letter_grades=letter_grades, honors_page=honors_page)
     return (
         (kickoff_relocated_patch.REQUESTS if with_kickoff else ())
         + (scorebug_runtime_patch.REQUESTS if runtime else ())
@@ -1399,18 +1421,21 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (anniversary_kickoff_patch.REQUESTS if anniversary_kickoff else ())
         + (widescreen_menus_patch.REQUESTS if widescreen_menus else ())
         + (team_logo_swap_patch.REQUESTS if team_logo_swap else ())
+        + (period_goalposts_patch.REQUESTS if period_goalposts else ())
         + (k128_patch.REQUESTS if k128_memory else ())
+        + (letter_grades_patch.REQUESTS if letter_grades else ())  # b77-f4: late, after K128
+        + (honors_patch.REQUESTS if honors_page else ())  # b77-f5: late, after the letter grades
     )
 
 
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, k128_memory=False, k128_roster_heap=False, k128_early=False):
+    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False):
         self.scaleout = bool(camera or franchise_autosave or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail
                              or (momentum_collisions and momentum_collision_level > 0) or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern"
-                             or bool(team_logo_swap))  # b76-pf P1: read-only space needs the scale-out
+                             or bool(team_logo_swap) or bool(period_goalposts))  # b76-pf P1: read-only space needs the scale-out; b77-v1b: the late owner needs it too
         self.requests = _selected_space_requests(
             with_kickoff, runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning, music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine,
-            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early)
+            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, period_goalposts=period_goalposts, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early, letter_grades=letter_grades, honors_page=honors_page)
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -1608,10 +1633,15 @@ class _cpu_money_downs_adapter:
 
 
 class _abilities_adapter:
-    def __init__(self, off_week, lock_right_stick=False, lock_special_moves=False, lock_speedster=True):
+    def __init__(self, off_week, lock_right_stick=False, lock_special_moves=False, lock_speedster=True,
+                 right_stick_stars_only=False, button_moves_stars_only=False,
+                 charge_stars_only=False, star_access=abilities_patch.DEFAULT_STAR_ACCESS):
         self.off_week = off_week
         self.settings = dict(abilities_off_week=off_week, lock_right_stick=lock_right_stick,
-                             lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
+                             lock_special_moves=lock_special_moves, lock_speedster=lock_speedster,
+                             right_stick_stars_only=right_stick_stars_only,
+                             button_moves_stars_only=button_moves_stars_only,
+                             charge_stars_only=charge_stars_only, star_access=tuple(star_access))
 
     @staticmethod
     def status(payload):
@@ -1686,6 +1716,8 @@ def _grown_status_fields(payload):
         return "foreign" if state == "foreign" else ("applied" if state == "applied" and enabled else "retail")
     arena = roster_arena_patch.read_settings(payload)
     k128_settings = k128_patch.read_settings(payload)  # b76-k1
+    letter_grades_settings = letter_grades_patch.read_settings(payload)  # b77-f4
+    honors_settings = honors_patch.read_settings(payload)  # b77-f5
     clock_state = accelerated_clock_patch.status(payload)
     clock_settings = accelerated_clock_patch.verify(payload) if clock_state != "foreign" else None
     return {"momentum": component(settings.get("momentum", 0) > 0), "momentum_settings": settings, "momentum_contact": contact,
@@ -1726,9 +1758,12 @@ def _grown_status_fields(payload):
             "anniversary_kickoff": anniversary_kickoff_patch.status(payload),
             "widescreen_menus": widescreen_menus_patch.status(payload),
             "team_logo_swap": team_logo_swap_patch.status(payload),
+            "period_goalposts": period_goalposts_patch.status(payload),
             "kickoff_return_blocking": ("applied" if anniversary_kickoff_patch.installed_blocking(payload) else "retail"),
             # b76-k1: rows named after the BuildPlan fields, so a build summary reads them back directly
             "k128_memory": k128_settings["status"], "k128_settings": k128_settings,
+            "letter_grades": letter_grades_settings["status"], "letter_grades_settings": letter_grades_settings,  # b77-f4
+            "honors_page": honors_settings["status"], "honors_page_settings": honors_settings,  # b77-f5
             "k128_roster_heap": ("foreign" if k128_settings["status"] == "foreign"
                                  else "applied" if k128_settings["roster_heap"] else "retail"),
             "k128_early": ("foreign" if k128_settings["status"] == "foreign"
@@ -1814,7 +1849,10 @@ def _check_installed_runtime_settings(payload, options):
                              (bool(options.get("anniversary_kickoff")), anniversary_kickoff_patch),
                              (bool(options.get("widescreen_menus")), widescreen_menus_patch),
                              (bool(options.get("team_logo_swap")), team_logo_swap_patch),
-                             (bool(options.get("k128_memory")), k128_patch)):
+                             (bool(options.get("period_goalposts")), period_goalposts_patch),
+                             (bool(options.get("k128_memory")), k128_patch),
+                             (bool(options.get("letter_grades")), letter_grades_patch),
+                             (bool(options.get("honors_page")), honors_patch)):
         state = module.status(payload)
         if selected:
             _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
@@ -1853,10 +1891,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                seven_on_seven: bool = False, position_row: bool = False,
                probowl_order: bool = False, elbow_options: bool = False,
                the1wam_lineman_rating: bool = False,
-               xemu_display_list_fix: bool = False, resource_load_guard: bool = False,
+               xemu_display_list_fix: bool = False, resource_load_guard: bool = False, name_keyboard: bool = False,
                franchise_economy: bool = False,
                penalties: str = "", uniform_choice: str = "",
-               kick_laces: bool = False, franchise_practice: bool = False,
+               kick_laces: bool = False, punter_holder: bool = False, franchise_practice: bool = False,
                prospect_names: str = "", player_star: bool = False,
                dynamic_kickoff: bool = False,
                dynamic_kickoff_settings: Mapping[str, object] | None = None,
@@ -1874,6 +1912,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                practice_squad_screen: bool = False,
                abilities: bool = False, abilities_off_week: int | None = None,
                abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
+               abilities_right_stick_stars_only: bool = False, abilities_button_moves_stars_only: bool = False,
+               abilities_charge_stars_only: bool = False, abilities_star_access: Sequence[str] = abilities_patch.DEFAULT_STAR_ACCESS,
                qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
                calendar_engine: bool = False,
     momentum_collisions=False,
@@ -1893,10 +1933,13 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     anniversary_kickoff_tables=None,
     widescreen_menus=None,
     team_logo_swap=None,
+    period_goalposts=None,
     kickoff_return_blocking=False,
     k128_memory=False,
     k128_roster_heap=False,
     k128_early=False,
+    letter_grades=False,
+    honors_page=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -1925,6 +1968,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     momentum_on = momentum > 0 or (momentum_collisions and momentum_collision_level > 0)
     _validate_lever_flags(coverage_slider, scramble_tuning, flatter_deep_ball, chop_block_toggle, all_stadiums, defensive_try, zone_drop_cap)
     abilities_patch._locks(lock_right_stick=abilities_lock_right_stick, lock_special_moves=abilities_lock_special_moves, lock_speedster=abilities_lock_speedster)
+    abilities_patch._stars(right_stick_stars_only=abilities_right_stick_stars_only, button_moves_stars_only=abilities_button_moves_stars_only,
+                           charge_stars_only=abilities_charge_stars_only, star_access=abilities_star_access)
     _validate_wave_a_flags(music_shuffle, music_shuffle_selection, practice_squad_screen, abilities, abilities_off_week, qb_spy, qb_spy_intent_table, calendar_engine)
     if practice_squad_screen:
         practice_squad, franchise_practice = True, True  # the screen needs the transaction and Coach's Desk row
@@ -2028,10 +2073,12 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (the1wam_lineman_rating, lineman_rating_patch, "the1wam_lineman_rating_patch", lineman_rating_patch.BUILD_CAPTION),
                                      (xemu_display_list_fix, display_list_patch, "xemu_display_list_fix_patch", display_list_patch.BUILD_CAPTION),
                                      (resource_load_guard, resource_load_guard_patch, "resource_load_guard_patch", resource_load_guard_patch.BUILD_CAPTION),
+                                     (name_keyboard, name_keyboard_patch, "name_keyboard_patch", name_keyboard_patch.BUILD_CAPTION),
                                      (bool(penalties), _penalties_adapter(penalties), "penalties_patch", "penalties"),
                                      (chop_block_toggle, _chop_block_adapter, "chop_block_toggle_patch", "experimental Chop Block toggle repair"),
                                      (flatter_deep_ball, flatter_flight_patch, "flatter_deep_ball_patch", "experimental flatter deep flight"),
                                      (kick_laces, kick_laces_patch, "kick_laces_patch", "kick-laces"),
+                                     (punter_holder, punter_holder_patch, "punter_holder_patch", "punter-holder"),
                                      (franchise_practice, franchise_practice_patch, "franchise_practice_patch", "Franchise-practice"),
                                      (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names"),
                                      (player_star, player_star_patch, "player_star_patch", "player-star"),
@@ -2049,7 +2096,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
-        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
+        if state == "retail" or (state == "legacy" and key == "player_star_patch") or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}
@@ -2122,8 +2169,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning
          or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
          or momentum_on or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or camera or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules
-         or (anniversary_kickoff and anniversary_kickoff_tables is not None) or bool(widescreen_menus) or bool(team_logo_swap)
-         or k128_memory,
+         or (anniversary_kickoff and anniversary_kickoff_tables is not None) or bool(widescreen_menus) or bool(team_logo_swap) or bool(period_goalposts)
+         or k128_memory or letter_grades or honors_page,
          _xbe_space_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
                             music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62), camera=camera),
          "xbe_space_patch", "experimental executable space"),
@@ -2133,7 +2180,9 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (scramble_tuning, scramble_tuning_patch, "scramble_tuning_patch", "experimental slow-QB acceleration"),
         (all_stadiums, roster_storage_patch, "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
         (calendar_engine, calendar_engine_patch, "calendar_engine_patch", "128-season calendar (experimental)"),
-        (abilities, _abilities_adapter(abilities_off_week, abilities_lock_right_stick, abilities_lock_special_moves, abilities_lock_speedster),
+        (abilities, _abilities_adapter(abilities_off_week, abilities_lock_right_stick, abilities_lock_special_moves, abilities_lock_speedster,
+                            abilities_right_stick_stars_only, abilities_button_moves_stars_only,
+                            abilities_charge_stars_only, abilities_star_access),
          "abilities_patch", "experimental player abilities rules v2"),
         (qb_spy, _qb_spy_adapter(qb_spy_intent_table), "qb_spy_patch", "QB spy for zone, man and rush (experimental)"),
         (music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(), "music_shuffle_patch", "experimental music playlist"),
@@ -2162,6 +2211,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (k128_memory, _k128_adapter(k128_roster_heap, k128_early,
                                     k128_requires_128(guardian_overlay, reserves_16, created_teams_extra)),
          "k128_patch", k128_patch.BUILD_CAPTION),
+        # b77-f4: late owner, after K128 (display only: no gameplay data)
+        (letter_grades, letter_grades_patch, "letter_grades_patch", letter_grades_patch.BUILD_CAPTION),
+        # b77-f5: late owner, after the letter grades (Player Card page + the game's own award commits)
+        (honors_page, honors_patch, "honors_patch", honors_patch.BUILD_CAPTION),
         (weekly_prep, _weekly_prep_adapter(weekly_prep_cpu, weekly_prep_remember), "weekly_prep_patch", "Weekly preparation (experimental, unwitnessed)"),
         (playbook_pair, playbook_pair_patch, "playbook_pair_patch", "Separate offensive and defensive playbooks (experimental)"),
         (deep_zone_facing or deep_zone_bail, _deep_zone_adapter(deep_zone_facing, deep_zone_bail), "deep_zone_patch", "deep-zone corner tiers (experimental)"),
@@ -2181,6 +2234,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (bool(widescreen_menus), widescreen_menus_patch, "widescreen_menus_patch", widescreen_menus_patch.BUILD_CAPTION),
         # b76-pf P1: the eighth field swap pair (a read-only table and the loop's two bounds); nothing else touches them.
         (bool(team_logo_swap), team_logo_swap_patch, "team_logo_swap_patch", team_logo_swap_patch.BUILD_CAPTION),
+        # b77-v1b: last of the executable owners; the four goalpost sites and its 304-byte cave (the retail sites are accepted)
+        (bool(period_goalposts), period_goalposts_patch, "period_goalposts_patch", period_goalposts_patch.BUILD_CAPTION),
         (espn25_era_rules, era_rules_patch, "espn25_era_rules_patch", era_rules_patch.BUILD_CAPTION),
     ):
         if not flag:
@@ -2221,11 +2276,12 @@ def write_xbe_copy(
     probowl_order: bool = False,
     elbow_options: bool = False,
     the1wam_lineman_rating: bool = False,
-    xemu_display_list_fix: bool = False, resource_load_guard: bool = False,
+    xemu_display_list_fix: bool = False, resource_load_guard: bool = False, name_keyboard: bool = False,
     franchise_economy: bool = False,
     penalties: str = "",
     uniform_choice: str = "",
     kick_laces: bool = False,
+    punter_holder: bool = False,
     franchise_practice: bool = False,
     prospect_names: str = "",
     player_star: bool = False,
@@ -2251,6 +2307,8 @@ def write_xbe_copy(
     practice_squad_screen: bool = False,
     abilities: bool = False, abilities_off_week: int | None = None,
                abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
+               abilities_right_stick_stars_only: bool = False, abilities_button_moves_stars_only: bool = False,
+               abilities_charge_stars_only: bool = False, abilities_star_access: Sequence[str] = abilities_patch.DEFAULT_STAR_ACCESS,
     qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
     calendar_engine: bool = False,
     momentum_collisions=False,
@@ -2270,10 +2328,13 @@ def write_xbe_copy(
     anniversary_kickoff_tables=None,
     widescreen_menus=None,
     team_logo_swap=None,
+    period_goalposts=None,
     kickoff_return_blocking=False,
     k128_memory=False,
     k128_roster_heap=False,
     k128_early=False,
+    letter_grades=False,
+    honors_page=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -2294,6 +2355,8 @@ def write_xbe_copy(
     momentum_on = momentum > 0 or (momentum_collisions and momentum_collision_level > 0)
     _validate_lever_flags(coverage_slider, scramble_tuning, flatter_deep_ball, chop_block_toggle, all_stadiums, defensive_try, zone_drop_cap)
     abilities_patch._locks(lock_right_stick=abilities_lock_right_stick, lock_special_moves=abilities_lock_special_moves, lock_speedster=abilities_lock_speedster)
+    abilities_patch._stars(right_stick_stars_only=abilities_right_stick_stars_only, button_moves_stars_only=abilities_button_moves_stars_only,
+                           charge_stars_only=abilities_charge_stars_only, star_access=abilities_star_access)
     _validate_wave_a_flags(music_shuffle, music_shuffle_selection, practice_squad_screen, abilities, abilities_off_week, qb_spy, qb_spy_intent_table, calendar_engine)
     _require(type(espn25_rosters) is bool, "espn25_rosters must be boolean")
     _require(not espn25_rosters, "Historic moment rosters need a disc image")
@@ -2301,15 +2364,15 @@ def write_xbe_copy(
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
+    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or name_keyboard or franchise_economy or penalties or uniform_choice or kick_laces or punter_holder or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or espn25_rosters,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or letter_grades or honors_page or espn25_rosters,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata, music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen, abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, name_keyboard=name_keyboard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, punter_holder=punter_holder, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata, music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen, abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     _prepare_target(source, target, overwrite)
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
@@ -2376,9 +2439,11 @@ def write_xbe_copy(
         "the1wam_lineman_rating": lineman_rating_patch.status(result),
         "xemu_display_list_fix": display_list_patch.status(result),
         "resource_load_guard": resource_load_guard_patch.status(result),
+        "name_keyboard": name_keyboard_patch.status(result),
         "penalties": penalties_patch.status(result),
         "uniform_choice": uniform_choice_patch.status(result),
         "kick_laces": kick_laces_patch.status(result),
+        "punter_holder": punter_holder_patch.status(result),
         "franchise_practice": franchise_practice_patch.status(result),
         "prospect_names": prospect_names_patch.xbe_status(result),
         "player_star": player_star_patch.status(result),
@@ -2451,11 +2516,12 @@ def write_image_copy(
     probowl_order: bool = False,
     elbow_options: bool = False,
     the1wam_lineman_rating: bool = False,
-    xemu_display_list_fix: bool = False, resource_load_guard: bool = False,
+    xemu_display_list_fix: bool = False, resource_load_guard: bool = False, name_keyboard: bool = False,
     franchise_economy: bool = False,
     penalties: str = "",
     uniform_choice: str = "",
     kick_laces: bool = False,
+    punter_holder: bool = False,
     franchise_practice: bool = False,
     prospect_names: str = "",
     player_star: bool = False,
@@ -2481,6 +2547,8 @@ def write_image_copy(
     practice_squad_screen: bool = False,
     abilities: bool = False, abilities_off_week: int | None = None,
                abilities_lock_right_stick: bool = False, abilities_lock_special_moves: bool = False, abilities_lock_speedster: bool = True,
+               abilities_right_stick_stars_only: bool = False, abilities_button_moves_stars_only: bool = False,
+               abilities_charge_stars_only: bool = False, abilities_star_access: Sequence[str] = abilities_patch.DEFAULT_STAR_ACCESS,
     qb_spy: bool = False, qb_spy_intent_table: bytes | None = None,
     calendar_engine: bool = False,
     momentum_collisions=False,
@@ -2500,10 +2568,13 @@ def write_image_copy(
     anniversary_kickoff_tables=None,
     widescreen_menus=None,
     team_logo_swap=None,
+    period_goalposts=None,
     kickoff_return_blocking=False,
     k128_memory=False,
     k128_roster_heap=False,
     k128_early=False,
+    letter_grades=False,
+    honors_page=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -2540,14 +2611,16 @@ def write_image_copy(
         accel_ramp = False
     _validate_lever_flags(coverage_slider, scramble_tuning, flatter_deep_ball, chop_block_toggle, all_stadiums, defensive_try, zone_drop_cap)
     abilities_patch._locks(lock_right_stick=abilities_lock_right_stick, lock_special_moves=abilities_lock_special_moves, lock_speedster=abilities_lock_speedster)
+    abilities_patch._stars(right_stick_stars_only=abilities_right_stick_stars_only, button_moves_stars_only=abilities_button_moves_stars_only,
+                           charge_stars_only=abilities_charge_stars_only, star_access=abilities_star_access)
     _validate_wave_a_flags(music_shuffle, music_shuffle_selection, practice_squad_screen, abilities, abilities_off_week, qb_spy, qb_spy_intent_table, calendar_engine)
     _require(type(espn25_rosters) is bool, "espn25_rosters must be boolean")
     if flatter_deep_ball and settings is not None:
         flatter_flight_patch.curves_for(settings)  # refuse conflicting flight choices before copying
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or franchise_economy or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
+    _require(wanted is not None or forward_pass_ruling or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or elbow_options or the1wam_lineman_rating or xemu_display_list_fix or resource_load_guard or name_keyboard or franchise_economy or penalties or uniform_choice or kick_laces or punter_holder or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or espn25_rosters,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or coverage_trail or franchise_edit_player or cpu_money_downs != "retail" or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern" or weekly_prep or weekly_prep_cpu or weekly_prep_remember or playbook_pair or deep_zone_facing or deep_zone_bail or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave or historic_teams_quick_game or espn25_more_moments or historic_stock_books or espn25_era_rules or k128_memory or letter_grades or honors_page or espn25_rosters,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -2569,7 +2642,7 @@ def write_image_copy(
         report("Preparing default.xbe patches", 0, 0)
         if not _defer_image_resources:
             _check_installed_runtime_settings(original, r62)
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, _defer_runtime_settings=bool(_defer_image_resources or defer_grown), **_deferred_r62_options(r62, defer_grown))
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, name_keyboard=name_keyboard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, punter_holder=punter_holder, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, _defer_runtime_settings=bool(_defer_image_resources or defer_grown), **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -2677,7 +2750,7 @@ def write_image_copy(
                 momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try,
                 zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_metadata=music_metadata,
                 music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen,
-                abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, camera=camera, **r62)
+                abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, camera=camera, **r62)
             storage.write_image_xbe(fd, final)
         receipt.update({key: value for key, value in extra.items() if key != "scorebug_runtime_patch"})
         check = _open_binary(target, os.O_RDONLY)
@@ -2770,9 +2843,11 @@ def write_image_copy(
         "the1wam_lineman_rating": lineman_rating_patch.status(after),
         "xemu_display_list_fix": display_list_patch.status(after),
         "resource_load_guard": resource_load_guard_patch.status(after),
+        "name_keyboard": name_keyboard_patch.status(after),
         "penalties": penalties_patch.status(after),
         "uniform_choice": uniform_choice_patch.status(after),
         "kick_laces": kick_laces_patch.status(after),
+        "punter_holder": punter_holder_patch.status(after),
         "franchise_practice": franchise_practice_patch.status(after),
         "prospect_names": prospect_names_patch.xbe_status(after),
         "player_star": player_star_patch.status(after),

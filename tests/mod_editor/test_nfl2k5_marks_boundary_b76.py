@@ -12,7 +12,7 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(Path(__file__).parent)]
-from mod_editor.core import nfl2k5_official_marks as official, mod_build
+from mod_editor.core import nfl2k5_official_marks as official, nfl2k5_marks_store as store, mod_build
 from official_marks_fixture import synthetic_pack
 
 MODULES = {
@@ -33,13 +33,16 @@ def worker_root(_job):
 
 class BoundaryTests(unittest.TestCase):
     def setUp(self):
-        self.configured_pack = os.environ.get(official.ENVIRONMENT, "")
+        self.configured_pack = official.selected_root()
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.env = mock.patch.dict(os.environ, {official.ENVIRONMENT: ''})
         self.env.start()
         self.addCleanup(self.env.stop)
+        registry = mock.patch.object(store, "state_root", return_value=self.root / "registry")
+        registry.start()
+        self.addCleanup(registry.stop)
 
     def test_every_new_consumer_refuses_before_opening_source_or_target(self):
         target = self.root / 'unchanged.iso'

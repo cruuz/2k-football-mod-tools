@@ -293,9 +293,9 @@
       "colour": "navy",
       "center": [
        161,
-       86
+       104.8
       ],
-      "width": 30
+      "width": 35
      },
      {
       "polygon": [
@@ -1486,7 +1486,7 @@
     "decal": {
      "mark": "team_logo_left",
      "boxes": {
-      "top": [
+      "upper": [
        26,
        50,
        134,
@@ -1500,9 +1500,11 @@
       ]
      },
      "erase": "box",
-     "scale": 1.0
+     "scale": 1.0,
+     "facing": "front",
+     "mark_faces": "left"
     },
-    "note": "the 1997-2023 centre stripe becomes shell navy (rules limited to its box); the 2024 orange triangle clusters are drawn on the centre line x 162 (four clusters of three, direction INFERRED). Both retail decals are upright left-facing copies, so the boxes are not named 'upper' (no 180 turn) and the mark is the club horse mirrored."
+    "note": "The upper native atlas island has inverted V. Flip the left-facing horse vertically there; the lower island stays upright. This applies to both helmet00 and helmet02. Keep our existing navy shell and orange triangle clusters."
    },
    "outer_index": 3678,
    "splayer": {
@@ -1592,9 +1594,9 @@
       "colour": "orange",
       "center": [
        161,
-       86
+       104.8
       ],
-      "width": 30
+      "width": 35
      },
      {
       "polygon": [
@@ -1981,95 +1983,20 @@
     ]
    },
    "pants": {
-    "base_colour": "white",
-    "stripe": [
-     [
-      "navy",
-      4
-     ]
-    ],
-    "swoosh_colour": "navy",
+    "base_colour": "navy",
+    "stripe": [],
+    "swoosh_colour": "white",
     "decorations": [
-     {
-      "rect": [
-       105,
-       0,
-       169,
-       205
-      ],
-      "colour": "white"
-     },
-     {
-      "rect": [
-       342,
-       0,
-       407,
-       205
-      ],
-      "colour": "white"
-     },
-     {
-      "polygon": [
-       [
-        133.5,
-        0
-       ],
-       [
-        151.5,
-        0
-       ],
-       [
-        144.5,
-        104
-       ],
-       [
-        140.5,
-        104
-       ]
-      ],
-      "colour": "orange"
-     },
-     {
-      "rect": [
-       140.5,
-       0,
-       144.5,
-       256
-      ],
-      "colour": "navy"
-     },
-     {
-      "polygon": [
-       [
-        360.5,
-        0
-       ],
-       [
-        378.5,
-        0
-       ],
-       [
-        371.5,
-        104
-       ],
-       [
-        367.5,
-        104
-       ]
-      ],
-      "colour": "orange"
-     },
-     {
-      "rect": [
-       367.5,
-       0,
-       371.5,
-       256
-      ],
-      "colour": "navy"
-     }
+     {"rect": [105, 0, 169, 205], "colour": "navy"},
+     {"rect": [342, 0, 407, 205], "colour": "navy"},
+     {"rect": [139.5, 0, 141.5, 256], "colour": "white"},
+     {"rect": [141.5, 0, 144.5, 256], "colour": "orange"},
+     {"polygon": [[133.5, 0], [151.5, 0], [144.5, 104], [140.5, 104]], "colour": "orange"},
+     {"rect": [366.5, 0, 368.5, 256], "colour": "white"},
+     {"rect": [368.5, 0, 371.5, 256], "colour": "orange"},
+     {"polygon": [[360.5, 0], [378.5, 0], [371.5, 104], [367.5, 104]], "colour": "orange"}
     ],
-    "note": "the white rects clear the retail 1997 tapered side panel (x 107-166 and 345-404, y to 201) that lies outside the band the tool clears"
+    "note": "2026 week 4 at SF (club photos): Midnight Navy pants with a white line and an orange stripe, the orange widening to a hip wedge; the navy rects clear the retail 1997 tapered side panel (x 107-166 and 345-404, y to 201); week 1 wore white pants with the white alternate helmet"
    },
    "socks": {
     "colour": "white"
@@ -2785,7 +2712,7 @@
     "decal": {
      "mark": "team_logo_left",
      "boxes": {
-      "top": [
+      "upper": [
        26,
        50,
        134,
@@ -2799,9 +2726,11 @@
       ]
      },
      "erase": "box",
-     "scale": 1.0
+     "scale": 1.0,
+     "facing": "front",
+     "mark_faces": "left"
     },
-    "note": "the 1997-2023 centre stripe becomes shell navy (rules limited to its box); the 2024 orange triangle clusters are drawn on the centre line x 162 (four clusters of three, direction INFERRED). Both retail decals are upright left-facing copies, so the boxes are not named 'upper' (no 180 turn) and the mark is the club horse mirrored."
+    "note": "The upper native atlas island has inverted V. Flip the left-facing horse vertically there; the lower island stays upright. This applies to both helmet00 and helmet02. Keep our existing navy shell and orange triangle clusters."
    },
    "outer_index": 3995,
    "splayer": {
@@ -3213,5 +3142,23 @@
     ]
    }
   }
+ },
+ "u2b_b77": {
+  "job": "b77 u2b (sonnet-5.5), 2026-10-08",
+  "checked_against": "denverbroncos.com 2026 galleries: week 2 vs JAX (orange home, white pants, orange socks), week 4 at SF (white road jersey, navy pants, white socks, navy helmet)",
+  "changes": {
+   "home.torso.chest_wordmark": "BRONCOS wordmark 35 px wide at centre y 104.8 (was 30 wide at y 86): about 0.47 front-number heights wide and 0.06 above the number on the week 2 photo (v0.5: 0.39 wide, 0.29 above)",
+   "away.torso.chest_wordmark": "same size and place (week 4 photo 0.5 wide, 0.07 above)",
+   "away.pants": "Midnight Navy base with a white line and an orange stripe widening to an orange hip wedge (was white pants with a thin navy line): the week 4 photos at SF show navy pants; the club's Oct 3 2026 release names Midnight Navy pants and white socks. The week 1 white-pants look (with the white alternate helmet) stays an alternate, not built"
+  },
+  "unchanged_because_right": [
+   "home white pants, orange socks, navy collar and orange jersey",
+   "road white jersey with orange collar, navy numbers with orange outline, white socks",
+   "navy helmet, horse logo, orange triangles",
+   "triangles, sleeve cuffs"
+  ]
+ },
+ "uni_b77": {
+  "why": "The top box name bypassed the upper-island transform. Native helmet00 for the primary and derived styles 5/6 had upside-down horse heads in world space. PS2 Default atlas plus native A/C UVs establish the vertical flip; use our own mark only."
  }
 }

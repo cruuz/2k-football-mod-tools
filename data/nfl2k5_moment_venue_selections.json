@@ -1,0 +1,783 @@
+{
+  "schema": "b77/mvx_venue_selections/v1",
+  "baseline_situation_sha256": "3570ae91019e932e0b632885c4968670b440c11a7a349c7fb0b0dc581f6b2edb",
+  "note": "Physical selection chooses shared environment metadata. Mode-8 aliases still choose the existing period scene and field paint. No assets are rebuilt by this selection repair.",
+  "selections": [
+    {
+      "row": 1,
+      "date": "1967-12-31",
+      "title": "THE ICE BOWL",
+      "before": 10,
+      "after": 10,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s10",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196712310gnb.htm"
+      ]
+    },
+    {
+      "row": 2,
+      "date": "1968-11-17",
+      "title": "THE HEIDI BOWL",
+      "before": 20,
+      "after": 25,
+      "reason": "Outdoor grass metadata near Oakland; Allegiant indoor metadata is wrong for the retail Oakland alias.",
+      "source_kind": "retail",
+      "source_prefix": "s20",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/196811170rai.htm",
+        "https://en.wikipedia.org/wiki/Oakland_Coliseum"
+      ]
+    },
+    {
+      "row": 3,
+      "date": "1971-12-25",
+      "title": "MERRY CHRISTMAS MIAMI",
+      "before": 13,
+      "after": 13,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s13",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197112250kan.htm"
+      ]
+    },
+    {
+      "row": 4,
+      "date": "1972-12-23",
+      "title": "THE IMMACULATE RECEPTION",
+      "before": 22,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata; Three Rivers had Tartan Turf, not Heinz grass.",
+      "source_kind": "retail",
+      "source_prefix": "s22",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197212230pit.htm",
+        "https://en.wikipedia.org/wiki/Three_Rivers_Stadium"
+      ]
+    },
+    {
+      "row": 5,
+      "date": "1974-12-21",
+      "title": "THE SEA OF HANDS",
+      "before": 20,
+      "after": 25,
+      "reason": "Outdoor grass metadata near Oakland; keep the retail Oakland alias.",
+      "source_kind": "retail",
+      "source_prefix": "s20",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197412210rai.htm",
+        "https://en.wikipedia.org/wiki/Oakland_Coliseum"
+      ]
+    },
+    {
+      "row": 6,
+      "date": "1979-12-16",
+      "title": "THE FINAL COMEBACK",
+      "before": 7,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata for Texas Turf under the open roof hole; keep retail Texas Stadium alias.",
+      "source_kind": "retail",
+      "source_prefix": "s07",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/197912160dal.htm",
+        "https://en.wikipedia.org/wiki/Texas_Stadium"
+      ]
+    },
+    {
+      "row": 7,
+      "date": "1980-12-07",
+      "title": "MONTANA'S COMEBACK",
+      "before": 25,
+      "after": 25,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s25",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198012070sfo.htm"
+      ]
+    },
+    {
+      "row": 8,
+      "date": "1982-01-02",
+      "title": "EPIC IN MIAMI",
+      "before": 14,
+      "after": 14,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s14",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201020mia.htm"
+      ]
+    },
+    {
+      "row": 9,
+      "date": "1982-01-10",
+      "title": "THE CATCH",
+      "before": 25,
+      "after": 25,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s25",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198201100sfo.htm"
+      ]
+    },
+    {
+      "row": 10,
+      "date": "1983-10-02",
+      "title": "WASHINGTON RALLIES",
+      "before": 29,
+      "after": 29,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s29",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198310020was.htm"
+      ]
+    },
+    {
+      "row": 11,
+      "date": "1987-01-11",
+      "title": "THE DRIVE",
+      "before": 30,
+      "after": 30,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s30",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198701110cle.htm"
+      ]
+    },
+    {
+      "row": 12,
+      "date": "1987-09-20",
+      "title": "THE 2-SECOND MISCALCULATION",
+      "before": 6,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata for Riverfront AstroTurf; keep existing approximation shell.",
+      "source_kind": "retail",
+      "source_prefix": "s06",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198709200cin.htm",
+        "https://en.wikipedia.org/wiki/Riverfront_Stadium"
+      ]
+    },
+    {
+      "row": 13,
+      "date": "1987-11-08",
+      "title": "SAME OLD BUCS",
+      "before": 20,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata for Busch AstroTurf; keep retail Oakland approximation alias.",
+      "source_kind": "retail",
+      "source_prefix": "s20",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198711080crd.htm",
+        "https://en.wikipedia.org/wiki/Busch_Memorial_Stadium"
+      ]
+    },
+    {
+      "row": 14,
+      "date": "1989-01-22",
+      "title": "SUPER BOWL XXIII",
+      "before": 14,
+      "after": 14,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s14",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/198901220cin.htm"
+      ]
+    },
+    {
+      "row": 15,
+      "date": "1991-01-27",
+      "title": "WIDE RIGHT",
+      "before": 27,
+      "after": 27,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s27",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199101270buf.htm"
+      ]
+    },
+    {
+      "row": 16,
+      "date": "1992-01-04",
+      "title": "HOUSTON'S HEARTS RIPPED OUT",
+      "before": 8,
+      "after": 8,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s08",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199201040den.htm"
+      ]
+    },
+    {
+      "row": 17,
+      "date": "1992-10-04",
+      "title": "THE TWO TD COMEBACK ON KC",
+      "before": 8,
+      "after": 8,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s08",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199210040den.htm"
+      ]
+    },
+    {
+      "row": 18,
+      "date": "1993-01-03",
+      "title": "THE 32-POINT COMEBACK",
+      "before": 3,
+      "after": 3,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s03",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199301030buf.htm"
+      ]
+    },
+    {
+      "row": 19,
+      "date": "1994-10-17",
+      "title": "THE HEARTBREAKER",
+      "before": 8,
+      "after": 8,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s08",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199410170den.htm"
+      ]
+    },
+    {
+      "row": 20,
+      "date": "1997-09-21",
+      "title": "THE COLTS' COLLAPSE",
+      "before": 3,
+      "after": 3,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s03",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199709210buf.htm"
+      ]
+    },
+    {
+      "row": 21,
+      "date": "1998-01-25",
+      "title": "SUPER BOWL XXXII",
+      "before": 24,
+      "after": 0,
+      "reason": "Outdoor grass metadata for Qualcomm; the shared Chargers row now describes indoor synthetic SoFi.",
+      "source_kind": "retail",
+      "source_prefix": "s24",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/199801250den.htm",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXII"
+      ]
+    },
+    {
+      "row": 22,
+      "date": "2000-01-30",
+      "title": "A YARD TOO SHORT",
+      "before": 1,
+      "after": 1,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s01",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200001300oti.htm"
+      ]
+    },
+    {
+      "row": 23,
+      "date": "2002-02-03",
+      "title": "VINATIERI STRIKES AGAIN",
+      "before": 17,
+      "after": 17,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s17",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200202030nwe.htm"
+      ]
+    },
+    {
+      "row": 24,
+      "date": "2003-01-05",
+      "title": "THE BOTCHED SNAP",
+      "before": 25,
+      "after": 25,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s25",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200301050sfo.htm"
+      ]
+    },
+    {
+      "row": 25,
+      "date": "2004-01-11",
+      "title": "FOURTH AND TWENTY-SIX",
+      "before": 21,
+      "after": 21,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s21",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/200401110phi.htm"
+      ]
+    },
+    {
+      "row": 26,
+      "date": "1999-01-17",
+      "title": "THE MISS",
+      "before": 15,
+      "after": 15,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s15",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game"
+      ]
+    },
+    {
+      "row": 27,
+      "date": "2008-02-03",
+      "title": "SUPER BOWL XLII: TYREE",
+      "before": 0,
+      "after": 20,
+      "reason": "Indoor grass metadata for the closed roof at SB XLII; open-roof geometry remains a separate art gap.",
+      "source_kind": "built",
+      "source_prefix": "s00",
+      "expected_indoor": 1,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII"
+      ]
+    },
+    {
+      "row": 28,
+      "date": "2009-02-01",
+      "title": "SUPER BOWL XLIII: HOLMES",
+      "before": 27,
+      "after": 27,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s27",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII"
+      ]
+    },
+    {
+      "row": 29,
+      "date": "2012-02-05",
+      "title": "SUPER BOWL XLVI: SIDELINE",
+      "before": 11,
+      "after": 11,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s11",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVI"
+      ]
+    },
+    {
+      "row": 30,
+      "date": "2017-02-05",
+      "title": "SUPER BOWL LI: 28-3",
+      "before": 31,
+      "after": 17,
+      "reason": "Indoor synthetic metadata for SB LI at NRG; Reliant metadata still describes its 2004 grass.",
+      "source_kind": "retail",
+      "source_prefix": "s37",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LI",
+        "https://en.wikipedia.org/wiki/NRG_Stadium"
+      ]
+    },
+    {
+      "row": 31,
+      "date": "2022-11-13",
+      "title": "FOURTH AND EIGHTEEN",
+      "before": 3,
+      "after": 3,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s03",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 32,
+      "date": "2000-01-08",
+      "title": "MUSIC CITY MIRACLE",
+      "before": 28,
+      "after": 28,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s28",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    {
+      "row": 33,
+      "date": "2002-01-19",
+      "title": "THE TUCK RULE GAME",
+      "before": 16,
+      "after": 16,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s16",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    {
+      "row": 34,
+      "date": "2004-02-01",
+      "title": "SUPER BOWL XXXVIII: FINALE",
+      "before": 31,
+      "after": 31,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s37",
+      "expected_indoor": 1,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
+      ]
+    },
+    {
+      "row": 35,
+      "date": "2010-02-07",
+      "title": "SUPER BOWL XLIV: AMBUSH",
+      "before": 14,
+      "after": 14,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s14",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
+      ]
+    },
+    {
+      "row": 36,
+      "date": "2010-12-19",
+      "title": "NEW MEADOWLANDS MIRACLE",
+      "before": 18,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata for 2010 New Meadowlands; retail Giants row still describes grass.",
+      "source_kind": "built",
+      "source_prefix": "s18",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+        "https://en.wikipedia.org/wiki/MetLife_Stadium"
+      ]
+    },
+    {
+      "row": 37,
+      "date": "2011-01-08",
+      "title": "BEAST QUAKE",
+      "before": 26,
+      "after": 26,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s26",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake"
+      ]
+    },
+    {
+      "row": 38,
+      "date": "2012-01-14",
+      "title": "THE CATCH III",
+      "before": 25,
+      "after": 25,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s25",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/The_Catch_III"
+      ]
+    },
+    {
+      "row": 39,
+      "date": "2013-01-12",
+      "title": "MILE HIGH MIRACLE",
+      "before": 8,
+      "after": 8,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s08",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle"
+      ]
+    },
+    {
+      "row": 40,
+      "date": "2013-02-03",
+      "title": "SUPER BOWL XLVII: HOLD ON",
+      "before": 17,
+      "after": 17,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s17",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    {
+      "row": 41,
+      "date": "2015-01-11",
+      "title": "DEZ CAUGHT IT?",
+      "before": 10,
+      "after": 10,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s10",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs"
+      ]
+    },
+    {
+      "row": 42,
+      "date": "2015-02-01",
+      "title": "SUPER BOWL XLIX: BUTLER",
+      "before": 0,
+      "after": 0,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s00",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
+      ]
+    },
+    {
+      "row": 43,
+      "date": "2015-12-03",
+      "title": "MIRACLE IN MOTOWN",
+      "before": 9,
+      "after": 9,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s09",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ]
+    },
+    {
+      "row": 44,
+      "date": "2018-01-14",
+      "title": "MINNEAPOLIS MIRACLE",
+      "before": 15,
+      "after": 15,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s15",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle"
+      ]
+    },
+    {
+      "row": 45,
+      "date": "2018-02-04",
+      "title": "SUPER BOWL LII: PHILLY",
+      "before": 15,
+      "after": 15,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s15",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Philly_Special"
+      ]
+    },
+    {
+      "row": 46,
+      "date": "2020-02-02",
+      "title": "SUPER BOWL LIV: WASP",
+      "before": 14,
+      "after": 14,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s14",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV"
+      ]
+    },
+    {
+      "row": 47,
+      "date": "2022-01-23",
+      "title": "THIRTEEN SECONDS",
+      "before": 13,
+      "after": 13,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "retail",
+      "source_prefix": "s13",
+      "expected_indoor": 0,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/13_seconds_game"
+      ]
+    },
+    {
+      "row": 48,
+      "date": "2022-02-13",
+      "title": "SUPER BOWL LVI: DONALD",
+      "before": 23,
+      "after": 23,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s23",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
+      ]
+    },
+    {
+      "row": 49,
+      "date": "2022-12-17",
+      "title": "THE 33-POINT COMEBACK",
+      "before": 15,
+      "after": 15,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s15",
+      "expected_indoor": 1,
+      "expected_grass": 0,
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
+      ]
+    },
+    {
+      "row": 50,
+      "date": "2024-02-11",
+      "title": "SUPER BOWL LVIII: OVERTIME",
+      "before": 20,
+      "after": 20,
+      "reason": "Keep the existing period bundle and metadata selection.",
+      "source_kind": "built",
+      "source_prefix": "s20",
+      "expected_indoor": 1,
+      "expected_grass": 1,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII"
+      ]
+    },
+    {
+      "row": 51,
+      "date": "2025-10-16",
+      "title": "THE UNC BOWL",
+      "before": 6,
+      "after": 2,
+      "reason": "Outdoor synthetic metadata for 2025 Paycor; retail Bengals row still describes 2003 grass.",
+      "source_kind": "built",
+      "source_prefix": "s06",
+      "expected_indoor": 0,
+      "expected_grass": 0,
+      "sources": [
+        "https://www.pro-football-reference.com/boxscores/202510160cin.htm",
+        "https://en.wikipedia.org/wiki/Paycor_Stadium"
+      ]
+    }
+  ]
+}

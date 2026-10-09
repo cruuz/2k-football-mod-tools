@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import json
 import os
-from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -247,6 +254,9 @@ class ProductInspectionOffscreenTests(unittest.TestCase):
             self.application.processEvents()
 
     def test_flagship_mounts_both_inspectors_and_preserves_raw_fallback(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade())
         self.application.processEvents()
         gameplay = window._category_pages[ProductCategory.SLIDERS_GAMEPLAY]

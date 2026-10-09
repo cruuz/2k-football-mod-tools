@@ -1,0 +1,56 @@
+{
+  "crossbar_top_cm": 304.8,
+  "outer": {
+    "index": 346,
+    "name_id": 11965036,
+    "size": 2977184
+  },
+  "resources": [
+    {
+      "applied_decoded_sha256": "d0be53907880410033bd62365a2a81613ec9d7883a823e30b901e1101f58044d",
+      "applied_sha256": "0007caee12b986c0b354f74b4be698ccf671ab0dd76fce4f116c8abecdd96014",
+      "chunk_index": 71,
+      "chunk_offset": 545616,
+      "decoded_size": 4864,
+      "fill": {
+        "compressed_bytes": 1925,
+        "exact_minimum_scratch": 0,
+        "filled_bytes": 1925,
+        "padding_bytes": 11,
+        "scratch_bytes": 16,
+        "stored_size": 1936,
+        "wrapper_identical": true
+      },
+      "retail_decoded_sha256": "8393525d3bec504ac246dece3036410807640d3d6f958979b0fefe7a3b3fc2be",
+      "retail_sha256": "828663be18d8b0d0747976e4ec196f4dc26e057016f3ea8b729eeac5af7e2bf0",
+      "scene": "goalpost_shadow",
+      "span_size": 1968
+    },
+    {
+      "applied_decoded_sha256": "423c1917d20ecdf53d0c42b7bfc644b2bb8d5ac9f621d45ad705e63f2bd361f6",
+      "applied_sha256": "844014814263621233a4eb578a8fa724d1e7c78af05d7409209c52f6e1c4abfc",
+      "chunk_index": 88,
+      "chunk_offset": 623504,
+      "decoded_size": 6400,
+      "fill": {
+        "compressed_bytes": 2784,
+        "exact_minimum_scratch": 0,
+        "filled_bytes": 2784,
+        "padding_bytes": 16,
+        "scratch_bytes": 16,
+        "stored_size": 2800,
+        "wrapper_identical": true
+      },
+      "retail_decoded_sha256": "e68c11e901978bdb23d1b0b37498c8f16df640f77e0efab9dbad6d3a76bd01e4",
+      "retail_sha256": "95bd5a553a79c4b5529737452e68f523eaa9beb8a971793aabda90bea83098a2",
+      "scene": "goalpost",
+      "span_size": 2832
+    }
+  ],
+  "runtime_witnessed": false,
+  "schema": "nfl2k5_modern_goalposts_pins/v1",
+  "upright_top_cm": {
+    "modern": 1371.6,
+    "retail": 1219.2
+  }
+}

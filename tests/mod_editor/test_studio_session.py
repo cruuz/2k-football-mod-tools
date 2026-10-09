@@ -77,7 +77,7 @@ class _Asset:
             "asset_code": "09",
             "clean_png": str(png),
             "kind": "torso",
-            "mud_mode": "darken_60",
+            "mud_mode": "wet_93",
             "mud_png": None,
             "side": "A",
             "variant": 0,

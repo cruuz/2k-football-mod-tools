@@ -94,10 +94,12 @@ PATCHES = (
     ("team_column", "TEAM column on the franchise Player Card",
      "Retail: the Player Card lists a player's stats season by season (Yr, Games, ...) but never which team a "
      "season was played for; only the card's colours show the current team, so a traded veteran's history reads "
-     "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The current season shows "
-     "the live team; every season rollover records the team the player finished it with, so from then on past "
-     "seasons show that club (a mid-season trade shows the season-end team). Seasons that ended before this patch "
-     "was in the save, the folded \"pre\" row and the Total row read \"--\". Franchise saves stay loadable either way."),
+     "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The season in progress "
+     "shows the club the player is on now; every game he plays records his club for that season, so a finished "
+     "season shows the club of his last game (a trade, signing or release shows from the next game on, and a "
+     "released player keeps the club he left). Seasons played before this patch was in the save, the folded "
+     "\"pre\" row and the Total row read \"--\". Offensive linemen have no stats table in the game and stay without "
+     "it. Franchise saves stay loadable either way."),
     ("kick_rules", "Modern kicking: kickoff from the 35, touchbacks to the 35, PAT from the 15, ~70-yard legs",
      "Retail kicks off from the 30 with touchbacks at the 20, snaps the extra point from the 2, and its "
      "field-goal tables top out near 60 yards for a 99 kicker on a perfect meter. Patch: kickoff spot 35, "
@@ -161,6 +163,13 @@ PATCHES = (
      "kickoffs and scrimmage carries are not), then turns the ball 180 degrees about its own long axis with "
      "the game's quaternion product, so the laces face the posts through the hold and the kick. A fake field "
      "goal carries the rolled ball for that play only. Unwitnessed in game."),
+    ("punter_holder", "Punter holds on field goals and PATs",
+     "Retail: the Field Goal formation has a holder slot (kind H) that the depth-chart builder fills from a "
+     "hidden team-record byte, usually the second quarterback; the depth chart has no holder row and nothing "
+     "keeps that byte up to date. Patch: a hook in that builder and a 47-byte cave in a dead routine make the "
+     "depth chart's first punter the holder on every field goal and PAT, for user and CPU teams in every mode; "
+     "the old rule runs only when a team has no punter (or the kicker would fill both slots). A fake field goal "
+     "run or throw is now the punter's. Unwitnessed in game."),
     ("prospect_names", "Modern draft-prospect names (disc images only)",
      "Retail: rookies and free agents are named from the 1990 US Census lists (James, Harold, Walter... Smith, "
      "Garcia, Martinez), drawn independently, so a fifth of every draft class carries a Hispanic-origin name and no "
@@ -319,6 +328,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
         "Choice form only here. Build also offers a fixed rule. Preview art shows era only.",
         "Reported not working; bounded checks pass / UNWITNESSED"),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
+    "punter_holder": ("Punter holds on field goals and PATs", "The first punter on the depth chart holds, as in the modern NFL.", NOT_TESTED),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),
@@ -505,7 +515,7 @@ class GameplayPatchesPanel(QWidget):
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
                     self.cpu_money_downs_level.addItem(text, value)
-                self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+                self.cpu_money_downs_level.setAccessibleName("CPU fourth downs, two-point tries and overtime level")
                 self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
                 check.toggled.connect(self._money_downs_toggled)
                 head.addWidget(self.cpu_money_downs_level)
@@ -748,8 +758,8 @@ class GameplayPatchesPanel(QWidget):
                 plan.momentum_collisions = on
                 plan.momentum_collision_level = int(self.momentum_collision_level.currentData() or 50) if on else 0
             elif key == "cpu_money_downs":
-                level = str(self.cpu_money_downs_level.currentData() or "modern")
-                plan.cpu_money_downs = ("modern" if level == "retail" else level) if on else "retail"
+                level = str(self.cpu_money_downs_level.currentData() or "modern2")
+                plan.cpu_money_downs = ("modern2" if level == "retail" else level) if on else "retail"
             elif key == "accelerated_clock":
                 plan.accelerated_clock = on
                 plan.accelerated_clock_minimum_seconds = int(self.accelerated_clock_minimum.currentData() or 20)
@@ -813,7 +823,7 @@ class GameplayPatchesPanel(QWidget):
         combo = self.cpu_money_downs_level
         combo.blockSignals(True)
         if on and str(combo.currentData()) == "retail":
-            combo.setCurrentIndex(max(0, combo.findData("modern")))
+            combo.setCurrentIndex(max(0, combo.findData("modern2")))
         elif not on:
             combo.setCurrentIndex(max(0, combo.findData("retail")))
         combo.blockSignals(False)
@@ -933,7 +943,7 @@ class GameplayPatchesPanel(QWidget):
             self.guardian_everyone_practice_check.setEnabled(on and self.checks["guardian_overlay"].isEnabled())
             if on and "guardian_cap" in self.checks:
                 self.checks["guardian_cap"].setChecked(False)
-        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "k128_memory", "k128_roster_heap", "k128_early"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page"):
             if key in self.checks and (self._state or {}).get(key) == "applied":
                 box = self.checks[key]
                 box.blockSignals(True)

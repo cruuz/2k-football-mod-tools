@@ -1,4 +1,12 @@
 """Exercise the build history stage without constructing or touching a disc."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from types import SimpleNamespace
 from unittest.mock import patch
 import unittest
@@ -12,7 +20,8 @@ class BuildHistoryTests(unittest.TestCase):
                 return SimpleNamespace(read_edits=lambda p:{'franchise_history':embedded},
                     apply=lambda *a,**kw:calls.append(('identities',kw)) or {'log':[]})
             return SimpleNamespace(apply=lambda *a,**kw:calls.append((name,kw)) or {'log':[]})
-        plan=SimpleNamespace(roster_edits='g.json',season_2026=season,position_pools=False,career_stats=career,team_history='retail')
+        plan=SimpleNamespace(roster_edits='g.json',season_2026=season,position_pools=False,
+                             career_stats=career,team_history='retail',honors_history='')
         with patch.object(build,'_core_module',side_effect=module):
             build._apply_roster_history(plan,'fake-target',{'steps':[]},lambda *a:None)
         return calls

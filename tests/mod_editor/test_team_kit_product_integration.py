@@ -101,6 +101,9 @@ class _LockCheckingTeamKitService:
 class TeamKitFacadeIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        required_asset = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         cls.catalog = load_nfl2k5_uniform_catalog()
 
     def test_all_team_kit_routes_hold_the_active_source_session_lock(self) -> None:
@@ -218,6 +221,9 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        required_asset = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         self.temporary = tempfile.TemporaryDirectory(prefix="team-kit-gui-")
         self.root = Path(self.temporary.name)
         self.facade = _WindowTeamKitFacade()

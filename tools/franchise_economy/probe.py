@@ -81,7 +81,7 @@ def control(body):
     for p in doc.players:
         if not any(t < 32 for t in p.teams):
             continue
-        minimum = data['minimums']['dollars'][min(p.record.values['years_pro'], 7)]
+        minimum = data['minimums']['dollars'][min(rr.accrued_seasons(p.record.values['years_pro']), 7)]
         term = 1 + p.index % 2
         key = (minimum, term)
         if key not in cache:

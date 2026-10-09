@@ -83,9 +83,9 @@
      "colour": "white",
      "center": [
       161,
-      93
+      102
      ],
-     "width": 17
+     "width": 23
     },
     "sleeve_swooshes": {
      "colour": "white"
@@ -321,7 +321,7 @@
   "away": {
    "selector": "03A0",
    "outer_index": 3957,
-   "note": "2026 away: white jersey, royal numbers outlined in red, royal-red-royal-red-royal sleeve stripes, royal pants with a white-red-white stripe, white socks, the same white helmet",
+   "note": "2026 away: white jersey, royal numbers outlined in red, royal-red-royal-red-royal sleeve stripes, white pants with a royal-red-royal stripe (u2a), white socks, the same white helmet",
    "torso": {
     "base_colour": "white",
     "neck_donor": "18H6",
@@ -341,9 +341,9 @@
      "colour": "jersey_royal",
      "center": [
       161,
-      93
+      102
      ],
-     "width": 17
+     "width": 23
     },
     "sleeve_swooshes": {
      "colour": "jersey_royal"
@@ -445,10 +445,10 @@
     ]
    },
    "pants": {
-    "base_colour": "jersey_royal",
+    "base_colour": "white",
     "stripe": [
      [
-      "white",
+      "jersey_royal",
       5
      ],
      [
@@ -456,11 +456,11 @@
       8
      ],
      [
-      "white",
+      "jersey_royal",
       5
      ]
     ],
-    "swoosh_colour": "white"
+    "swoosh_colour": "jersey_royal"
    },
    "socks": {
     "colour": "white"

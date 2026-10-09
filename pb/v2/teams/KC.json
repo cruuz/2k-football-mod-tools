@@ -1,0 +1,656 @@
+{
+ "team": "KC",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Reid West Coast spread",
+ "staff": "Andy Reid / Eric Bieniemy",
+ "family": "west_coast",
+ "feature": "TE1",
+ "key_players": "Travis Kelce; Rashee Rice; Patrick Mahomes",
+ "depth_step": 1,
+ "tendencies": {
+  "shotgun_pct": 80.73,
+  "pistol_pct": 3.53,
+  "play_action_pct": 15.24,
+  "motion_pct": 49.81,
+  "personnel": {
+   "11": 595,
+   "12": 297,
+   "13": 66,
+   "other": 37,
+   "23": 3,
+   "21": 45,
+   "22": 1,
+   "10": 2,
+   "02": 2
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Trey",
+   "Gun Doubles",
+   "Gun Bunch",
+   "Pistol Doubles",
+   "Gun Wing"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Pistol Doubles",
+   "Gun Ace Wing",
+   "Gun Ace",
+   "Ace Jumbo"
+  ]
+ },
+ "boost": {
+  "Bubble Screen": 1,
+  "Drive": 2,
+  "Mesh": 5,
+  "PA Boot Leak": 1,
+  "RB Screen": 4,
+  "Slant Flat": 2,
+  "Snag": 2,
+  "Spacing": 2,
+  "Stick": 5,
+  "TE Screen": 1,
+  "Texas": 1,
+  "Y Cross": 1
+ },
+ "preference_shift": {
+  "PA Boot": 1,
+  "PA Crossers": 1,
+  "PA Dagger": 1
+ },
+ "signature": [
+  {
+   "formation": "Gun Bunch",
+   "concept": "Mesh",
+   "name": "Bunch Mesh Wheel",
+   "overrides": {
+    "routes": {
+     "B": [
+      "route",
+      "Back Wheel"
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Stick",
+   "name": "Y Stick Nod",
+   "overrides": {
+    "routes": {
+     "S3": [
+      "route",
+      "Stop and Go",
+      6
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "Swing Screen",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Mesh Wheel",
+   "name": "KC Mesh Wheel",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "B",
+     "S1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Texas",
+   "name": "KC Texas",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W1",
+     "S1",
+     "S2",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Slant Flat",
+   "name": "KC Slant Flat",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W2",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Bunch",
+   "concept": "Double Slants",
+   "name": "KC Double Slants",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W1",
+     "S2",
+     "S3",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Slant Flat",
+   "name": "KC Slant Flat",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W2",
+     "S2",
+     "S1",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Bubble Screen",
+   "name": "KC Bubble Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Wing",
+   "concept": "Stick",
+   "name": "KC Stick",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W2",
+     "W1",
+     "S2",
+     "B"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.chiefs.com/team/coaches-roster/eric-bieniemy)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.8 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Straight": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Mesh Wheel",
+    "name": "KC Mesh Wheel",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "B",
+      "S1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "targets SWING 10.0% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Texas",
+    "name": "KC Texas",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W1",
+      "S1",
+      "S2",
+      "B"
+     ]
+    },
+    "reason": "targets SWING 10.0% (league 5.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Slant Flat",
+    "name": "KC Slant Flat",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W2",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets SLANT 10.0% (league 6.1)"
+   },
+   {
+    "formation": "Gun Bunch",
+    "concept": "Double Slants",
+    "name": "KC Double Slants",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W1",
+      "S2",
+      "S3",
+      "S1"
+     ]
+    },
+    "reason": "targets SLANT 10.0% (league 6.1)"
+   },
+   {
+    "formation": "Pistol Doubles",
+    "concept": "Slant Flat",
+    "name": "KC Slant Flat",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W2",
+      "S2",
+      "S1",
+      "W1"
+     ]
+    },
+    "reason": "rpo_pct 9.3 (league 2.2)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Bubble Screen",
+    "name": "KC Bubble Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "rpo_pct 9.3 (league 2.2)"
+   },
+   {
+    "formation": "Gun Wing",
+    "concept": "Stick",
+    "name": "KC Stick",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W2",
+      "W1",
+      "S2",
+      "B"
+     ]
+    },
+    "reason": "rpo_pct 9.3 (league 2.2)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 72.5%"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 25.3%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   4
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   4,
+   4
+  ],
+  "Gun Trey": [
+   1,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   4
+  ],
+  "Gun Trips": [
+   2,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   2,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   4,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   3,
+   2
+  ],
+  "Gun Split Backs": [
+   3,
+   1,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   4,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   3
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Pistol Doubles": [
+   4,
+   4,
+   1
+  ],
+  "Gun Ace Wing": [
+   2,
+   0,
+   1
+  ],
+  "Gun Ace": [
+   1,
+   0,
+   1
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ]
+ }
+}

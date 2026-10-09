@@ -43,6 +43,8 @@ from mod_editor.gui import beta62_options as r62_ui
 from mod_editor.core import mod_build, platform_compat
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.core.errors import ModEditorError
+from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
 
 
@@ -70,10 +72,12 @@ PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
                         "kicking power, Player Card team column, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
-                           "presentation, screen timing and other selected changes. Includes changes not yet tested in-game."),
+                           "letter-grade ratings in Franchise, presentation, screen timing and other selected changes. "
+                           "Includes changes not yet tested in-game."),
     "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
                                "Includes changes not yet tested in-game."),
 }
+BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
 PRESET_NOTE = "Review the selected changes below. Unavailable or already-installed changes are listed here."
 
 # Lab scope from BETA75_WAVE_2026-09-21.md and the Beta 76 release draft.
@@ -203,7 +207,11 @@ ANNIVERSARY_OPTIONS = (
     ("historic_stock_books", "Stock playbooks for historic teams",
      "Keep a separate retail playbook bank for historic teams and Anniversary sides. "
      "Cannot combine with Separate offensive and defensive playbooks. Home-side bindings "
-     "were verified in four lab cases; away-side content remains unwitnessed."),
+     "were verified in four lab cases; away-side content remains unwitnessed. Moments from 2005 on "
+     "use the franchise's current playbook and call shotgun about as often as that team-season did "
+     "(nflverse), instead of the engine's fixed 0.05 shotgun weight. In exhibition, season and franchise games each current "
+     "franchise calls shotgun about as often as it did in 2025 and 2026 on 1st down, on 2nd down and on 3rd or 4th down, "
+     "by yards to go; offline checks only."),
     ("espn25_era_rules", "Anniversary rules by season",
      "Use season-specific rules in Anniversary moments. Requires historic Anniversary moments, dynamic kickoff, "
      "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
@@ -240,6 +248,8 @@ class _Task(QRunnable):
         self.started = time.monotonic()
         self.last_update = self.started
         self._last_emit = 0.0
+        # (total, done, started) of the step being reported, so its time estimate counts that step only.
+        self._step = (0, 0, self.started)
         self.setAutoDelete(False)
 
     def run(self) -> None:
@@ -249,9 +259,17 @@ class _Task(QRunnable):
                     from mod_editor.core.nfl2k5_project_fit import BuildCancelled
                     raise BuildCancelled("Build cancelled; no output was published. Your project is unchanged.")
                 from mod_editor.core.nfl2k5_project_fit import progress_text
-                message = progress_text(message, done, total, self.started)
+                now = time.monotonic()
+                # "About N s remaining" is the time spent in THIS step scaled to what is left of it. Counted from the
+                # start of the whole build it read "about 3000000 s remaining" on the first block of every step after
+                # the first. A new step is a different total, or a count that went back down.
+                step_total, step_done, step_started = self._step
+                if total != step_total or done < step_done:
+                    step_started = now
+                self._step = (total, done, step_started)
+                message = progress_text(message, done, total, step_started)
                 self.latest_progress = message
-                self.last_update = time.monotonic()
+                self.last_update = now
                 if total > 2**31 - 1:  # Qt's int signal is signed 32-bit; discs are larger.
                     self.signals.counts.emit(round(done * 1000 / total), 1000)
                 else:
@@ -276,6 +294,7 @@ class BuildPanel(QWidget):
     music_library_preview_ready = pyqtSignal(object, object)
     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
+    book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None) -> None:
         super().__init__(parent)
@@ -324,6 +343,7 @@ class BuildPanel(QWidget):
         self._marks_task = None
         self._marks_modules = dict(self._available)
         self._official_marks_pack_changed()
+        self.refresh_book_set()
         self._refresh()
 
     # ---------------------------------------------------------------- UI
@@ -454,6 +474,12 @@ class BuildPanel(QWidget):
         self.summary_label.setObjectName("throwMuted")
         self.summary_label.setWordWrap(True)
         mk.addWidget(self.summary_label)
+        self.synced_note = QLabel("")
+        self.synced_note.setObjectName("throwMuted")
+        self.synced_note.setWordWrap(True)
+        self.synced_note.setAccessibleName("Cloud-synced folder warning")
+        self.synced_note.hide()
+        mk.addWidget(self.synced_note)
         actions = QHBoxLayout()
         self.build_button = QPushButton("Make my disc")
         self.build_button.setObjectName("primaryButton")
@@ -630,6 +656,47 @@ class BuildPanel(QWidget):
             box.toggled.connect(lambda _on: self._abilities_locks_changed())
             g.addWidget(box)
             self.abilities_lock_checks[key] = box
+        # b77-g2: who may use which moves. The rules read the roster star tag (the star under the player) and the
+        # ability tier; CPU players follow the same rules. Speedster and the tier bonuses are not touched.
+        self.abilities_star_checks = {}
+        for key, caption, tip in (
+                ("abilities_right_stick_stars_only", "Right-stick moves: stars only",
+                 "Only starred players can use the right-stick moves: the stick flicks (stutter-step, stop short, "
+                 "juke left and right) and the stick-click hurdle. Which of those a star has depends on the access "
+                 "level chosen below for the star's ability tier. Everyone keeps the button moves. Needs the Player "
+                 "abilities option and a rebuilt disc."),
+                ("abilities_charge_stars_only", "Charge-ups: stars only",
+                 "Only starred players can charge up (hold the sprint button to fill the control circle) while "
+                 "carrying the ball, and only if their access level includes charge-ups. Defenders and receivers "
+                 "keep the retail charge. Cannot be combined with the two move locks above. Needs the Player "
+                 "abilities option and a rebuilt disc."),
+                ("abilities_button_moves_stars_only", "Button moves: stars only",
+                 "Only starred players can spin, truck, stiff-arm or use the button jukes. Off in every preset: "
+                 "button moves stay open to everyone by default. Needs the Player abilities option and a rebuilt disc.")):
+            box = QCheckBox(caption)
+            box.setChecked(tt.abilities_patch.DEFAULT_STARS[key.removeprefix("abilities_")])
+            box.setEnabled(False)
+            box.setToolTip(tip)
+            box.toggled.connect(lambda _on: self._refresh())
+            g.addWidget(box)
+            self.abilities_star_checks[key] = box
+        self.abilities_access_combos = []
+        for index, caption in enumerate(tt.abilities_patch.STAR_CLASSES):
+            combo = QComboBox()
+            for name, label in tt.abilities_patch.ACCESS_LABELS.items():
+                combo.addItem(label, name)
+            combo.setCurrentIndex(combo.findData(tt.abilities_patch.DEFAULT_STAR_ACCESS[index]))
+            combo.setEnabled(False)
+            combo.setAccessibleName("Star access: " + caption)
+            combo.setToolTip(f"What a starred player in this class can do with the right stick and the charge-up. "
+                             f"Class: {caption}. A player's class comes from the star tag and the ability tier set on "
+                             "the Rosters Abilities page, so each star can be given a different level there.")
+            combo.currentIndexChanged.connect(lambda _i: self._refresh())
+            row = QHBoxLayout()
+            row.addWidget(QLabel(caption + ":"))
+            row.addWidget(combo, 1)
+            g.addLayout(row)
+            self.abilities_access_combos.append(combo)
         self._abilities_lock_sync = False
         self.abilities_check.toggled.connect(self._abilities_toggled)
         self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
@@ -641,9 +708,11 @@ class BuildPanel(QWidget):
         self.cpu_money_downs_level = QComboBox()
         for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
             self.cpu_money_downs_level.addItem(caption, value)
-        self.cpu_money_downs_level.setAccessibleName("CPU fourth downs and first downs level")
+        self.cpu_money_downs_level.setAccessibleName("CPU fourth downs, two-point tries and overtime level")
         self.cpu_money_downs_level.setToolTip("Retail keeps the original CPU choices. Modern adds measured fourth-down attempts and "
-                                              "first-down targets. Aggressive goes further. EXPERIMENTAL / UNWITNESSED.")
+                                              "first-down targets. Aggressive goes further. Modern 2 adds a fourth-down table from "
+                                              "published analytics that reads score and clock, the modern overtime rules, a modern "
+                                              "two-point chart and more varied defensive coverage. EXPERIMENTAL / UNWITNESSED.")
         g.addWidget(self.cpu_money_downs_level)
         self.cpu_money_downs_level.currentIndexChanged.connect(self._money_downs_changed)
         self.cpu_money_downs_check.toggled.connect(self._money_downs_toggled)
@@ -757,6 +826,9 @@ class BuildPanel(QWidget):
                                                     "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
         self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
+        self.punter_holder_check = self._option(g, "punter_holder", "Punter holds on field goals and PATs",
+                                                "The depth chart's first punter holds the ball, as in the modern NFL; the old holder rule only if a team has no punter.",
+                                                badge=NOT_TESTED)
         self.uniform_choice_check = self._option(
             g, "uniform_choice", r62_ui.uniform_choice_caption(""),
             r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
@@ -816,8 +888,9 @@ class BuildPanel(QWidget):
                     "are not reproduced exactly. Keep this off for existing saves.")
         self.team_column_check = self._option(f, "team_column", "Show TEAM in Player Card season stats",
                                               "Which team each season was played for.",
-                                              details="Seasons that ended before this change was in the save, the folded \"pre\" row and the Total row read "
-                                                      "\"--\" until their next rollover. Franchise saves stay loadable either way.")
+                                              details="The season in progress shows the club the player is on now; a finished season shows the club "
+                                                      "of his last game. Seasons played before this change was in the save, the folded \"pre\" row and "
+                                                      "the Total row read \"--\". Franchise saves stay loadable either way.")
         self.team_history_check = self._option(f, "team_history", "Past teams in Player Card stats",
                                                "New franchises only; missing seasons use the player's 2004 team.",
                                                badge="New franchises only", needs_image=True,
@@ -842,6 +915,14 @@ class BuildPanel(QWidget):
         career_row.addWidget(self.career_stats_button)
         self.career_row.hide()
         f.addWidget(self.career_row)
+        # b77-f5: the real award history the Player Card honors page shows (built-in sourced data, or an edited file)
+        self.honors_history_check = self._option(f, "honors_history", "Award history on the Player Card honors page",
+                                                 "Real MVPs, Super Bowls, Pro Bowls, All-Pros and more for the 2026 roster.",
+                                                 badge="New franchises only", needs_image=True,
+                                                 details="Writes each honor into the player's career history (the built-in data cites "
+                                                         "Wikipedia and nflverse for every honor). Pair with the Player Card honors "
+                                                         "page. A JSON or CSV under Custom data replaces the built-in data (export one "
+                                                         "with tools/nfl2k5_honors.py).")
         self.prospect_names_check = self._option(f, "prospect_names", "Modern draft-prospect names",
                                                  "New franchises only; some new surnames are announced by number.",
                                                  badge="New franchises only", needs_image=True,
@@ -891,6 +972,10 @@ class BuildPanel(QWidget):
             f, "resource_load_guard", tt.resource_load_guard_patch.BUILD_CAPTION,
             "Skip a cutaway if its presentation pool is full so the game can continue.",
             badge=NOT_TESTED, details=tt.resource_load_guard_patch.HELP_TEXT)
+        self.name_keyboard_check = self._option(  # b77-k1
+            f, "name_keyboard", tt.name_keyboard_patch.UI_LABEL,
+            "Create Player and Edit Player keyboards take space, period, apostrophe and hyphen.",
+            badge=NOT_TESTED, details=tt.name_keyboard_patch.HELP_TEXT)
         self.franchise_practice_check = self._option(f, "franchise_practice", 'Free Practice inside Franchise',
                                                      r62_ui.PRACTICE_HELP,
                                                      badge=NOT_TESTED)
@@ -1178,6 +1263,10 @@ class BuildPanel(QWidget):
         self.kick_meter_check = self._option(
             r, "kick_meter_2026", kick_meter.BUILD_CAPTION, kick_meter.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_goalposts as goalposts  # b77-v1
+        self.modern_goalposts_check = self._option(
+            r, "modern_goalposts", goalposts.BUILD_CAPTION, goalposts.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_intro_videos as intro_videos
         self.trim_intro_videos_check = self._option(
             r, "trim_intro_videos", intro_videos.BUILD_CAPTION, intro_videos.HELP_TEXT,
@@ -1344,9 +1433,18 @@ class BuildPanel(QWidget):
         self.prospect_names_button.clicked.connect(self._choose_prospect_names)
         names_row.addWidget(self.prospect_names_button)
         self.custom_details.content.addLayout(names_row)
+        honors_row = QHBoxLayout()
+        honors_row.addWidget(QLabel("Award history JSON or CSV (optional)"))
+        self.honors_history_field = QLineEdit()
+        self.honors_history_field.setPlaceholderText("pool,index,first,last,birth_date,season,honor,source — replaces the built-in data")
+        honors_row.addWidget(self.honors_history_field, 1)
+        self.honors_history_button = QPushButton("Choose…")
+        self.honors_history_button.clicked.connect(self._choose_honors_history)
+        honors_row.addWidget(self.honors_history_button)
+        self.custom_details.content.addLayout(honors_row)
         ol.addWidget(self.custom_details)
 
-        self.advanced_details = Details("More inputs (commentary, playbook packs, description)")
+        self.advanced_details = Details("More inputs (modern or classic playbooks, commentary, packs, description)")
         adv = self.advanced_details.content
         self.commentary_box = QGroupBox("Commentary replacements (0)")
         cb = QVBoxLayout(self.commentary_box)
@@ -1379,8 +1477,32 @@ class BuildPanel(QWidget):
         self.commentary_label.setWordWrap(True)
         cb.addWidget(self.commentary_label)
         adv.addWidget(self.commentary_box)
-        packs_box = QGroupBox("Playbook packs (.2k5book)")
+        packs_box = QGroupBox("Playbooks: modern or classic books, and packs (.2k5book)")
         pb = QVBoxLayout(packs_box)
+        book_row = QHBoxLayout()
+        book_row.addWidget(QLabel("Modern books:"))
+        self.book_all_button = QPushButton("All 32")
+        self.book_all_button.setToolTip("Every team gets the modern SOFTDRINK playbook, offense and defense together "
+                                        "(the books on the SOFTDRINK 2K28 disc).")
+        self.book_all_button.clicked.connect(lambda: self._apply_book_set(None))
+        self.book_none_button = QPushButton("None")
+        self.book_none_button.setToolTip("Every team keeps the classic 2004 book from the source disc.")
+        self.book_none_button.clicked.connect(lambda: self._apply_book_set([]))
+        self.book_choose_button = QPushButton("Choose teams…")
+        self.book_choose_button.setToolTip("Pick which teams get the modern book; the others keep the classic 2004 book.")
+        self.book_choose_button.clicked.connect(self._choose_book_teams)
+        for button in (self.book_all_button, self.book_none_button, self.book_choose_button):
+            button.setAccessibleName(button.text() + " modern books")
+            book_row.addWidget(button)
+        self.book_set_status = QLabel("")
+        self.book_set_status.setObjectName("bookSetStatus")
+        self.book_set_status.setAccessibleName("Modern and classic book count")
+        book_row.addWidget(self.book_set_status, 1)
+        pb.addLayout(book_row)
+        self.book_set_note = QLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
+        self.book_set_note.setObjectName("throwMuted")
+        self.book_set_note.setWordWrap(True)
+        pb.addWidget(self.book_set_note)
         self.packs_list = QListWidget()
         self.packs_list.setAccessibleName("Playbook packs")
         self.packs_list.setMaximumHeight(80)
@@ -1462,7 +1584,7 @@ class BuildPanel(QWidget):
             box.toggled.connect(lambda _c: self._refresh())
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
         for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field,
-                      self.espn25_plan_field):
+                      self.espn25_plan_field, self.honors_history_field):
             field.textChanged.connect(lambda _t: self._refresh())
         self._refresh()
 
@@ -1683,7 +1805,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -1704,8 +1826,8 @@ class BuildPanel(QWidget):
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
-            ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("penalties", "penalties"),
-            ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
+            ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
+            ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
@@ -1785,6 +1907,7 @@ class BuildPanel(QWidget):
         gate(self.team_column_check, "team_column")
         gate(self.team_history_check, "team_history", needs_image=True)
         gate(self.career_stats_check, "career_stats", needs_image=True)
+        gate(self.honors_history_check, "honors_history", needs_image=True)
         gate(self.prospect_names_check, "prospect_names", needs_image=True)
         # an already-edited roster can take more edits: gate on availability and the container only
         self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
@@ -1968,13 +2091,26 @@ class BuildPanel(QWidget):
                         "Already in this source (Off cannot restore it)" if evb_done else
                         "Needs a supported USA disc image; Jaguars packages unavailable")
         bk_state = state.get("modern_board_kit")  # b76-st5
-        bk_ok = bool(self._available.get("modern_board_kit", False) and is_image and bk_state == "retail")
+        # "partial" (b77 e4): some stadiums take the boards and some stay as they are (a stadium Modern Arrowhead or
+        # another tool changed, or one that already has them); the build says which, instead of refusing the disc
+        bk_ok = bool(self._available.get("modern_board_kit", False) and is_image and bk_state in ("retail", "partial"))
         bk_done = bool(self._available.get("modern_board_kit", False) and is_image and bk_state == "applied")
+        bk_skips = [str(name) for name in (state.get("modern_board_kit_skips") or ())]
+        bk_note = ""
+        if bk_skips and (bk_ok or bk_done):
+            bk_note = ("; leaves " + ", ".join(bk_skips) + " as it is" if len(bk_skips) <= 2
+                       else f"; leaves {len(bk_skips)} stadiums as they are")
         self.modern_board_kit_check.setEnabled(bk_ok)
         self.modern_board_kit_check.setChecked(bk_done)
+        bk_modified = bool(self._available.get("modern_board_kit", False) and is_image and bk_state == "foreign")
         self._set_badge("modern_board_kit", "EXPERIMENTAL / UNWITNESSED" if bk_ok else
                         "Already in this source (Off cannot restore it)" if bk_done else
+                        "Every stadium scene in this image is modified; choose your unmodified USA retail image"
+                        if bk_modified else
                         "Needs a supported USA disc image; the stadium packages unavailable")
+        badge = self._badges.get("modern_board_kit")
+        if bk_note and badge is not None:
+            badge.setText(badge.text() + bk_note)
         practice_state = state.get("modern_practice_field")  # b76-pf
         practice_ok = bool(self._available.get("modern_practice_field", False) and is_image and practice_state == "retail")
         practice_done = bool(self._available.get("modern_practice_field", False) and is_image
@@ -2038,6 +2174,15 @@ class BuildPanel(QWidget):
         self._set_badge("kick_meter_2026", "EXPERIMENTAL / UNWITNESSED" if kick_ok else
                         "Already in this source (Off cannot restore it)" if kick_done else
                         "Needs a supported USA disc image with the retail kick meter")
+        # b77-v1: modern goalposts
+        goal_state = state.get("modern_goalposts")
+        goal_ok = bool(self._available.get("modern_goalposts", False) and is_image and goal_state == "retail")
+        goal_done = bool(self._available.get("modern_goalposts", False) and is_image and goal_state == "applied")
+        self.modern_goalposts_check.setEnabled(goal_ok)
+        self.modern_goalposts_check.setChecked(goal_done)
+        self._set_badge("modern_goalposts", "EXPERIMENTAL / UNWITNESSED" if goal_ok else
+                        "Already in this source (Off cannot restore it)" if goal_done else
+                        "Needs a supported USA disc image with the retail goalposts")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -2070,6 +2215,7 @@ class BuildPanel(QWidget):
         gate(self.the1wam_lineman_rating_check, "the1wam_lineman_rating")
         gate(self.xemu_display_list_fix_check, "xemu_display_list_fix")
         gate(self.resource_load_guard_check, "resource_load_guard")
+        gate(self.name_keyboard_check, "name_keyboard")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
         if state.get("uniform_choice") == "applied":
@@ -2091,6 +2237,7 @@ class BuildPanel(QWidget):
         self._set_badge("helmet_finish", "ADVANCED / UNWITNESSED" if finish_enabled else
                         "Unrecognized source data" if finish_available else "Not available in this release")
         gate(self.kick_laces_check, "kick_laces")
+        gate(self.punter_holder_check, "punter_holder")
         gate(self.franchise_practice_check, "franchise_practice")
         gate(self.practice_squad_check, "practice_squad")
         gate(self.depth_locks_check, "depth_locks")
@@ -2112,6 +2259,7 @@ class BuildPanel(QWidget):
             self._set_badge("depth_chart_rows", "Unrecognized source data")
         self.packs_add_button.setEnabled(is_image and self._available.get("playbook_packs", True))
         self.packs_add_button.setToolTip("" if is_image else "Full disc required.")
+        self.refresh_book_set()
         gate(self.scorebug_runtime_check, "scorebug_runtime", needs_image=True)
         for key in ("music_policy", "music_unlock", "music_userlist"):
             gate(getattr(self, key + "_check"), key)
@@ -2201,6 +2349,11 @@ class BuildPanel(QWidget):
             widget.blockSignals(False)
         self.my_career_setup_field.clear()
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
+        for key, box in self.abilities_star_checks.items():   # b77-g2: the presets carry the stars-only rules
+            box.blockSignals(True)
+            box.setChecked(bool(values.get(key, False)))
+            box.blockSignals(False)
+        self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         boxes = self._boxes()
         applied, skipped = [], []
         if "max_deep_yards" in values:
@@ -2217,18 +2370,33 @@ class BuildPanel(QWidget):
             box.setChecked(want)
             if want and key not in ("realistic_flight", "arc_by_distance"):
                 applied.append(key)
+        preset_money = str(values.get("cpu_money_downs", "retail"))
+        if preset_money != "retail" and self.cpu_money_downs_check.isChecked() and self.cpu_money_downs_level.findData(preset_money) >= 0:
+            self.cpu_money_downs_level.blockSignals(True)
+            self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(preset_money))
+            self.cpu_money_downs_level.blockSignals(False)
         self._refresh()
         title = PRESET_LABELS.get(name, name)
         tested = ("" if name == "softdrink_basic"
                   else " Includes experimental changes not yet tested in-game.")
+        books = self._playbook_hint()
         if skipped:
             reasons = "; ".join(f"{self._short_label(key)} ({self._skip_reason(key)})" for key in skipped)
             self.preset_note.setText(f"{title} preset: ticked {len(applied)} changes; not available on this source: "
-                                     f"{reasons}.{tested} Untick anything you do not want, then Make my disc.")
+                                     f"{reasons}.{tested} Untick anything you do not want, then Make my disc.{books}")
         else:
             self.preset_note.setText(f"{title} preset: ticked {len(applied)} changes.{tested} "
-                                     "Untick anything you do not want, then Make my disc.")
+                                     f"Untick anything you do not want, then Make my disc.{books}")
         return {"applied": applied, "skipped": skipped}
+
+    def _playbook_hint(self) -> str:
+        """Presets never change the playbooks; say which books the build will use and where to switch them."""
+
+        info = self.book_set_info()
+        if info is None:
+            return ""
+        return (f" Playbooks: {book_set_status_text(info)} (presets leave them alone; switch under "
+                "More inputs ▸ Modern books).")
 
     def _short_label(self, key: str) -> str:
         box = self._boxes().get(key)
@@ -2261,14 +2429,17 @@ class BuildPanel(QWidget):
             "xbe_space": self.xbe_space_check, "kickoff_relocated": self.kickoff_relocated_check,
             "widescreen": self.widescreen_check, "overtime": self.overtime_check, "team_column": self.team_column_check,
             "team_history": self.team_history_check, "career_stats": self.career_stats_check,
+            "honors_history": self.honors_history_check,
             "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "elbow_options": self.elbow_options_check,
             "the1wam_lineman_rating": self.the1wam_lineman_rating_check,
             "xemu_display_list_fix": self.xemu_display_list_fix_check,
             "resource_load_guard": self.resource_load_guard_check,
+            "name_keyboard": self.name_keyboard_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
-            "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
+            "kick_laces": self.kick_laces_check, "punter_holder": self.punter_holder_check,
+            "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "weather_plan": self.weather_plan_check, "weather_haze": self.weather_haze_check,
@@ -2300,6 +2471,7 @@ class BuildPanel(QWidget):
             "espn_marks_2026": self.espn_marks_check,
             "espn_wipes_boards_2026": self.espn_wipes_boards_check,  # b76-p2
             "kick_meter_2026": self.kick_meter_check,  # b76-km
+            "modern_goalposts": self.modern_goalposts_check,  # b77-v1
             "trim_intro_videos": self.trim_intro_videos_check,
             "custom_intro": self.custom_intro_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
@@ -2362,6 +2534,8 @@ class BuildPanel(QWidget):
             abilities=self.abilities_check.isChecked(),
             abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
             **{key: box.isChecked() for key, box in self.abilities_lock_checks.items()},
+            **{key: box.isChecked() for key, box in self.abilities_star_checks.items()},
+            abilities_star_access=self.abilities_star_access(),
             qb_spy=self.qb_spy_check.isChecked(),
             calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
@@ -2393,16 +2567,19 @@ class BuildPanel(QWidget):
             the1wam_lineman_rating=self.the1wam_lineman_rating_check.isChecked(),
             xemu_display_list_fix=self.xemu_display_list_fix_check.isChecked(),
             resource_load_guard=self.resource_load_guard_check.isChecked(),
+            name_keyboard=self.name_keyboard_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
             helmet_finish=("matte" if self.helmet_finish_check.isChecked() else "glossy"),
             kick_laces=self.kick_laces_check.isChecked(),
+            punter_holder=self.punter_holder_check.isChecked(),
             franchise_practice=self.franchise_practice_check.isChecked(),
             practice_squad=self.practice_squad_check.isChecked(),
             depth_locks=self.depth_locks_check.isChecked(),
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             career_stats=(self.career_stats_field.text().strip() if self.career_stats_check.isChecked() else ""),
+            honors_history=((self.honors_history_field.text().strip() or "builtin") if self.honors_history_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             espn25_plan=(self.espn25_plan_field.text().strip() if self.espn25_plan_check.isChecked() else ""),
@@ -2420,6 +2597,7 @@ class BuildPanel(QWidget):
             espn_marks_2026=self._espn_marks_changed(),
             espn_wipes_boards_2026=self._espn_wipes_boards_changed(),  # b76-p2
             kick_meter_2026=self._kick_meter_changed(),  # b76-km
+            modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
             custom_intro=(self.custom_intro_field.text().strip() if self.custom_intro_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
@@ -2480,9 +2658,11 @@ class BuildPanel(QWidget):
             return True
         if p.kick_meter_2026:  # b76-km
             return True
+        if p.modern_goalposts:  # b77-v1
+            return True
         return bool(self.softdrink_project_check.isChecked() or self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression or p.franchise_economy
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.name_keyboard or p.penalties or p.uniform_choice or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
                     or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
@@ -2554,6 +2734,8 @@ class BuildPanel(QWidget):
                     continue
                 if key == "kick_meter_2026" and not self._kick_meter_changed():  # b76-km
                     continue
+                if key == "modern_goalposts" and not self._modern_goalposts_changed():  # b77-v1
+                    continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
                 if key == "helmet_finish" and not self._helmet_finish_changed():
@@ -2570,8 +2752,22 @@ class BuildPanel(QWidget):
         if self.commentary:
             labels.append(f"commentary lines ({len(self.commentary)})")
         if self.playbook_packs:
-            labels.append(f"playbook packs ({len(self.playbook_packs)})")
+            labels.append(self._playbook_label())
         return labels
+
+    def _playbook_label(self, *, files: bool = False) -> str:
+        """The pack line: plain pack count, or Modern N, Classic M once a disc is open and books are chosen."""
+
+        info = self.book_set_info()
+        if info is None or not (info["modern_count"] or info["incomplete_teams"]):
+            count = len(self.playbook_packs)
+            return f"playbook packs: {count}" if files else f"playbook packs ({count})"
+        managed = {path.name for path in mod_build.softdrink_book_paths(info["per_team"])}
+        other = sum(Path(path).name not in managed for path in self.playbook_packs)
+        text = book_set_status_text(info)
+        if other:
+            text += f"; {other} other pack{'s' if other != 1 else ''}"
+        return f"playbooks: {text}" if files else f"playbooks ({text})"
 
     def blocker(self) -> str:
         """Why Make my disc is unavailable, or "" when it can run (most blocking first)."""
@@ -2745,6 +2941,10 @@ class BuildPanel(QWidget):
                 and installed_abilities.get("model_version") == 2:
             self._apply_abilities_lock_boxes({key: installed_abilities.get(key)
                                               for key in ("lock_right_stick", "lock_special_moves", "lock_speedster")})
+            self._apply_abilities_star_boxes({key: installed_abilities.get(key)
+                                              for key in ("right_stick_stars_only", "charge_stars_only", "button_moves_stars_only")})
+            if installed_abilities.get("star_access"):
+                self._apply_abilities_access(installed_abilities["star_access"])
         money = self.cpu_money_downs_check
         installed_money = (self._state or {}).get("cpu_money_downs_settings") or None
         self.cpu_money_downs_level.blockSignals(True)
@@ -2771,7 +2971,7 @@ class BuildPanel(QWidget):
             combo.setEnabled(False)
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
-        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page"):
             if (self._state or {}).get(key) == "applied":
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
@@ -2828,6 +3028,9 @@ class BuildPanel(QWidget):
             self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
         else:
             self.summary_label.setText("Selected: nothing yet.")
+        advice = self.synced_folder_advice()
+        self.synced_note.setText(advice)
+        self.synced_note.setVisible(bool(advice))
         from mod_editor.studio.plan_controls import refresh_playbook_controls
         self._playbook_blockers = refresh_playbook_controls(
             self._boxes(), self._helpers, self._state, self._available)
@@ -2970,7 +3173,7 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _money_downs_level(self) -> str:
-        return str(self.cpu_money_downs_level.currentData() or "modern")
+        return str(self.cpu_money_downs_level.currentData() or "modern2")
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")
@@ -2981,7 +3184,7 @@ class BuildPanel(QWidget):
         combo = self.cpu_money_downs_level
         combo.blockSignals(True)
         if on and str(combo.currentData()) == "retail":
-            combo.setCurrentIndex(max(0, combo.findData("modern")))
+            combo.setCurrentIndex(max(0, combo.findData("modern2")))
         elif not on:
             combo.setCurrentIndex(max(0, combo.findData("retail")))
         combo.blockSignals(False)
@@ -3017,7 +3220,7 @@ class BuildPanel(QWidget):
         identity = self._hires_budget_identity
         if not self.hires_pack_check.isChecked() or identity != self._hires_identity():
             return
-        _, folder, scale, target, families = identity
+        _, folder, _scorebug_folder, scale, target, families = identity   # the identity also carries the scorebar folder
         self._hires_budget_serial += 1
         token = self._hires_budget_serial
         def preview(_progress):
@@ -3238,6 +3441,12 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("kick_meter_2026")
         return bool(self.kick_meter_check.isEnabled() and state == "retail" and self.kick_meter_check.isChecked())
 
+    def _modern_goalposts_changed(self):  # b77-v1
+        """Only turning the option on counts: Off leaves an already-modern source as it is."""
+        state = (self._state or {}).get("modern_goalposts")
+        return bool(self.modern_goalposts_check.isEnabled() and state == "retail"
+                    and self.modern_goalposts_check.isChecked())
+
     def _modern_color_changed(self):
         from mod_editor.core import nfl2k5_modern_color as colour
         state = (self._state or {}).get("modern_color")
@@ -3355,7 +3564,8 @@ class BuildPanel(QWidget):
 
     def _abilities_toggled(self, on):
         self.abilities_week.setEnabled(bool(on))
-        for box in self.abilities_lock_checks.values():
+        for box in (*self.abilities_lock_checks.values(), *self.abilities_star_checks.values(),
+                    *self.abilities_access_combos):
             box.setEnabled(bool(on))  # choices are kept while the parent is off
         if not on:
             self.abilities_week.blockSignals(True)
@@ -3379,6 +3589,31 @@ class BuildPanel(QWidget):
                     box.blockSignals(False)
         finally:
             self._abilities_lock_sync = False
+
+    def abilities_star_settings(self) -> dict:
+        """Runtime key names (right_stick_stars_only, charge_stars_only, button_moves_stars_only) -> bool."""
+        return {key.removeprefix("abilities_"): box.isChecked() for key, box in self.abilities_star_checks.items()}
+
+    def abilities_star_access(self) -> tuple:
+        """The access level name for each star class (no tier, Star, Superstar, X-Factor)."""
+        return tuple(combo.currentData() for combo in self.abilities_access_combos)
+
+    def _apply_abilities_access(self, levels) -> None:
+        for combo, name in zip(self.abilities_access_combos, levels):
+            index = combo.findData(name)
+            if index >= 0:
+                combo.blockSignals(True)
+                combo.setCurrentIndex(index)
+                combo.blockSignals(False)
+
+    def _apply_abilities_star_boxes(self, settings: dict) -> None:
+        """Set the two stars-only boxes silently (an installed disc dictates them, like the locks)."""
+        for key, box in self.abilities_star_checks.items():
+            value = settings.get(key.removeprefix("abilities_"), settings.get(key))
+            if value is not None:
+                box.blockSignals(True)
+                box.setChecked(bool(value))
+                box.blockSignals(False)
 
     def set_abilities_lock_settings(self, settings: dict) -> None:
         """From the Rosters page; emits no change signal back to Rosters, then refreshes once."""
@@ -3492,6 +3727,7 @@ class BuildPanel(QWidget):
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_option.2k5book")
         if not any(platform_compat.paths_alias(seed, p) for p in self.playbook_packs):
             self.set_playbook_packs([*self.playbook_packs, seed])
+            self._packs_edited()
 
     def _add_match_coverage_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_match_coverage.2k5book")
@@ -3499,6 +3735,7 @@ class BuildPanel(QWidget):
         if not any(platform_compat.paths_alias(seed, path) for path in paths):
             paths.append(seed)
         self.set_playbook_packs(paths)
+        self._packs_edited()
 
     def _add_modern_defense_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")
@@ -3506,12 +3743,14 @@ class BuildPanel(QWidget):
         if not any(platform_compat.paths_alias(seed, path) for path in paths):
             paths.append(seed)
         self.set_playbook_packs(paths)
+        self._packs_edited()
 
     def _add_playbook_pack(self) -> None:
         chosen, _f = QFileDialog.getOpenFileNames(self, "Choose playbook packs", str(Path.home()),
                                                   "Playbook packs (*.2k5book);;All files (*)")
         if chosen:
             self.set_playbook_packs(list(self.playbook_packs) + [str(path) for path in chosen])
+            self._packs_edited()
 
     def _remove_playbook_pack(self) -> None:
         rows = sorted({index.row() for index in self.packs_list.selectedIndexes()}, reverse=True)
@@ -3520,6 +3759,7 @@ class BuildPanel(QWidget):
             if 0 <= row < len(remaining):
                 del remaining[row]
         self.set_playbook_packs(remaining)
+        self._packs_edited()
 
     def set_playbook_packs(self, paths: list[str]) -> None:
         """The community packs installed into the copy, in order (also used by tests)."""
@@ -3528,13 +3768,110 @@ class BuildPanel(QWidget):
         self.packs_list.clear()
         for path in self.playbook_packs:
             self.packs_list.addItem(Path(path).name)
+        self.refresh_book_set()
         self._refresh()
+
+    # ----------------------------------------------- modern / classic books
+    def _book_host(self):
+        """The facade when it can hold a book set (a disc is open), else None."""
+
+        host = self._facade
+        if (host is None or not getattr(host, "source_ready", False)
+                or not callable(getattr(host, "set_softdrink_book_set", None))
+                or not callable(getattr(host, "project_softdrink_book_set", None))):
+            return None
+        return host
+
+    def book_set_info(self) -> dict | None:
+        """What the project's pack list makes modern and classic, from the facade; None without a disc."""
+
+        host = self._book_host()
+        if host is None:
+            return None
+        try:
+            return host.project_softdrink_book_set()
+        except ModEditorError:
+            return None
+
+    def refresh_book_set(self) -> None:
+        """Update the Modern N, Classic M line and the three buttons (read only)."""
+
+        info = self.book_set_info()
+        self.book_set_status.setText(book_set_status_text(info))
+        source = self.source_field.text().strip()
+        usable = (info is not None and self._available.get("playbook_packs", True)
+                  and (not source or tt.is_disc_image(source)))
+        for button in (self.book_all_button, self.book_none_button, self.book_choose_button):
+            button.setEnabled(usable)
+        if info is None:
+            reason = "Open your game disc first (top right)."
+        elif not usable:
+            reason = "Full disc required."
+        else:
+            reason = ""
+        self.book_all_button.setToolTip(reason or "Every team gets the modern SOFTDRINK playbook, offense and "
+                                        "defense together (the books on the SOFTDRINK 2K28 disc).")
+        self.book_none_button.setToolTip(reason or "Every team keeps the classic 2004 book from the source disc.")
+        self.book_choose_button.setToolTip(reason or "Pick which teams get the modern book; the others keep the "
+                                           "classic 2004 book.")
+
+    def _packs_edited(self) -> None:
+        """A pack was added or removed here: store the list in the project so Playbooks & Plays agrees."""
+
+        host = self._book_host()
+        if host is not None:
+            try:
+                self._sync_packs_to_host(host)
+            except (ModEditorError, ValueError, OSError) as exc:
+                show_operation_error(self, "save the playbook pack list", str(exc), source_unchanged=False)
+        self.refresh_book_set()
+        self.book_set_changed.emit()
+
+    def _sync_packs_to_host(self, host) -> None:
+        state = dict(host.project_build_settings())
+        state["playbook_packs"] = list(self.playbook_packs)
+        host.set_project_build_settings(state)
+
+    def _apply_book_set(self, teams) -> None:
+        """All 32 (None), none ([]) or the given teams modern; the facade does the work."""
+
+        host = self._book_host()
+        if host is None:
+            return
+        try:
+            self._sync_packs_to_host(host)       # pending choices first, so the facade edits the real list
+            host.set_softdrink_book_set(teams)
+            self.set_playbook_packs(list(host.project_build_settings().get("playbook_packs", ())))
+        except (ModEditorError, ValueError, OSError) as exc:
+            show_operation_error(self, "choose the playbook books", str(exc), source_unchanged=False)
+            self.refresh_book_set()
+            return
+        self.book_set_changed.emit()
+
+    def _choose_book_teams(self) -> None:
+        info = self.book_set_info()
+        if info is None:
+            return
+        dialog = BookSetTeamsDialog(info, self)
+        try:
+            if dialog.exec_() == dialog.Accepted:
+                self._apply_book_set(dialog.selected_teams())
+        finally:
+            dialog.deleteLater()
 
     def _choose_career_stats(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a career stats CSV", str(Path.home()), "CSV (*.csv);;All files (*)")
         if chosen:
             self.career_stats_field.setText(chosen)
             self.career_stats_check.setChecked(True)
+            self._refresh()
+
+    def _choose_honors_history(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose an award history file", str(Path.home()),
+                                                 "Award history (*.json *.csv);;All files (*)")
+        if chosen:
+            self.honors_history_field.setText(chosen)
+            self.honors_history_check.setChecked(True)
             self._refresh()
 
     def _choose_team_history(self) -> None:
@@ -3561,17 +3898,52 @@ class BuildPanel(QWidget):
             self._target_generated = False
             self._refresh()
 
-    def confirmation_text(self, plan: mod_build.BuildPlan) -> str:
-        """What the user is about to make: source, output, every selected change and file."""
+    def synced_folder_advice(self) -> str:
+        """A heads-up, not a refusal, when the disc copy or its source sits in a OneDrive-managed folder.
+
+        OneDrive uploads and scans a 6 GB image while it is written, which stalled or failed builds for
+        testers (the Source-changed install, and a project build that refuses a synced output folder only
+        after Make my disc). Windows only: the check reads OneDrive's own sync-root variables and the
+        Files On-Demand tag, and does nothing elsewhere."""
+
+        from mod_editor.core import nfl2k5_build_service as service
+        notes = []
+        for role, text in (("disc copy", self.target_field.text().strip()),
+                           ("source disc", self.source_field.text().strip())):
+            if not text:
+                continue
+            try:
+                found = service._cloud_synced_root(Path(text).parent)
+            except (OSError, ValueError):
+                found = None
+            if found is not None:
+                notes.append(f"the {role} is in {found[0]}")
+        if not notes:
+            return ""
+        return ("OneDrive warning: " + " and ".join(notes) + ", a folder OneDrive syncs. It uploads and scans the 6 GB disc while it is "
+                "written, which can make a build crawl or fail. For a safe build choose a plain folder such as C:\\2K5 "
+                "for the disc copy (Choose…).")
+
+    def confirmation_text(self, plan: mod_build.BuildPlan, *, brief: bool = False) -> str:
+        """What the user is about to make: source, output, every selected change and file.
+
+        ``brief`` keeps the dialog's first screen short: the first six changes and a count. The full
+        text is the same call without it, and sits under Show Details (and in the build summary)."""
 
         for key in ("music_project", "music_library"):
             if getattr(self, key + "_check").isChecked() and not getattr(plan, key) and not (key == "music_project" and self._include_session_project()):
                 raise ValueError("Choose a " + key.replace("_", " ") + " before building")
         is_image = tt.is_disc_image(plan.source)
+        labels = self.selected_labels()
+        if brief and len(labels) > BRIEF_CHANGES:
+            changes = (f"{len(labels)} selected: " + ", ".join(labels[:BRIEF_CHANGES])
+                       + f" … (+{len(labels) - BRIEF_CHANGES} more; the full list is under Show Details)")
+        else:
+            changes = ", ".join(labels) or "none"
         lines = [f"Source (unchanged): {plan.source}",
                  (f"Replace existing disc copy: {plan.target}" if plan.overwrite
                   else f"New {'disc' if is_image else 'executable'}: {plan.target}"),
-                 "", "Changes: " + (", ".join(self.selected_labels()) or "none")]
+                 "", "Changes: " + changes]
         files = []
         if self.softdrink_project_check.isChecked():
             files.append(f"SOFTDRINK league artwork: {self.softdrink_project_field.text()}")
@@ -3579,6 +3951,8 @@ class BuildPanel(QWidget):
             files.append(f"team history CSV: {Path(plan.team_history).name}")
         if plan.career_stats:
             files.append(f"career stats CSV: {Path(plan.career_stats).name}")
+        if plan.honors_history and plan.honors_history != "builtin":
+            files.append(f"award history: {Path(plan.honors_history).name}")
         if plan.prospect_names and plan.prospect_names != "modern":
             files.append(f"prospect names CSV: {Path(plan.prospect_names).name}")
         if plan.roster_edits:
@@ -3592,11 +3966,15 @@ class BuildPanel(QWidget):
         if plan.espn25_plan:
             files.append(f"ESPN Anniversary plan: {Path(plan.espn25_plan).name}")
         if plan.playbook_packs:
-            files.append(f"playbook packs: {len(plan.playbook_packs)}")
+            files.append(self._playbook_label(files=True))
         if self._include_session_project():
             files.append("shared project: all current edits, including Music replacements")
-            for model in getattr(self._facade, "model_project_plan", ()):
-                lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
+            models = list(getattr(self._facade, "model_project_plan", ()))
+            if brief and len(models) > BRIEF_CHANGES:
+                lines.append(f"Models: {len(models)} (listed under Show Details; in-game UNWITNESSED)")
+            else:
+                for model in models:
+                    lines.append("Model: " + model["summary"] + " (saved checked bytes; in-game UNWITNESSED)")
         if plan.commentary:
             files.append(f"commentary lines: {len(plan.commentary)}")
         if plan.player_tags:
@@ -3716,6 +4094,22 @@ class BuildPanel(QWidget):
             self.progress_label.setText(message)
             self.progress_text_changed.emit(message)
 
+    def _confirm_make_disc(self, plan: mod_build.BuildPlan) -> bool:
+        """Ask before writing. A long change list goes under Show Details, so OK and Cancel stay on screen
+        (testers with many options ticked could not reach OK: a plain message box grew taller than the screen)."""
+
+        full = self.confirmation_text(plan)
+        brief = self.confirmation_text(plan, brief=True)
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Question)
+        box.setWindowTitle("Make my disc?")
+        box.setText(brief)
+        if brief != full:
+            box.setDetailedText(full)
+        box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        box.setDefaultButton(QMessageBox.Cancel)
+        return box.exec_() == QMessageBox.Ok
+
     def _build(self) -> None:
         # The blocker runs first: it is what takes the page back to the disc a
         # vanished build copy came from, and the plan must name the file the
@@ -3723,9 +4117,7 @@ class BuildPanel(QWidget):
         if self.blocker():
             return
         plan = self.plan()
-        answer = QMessageBox.question(self, "Make my disc?", self.confirmation_text(plan),
-                                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
-        if answer != QMessageBox.Ok:
+        if not self._confirm_make_disc(plan):
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
         self._requested_build_labels = self.selected_labels()
@@ -3808,9 +4200,24 @@ class BuildPanel(QWidget):
             self._point_at_the_next_source(target)
         self._refresh()
 
+    def _running_line(self) -> str:
+        """Where a build that is still running is, for a help request: its last progress line and how long ago it moved.
+
+        "Stuck at Compacting disc image" arrived as a screenshot because the summary said only "Build in progress."
+        """
+        task = self._task
+        if task is None:
+            return ""
+        now = time.monotonic()
+        elapsed = max(0, int(now - task.started))
+        quiet = max(0, int(now - task.last_update))
+        return (f"Still running: {task.latest_progress} • {elapsed // 60}:{elapsed % 60:02d} elapsed "
+                f"(last progress update {quiet} s ago)")
+
     def _copy_build_summary(self) -> None:
         from PyQt5.QtWidgets import QApplication
-        QApplication.clipboard().setText(self._last_build_summary)
+        running = self._running_line()
+        QApplication.clipboard().setText(self._last_build_summary + ("\n" + running if running else ""))
         self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
 
     def _failed(self, message: str) -> None:

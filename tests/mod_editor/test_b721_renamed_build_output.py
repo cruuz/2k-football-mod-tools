@@ -214,7 +214,7 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
     def run_build(self, target: Path) -> None:
         self.panel.target_field.setText(str(target))
         self.panel._target_generated = False
-        with mock.patch.object(QMessageBox, "question", return_value=QMessageBox.Ok), \
+        with mock.patch.object(QMessageBox, "exec_", return_value=QMessageBox.Ok), \
              mock.patch.object(QMessageBox, "information"):
             self.panel._build()
         self.assertTrue(target.is_file(), self.panel.status_label.text())
@@ -254,7 +254,7 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         first.rename(renamed)
         kept = digest(renamed)
 
-        with mock.patch.object(QMessageBox, "question", return_value=QMessageBox.Ok), \
+        with mock.patch.object(QMessageBox, "exec_", return_value=QMessageBox.Ok), \
              mock.patch.object(QMessageBox, "information"):
             self.panel._build()
 

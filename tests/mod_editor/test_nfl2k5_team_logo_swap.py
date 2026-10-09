@@ -1,5 +1,5 @@
 """The practicing team's logo at the practice field's midfield (job pf, P1): the xbe_space owner (status, apply, exact
-revert, guards, its place after every existing read-only owner) and the game's own field swap loop run under Unicorn on
+revert, guards, its place before the appended b77 read-only owners) and the game's own field swap loop run under Unicorn on
 the retail and the patched executable (the eighth pair reaches a material named teamlogo, only that material, and only
 when a logo is loaded)."""
 import struct
@@ -71,17 +71,37 @@ class Owner(unittest.TestCase):
         with self.assertRaises(ValueError):
             tl.apply(bytes(bad))
 
-    def test_it_sorts_after_every_read_only_owner_in_the_union(self):
-        """In the dormant union the table lands after every existing read-only owner, and no other owner moves."""
+    def test_it_preserves_earlier_owners_and_shifts_only_later_read_only_tables(self):
+        """The 64-byte table precedes the explicitly appended b77 read-only owners."""
         union = space.dormant_union()
         self.assertIn(tl.REQUESTS[0], union)
         without = [r for r in union if r[0] != tl.OWNER]
-        before = {(a["owner"], a["kind"]): a["va"] for a in space._scale_allocations(without)}
-        after = {(a["owner"], a["kind"]): a["va"] for a in space._scale_allocations(union)}
-        mine = after.pop((tl.OWNER, "read_only"))
-        self.assertEqual(before, after)
-        ro = [va for (owner, kind), va in after.items() if kind == "read_only" and owner != space.DIRECTORY_OWNER]
-        self.assertGreater(mine, max(ro))
+        key = lambda row: (row["owner"], row["kind"], row.get("owner_offset", 0))
+        before_rows = space._scale_allocations(without)
+        after_rows = space._scale_allocations(union)
+        before = {key(row): row for row in before_rows}
+        after = {key(row): row for row in after_rows}
+        self.assertEqual(len(before), len(before_rows))
+        self.assertEqual(len(after), len(after_rows))
+        mine = after.pop((tl.OWNER, "read_only", 0))
+        self.assertEqual(mine["size"], 64)
+        self.assertEqual(set(before), set(after))
+        shifted = {
+            ("nfl2k5_letter_grades", "read_only", 0),
+            ("nfl2k5_period_goalposts", "read_only", 0),
+        }
+        self.assertEqual({key for key in before if before[key] != after[key]}, shifted)
+        for allocation, row in before.items():
+            expected = dict(row)
+            if allocation in shifted:
+                expected["va"] += 64
+                expected["raw"] += 64
+            self.assertEqual(after[allocation], expected, allocation)
+        earlier = [row["va"] for (owner, kind, _), row in after.items()
+                   if kind == "read_only" and owner != space.DIRECTORY_OWNER
+                   and owner not in space.LATE_OWNERS]
+        self.assertGreater(mine["va"], max(earlier))
+        self.assertLessEqual(mine["va"] + mine["size"], min(after[key]["va"] for key in shifted))
 
     def test_a_union_build_installs_into_its_reserved_table(self):
         """The builder reserves the whole selected union first; the owner then installs into its own place."""

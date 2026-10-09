@@ -86,12 +86,13 @@ RETAIL_RESOURCE_SHA256 = "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a7
 #: Only the category table's defensive slot codes differ, so the 7-on-7 sets are written on top of it with
 #: their own personnel groups recoded by the same rule; the result is byte-identical to recoding a 7-on-7 book.
 RECODED_RESOURCE_SHA256 = "83ac912b3b44505ced3598b76cecc5ea71789e2273cb2bbd331b91d5b8d97cfb"
-# The existing depth-role writer changes exactly 12 retail bytes, independently
+# The beta-76.4 lead-back repair (2c82378d) makes the depth-role writer change
+# exactly 14 retail bytes: nine core roles and five SPECIAL slots, independently
 # of the six pooled-position bytes. Accept only these complete known resources.
 KNOWN_SOURCE_STATES = {
     RETAIL_RESOURCE_SHA256: "retail", RECODED_RESOURCE_SHA256: "recoded",
-    "6983c525df582b063028281b94e26554744ea5ea44a509047974e7f7fd6a937e": "retail_depth_roles",
-    "e521c58f206fa32eae8f06d31ac62eb2796d8377636b895b371c66f9596bfe80": "recoded_depth_roles",
+    "fa3675643f57d755b7b9ed25cbd98b2d81050a9197b0e25955f310c9d35e1d7a": "retail_depth_roles",
+    "a16faf31ade1137282b251421566d9809a80261cea3ca41b2211fa811b072b42": "recoded_depth_roles",
 }
 # Full output pins include the wrapper, unused space, old drills, all links,
 # personnel, geometry and node operands. Structural validation alone cannot
@@ -99,8 +100,8 @@ KNOWN_SOURCE_STATES = {
 APPLIED_RESOURCE_STATES = {
     "e4f62632e0dbff7298aa5ee2a5c68bf9ed702cc23bda94e15a2cc47ffd39d2e7": "retail",
     "3844d1f9a56d34b69ab9b99e08b35cbc6f5601d068b305b4c0e80986c6348639": "recoded",
-    "fd9b6c9999340dea5883f149fbc74c4d90b027ba2b96c88e14373434786b0b8f": "retail_depth_roles",
-    "80334a4d82ec7524c466cf4ed2c00f9d5e1509d655e18a571275f6c6edc10fbb": "recoded_depth_roles",
+    "1694eff5a9b26cc6f4ccdbd52bda695d17aebad06cfa306756f267ea0a063bd7": "retail_depth_roles",
+    "36b708c768145ce93327aa2d12c418e169a060ee80316ece1ac45bbb16f17cf6": "recoded_depth_roles",
 }
 VERSION = 2
 RETAIL_FORMATIONS = 23

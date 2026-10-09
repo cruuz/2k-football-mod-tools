@@ -1,0 +1,717 @@
+{
+ "team": "DEN",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Payton West Coast progression",
+ "staff": "Sean Payton / Davis Webb",
+ "family": "west_coast",
+ "feature": "WR1",
+ "key_players": "Courtland Sutton; Bo Nix",
+ "depth_step": 1,
+ "tendencies": {
+  "shotgun_pct": 65.15,
+  "pistol_pct": 4.49,
+  "play_action_pct": 24.11,
+  "motion_pct": 46.52,
+  "personnel": {
+   "12": 114,
+   "02": 4,
+   "11": 690,
+   "21": 55,
+   "other": 93,
+   "20": 4,
+   "22": 77,
+   "01": 20,
+   "13": 21,
+   "23": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Doubles",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Trey",
+   "Pistol Doubles",
+   "Gun Wing"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Pistol Doubles",
+   "Gun Empty Y",
+   "Ace Jumbo"
+  ]
+ },
+ "boost": {
+  "Bubble Screen": 1,
+  "Dagger": 1,
+  "Double Post": 1,
+  "Drive": 2,
+  "Levels": 2,
+  "Mesh": 5,
+  "Mills": 1,
+  "RB Screen": 2,
+  "Slant Flat": 2,
+  "Smash": 1,
+  "Snag": 2,
+  "Spacing": 2,
+  "Stick": 4,
+  "Texas": 1
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Bunch",
+   "concept": "Mesh",
+   "name": "Bunch Mesh",
+   "overrides": {
+    "routes": {
+     "S1": [
+      "route",
+      "Corner",
+      12
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Drive",
+   "name": "Drive Swing",
+   "overrides": {
+    "routes": {
+     "B": [
+      "check",
+      "Swing"
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "DEN RB Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bubble Screen",
+   "name": "DEN Bubble Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Ace Wing",
+   "concept": "TE Screen",
+   "name": "DEN TE Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "W1": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Four Verticals",
+   "name": "DEN Four Verticals",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "S1",
+     "S2",
+     "W1",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Hitch Seam",
+   "name": "DEN Hitch Seam",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "S2",
+     "W1",
+     "S1",
+     "S3"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Slant Flat",
+   "name": "DEN Slant Flat",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W1",
+     "S2",
+     "W2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Bubble Screen",
+   "name": "DEN Bubble Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Wing",
+   "concept": "Stick",
+   "name": "DEN Stick",
+   "overrides": {
+    "depth_step": 2.0,
+    "reads": [
+     "W1",
+     "W2",
+     "B",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "WR Slip Screen",
+   "name": "DEN WR Slip Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "RB Screen",
+   "name": "DEN RB Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.denverbroncos.com/news/head-coach-sean-payton-names-davis-webb-as-offensive-coordinator-and-logan-kilgore-as-quarterbacks-coach)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.33 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Empty Y": {
+   "own": "Straight",
+   "mask": [
+    "Straight"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "DEN RB Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.6% (league 9.1)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Bubble Screen",
+    "name": "DEN Bubble Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.6% (league 9.1)"
+   },
+   {
+    "formation": "Ace Wing",
+    "concept": "TE Screen",
+    "name": "DEN TE Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "W1": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.6% (league 9.1)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Four Verticals",
+    "name": "DEN Four Verticals",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "S1",
+      "S2",
+      "W1",
+      "W2"
+     ]
+    },
+    "reason": "targets GO 10.3% (league 8.2)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Hitch Seam",
+    "name": "DEN Hitch Seam",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "S2",
+      "W1",
+      "S1",
+      "S3"
+     ]
+    },
+    "reason": "targets GO 10.3% (league 8.2)"
+   },
+   {
+    "formation": "Pistol Doubles",
+    "concept": "Slant Flat",
+    "name": "DEN Slant Flat",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W1",
+      "S2",
+      "W2",
+      "S1"
+     ]
+    },
+    "reason": "rpo_pct 5.5 (league 2.2)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Bubble Screen",
+    "name": "DEN Bubble Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "rpo_pct 5.5 (league 2.2)"
+   },
+   {
+    "formation": "Gun Wing",
+    "concept": "Stick",
+    "name": "DEN Stick",
+    "overrides": {
+     "depth_step": 2.0,
+     "reads": [
+      "W1",
+      "W2",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "rpo_pct 5.5 (league 2.2)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "WR Slip Screen",
+    "name": "DEN WR Slip Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "screen_pct 11.3 (league 7.8)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "RB Screen",
+    "name": "DEN RB Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "screen_pct 11.3 (league 7.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 86.1%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   3,
+   0
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   2,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   3,
+   2,
+   4
+  ],
+  "Heavy Wing": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   2,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   0,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   0,
+   4,
+   0
+  ],
+  "Pistol Doubles": [
+   1,
+   4,
+   1
+  ],
+  "Gun Empty Y": [
+   2,
+   1,
+   1
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ]
+ }
+}

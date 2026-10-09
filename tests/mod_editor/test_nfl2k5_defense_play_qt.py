@@ -143,7 +143,9 @@ class DefenseQtTests(unittest.TestCase):
     def test_double_a_and_exchange_show_experimental_and_keep_pairs(self):
         w = self.wizard()
         w.page_formation._double_a()
-        self.assertEqual(w.page_formation.positions[4:6], [[-76, 91], [76, 91]])
+        # The native centimeter grid places these linebackers 80 cm to either
+        # side and 100 cm behind the line, as the core compiler test checks.
+        self.assertEqual(w.page_formation.positions[4:6], [[-80, 100], [80, 100]])
         self.assertIn('EXPERIMENTAL', w.page_formation.name_edit.text())
         d = lib.make_defense_design(self.book, w.body, 23, 'Stock Exchange')
         partners = [(s, int(v[5])) for s, chain in enumerate(d.chains) for op, v in chain if op == 0x0E and v[6]]

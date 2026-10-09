@@ -84,9 +84,9 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 97767)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 100679)  # b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84546)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84562)  # b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])
@@ -137,11 +137,13 @@ class CompleteOwnerTests(unittest.TestCase):
         # The era and stock-book owners consume 3584 of the previous 3776
         # spare RX bytes. Venue labels occupy legacy tails. Pin the remaining
         # 192-byte boundary, including alignment and the final K128 owner.
-        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 192, 16),))
+        # b77-f4: the letter grades owner takes 160 of those 192 bytes (and 240 read-only bytes): 32 remain.
+        # b77-f4b: the progression row takes 16 more: 16 remain.
+        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 16, 16),))
         self.assertTrue(space.is_scaleout(overflow))
         self.assertEqual(space.status(overflow), "applied")
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.plan(REQUESTS + (("extra", "code", 208, 16),))
+            space.plan(REQUESTS + (("extra", "code", 32, 16),))
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
             space.plan(REQUESTS + (("extra", "code", 98305, 16),))
 

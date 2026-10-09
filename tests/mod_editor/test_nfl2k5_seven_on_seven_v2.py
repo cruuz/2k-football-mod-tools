@@ -175,6 +175,21 @@ class BookRegressionTests(unittest.TestCase):
         at = 32 + self.recode.CATEGORY_BASE
         return raw[:at] + table + raw[at + len(table):]
 
+    def test_depth_role_pins_keep_beta764_lead_back_assignments(self):
+        # Independent retail offsets: nine WR role bytes plus five HB slots.
+        expected = {0x99A8, 0x99A9, 0x99AA, 0x99B7, 0x99B8, 0x99B9,
+                    0x99C8, 0x99C9, 0x99CA, 0x996B, 0x997B, 0x99AB,
+                    0x99BB, 0x99CB}
+        for raw in (self.retail, self.pool(self.retail)):
+            normalised = roles.normalise(raw).replacement
+            self.assertEqual(len(normalised), len(raw))
+            self.assertEqual({i for i, (a, b) in enumerate(zip(raw, normalised)) if a != b},
+                             expected)
+            # Spread formations use HB0; power formations use independent HB1.
+            self.assertEqual([normalised[i] for i in (0x99AB, 0x99BB, 0x99CB)], [10] * 3)
+            self.assertEqual([normalised[i] for i in (0x996B, 0x997B)], [42] * 2)
+            self.assertIn(hashlib.sha256(normalised).hexdigest(), book.KNOWN_SOURCE_STATES)
+
     def test_all_six_writer_orders_and_all_four_exact_replays(self):
         ops = {"seven": lambda raw: book.build_replacement(raw)[0], "pools": self.pool,
                "roles": lambda raw: roles.normalise(raw).replacement}

@@ -26,6 +26,14 @@ This option (job m1 of the moments wave) adds up to 26 moments whose team-season
 Measured (m1, v7 lab run): the main heap has 16 MB free at the Anniversary list and 128 KB after game setup, so
 nothing here stays resident during a game: situation.iff is released at selection and the imported teams use the
 retail spare slots.
+
+Beta 77 (job a1; Noah 10/7: "click one and another wrong one opens"). The chronological menu keeps the physical SITU rows
+and maps only the list's display ordinal. Beta 76.5 mapped it in the select handler (20CB45), the completed-moment test
+(20C390), the restored highlight (20C2F5) and the caption function 20C350, which retail never calls (no caller, no table
+entry). The rows the player actually sees are drawn by the callbacks in the list descriptor (.rdata 5293CC, 52947C,
+52952C, 5295DC): the title and date cell 20C800 and the two mini-helmet cells 20C710 and 20C790. Each fetched its
+record with the raw list row, so display rows 22 to 48 showed one moment and opened another. Four more call sites of
+2CFD40 (ROW_HOOKS) now go through the same display-to-physical helper; nothing else changes.
 """
 from __future__ import annotations
 
@@ -109,6 +117,16 @@ DISPLAY_HOOKS = (
     ("display_select", 0x20CB45, "e8f6310c00", "display_select"),
     ("display_return", 0x20C2F5, "8b155818bf00", "display_return"),
 )
+# beta 77: the live row-draw callbacks of the list. Retail bytes are `call 2CFD40` (record_get, ECX = the row); the
+# display helper maps ECX through the order table and jumps to 2CFD40, so the call keeps every other register and result.
+ROW_HELPER = "display_caption"
+ROW_HOOKS = (
+    ("row_helmet_home", 0x20C71E, "e81d360c00"),         # 20C710: first record read of the first mini-helmet cell
+    ("row_helmet_home_team", 0x20C740, "e8fb350c00"),    # 20C710: second record read (the team name and kit)
+    ("row_helmet_away", 0x20C79B, "e8a0350c00"),         # 20C790: the second mini-helmet cell
+    ("row_title_date", 0x20C813, "e828350c00"),          # 20C800: the title and date text cell
+)
+ROW_LABELS = frozenset(label for label, _va, _retail in ROW_HOOKS)
 # Physical identities of the original 25 are the profile's saved-bit and speech identities. Sorting the
 # presentation rather than the records preserves those identities, including already completed moments.
 RETAIL_DATES = (
@@ -143,6 +161,7 @@ GUARDS = (
     (0x20C5C0, 0x5E, "the record copy at selection"),
     (0x20C670, 0x54, "the won-moment mark and save"),
     (0x20CB30, 0x15C, "the moment select handler"),
+    (0x20C710, 0x140, "the list's row-draw callbacks (mini helmets, title and date)"),
     (0x2D17B0, 0x19D, "Load Historic Team, called unchanged"),
     (0x196DC0, 0x18, "the profile's saved marks"),
     (0x30CF0, 0x40, "text equality used by the search"),
@@ -160,6 +179,7 @@ GUARD_SHA256 = {
     0x20c5c0: "38f566b07df7385262dd77f515ac3ae598d6da48413b328cbd334456be852f5f",
     0x20c670: "7693bd6488be429005064f91c97b4b8ddede752732d70a2b1e3c7a84b5671aac",
     0x20cb30: "404756b49a8199ff68d8255d937072f7c7cd9fdaa0aa48358c44117873cd84c5",
+    0x20c710: "36659f08ae3fc0d230696fd0bda21ce85ef7d77f637e25d9455cd1ca90eeade1",
     0x2d17b0: "c72530b9b42e5e53d7b9fd02e004d6e5e7a719daa6d9b5ef16874bd8be27b8d3",
     0x196dc0: "87ca59fb8c7394ee8e7c9cfeba1e33964da0d8b3424e22f0e460513ca92761e4",
     0x30cf0: "50a55aabd822ec7502c7c9e027e7645f2ee867a582be30adfaebec51205fff5d",
@@ -401,8 +421,20 @@ class Data:
 
 # ------------------------------------------------------------------------------------------------ the SITU chunk
 
+MODERN_KIT = "modern"
+
+
+def modern_sides(data):
+    """{(physical SITU row, side)} whose authored kit is "modern": style 0 is the 2026 kit there, so the historic styles
+    step (nfl2k5_historic_styles) leaves the kit at 0 instead of moving it to the franchise's spare (retail 2004) style."""
+    return {(RETAIL_COUNT + i, side) for i, m in enumerate(data.moments) for side in ("away", "home")
+            if m["kits"][side] == MODERN_KIT}
+
+
 def kit_index(reference_uniforms, kit):
-    """kit: an int uniform index, or {"era_year": Y}; reference_uniforms: [(index, first, last)] from the roster."""
+    """kit: an int uniform index, {"era_year": Y}, or "modern" (style 0, the 2026 kit); reference_uniforms: [(index, first, last)]."""
+    if kit == MODERN_KIT:
+        return 0
     if type(kit) is int:
         require(0 <= kit <= 14 and any(i == kit for i, _, _ in reference_uniforms), f"no uniform {kit}")
         return kit
@@ -613,6 +645,11 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
             v["pbp_id"], v["photo_id"] = hit
         elif look.get("retail") and look["retail"]["photo"] not in main_photos:
             v["photo_id"] = look["retail"]["photo"]
+        # beta 77 (job c2): a matched person's play-by-play id is a copy of his main-roster record. That record held the
+        # retired "double zero" cue (9100) before beta 76.5, and a number call is that roster's current jersey, not this
+        # season's. Resolve it the way the final roster pass does: recorded names stay, 0/9100/9101/unrecorded become the
+        # exact surname cue or 9000 + this season's jersey, and an explicit number call follows this season's jersey.
+        v["pbp_id"] = rr.commentary_id(row["last"], v["jersey"], v["pbp_id"])
         # The donor's skin, face and dreads belonged to someone else. The tone (skin bits 0-2) comes from the
         # appearance data; a player with a retail 2004 record also takes its skin group, face and dreads.
         if look.get("tone") is not None:
@@ -906,8 +943,9 @@ def announcer_guard():
     return bytes(code).ljust(31, b"\x90")
 
 
-def sites(code_va, data_va, total, *, legacy=False):
-    """(label, va, retail bytes, patched bytes) for every in-place edit."""
+def sites(code_va, data_va, total, *, legacy=False, rows=True):
+    """(label, va, retail bytes, patched bytes) for every in-place edit. rows=False leaves out the beta 77 row-draw
+    hooks (the install of beta 76.5)."""
     out = []
     for label, va, retail, entry, kind in HOOKS:
         before = bytes.fromhex(retail)
@@ -924,6 +962,11 @@ def sites(code_va, data_va, total, *, legacy=False):
             target = code_va + DISPLAY_OFFSET + assembly.DISPLAY_LABELS[entry]
             before = bytes.fromhex(retail)
             out.append((label, va, before, (b"\xe8" + struct.pack("<i", target - va - 5)).ljust(len(before), b"\x90")))
+        if rows:
+            target = code_va + DISPLAY_OFFSET + assembly.DISPLAY_LABELS[ROW_HELPER]
+            for label, va, retail in ROW_HOOKS:
+                before = bytes.fromhex(retail)
+                out.append((label, va, before, (b"\xe8" + struct.pack("<i", target - va - 5)).ljust(len(before), b"\x90")))
     return out
 
 
@@ -968,6 +1011,7 @@ def _recognize(payload, data, *, legacy=False):
                             order=None if legacy else display_order(data), legacy=legacy)
         # beta 76.0-76.2 installed the same code without the star copy (int3 there) and left the C1030 site retail
         earlier = expected[:STAR_OFFSET] + b"\xcc" * (TABLE_OFFSET - STAR_OFFSET) + expected[TABLE_OFFSET:]
+    row_states = set()
     for label, va, before, after in edits:
         actual = image.read(va, len(before))
         if label == "star_copy" and earlier is not None and body == earlier:
@@ -975,11 +1019,16 @@ def _recognize(payload, data, *, legacy=False):
             # is valid. A new JMP paired with that body would jump into int3.
             states.add("applied" if actual == before else "foreign")
             continue
-        states.add("retail" if actual == before else "applied" if owned and actual == after else "foreign")
+        state = "retail" if actual == before else "applied" if owned and actual == after else "foreign"
+        (row_states if label in ROW_LABELS else states).add(state)
     if owned:
         states.add("retail" if body == b"\xcc" * CODE_SIZE else
                    "applied" if expected is not None and body in (expected, earlier) else "foreign")
     require(states in ({"retail"}, {"applied"}), "foreign/mixed 25 more moments hooks or owned code")
+    # beta 77: the four row-draw hooks are all retail or all installed. A beta 76.5 install is applied without them;
+    # apply() completes exactly those call sites (row_hooks_status tells the two apart).
+    require(row_states in (set(), {"retail"}, {"applied"}) and (row_states != {"applied"} or states == {"applied"}),
+            "foreign/mixed 25 more moments row-draw hooks")
     for va, size, what in GUARDS:
         pin = GUARD_SHA256.get(va)
         require(pin is None or _guard_digest(image, va, size, edits) == pin, f"foreign {what} at {va:#x}")
@@ -1004,8 +1053,58 @@ def legacy_status(payload, data):
         return "foreign"
 
 
+def row_hooks_status(payload, data=None):
+    """The beta 77 row-draw hooks on a recognized install: 'applied' (all four call sites go through the display
+    helper), 'previous' (a beta 76.5 install: the owner is applied and the four call sites are still retail), 'retail'
+    (no moments install) or 'foreign'."""
+    try:
+        data = Data.load() if data is None else data
+        state = _recognize(payload, data)
+        if state == "retail":
+            return "retail"
+        code, dat = allocations(payload)
+        image = XbeImage(payload)
+        rows = [edit for edit in sites(code["va"], dat["va"], RETAIL_COUNT + len(data.moments))
+                if edit[0] in ROW_LABELS]
+        found = {"applied" if image.read(va, len(before)) == after else
+                 "previous" if image.read(va, len(before)) == before else "foreign"
+                 for _label, va, before, after in rows}
+        return next(iter(found)) if len(found) == 1 else "foreign"
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, OSError):
+        return "foreign"
+
+
+def _complete_row_hooks(payload, data, common):
+    """A beta 76.5 install: write the four row-draw call sites and reseal the one section they sit in. The owned code,
+    the allocator directory and every other byte stay as they are."""
+    code, dat = allocations(payload)
+    edits = [edit for edit in sites(code["va"], dat["va"], RETAIL_COUNT + len(data.moments)) if edit[0] in ROW_LABELS]
+    require(len(edits) == len(ROW_HOOKS), "row-draw hook sites")
+    image = XbeImage(payload)
+    buffer = bytearray(payload)
+    touched = []
+    for _label, va, before, after in edits:
+        at = image.offset(va, len(before))
+        require(bytes(buffer[at:at + len(before)]) == before, "row-draw call site is not retail")
+        buffer[at:at + len(before)] = after
+        touched.append(at)
+    for section in _sections(buffer):
+        if any(section.raw_offset <= at < section.raw_offset + section.raw_size for at in touched):
+            require(section.stored_digest == section_digest(payload, section), "section digest was already stale")
+            buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
+    result = bytes(buffer)
+    require(_recognize(result, data) == "applied" and row_hooks_status(result, data) == "applied",
+            "row-draw hooks postcondition failed")
+    return result, dict(common, status="upgraded", upgraded_from="beta-76.5 display hooks", rows_completed=True,
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)), file_growth=0,
+                        before_sha256=sha(payload), after_sha256=sha(result),
+                        edits=[dict(label=name, va=hex(va), size=len(before), before=before.hex(), after=after.hex())
+                               for name, va, before, after in edits])
+
+
 def apply(payload, data=None, *, legacy_data=None):
-    """Install on a clean base, or replay an installed copy unchanged."""
+    """Install on a clean base, replay an installed copy unchanged, or complete the beta 77 row-draw hooks on a beta
+    76.5 install (four call sites; nothing else moves)."""
     data = Data.load() if data is None else data
     try:
         state = _recognize(payload, data)
@@ -1019,6 +1118,8 @@ def apply(payload, data=None, *, legacy_data=None):
                   team_seasons=len(entries), rx_bytes=CODE_SIZE, rw_bytes=DATA_SIZE, save_growth=0,
                   display_order=list(display_order(data)), physical_order_preserved=True)
     if state == "applied":
+        if row_hooks_status(payload, data) == "previous":
+            return _complete_row_hooks(payload, data, common)
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     if space.status(payload) == "retail":
         allocated, receipt = space.apply(payload, REQUESTS)
@@ -1277,11 +1378,13 @@ def apply_to_image(path, *, data=None, one_pool=False, named=False):
                 named_previews=named)
 
 
-def _historical_stadiums(data):
+def _historical_stadiums(data, *, previous=False):
     """Known physical-row venue alternatives, bound to the shipped field catalog's dated moments.
 
     Reading the JSON directly preserves this executable owner's import closure. Arbitrary stadium words are
-    never masked: each actual word must equal its original index or this catalog's exact dated alternative.
+    never masked: each actual word must equal its original index or a catalog alternative for that dated row.
+    The previous profile admits the final v0.6 selection before the MVX environment repair, including aliases
+    whose scene donor differs from the shared metadata record. Neither profile changes the filename hook.
     """
     path = ROOT / "data/nfl2k5_espn25_fields.json"
     if not path.is_file():
@@ -1296,6 +1399,8 @@ def _historical_stadiums(data):
     result = {}
     for i, row in enumerate(rows[:RETAIL_COUNT + len(data.moments)]):
         value = row.get("native_stadium_index")
+        if previous:
+            value = row.get("previous_native_stadium_index", value)
         require(type(value) is int and 0 <= value < 82, "foreign historical stadium index")
         date = RETAIL_DATES[i] if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["date"]
         iso = datetime.datetime.strptime(_date_ok(date), "%B %d, %Y").date().isoformat()
@@ -1315,13 +1420,14 @@ def situ_rows(collection, data):
         return "foreign"
     rows, values = [], []
     historical = _historical_stadiums(data)
+    previous_historical = _historical_stadiums(data, previous=True)
     for i in range(count):
         record = body[sc.RECORDS + i * sc.STRIDE:sc.RECORDS + (i + 1) * sc.STRIDE]
         rows.append([sc.utf16(body, sc.rel(body, sc.RECORDS + i * sc.STRIDE + p)) for p in sc.POINTERS])
         masked = bytearray(record)
         original = RETAIL_STADIUMS[i] if i < RETAIL_COUNT else data.moments[i - RETAIL_COUNT]["stadium_index"]
         stadium = sc.u32(record, 0x10)
-        if stadium not in (original, historical.get(i, original)):
+        if stadium not in (original, historical.get(i, original), previous_historical.get(i, original)):
             return "foreign"
         # Restore only the checked venue word for the existing full retail situation-value hash.
         struct.pack_into("<I", masked, 0x10, original)

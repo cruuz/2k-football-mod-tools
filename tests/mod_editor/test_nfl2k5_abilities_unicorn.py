@@ -54,7 +54,7 @@ class InstructionTests(unittest.TestCase):
             for stage in (7,8,9):
                 for week in range(18):
                     m.u32(0xE576A0,mode);m.u32(0xE576A4,stage);m.u32(0xE576B4,week)
-                    expected=0 if (mode,stage,week)==(2,8,7) else patch.ABILITY_MASK
+                    expected=0 if (mode,stage,week)==(2,8,7) else patch.ABILITY_MASK|patch.GRANT_MASK   # 0xFFFF is a starred X-Factor: it also holds the default 'full' grants
                     self.assertEqual(m.run('effective',ecx=m.R),expected)
         self.assertEqual(bytes(m.uc.mem_read(m.R+0x52,2)),b'\xff\xff')
         for pointer in (0,0xFFFFFFFF): self.assertEqual(m.run('effective',ecx=pointer),0)

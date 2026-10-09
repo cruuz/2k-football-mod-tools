@@ -25,11 +25,14 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-# e2: the complete live union leaves 192 RX and 648 RO bytes. Fill the RX
-# reservation exactly and leave enough RO for a sealed synthetic constant.
+# e2: the complete live union left 192 RX and 648 RO bytes; b77-v1b: the period goalposts owner (176 RX, 32 RO) takes most of
+# that, leaving 16 RX and 552 RO. Fill the RX reservation exactly and leave enough RO for a sealed synthetic constant.
 # Page-sized alignment remains covered independently by the capacity tests.
-LARGE = (("synthetic_scaleout", "code", 192, 16),
-         ("synthetic_scaleout", "read_only", 512, 16))
+# b77-f4: the letter grades owner takes 160 RX and 240 RO of that; the complete union now leaves 32 RX and 336 RO bytes.
+# b77-f4b: the progression row takes 16 more RX bytes: the complete union leaves 16 RX and 336 RO bytes.
+# b77-v1b + i1: the period goalposts owner (176 RX, 32 RO) is a TAIL_OWNER: its code sits at the top of the legacy RX tail; 16 RX and 304 RO remain in the run.
+LARGE = (("synthetic_scaleout", "code", 16, 16),
+         ("synthetic_scaleout", "read_only", 256, 16))
 
 
 class PlannerTests(unittest.TestCase):
@@ -44,7 +47,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 64])  # the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes
+                         [0, 0, 48])  # the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -58,7 +61,7 @@ class PlannerTests(unittest.TestCase):
         report = space.plan(requests)
         self.assertEqual({tuple(row) for row in requests}, set(space.dormant_union()))
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [192, 0, 584])  # b76-pf P1: the team-logo table, 64 RO
+                         [16, 0, 304])  # b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
         # e2 adds 3,584 RX, 16 RW and 2,176 RO bytes. The old fixture also
         # reserved the nonexistent nfl2k5_guardian_cap_overlay (2,048 RX,
         # 336 RW), in addition to the real nfl2k5_guardian_overlay owner.
@@ -293,14 +296,14 @@ class SyntheticTests(unittest.TestCase):
         owned_pages = [p for p in pages if p['va'] <= owner['va'] < p['va'] + 4096
                        or owner['va'] <= p['va'] < owner['va'] + owner['size']]
         self.assertGreaterEqual(len(owned_pages), 1)
-        entries = [({'va': owner['va']}, 0x33333333), ({'va': owner['va'] + owner['size'] - 11}, 0xAAAAAAAA)]
+        entries = [({'va': owner['va']}, 0x33333333), ({'va': owner['va'] + owner['size'] - 6}, 0xAAAAAAAA)]
         self.assertGreaterEqual(owned_pages[0]['va'], space.SCALE_RUNS[0][1])
         self.assertEqual(owned_pages[-1]['va'] - owned_pages[0]['va'], (len(owned_pages) - 1) * 4096)
         code = bytearray(b'\xcc' * owner['size'])
         for page, value in entries:
             at = page['va'] - owner['va']
-            self.assertTrue(0 <= at <= owner['size'] - 11)
-            code[at:at+11] = b'\xc7\x05' + struct.pack('<II', target, value) + b'\xc3'
+            self.assertTrue(0 <= at <= owner['size'] - 6)
+            code[at:at+6] = b'\xa3' + struct.pack('<I', target) + b'\xc3'     # mov [target], eax ; ret (b77-f4b: the owner is 16 bytes, two 11 byte stores no longer fit)
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', bytes(code))
         for page, value in entries:
             machine = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
@@ -316,6 +319,7 @@ class SyntheticTests(unittest.TestCase):
             machine.mem_write(stack, struct.pack('<I', stop))
             machine.reg_write(x86.UC_X86_REG_ESP, stack)
             machine.reg_write(x86.UC_X86_REG_EBX, 0x12345678)
+            machine.reg_write(x86.UC_X86_REG_EAX, value)
             writes = []
             machine.hook_add(uc.UC_HOOK_MEM_WRITE, lambda _m, _a, va, size, val, _d: writes.append((va, size, val)))
             machine.emu_start(page['va'], stop, count=4)

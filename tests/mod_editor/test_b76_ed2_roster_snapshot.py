@@ -1,4 +1,12 @@
 """Bounded save-to-disc replacement tests; no emulator or disc build."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import copy
 import struct
 import unittest
@@ -67,6 +75,45 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(player.record.get('history_pointer'), 0)
         self.assertEqual(player.record.get('star_tag'), 1)
         self.assertEqual(receipt['history_links_cleared'], 1)
+
+    def test_commentary_repair_replay_keeps_the_same_players_career_history(self):
+        for raw_pbp in (0, rr.PBP_DOUBLE_ZERO, rr.PBP_NUMBER_FALLBACK, 971, 9001):
+            with self.subTest(pbp_id=raw_pbp):
+                body = bytearray(self.body)
+                player = rr.load_body(body).players[0]
+                struct.pack_into('<H', body, player.offset + rr.FIELD_BY_NAME['pbp_id'].offset, raw_pbp)
+                self.disc = rr.load_body(body)
+                history = 0x42000
+                struct.pack_into('<I', self.disc.body, rr.OBJ_OFF + 0x40, 1)
+                self.disc.set_rel(rr.OBJ_OFF + 0x44, history)
+                struct.pack_into('<I', self.disc.body, history, 0x80000000)
+                pointer = history - player.offset - 0x2C + 1
+                self.disc.players[0].record.values['history_pointer'] = pointer
+                self.save = signed(self.disc.to_body())
+                edits = self.export().edits
+                first, _ = rr.apply_body(self.disc.to_body(), edits)
+                # The native disc writer runs c2 after applying the snapshot.
+                first, _ = rr.repair_commentary_body(first)
+                self.assertEqual(rr.load_body(first).players[0].record.get('history_pointer'), pointer)
+                replay, receipt = rr.apply_body(first, edits)
+                replay, _ = rr.repair_commentary_body(replay)
+                self.assertEqual(replay, first)
+                self.assertEqual(receipt['history_links_cleared'], 0)
+
+    def test_changed_birth_or_recorded_name_cue_still_clears_history(self):
+        history = 0x42000
+        struct.pack_into('<I', self.disc.body, rr.OBJ_OFF + 0x40, 1)
+        self.disc.set_rel(rr.OBJ_OFF + 0x44, history)
+        struct.pack_into('<I', self.disc.body, history, 0x80000000)
+        self.disc.players[0].record.values['history_pointer'] = history - self.disc.players[0].offset - 0x2C + 1
+        for field in ('birth_day', 'pbp_id'):
+            with self.subTest(field=field):
+                edits = self.export().edits
+                current = edits['edits'][0]['fields'][field]
+                edits['edits'][0]['fields'][field] = current + 1 if field == 'birth_day' else 123
+                after, receipt = rr.apply_body(self.disc.to_body(), edits)
+                self.assertEqual(rr.load_body(after).players[0].record.get('history_pointer'), 0)
+                self.assertEqual(receipt['history_links_cleared'], 1)
 
     def test_capacity_and_invalid_membership_refuse_instead_of_skipping_players(self):
         edits = self.export().edits

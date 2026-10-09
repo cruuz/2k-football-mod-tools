@@ -512,9 +512,14 @@ def situ_sides(situ):
     return out
 
 
-def plan_spares(target, source):
-    """Everything the option writes, from the build copy (target) and the retail source (copies, styles)."""
+def plan_spares(target, source, modern=None):
+    """Everything the option writes, from the build copy (target) and the retail source (copies, styles).
+
+    modern: the (SITU row, side) pairs whose authored kit is "modern" (style 0 is the 2026 kit): they keep kit 0 and do not
+    count as users of the retail style 0 (default: read from the shipped moments data)."""
     from . import nfl2k5_espn25_more_moments as moments
+    if modern is None:
+        modern = moments.modern_sides(moments.Data.load())
     main = source.get(identity=ROSTER_OUTER_ID)
     styles = franchise_styles(main)
     descriptors = moments._retail_descriptors(main)
@@ -541,11 +546,11 @@ def plan_spares(target, source):
                 filename, code = hits[0], hits[0][2:4]
             historic.setdefault(filename, target.get(filename))
         sides.append((row, side, code, kit, field, filename))
-    affected = census(historic, [(r, s, c, k) for r, s, c, k, _f, _n in sides])
+    affected = census(historic, [(r, s, c, k) for r, s, c, k, _f, _n in sides if (r, s) not in modern])
     taken = taken_styles(source, styles)
     spares = {code: spare_style(code, styles, taken) for code in affected}
     return dict(styles=styles, taken=taken, affected=affected, spares=spares, sides=sides, historic=historic,
-                situ=situ)
+                situ=situ, modern=set(modern))
 
 
 def compile_spares(target, source, plan):
@@ -560,7 +565,7 @@ def compile_spares(target, source, plan):
                 edits[target.outer(name)] = new
     situ = bytearray(plan["situ"])
     for row, side, code, kit, field, _filename in plan["sides"]:
-        if kit == 0 and code in spares:
+        if kit == 0 and code in spares and (row, side) not in plan["modern"]:
             struct.pack_into("<I", situ, field, spares[code])
     if bytes(situ) != plan["situ"]:
         edits[target.outer(identity=SITU_OUTER_ID)] = bytes(situ)
@@ -636,6 +641,8 @@ def image_status(path, source):
                 if code in styles and style in (0, spare_of[code]):
                     users.add(code)
             for _row, _side, code, kit, _field, _filename in plan["sides"]:
+                if (_row, _side) in plan["modern"]:
+                    continue                      # style 0 is the 2026 kit there: not a user of the retail look
                 if code in styles and kit in (0, spare_of[code]):
                     users.add(code)
             if not users:

@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
-import json
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
+import json
 import re
 import tempfile
 import unittest
@@ -19,13 +26,20 @@ class NamedMainMenuInspectorTests(unittest.TestCase):
     def require_apf_reports(self) -> None:
         keys = ("state", "closure", "apf_frontend", "apf_labels", "apf_text")
         missing = [
-            _REPORT_PINS[key].filename for key in keys
-            if not (DEFAULT_REPORT_DIR / _REPORT_PINS[key].filename).is_file()
+            str(DEFAULT_REPORT_DIR / _REPORT_PINS[key].filename) for key in keys
+            if not (DEFAULT_REPORT_DIR / _REPORT_PINS[key].filename).exists()
         ]
         if missing:
             self.skipTest("Private APF menu proof reports missing: " + ", ".join(missing))
 
+    def require_nfl_reports(self) -> None:
+        for key in ("state", "nfl_live"):
+            path = DEFAULT_REPORT_DIR / _REPORT_PINS[key].filename
+            if not path.exists():
+                self.skipTest(f"Missing asset: {path}")
+
     def test_nfl_named_rows_initial_state_and_layouts(self) -> None:
+        self.require_nfl_reports()
         value = inspect_main_menu(" NFL2K5 ")
         self.assertEqual(value["game"], "NFL 2K5")
         self.assertEqual(value["state"]["initial_selection"], "Quick Game")
@@ -69,6 +83,8 @@ class NamedMainMenuInspectorTests(unittest.TestCase):
             with self.subTest(game=game):
                 if game == "apf2k8":
                     self.require_apf_reports()
+                else:
+                    self.require_nfl_reports()
                 value = inspect_main_menu(game)
                 encoded = json.dumps(value, sort_keys=True)
                 self.assertIsNone(ADDRESS.search(encoded))
@@ -83,6 +99,7 @@ class NamedMainMenuInspectorTests(unittest.TestCase):
                 inspect_main_menu(game)  # type: ignore[arg-type]
 
     def test_missing_symlink_and_tampered_evidence_are_refused(self) -> None:
+        self.require_nfl_reports()
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             for source in DEFAULT_REPORT_DIR.glob("*.json"):

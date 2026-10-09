@@ -103,18 +103,95 @@ class Geometry(unittest.TestCase):
                          "ag_pyramid", "env_band"} <= mats)
         self.assertTrue(mats <= set(lv.MATERIALS) | {"crowd", "jumbo_tron"}, mats - set(lv.MATERIALS))
 
+    def test_the_roof_trusses_hang_under_the_etfe_clear_of_the_bowl(self):
+        """ALG pass 1: the trusses take the alpha truss art, stay inside the dark ring, hang their depth under the ETFE
+        and clear every rim and the boards' tops by more than 4 m."""
+        m = self.model
+        self.assertEqual(lv.MATERIALS["ag_truss"][1], lv.CLASS_ALPHA)
+        t = m.meshes["ag_trusses"]
+        self.assertEqual(set(t.groups), {"ag_truss"})
+        P = np.array(t.P)
+        rr = m.p["roof"]["ring_rho"]
+        for x, y, z in P:
+            self.assertLess(m._roof_rho(x, z), rr)
+            self.assertLessEqual(y, m.roof_height(x, z))
+            self.assertGreaterEqual(y, m.roof_height(x, z) - 0.15 - m.p["truss"]["depth"] - 1e-6)
+        rim = max(s["rim"][2] for s in m.secs if "rim" in s)
+        boards = float(np.array(m.meshes["ag_boards"].P)[:, 1].max())
+        self.assertGreater(P[:, 1].min(), max(rim, boards) + 4.0)
+
+    def test_the_etfe_is_mapped_on_the_plan_grid(self):
+        """ALG pass 1: the ETFE's art repeats every ROOF_GRID_M metres in plan (u across, v along), not round the ring."""
+        u = self.model.meshes["ag_roof_under"]
+        idx = sorted({i for st in u.groups["ag_roof_under"] for i in st})
+        self.assertGreater(len(idx), 100)
+        for i in idx:
+            (x, _y, z), (s, t) = u.P[i], u.UV[i]
+            self.assertAlmostEqual(s, x / lv.ROOF_GRID_M, places=5)
+            self.assertAlmostEqual(t, z / lv.ROOF_GRID_M, places=5)
+
+    def test_the_lanai_shows_the_skyline_across_the_glass(self):
+        """ALG pass 3: one skyline panel spans the glass behind it (u 0 to 1 west to east), its lower rows lit at night
+        and its top row (the sky) dimmed; the deck boards stand inside the glass, either side of the torch."""
+        m, la = self.model, self.model.lanai
+        mesh = m.meshes["ag_lanai"]
+        idx = sorted({i for st in mesh.groups["LIGHT_ag_skyline"] for i in st})
+        P = np.array([mesh.P[i] for i in idx]); U = np.array([mesh.UV[i] for i in idx])
+        self.assertAlmostEqual(float(U[:, 0].min()), 0.0); self.assertAlmostEqual(float(U[:, 0].max()), 1.0)
+        self.assertAlmostEqual(float(P[:, 1].min()), la["y0"]); self.assertAlmostEqual(float(P[:, 1].max()), la["y1"])
+        N = np.tile([0.0, 0.0, 1.0], (len(P), 1))
+        night = lv.light("LIGHT_ag_skyline", P, N, "n", "d")
+        top = P[:, 1] >= la["y1"] - 1e-6
+        self.assertTrue((night[top, 0] < 80).all() and (night[~top, 0] == 255).all())
+        for s_ in (-1, 1):
+            x = s_ * lv.PARAMS["deck_boards"]["x"]
+            self.assertGreater(abs(x), lv.PARAMS["torch"]["radius"] + lv.PARAMS["deck_boards"]["w"] / 2)
+            self.assertLess(abs(x) + lv.PARAMS["deck_boards"]["w"] / 2, lv.PARAMS["lanai"]["glass_w"] / 2)
+
+    def test_the_drum_rounds_into_the_roof(self):
+        """ALG pass 3: the drum's shoulder leaves the outline under the roof and meets the skin's first row; the speakers
+        hang under the trusses."""
+        m = self.model
+        top = m.meshes["ag_roof_top"]
+        fi = lv.PARAMS["shoulder"]["inset"]
+        ring, _pos = m.facade_ring(lv.PARAMS["roof"]["points"])
+        x, z = ring[0]
+        self.assertTrue(any(abs(px - x * (1 - fi)) < 1e-6 and abs(pz - z * (1 - fi * 0.985)) < 1e-6 for px, _y, pz in top.P))
+        sp = np.array(m.meshes["ag_speakers"].P)
+        q = lv.PARAMS["speakers"]
+        for x, z in q["at"]:
+            near = sp[(np.abs(sp[:, 0] - x) <= q["w"]) & (np.abs(sp[:, 2] - z) <= q["w"])]
+            self.assertTrue(len(near))
+            self.assertLess(near[:, 1].max(), m.roof_height(x, z) - 0.15 - lv.PARAMS["truss"]["depth"])
+        rim = max(s["rim"][2] for s in m.secs if "rim" in s)
+        self.assertGreater(sp[:, 1].min(), rim)
+
+    def test_the_torch_is_a_chalice(self):
+        """ALG pass 2 (the 2022 torch photo): a slim stem, the widest part high up, rounding in at the top."""
+        prof = lv.TORCH_PROFILE
+        hs = [h for h, _r in prof]
+        self.assertEqual(hs, sorted(hs))
+        self.assertEqual((hs[0], hs[-1]), (0.0, 1.0))
+        widest = max(prof, key=lambda p: p[1])
+        self.assertGreater(widest[0], 0.7)
+        self.assertLess(min(r for h, r in prof if h < 0.5), widest[1] / 2)
+        self.assertLess(prof[-1][1], widest[1])
+        y = np.array(self.model.meshes["ag_torch"].P)[:, 1]
+        self.assertAlmostEqual(float(y.max()), lv.PARAMS["torch"]["top"] + lv.PARAMS["torch"]["flame"], places=6)
+
     def test_the_boards_show_the_feed_at_the_pictures_aspect(self):
         """Every board shows a crop of the 640 x 448 feed picture (u 0 to 0.625, v 0 to 0.875 of the render target) at the
         picture's own aspect, never stretched: the south board's middle between its stat panels, the north boards
-        whole."""
-        q = lv.PARAMS["boards"]
-        for aspect in (q["south_w"] * q["feed"] / q["south_h"], q["north_w"] / q["north_h"]):
+        whole, and (ALG pass 3) the two small lanai-deck boards whole."""
+        q, d = lv.PARAMS["boards"], lv.PARAMS["deck_boards"]
+        for aspect in (q["south_w"] * q["feed"] / q["south_h"], q["north_w"] / q["north_h"], d["w"] / d["h"]):
             (u0, u1), (v0, v1) = self.model.board_crop(aspect)
             self.assertGreaterEqual(u0, 0.0); self.assertLessEqual(u1, 0.625 + 1e-9)
             self.assertGreaterEqual(v0, 0.0); self.assertLessEqual(v1, 0.875 + 1e-9)
             self.assertAlmostEqual((u1 - u0) * 1024 / ((v1 - v0) * 512), aspect, places=3)
         feeds = [strip for m in self.model.meshes.values() for strip in m.groups.get("jumbo_tron", ())]
-        self.assertEqual(len(feeds), 3)
+        self.assertEqual(len(feeds), 5)
+        self.assertEqual(len(self.model.markers["jumbo"]), 3)
 
     def test_the_boards_stand_at_the_ends(self):
         """The south board over the south end on the field axis, facing north; the north pair over the corner seats at

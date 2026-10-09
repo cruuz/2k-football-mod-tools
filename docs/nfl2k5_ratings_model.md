@@ -95,7 +95,8 @@ rows = rm.rate_players(rows, stats, rm.Reference.load(), honors=None, anchors=No
 ```
 
 `rows` are dicts with at least `position` (a 2K5 code) and `gsis_id` (empty = no statistics); `weight`,
-`birth_date`, `years_pro`, `draft_number` and `depth` are used when present. Each output row adds the 28 rating
+`birth_date`, `years_pro` (completed seasons, nflverse `years_exp`, rookie = 0; the roster record's own years pro counts the
+season in progress, rookie = 1), `draft_number` and `depth` are used when present. Each output row adds the 28 rating
 columns (`nfl2k5_roster_records.RATING_BYTE_ORDER`) and `rating_basis` (JSON: percentiles, anchor, priors, and
 `speed_source` with `forty`, `forty_source` or `speed_flag`).
 

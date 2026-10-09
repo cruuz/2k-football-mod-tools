@@ -34,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc110"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc111"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -54,7 +54,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC110 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC111: Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -70,7 +70,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC110 Release Status"
+            "# 2K5 Mod Studio: v1.0 RC111 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -376,6 +376,10 @@ class ModStudioPackagingTests(unittest.TestCase):
                 for path in release_gate.REVIEWED_METADATA),
             16,
         )
+        for relative in release_gate.REVIEWED_METADATA:
+            path = ROOT / relative
+            if relative.startswith("reports/assets/") and not path.exists():
+                self.skipTest(f"Missing asset: {path}")
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
             path = ROOT / relative
             payload = path.read_bytes()
@@ -575,7 +579,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=207 sections=12 nfl2k5_capabilities=132", runtime_probe)
+        self.assertIn("registry=210 sections=12 nfl2k5_capabilities=135", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

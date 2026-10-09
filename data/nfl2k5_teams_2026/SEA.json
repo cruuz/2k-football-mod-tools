@@ -257,7 +257,8 @@
     ],
     "decal": {
      "mark": "club_logo",
-     "scale": 1.0
+     "scale": 1.0,
+     "facing": "front"
     },
     "decorations": [
      {
@@ -279,26 +280,93 @@
       ],
       "colour": "helmet_navy",
       "shade": true
-     },
-     {
-      "rect": [
-       154,
-       0,
-       170,
-       232
-      ],
-      "colour": "green"
-     },
-     {
-      "rect": [
-       155.5,
-       0,
-       168.5,
-       232
-      ],
-      "colour": "grey"
      }
-    ]
+    ],
+    "atlas_decal": {
+     "mark": "club_logo",
+     "erase_boxes": {
+      "upper": [
+       25,
+       25,
+       158,
+       119
+      ],
+      "lower": [
+       25,
+       137,
+       158,
+       231
+      ]
+     },
+     "placements": {
+      "upper": {
+       "centre": [
+        103.0,
+        73.3
+       ],
+       "matrix": [
+        [
+         106.0,
+         9.9
+        ],
+        [
+         -21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        -1
+       ]
+      },
+      "lower": {
+       "centre": [
+        103.0,
+        182.7
+       ],
+       "matrix": [
+        [
+         106.0,
+         -9.9
+        ],
+        [
+         21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        1
+       ]
+      }
+     },
+     "protect": [
+      [
+       27,
+       87,
+       49,
+       97
+      ],
+      [
+       27,
+       159,
+       49,
+       169
+      ]
+     ],
+     "why": "UNI: numeric placement from PS2 atlas landmarks; own mark faces the front on both shell C sides. Replaces sh1 rear-facing 40 degree projection.",
+     "clear_crown": {
+      "families": [
+       "helmet00"
+      ],
+      "box": [
+       153,
+       0,
+       174,
+       214
+      ]
+     }
+    }
    },
    "card": {
     "recolour": [
@@ -358,7 +426,7 @@
   "away": {
    "selector": "26A0",
    "outer_index": 4154,
-   "note": "2026 road: white jersey, navy shoulder bands, navy numbers with action green outline, navy pants with a grey and green stripe, navy socks, navy helmet",
+   "note": "2026 road (week 3 at WAS, club game photos): white jersey, navy shoulder bands, navy numbers with action green outline, white pants with a thin navy side seam stripe, white socks, navy helmet",
    "torso": {
     "base_colour": "white",
     "neck_donor": "26H0",
@@ -426,25 +494,17 @@
     "decorations": []
    },
    "pants": {
-    "base_colour": "pants_navy",
+    "base_colour": "white",
     "stripe": [
      [
-      "green",
-      1
-     ],
-     [
-      "grey",
-      5
-     ],
-     [
-      "green",
-      1
+      "navy",
+      6
      ]
     ],
-    "swoosh_colour": "white"
+    "swoosh_colour": "navy"
    },
    "socks": {
-    "colour": "navy"
+    "colour": "white"
    },
    "digits": {
     "glyph_donor": "26A0",
@@ -474,7 +534,8 @@
     ],
     "decal": {
      "mark": "club_logo",
-     "scale": 1.0
+     "scale": 1.0,
+     "facing": "front"
     },
     "decorations": [
      {
@@ -496,26 +557,93 @@
       ],
       "colour": "helmet_navy",
       "shade": true
-     },
-     {
-      "rect": [
-       154,
-       0,
-       170,
-       232
-      ],
-      "colour": "green"
-     },
-     {
-      "rect": [
-       155.5,
-       0,
-       168.5,
-       232
-      ],
-      "colour": "grey"
      }
-    ]
+    ],
+    "atlas_decal": {
+     "mark": "club_logo",
+     "erase_boxes": {
+      "upper": [
+       25,
+       25,
+       158,
+       119
+      ],
+      "lower": [
+       25,
+       137,
+       158,
+       231
+      ]
+     },
+     "placements": {
+      "upper": {
+       "centre": [
+        103.0,
+        73.3
+       ],
+       "matrix": [
+        [
+         106.0,
+         9.9
+        ],
+        [
+         -21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        -1
+       ]
+      },
+      "lower": {
+       "centre": [
+        103.0,
+        182.7
+       ],
+       "matrix": [
+        [
+         106.0,
+         -9.9
+        ],
+        [
+         21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        1
+       ]
+      }
+     },
+     "protect": [
+      [
+       27,
+       87,
+       49,
+       97
+      ],
+      [
+       27,
+       159,
+       49,
+       169
+      ]
+     ],
+     "why": "UNI: numeric placement from PS2 atlas landmarks; own mark faces the front on both shell C sides. Replaces sh1 rear-facing 40 degree projection.",
+     "clear_crown": {
+      "families": [
+       "helmet00"
+      ],
+      "box": [
+       153,
+       0,
+       174,
+       214
+      ]
+     }
+    }
    },
    "card": {
     "recolour": [
@@ -1387,5 +1515,11 @@
     ]
    }
   }
+ },
+ "u2d_b77": {
+  "away": "pants navy to white with a thin navy side seam stripe, socks navy to white: seahawks.com week 3 at WAS game photos (all-white combination, white socks). Home kit checked against week 1 vs NE: unchanged."
+ },
+ "uni_b77": {
+  "helmet": "Replace sh1 side projection with measured native-atlas placement, using own artwork only."
  }
 }

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC110 — Getting Started (beta 76.5)
+# 2K5 Mod Studio v1.0 RC111: Getting Started (beta 77)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -1205,7 +1205,7 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
 2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.
-3. **Middle** — search by name, years pro or college; the position chips (QB RB WR TE OL DL LB DB
+3. **Middle** — search by name, years pro (type `R` for rookies) or college; the position chips (QB RB WR TE OL DL LB DB
    K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
    depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
    chart.
@@ -1235,7 +1235,7 @@ depth chart is grouped per code. The picker greys out a code the scheme retired 
 it, and a CSV that brings OLB rows onto a one-pool roster maps them to LB and lists every row it
 moved. Nothing in your roster is renamed by any of this — only what the editor shows you.
 
-**What you can edit.** First and last name, college, position, jersey number, years pro, hand,
+**What you can edit.** First and last name, college, position, jersey number, years pro (it counts the season you are in, so a rookie is 1 and the game prints R), hand,
 height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
 face shield, body type, dreads, eye black, mouthpiece, turtleneck, sleeves, neck roll, both gloves,
 wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth rank and side; and the
@@ -1469,16 +1469,19 @@ instead of hiding inside a second "Linebackers".
 
 **TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
-which team each season was played for. The current season shows the player's live
-team; from the first season rollover after the patch is in the save, every completed
-season shows the team the player finished it with. The current-season row always
-reads the player's live team, whatever the history says, so a trade shows up there
-at once. Past seasons of an OLD franchise save show "--" until their next rollover
-(the game never stored a team per season; the patch records one from then on), the
-folded "pre" row and the Total row also read "--", and a player traded mid-season
-shows the season-end team. Saves stay
-loadable with or without the patch. Unwitnessed in game so far: it is executed under
-an emulator in the test suite, so please report what you see.
+which team each season was played for. The row for the season in progress shows the club
+the player is on right now, so a trade shows up there at once (a player on injured reserve
+or released shows the club he last played for). Every game he plays records his club in the
+season he is playing, so a completed season shows the club of the **last game he played in
+it**: after a mid-season trade, signing or release the row names the club he ended the year
+with (or left). Seasons already played before the patch was in the save, the folded "pre"
+row and the Total row read "--". Revision 2 (b77) fixes the earlier column, which looked
+the club up in a roster field the game never fills, so seasons played in a franchise never
+got a team (only the history baked into the roster did). The offensive-line Player Cards
+have no stats table in the retail game and still have no TEAM column. MyCareer's MyPlayer
+card is the same card and shows the column too. A season split between two clubs shows
+only the later club. Saves stay loadable with or without the patch. Unwitnessed in game so far: it is executed against the game's own
+code under an emulator in the test suite, so please report what you see.
 
 **The ESPN scorebug** (Build tab and Presentation, EXPERIMENTAL only since the current release; disc images
 only; the current release replaces this bar with the v3 static bar and adds Scorebar Studio, both described

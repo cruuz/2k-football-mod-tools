@@ -40,7 +40,10 @@ class AbilitiesPanel(QWidget):
             "Player abilities rules v2 adds small live rating bonuses. Base moves work "
             "for every player by default; move locks are optional. "
             "Star, Superstar and X-Factor allow 2, 4 and 7 abilities. Their bonuses are "
-            "2, 4 and 6 effective points, capped at 100. The cosmetic star stays separate. "
+            "2, 4 and 6 effective points, capped at 100. The star tag (set on the Rosters page) stays separate "
+            "from the abilities, but with the Build page's star rules on it also decides who may use the "
+            "right-stick moves and charge-ups, and this ability tier picks how much a star gets "
+            "(one access level per tier: none, Star, Superstar, X-Factor). "
             "Lowering a tier removes excess abilities in the order shown. Rosters Undo restores them.")
         note.setWordWrap(True)
         layout.addWidget(note)

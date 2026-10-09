@@ -78,6 +78,20 @@ GUARDS = (
     (0xf2360, 0x168, "c9f0e5c7bd79926056f91cd21d8ae05b929eb5d635e22da5ea89d941bfdc7f9b"),
     (0xf24d0, 0x4c, "ff172eb5cc10369aa706e6b6b350f94aa48d1b5de0f2ae54f4e00cc4a1a77e4d"),
 )
+# W1 (beta 77): the rain fog row. Rain turns on linear fog for every character (body materials carry the fog bit)
+# from 30 m to 60 m toward grey 97, and the Broadcast camera stands about 49 m from the ball, so a white road jersey
+# kept only 37 percent of its own colour there. Row layout: density low/high floats (an on/off flag in the reader at
+# 0x2A7AD), start and end in cm, fog colour B,G,R,A. Only start and end are written, blended from retail to
+# RAIN_FOG_MODERN by the overall strength like every other value (the default 0.5 gives 50 m to 135 m).
+RAIN_FOG = ("rain_fog", 0xA86804, 20, "b50f5815a1afaed2e7e77ccabf577d2d188c73d1edc9f21633b2f22bad9c2177")
+RAIN_FOG_MODERN = dict(start=7000.0, end=21000.0)
+FOG_SIZE = 20
+RETAIL_FOG = bytes.fromhex("cdcc4c3f6666663f00803b450080bb45616161ff")
+# The haze reader and the fog installer decide what the row's floats mean (shared with nfl2k5_weather_haze).
+FOG_GUARDS = (
+    (0x85EF0, 160, "9a6c2b318862584e4831c20c289a3686cf206dc63df001a3cc57bf0758944777"),
+    (0x86190, 35, "a2dd6d42a842bb0da56a1acb2da8b76580acd0dd73b4769bb5a0fa15922374ae"),
+)
 # Broadcast rigs. Ambient (r, g, b) and intensity, then (colour, intensity) per
 # light in table order. Measured 2026 Week 1 whites sit at (215..245, 218..243,
 # 223..241): neutral to slightly cool, never yellow. Night is LED white.
@@ -90,7 +104,12 @@ MODERN_RIGS = {
                     lights=(((1.00, 0.98, 0.94), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
     "alt_dynamic": dict(ambient=(0.95, 0.97, 1.00), ambient_intensity=0.42,
                         lights=(((1.00, 0.97, 0.92), 1.10), ((0.90, 0.94, 1.00), 0.40), ((0.90, 0.94, 1.00), 0.40))),
-    "rain": dict(ambient=(0.92, 0.93, 0.98), ambient_intensity=0.46,
+    # W1 (beta 77): the retail rain rig has no light with a sideline component, so a surface that faces a sideline
+    # (everything the Broadcast camera sees of a player running across the field) gets ambient only: 0.31 to 0.39
+    # against 0.54 to 0.60 in daylight, and a white jersey read 176 instead of 255 (grey, pink in retail). The
+    # ambient is lifted and neutralised so the overall-strength default (0.5) leaves a sideline-facing surface at
+    # about 0.50 in all three channels, a wet white that is a few percent under dry white, not grey.
+    "rain": dict(ambient=(0.90, 1.00, 1.00), ambient_intensity=0.70,
                  lights=(((0.92, 0.94, 1.00), 0.70),) * 3),
     "snow": dict(ambient=(0.96, 0.97, 1.00), ambient_intensity=0.50,
                  lights=(((0.95, 0.96, 1.00), 0.62),) * 3),
@@ -371,6 +390,32 @@ def modern_table(retail, settings=None):
     return bytes(out)
 
 
+def modern_fog(settings=None):
+    """The rain fog row for these settings: retail with start and end blended toward the Broadcast values."""
+    doc = normalize_settings(settings)
+    if not doc["enabled"]["rig_rain"]:
+        return bytes(RETAIL_FOG)
+    k = strength(doc)
+    out = bytearray(RETAIL_FOG)
+    struct.pack_into("<2f", out, 8, blend(struct.unpack_from("<f", RETAIL_FOG, 8)[0], RAIN_FOG_MODERN["start"], k),
+                     blend(struct.unpack_from("<f", RETAIL_FOG, 12)[0], RAIN_FOG_MODERN["end"], k))
+    return bytes(out)
+
+
+def _fog_state(image, settings=None):
+    for va, size, digest in FOG_GUARDS:
+        require(sha(image.read(va, size)) == digest, f"Fog reader changed at {va:#x}; rebuild from a supported base")
+    require(image.section(RAIN_FOG[1]).name == ".data", "rain fog row is not in .data")
+    have = image.read(RAIN_FOG[1], FOG_SIZE)
+    if have == RETAIL_FOG:
+        return "retail"
+    if have == modern_fog():
+        return "applied"
+    if settings is not None and have == modern_fog(settings):
+        return "applied (custom)"
+    return "foreign"
+
+
 def _table_states(image, settings=None):
     for va, size, digest in GUARDS:
         require(sha(image.read(va, size)) == digest, f"Light selector changed at {va:#x}; rebuild from a supported base")
@@ -388,6 +433,7 @@ def _table_states(image, settings=None):
             states.append("applied (custom)")
         else:
             states.append("foreign")
+    states.append(_fog_state(image, settings))
     return states
 
 
@@ -409,7 +455,8 @@ def xbe_status(payload, settings=None):
         image = XbeImage(payload)
         states = _table_states(image, settings)
         if settings is not None and is_custom(settings) and all(
-                image.read(va, TABLE_SIZE) == modern_table(_retail_table(name), settings) for name, va, _ in LIGHT_TABLES):
+                image.read(va, TABLE_SIZE) == modern_table(_retail_table(name), settings) for name, va, _ in LIGHT_TABLES) \
+                and image.read(RAIN_FOG[1], FOG_SIZE) == modern_fog(settings):
             return "applied (custom)"
     except (ValueError, TypeError, IndexError, struct.error):
         return "foreign"
@@ -431,7 +478,8 @@ def verify(payload, *, enabled=True, settings=None):
     require(state == expected, "Light rigs do not match the requested option")
     return dict(state=state, enabled=enabled, label=LABEL, runtime_witnessed=False,
                 schema=RECEIPT_SCHEMA, settings=settings, settings_sha256=settings_id(settings),
-                tables=[dict(name=n, va=hex(va)) for n, va, _ in LIGHT_TABLES])
+                tables=[dict(name=n, va=hex(va)) for n, va, _ in LIGHT_TABLES],
+                fog=dict(name=RAIN_FOG[0], va=hex(RAIN_FOG[1]), size=FOG_SIZE))
 
 
 def apply(payload, *, enabled=True, settings=None, previous_settings=None):
@@ -451,9 +499,14 @@ def apply(payload, *, enabled=True, settings=None, previous_settings=None):
         if bytes(result[at:at + TABLE_SIZE]) != after:
             result[at:at + TABLE_SIZE] = after
             edits.append(dict(label=name, va=hex(va), size=TABLE_SIZE))
-    section = image.section(LIGHT_TABLES[0][1])
+    fog_after = modern_fog(settings) if enabled else bytes(RETAIL_FOG)
+    at = image.offset(RAIN_FOG[1], FOG_SIZE)
+    if bytes(result[at:at + FOG_SIZE]) != fog_after:
+        result[at:at + FOG_SIZE] = fog_after
+        edits.append(dict(label=RAIN_FOG[0], va=hex(RAIN_FOG[1]), size=FOG_SIZE))
+    headers = {image.section(LIGHT_TABLES[0][1]).header, image.section(RAIN_FOG[1]).header}
     for s in _sections(result):
-        if s.header_offset == section.header:
+        if s.header_offset in headers:
             result[s.header_offset + 36:s.header_offset + 56] = section_digest(result, s)
     result = bytes(result)
     return result, dict(verify(result, enabled=enabled, settings=settings),
@@ -464,7 +517,9 @@ def reservations(payload):
     verify(payload)
     return [dict(owner=OWNER, start=hex(va), end=hex(va + TABLE_SIZE), size=TABLE_SIZE,
                  basis=f"pinned existing .rdata light rig '{name}' rewritten in place; no runtime space")
-            for name, va, _ in LIGHT_TABLES]
+            for name, va, _ in LIGHT_TABLES] + [
+        dict(owner=OWNER, start=hex(RAIN_FOG[1]), end=hex(RAIN_FOG[1] + FOG_SIZE), size=FOG_SIZE,
+             basis="pinned existing .data rain fog row (start and end) rewritten in place; no runtime space")]
 
 
 # --- palettes, tints, bump map -----------------------------------------------

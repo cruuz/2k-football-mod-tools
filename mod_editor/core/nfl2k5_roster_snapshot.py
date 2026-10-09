@@ -95,10 +95,16 @@ def apply_body(body, doc, *, scheme=None):
         fields = entry.get("fields")
         rr._require(type(fields) is dict and set(fields) == set(CARRIED_FIELDS),
                     "A replacement roster must carry every supported player field.")
+        canonical_pbp = fields["pbp_id"]
+        if (entry["first"] or entry["last"]) and "*" not in entry["first"] + entry["last"]:
+            canonical_pbp = rr.commentary_id(entry["last"], fields["jersey"], canonical_pbp)
         # A new player must not inherit the previous occupant's career history.
+        # The final commentary pass may have canonicalized this same snapshot's
+        # ID on its first import. Accept that exact repair on replay as well.
         if ((player.first, player.last) != (entry["first"], entry["last"])
+                or player.record.get("pbp_id") not in (fields["pbp_id"], canonical_pbp)
                 or any(player.record.get(k) != fields[k] for k in
-                       ("pbp_id", "birth_month", "birth_day", "birth_year_low", "birth_year_high"))):
+                       ("birth_month", "birth_day", "birth_year_low", "birth_year_high"))):
             history_cleared += bool(player.record.get("history_pointer"))
             player.record.values["history_pointer"] = 0
         for key, value in fields.items():

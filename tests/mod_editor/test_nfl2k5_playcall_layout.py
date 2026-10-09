@@ -118,10 +118,18 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(result['viewports'][0]['before'],result['viewports'][0]['after'])
         self.assertEqual(result['menu_target'][1],16.)
 
-    @unittest.skipUnless(Path('/media/noah/Storage/.b76-research/main/witness/kr_candE/ari.jpg').is_file(),
-                         'Noah witness frames required')
     def test_measured_clearance_respects_native_menu_clip_boundary(self):
-        result = measurements(Path('/media/noah/Storage/.b76-research'))
+        research = Path('/media/noah/Storage/.b76-research')
+        for relative in (
+            'main/witness/kr_candE/ari.jpg',
+            'main/witness/kr_candE/det.jpg',
+            'hx/lab-F-20260929-091218/s37-hou/attempt-01/screens/09-last-play.png',
+            'hx/lab-20260929-072352/ari-kickoff/attempt-02/screens/toss-0131.3s.jpg',
+        ):
+            frame = research / relative
+            if not frame.is_file():
+                self.skipTest(f'Missing private witness frame: {frame}')
+        result = measurements(research)
         for row in result['frames']:
             self.assertEqual((row['bar_top_weak'],row['bar_top_strong']),(569,570))
             self.assertGreaterEqual(row['projected_bar_gap'],4.)

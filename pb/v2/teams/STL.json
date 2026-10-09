@@ -1,0 +1,758 @@
+{
+ "team": "STL",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "McVay condensed downhill",
+ "staff": "Sean McVay / Nate Scheelhaase",
+ "family": "mcvay",
+ "feature": "WR1",
+ "key_players": "Puka Nacua; Kyren Williams",
+ "depth_step": 2,
+ "tendencies": {
+  "shotgun_pct": 41.0,
+  "pistol_pct": 0.66,
+  "play_action_pct": 34.62,
+  "motion_pct": 64.87,
+  "personnel": {
+   "11": 630,
+   "12": 94,
+   "10": 1,
+   "13": 331
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Ace Jumbo",
+   "Gun Doubles",
+   "Singleback Doubles",
+   "Gun Trey",
+   "Singleback Ace",
+   "I-Form Pro",
+   "Pistol Doubles",
+   "Gun Trips"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Ace Jumbo",
+   "Pistol Doubles",
+   "Singleback Wing",
+   "Gun Ace Wing",
+   "Gun Ace",
+   "Split Backs",
+   "Gun Empty Bunch"
+  ]
+ },
+ "boost": {
+  "Dagger": 5,
+  "Double Post": 1,
+  "Drive": 2,
+  "Duo": 4,
+  "Levels": 1,
+  "Mills": 2,
+  "Outside Zone": 2,
+  "PA Boot": 4,
+  "Smash": 1,
+  "Yankee": 2
+ },
+ "preference_shift": {
+  "PA Boot": -1,
+  "PA Boot Leak": -1,
+  "Yankee": -1,
+  "PA Dagger": -1,
+  "PA Crossers": -1
+ },
+ "signature": [
+  {
+   "formation": "Ace Jumbo",
+   "concept": "PA Boot",
+   "name": "Jumbo Boot Over",
+   "overrides": {
+    "routes": {
+     "S1": [
+      "route",
+      "Over",
+      10
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Dagger",
+   "name": "Dagger Dig",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Dig",
+      14
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Trey",
+   "concept": "Drive",
+   "name": "Trey Drive",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Scissors",
+   "name": "STL Scissors",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "S1",
+     "S2",
+     "W1",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Post Corner",
+   "name": "STL Post Corner",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Four Verticals",
+   "name": "STL Four Verticals",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W2",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Hitch Seam",
+   "name": "STL Hitch Seam",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S2",
+     "S3",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "PA Boot",
+   "name": "STL PA Boot",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "S1",
+     "W2",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Crossers",
+   "name": "STL PA Crossers",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "Yankee",
+   "name": "STL Yankee",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Shot",
+   "name": "STL PA Shot",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Post Wheel",
+   "name": "STL Post Wheel",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Stick Nod",
+   "name": "STL Stick Nod",
+   "overrides": {
+    "depth_step": 3.3333333333333335,
+    "reads": [
+     "W1",
+     "S1",
+     "B",
+     "S3"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.therams.com/team/coaches-roster/nate-scheelhaase)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 9.31 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Empty Bunch": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "Scissors",
+    "name": "STL Scissors",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "S1",
+      "S2",
+      "W1",
+      "B"
+     ]
+    },
+    "reason": "targets CORNER 7.7% (league 4.1)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Post Corner",
+    "name": "STL Post Corner",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "targets CORNER 7.7% (league 4.1)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Four Verticals",
+    "name": "STL Four Verticals",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W2",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets GO 10.8% (league 8.2)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Hitch Seam",
+    "name": "STL Hitch Seam",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S2",
+      "S3",
+      "S1"
+     ]
+    },
+    "reason": "targets GO 10.8% (league 8.2)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "PA Boot",
+    "name": "STL PA Boot",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "S1",
+      "W2",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "play_action_pct 34.6 (league 23.2)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Crossers",
+    "name": "STL PA Crossers",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "play_action_pct 34.6 (league 23.2)"
+   },
+   {
+    "formation": "I-Form Pro",
+    "concept": "Yankee",
+    "name": "STL Yankee",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "play_action_pct 34.6 (league 23.2)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Shot",
+    "name": "STL PA Shot",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "adot 9.31 (league 7.8)"
+   },
+   {
+    "formation": "Pistol Doubles",
+    "concept": "Post Wheel",
+    "name": "STL Post Wheel",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "adot 9.31 (league 7.8)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Stick Nod",
+    "name": "STL Stick Nod",
+    "overrides": {
+     "depth_step": 3.3333333333333335,
+     "reads": [
+      "W1",
+      "S1",
+      "B",
+      "S3"
+     ]
+    },
+    "reason": "adot 9.31 (league 7.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 96.9%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   1,
+   0
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   3,
+   4,
+   4
+  ],
+  "Singleback Ace": [
+   3,
+   3,
+   4
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   4,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   3,
+   3,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   4,
+   4
+  ],
+  "Heavy Wing": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   2,
+   3,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   4,
+   1
+  ],
+  "Singleback Bunch": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   1,
+   4
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Pistol Doubles": [
+   4,
+   4,
+   1
+  ],
+  "Singleback Wing": [
+   4,
+   3,
+   0
+  ],
+  "Gun Ace Wing": [
+   4,
+   0,
+   1
+  ],
+  "Gun Ace": [
+   4,
+   4,
+   1
+  ],
+  "Split Backs": [
+   4,
+   4,
+   4
+  ],
+  "Gun Empty Bunch": [
+   3,
+   1,
+   0
+  ]
+ }
+}

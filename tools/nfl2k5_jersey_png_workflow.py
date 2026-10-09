@@ -217,7 +217,7 @@ def run(
     index_path: Path = DEFAULT_INDEX,
     inventory_path: Path = DEFAULT_INVENTORY,
 ) -> dict[str, object]:
-    common.require(mud_mode in {"identity", "darken_60"}, "invalid mud mode")
+    common.require(mud_mode in {"identity", "darken_60", "wet_93"}, "invalid mud mode")
     common.require(mud_png is None or mud_mode == "identity",
                    "--mud-png cannot be combined with --mud-mode darken_60")
 
@@ -519,7 +519,7 @@ def main() -> int:
     parser.add_argument("--source-xiso", required=True, type=Path)
     parser.add_argument("--clean-png", required=True, type=Path)
     parser.add_argument("--mud-png", type=Path)
-    parser.add_argument("--mud-mode", choices=("identity", "darken_60"),
+    parser.add_argument("--mud-mode", choices=("identity", "darken_60", "wet_93"),
                         default="identity")
     parser.add_argument("--output-xiso", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)

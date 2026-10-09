@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
-import json
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
+import json
 import shutil
 import struct
 import tempfile
@@ -89,6 +96,9 @@ class CribGeometryCatalogTests(unittest.TestCase):
 
     def test_recipe_retains_only_changed_vertices_not_stock_model_bytes(self) -> None:
         source = MODELS / "4248_0105_phone.gltf"
+        for required_asset in (source, source.with_suffix(".bin")):
+            if not required_asset.exists():
+                self.skipTest(f"Missing asset: {required_asset}")
         with tempfile.TemporaryDirectory(prefix="crib-geometry-recipe-") as raw:
             edited = _edited_copy(source, Path(raw))
             compiled = compile_crib_geometry_recipe(PHONE_SCENE, source, edited)
@@ -104,6 +114,9 @@ class CribGeometryCatalogTests(unittest.TestCase):
 
     def test_changed_topology_is_refused_before_staging(self) -> None:
         source = MODELS / "4248_0105_phone.gltf"
+        for required_asset in (source, source.with_suffix(".bin")):
+            if not required_asset.exists():
+                self.skipTest(f"Missing asset: {required_asset}")
         with tempfile.TemporaryDirectory(prefix="crib-geometry-topology-") as raw:
             edited = _edited_copy(source, Path(raw), change_topology=True)
             with self.assertRaisesRegex(CribGeometryWriterError, "topology changed"):

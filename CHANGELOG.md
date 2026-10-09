@@ -11,6 +11,23 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-77: 2026-10-09
+
+2K5 is **v1.0-RC111** and APF is **0.1.0-alpha.107**. The pack is
+**SOFTDRINK 2K28 v0.6**. The [complete 2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md)
+records every feature, uniform set, correction and remaining proof limit. The
+[APF changelog](docs/mod_editor/apf2k8_mod_studio_changelog.md) records the shared packaging update.
+
+- Repair the shotgun hook's live-team/roster pointer error and replace the synthetic fixture that concealed it. Native replay passes; the attract-demo freeze still needs a gameplay check.
+- Add modern/classic book controls, newcomer build guidance, content-based install validation, useful compaction progress, early playbook compatibility checks and supported-stadium board skipping.
+- Rebuild modern offense and defense books, add team packages and wizard concepts, repair end-arounds/screens/checkdowns, tune receiving reads and add Modern 2 CPU decisions with situation-based shotgun weights.
+- Add the punter-holder option, separate star-only move settings, name punctuation and the pack's quarterback Throw Power adjustment.
+- Correct rookie experience and Player Card team history; add Franchise letter grades, progression grades and a second honors page with seeded and live award history.
+- Repair remaining commentary number calls, playoff-picture rows, Week 18 labels and Anniversary menu identity; correct period uniforms, handedness and venue environment choices.
+- Revise primary and alternate uniforms, helmets, Team Select cards and equipment fitting; reduce wet-darkening and rain frequency, extend goalposts with period restoration, and improve Allegiant.
+- Keep the final pack's exact reconstruction proof separate from source rebuilding: Anniversary donor kits and the Denver/Pittsburgh/Seattle native helmet layer still have source-build blockers.
+- Repair the five earlier integration-test failures, add pin checking and portable fixture defaults, normalize release modes and prepare both product archives and Windows Setup files. Windows execution can be explicitly deferred during cross-building and remains a required publication check.
+
 ## beta-76.5 — 2026-10-06
 
 2K5 is **v1.0-RC110** and APF is **0.1.0-alpha.106**. The SOFTDRINK pack target is

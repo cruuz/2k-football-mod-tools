@@ -481,7 +481,7 @@ class RetailXbeTests(unittest.TestCase):
             mm.apply(legacy, newer)  # no silent reconfiguration of a differently authored owner
         patched, receipt = mm.apply(legacy, newer, legacy_data=self.data)
         self.assertEqual((receipt["status"], receipt["rows"]), ("upgraded", 51))
-        self.assertEqual(mm.status(patched, newer), "applied")
+        self.assertEqual((mm.status(patched, newer), mm.row_hooks_status(patched, newer)), ("applied", "applied"))
         self.assertEqual(mm.apply(patched, newer)[0], patched)
         self.assertEqual(space.layout(legacy)["allocations"], space.layout(patched)["allocations"])
         for allocation in space.layout(legacy)["allocations"]:
@@ -495,6 +495,76 @@ class RetailXbeTests(unittest.TestCase):
         self.assertEqual(mm.legacy_status(bytes(mixed), self.data), "foreign")
         with self.assertRaises(mm.MoreMomentsError):
             mm.apply(bytes(mixed), newer, legacy_data=self.data)
+
+    def test_row_hooks_are_the_four_record_reads_of_the_list_draw_callbacks(self):
+        """Beta 77: retail has `call 2CFD40` at each ROW_HOOKS site; the install points all four at the display helper,
+        which maps the list row and jumps to 2CFD40. Nothing else in 20C710..20C850 changes."""
+        image = XbeImage(self.retail)
+        self.assertEqual([va for _label, va, _retail in mm.ROW_HOOKS], [0x20C71E, 0x20C740, 0x20C79B, 0x20C813])
+        for _label, va, retail in mm.ROW_HOOKS:
+            raw = image.read(va, 5)
+            self.assertEqual(raw.hex(), retail)
+            self.assertEqual(raw[0], 0xE8)
+            self.assertEqual(va + 5 + struct.unpack_from("<i", raw, 1)[0], 0x2CFD40)
+        patched, receipt = mm.apply(self.retail, self.data)
+        code, _dat = mm.allocations(patched)
+        helper = code["va"] + mm.DISPLAY_OFFSET + mm.assembly.DISPLAY_LABELS[mm.ROW_HELPER]
+        after = XbeImage(patched)
+        for _label, va, _retail in mm.ROW_HOOKS:
+            raw = after.read(va, 5)
+            self.assertEqual((raw[0], va + 5 + struct.unpack_from("<i", raw, 1)[0]), (0xE8, helper))
+        self.assertEqual({e["label"] for e in receipt["edits"]} & mm.ROW_LABELS, set(mm.ROW_LABELS))
+        changed = [at for at in range(0x20C710, 0x20C850) if after.read(at, 1) != image.read(at, 1)]
+        operands = {va + k for _l, va, _r in mm.ROW_HOOKS for k in range(1, 5)}     # the rel32 of each call
+        self.assertTrue(changed and set(changed) <= operands, "only the four call operands in the callbacks change")
+        self.assertEqual(mm.row_hooks_status(patched, self.data), "applied")
+        self.assertEqual(mm.row_hooks_status(self.retail, self.data), "retail")
+
+    def test_a_beta_765_install_is_completed_in_place_and_nothing_else_moves(self):
+        """The shipped v0.5 executable has the owner and the three older display hooks but not the row hooks: it still
+        reads applied, and apply() writes exactly the four call sites and the one section digest."""
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        current, _ = mm.apply(self.retail, self.data)
+        code, dat = mm.allocations(current)
+        image, previous = XbeImage(current), bytearray(current)
+        for label, va, before, _after in mm.sites(code["va"], dat["va"], mm.RETAIL_COUNT + len(self.data.moments)):
+            if label in mm.ROW_LABELS:
+                previous[image.offset(va, len(before)):image.offset(va, len(before)) + len(before)] = before
+        for section in _sections(previous):
+            previous[section.header_offset + 36:section.header_offset + 56] = section_digest(previous, section)
+        previous = bytes(previous)
+        self.assertNotEqual(previous, current)
+        self.assertEqual((mm.status(previous, self.data), mm.row_hooks_status(previous, self.data)),
+                         ("applied", "previous"))
+        upgraded, receipt = mm.apply(previous, self.data)
+        self.assertEqual((receipt["status"], receipt["rows_completed"]), ("upgraded", True))
+        self.assertEqual(upgraded, current)
+        runs = [i for i, (a, b) in enumerate(zip(previous, upgraded)) if a != b]
+        self.assertEqual(len(runs), receipt["changed_bytes"])
+        self.assertLessEqual(len(runs), 16 + 20)          # the rel32 of four calls, and the .text section's SHA-1
+        again, replay = mm.apply(upgraded, self.data)
+        self.assertEqual((again, replay["status"]), (upgraded, "already_applied"))
+        self.assertEqual(mm.row_hooks_status(upgraded, self.data), "applied")
+
+    def test_a_changed_row_hook_or_draw_callback_is_foreign(self):
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        patched, _ = mm.apply(self.retail, self.data)
+        image = XbeImage(patched)
+        for va in [va + 2 for _l, va, _r in mm.ROW_HOOKS] + [0x20C712, 0x20C7D0, 0x20C84F]:
+            bad = bytearray(patched)
+            bad[image.offset(va, 1)] ^= 1
+            for section in _sections(bad):
+                bad[section.header_offset + 36:section.header_offset + 56] = section_digest(bad, section)
+            with self.subTest(va=hex(va)):
+                self.assertEqual(mm.status(bytes(bad), self.data), "foreign")
+                with self.assertRaises(mm.MoreMomentsError):
+                    mm.apply(bytes(bad), self.data)
+        mixed = bytearray(patched)
+        first = mm.ROW_HOOKS[0]
+        mixed[image.offset(first[1], 5):image.offset(first[1], 5) + 5] = bytes.fromhex(first[2])
+        for section in _sections(mixed):
+            mixed[section.header_offset + 36:section.header_offset + 56] = section_digest(mixed, section)
+        self.assertEqual(mm.status(bytes(mixed), self.data), "foreign")       # one of four still retail
 
     def test_the_venue_callback_is_the_details_screens_alone(self):
         """2C5A70 is registered once, in the Anniversary details screen's text callbacks (the group that also
@@ -535,7 +605,7 @@ class NativeMomentsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         try:
-            from nfl2k5_espn25_more_moments_native import MomentsCPU, evidence
+            from nfl2k5_espn25_more_moments_native import FastMomentsCPU, MomentsCPU, evidence
         except ImportError as exc:
             raise unittest.SkipTest(f"Unicorn unavailable: {exc}")
         from mod_editor.core import nfl2k5_espn25_rosters as e
@@ -566,6 +636,9 @@ class NativeMomentsTests(unittest.TestCase):
         resources, context, ids = evidence(RETAIL)
         cls.cpu = MomentsCPU(payload, resources, context, ids,
                              situ_chunk=collection[:32 + sc.u32(collection, 4)], extra_files=files)
+        # the same executable and data with hooks only at the named boundaries: 51 clicks in seconds
+        cls.fast = FastMomentsCPU(payload, resources, context, ids,
+                                  situ_chunk=collection[:32 + sc.u32(collection, 4)], extra_files=files)
 
     @classmethod
     def tearDownClass(cls):
@@ -577,6 +650,35 @@ class NativeMomentsTests(unittest.TestCase):
         self.assertEqual(cpu.caption(0), "THE ICE BOWL | December 31, 1967")
         self.assertEqual(cpu.caption(mm.display_order(self.data).index(25)), "THE MISS | January 17, 1999")
         self.assertEqual(cpu.caption(mm.display_order(self.data).index(49)), "TEST MOMENT 50 | January 17, 1999")
+
+    def test_every_list_row_draws_the_moment_a_click_opens(self):
+        """Beta 77 (Noah 10/7: "click one and another wrong one opens"). The list draws each row with its own
+        callbacks (title and date 20C800, mini helmets 20C710 and 20C790). For all 51 rows, run those callbacks
+        natively and require that they read the SITU record the select handler opens: the display row's physical
+        row, with the title, date and both helmet kits taken from that record."""
+        cpu, order = self.fast, mm.display_order(self.data)
+        self.assertEqual(sorted(order), list(range(51)))
+        self.assertNotEqual(list(order), list(range(51)), "the test needs a real permutation")
+        for display, physical in enumerate(order):
+            with self.subTest(display_row=display + 1, physical_row=physical + 1):
+                expected = cpu.run(0x2CFD40, ecx=physical)
+                title, date = cpu.text(cpu.r(expected)), cpu.text(cpu.r(expected + 0xC))
+                drawn = {kind: cpu.draw_row(kind, display) for kind in ("title", "home_helmet", "away_helmet")}
+                self.assertEqual(drawn["title"]["asked"], [physical])
+                self.assertEqual(drawn["title"]["records"], [expected])
+                self.assertEqual(drawn["home_helmet"]["asked"], [physical, physical])
+                self.assertEqual(drawn["home_helmet"]["records"], [expected, expected])
+                self.assertEqual(drawn["away_helmet"]["asked"], [physical])
+                self.assertEqual(drawn["away_helmet"]["records"], [expected])
+                self.assertEqual((drawn["title"]["title"], drawn["title"]["date"]), (title, date))
+                self.assertEqual(drawn["home_helmet"]["kit"], cpu.r(expected + 0x5C))
+                self.assertEqual(drawn["away_helmet"]["kit"], cpu.r(expected + 0x58))
+                cpu.events.clear()
+                cpu.select(display)
+                self.assertEqual(cpu.r(0xBF1858), physical)
+                self.assertEqual(cpu.run(0x20C6F0), expected)          # what the details screen reads
+                self.assertEqual(cpu.text(cpu.r(cpu.run(0x20C6F0))), title)
+                cpu.run(0x20C3C0)
 
     def test_new_moments_load_their_own_files_and_set_up(self):
         cpu = self.cpu

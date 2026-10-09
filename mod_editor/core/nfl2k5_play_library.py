@@ -647,8 +647,37 @@ PASS_CONCEPTS: dict[str, dict] = {
 }
 
 
+def _engine_for(spec: PlaySpec, concept: str | None, scheme: str | None) -> str | None:
+    if spec.play_type == "flea":
+        return "Flea Flicker"
+    if spec.play_type in ("pass", "pa_pass"):
+        return (PASS_CONCEPTS.get(concept or "") or {}).get("engine")
+    if spec.play_type in ("run", "sneak", "keeper", "reverse"):
+        return (RUN_SCHEMES.get(scheme or "") or {}).get("engine")
+    return None
+
+
 def default_assignments(spec: PlaySpec, concept: str | None = None, scheme: str | None = None) -> None:
-    """Fill spec.assignments with sensible defaults for the play type."""
+    """Fill spec.assignments with sensible defaults for the play type.
+
+    Modern concepts (``engine`` entries registered by nfl2k5_offense_concepts) are built
+    by the formation-aware concept engine: every slot gets the engine's chain as a
+    custom assignment, and a pass concept's play type follows the engine's design
+    (a play-action concept stages as play action)."""
+    engine = _engine_for(spec, concept, scheme)
+    if engine:
+        from . import nfl2k5_offense_concepts as concepts
+        try:
+            d = concepts.engine_assignments(engine, spec.positions, spec.kinds)
+        except concepts.ConceptUnavailable as exc:
+            raise ValueError(f"{engine}: {exc}") from exc
+        spec.assignments.clear()
+        spec.screen = None
+        for s in range(len(spec.kinds)):
+            spec.assignments[s] = PlayerAssignment("custom", custom=[(op, list(vals)) for op, vals, *_ in d.chains[s]])
+        if spec.play_type in ("pass", "pa_pass") and d.play_type in ("pass", "pa_pass"):
+            spec.play_type = d.play_type
+        return
     kinds = spec.kinds
     xs = [x for x, _ in spec.positions]
     spec.assignments.clear()
@@ -1022,14 +1051,17 @@ PLAY_FLAG_SPECIAL = 0x8000000
 PLAY_FLAGS_KEEP_MASK = 0x1FF          # type code + family: must stay the donor's
 
 WANTED_SIGNATURE = {"pass": "pass", "pa_pass": "pa_pass", "run": "run", "sneak": "qb_run",
-                    "keeper": "qb_run", "reverse": "run"}
+                    "keeper": "qb_run", "reverse": "run", "flea": "flea"}
 
 
 def qb_signature(qb_chain: Sequence) -> str:
     """Shape of a QB chain from its opcodes: 'pass' (dropback), 'pa_pass' (fake then throw),
-    'run' (handoff), 'draw' (drop then handoff), 'qb_run' (sneak / keeper / bootleg / QB draw)
-    or 'other'.  Accepts raw 8-byte nodes or (opcode, operands) tuples."""
+    'run' (handoff), 'draw' (drop then handoff), 'qb_run' (sneak / keeper / bootleg / QB draw),
+    'flea' (hand off, take the pitch back, then throw: the retail Flea Flicker) or 'other'.
+    Accepts raw 8-byte nodes or (opcode, operands) tuples."""
     ops = {(n[0] if isinstance(n, (bytes, bytearray)) else int(n[0])) for n in qb_chain}
+    if 0x13 in ops and 0x16 in ops and 0x06 in ops:
+        return "flea"           # hand off, take the pitch back, throw (retail Flea Flicker)
     if 0x13 in ops:
         return "draw" if 0x04 in ops else "run"
     if 0x06 in ops:
@@ -1050,7 +1082,7 @@ def play_class_label(flags: int) -> str:
 
 def class_flags_for(play_type: str, flags: int) -> int:
     """Force ``flags`` into the class the wizard play type needs (type code / family kept)."""
-    want_pass = play_type in ("pass", "pa_pass")
+    want_pass = play_type in ("pass", "pa_pass", "flea")
     ok = play_class_label(flags) == ("pass" if want_pass else "run")
     if ok:
         return flags
@@ -1067,7 +1099,7 @@ def reference_play_for(book: Nfl2k5Playbook, body: bytes, play_type: str, scheme
     play it as (the most common flags word in that group).  Falls back to any offensive
     play with the class bits forced, so a pass is never staged under a run header."""
     wanted = WANTED_SIGNATURE.get(play_type, "pass")
-    if play_type == "run" and scheme == "Draw":
+    if play_type == "run" and scheme in ("Draw", "Draw (modern)"):
         wanted = "draw"
     cands: list[tuple[int, int, str]] = []
     for p in book.plays:
@@ -1086,6 +1118,7 @@ def reference_play_for(book: Nfl2k5Playbook, body: bytes, play_type: str, scheme
         "run": [("run", is_run), ("draw", is_run), ("qb_run", is_run), ("run", not_special)],
         "draw": [("draw", is_run), ("run", is_run), ("qb_run", is_run), ("draw", not_special)],
         "qb_run": [("qb_run", is_run), ("draw", is_run), ("run", is_run), ("qb_run", not_special)],
+        "flea": [("flea", is_pass), ("flea", not_special), ("pa_pass", is_pass)],
     }[wanted]
     for sig, ok in order:
         group = [(i, f) for i, f, s in cands if s == sig and ok(f)]
@@ -1434,13 +1467,26 @@ def make_defense_design(book: Nfl2k5Playbook, body: bytes, formation_index: int,
 
 
 def double_a_positions(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> list[tuple[int, int]]:
+    """Double-A mug look (a named pressure call): two linebackers walked into the A gaps (80 cm off the centre,
+    1.1 yd deep, 1.75 yd apart). Linemen inside the 4i shades move out to them and every lineman is spaced at
+    least 1.7 yd from the others (beta 77 alignment rules, nfl2k5_defense_lint)."""
     info = defense_personnel(book, body, formation_index)
     lbs = [s for s, c in enumerate(info['codes']) if c & 31 in (MLB, OLB) and s >= 4]
     if len(lbs) < 2:
         raise ValueError("Double A needs two linebackers in this formation")
     positions = [(s.x[0], s.z[0]) for s in formation_record(body, formation_index).slots]
-    for slot, x in zip(lbs[:2], (-76, 76)):
-        positions[slot] = (x, 91)
+    for slot, x in zip(lbs[:2], (-80, 80)):
+        positions[slot] = (x, 100)
+    line = sorted((s for s, c in enumerate(info['codes']) if c & 31 in (DE, DT)), key=lambda s: abs(positions[s][0]))
+    taken: list[float] = []
+    for s in line:
+        x, z = positions[s]
+        side = 1 if x > 0 or (x == 0 and sum(1 for t in taken if t > 0) <= sum(1 for t in taken if t < 0)) else -1
+        ax = max(abs(x), 255.0)
+        while any(abs(side * ax - t) < 1.7 * YD for t in taken):
+            ax += 20.0
+        positions[s] = (int(round(side * ax)), z)
+        taken.append(side * ax)
     return positions
 
 

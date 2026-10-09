@@ -2337,7 +2337,8 @@ def fsync_fd(fd: int, *, path: str | os.PathLike[str] | None = None) -> None:
     descriptor takes exactly one syscall everywhere and POSIX behaviour -- including
     which errors propagate -- is untouched.
 
-    Only on Windows, and only for ``EBADF``, is a fallback taken: that errno is
+    Only on Windows, and only for ``EBADF`` (or ``EACCES``, Wine's CRT spelling of the same
+    refusal), is a fallback taken: that errno is
     precisely how ``FlushFileBuffers`` reports "this handle has no write access",
     which happens whenever the caller opened the file ``O_RDONLY`` (legal and
     flushable on POSIX).  The fallback reopens the *same file* by ``path`` with
@@ -2355,7 +2356,10 @@ def fsync_fd(fd: int, *, path: str | os.PathLike[str] | None = None) -> None:
         os.fsync(fd)
         return
     except OSError as exc:
-        if not IS_WINDOWS or exc.errno != errno.EBADF:
+        # b77-i2: the Microsoft CRT reports FlushFileBuffers' refusal of a read-only handle as EBADF; Wine's CRT
+        # reports the same refusal as EACCES (seen in the Windows-CPython-under-Wine build gate). Both take the
+        # verified reopen below; a closed descriptor still fails there, in os.fstat.
+        if not IS_WINDOWS or exc.errno not in (errno.EBADF, errno.EACCES):
             raise
         refusal = exc
     if path is None:

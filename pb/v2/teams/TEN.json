@@ -1,0 +1,698 @@
+{
+ "team": "TEN",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Brian Daboll Erhardt-Perkins spread: 11 personnel shotgun quick game, 12 personnel play action, gun runs, screens",
+ "staff": "HC Robert Saleh; OC and play caller Brian Daboll (hired January 2026)",
+ "family": "spread",
+ "feature": "WR1",
+ "key_players": "QB Cam Ward; RB Tony Pollard, Tyjae Spears; WR Calvin Ridley, Wan'Dale Robinson (slot), Carnell Tate; TE Gunnar Helm, Daniel Bellinger",
+ "depth_step": 0,
+ "tendencies": {
+  "shotgun_pct": 72.86,
+  "pistol_pct": 1.71,
+  "play_action_pct": 18.73,
+  "motion_pct": 44.72,
+  "personnel": {
+   "12": 166,
+   "11": 698,
+   "other": 101,
+   "13": 7,
+   "21": 23
+  }
+ },
+ "formations": {
+  "exact": [
+   "Gun Doubles",
+   "Singleback Doubles",
+   "Singleback Ace",
+   "Gun Trey",
+   "Gun Bunch",
+   "Goal Line",
+   "Ace Wing",
+   "Singleback Trey",
+   "Pistol Doubles",
+   "Gun Ace Wing",
+   "Gun Trips",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "I-Form Pro",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Y Trips",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Doubles Tight",
+   "Ace Jumbo"
+  ],
+  "prefer": [],
+  "avoid": []
+ },
+ "personnel_groups": {
+  "Queens": {
+   "twin_of": "11",
+   "code": 5,
+   "name": "Kings Early"
+  },
+  "Straight": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  },
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Gun Doubles": {
+   "own": "Kings Early",
+   "mask": [
+    "Kings",
+    "Kings Early"
+   ]
+  },
+  "Singleback Doubles": {
+   "own": "Kings Early",
+   "mask": [
+    "Kings Early",
+    "Kings Long"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Early",
+   "mask": [
+    "Kings",
+    "Kings Early"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings Early",
+   "mask": [
+    "Kings",
+    "Kings Early"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings Early",
+   "mask": [
+    "Kings",
+    "Kings Early"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Early",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  }
+ },
+ "formation_ratings": {
+  "Gun Doubles": [
+   3,
+   4,
+   2
+  ],
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Ace": [
+   4,
+   4,
+   4
+  ],
+  "Gun Trey": [
+   0,
+   0,
+   3
+  ],
+  "Gun Bunch": [
+   1,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "Ace Wing": [
+   1,
+   1,
+   3
+  ],
+  "Singleback Trey": [
+   4,
+   0,
+   1
+  ],
+  "Pistol Doubles": [
+   4,
+   4,
+   4
+  ],
+  "Gun Ace Wing": [
+   2,
+   0,
+   4
+  ],
+  "Gun Trips": [
+   4,
+   1,
+   0
+  ],
+  "Gun Empty Trey": [
+   4,
+   3,
+   2
+  ],
+  "Gun Wing": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   3,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   2,
+   0,
+   4
+  ],
+  "Gun Y Trips": [
+   3,
+   2,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   3
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   4
+  ],
+  "Gun Doubles Tight": [
+   3,
+   2,
+   1
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ]
+ },
+ "menus": {
+  "Gun Doubles": [
+   "Inside Zone",
+   "Stick",
+   "Quick Outs",
+   "Mesh",
+   {
+    "concept": "Hitch Seam",
+    "name": "Y Seam Hitch",
+    "overrides": {
+     "reads": [
+      "Y",
+      "W2",
+      "S1",
+      "W1"
+     ]
+    }
+   },
+   {
+    "concept": "Slant Flat",
+    "name": "Slant Seam",
+    "overrides": {
+     "routes": {
+      "S2": [
+       "route",
+       "Seam",
+       15
+      ]
+     }
+    }
+   },
+   "Scissors",
+   "Dagger",
+   "Smash",
+   "RB Screen",
+   "Draw",
+   {
+    "concept": "Mills",
+    "name": "Titans Mills",
+    "overrides": {
+     "depth_step": 1
+    }
+   }
+  ],
+  "Singleback Doubles": [
+   "Inside Zone",
+   "PA Boot",
+   "Outside Zone",
+   "Mesh",
+   "Slant Flat",
+   "End Around",
+   "Dagger",
+   "Counter",
+   "Smash",
+   "Curl Flat",
+   "Draw",
+   {
+    "concept": "Post Wheel",
+    "name": "Titans Post Wheel",
+    "overrides": {
+     "depth_step": 1
+    }
+   }
+  ],
+  "Singleback Ace": [
+   "Inside Zone",
+   "Duo",
+   "PA Boot",
+   "Y Cross",
+   "Outside Zone",
+   "Counter",
+   {
+    "concept": "Yankee",
+    "name": "Ace Yankee Post",
+    "overrides": {
+     "depth_step": 1
+    }
+   },
+   "PA Dagger",
+   "Power",
+   "Four Verticals"
+  ],
+  "Gun Trey": [
+   "Inside Zone",
+   "Stick",
+   "Levels",
+   "Y Cross",
+   "Flood",
+   "Counter",
+   "Snag",
+   "Drive",
+   "Bench",
+   "RB Screen"
+  ],
+  "Gun Bunch": [
+   "Inside Zone",
+   "Mesh",
+   "Snag",
+   "Double Slants",
+   "Flood",
+   "Bubble Screen",
+   "Spacing",
+   "Draw",
+   "Texas",
+   "Sail"
+  ],
+  "Goal Line": [
+   "QB Sneak",
+   "Inside Zone",
+   "Power",
+   "Iso",
+   "PA Boot Leak",
+   "Y Pivot",
+   "Duo",
+   "Counter",
+   "Toss"
+  ],
+  "Ace Wing": [
+   "Outside Zone",
+   "Duo",
+   "PA Boot Leak",
+   "TE Screen",
+   "Counter",
+   "PA Crossers",
+   "Power",
+   "Stick",
+   "Flood",
+   "Y Cross",
+   "Scissors"
+  ],
+  "Singleback Trey": [
+   "Inside Zone",
+   "Outside Zone",
+   "Stick",
+   "Levels",
+   "PA Boot",
+   "Y Cross",
+   "Flood",
+   "Counter",
+   "Toss",
+   "Drive"
+  ],
+  "Pistol Doubles": [
+   "Inside Zone",
+   "Outside Zone",
+   {
+    "concept": "PA Boot",
+    "name": "Pistol Boot",
+    "overrides": {
+     "depth_step": 1
+    }
+   },
+   "Counter",
+   "PA Crossers",
+   "Slant Flat",
+   "Mesh",
+   "Duo",
+   "Stick",
+   "Mills"
+  ],
+  "Gun Ace Wing": [
+   "Inside Zone",
+   "Duo",
+   {
+    "concept": "TE Screen",
+    "name": "Helm Screen",
+    "overrides": {}
+   },
+   "Stick",
+   "Drive",
+   "Counter",
+   "Levels",
+   "Y Cross",
+   {
+    "concept": "Y Pivot",
+    "name": "Helm Pivot",
+    "overrides": {
+     "reads": [
+      "Y",
+      "B",
+      "S1",
+      "W1"
+     ]
+    }
+   },
+   "Mills"
+  ],
+  "Gun Trips": [
+   "Inside Zone",
+   {
+    "concept": "Stick",
+    "name": "Trips Whip Stick",
+    "overrides": {
+     "routes": {
+      "S2": [
+       "route",
+       "Whip",
+       4
+      ]
+     },
+     "reads": [
+      "S2",
+      "S3",
+      "W1",
+      "B"
+     ]
+    }
+   },
+   "Snag",
+   "Flood",
+   "Stick Nod",
+   "Levels",
+   "Bubble Screen",
+   "Spacing",
+   "Drive",
+   "Four Verticals",
+   "Whip Seam",
+   "Bench"
+  ],
+  "Gun Empty Trey": [
+   "Stick",
+   "Spacing",
+   "QB Draw",
+   "Quick Outs",
+   "Comebacks",
+   "Mesh",
+   "Four Verticals",
+   "Snag",
+   "Hank",
+   {
+    "concept": "Spacing",
+    "name": "Empty Spacing",
+    "overrides": {
+     "routes": {
+      "S3": [
+       "route",
+       "Snag",
+       4
+      ]
+     }
+    }
+   },
+   "Slant Flat"
+  ],
+  "Gun Wing": [
+   "Inside Zone",
+   "Duo",
+   "Counter",
+   "Stick",
+   "Smash",
+   "Mesh",
+   "Drive",
+   "TE Screen",
+   "Dagger",
+   "Draw",
+   "Curl Flat",
+   "Comebacks"
+  ],
+  "I-Form Pro": [
+   "Inside Zone",
+   "PA Boot",
+   "Power",
+   "Iso",
+   "Toss",
+   "Flea Flicker",
+   "Counter",
+   "Yankee",
+   "Draw",
+   "PA Crossers"
+  ],
+  "Heavy Wing": [
+   "Outside Zone",
+   "Power",
+   "Duo",
+   "PA Boot Leak",
+   "Counter",
+   "QB Sneak",
+   "Iso",
+   "Trap",
+   "Yankee"
+  ],
+  "Singleback Y Trips": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Levels",
+   "Snag",
+   "Flood",
+   "PA Boot",
+   "Counter",
+   "Outside Zone",
+   "Y Pivot"
+  ],
+  "Gun Y Trips": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Levels",
+   "Flood",
+   "Snag",
+   "Draw",
+   "Spacing",
+   "Drive",
+   "Bench",
+   "Y Pivot"
+  ],
+  "Singleback Bunch": [
+   "Outside Zone",
+   "Mesh",
+   "Snag",
+   "Flood",
+   "PA Boot",
+   "Bubble Screen",
+   "Inside Zone",
+   "Double Slants",
+   "Spacing"
+  ],
+  "Singleback Doubles Tight": [
+   "Inside Zone",
+   "Mesh",
+   "PA Boot",
+   "Drive",
+   "Smash",
+   "Reverse",
+   "Outside Zone",
+   "Counter",
+   "Draw",
+   "Curl Flat"
+  ],
+  "Gun Doubles Tight": [
+   "Inside Zone",
+   "Mesh",
+   "Shallow Cross",
+   "Dagger",
+   "Drive",
+   {
+    "concept": "Mesh",
+    "name": "Mesh Wheel",
+    "overrides": {
+     "routes": {
+      "B": [
+       "route",
+       "Back Wheel"
+      ]
+     }
+    }
+   },
+   "Counter",
+   "Snag",
+   "RB Screen",
+   "Levels"
+  ],
+  "Ace Jumbo": [
+   "Inside Zone",
+   "Duo",
+   "QB Sneak",
+   "Power",
+   "PA Boot Leak",
+   "Y Pivot",
+   "Counter",
+   "PA Boot",
+   "Toss"
+  ]
+ },
+ "boost": {},
+ "preference_shift": {},
+ "signature": [],
+ "menu_adds": {},
+ "sources": {
+  "staff": [
+   "https://www.nfl.com/news/titans-hire-brian-daboll-offensive-coordinator",
+   "https://www.wsmv.com/2026/01/27/tennessee-titans-sign-former-ny-giants-coach-brian-daboll-new-offensive-coordinator/"
+  ],
+  "roster": "https://www.tennesseetitans.com/team/depth-chart (unofficial depth chart as of 10/5/26; no fullback listed)",
+  "personnel_2026": "11 personnel 71% through two 2026 games (Yahoo Sports / Big Blue View via https://www.stackedfantasy.com/nfl/news/insights/846170)",
+  "shotgun": "Daboll offenses 70-80% shotgun; 2025 Giants under-center 23.5% (https://atozsports.com/?p=494471)",
+  "scheme": "Erhardt-Perkins concept passing, short passing sets up shots, Daboll TE screen in the 2026 preseason (https://www.foxsports.com/stories/nfl/titans-qb-cam-ward-oc-brian-daboll)",
+  "third_down_slot": "https://www.nbcsports.com/fantasy/football/player-news/2026-08-16/daboll-to-have-ward-rely-on-robinson-on-3rd-down",
+  "qb_runs": "https://www.nbcsports.com/fantasy/football/player-news/2026-09-20/ward-rushes-for-two-touchdowns-in-loss-to-eagles",
+  "charting": "nflverse 2025 play_by_play + pbp_participation + FTN charting (sha256 in pb/research/tendencies_2025.json): TEN 2025 (995 snaps) and NYG 2025 weeks 1-10 (634 snaps, Daboll calling plays); per-situation table reports/p6s_REPORT.md",
+  "design": "formations, menus, personnel groups and CPU ratings are DESIGN (beta 77 p6s), fitted on the analytic selector pb/v2/selection_model.py to the charting targets and checked natively; p6s P4 concepts in the Titans menus: Scissors (Gun Doubles), Titans Post Wheel (Singleback Doubles, PA shot for Ridley/Tate), Helm Pivot (Gun Ace Wing), Stick Nod (Gun Trips), Comebacks (Gun Empty Trey)"
+ }
+}

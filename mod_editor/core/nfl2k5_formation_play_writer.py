@@ -139,16 +139,22 @@ class FormationCreateRequest:
     category_index: int | None = None
     replace_index: int | None = None
     category_positions: tuple[int, ...] | None = None
+    # CPU situation ratings (short, medium, long), formation flag bits 21-23 / 24-26 / 27-29, each 0-7
+    # (0x207EF0 scores rating - 2 in normal play and rating - 1 on the urgent field; 1 is best). None keeps
+    # the donor's ratings.
+    situation: tuple[int, int, int] | None = None
 
     @property
     def selector(self) -> str:
         # selector is resolved after compilation (needs new_index); placeholder
         base = f"formation-create:{self.asset_id}:donor{self.donor_formation_index}"
         if (self.slot_positions is not None or self.category_index is not None or self.replace_index is not None
-                or self.category_positions is not None):
+                or self.category_positions is not None or self.situation is not None):
             payload: list[object] = [self.slot_positions, self.category_index, self.custom_name, self.replace_index]
             if self.category_positions is not None:
                 payload.append(list(self.category_positions))
+            if self.situation is not None:
+                payload.append(["situation", *self.situation])
             base += ":" + _payload_tag(payload)
         return base
 
@@ -164,6 +170,8 @@ class FormationCreateRequest:
             row["replace_index"] = self.replace_index
         if self.category_positions is not None:
             row["category_positions"] = list(self.category_positions)
+        if self.situation is not None:
+            row["situation"] = list(self.situation)
         return row
 
 
@@ -362,7 +370,7 @@ def formation_request_from_mapping(value: Mapping[str, object]) -> FormationCrea
     if value.get("kind") == PROVIDER_KIND_FORMATION:
         value = {k: v for k, v in value.items() if k != "kind"}
     fields = {"asset_id", "donor_formation_index", "custom_name", "slot_positions", "category_index", "replace_index",
-              "category_positions"}
+              "category_positions", "situation"}
     if not set(value) <= fields or not {"asset_id", "donor_formation_index"} <= set(value):
         raise ValidationError("A formation create has unsupported fields.")
     asset_id = value.get("asset_id")
@@ -385,7 +393,31 @@ def formation_request_from_mapping(value: Mapping[str, object]) -> FormationCrea
         category,
         replace,
         codes,
+        situation_from(value.get("situation")),
     )
+
+
+def situation_from(value: object) -> tuple[int, int, int] | None:
+    """Three 3-bit CPU situation ratings (short, medium, long yardage) for formation flag bits 21-29."""
+    if value is None:
+        return None
+    if (not isinstance(value, (list, tuple)) or len(value) != 3
+            or any(type(v) is not int or not 0 <= v <= 7 for v in value)):
+        raise ValidationError("Situation ratings are three whole numbers 0 through 7 (short, medium, long).")
+    return (value[0], value[1], value[2])
+
+
+SITUATION_SHIFTS = (21, 24, 27)
+SITUATION_MASK = 0x1FF << 21
+
+
+def apply_situation(flags: int, situation: tuple[int, int, int] | None) -> int:
+    if situation is None:
+        return flags
+    flags &= ~SITUATION_MASK
+    for shift, value in zip(SITUATION_SHIFTS, situation):
+        flags |= (value & 7) << shift
+    return flags
 
 
 def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
@@ -787,6 +819,10 @@ def compile_formation_play_creations(
         allowed.append(range(body_off + c_off + 5, body_off + c_off + 16))
 
     for i, req in enumerate(norm_formations):
+        if req.situation is not None:
+            dst_f = FORMATION_BASE + new_formation_indices[i] * FORMATION_SIZE
+            word = struct.unpack_from("<I", replacement, body_off + dst_f + 4)[0]
+            struct.pack_into("<I", replacement, body_off + dst_f + 4, apply_situation(word, req.situation))
         if req.slot_positions is None and req.category_index is None:
             continue
         dst_idx = new_formation_indices[i]

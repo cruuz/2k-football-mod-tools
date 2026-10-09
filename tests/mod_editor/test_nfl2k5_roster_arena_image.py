@@ -41,22 +41,24 @@ class PublicTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space
         before = space._scale_allocations([r for r in REQUESTS if r[0] != growth.OWNER])
         after = space._scale_allocations(REQUESTS)
-        # MyCareer M3 (beta 63) deliberately places its promoted 16 KiB code AFTER every other code allocation, so
-        # that one row moves with the union by design; every other owner must keep its exact address.
-        promoted = ('nfl2k5_my_career', 'code')
-        # Beta 71's sprite scorebug owner (4 KiB of code) likewise sits after the scale union by design, so its
-        # row moves with the union too; the allocator gates and the manifest pin its shipped address.
-        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
-        # Beta 76 k1's K128 owner (512 bytes of code) is placed after all of them, so it moves with the union too.
-        from mod_editor.core import nfl2k5_k128 as k128
-        late = (runtime.OWNER, k128.OWNER)
-        movers = lambda a: (a['owner'], a['kind']) == promoted or a['owner'] in late
-        self.assertEqual([a for a in before if not movers(a)],
-                         [a for a in after if a['owner'] != growth.OWNER and not movers(a)])
-        self.assertEqual([(a['owner'], a['kind'], a['size']) for a in before if a['owner'] in late],
-                         [(a['owner'], a['kind'], a['size']) for a in after if a['owner'] in late])
-        self.assertEqual([(a['owner'], a['size']) for a in before if (a['owner'], a['kind']) == promoted],
-                         [(a['owner'], a['size']) for a in after if (a['owner'], a['kind']) == promoted])
+        # Growth adds 8 KiB before the promoted MyCareer code and its four
+        # following code owners. Static tails, the honors gap, every data/RO
+        # row and every other code allocation keep their complete records.
+        movers = {(name, 'code', 0) for name in (
+            'nfl2k5_my_career', 'nfl2k5_scorebug_runtime', 'nfl2k5_k128',
+            'nfl2k5_letter_grades', 'nfl2k5_letter_grades_progress')}
+        key = lambda row: (row['owner'], row['kind'], row.get('owner_offset', 0))
+        self.assertTrue(movers.issubset({key(row) for row in before}))
+        added = [row for row in after if row['owner'] == growth.OWNER]
+        self.assertEqual([(row['kind'], row['size']) for row in added], [('code', 8192)])
+        expected = []
+        for row in before:
+            result = dict(row)
+            if key(row) in movers:
+                result['va'] += 8192
+                result['raw'] += 8192
+            expected.append(result)
+        self.assertEqual(expected, [row for row in after if row['owner'] != growth.OWNER])
         for kwargs in (dict(created_teams_extra=1), dict(created_teams_extra=True), dict(reserves_16=1),
                        dict(reserves_16=False, created_teams_extra=0)):
             with self.assertRaises(ValueError): growth.options(**kwargs)

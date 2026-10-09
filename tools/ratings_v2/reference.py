@@ -69,6 +69,10 @@ def retail_players():
             v = p.record.values
             ovr, ovr01 = game_ovr(p.record.encode())
             rpos = RETAIL_POS[v["position"]]
+            # NOTE (f12, beta 77): the retail record's years pro counts the season in progress (rookie = 1) but the
+            # candidates ranked against this reference use completed seasons (nflverse years_exp, rookie = 0), so their
+            # experience percentile (composure / leadership / consistency) is one year low. Left as shipped because
+            # changing it moves every mental rating; use rr.accrued_seasons(v["years_pro"]) when ratings are regenerated.
             out.append(dict(team=team.abbreviation, first=p.first, last=p.last, rpos=rpos,
                             pool=next(k for k, pos in POOL.items() if rpos in pos), years=v["years_pro"],
                             birth=p.record.get("birth_year"), ovr01=ovr01, ratings=p.record.ratings()))

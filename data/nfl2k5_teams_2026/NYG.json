@@ -489,5 +489,24 @@
     "hair_by_eye": {
       "Jaxson Dart": "#8A6848"
     }
+  },
+ "u2c_b77": {
+  "job": "b77 u2c (sonnet-5.5), 2026-10-08",
+  "checked_against": "giants.com 2026 galleries wk3 vs TEN, wk4 vs ARI (home blue), wk2 at LAR (road white)",
+  "changes": {
+   "home.digits": "white block numbers get a thin red outline (outline red, outline_frac 0.022 of the glyph, cut from inside the v0.5 glyph; the shoulder (TV) numbers follow): wk3 vs TEN #49 and wk4 vs ARI #57 show white numbers with a thin red edge on the blue jersey"
+  },
+  "unchanged_because_right": [
+   "road red numbers",
+   "road pants red stripe",
+   "socks",
+   "sleeve stripes",
+   "helmet"
+  ]
+ },
+  "uni_b77": {
+    "reason": "Noah rejected the u2c red number outline in game. Restore v0.5 plain white home numbers and plain red away numbers.",
+    "home_digits": "v0.5",
+    "away_digits": "v0.5"
   }
 }

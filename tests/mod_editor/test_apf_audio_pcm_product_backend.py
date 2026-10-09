@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import ctypes
 import hashlib
 import os
-from pathlib import Path
 import struct
-import sys
 import time
 import tempfile
 from types import SimpleNamespace

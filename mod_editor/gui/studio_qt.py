@@ -1811,6 +1811,7 @@ class StudioMainWindow(QMainWindow):
         self._commentary_panel: CommentaryPanel | None = None
         self._build_panel: BuildPanel | None = None
         self._star_players_connected = False
+        self._book_set_wired: set[str] = set()
         # E2: the open-disc hook.  A generation counter drops inspection results
         # of a disc that was superseded by a later open; the roster page loads
         # lazily on first entry so an edited roster is never reset by navigation.
@@ -3113,6 +3114,7 @@ class StudioMainWindow(QMainWindow):
             page = audio_tabs
         elif category == ProductCategory.PLAYBOOKS_PLAYS:
             self._playbooks_panel = PlaybooksPanel(self.facade)
+            self._connect_book_set()
             page = self._playbooks_panel
         elif category == ProductCategory.SLIDERS_GAMEPLAY:
             self._ensure_workspace(self.navigation.count() - 1)
@@ -9232,6 +9234,7 @@ class StudioMainWindow(QMainWindow):
         if self._music_policy_values:
             self._build_panel.set_music_policy(self._music_policy_values)
         self._connect_star_players()
+        self._connect_book_set()
         # ★ Rosters writes a roster-edits document; the Build tab carries it as the roster_edits step
         roster_editor = getattr(self, "_roster_editor_panel", None)
         if roster_editor is not None:
@@ -9391,6 +9394,46 @@ class StudioMainWindow(QMainWindow):
             self._mark_workspace_changed()
         finally:
             self._saving_build_settings = False
+
+    def _connect_book_set(self) -> None:
+        """Modern/classic books: Build and Playbooks & Plays edit one list (the project's playbook_packs).
+
+        Either page may be built first; each side is wired once."""
+
+        playbooks = getattr(self, "_playbooks_panel", None)
+        if playbooks is not None and "playbooks" not in self._book_set_wired:
+            playbooks.flush_build_choices = self._flush_build_for_book_set
+            playbooks.book_set_changed.connect(self._playbooks_book_set_changed)
+            self._book_set_wired.add("playbooks")
+        build = getattr(self, "_build_panel", None)
+        if build is not None and "build" not in self._book_set_wired:
+            build.book_set_changed.connect(self._build_book_set_changed)
+            self._book_set_wired.add("build")
+
+    def _flush_build_for_book_set(self) -> None:
+        """Store pending Build page choices in the project before the pack list is edited elsewhere."""
+
+        if self._build_panel is None:
+            return
+        try:
+            self._capture_music_build_settings()
+        except (ValueError, OSError):
+            # The Build page's own pack edits already sync the list; an unrelated unfinished
+            # choice must not block a playbook swap.
+            pass
+
+    def _playbooks_book_set_changed(self) -> None:
+        build = self._build_panel
+        if build is not None:
+            packs = self.facade.project_build_settings().get("playbook_packs", ())
+            build.set_playbook_packs(list(packs))   # so a later Build capture cannot restore stale packs
+        self._mark_workspace_changed()
+
+    def _build_book_set_changed(self) -> None:
+        playbooks = getattr(self, "_playbooks_panel", None)
+        if playbooks is not None:
+            playbooks.refresh_book_set()
+        self._mark_workspace_changed()
 
     def _connect_star_players(self) -> None:
         """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.

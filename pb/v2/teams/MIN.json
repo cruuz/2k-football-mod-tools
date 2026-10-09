@@ -1,0 +1,697 @@
+{
+ "team": "MIN",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "McVay wide zone and crossers",
+ "staff": "Kevin O'Connell / Wes Phillips",
+ "family": "wide_zone",
+ "feature": "WR1",
+ "key_players": "Justin Jefferson; T.J. Hockenson",
+ "depth_step": 1,
+ "tendencies": {
+  "shotgun_pct": 55.67,
+  "pistol_pct": 0.64,
+  "play_action_pct": 25.57,
+  "motion_pct": 51.96,
+  "personnel": {
+   "12": 188,
+   "11": 611,
+   "21": 74,
+   "other": 4,
+   "13": 29,
+   "22": 36,
+   "23": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Trips",
+   "Gun Wing",
+   "Gun Doubles",
+   "Singleback Doubles",
+   "Singleback Trey"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Ace Wing",
+   "Ace Jumbo",
+   "Gun Ace",
+   "Singleback Wing",
+   "I-Form Twins",
+   "Weak I",
+   "Split Backs",
+   "Gun Split Pro"
+  ]
+ },
+ "boost": {
+  "Counter": 1,
+  "Dagger": 4,
+  "Double Post": 1,
+  "Drive": 2,
+  "Mills": 1,
+  "Outside Zone": 5,
+  "PA Boot": 3,
+  "PA Boot Leak": 2,
+  "Sail": 1,
+  "Smash": 1,
+  "Y Cross": 3,
+  "Yankee": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Trips",
+   "concept": "Bench",
+   "name": "MIN Bench",
+   "overrides": {
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "B",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Wing",
+   "concept": "Comebacks",
+   "name": "MIN Comebacks",
+   "overrides": {
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "B",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Scissors",
+   "name": "MIN Scissors",
+   "overrides": {
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "B",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Post Corner",
+   "name": "MIN Post Corner",
+   "overrides": {
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "W2",
+     "W1",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "MIN RB Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.666666666666668
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Post Wheel",
+   "name": "MIN Post Wheel",
+   "overrides": {
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "W2",
+     "W1",
+     "S1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Trey",
+   "concept": "Y Cross",
+   "name": "Y Cross Dig",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Dig",
+      14
+     ]
+    },
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "S3",
+     "W1",
+     "B",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Double Post",
+   "name": "Yankee Posts",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Post",
+      14
+     ]
+    },
+    "depth_step": 2.6666666666666665,
+    "reads": [
+     "S2",
+     "W1",
+     "S1",
+     "B"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.vikings.com/news/2026-coaching-staff-updates-promotions-hires)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.78 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  },
+  "Weak I": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  },
+  "Split Backs": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  },
+  "Gun Split Pro": {
+   "own": "Ace H",
+   "mask": [
+    "Ace H"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Trips",
+    "concept": "Bench",
+    "name": "MIN Bench",
+    "overrides": {
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "B",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets DEEP OUT 12.3% (league 7.4)"
+   },
+   {
+    "formation": "Gun Wing",
+    "concept": "Comebacks",
+    "name": "MIN Comebacks",
+    "overrides": {
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "B",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets DEEP OUT 12.3% (league 7.4)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Scissors",
+    "name": "MIN Scissors",
+    "overrides": {
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "B",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets CORNER 6.2% (league 4.1)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Post Corner",
+    "name": "MIN Post Corner",
+    "overrides": {
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "W2",
+      "W1",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "targets CORNER 6.2% (league 4.1)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "MIN RB Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "targets SCREEN 10.8% (league 9.1, small lean)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Post Wheel",
+    "name": "MIN Post Wheel",
+    "overrides": {
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "W2",
+      "W1",
+      "S1",
+      "S2"
+     ]
+    },
+    "reason": "targets POST 6.4% (league 5.7, small lean)"
+   },
+   {
+    "formation": "Singleback Trey",
+    "concept": "Y Cross",
+    "name": "Y Cross Dig",
+    "overrides": {
+     "routes": {
+      "W1": [
+       "route",
+       "Dig",
+       14
+      ]
+     },
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "S3",
+      "W1",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Double Post",
+    "name": "Yankee Posts",
+    "overrides": {
+     "routes": {
+      "W1": [
+       "route",
+       "Post",
+       14
+      ]
+     },
+     "depth_step": 2.6666666666666665,
+     "reads": [
+      "S2",
+      "W1",
+      "S1",
+      "B"
+     ]
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 96.8%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   1,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   0,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   1,
+   4
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   2,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   4
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   4
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   3,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Gun Ace Wing": [
+   3,
+   0,
+   1
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Gun Ace": [
+   4,
+   0,
+   1
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "I-Form Twins": [
+   3,
+   2,
+   4
+  ],
+  "Weak I": [
+   3,
+   2,
+   4
+  ],
+  "Split Backs": [
+   2,
+   4,
+   4
+  ],
+  "Gun Split Pro": [
+   2,
+   0,
+   1
+  ]
+ }
+}

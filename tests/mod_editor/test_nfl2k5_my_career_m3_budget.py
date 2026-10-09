@@ -12,7 +12,6 @@ from mod_editor.core import nfl2k5_my_career_mode as mode
 from mod_editor.core import nfl2k5_my_career as legacy
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_scorebug_runtime as runtime
-from mod_editor.core import nfl2k5_k128 as k128
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 from tests.nfl2k5_allocator_stack import REQUESTS
 from tests.nfl2k5_my_career_fixture import XBE
@@ -42,11 +41,14 @@ class PlanningTests(unittest.TestCase):
                 for row in before['allocations']:
                     if (row['owner'], row['kind']) == (mode.OWNER, 'code'):
                         continue
-                    if row['owner'] in (runtime.OWNER, k128.OWNER):
-                        # Beta 71's sprite scorebug owner outgrew its beta-61 slot and is allocated after the
-                        # promoted MyCareer code, so its address follows that size; the allocator gates and the
-                        # manifest pin it. Beta 76's K128 owner (k1) is placed after it and follows the same
-                        # size for the same reason. Every other owner still keeps its address.
+                    if (row['kind'] == 'code' and row['owner'] in (runtime.OWNER, *space.LATE_OWNERS)
+                            and (row['owner'], row['kind']) not in space.TAIL_OWNERS):
+                        # Code placed after the promoted MyCareer code follows its size: beta 71's sprite scorebug
+                        # runtime (outgrew its beta-61 slot), beta 76's K128 (k1) and the beta 77 late owners letter
+                        # grades and their progression row (f4/f4b). Honors code (f5) is a gap owner that moves into the
+                        # 8 KiB footprint M3 leaves behind. b77-i2 measured it: on every union exactly these five code
+                        # rows move. Static tail owners (period goalposts code, honors data) and every data/RO row,
+                        # late or not, must keep their addresses.
                         continue
                     self.assertEqual(current[row['owner'], row['kind'], row.get('owner_offset', 0)], row)
                 self.assertEqual(current[mode.OWNER, 'code', 0]['size'], 20480)

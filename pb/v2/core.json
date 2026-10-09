@@ -1,0 +1,1143 @@
+{
+ "status": "DESIGN",
+ "about": "SOFTDRINK offense v2 shared core (beta 77, job p48o). Every team gets these formations in priority order (a book with fewer ordinary formation slots drops the tail), each with a menu in priority order: the generator keeps 8-12 plays per menu and the first three become the formation's default audibles. Concept names are nfl2k5_offense_concepts.CONCEPTS keys. Formations whose personnel group the team's book lacks are skipped. offense_total_node_cap: the compiled offense (retained retail chains + new chains) stays at or under this many nodes, leaving 3500 - cap for the defense pack the CPU defense ships with.",
+ "menu_min": 8,
+ "menu_max": 12,
+ "menu_target": 10,
+ "core_formations": [
+  "Singleback Doubles",
+  "Gun Doubles",
+  "I-Form Pro",
+  "Singleback Ace",
+  "Gun Trey",
+  "Goal Line",
+  "I-Form Tight",
+  "Singleback Trey",
+  "Gun Trips",
+  "Ace Wing",
+  "Gun Empty Trey",
+  "Gun Wing",
+  "Gun Bunch",
+  "Strong I",
+  "Heavy Wing",
+  "Singleback Y Trips",
+  "Gun Split Backs",
+  "Singleback Bunch",
+  "Singleback Doubles Tight",
+  "Gun Y Trips",
+  "Gun Doubles Tight"
+ ],
+ "optional_formations": {
+  "Pistol Doubles": {
+   "pistol": 1.0,
+   "p11": 0.2
+  },
+  "Pistol Ace": {
+   "pistol": 1.0,
+   "p12": 0.3
+  },
+  "Pistol Strong": {
+   "pistol": 0.8,
+   "p21": 0.6
+  },
+  "Weak I": {
+   "p21": 1.0
+  },
+  "I-Form Twins": {
+   "p21": 0.8,
+   "uc": 0.2
+  },
+  "Split Backs": {
+   "p21": 0.6,
+   "uc": 0.3
+  },
+  "Gun Ace Wing": {
+   "p12": 0.8,
+   "gun": 0.3
+  },
+  "Ace Jumbo": {
+   "p13": 1.2,
+   "p22": 0.6
+  },
+  "Split Backs Twins": {
+   "p21": 0.3,
+   "uc": 0.2
+  },
+  "Gun Empty Y": {
+   "p01": 1.0,
+   "gun": 0.4
+  },
+  "Pistol Trey": {
+   "pistol": 0.9,
+   "p11": 0.1
+  },
+  "Pistol Bunch": {
+   "pistol": 0.7,
+   "p11": 0.1
+  },
+  "Gun Split Pro": {
+   "p21": 0.5,
+   "gun": 0.2
+  },
+  "Strong I Twins": {
+   "p21": 0.5,
+   "uc": 0.1
+  },
+  "Gun Spread Tight": {
+   "gun": 0.25,
+   "p11": 0.1
+  },
+  "Gun Empty Bunch": {
+   "gun": 0.2,
+   "p11": 0.1
+  },
+  "Gun Spread": {
+   "p10": 2.0
+  },
+  "Gun Trips Open": {
+   "p10": 1.5
+  },
+  "Gun Empty": {
+   "p00": 2.0
+  },
+  "Singleback Wing": {
+   "p11": 0.3,
+   "uc": 0.3
+  },
+  "Gun Ace": {
+   "p12": 0.6,
+   "gun": 0.3
+  },
+  "Pistol Wing": {
+   "pistol": 0.6,
+   "p11": 0.1
+  }
+ },
+ "max_gun_sets": {
+  "11": 5
+ },
+ "keep_in_menu_about": "Gadgets every book keeps (they never leave the menu, like team signatures): retail ships a Flea Flicker in all 32 team books; the End Around and the toss Reverse use the retail exchange envelopes. All carry the retail trick class (0x1000), so the CPU never calls them.",
+ "keep_in_menu": {
+  "I-Form Pro": [
+   "Flea Flicker"
+  ],
+  "Singleback Doubles": [
+   "End Around"
+  ],
+  "Singleback Doubles Tight": [
+   "Reverse"
+  ]
+ },
+ "keep_release_order": [
+  "Reverse",
+  "End Around"
+ ],
+ "formation_ratings_about": "CPU situation ratings (short, medium, long) written into formation flag bits 21-23 / 24-26 / 27-29 (native scorer 0x207EF0: x = rating - 2 in normal play, 1 best for the formation lottery, 0 best for the personnel-group mean). DESIGN values chosen per personnel and alignment with an analytic model of the native lotteries (0x2093F0 cubed, 0x2081B0) checked against the emulated call mix: goal line and 22 (2,4,5)/(2,3,4), 21 under centre (2,2,3), 12 under centre (1,2,2), 11 under centre (1,0,1), shotgun 11 (3,1,0), shotgun 12 (3,1,1), 10 spread (4,2,0), empty (4,3,0). Shotgun and pistol sets score 0.05 outside the 10 whatever their ratings (0x207F85, left as retail).",
+ "formation_ratings": {
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Empty": [
+   4,
+   3,
+   1
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "Gun Ace Wing": [
+   4,
+   0,
+   1
+  ],
+  "Gun Bunch": [
+   3,
+   4,
+   0
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Gun Empty": [
+   4,
+   3,
+   0
+  ],
+  "Gun Empty Bunch": [
+   4,
+   3,
+   0
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Empty Y": [
+   3,
+   1,
+   1
+  ],
+  "Gun Split Backs": [
+   3,
+   1,
+   1
+  ],
+  "Gun Split Pro": [
+   3,
+   2,
+   1
+  ],
+  "Gun Spread": [
+   4,
+   2,
+   0
+  ],
+  "Gun Spread Tight": [
+   4,
+   2,
+   0
+  ],
+  "Gun Trey": [
+   3,
+   4,
+   0
+  ],
+  "Gun Trips": [
+   2,
+   4,
+   0
+  ],
+  "Gun Trips Open": [
+   4,
+   2,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "I-Form Pro": [
+   2,
+   2,
+   4
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "I-Form Twins": [
+   2,
+   2,
+   3
+  ],
+  "Pistol Ace": [
+   1,
+   0,
+   2
+  ],
+  "Pistol Bunch": [
+   2,
+   1,
+   1
+  ],
+  "Pistol Doubles": [
+   2,
+   1,
+   1
+  ],
+  "Pistol Strong": [
+   2,
+   1,
+   2
+  ],
+  "Pistol Trey": [
+   2,
+   1,
+   1
+  ],
+  "Singleback Ace": [
+   4,
+   1,
+   4
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   3
+  ],
+  "Singleback Spread": [
+   4,
+   3,
+   1
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Trips Open": [
+   4,
+   3,
+   1
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   3
+  ],
+  "Split Backs": [
+   2,
+   2,
+   3
+  ],
+  "Split Backs Twins": [
+   3,
+   2,
+   2
+  ],
+  "Strong I": [
+   4,
+   3,
+   4
+  ],
+  "Strong I Twins": [
+   2,
+   2,
+   3
+  ],
+  "Weak I": [
+   2,
+   2,
+   3
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "Gun Ace": [
+   4,
+   0,
+   1
+  ],
+  "Pistol Wing": [
+   2,
+   1,
+   1
+  ]
+ },
+ "menus": {
+  "Goal Line": [
+   "QB Sneak",
+   "Inside Zone",
+   "Power",
+   "Iso",
+   "PA Boot Leak",
+   "Duo",
+   "Toss",
+   "Fade Out",
+   "PA Boot",
+   "Counter",
+   "Yankee"
+  ],
+  "I-Form Tight": [
+   "Inside Zone",
+   "Power",
+   "PA Boot",
+   "Iso",
+   "Duo",
+   "Counter",
+   "QB Sneak",
+   "Toss",
+   "PA Boot Leak",
+   "Yankee",
+   "PA Dagger",
+   "Outside Zone"
+  ],
+  "Heavy Wing": [
+   "Outside Zone",
+   "Power",
+   "PA Boot Leak",
+   "Counter",
+   "Duo",
+   "Toss",
+   "PA Boot",
+   "Yankee",
+   "QB Sneak",
+   "Trap",
+   "Inside Zone",
+   "Iso"
+  ],
+  "Ace Jumbo": [
+   "Inside Zone",
+   "Duo",
+   "PA Boot Leak",
+   "Outside Zone",
+   "Counter",
+   "Power",
+   "PA Boot",
+   "Yankee",
+   "QB Sneak",
+   "Toss",
+   "Trap"
+  ],
+  "I-Form Pro": [
+   "Inside Zone",
+   "PA Boot",
+   "Power",
+   "Iso",
+   "Outside Zone",
+   "Counter",
+   "Toss",
+   "Draw",
+   "Post Wheel",
+   "Yankee",
+   "PA Dagger",
+   "Flea Flicker",
+   "Curl Flat",
+   "Y Cross"
+  ],
+  "Strong I": [
+   "Power",
+   "PA Boot",
+   "Iso",
+   "Toss",
+   "Inside Zone",
+   "Counter",
+   "PA Crossers",
+   "Flood",
+   "Smash",
+   "Yankee",
+   "Trap",
+   "RB Screen"
+  ],
+  "Weak I": [
+   "Inside Zone Weak",
+   "PA Dagger",
+   "Iso",
+   "Counter",
+   "Draw",
+   "Inside Zone",
+   "Trap",
+   "Curl Flat",
+   "Levels",
+   "Out and Up",
+   "RB Screen"
+  ],
+  "I-Form Twins": [
+   "Inside Zone",
+   "Smash",
+   "Power",
+   "Toss",
+   "Draw",
+   "Levels",
+   "Flood",
+   "PA Boot",
+   "Curl Flat",
+   "Post Corner",
+   "Counter"
+  ],
+  "Split Backs": [
+   "Inside Zone",
+   "Mesh",
+   "Counter",
+   "Draw",
+   "Trap",
+   "Texas",
+   "Smash",
+   "Flood",
+   "PA Crossers",
+   "RB Screen",
+   "Curl Flat"
+  ],
+  "Pistol Strong": [
+   "Inside Zone",
+   "PA Boot",
+   "Power",
+   "Counter",
+   "Duo",
+   "Draw",
+   "Yankee",
+   "PA Dagger",
+   "Smash",
+   "Curl Flat",
+   "Toss"
+  ],
+  "Singleback Ace": [
+   "Inside Zone",
+   "PA Boot",
+   "Y Cross",
+   "Outside Zone",
+   "Duo",
+   "Counter",
+   "Y Pivot",
+   "Dagger",
+   "Curl Flat",
+   "Post Wheel",
+   "Four Verticals",
+   "Levels",
+   "PA Shot",
+   "Flea Flicker",
+   "Inside Zone Weak"
+  ],
+  "Pistol Ace": [
+   "Inside Zone",
+   "PA Boot",
+   "Y Cross",
+   "Duo",
+   "Counter",
+   "Outside Zone",
+   "Dagger",
+   "Curl Flat",
+   "Yankee",
+   "Four Verticals",
+   "PA Shot",
+   "Levels"
+  ],
+  "Ace Wing": [
+   "Outside Zone",
+   "PA Boot Leak",
+   "Y Cross",
+   "Counter",
+   "Drive",
+   "Flood",
+   "Y Pivot",
+   "Power",
+   "Stick",
+   "PA Boot",
+   "Levels",
+   "Sail",
+   "End Around"
+  ],
+  "Singleback Y Trips": [
+   "Inside Zone",
+   "Y Cross",
+   "Stick",
+   "Counter",
+   "Flood",
+   "Y Pivot",
+   "Levels",
+   "Drive",
+   "Snag",
+   "PA Boot",
+   "Bench",
+   "PA Crossers"
+  ],
+  "Gun Y Trips": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Draw",
+   "Flood",
+   "Y Pivot",
+   "Levels",
+   "Snag",
+   "Drive",
+   "Bench",
+   "Whip Seam",
+   "Spacing"
+  ],
+  "Gun Ace Wing": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Counter",
+   "Y Pivot",
+   "Draw",
+   "Flood",
+   "Drive",
+   "Levels",
+   "Snag",
+   "Sail",
+   "Texas"
+  ],
+  "Singleback Doubles": [
+   "Inside Zone",
+   "Slant Flat",
+   "PA Boot",
+   "Mesh",
+   "Smash",
+   "Outside Zone",
+   "Post Wheel",
+   "Dagger",
+   "Curl Flat",
+   "Scissors",
+   "Counter",
+   "Four Verticals",
+   "Double Post",
+   "Draw",
+   "End Around"
+  ],
+  "Gun Doubles": [
+   "Inside Zone",
+   "Slant Flat",
+   "Mesh",
+   "Smash",
+   "Draw",
+   "Scissors",
+   "Dagger",
+   "Curl Flat",
+   "Counter",
+   "Slot Fade",
+   "Four Verticals",
+   "Shallow Cross",
+   "Double Post",
+   "RB Screen",
+   "QB Draw"
+  ],
+  "Pistol Doubles": [
+   "Inside Zone",
+   "Slant Flat",
+   "PA Boot",
+   "Mesh",
+   "Smash",
+   "Counter",
+   "Post Wheel",
+   "Duo",
+   "Dagger",
+   "Curl Flat",
+   "Four Verticals",
+   "Draw",
+   "Mills"
+  ],
+  "Gun Wing": [
+   "Inside Zone",
+   "Slant Flat",
+   "Mesh",
+   "Smash",
+   "Counter",
+   "Y Pivot",
+   "Draw",
+   "Dagger",
+   "Comebacks",
+   "Curl Flat",
+   "Four Verticals",
+   "TE Screen",
+   "Shallow Cross",
+   "Stick"
+  ],
+  "Singleback Trey": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Flood",
+   "Counter",
+   "Levels",
+   "Toss",
+   "Scissors",
+   "Drive",
+   "Snag",
+   "Bench",
+   "PA Crossers",
+   "Whip Seam"
+  ],
+  "Gun Trey": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "Flood",
+   "Draw",
+   "Levels",
+   "Counter",
+   "Stick Nod",
+   "Drive",
+   "Snag",
+   "Bench",
+   "Bubble Screen",
+   "Texas"
+  ],
+  "Gun Trips": [
+   "Inside Zone",
+   "Stick",
+   "Flood",
+   "Y Cross",
+   "Draw",
+   "Levels",
+   "Snag",
+   "Stick Nod",
+   "Drive",
+   "Bench",
+   "Slot Fade",
+   "Bubble Screen",
+   "Sail",
+   "Whip Seam"
+  ],
+  "Singleback Bunch": [
+   "Outside Zone",
+   "Snag",
+   "Mesh",
+   "Flood",
+   "Inside Zone",
+   "Spacing",
+   "Double Slants",
+   "Bench",
+   "PA Boot",
+   "Bubble Screen",
+   "Sail"
+  ],
+  "Gun Bunch": [
+   "Inside Zone",
+   "Snag",
+   "Mesh",
+   "Flood",
+   "Spacing",
+   "Double Slants",
+   "Mesh Wheel",
+   "Bench",
+   "Draw",
+   "Bubble Screen",
+   "Sail",
+   "Drive"
+  ],
+  "Gun Empty Trey": [
+   "Stick",
+   "Spacing",
+   "QB Draw",
+   "Snag",
+   "Mesh",
+   "Four Verticals",
+   "Comebacks",
+   "Hank",
+   "Slant Flat",
+   "Levels",
+   "Double Slants",
+   "Y Cross"
+  ],
+  "Gun Split Backs": [
+   "Inside Zone",
+   "Texas",
+   "Mesh",
+   "Draw",
+   "Counter",
+   "Spacing",
+   "Smash",
+   "RB Screen",
+   "Flood",
+   "Curl Flat",
+   "Four Verticals"
+  ],
+  "Split Backs Twins": [
+   "Inside Zone",
+   "Mesh",
+   "Counter",
+   "Draw",
+   "Smash",
+   "Texas",
+   "Flood",
+   "Curl Flat",
+   "RB Screen",
+   "Four Verticals",
+   "Spacing"
+  ],
+  "Gun Spread": [
+   "Draw",
+   "Four Verticals",
+   "Shallow Cross",
+   "Smash",
+   "Mills",
+   "Comebacks",
+   "Dagger",
+   "Mesh",
+   "Inside Zone",
+   "Hitch Seam",
+   "Quick Outs",
+   "RB Screen",
+   "Double Post"
+  ],
+  "Singleback Spread": [
+   "Draw",
+   "Four Verticals",
+   "Smash",
+   "Inside Zone",
+   "Mills",
+   "Dagger",
+   "Mesh",
+   "Shallow Cross",
+   "Hitch Seam",
+   "Quick Outs",
+   "Double Post",
+   "WR Slip Screen"
+  ],
+  "Gun Trips Open": [
+   "Draw",
+   "Stick",
+   "Levels",
+   "Snag",
+   "Spacing",
+   "Flood",
+   "Bubble Screen",
+   "Bench",
+   "Hank",
+   "Four Verticals",
+   "Sail"
+  ],
+  "Singleback Trips Open": [
+   "Draw",
+   "Stick",
+   "Levels",
+   "Inside Zone",
+   "Snag",
+   "Flood",
+   "Spacing",
+   "Bench",
+   "Hank",
+   "Bubble Screen",
+   "Sail"
+  ],
+  "Gun Empty": [
+   "Slant Flat",
+   "Stick",
+   "Four Verticals",
+   "QB Draw",
+   "Spacing",
+   "Mesh",
+   "Snag",
+   "Hank",
+   "Quick Outs",
+   "Double Slants",
+   "Bubble Screen",
+   "Hitch Seam"
+  ],
+  "Empty": [
+   "Slant Flat",
+   "Stick",
+   "Four Verticals",
+   "QB Draw",
+   "Spacing",
+   "Mesh",
+   "Snag",
+   "Hank",
+   "Quick Outs",
+   "Hitch Seam",
+   "Double Slants",
+   "WR Slip Screen"
+  ],
+  "Gun Empty Y": [
+   "Stick",
+   "Spacing",
+   "QB Draw",
+   "Snag",
+   "Y Cross",
+   "Mesh",
+   "Four Verticals",
+   "Hank",
+   "Levels",
+   "Slant Flat",
+   "Double Slants"
+  ],
+  "Singleback Doubles Tight": [
+   "Inside Zone",
+   "Mesh",
+   "PA Boot",
+   "Drive",
+   "Slant Flat",
+   "Smash",
+   "Outside Zone",
+   "Counter",
+   "Dagger",
+   "Comebacks",
+   "Shallow Cross",
+   "Curl Flat",
+   "Draw",
+   "Reverse"
+  ],
+  "Gun Doubles Tight": [
+   "Inside Zone",
+   "Mesh",
+   "Slant Flat",
+   "Drive",
+   "Mesh Wheel",
+   "Smash",
+   "Draw",
+   "Comebacks",
+   "Shallow Cross",
+   "Dagger",
+   "Counter",
+   "Curl Flat",
+   "RB Screen",
+   "Double Post"
+  ],
+  "Pistol Trey": [
+   "Inside Zone",
+   "Stick",
+   "Y Cross",
+   "PA Boot",
+   "Flood",
+   "Counter",
+   "Levels",
+   "Drive",
+   "Snag",
+   "Duo",
+   "Bench"
+  ],
+  "Pistol Bunch": [
+   "Inside Zone",
+   "Snag",
+   "Mesh",
+   "PA Boot",
+   "Flood",
+   "Spacing",
+   "Counter",
+   "Double Slants",
+   "Bench",
+   "Bubble Screen"
+  ],
+  "Gun Split Pro": [
+   "Inside Zone",
+   "Texas",
+   "Mesh",
+   "Counter",
+   "Draw",
+   "Smash",
+   "Flood",
+   "Curl Flat",
+   "RB Screen",
+   "Spacing",
+   "Power"
+  ],
+  "Strong I Twins": [
+   "Power",
+   "Smash",
+   "Iso",
+   "Toss",
+   "Inside Zone",
+   "Levels",
+   "Flood",
+   "PA Boot",
+   "Curl Flat",
+   "Counter",
+   "Post Corner"
+  ],
+  "Gun Spread Tight": [
+   "Draw",
+   "Mesh",
+   "Shallow Cross",
+   "Smash",
+   "Four Verticals",
+   "Dagger",
+   "Mills",
+   "Slant Flat",
+   "Quick Outs",
+   "RB Screen",
+   "Double Post"
+  ],
+  "Gun Empty Bunch": [
+   "Snag",
+   "Stick",
+   "Mesh",
+   "Spacing",
+   "QB Draw",
+   "Double Slants",
+   "Four Verticals",
+   "Hank",
+   "Bubble Screen",
+   "Slant Flat"
+  ],
+  "Singleback Wing": [
+   "Inside Zone",
+   "Outside Zone",
+   "PA Boot",
+   "Slant Flat",
+   "Mesh",
+   "Y Pivot",
+   "Counter",
+   "Smash",
+   "Dagger",
+   "TE Screen",
+   "Curl Flat",
+   "Draw"
+  ],
+  "Gun Ace": [
+   "Inside Zone",
+   "Duo",
+   "Stick",
+   "Y Pivot",
+   "Counter",
+   "Levels",
+   "Draw",
+   "Y Cross",
+   "Drive",
+   "TE Screen",
+   "Smash",
+   "Four Verticals"
+  ],
+  "Pistol Wing": [
+   "Inside Zone",
+   "Outside Zone",
+   "PA Boot",
+   "Counter",
+   "Slant Flat",
+   "Duo",
+   "Stick",
+   "Mesh",
+   "Post Wheel",
+   "TE Screen",
+   "Smash",
+   "Draw"
+  ]
+ },
+ "offense_total_node_cap": 2300,
+ "personnel_groups_default": [
+  {
+   "records": [
+    "Flush",
+    "Queens"
+   ],
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ ],
+ "personnel_groups_about": "b77 p6s (GOAL P4): the native category target 0x209FE0 puts third and 7+ at personnel codes 9-10, where the stock Flush group fields 10 personnel (4 WR), so every book collapsed to 10 personnel on third and long while 2025 NFL offenses used 11 personnel on 86% of those snaps (pb/research/situational_2025.json). The default turns the book's Flush record (else Queens) into 'Kings Long': the same eleven players as Kings at code 9. The third-down shotgun 11 sets are owned by Kings Long; every 11 personnel set lists both groups (the category mean 0x208120 averages members, the formation lottery 0x2081B0 draws owners). Ratings and these groups were fitted with pb/v2/fit_cpu.py --league (2025 league-mean targets) on the KC book. A team package that sets its own personnel_groups / formation_groups replaces these defaults (TEN does).",
+ "formation_groups_default": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  }
+ },
+ "offense_cap_about": "b77 p6s: with the v2 defense of job p48d (about 400-570 nodes per book, job/b77-p48d 2910409c) the offense may use up to 2,300 of the 3,500 nodes (3,500 - 2,300 - 78 kickoff-return nodes leaves more than 1,100 for the defense); the interim old-generator defense needed the 1,820 cap."
+}

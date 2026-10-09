@@ -74,6 +74,50 @@ class FilePackQtTests(unittest.TestCase):
             self.assertIn("same file", panel.blocker())
         self.assertEqual(f._path(out).read_bytes(), self.fixture.built.read_bytes())
 
+    def test_install_succeeds_and_says_so_when_the_disc_files_dates_move_mid_install(self):
+        """Beta 77 E1: "Source changed during installation" came from exactly this (OneDrive)."""
+        from mod_editor.core import modpack
+        out = self.fixture.root / "touched.iso"
+        real_apply = modpack.apply
+
+        def touching(pack, source, target, *, overwrite=False, progress=None):
+            fired = []
+
+            def hook(stage, done, total):
+                if stage == "Verifying installed files" and not fired:
+                    fired.append(True)
+                    info = os.stat(source)
+                    os.utime(source, ns=(info.st_atime_ns, info.st_mtime_ns + 5_000_000_000))
+                progress(stage, done, total)
+
+            receipt = real_apply(pack, source, target, overwrite=overwrite, progress=hook)
+            self.assertTrue(fired)
+            return receipt
+
+        self.panel.load_pack(self.fixture.pack)
+        self.panel.source_field.setText(str(self.fixture.base))
+        self.panel.target_field.setText(str(out))
+        with mock.patch.object(modpack, "apply", touching):
+            self.panel.start_file_install()
+            self.wait()
+        self.assertIn("modified time", self.panel.last_apply["source_metadata_changed"])
+        self.assertEqual(out.read_bytes(), self.fixture.built.read_bytes())
+        text = self.panel.apply_status.text()
+        self.assertTrue(text.startswith("Disc ready:"), text)
+        self.assertNotIn("Couldn't make the disc", text)
+        self.assertIn("details changed while this ran (modified time", text)
+        self.assertIn("still checked byte for byte", text)
+
+    def test_untouched_install_shows_no_dates_note(self):
+        out = self.fixture.root / "untouched.iso"
+        self.panel.load_pack(self.fixture.pack)
+        self.panel.source_field.setText(str(self.fixture.base))
+        self.panel.target_field.setText(str(out))
+        self.panel.start_file_install()
+        self.wait()
+        self.assertEqual(self.panel.last_apply["source_metadata_changed"], [])
+        self.assertNotIn("details changed", self.panel.apply_status.text())
+
     def test_negative_worker_message_and_progress_beyond_four_gib(self):
         self.panel._on_progress("Installing", 5 * 1024**3, 6 * 1024**3)
         self.assertEqual(self.panel.progress_bar.value(), 83)

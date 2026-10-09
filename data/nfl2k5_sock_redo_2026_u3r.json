@@ -1,0 +1,147 @@
+{
+ "schema": "nfl2k5_sock_redo_2026/v1",
+ "note": "Socks redone with the fixed equipment writer (job u3r). A set either paints bands on a solid base (rows of the 64 px sock texture, top down: row 0 is the pants hem, row 63 the shoe) or reuses a project PNG (private, named in the sources file). snap = row-median snap tolerance (of 255) that lets the own index chain fit the slot at 64 x 64.",
+ "sets": {
+  "CHI:0:H": {
+   "selector": "05H0",
+   "source": "frozen SOFTDRINK project (candC k2v54) Bears home socks",
+   "snap": 0,
+   "evidence": "the frozen project's own art; the v0.5 disc holds the old writer's scrambled copy of it"
+  },
+  "CHI:0:A": {
+   "selector": "05A0",
+   "source": "frozen SOFTDRINK project Bears road socks",
+   "snap": 0,
+   "evidence": "same"
+  },
+  "CLE:0:H": {
+   "selector": "30H0",
+   "source": "frozen SOFTDRINK project Browns home socks",
+   "snap": 4,
+   "evidence": "same; rows snapped to their median (tolerance 4) so the full 64 x 64 chain fits the 6,528 byte slot (the unsnapped art needs 6,564)"
+  },
+  "CLE:0:A": {
+   "selector": "30A0",
+   "source": "frozen SOFTDRINK project Browns road socks",
+   "snap": 0,
+   "evidence": "same"
+  },
+  "CHI:4:H": {
+   "selector": "05H4",
+   "source": "the Bears home socks (navy, orange and white stripes) as u3a's CHI 4 spec draws them from the 2026 home kit",
+   "snap": 4,
+   "evidence": "u3a CHI 4 Rivalries: navy socks with orange and white stripes (club Return of the Monsters image)"
+  },
+  "CHI:4:A": {
+   "selector": "05A4",
+   "source": "same as CHI:4:H",
+   "snap": 4,
+   "evidence": "same"
+  },
+  "CLE:4:H": {
+   "selector": "30H4",
+   "base": "#FFFFFF",
+   "bands": [
+    {
+     "y": 46,
+     "height": 2,
+     "colour": "#311D00"
+    },
+    {
+     "y": 48,
+     "height": 2,
+     "colour": "#FF3C00"
+    },
+    {
+     "y": 50,
+     "height": 2,
+     "colour": "#311D00"
+    },
+    {
+     "y": 52,
+     "height": 2,
+     "colour": "#FF3C00"
+    },
+    {
+     "y": 54,
+     "height": 2,
+     "colour": "#311D00"
+    }
+   ],
+   "evidence": "clevelandbrowns.com 2024 In Focus white-helmet throwback gallery (Sep 2024, white 2021-throwback jersey with the white helmet, frame 18): white socks with a stack of brown, orange, brown, orange, brown stripes at the ankle just above the shoe (rows 46 to 55 of the sock texture); Wikipedia: three brown and two orange stripes, thinner orange with the throwback jersey. Replaces u3r's first design (the road kit's calf-height stripes) and u3b's plain white socks."
+  },
+  "CLE:4:A": {
+   "selector": "30A4",
+   "base": "#FFFFFF",
+   "bands": [
+    {
+     "y": 46,
+     "height": 2,
+     "colour": "#311D00"
+    },
+    {
+     "y": 48,
+     "height": 2,
+     "colour": "#FF3C00"
+    },
+    {
+     "y": 50,
+     "height": 2,
+     "colour": "#311D00"
+    },
+    {
+     "y": 52,
+     "height": 2,
+     "colour": "#FF3C00"
+    },
+    {
+     "y": 54,
+     "height": 2,
+     "colour": "#311D00"
+    }
+   ],
+   "evidence": "clevelandbrowns.com 2024 In Focus white-helmet throwback gallery (Sep 2024, white 2021-throwback jersey with the white helmet, frame 18): white socks with a stack of brown, orange, brown, orange, brown stripes at the ankle just above the shoe (rows 46 to 55 of the sock texture); Wikipedia: three brown and two orange stripes, thinner orange with the throwback jersey. Replaces u3r's first design (the road kit's calf-height stripes) and u3b's plain white socks."
+  },
+  "WAS:0:A": {
+   "selector": "29A0",
+   "base": "#FFFFFF",
+   "bands": [
+    {
+     "y": 33,
+     "height": 4,
+     "colour": "#5E1519"
+    },
+    {
+     "y": 37,
+     "height": 6,
+     "colour": "#FFB612"
+    }
+   ],
+   "evidence": "commanders.com week 1 at PHI photos #85 and #14 (u2d): white socks, burgundy band over a gold band low on the calf; rows fitted by u2d against the photo"
+  },
+  "SF:7:H": {
+   "selector": "25H7",
+   "base": "#CC1020",
+   "bands": [],
+   "evidence": "seahawks.com Week 18 2025 game action gallery (Jan 3 2026, 49ers in the black Rivalries uniform), frames 19, 13, 27, 42: tall solid red socks with no stripes below the black pants. Colour #CC1020 = the fabric tone of the photo (25th percentile of the sock pixels 214,16,28; highlights reach 255,103,105). u3e had drawn black socks, an estimate."
+  },
+  "SF:7:A": {
+   "selector": "25A7",
+   "base": "#CC1020",
+   "bands": [],
+   "evidence": "seahawks.com Week 18 2025 game action gallery (Jan 3 2026, 49ers in the black Rivalries uniform), frames 19, 13, 27, 42: tall solid red socks with no stripes below the black pants. Colour #CC1020 = the fabric tone of the photo (25th percentile of the sock pixels 214,16,28; highlights reach 255,103,105). u3e had drawn black socks, an estimate."
+  },
+  "TEN:7:H": {
+   "selector": "28H7",
+   "base": "#3F86B9",
+   "bands": [],
+   "evidence": "WSMV Aug 25 2026 reveal gallery, full-length studio photo of #98: solid light-blue socks, no stripes, white ankle sock under them. Colour #3F86B9 = midpoint of the photo's sock tone (59,120,161 at the 75th percentile) and the team's Titans Blue #4495D2. u3e had drawn navy socks, an estimate."
+  },
+  "TEN:7:A": {
+   "selector": "28A7",
+   "base": "#3F86B9",
+   "bands": [],
+   "evidence": "WSMV Aug 25 2026 reveal gallery, full-length studio photo of #98: solid light-blue socks, no stripes, white ankle sock under them. Colour #3F86B9 = midpoint of the photo's sock tone (59,120,161 at the 75th percentile) and the team's Titans Blue #4495D2. u3e had drawn navy socks, an estimate."
+  }
+ }
+}

@@ -22,6 +22,11 @@ def load_data(path=DEFAULT_DATA):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     if data.get("schema") != SCHEMA or data.get("as_of") != "2026-10-05":
         raise ValueError("Unsupported dated free-agent data.")
+    # beta 77 (f12): fields.years_pro must count the season in progress (rookie = 1, the card prints R); the
+    # original file carried nflverse years_exp (rookie = 0). tools/b77/f12_convert_data.py converts and stamps it.
+    if data.get("years_pro_convention") != "game_rookie_1":
+        raise ValueError("Free-agent data predates the years pro convention fix (rookie = 1); "
+                         "convert it with tools/b77/f12_convert_data.py.")
     return data
 
 

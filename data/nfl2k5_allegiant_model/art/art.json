@@ -6,21 +6,21 @@
     64,
     128
    ],
-   "sha256": "ea44808b595551a3b8fa9ed7f44a8cf74dbfe88a54f7e0db81389ed94cd4de7d"
+   "sha256": "94e63e956fc8555216acf0ca8bbc66ab47558786c59e240d0c0e6ce1f045ba48"
   },
   "ag_seat_mid": {
    "size": [
     64,
     128
    ],
-   "sha256": "3acd44617a47b1320c94f3e11f2123693662edb77437ccf4b034ba513fa1c94d"
+   "sha256": "ad8ec07258ac426cbf7ba15ffb08a17bc0cebd9d2fb769d15bbfc6024365f78c"
   },
   "ag_seat_back": {
    "size": [
     64,
     128
    ],
-   "sha256": "96766c37f77e7ebd253a31121e92d61c75f8836efb142f7139bdb220e2ba64ae"
+   "sha256": "0b5ec2572d8080b52c3a8773ec0dfd6dcecfddc5234d7e0a99eae97425a1d073"
   },
   "ag_concrete": {
    "size": [
@@ -41,7 +41,7 @@
     256,
     64
    ],
-   "sha256": "76ca5f5a07491c4feffa46f7c3d149b1bc50850050dd766ad3ab696ef089002c"
+   "sha256": "2e89857856e4cd880a2be6122eae2f07ee637198cfaeea2c4c0a74e5a1f39fa5"
   },
   "LIGHT_ag_glass": {
    "size": [
@@ -83,7 +83,7 @@
     128,
     128
    ],
-   "sha256": "cde1ee9c967b542a575473f7882dfb832555cfba2f76ec507681a7adfca896be"
+   "sha256": "e56888d21007bd12d470e7029bdb3de34ea01aaa1a1d7ccfdbe69de05c45b7c0"
   },
   "ag_roof_top": {
    "size": [
@@ -91,6 +91,13 @@
     64
    ],
    "sha256": "80af8508f94d38d7a9afdcb3fb058313ffbef59b05a054c67d67386f20d14e9b"
+  },
+  "ag_truss": {
+   "size": [
+    64,
+    32
+   ],
+   "sha256": "a00f3395e7b66eb62bd69c47aba2fd5f97173dc16e6044cd4e964e3b4eccd24f"
   },
   "ag_roof_rim": {
    "size": [
@@ -108,10 +115,17 @@
   },
   "LIGHT_ag_lanai": {
    "size": [
-    128,
-    128
+    64,
+    64
    ],
-   "sha256": "c1a79964952f30859b449a467a03779f4b3e0e3f0692a6b5a81dfb1c9bff9848"
+   "sha256": "3fc232143bff7cdde479a72fd3082d3d78d82d352eb9e2cf584243545975173f"
+  },
+  "LIGHT_ag_skyline": {
+   "size": [
+    128,
+    32
+   ],
+   "sha256": "5eb1b91e9804eb379be9b1d52c9bf50cde75cea46cb37e491dfeb4b5f2e282a2"
   },
   "ag_torch": {
    "size": [
@@ -146,7 +160,7 @@
     128,
     128
    ],
-   "sha256": "33f70012664721bbe97aa6238ce58d0eac549f3be2d14d05418bea4c4fd5a10e"
+   "sha256": "4cd0e4b394ed96d2116f44e4cfd05dad492e6d1e8be5ba280a228eb2b2a4c765"
   },
   "ag_glass_out": {
    "size": [
@@ -167,7 +181,7 @@
     256,
     64
    ],
-   "sha256": "959b74054671c1c0a07fde01f0b9967660e436731b9278b1ef5718caba494133"
+   "sha256": "d12a98dd7c237f2f6e249de9bf54d582cce3b1fe2235c91a6e12d17531852e72"
   },
   "ag_plaza": {
    "size": [
@@ -209,7 +223,7 @@
     64,
     64
    ],
-   "sha256": "5a06592f7570eb3da4a8b81fc0118953db806373aba2e4d820395b69feca2c60"
+   "sha256": "cc3795618498a313ba9a7b28f963a6b4b09682a69ac0db702cc9e05acfb8630f"
   },
   "ag_pyramid": {
    "size": [

@@ -16,7 +16,7 @@ It only ever recomputes a pin from the bytes the pin covers; it never relaxes,
 removes or widens one.  Run it with no arguments first to see what WOULD change,
 then with ``--apply``.
 
-Usage:  python3 packaging/repin.py [--apply] [--root DIR] [--include-tests]
+Usage:  python3 packaging/repin.py [--apply | --check] [--root DIR] [--include-tests]
 """
 
 from __future__ import annotations
@@ -176,7 +176,10 @@ def apply_replacements(source: Path, reps: list[Replacement]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--apply", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--apply", action="store_true")
+    mode.add_argument("--check", action="store_true",
+                      help="exit nonzero if any source integrity pins are stale; never write")
     parser.add_argument(
         "--root",
         default=str(Path(__file__).resolve().parent.parent),
@@ -221,9 +224,8 @@ def main() -> int:
         if round_total == 0 or not args.apply:
             break
     print(f"\n{'applied' if args.apply else 'would apply'} {total} pin update(s)")
-    return 0
+    return 1 if args.check and total else 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-

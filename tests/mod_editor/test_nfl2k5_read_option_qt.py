@@ -15,6 +15,7 @@ for entry in (ROOT, ROOT / 'tools'):
         sys.path.insert(0, str(entry))
 
 from tests.mod_editor.test_nfl2k5_read_option import retail_resources
+from tests.mod_editor.test_nfl2k5_defense_play import EXTRACT
 from mod_editor.core import nfl2k5_play_codec as codec, nfl2k5_play_library as lib
 from mod_editor.core import nfl2k5_playbook_pack as pk, nfl2k5_playbook_inspector as insp
 
@@ -35,6 +36,7 @@ class OptionQtTests(unittest.TestCase):
         from mod_editor.gui.create_play_wizard_qt import CreatePlayWizard, DesignedFormation
         testcase = self
         class Host:
+            source_path = EXTRACT / 'default.xbe'
             installed = None
             used = ()
             def playbook_raw_body(self, _asset): return testcase.resource[32:]
@@ -42,7 +44,7 @@ class OptionQtTests(unittest.TestCase):
             def install_playbook_pack(self, pack, teams, progress):
                 self.installed = pack
                 self.teams = teams
-                self.compiled = pk.apply_pack_to_resource(testcase.resource, pack)
+                self.compiled = pk.apply_pack_to_resource(testcase.resource, pack, xbe=self.source_path)
         host = Host()
         w = CreatePlayWizard(host); w.load_book(self.book)
         self.addCleanup(w.close)

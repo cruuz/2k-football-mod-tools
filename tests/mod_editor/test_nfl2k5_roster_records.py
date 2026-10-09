@@ -836,7 +836,7 @@ class PickerIndexTests(unittest.TestCase):
         self.assertEqual(index[1003], "Vick, Michael")
         self.assertEqual(index[9000], "#00 (jersey-number call-out)")
         self.assertEqual(index[9099], "#99 (jersey-number call-out)")
-        self.assertEqual(index[9100], "Double zero (recorded 00 cue)")
+        self.assertEqual(index[9100], "Double zero (recorded 00 clip; SOFTDRINK builds retire it: the live number is called)")
         self.assertEqual(index[9101], "(announce the jersey number)")
         self.assertEqual(index[9300], "Smith (recorded surname bank)")
         self.assertEqual(index[9300 + 484], index[9784])
@@ -1289,6 +1289,29 @@ class TeamUniformYearsTests(unittest.TestCase):
         self.assertEqual(receipt["team_uniform_years_written"], 0)
         self.assertEqual(len(receipt["log"]), 3)
         self.assertEqual(out, rr.RosterDocument(self.body).to_body())
+
+    def test_enable_styles_opens_a_zero_pair_only_when_named(self) -> None:
+        """Job u3s: the Bengals (record 2) carry retail kits 6 and 7 past their five pairs."""
+        doc = {"schema": rr.EDITS_SCHEMA, "edits": [], "teams": [
+            {"team_index": 2, "uniform_years": {"4": [2026, 1], "6": [2026, 2], "7": [2026, 3]},
+             "enable_styles": [6]}]}
+        out, receipt = rr.apply_body(self.body, doc)
+        self.assertEqual(receipt["team_uniform_years_written"], 2)           # 4 relabelled, 6 enabled, 7 refused
+        self.assertEqual(len(receipt["log"]), 1)
+        self.assertIn("style 7", receipt["log"][0])
+        before, after = self.pairs(self.body, 2), self.pairs(out, 2)
+        self.assertEqual(before[5:7], [(0, 0), (0, 0)])
+        self.assertEqual(after[3], (2026, 1))
+        self.assertEqual(after[5:7], [(2026, 2), (0, 0)])
+        self.assertEqual(after[:3] + after[4:5] + after[7:], before[:3] + before[4:5] + before[7:])
+
+    def test_a_malformed_enable_list_skips_the_whole_entry(self) -> None:
+        for bad in ([0], [15], ["6"], 6):
+            doc = {"schema": rr.EDITS_SCHEMA, "edits": [], "teams": [
+                {"team_index": 2, "uniform_years": {"4": [2026, 1]}, "enable_styles": bad}]}
+            out, receipt = rr.apply_body(self.body, doc)
+            self.assertEqual(receipt["team_uniform_years_written"], 0, bad)
+            self.assertEqual(out, rr.RosterDocument(self.body).to_body(), bad)
 
 
 @unittest.skipUnless(HAVE_RETAIL, "the retail extraction is not present")

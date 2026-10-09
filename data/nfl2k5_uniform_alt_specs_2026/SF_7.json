@@ -1,0 +1,419 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "SF",
+ "name": "San Francisco 49ers",
+ "asset_code": "25",
+ "season": 2026,
+ "status": "u3e alternate SF:7 black Rivalries 'For the Faithful', authored by tools/b77/u3e_paint.py into slot 25H7/25A7 (2004 Alternate 1)",
+ "sources": {
+  "alternate": "https://africa.espn.com/nfl/story/_/id/46091459/nfl-nike-2025-rivalries-uniform-gear-series-unveiling-nfc-west-afc-east (jersey photo r1537673: black jersey, red numbers trimmed in gold in a saloon face, red stripes on the sleeves, gold Faithful script on the chest); https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers (black helmet with gold facemask and red stripes)"
+ },
+ "albedo": {
+  "jersey_black": "#111113",
+  "helmet_black": "#17171A",
+  "pants_black": "#111113",
+  "jersey_red": "#B0080E",
+  "red": "#AA0000",
+  "gold": "#C4A55E",
+  "white": "#FFFFFF",
+  "black": "#111111",
+  "retail_helmet_gold": "#B48458",
+  "retail_helmet_red": "#9F0610",
+  "retail_splayer_red": "#880011",
+  "retail_splayer_gold": "#BB8855"
+ },
+ "marks": {
+  "club_logo": "club_logo_full.png",
+  "faithful": "faithful.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "25H7",
+   "note": "Black Rivalries 'For the Faithful' (week 14 vs the Rams): black jersey and pants, red numbers trimmed in gold in a saloon face, red stripes on the sleeves, gold Faithful script on the chest; black helmet with red stripes and a gold facemask (swoosh and name colours, stripe widths, socks and the pants stripes are estimates)",
+   "torso": {
+    "base_colour": "jersey_black",
+    "neck_donor": "25H7",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "gold"
+    },
+    "decorations": [
+     {
+      "mark": "faithful",
+      "colour": "gold",
+      "center": [
+       162.0,
+       76.0
+      ],
+      "width": 27.0
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       0,
+       36,
+       128,
+       40
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       42,
+       128,
+       46
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       48,
+       128,
+       52
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       54,
+       128,
+       58
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       100,
+       128,
+       104
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       106,
+       128,
+       110
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       112,
+       128,
+       116
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       118,
+       128,
+       122
+      ],
+      "colour": "jersey_red"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_black",
+    "stripe": [
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "black",
+      1
+     ],
+     [
+      "jersey_red",
+      3
+     ]
+    ],
+    "swoosh_colour": "gold"
+   },
+   "socks": {
+    "colour": "jersey_black"
+   },
+   "digits": {
+    "glyph_donor": "25H7",
+    "fill": "jersey_red",
+    "font": "/media/noah/Storage/.b76-research/u3e/fonts/Rye-Regular.ttf",
+    "outline": "gold",
+    "outline_frac": 0.06
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "25H7",
+    "fill": "gold",
+    "font": "/media/noah/Storage/.b76-research/u3e/fonts/Rye-Regular.ttf"
+   },
+   "helmet": {
+    "shell_from": "retail_helmet_gold",
+    "shell": "helmet_black",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    },
+    "decorations": [
+     {
+      "rect": [
+       146,
+       0,
+       179,
+       232
+      ],
+      "colour": "helmet_black",
+      "shade": true
+     },
+     {
+      "rect": [
+       152,
+       0,
+       155,
+       232
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       159,
+       0,
+       165,
+       232
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       169,
+       0,
+       172,
+       232
+      ],
+      "colour": "jersey_red"
+     }
+    ]
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "25H7",
+    "sleeve_from_donor": false,
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "25A7",
+   "note": "Black Rivalries 'For the Faithful' (week 14 vs the Rams): black jersey and pants, red numbers trimmed in gold in a saloon face, red stripes on the sleeves, gold Faithful script on the chest; black helmet with red stripes and a gold facemask (swoosh and name colours, stripe widths, socks and the pants stripes are estimates)",
+   "torso": {
+    "base_colour": "jersey_black",
+    "neck_donor": "25A7",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "gold"
+    },
+    "decorations": [
+     {
+      "mark": "faithful",
+      "colour": "gold",
+      "center": [
+       162.0,
+       76.0
+      ],
+      "width": 27.0
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "rect": [
+       0,
+       36,
+       128,
+       40
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       42,
+       128,
+       46
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       48,
+       128,
+       52
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       54,
+       128,
+       58
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       100,
+       128,
+       104
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       106,
+       128,
+       110
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       112,
+       128,
+       116
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       0,
+       118,
+       128,
+       122
+      ],
+      "colour": "jersey_red"
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_black",
+    "stripe": [
+     [
+      "jersey_red",
+      3
+     ],
+     [
+      "black",
+      1
+     ],
+     [
+      "jersey_red",
+      3
+     ]
+    ],
+    "swoosh_colour": "gold"
+   },
+   "socks": {
+    "colour": "jersey_black"
+   },
+   "digits": {
+    "glyph_donor": "25A7",
+    "fill": "jersey_red",
+    "font": "/media/noah/Storage/.b76-research/u3e/fonts/Rye-Regular.ttf",
+    "outline": "gold",
+    "outline_frac": 0.06
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "25A7",
+    "fill": "gold",
+    "font": "/media/noah/Storage/.b76-research/u3e/fonts/Rye-Regular.ttf"
+   },
+   "helmet": {
+    "shell_from": "retail_helmet_gold",
+    "shell": "helmet_black",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0
+    },
+    "decorations": [
+     {
+      "rect": [
+       146,
+       0,
+       179,
+       232
+      ],
+      "colour": "helmet_black",
+      "shade": true
+     },
+     {
+      "rect": [
+       152,
+       0,
+       155,
+       232
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       159,
+       0,
+       165,
+       232
+      ],
+      "colour": "jersey_red"
+     },
+     {
+      "rect": [
+       169,
+       0,
+       172,
+       232
+      ],
+      "colour": "jersey_red"
+     }
+    ]
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "25A7",
+    "sleeve_from_donor": false,
+    "recolour": [],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ }
+}

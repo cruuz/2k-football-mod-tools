@@ -625,11 +625,42 @@ def kick_meter_font_tail(pins=None):
 _SHIPPED_KICK_FONT = []
 
 
-def _hud_in_place(hud):
-    """The shipped-pins rule with the kick meter: {name: state} for the four marks and the three kick scenes, or None."""
-    marks,kick=espn_mark_spans(),kick_meter_spans()
-    if marks is None or kick is None or len(hud)!=marks[0]:return None
-    rows=sorted(marks[1]+kick,key=lambda r:r[1])
+# b77 v1: the modern goalposts (nfl2k5_modern_goalposts) refit two more fixed spans of this outer in place (chunks 71
+# and 88: goalpost_shadow and goalpost, the shared goalpost every venue draws) and never grow it either. With the
+# shipped pins the HUD is also the supported base when every byte outside the four marks, the three kick meter spans
+# and those two is retail (this SHA-256 of the retail HUD with the nine spans cut out, in offset order) and each span
+# holds its retail or applied pin. Tried only after the rule above, which it extends, so every state that rule accepts
+# reads exactly as before.
+GOALPOSTS_PINS = ROOT/'data/nfl2k5_modern_goalposts_pins.json'
+HUD_OUTSIDE_WITH_GOALPOSTS = 'a8b80ebaa1fc65bf0452358785f773d3faff37afd1d809ade29692f3cee40da3'
+_SHIPPED_GOALPOSTS = []
+
+
+def goalpost_spans(pins=None):
+    """((scene, offset, size, retail SHA-256, applied SHA-256), ...) of the modern goalposts inside the HUD outer, in
+    offset order, from ``pins`` (default: the shipped pins). None when absent or malformed."""
+    if pins is None:
+        if not _SHIPPED_GOALPOSTS:
+            try:document=json.loads(GOALPOSTS_PINS.read_text(encoding='utf-8'))
+            except (OSError,ValueError):document=None
+            _SHIPPED_GOALPOSTS.append(goalpost_spans(document) if isinstance(document,dict) else None)
+        return _SHIPPED_GOALPOSTS[0]
+    try:
+        outer=pins['outer'];hexed=lambda v:isinstance(v,str) and len(v)==64 and set(v)<=set('0123456789abcdef')
+        rows=tuple(sorted(((r['scene'],r['chunk_offset'],r['span_size'],r['retail_sha256'],r['applied_sha256'])
+                           for r in pins['resources']),key=lambda r:r[1]))
+        ok=(pins.get('schema')=='nfl2k5_modern_goalposts_pins/v1' and (outer['index'],outer['name_id'])==(346,11965036)
+            and [r[0] for r in rows]==['goalpost_shadow','goalpost'] and all(type(at) is int and type(n) is int
+            and 0<=at and 0<n and hexed(a) and hexed(b) and a!=b for _,at,n,a,b in rows)
+            and all(p[1]+p[2]<=q[1] for p,q in zip(rows,rows[1:])) and rows[-1][1]+rows[-1][2]<=outer['size'])
+        return rows if ok else None
+    except (KeyError,TypeError,ValueError):return None
+
+
+def _hud_cut(hud,rows,outside):
+    """{name: state} when every row of ``rows`` holds its retail or applied pin and the rest of ``hud`` hashes to
+    ``outside``; else None."""
+    rows=sorted(rows,key=lambda r:r[1])
     if not all(p[1]+p[2]<=q[1] for p,q in zip(rows,rows[1:])):return None
     digest=hashlib.sha256();cursor=0;states={}
     for name,at,size,retail,applied in rows:
@@ -637,7 +668,20 @@ def _hud_in_place(hud):
         if have not in (retail,applied):return None
         states[name]='retail' if have==retail else 'applied';cursor=at+size
     digest.update(hud[cursor:])
-    return states if digest.hexdigest()==HUD_OUTSIDE_IN_PLACE else None
+    return states if digest.hexdigest()==outside else None
+
+
+def _hud_in_place(hud):
+    """The shipped-pins rule with the kick meter: {name: state} for the four marks and the three kick scenes, or None.
+    b77 v1: failing that, the same rule with the two modern goalpost spans cut out as well (their states included)."""
+    marks,kick=espn_mark_spans(),kick_meter_spans()
+    if marks is None or kick is None or len(hud)!=marks[0]:return None
+    states=_hud_cut(hud,marks[1]+kick,HUD_OUTSIDE_IN_PLACE)
+    if states is None:
+        goals=goalpost_spans()
+        if goals is not None:
+            states=_hud_cut(hud,marks[1]+kick+goals,HUD_OUTSIDE_WITH_GOALPOSTS)
+    return states
 
 
 def hud_espn_marks(hud,*,pins=None,outside=None,before=None):

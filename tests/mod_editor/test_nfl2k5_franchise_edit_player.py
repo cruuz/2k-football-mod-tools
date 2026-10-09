@@ -28,8 +28,9 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(set(edit.REQUESTS) <= set(REQUESTS))
         self.assertTrue(set(edit.REQUESTS) <= set(space.dormant_union()))
         plan = space.plan(rows, scaleout=True)
-        # Beta 76 adds 64 bytes for team-logo routing and 2176 for era rules.
-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 584)
+        # Beta 77 also reserves letter-grade and period-goalpost tables,
+        # reducing the previous 584-byte remainder by 280 including alignment.
+        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 304)
         self.assertEqual(len(edit.read_only_bytes()), 704)
         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)

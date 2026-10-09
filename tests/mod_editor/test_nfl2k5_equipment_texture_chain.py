@@ -423,7 +423,9 @@ class IntentTests(unittest.TestCase):
         tagged = with_import_mode(self.png, self.asset_id, self.rgba, independent=True)
         self.assertEqual(import_mode(tagged, self.asset_id, self.rgba), OWN_TEXTURE)
         self.assertEqual(with_import_mode(tagged, self.asset_id, self.rgba, independent=True), tagged)
-        self.assertEqual(with_import_mode(tagged, self.asset_id, self.rgba, independent=False), self.png)
+        shared = with_import_mode(tagged, self.asset_id, self.rgba, independent=False)
+        self.assertEqual(import_mode(shared, self.asset_id, self.rgba), PALETTE_ONLY)
+        self.assertEqual(with_import_mode(shared, self.asset_id, b"", independent=False), self.png)
 
     def test_wrong_variant_changed_pixels_crc_and_unsupported_family_refuse(self):
         tagged = with_import_mode(self.png, self.asset_id, self.rgba, independent=True)

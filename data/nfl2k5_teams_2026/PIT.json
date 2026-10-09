@@ -122,7 +122,7 @@
         "stripe": [
           [
             "black",
-            17
+            24
           ]
         ],
         "swoosh_colour": "black"
@@ -190,6 +190,7 @@
         "base_colour": "white",
         "neck_donor": "22N0",
         "collar_shield": true,
+        "collar_trim": [{"colour": "gold", "width": 8}],
         "sleeve_swooshes": {
           "colour": "black"
         },
@@ -239,7 +240,7 @@
         "stripe": [
           [
             "black",
-            17
+            24
           ]
         ],
         "swoosh_colour": "black"
@@ -944,5 +945,8 @@
   },
   "notes_d2": {
     "neck_donor": "22N0 is a synthetic clean neck mask (the retail 22H0 neck grey connected to the top edge only): art.py reads every near-grey pixel as neck, and the retail torsos carry grey mesh dots (about 1,900 on the away) and a grey NFL shield under the V"
-  }
+  },
+ "u2d_b77": {
+  "away": "gold V collar trim (club week 2 at NE photos), pants stripe 17 to 24 px on both kits (week 2 at NE photo: black side stripe about 0.3 of the thigh width in the oblique view, v0.5 0.19)"
+ }
 }

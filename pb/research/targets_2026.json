@@ -1,0 +1,6941 @@
+{
+ "schema": "b77.targets-2026.v1",
+ "season": 2026,
+ "sources": [
+  {
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz",
+   "last_modified": "Thu, 08 Oct 2026 16:29:14 GMT",
+   "retrieved_at_utc": "2026-10-08T20:46:03.399934+00:00",
+   "sha256": "cfc874d762e1a2f7d1358a4db0e4f08f3c344d4b2dbbb7ae8eb78b533ced2d5d",
+   "created_at": "2026-10-08T16:29:14Z",
+   "updated_at": "2026-10-08T16:29:15Z",
+   "size": 4380424
+  },
+  {
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2026.csv",
+   "retrieved_at_utc": "2026-10-08T20:47:14.973450+00:00",
+   "last_modified": "Thu, 08 Oct 2026 14:34:41 GMT",
+   "sha256": "5e1facd91005d3e8dd5e8fa52de7e4155ab0a2536ea978f06e132a040423cd7e",
+   "bytes": 963300
+  }
+ ],
+ "coverage": {
+  "weeks": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "first_game": "2026-09-09",
+  "last_game": "2026-10-05",
+  "games": 64
+ },
+ "target_definition": "Named receiver on a counted pass attempt (play_type pass), REG, week >= 1; excludes no-play penalties and two-point attempts. Share denominator is all named team targets, including players absent from the build.",
+ "build_depth_source": {
+  "disc": "SOFTDRINK 2K28 v0.5 (2026-10-06).xiso.iso",
+  "pack": "0",
+  "entry": 5,
+  "resource_sha256": "b3dd88e2b51824b368e78f99f17d7aea7d64b26316c60fee5c0767f31261f501",
+  "method": "RosterDocument.depth_chart: position pool, depth_rank, depth_side, player index. WR1 is X, WR2 Z, WR3 slot. Exact rank/side fields retained for personnel-chain verification."
+ },
+ "teams": {
+  "ARZ": {
+   "nflverse_team": "ARI",
+   "targets": 148,
+   "players": [
+    {
+     "gsis_id": "00-0037744",
+     "name": "Trey McBride",
+     "pbp_name": "T.McBride",
+     "position": "TE",
+     "targets": 46,
+     "share": 0.3108108108108108,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0038559",
+     "name": "Michael Wilson",
+     "pbp_name": "Mi.Wilson",
+     "position": "WR",
+     "targets": 44,
+     "share": 0.2972972972972973,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0033307",
+     "name": "Kendrick Bourne",
+     "pbp_name": "K.Bourne",
+     "position": "WR",
+     "targets": 14,
+     "share": 0.0945945945945946,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039849",
+     "name": "Marvin Harrison Jr.",
+     "pbp_name": "M.Harrison",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.08783783783783784,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0041027",
+     "name": "Jeremiyah Love",
+     "pbp_name": "J.Love",
+     "position": "RB",
+     "targets": 13,
+     "share": 0.08783783783783784,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037263",
+     "name": "Tyler Allgeier",
+     "pbp_name": "T.Allgeier",
+     "position": "RB",
+     "targets": 10,
+     "share": 0.06756756756756757,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0039041",
+     "name": "Elijah Higgins",
+     "pbp_name": "E.Higgins",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.033783783783783786,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0037004",
+     "name": "Hunter Long",
+     "pbp_name": "H.Long",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.013513513513513514,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0038640",
+     "name": "Jalen Brooks",
+     "pbp_name": "J.Brooks",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.006756756756756757,
+     "role": "WR4"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Jeremiyah Love",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Tyler Allgeier",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Bam Knight",
+     "rank": 2,
+     "side": 2
+    },
+    "WR1": {
+     "name": "Michael Wilson",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Marvin Harrison",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Kendrick Bourne",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Jalen Brooks",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Simi Fehoko",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Devin Duvernay",
+     "rank": 5,
+     "side": 5
+    },
+    "WR7": {
+     "name": "Reggie Virgil",
+     "rank": 6,
+     "side": 6
+    },
+    "TE1": {
+     "name": "Trey McBride",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Elijah Higgins",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Hunter Long",
+     "rank": 2,
+     "side": 1
+    },
+    "QB1": {
+     "name": "Jacoby Brissett",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Gardner Minshew",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Carson Beck",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "TE1": 46,
+    "WR1": 44,
+    "WR3": 14,
+    "WR2": 13,
+    "RB1": 13,
+    "RB2": 10,
+    "TE2": 5,
+    "TE3": 2,
+    "WR4": 1
+   },
+   "role_shares": {
+    "RB1": 0.08783783783783784,
+    "RB2": 0.06756756756756757,
+    "TE1": 0.3108108108108108,
+    "TE2": 0.033783783783783786,
+    "TE3": 0.013513513513513514,
+    "WR1": 0.2972972972972973,
+    "WR2": 0.08783783783783784,
+    "WR3": 0.0945945945945946,
+    "WR4": 0.006756756756756757
+   },
+   "unmapped_targets": 0
+  },
+  "ATL": {
+   "nflverse_team": "ATL",
+   "targets": 93,
+   "players": [
+    {
+     "gsis_id": "00-0037238",
+     "name": "Drake London",
+     "pbp_name": "D.London",
+     "position": "WR",
+     "targets": 25,
+     "share": 0.26881720430107525,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038542",
+     "name": "Bijan Robinson",
+     "pbp_name": "Bi.Robinson",
+     "position": "RB",
+     "targets": 18,
+     "share": 0.1935483870967742,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037741",
+     "name": "Jahan Dotson",
+     "pbp_name": "J.Dotson",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.13978494623655913,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036970",
+     "name": "Kyle Pitts",
+     "pbp_name": "K.Pitts",
+     "position": "TE",
+     "targets": 9,
+     "share": 0.0967741935483871,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0035208",
+     "name": "Olamide Zaccheaus",
+     "pbp_name": "O.Zaccheaus",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.07526881720430108,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0032392",
+     "name": "Austin Hooper",
+     "pbp_name": "A.Hooper",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.07526881720430108,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0041044",
+     "name": "Zachariah Branch",
+     "pbp_name": "Z.Branch",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.06451612903225806,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0037746",
+     "name": "Brian Robinson",
+     "pbp_name": "Br.Robinson",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.03225806451612903,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0036463",
+     "name": "Chris Blair",
+     "pbp_name": "C.Blair",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.03225806451612903,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0036429",
+     "name": "Charlie Woerner",
+     "pbp_name": "C.Woerner",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.021505376344086023,
+     "role": "TE2"
+    }
+   ],
+   "depth_chart": {
+    "QB1": {
+     "name": "Michael Penix",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Tua Tagovailoa",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Cooper Rush",
+     "rank": 2,
+     "side": 1
+    },
+    "QB4": {
+     "name": "Jack Strand",
+     "rank": 3,
+     "side": 3
+    },
+    "RB1": {
+     "name": "Bijan Robinson",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Brian Robinson",
+     "rank": 1,
+     "side": 1
+    },
+    "TE1": {
+     "name": "Kyle Pitts",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Charlie Woerner",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Austin Hooper",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Nick Muse",
+     "rank": 3,
+     "side": 3
+    },
+    "WR1": {
+     "name": "Drake London",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Jahan Dotson",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Olamide Zaccheaus",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Zachariah Branch",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Chris Blair",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 25,
+    "RB1": 18,
+    "WR2": 13,
+    "TE1": 9,
+    "WR3": 7,
+    "TE3": 7,
+    "WR4": 6,
+    "RB2": 3,
+    "WR5": 3,
+    "TE2": 2
+   },
+   "role_shares": {
+    "RB1": 0.1935483870967742,
+    "RB2": 0.03225806451612903,
+    "TE1": 0.0967741935483871,
+    "TE2": 0.021505376344086023,
+    "TE3": 0.07526881720430108,
+    "WR1": 0.26881720430107525,
+    "WR2": 0.13978494623655913,
+    "WR3": 0.07526881720430108,
+    "WR4": 0.06451612903225806,
+    "WR5": 0.03225806451612903
+   },
+   "unmapped_targets": 0
+  },
+  "BAL": {
+   "nflverse_team": "BAL",
+   "targets": 102,
+   "players": [
+    {
+     "gsis_id": "00-0034753",
+     "name": "Mark Andrews",
+     "pbp_name": "M.Andrews",
+     "position": "TE",
+     "targets": 24,
+     "share": 0.23529411764705882,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039064",
+     "name": "Zay Flowers",
+     "pbp_name": "Z.Flowers",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.21568627450980393,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0036550",
+     "name": "Rashod Bateman",
+     "pbp_name": "R.Bateman",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.14705882352941177,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0032764",
+     "name": "Derrick Henry",
+     "pbp_name": "D.Henry",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.06862745098039216,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0032398",
+     "name": "Chris Moore",
+     "pbp_name": "C.Moore",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.058823529411764705,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0034975",
+     "name": "Justice Hill",
+     "pbp_name": "J.Hill",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.058823529411764705,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040879",
+     "name": "Matthew Hibner",
+     "pbp_name": "M.Hibner",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.049019607843137254,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0039792",
+     "name": "Devontez Walker",
+     "pbp_name": "D.Walker",
+     "position": "WR",
+     "targets": 5,
+     "share": 0.049019607843137254,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040075",
+     "name": "LaJohntay Wester",
+     "pbp_name": "L.Wester",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.0392156862745098,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0040870",
+     "name": "Ja'Kobi Lane",
+     "pbp_name": "J.Lane",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.029411764705882353,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0034798",
+     "name": "Durham Smythe",
+     "pbp_name": "D.Smythe",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.0196078431372549,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040876",
+     "name": "Elijah Sarratt",
+     "pbp_name": "E.Sarratt",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.0196078431372549,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0040887",
+     "name": "Josh Cuevas",
+     "pbp_name": "J.Cuevas",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.00980392156862745,
+     "role": "TE4"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Derrick Henry",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Justice Hill",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Rasheen Ali",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Mark Andrews",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Durham Smythe",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Matthew Hibner",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Josh Cuevas",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Lamar Jackson",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Tyler Huntley",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Joe Fagnano",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Zay Flowers",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Rashod Bateman",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Devontez Walker",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Chris Moore",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Elijah Sarratt",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "LaJohntay Wester",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "TE1": 24,
+    "WR1": 22,
+    "WR2": 15,
+    "RB1": 7,
+    "WR4": 6,
+    "RB2": 6,
+    "TE3": 5,
+    "WR3": 5,
+    "WR6": 4,
+    "TE2": 2,
+    "WR5": 2,
+    "TE4": 1
+   },
+   "role_shares": {
+    "RB1": 0.06862745098039216,
+    "RB2": 0.058823529411764705,
+    "TE1": 0.23529411764705882,
+    "TE2": 0.0196078431372549,
+    "TE3": 0.049019607843137254,
+    "TE4": 0.00980392156862745,
+    "WR1": 0.21568627450980393,
+    "WR2": 0.14705882352941177,
+    "WR3": 0.049019607843137254,
+    "WR4": 0.058823529411764705,
+    "WR5": 0.0196078431372549,
+    "WR6": 0.0392156862745098
+   },
+   "unmapped_targets": 3
+  },
+  "BUF": {
+   "nflverse_team": "BUF",
+   "targets": 112,
+   "players": [
+    {
+     "gsis_id": "00-0037261",
+     "name": "Khalil Shakir",
+     "pbp_name": "K.Shakir",
+     "position": "WR",
+     "targets": 23,
+     "share": 0.20535714285714285,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0034827",
+     "name": "DJ Moore",
+     "pbp_name": "D.Moore",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.17857142857142858,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038933",
+     "name": "Dalton Kincaid",
+     "pbp_name": "D.Kincaid",
+     "position": "TE",
+     "targets": 19,
+     "share": 0.16964285714285715,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039901",
+     "name": "Keon Coleman",
+     "pbp_name": "K.Coleman",
+     "position": "WR",
+     "targets": 16,
+     "share": 0.14285714285714285,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0037248",
+     "name": "James Cook",
+     "pbp_name": "J.Cook",
+     "position": "RB",
+     "targets": 10,
+     "share": 0.08928571428571429,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0036988",
+     "name": "Josh Palmer",
+     "pbp_name": "J.Palmer",
+     "position": "WR",
+     "targets": 9,
+     "share": 0.08035714285714286,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0035689",
+     "name": "Dawson Knox",
+     "pbp_name": "D.Knox",
+     "position": "TE",
+     "targets": 6,
+     "share": 0.05357142857142857,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0035537",
+     "name": "Ty Johnson",
+     "pbp_name": "T.Johnson",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.05357142857142857,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0034857",
+     "name": "Josh Allen",
+     "pbp_name": "J.Allen",
+     "position": "QB",
+     "targets": 1,
+     "share": 0.008928571428571428,
+     "role": "QB1"
+    },
+    {
+     "gsis_id": "00-0040194",
+     "name": "Jackson Hawes",
+     "pbp_name": "J.Hawes",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.008928571428571428,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0039875",
+     "name": "Ray Davis",
+     "pbp_name": "R.Davis",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.008928571428571428,
+     "role": "RB2"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "James Cook",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Ray Davis",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Ty Johnson",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Dalton Kincaid",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Dawson Knox",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Jackson Hawes",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Keleki Latu",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Josh Allen",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Kyle Allen",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "DJ Moore",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Khalil Shakir",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Keon Coleman",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Josh Palmer",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Skyler Bell",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR2": 23,
+    "WR1": 20,
+    "TE1": 19,
+    "WR3": 16,
+    "RB1": 10,
+    "WR4": 9,
+    "TE2": 6,
+    "RB3": 6,
+    "QB1": 1,
+    "TE3": 1,
+    "RB2": 1
+   },
+   "role_shares": {
+    "QB1": 0.008928571428571428,
+    "RB1": 0.08928571428571429,
+    "RB2": 0.008928571428571428,
+    "RB3": 0.05357142857142857,
+    "TE1": 0.16964285714285715,
+    "TE2": 0.05357142857142857,
+    "TE3": 0.008928571428571428,
+    "WR1": 0.17857142857142858,
+    "WR2": 0.20535714285714285,
+    "WR3": 0.14285714285714285,
+    "WR4": 0.08035714285714286
+   },
+   "unmapped_targets": 0
+  },
+  "CAR": {
+   "nflverse_team": "CAR",
+   "targets": 147,
+   "players": [
+    {
+     "gsis_id": "00-0040124",
+     "name": "Tetairoa McMillan",
+     "pbp_name": "T.McMillan",
+     "position": "WR",
+     "targets": 39,
+     "share": 0.2653061224489796,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0039491",
+     "name": "Jalen Coker",
+     "pbp_name": "J.Coker",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.14965986394557823,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0031610",
+     "name": "Darren Waller",
+     "pbp_name": "D.Waller",
+     "position": "TE",
+     "targets": 19,
+     "share": 0.1292517006802721,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0037005",
+     "name": "Tommy Tremble",
+     "pbp_name": "T.Tremble",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.10204081632653061,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0036555",
+     "name": "Chuba Hubbard",
+     "pbp_name": "C.Hubbard",
+     "position": "RB",
+     "targets": 11,
+     "share": 0.07482993197278912,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037614",
+     "name": "John Metchie III",
+     "pbp_name": "J.Metchie",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.06802721088435375,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0038840",
+     "name": "Brycen Tremayne",
+     "pbp_name": "B.Tremayne",
+     "position": "WR",
+     "targets": 9,
+     "share": 0.061224489795918366,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040187",
+     "name": "Mitchell Evans",
+     "pbp_name": "M.Evans",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.047619047619047616,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0039342",
+     "name": "Xavier Legette",
+     "pbp_name": "X.Legette",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.04081632653061224,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039344",
+     "name": "Jonathon Brooks",
+     "pbp_name": "J.Brooks",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.02040816326530612,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0033589",
+     "name": "David Moore",
+     "pbp_name": "D.Moore",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.013605442176870748,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0036265",
+     "name": "AJ Dillon",
+     "pbp_name": "A.Dillon",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.013605442176870748,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040218",
+     "name": "Jimmy Horn Jr.",
+     "pbp_name": "Ji.Horn",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.006802721088435374,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0040265",
+     "name": "Ja'Seem Reed",
+     "pbp_name": "J.Reed",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.006802721088435374,
+     "role": null
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Chuba Hubbard",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "AJ Dillon",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Jonathon Brooks",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Tommy Tremble",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Mitchell Evans",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Darren Waller",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Feleipe Franks",
+     "rank": 3,
+     "side": 3
+    },
+    "TE5": {
+     "name": "Ja'Tavion Sanders",
+     "rank": 4,
+     "side": 4
+    },
+    "QB1": {
+     "name": "Bryce Young",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Kenny Pickett",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Haynes King",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Tetairoa McMillan",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Jalen Coker",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Xavier Legette",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Brycen Tremayne",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "John Metchie",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 39,
+    "WR2": 22,
+    "TE3": 19,
+    "TE1": 15,
+    "RB1": 11,
+    "WR5": 10,
+    "WR4": 9,
+    "TE2": 7,
+    "WR3": 6,
+    "RB3": 3,
+    "RB2": 2
+   },
+   "role_shares": {
+    "RB1": 0.07482993197278912,
+    "RB2": 0.013605442176870748,
+    "RB3": 0.02040816326530612,
+    "TE1": 0.10204081632653061,
+    "TE2": 0.047619047619047616,
+    "TE3": 0.1292517006802721,
+    "WR1": 0.2653061224489796,
+    "WR2": 0.14965986394557823,
+    "WR3": 0.04081632653061224,
+    "WR4": 0.061224489795918366,
+    "WR5": 0.06802721088435375
+   },
+   "unmapped_targets": 4
+  },
+  "CHI": {
+   "nflverse_team": "CHI",
+   "targets": 121,
+   "players": [
+    {
+     "gsis_id": "00-0040735",
+     "name": "Luther Burden III",
+     "pbp_name": "L.Burden",
+     "position": "WR",
+     "targets": 29,
+     "share": 0.2396694214876033,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0032464",
+     "name": "Kalif Raymond",
+     "pbp_name": "K.Raymond",
+     "position": "WR",
+     "targets": 23,
+     "share": 0.19008264462809918,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039919",
+     "name": "Rome Odunze",
+     "pbp_name": "R.Odunze",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.1652892561983471,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0040126",
+     "name": "Colston Loveland",
+     "pbp_name": "C.Loveland",
+     "position": "TE",
+     "targets": 18,
+     "share": 0.1487603305785124,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0036275",
+     "name": "D'Andre Swift",
+     "pbp_name": "D.Swift",
+     "position": "RB",
+     "targets": 11,
+     "share": 0.09090909090909091,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0036290",
+     "name": "Cole Kmet",
+     "pbp_name": "C.Kmet",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.05785123966942149,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040236",
+     "name": "Kyle Monangai",
+     "pbp_name": "K.Monangai",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.04132231404958678,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0041558",
+     "name": "Sam Roush",
+     "pbp_name": "S.Roush",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.04132231404958678,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0040277",
+     "name": "Jahdae Walker",
+     "pbp_name": "J.Walker",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.008264462809917356,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0041051",
+     "name": "Zavion Thomas",
+     "pbp_name": "Z.Thomas",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.008264462809917356,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0039021",
+     "name": "Roschon Johnson",
+     "pbp_name": "R.Johnson",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.008264462809917356,
+     "role": "RB3"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "D'Andre Swift",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Kyle Monangai",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Roschon Johnson",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Colston Loveland",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Cole Kmet",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Sam Roush",
+     "rank": 2,
+     "side": 1
+    },
+    "QB1": {
+     "name": "Caleb Williams",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Tyson Bagent",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Case Keenum",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Rome Odunze",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Luther Burden",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Kalif Raymond",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Zavion Thomas",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jahdae Walker",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR2": 29,
+    "WR3": 23,
+    "WR1": 20,
+    "TE1": 18,
+    "RB1": 11,
+    "TE2": 7,
+    "RB2": 5,
+    "TE3": 5,
+    "WR5": 1,
+    "WR4": 1,
+    "RB3": 1
+   },
+   "role_shares": {
+    "RB1": 0.09090909090909091,
+    "RB2": 0.04132231404958678,
+    "RB3": 0.008264462809917356,
+    "TE1": 0.1487603305785124,
+    "TE2": 0.05785123966942149,
+    "TE3": 0.04132231404958678,
+    "WR1": 0.1652892561983471,
+    "WR2": 0.2396694214876033,
+    "WR3": 0.19008264462809918,
+    "WR4": 0.008264462809917356,
+    "WR5": 0.008264462809917356
+   },
+   "unmapped_targets": 0
+  },
+  "CIN": {
+   "nflverse_team": "CIN",
+   "targets": 155,
+   "players": [
+    {
+     "gsis_id": "00-0036410",
+     "name": "Tee Higgins",
+     "pbp_name": "T.Higgins",
+     "position": "WR",
+     "targets": 39,
+     "share": 0.25161290322580643,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036900",
+     "name": "Ja'Marr Chase",
+     "pbp_name": "J.Chase",
+     "position": "WR",
+     "targets": 28,
+     "share": 0.18064516129032257,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038597",
+     "name": "Chase Brown",
+     "pbp_name": "C.Brown",
+     "position": "RB",
+     "targets": 24,
+     "share": 0.15483870967741936,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0040785",
+     "name": "Dohnte Meyers",
+     "pbp_name": "D.Meyers",
+     "position": "WR",
+     "targets": 16,
+     "share": 0.1032258064516129,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0034829",
+     "name": "Mike Gesicki",
+     "pbp_name": "M.Gesicki",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.0967741935483871,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0033526",
+     "name": "Samaje Perine",
+     "pbp_name": "S.Perine",
+     "position": "RB",
+     "targets": 8,
+     "share": 0.05161290322580645,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0038839",
+     "name": "Mitchell Tinsley",
+     "pbp_name": "M.Tinsley",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.04516129032258064,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0035631",
+     "name": "Drew Sample",
+     "pbp_name": "D.Sample",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.03225806451612903,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038619",
+     "name": "Andrei Iosivas",
+     "pbp_name": "A.Iosivas",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.025806451612903226,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0034613",
+     "name": "Tanner Hudson",
+     "pbp_name": "T.Hudson",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.025806451612903226,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0039814",
+     "name": "Erick All",
+     "pbp_name": "E.All",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.01935483870967742,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0041069",
+     "name": "Colbie Young",
+     "pbp_name": "C.Young",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.012903225806451613,
+     "role": "WR3"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Chase Brown",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Samaje Perine",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Tahj Brooks",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Joe Burrow",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Joe Flacco",
+     "rank": 1,
+     "side": 0
+    },
+    "TE1": {
+     "name": "Mike Gesicki",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Drew Sample",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Erick All",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Jack Endries",
+     "rank": 3,
+     "side": 3
+    },
+    "WR1": {
+     "name": "Ja'Marr Chase",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Tee Higgins",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Colbie Young",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Dohnte Meyers",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Ke'Shawn Williams",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Andrei Iosivas",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "WR2": 39,
+    "WR1": 28,
+    "RB1": 24,
+    "WR4": 16,
+    "TE1": 15,
+    "RB2": 8,
+    "TE2": 5,
+    "WR6": 4,
+    "TE3": 3,
+    "WR3": 2
+   },
+   "role_shares": {
+    "RB1": 0.15483870967741936,
+    "RB2": 0.05161290322580645,
+    "TE1": 0.0967741935483871,
+    "TE2": 0.03225806451612903,
+    "TE3": 0.01935483870967742,
+    "WR1": 0.18064516129032257,
+    "WR2": 0.25161290322580643,
+    "WR3": 0.012903225806451613,
+    "WR4": 0.1032258064516129,
+    "WR6": 0.025806451612903226
+   },
+   "unmapped_targets": 11
+  },
+  "CLE": {
+   "nflverse_team": "CLE",
+   "targets": 115,
+   "players": [
+    {
+     "gsis_id": "00-0041547",
+     "name": "KC Concepcion",
+     "pbp_name": "K.Concepcion",
+     "position": "WR",
+     "targets": 28,
+     "share": 0.24347826086956523,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040663",
+     "name": "Harold Fannin Jr.",
+     "pbp_name": "H.Fannin",
+     "position": "TE",
+     "targets": 23,
+     "share": 0.2,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0041037",
+     "name": "Denzel Boston",
+     "pbp_name": "D.Boston",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.19130434782608696,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040784",
+     "name": "Quinshon Judkins",
+     "pbp_name": "Q.Judkins",
+     "position": "RB",
+     "targets": 16,
+     "share": 0.1391304347826087,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0040466",
+     "name": "Raheim Sanders",
+     "pbp_name": "R.Sanders",
+     "position": "RB",
+     "targets": 11,
+     "share": 0.09565217391304348,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0036407",
+     "name": "Jerry Jeudy",
+     "pbp_name": "J.Jeudy",
+     "position": "WR",
+     "targets": 8,
+     "share": 0.06956521739130435,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038710",
+     "name": "Blake Whiteheart",
+     "pbp_name": "B.Whiteheart",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.02608695652173913,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040782",
+     "name": "Isaiah Bond",
+     "pbp_name": "I.Bond",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.017391304347826087,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0038794",
+     "name": "Jaleel McLaughlin",
+     "pbp_name": "J.McLaughlin",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.008695652173913044,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0031595",
+     "name": "Michael Burton",
+     "pbp_name": "M.Burton",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.008695652173913044,
+     "role": "FB1"
+    }
+   ],
+   "depth_chart": {
+    "WR1": {
+     "name": "Jerry Jeudy",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "KC Concepcion",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Denzel Boston",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Isaiah Bond",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Tylan Wallace",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Malachi Corley",
+     "rank": 5,
+     "side": 5
+    },
+    "FB1": {
+     "name": "Michael Burton",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Quinshon Judkins",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Raheim Sanders",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Jaleel McLaughlin",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Deshaun Watson",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Shedeur Sanders",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Taylen Green",
+     "rank": 2,
+     "side": 1
+    },
+    "TE1": {
+     "name": "Harold Fannin",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Blake Whiteheart",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Carsen Ryan",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR2": 28,
+    "TE1": 23,
+    "WR3": 22,
+    "RB1": 16,
+    "RB2": 11,
+    "WR1": 8,
+    "TE2": 3,
+    "WR4": 2,
+    "RB3": 1,
+    "FB1": 1
+   },
+   "role_shares": {
+    "FB1": 0.008695652173913044,
+    "RB1": 0.1391304347826087,
+    "RB2": 0.09565217391304348,
+    "RB3": 0.008695652173913044,
+    "TE1": 0.2,
+    "TE2": 0.02608695652173913,
+    "WR1": 0.06956521739130435,
+    "WR2": 0.24347826086956523,
+    "WR3": 0.19130434782608696,
+    "WR4": 0.017391304347826087
+   },
+   "unmapped_targets": 0
+  },
+  "DAL": {
+   "nflverse_team": "DAL",
+   "targets": 144,
+   "players": [
+    {
+     "gsis_id": "00-0036358",
+     "name": "CeeDee Lamb",
+     "pbp_name": "C.Lamb",
+     "position": "WR",
+     "targets": 46,
+     "share": 0.3194444444444444,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0037247",
+     "name": "George Pickens",
+     "pbp_name": "G.Pickens",
+     "position": "WR",
+     "targets": 28,
+     "share": 0.19444444444444445,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0039410",
+     "name": "Ryan Flournoy",
+     "pbp_name": "R.Flournoy",
+     "position": "WR",
+     "targets": 23,
+     "share": 0.1597222222222222,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036997",
+     "name": "Javonte Williams",
+     "pbp_name": "J.Williams",
+     "position": "RB",
+     "targets": 17,
+     "share": 0.11805555555555555,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0038041",
+     "name": "Jake Ferguson",
+     "pbp_name": "J.Ferguson",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.10416666666666667,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039530",
+     "name": "Brevyn Spann-Ford",
+     "pbp_name": "B.Spann-Ford",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.027777777777777776,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0037801",
+     "name": "KaVontae Turpin",
+     "pbp_name": "K.Turpin",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.020833333333333332,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0039062",
+     "name": "Jonathan Mingo",
+     "pbp_name": "J.Mingo",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.020833333333333332,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0038547",
+     "name": "Luke Schoonmaker",
+     "pbp_name": "L.Schoonmaker",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.013888888888888888,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0037120",
+     "name": "Tyler Goodson",
+     "pbp_name": "T.Goodson",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.013888888888888888,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0038738",
+     "name": "Hunter Luepke",
+     "pbp_name": "H.Luepke",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.006944444444444444,
+     "role": "FB1"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Hunter Luepke",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Javonte Williams",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Emari Demercado",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Tyler Goodson",
+     "rank": 2,
+     "side": 2
+    },
+    "WR1": {
+     "name": "CeeDee Lamb",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "George Pickens",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Ryan Flournoy",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "KaVontae Turpin",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jonathan Mingo",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Camden Brown",
+     "rank": 5,
+     "side": 5
+    },
+    "QB1": {
+     "name": "Dak Prescott",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Sam Howell",
+     "rank": 1,
+     "side": 0
+    },
+    "TE1": {
+     "name": "Jake Ferguson",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Brevyn Spann-Ford",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Luke Schoonmaker",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR1": 46,
+    "WR2": 28,
+    "WR3": 23,
+    "RB1": 17,
+    "TE1": 15,
+    "TE2": 4,
+    "WR4": 3,
+    "WR5": 3,
+    "TE3": 2,
+    "RB3": 2,
+    "FB1": 1
+   },
+   "role_shares": {
+    "FB1": 0.006944444444444444,
+    "RB1": 0.11805555555555555,
+    "RB3": 0.013888888888888888,
+    "TE1": 0.10416666666666667,
+    "TE2": 0.027777777777777776,
+    "TE3": 0.013888888888888888,
+    "WR1": 0.3194444444444444,
+    "WR2": 0.19444444444444445,
+    "WR3": 0.1597222222222222,
+    "WR4": 0.020833333333333332,
+    "WR5": 0.020833333333333332
+   },
+   "unmapped_targets": 0
+  },
+  "DEN": {
+   "nflverse_team": "DEN",
+   "targets": 125,
+   "players": [
+    {
+     "gsis_id": "00-0036613",
+     "name": "Jaylen Waddle",
+     "pbp_name": "J.Waddle",
+     "position": "WR",
+     "targets": 26,
+     "share": 0.208,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0034348",
+     "name": "Courtland Sutton",
+     "pbp_name": "C.Sutton",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.176,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040730",
+     "name": "RJ Harvey",
+     "pbp_name": "R.Harvey",
+     "position": "RB",
+     "targets": 21,
+     "share": 0.168,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0033881",
+     "name": "Evan Engram",
+     "pbp_name": "E.Engram",
+     "position": "TE",
+     "targets": 13,
+     "share": 0.104,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0040134",
+     "name": "Pat Bryant",
+     "pbp_name": "P.Bryant",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.096,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0037085",
+     "name": "Tyler Badie",
+     "pbp_name": "T.Badie",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.048,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0038783",
+     "name": "Nate Adkins",
+     "pbp_name": "N.Adkins",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.04,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0036422",
+     "name": "Adam Trautman",
+     "pbp_name": "A.Trautman",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.032,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0039868",
+     "name": "Troy Franklin",
+     "pbp_name": "T.Franklin",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.032,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0036158",
+     "name": "J.K. Dobbins",
+     "pbp_name": "J.Dobbins",
+     "position": "RB",
+     "targets": 4,
+     "share": 0.032,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0041496",
+     "name": "Jonah Coleman",
+     "pbp_name": "J.Coleman",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.024,
+     "role": "RB4"
+    },
+    {
+     "gsis_id": "00-0038976",
+     "name": "Marvin Mims Jr.",
+     "pbp_name": "M.Mims",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.024,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036727",
+     "name": "Adam Prentice",
+     "pbp_name": "A.Prentice",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.008,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0035406",
+     "name": "Lil'Jordan Humphrey",
+     "pbp_name": "L.Humphrey",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.008,
+     "role": "WR6"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "J.K. Dobbins",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "RJ Harvey",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Tyler Badie",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Jonah Coleman",
+     "rank": 3,
+     "side": 3
+    },
+    "WR1": {
+     "name": "Jaylen Waddle",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Courtland Sutton",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Marvin Mims",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Pat Bryant",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Troy Franklin",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Lil'Jordan Humphrey",
+     "rank": 5,
+     "side": 5
+    },
+    "TE1": {
+     "name": "Evan Engram",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Adam Trautman",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Nate Adkins",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Dallen Bentley",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Bo Nix",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Jarrett Stidham",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Sam Ehlinger",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR1": 26,
+    "WR2": 22,
+    "RB2": 21,
+    "TE1": 13,
+    "WR4": 12,
+    "RB3": 6,
+    "TE3": 5,
+    "TE2": 4,
+    "WR5": 4,
+    "RB1": 4,
+    "RB4": 3,
+    "WR3": 3,
+    "WR6": 1
+   },
+   "role_shares": {
+    "RB1": 0.032,
+    "RB2": 0.168,
+    "RB3": 0.048,
+    "RB4": 0.024,
+    "TE1": 0.104,
+    "TE2": 0.032,
+    "TE3": 0.04,
+    "WR1": 0.208,
+    "WR2": 0.176,
+    "WR3": 0.024,
+    "WR4": 0.096,
+    "WR5": 0.032,
+    "WR6": 0.008
+   },
+   "unmapped_targets": 1
+  },
+  "DET": {
+   "nflverse_team": "DET",
+   "targets": 159,
+   "players": [
+    {
+     "gsis_id": "00-0036963",
+     "name": "Amon-Ra St. Brown",
+     "pbp_name": "A.St. Brown",
+     "position": "WR",
+     "targets": 46,
+     "share": 0.2893081761006289,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0039065",
+     "name": "Sam LaPorta",
+     "pbp_name": "S.LaPorta",
+     "position": "TE",
+     "targets": 32,
+     "share": 0.20125786163522014,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039139",
+     "name": "Jahmyr Gibbs",
+     "pbp_name": "J.Gibbs",
+     "position": "RB",
+     "targets": 28,
+     "share": 0.1761006289308176,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037240",
+     "name": "Jameson Williams",
+     "pbp_name": "J.Williams",
+     "position": "WR",
+     "targets": 25,
+     "share": 0.15723270440251572,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040669",
+     "name": "Isaac TeSlaa",
+     "pbp_name": "I.TeSlaa",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.1069182389937107,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039364",
+     "name": "Sione Vaki",
+     "pbp_name": "S.Vaki",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.031446540880503145,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0036754",
+     "name": "Brock Wright",
+     "pbp_name": "B.Wright",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.031446540880503145,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040390",
+     "name": "Jackson Meeks",
+     "pbp_name": "J.Meeks",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.006289308176100629,
+     "role": "TE4"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Jahmyr Gibbs",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Sione Vaki",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Jacob Saylors",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Sam LaPorta",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Brock Wright",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Tyler Conklin",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Jackson Meeks",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Jared Goff",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Joshua Dobbs",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Amon-Ra St. Brown",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Jameson Williams",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Isaac TeSlaa",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Tom Kennedy",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Tay Martin",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 46,
+    "TE1": 32,
+    "RB1": 28,
+    "WR2": 25,
+    "WR3": 17,
+    "RB2": 5,
+    "TE2": 5,
+    "TE4": 1
+   },
+   "role_shares": {
+    "RB1": 0.1761006289308176,
+    "RB2": 0.031446540880503145,
+    "TE1": 0.20125786163522014,
+    "TE2": 0.031446540880503145,
+    "TE4": 0.006289308176100629,
+    "WR1": 0.2893081761006289,
+    "WR2": 0.15723270440251572,
+    "WR3": 0.1069182389937107
+   },
+   "unmapped_targets": 0
+  },
+  "GB": {
+   "nflverse_team": "GB",
+   "targets": 150,
+   "players": [
+    {
+     "gsis_id": "00-0040667",
+     "name": "Matthew Golden",
+     "pbp_name": "M.Golden",
+     "position": "WR",
+     "targets": 37,
+     "share": 0.24666666666666667,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0038124",
+     "name": "Christian Watson",
+     "pbp_name": "C.Watson",
+     "position": "WR",
+     "targets": 32,
+     "share": 0.21333333333333335,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038996",
+     "name": "Tucker Kraft",
+     "pbp_name": "T.Kraft",
+     "position": "TE",
+     "targets": 24,
+     "share": 0.16,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0038090",
+     "name": "Skyy Moore",
+     "pbp_name": "S.Moore",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.08666666666666667,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039811",
+     "name": "MarShawn Lloyd",
+     "pbp_name": "M.Lloyd",
+     "position": "RB",
+     "targets": 11,
+     "share": 0.07333333333333333,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039146",
+     "name": "Jayden Reed",
+     "pbp_name": "J.Reed",
+     "position": "WR",
+     "targets": 8,
+     "share": 0.05333333333333334,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0033858",
+     "name": "Jonnu Smith",
+     "pbp_name": "J.Smith",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.04666666666666667,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038685",
+     "name": "Chris Brooks",
+     "pbp_name": "C.Brooks",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.03333333333333333,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0037091",
+     "name": "Bo Melton",
+     "pbp_name": "B.Melton",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.02666666666666667,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040948",
+     "name": "J. Michael Sturdivant",
+     "pbp_name": "J.Sturdivant",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.02666666666666667,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0040142",
+     "name": "Kaleb Johnson",
+     "pbp_name": "K.Johnson",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.02,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0040598",
+     "name": "Mark Redman",
+     "pbp_name": "M.Redman",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.013333333333333334,
+     "role": "TE4"
+    }
+   ],
+   "depth_chart": {
+    "WR1": {
+     "name": "Christian Watson",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Matthew Golden",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Skyy Moore",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Bo Melton",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "J. Michael Sturdivant",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Jayden Reed",
+     "rank": 5,
+     "side": 5
+    },
+    "TE1": {
+     "name": "Tucker Kraft",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Jonnu Smith",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Josh Whyle",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Mark Redman",
+     "rank": 3,
+     "side": 3
+    },
+    "RB1": {
+     "name": "MarShawn Lloyd",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Chris Brooks",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Kaleb Johnson",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Jordan Love",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Tyrod Taylor",
+     "rank": 1,
+     "side": 0
+    }
+   },
+   "role_targets": {
+    "WR2": 37,
+    "WR1": 32,
+    "TE1": 24,
+    "WR3": 13,
+    "RB1": 11,
+    "WR6": 8,
+    "TE2": 7,
+    "RB2": 5,
+    "WR4": 4,
+    "WR5": 4,
+    "RB3": 3,
+    "TE4": 2
+   },
+   "role_shares": {
+    "RB1": 0.07333333333333333,
+    "RB2": 0.03333333333333333,
+    "RB3": 0.02,
+    "TE1": 0.16,
+    "TE2": 0.04666666666666667,
+    "TE4": 0.013333333333333334,
+    "WR1": 0.21333333333333335,
+    "WR2": 0.24666666666666667,
+    "WR3": 0.08666666666666667,
+    "WR4": 0.02666666666666667,
+    "WR5": 0.02666666666666667,
+    "WR6": 0.05333333333333334
+   },
+   "unmapped_targets": 0
+  },
+  "HOU": {
+   "nflverse_team": "HOU",
+   "targets": 138,
+   "players": [
+    {
+     "gsis_id": "00-0034383",
+     "name": "Dalton Schultz",
+     "pbp_name": "D.Schultz",
+     "position": "TE",
+     "targets": 27,
+     "share": 0.1956521739130435,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0038618",
+     "name": "Xavier Hutchinson",
+     "pbp_name": "X.Hutchinson",
+     "position": "WR",
+     "targets": 26,
+     "share": 0.18840579710144928,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036554",
+     "name": "Nico Collins",
+     "pbp_name": "N.Collins",
+     "position": "WR",
+     "targets": 18,
+     "share": 0.13043478260869565,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038608",
+     "name": "Kayshon Boutte",
+     "pbp_name": "K.Boutte",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.09420289855072464,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040138",
+     "name": "Jaylin Noel",
+     "pbp_name": "J.Noel",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.08695652173913043,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0038728",
+     "name": "Jared Wayne",
+     "pbp_name": "J.Wayne",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.08695652173913043,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0034981",
+     "name": "Foster Moreau",
+     "pbp_name": "F.Moreau",
+     "position": "TE",
+     "targets": 9,
+     "share": 0.06521739130434782,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040583",
+     "name": "Woody Marks",
+     "pbp_name": "W.Marks",
+     "position": "RB",
+     "targets": 9,
+     "share": 0.06521739130434782,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0035685",
+     "name": "David Montgomery",
+     "pbp_name": "D.Montgomery",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.050724637681159424,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039359",
+     "name": "Cade Stover",
+     "pbp_name": "C.Stover",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.014492753623188406,
+     "role": "TE4"
+    },
+    {
+     "gsis_id": "00-0041472",
+     "name": "Marlin Klein",
+     "pbp_name": "M.Klein",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.007246376811594203,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0041467",
+     "name": "Lewis Bond",
+     "pbp_name": "L.Bond",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.007246376811594203,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0036556",
+     "name": "Brevin Jordan",
+     "pbp_name": "B.Jordan",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.007246376811594203,
+     "role": "TE5"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "David Montgomery",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Woody Marks",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "British Brooks",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Dalton Schultz",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Foster Moreau",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Marlin Klein",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Cade Stover",
+     "rank": 3,
+     "side": 3
+    },
+    "TE5": {
+     "name": "Brevin Jordan",
+     "rank": 4,
+     "side": 4
+    },
+    "QB1": {
+     "name": "C.J. Stroud",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Davis Mills",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Nico Collins",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Xavier Hutchinson",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Kayshon Boutte",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Jaylin Noel",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jared Wayne",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "TE1": 27,
+    "WR2": 26,
+    "WR1": 18,
+    "WR3": 13,
+    "WR4": 12,
+    "WR5": 12,
+    "TE2": 9,
+    "RB2": 9,
+    "RB1": 7,
+    "TE4": 2,
+    "TE3": 1,
+    "TE5": 1
+   },
+   "role_shares": {
+    "RB1": 0.050724637681159424,
+    "RB2": 0.06521739130434782,
+    "TE1": 0.1956521739130435,
+    "TE2": 0.06521739130434782,
+    "TE3": 0.007246376811594203,
+    "TE4": 0.014492753623188406,
+    "TE5": 0.007246376811594203,
+    "WR1": 0.13043478260869565,
+    "WR2": 0.18840579710144928,
+    "WR3": 0.09420289855072464,
+    "WR4": 0.08695652173913043,
+    "WR5": 0.08695652173913043
+   },
+   "unmapped_targets": 1
+  },
+  "IND": {
+   "nflverse_team": "IND",
+   "targets": 123,
+   "players": [
+    {
+     "gsis_id": "00-0038997",
+     "name": "Josh Downs",
+     "pbp_name": "J.Downs",
+     "position": "WR",
+     "targets": 28,
+     "share": 0.22764227642276422,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0040128",
+     "name": "Tyler Warren",
+     "pbp_name": "T.Warren",
+     "position": "TE",
+     "targets": 27,
+     "share": 0.21951219512195122,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0030279",
+     "name": "Keenan Allen",
+     "pbp_name": "K.Allen",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.16260162601626016,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036223",
+     "name": "Jonathan Taylor",
+     "pbp_name": "J.Taylor",
+     "position": "RB",
+     "targets": 15,
+     "share": 0.12195121951219512,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0032951",
+     "name": "Laquon Treadwell",
+     "pbp_name": "L.Treadwell",
+     "position": "WR",
+     "targets": 11,
+     "share": 0.08943089430894309,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0037664",
+     "name": "Alec Pierce",
+     "pbp_name": "A.Pierce",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.056910569105691054,
+     "role": "WR7"
+    },
+    {
+     "gsis_id": "00-0035021",
+     "name": "Ashton Dulin",
+     "pbp_name": "A.Dulin",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.056910569105691054,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0041125",
+     "name": "Seth McGowan",
+     "pbp_name": "S.McGowan",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.024390243902439025,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0037292",
+     "name": "Andrew Ogletree",
+     "pbp_name": "A.Ogletree",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.016260162601626018,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0041132",
+     "name": "Deion Burks",
+     "pbp_name": "D.Burks",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.016260162601626018,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0033217",
+     "name": "Mo Alie-Cox",
+     "pbp_name": "M.Alie-Cox",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.008130081300813009,
+     "role": "TE2"
+    }
+   ],
+   "depth_chart": {
+    "WR1": {
+     "name": "Josh Downs",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Keenan Allen",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Darius Slayton",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Ashton Dulin",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Laquon Treadwell",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Deion Burks",
+     "rank": 5,
+     "side": 5
+    },
+    "WR7": {
+     "name": "Alec Pierce",
+     "rank": 6,
+     "side": 6
+    },
+    "RB1": {
+     "name": "Jonathan Taylor",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Seth McGowan",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "DJ Giddens",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Daniel Jones",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Anthony Richardson",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Riley Leonard",
+     "rank": 2,
+     "side": 1
+    },
+    "TE1": {
+     "name": "Tyler Warren",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Mo Alie-Cox",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Andrew Ogletree",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR1": 28,
+    "TE1": 27,
+    "WR2": 20,
+    "RB1": 15,
+    "WR5": 11,
+    "WR7": 7,
+    "WR4": 7,
+    "RB2": 3,
+    "TE3": 2,
+    "WR6": 2,
+    "TE2": 1
+   },
+   "role_shares": {
+    "RB1": 0.12195121951219512,
+    "RB2": 0.024390243902439025,
+    "TE1": 0.21951219512195122,
+    "TE2": 0.008130081300813009,
+    "TE3": 0.016260162601626018,
+    "WR1": 0.22764227642276422,
+    "WR2": 0.16260162601626016,
+    "WR4": 0.056910569105691054,
+    "WR5": 0.08943089430894309,
+    "WR6": 0.016260162601626018,
+    "WR7": 0.056910569105691054
+   },
+   "unmapped_targets": 0
+  },
+  "JAX": {
+   "nflverse_team": "JAX",
+   "targets": 99,
+   "players": [
+    {
+     "gsis_id": "00-0038606",
+     "name": "Parker Washington",
+     "pbp_name": "P.Washington",
+     "position": "WR",
+     "targets": 26,
+     "share": 0.26262626262626265,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0038935",
+     "name": "Brenton Strange",
+     "pbp_name": "B.Strange",
+     "position": "TE",
+     "targets": 18,
+     "share": 0.18181818181818182,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0034960",
+     "name": "Jakobi Meyers",
+     "pbp_name": "J.Meyers",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.15151515151515152,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0039893",
+     "name": "Brian Thomas Jr.",
+     "pbp_name": "Bri.Thomas",
+     "position": "WR",
+     "targets": 14,
+     "share": 0.1414141414141414,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040719",
+     "name": "Bhayshul Tuten",
+     "pbp_name": "B.Tuten",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.0707070707070707,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0041100",
+     "name": "Josh Cameron",
+     "pbp_name": "J.Cameron",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.06060606060606061,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0041503",
+     "name": "Nate Boerkircher",
+     "pbp_name": "N.Boerkircher",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.04040404040404041,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0032104",
+     "name": "Ameer Abdullah",
+     "pbp_name": "A.Abdullah",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.030303030303030304,
+     "role": "RB4"
+    },
+    {
+     "gsis_id": "00-0040238",
+     "name": "LeQuint Allen Jr.",
+     "pbp_name": "L.Allen",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.030303030303030304,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0036590",
+     "name": "Quintin Morris",
+     "pbp_name": "Q.Morris",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.020202020202020204,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0040718",
+     "name": "Travis Hunter",
+     "pbp_name": "T.Hunter",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.010101010101010102,
+     "role": "WR1"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Bhayshul Tuten",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Chris Rodriguez",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "LeQuint Allen",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Ameer Abdullah",
+     "rank": 3,
+     "side": 3
+    },
+    "TE1": {
+     "name": "Brenton Strange",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Nate Boerkircher",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Quintin Morris",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Tanner Koziol",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Trevor Lawrence",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Quinn Ewers",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Travis Hunter",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Brian Thomas",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Parker Washington",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Jakobi Meyers",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Josh Cameron",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "C.J. Williams",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "WR3": 26,
+    "TE1": 18,
+    "WR4": 15,
+    "WR2": 14,
+    "RB1": 7,
+    "WR5": 6,
+    "TE2": 4,
+    "RB4": 3,
+    "RB3": 3,
+    "TE3": 2,
+    "WR1": 1
+   },
+   "role_shares": {
+    "RB1": 0.0707070707070707,
+    "RB3": 0.030303030303030304,
+    "RB4": 0.030303030303030304,
+    "TE1": 0.18181818181818182,
+    "TE2": 0.04040404040404041,
+    "TE3": 0.020202020202020204,
+    "WR1": 0.010101010101010102,
+    "WR2": 0.1414141414141414,
+    "WR3": 0.26262626262626265,
+    "WR4": 0.15151515151515152,
+    "WR5": 0.06060606060606061
+   },
+   "unmapped_targets": 0
+  },
+  "KC": {
+   "nflverse_team": "KC",
+   "targets": 118,
+   "players": [
+    {
+     "gsis_id": "00-0030506",
+     "name": "Travis Kelce",
+     "pbp_name": "T.Kelce",
+     "position": "TE",
+     "targets": 22,
+     "share": 0.1864406779661017,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039894",
+     "name": "Xavier Worthy",
+     "pbp_name": "X.Worthy",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.1864406779661017,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0038134",
+     "name": "Kenneth Walker III",
+     "pbp_name": "K.Walker",
+     "position": "RB",
+     "targets": 19,
+     "share": 0.16101694915254236,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039067",
+     "name": "Rashee Rice",
+     "pbp_name": "R.Rice",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.1440677966101695,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038104",
+     "name": "Tyquan Thornton",
+     "pbp_name": "T.Thornton",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.1271186440677966,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036637",
+     "name": "Noah Gray",
+     "pbp_name": "N.Gray",
+     "position": "TE",
+     "targets": 8,
+     "share": 0.06779661016949153,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0041013",
+     "name": "Emmett Johnson",
+     "pbp_name": "E.Johnson",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.0423728813559322,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040646",
+     "name": "Jalen Royals",
+     "pbp_name": "J.Royals",
+     "position": "WR",
+     "targets": 5,
+     "share": 0.0423728813559322,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0040890",
+     "name": "Cyrus Allen",
+     "pbp_name": "C.Allen",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.01694915254237288,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040081",
+     "name": "Jake Briningstool",
+     "pbp_name": "J.Briningstool",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.01694915254237288,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0040078",
+     "name": "Brashard Smith",
+     "pbp_name": "B.Smith",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.00847457627118644,
+     "role": "RB3"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Ben VanSumeren",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Kenneth Walker",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Emmett Johnson",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Brashard Smith",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Travis Kelce",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Noah Gray",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Jake Briningstool",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Jared Wiley",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Patrick Mahomes",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Justin Fields",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Garrett Nussmeier",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Rashee Rice",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Xavier Worthy",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Tyquan Thornton",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Cyrus Allen",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jalen Royals",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Nikko Remigio",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "TE1": 22,
+    "WR2": 22,
+    "RB1": 19,
+    "WR1": 17,
+    "WR3": 15,
+    "TE2": 8,
+    "RB2": 5,
+    "WR5": 5,
+    "WR4": 2,
+    "TE3": 2,
+    "RB3": 1
+   },
+   "role_shares": {
+    "RB1": 0.16101694915254236,
+    "RB2": 0.0423728813559322,
+    "RB3": 0.00847457627118644,
+    "TE1": 0.1864406779661017,
+    "TE2": 0.06779661016949153,
+    "TE3": 0.01694915254237288,
+    "WR1": 0.1440677966101695,
+    "WR2": 0.1864406779661017,
+    "WR3": 0.1271186440677966,
+    "WR4": 0.01694915254237288,
+    "WR5": 0.0423728813559322
+   },
+   "unmapped_targets": 0
+  },
+  "MIA": {
+   "nflverse_team": "MIA",
+   "targets": 102,
+   "players": [
+    {
+     "gsis_id": "00-0039880",
+     "name": "Malik Washington",
+     "pbp_name": "M.Washington",
+     "position": "WR",
+     "targets": 28,
+     "share": 0.27450980392156865,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0041525",
+     "name": "Chris Bell",
+     "pbp_name": "C.Bell",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.12745098039215685,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039040",
+     "name": "De'Von Achane",
+     "pbp_name": "D.Achane",
+     "position": "RB",
+     "targets": 12,
+     "share": 0.11764705882352941,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0037252",
+     "name": "Greg Dulcich",
+     "pbp_name": "G.Dulcich",
+     "position": "TE",
+     "targets": 12,
+     "share": 0.11764705882352941,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0041523",
+     "name": "Caleb Douglas",
+     "pbp_name": "C.Douglas",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.09803921568627451,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0041529",
+     "name": "Kevin Coleman Jr.",
+     "pbp_name": "K.Coleman",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.09803921568627451,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040198",
+     "name": "Ollie Gordon II",
+     "pbp_name": "O.Gordon",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.049019607843137254,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0041524",
+     "name": "Will Kacmarek",
+     "pbp_name": "W.Kacmarek",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.0392156862745098,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038824",
+     "name": "Ryan Miller",
+     "pbp_name": "R.Miller",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.0392156862745098,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0041436",
+     "name": "DJ Herman",
+     "pbp_name": "D.Herman",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.029411764705882353,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0037666",
+     "name": "Jalen Tolbert",
+     "pbp_name": "J.Tolbert",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00980392156862745,
+     "role": "WR5"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "DJ Herman",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Jaylen Wright",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Ollie Gordon",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "De'Von Achane",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Greg Dulcich",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Will Kacmarek",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Seydou Traore",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Justin Joly",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Malik Willis",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Kyle McCord",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Brady Cook",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Malik Washington",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Caleb Douglas",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Chris Bell",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Kevin Coleman",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jalen Tolbert",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Ryan Miller",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "WR1": 28,
+    "WR3": 13,
+    "RB3": 12,
+    "TE1": 12,
+    "WR2": 10,
+    "WR4": 10,
+    "RB2": 5,
+    "TE2": 4,
+    "WR6": 4,
+    "FB1": 3,
+    "WR5": 1
+   },
+   "role_shares": {
+    "FB1": 0.029411764705882353,
+    "RB2": 0.049019607843137254,
+    "RB3": 0.11764705882352941,
+    "TE1": 0.11764705882352941,
+    "TE2": 0.0392156862745098,
+    "WR1": 0.27450980392156865,
+    "WR2": 0.09803921568627451,
+    "WR3": 0.12745098039215685,
+    "WR4": 0.09803921568627451,
+    "WR5": 0.00980392156862745,
+    "WR6": 0.0392156862745098
+   },
+   "unmapped_targets": 0
+  },
+  "MIN": {
+   "nflverse_team": "MIN",
+   "targets": 100,
+   "players": [
+    {
+     "gsis_id": "00-0035229",
+     "name": "T.J. Hockenson",
+     "pbp_name": "T.Hockenson",
+     "position": "TE",
+     "targets": 26,
+     "share": 0.26,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0038994",
+     "name": "Jordan Addison",
+     "pbp_name": "J.Addison",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.22,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036322",
+     "name": "Justin Jefferson",
+     "pbp_name": "J.Jefferson",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.17,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0033293",
+     "name": "Aaron Jones",
+     "pbp_name": "A.Jones",
+     "position": "RB",
+     "targets": 15,
+     "share": 0.15,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0035249",
+     "name": "Josh Oliver",
+     "pbp_name": "J.Oliver",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.05,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0036259",
+     "name": "Jauan Jennings",
+     "pbp_name": "J.Jennings",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.04,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036425",
+     "name": "DeeJay Dallas",
+     "pbp_name": "D.Dallas",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.03,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0040506",
+     "name": "Myles Price",
+     "pbp_name": "M.Price",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.03,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0040154",
+     "name": "Tai Felton",
+     "pbp_name": "T.Felton",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.03,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0041104",
+     "name": "Demond Claiborne",
+     "pbp_name": "D.Claiborne",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.01,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040215",
+     "name": "Gavin Bartholomew",
+     "pbp_name": "G.Bartholomew",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.01,
+     "role": "TE2"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Max Bredeson",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Aaron Jones",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Demond Claiborne",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "DeeJay Dallas",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Kyler Murray",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Carson Wentz",
+     "rank": 1,
+     "side": 0
+    },
+    "TE1": {
+     "name": "T.J. Hockenson",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Gavin Bartholomew",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Josh Oliver",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Justin Jefferson",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Jordan Addison",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Jauan Jennings",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Tai Felton",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Myles Price",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "TE1": 26,
+    "WR2": 22,
+    "WR1": 17,
+    "RB1": 15,
+    "TE3": 5,
+    "WR3": 4,
+    "RB3": 3,
+    "WR5": 3,
+    "WR4": 3,
+    "RB2": 1,
+    "TE2": 1
+   },
+   "role_shares": {
+    "RB1": 0.15,
+    "RB2": 0.01,
+    "RB3": 0.03,
+    "TE1": 0.26,
+    "TE2": 0.01,
+    "TE3": 0.05,
+    "WR1": 0.17,
+    "WR2": 0.22,
+    "WR3": 0.04,
+    "WR4": 0.03,
+    "WR5": 0.03
+   },
+   "unmapped_targets": 0
+  },
+  "NE": {
+   "nflverse_team": "NE",
+   "targets": 118,
+   "players": [
+    {
+     "gsis_id": "00-0033555",
+     "name": "Mack Hollins",
+     "pbp_name": "M.Hollins",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.1694915254237288,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0037816",
+     "name": "Romeo Doubs",
+     "pbp_name": "R.Doubs",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.1694915254237288,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038621",
+     "name": "DeMario Douglas",
+     "pbp_name": "D.Douglas",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.1440677966101695,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036875",
+     "name": "Rhamondre Stevenson",
+     "pbp_name": "R.Stevenson",
+     "position": "RB",
+     "targets": 16,
+     "share": 0.13559322033898305,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0033090",
+     "name": "Hunter Henry",
+     "pbp_name": "H.Henry",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.1271186440677966,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0040131",
+     "name": "Kyle Williams",
+     "pbp_name": "K.Williams",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.059322033898305086,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040563",
+     "name": "Efton Chism III",
+     "pbp_name": "E.Chism",
+     "position": "WR",
+     "targets": 7,
+     "share": 0.059322033898305086,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0035676",
+     "name": "A.J. Brown",
+     "pbp_name": "A.Brown",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.03389830508474576,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0041395",
+     "name": "Eli Raridon",
+     "pbp_name": "E.Raridon",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.03389830508474576,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040734",
+     "name": "TreVeyon Henderson",
+     "pbp_name": "T.Henderson",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.025423728813559324,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040568",
+     "name": "Lan Larison",
+     "pbp_name": "L.Larison",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.01694915254237288,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0036187",
+     "name": "Reggie Gilliam",
+     "pbp_name": "R.Gilliam",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.01694915254237288,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0040556",
+     "name": "Corey Kiner",
+     "pbp_name": "C.Kiner",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.00847457627118644,
+     "role": "RB3"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Reggie Gilliam",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Rhamondre Stevenson",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "TreVeyon Henderson",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Corey Kiner",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Hunter Henry",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Eli Raridon",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Tanner Arkin",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Cameron Latu",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Drake Maye",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Tommy DeVito",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Behren Morton",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Romeo Doubs",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "DeMario Douglas",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Mack Hollins",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Kyle Williams",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Efton Chism",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR3": 20,
+    "WR1": 20,
+    "WR2": 17,
+    "RB1": 16,
+    "TE1": 15,
+    "WR4": 7,
+    "WR5": 7,
+    "TE2": 4,
+    "RB2": 3,
+    "FB1": 2,
+    "RB3": 1
+   },
+   "role_shares": {
+    "FB1": 0.01694915254237288,
+    "RB1": 0.13559322033898305,
+    "RB2": 0.025423728813559324,
+    "RB3": 0.00847457627118644,
+    "TE1": 0.1271186440677966,
+    "TE2": 0.03389830508474576,
+    "WR1": 0.1694915254237288,
+    "WR2": 0.1440677966101695,
+    "WR3": 0.1694915254237288,
+    "WR4": 0.059322033898305086,
+    "WR5": 0.059322033898305086
+   },
+   "unmapped_targets": 6
+  },
+  "NO": {
+   "nflverse_team": "NO",
+   "targets": 171,
+   "players": [
+    {
+     "gsis_id": "00-0037239",
+     "name": "Chris Olave",
+     "pbp_name": "C.Olave",
+     "position": "WR",
+     "targets": 48,
+     "share": 0.2807017543859649,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0039424",
+     "name": "Devaughn Vele",
+     "pbp_name": "D.Vele",
+     "position": "WR",
+     "targets": 31,
+     "share": 0.18128654970760233,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036040",
+     "name": "Juwan Johnson",
+     "pbp_name": "J.Johnson",
+     "position": "TE",
+     "targets": 27,
+     "share": 0.15789473684210525,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0033906",
+     "name": "Alvin Kamara",
+     "pbp_name": "A.Kamara",
+     "position": "RB",
+     "targets": 14,
+     "share": 0.08187134502923976,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0036973",
+     "name": "Travis Etienne",
+     "pbp_name": "T.Etienne",
+     "position": "RB",
+     "targets": 13,
+     "share": 0.07602339181286549,
+     "role": "RB4"
+    },
+    {
+     "gsis_id": "00-0041067",
+     "name": "Bryce Lance",
+     "pbp_name": "B.Lance",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.07602339181286549,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0035644",
+     "name": "Noah Fant",
+     "pbp_name": "N.Fant",
+     "position": "TE",
+     "targets": 12,
+     "share": 0.07017543859649122,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038551",
+     "name": "Kendre Miller",
+     "pbp_name": "K.Miller",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.03508771929824561,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0041326",
+     "name": "CJ Donaldson",
+     "pbp_name": "C.Donaldson",
+     "position": "RB",
+     "targets": 4,
+     "share": 0.023391812865497075,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0041041",
+     "name": "Oscar Delp",
+     "pbp_name": "O.Delp",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.005847953216374269,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0037231",
+     "name": "Kevin Austin Jr.",
+     "pbp_name": "K.Austin",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.005847953216374269,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0039518",
+     "name": "Treyton Welch",
+     "pbp_name": "T.Welch",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.005847953216374269,
+     "role": "TE4"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Alvin Kamara",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Kendre Miller",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "CJ Donaldson",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Travis Etienne",
+     "rank": 3,
+     "side": 3
+    },
+    "TE1": {
+     "name": "Juwan Johnson",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Noah Fant",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Oscar Delp",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Treyton Welch",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Tyler Shough",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Spencer Rattler",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Zach Wilson",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Chris Olave",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Devaughn Vele",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Barion Brown",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Bryce Lance",
+     "rank": 3,
+     "side": 3
+    }
+   },
+   "role_targets": {
+    "WR1": 48,
+    "WR2": 31,
+    "TE1": 27,
+    "RB1": 14,
+    "RB4": 13,
+    "WR4": 13,
+    "TE2": 12,
+    "RB2": 6,
+    "RB3": 4,
+    "TE3": 1,
+    "TE4": 1
+   },
+   "role_shares": {
+    "RB1": 0.08187134502923976,
+    "RB2": 0.03508771929824561,
+    "RB3": 0.023391812865497075,
+    "RB4": 0.07602339181286549,
+    "TE1": 0.15789473684210525,
+    "TE2": 0.07017543859649122,
+    "TE3": 0.005847953216374269,
+    "TE4": 0.005847953216374269,
+    "WR1": 0.2807017543859649,
+    "WR2": 0.18128654970760233,
+    "WR4": 0.07602339181286549
+   },
+   "unmapped_targets": 1
+  },
+  "NYG": {
+   "nflverse_team": "NYG",
+   "targets": 111,
+   "players": [
+    {
+     "gsis_id": "00-0037838",
+     "name": "Isaiah Likely",
+     "pbp_name": "I.Likely",
+     "position": "TE",
+     "targets": 35,
+     "share": 0.3153153153153153,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039337",
+     "name": "Malik Nabers",
+     "pbp_name": "M.Nabers",
+     "position": "WR",
+     "targets": 26,
+     "share": 0.23423423423423423,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0041042",
+     "name": "Malachi Fields",
+     "pbp_name": "M.Fields",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.13513513513513514,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0036309",
+     "name": "Darnell Mooney",
+     "pbp_name": "D.Mooney",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.09009009009009009,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040715",
+     "name": "Cam Skattebo",
+     "pbp_name": "C.Skattebo",
+     "position": "RB",
+     "targets": 9,
+     "share": 0.08108108108108109,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039847",
+     "name": "Theo Johnson",
+     "pbp_name": "T.Johnson",
+     "position": "TE",
+     "targets": 6,
+     "share": 0.05405405405405406,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0035250",
+     "name": "Devin Singletary",
+     "pbp_name": "D.Singletary",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.04504504504504504,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0033376",
+     "name": "Patrick Ricard",
+     "pbp_name": "P.Ricard",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.02702702702702703,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0031235",
+     "name": "Odell Beckham Jr.",
+     "pbp_name": "O.Beckham",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.009009009009009009,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0034419",
+     "name": "Braxton Berrios",
+     "pbp_name": "B.Berrios",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.009009009009009009,
+     "role": null
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Patrick Ricard",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Cam Skattebo",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Devin Singletary",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Najee Harris",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Tyrone Tracy",
+     "rank": 3,
+     "side": 3
+    },
+    "TE1": {
+     "name": "Isaiah Likely",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Theo Johnson",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Thomas Fidone",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Chris Manhertz",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Jameis Winston",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "J.J. McCarthy",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Jaxson Dart",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Malik Nabers",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Malachi Fields",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Darnell Mooney",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "TE1": 35,
+    "WR1": 26,
+    "WR2": 15,
+    "WR3": 10,
+    "RB1": 9,
+    "TE2": 6,
+    "RB2": 5,
+    "FB1": 3
+   },
+   "role_shares": {
+    "FB1": 0.02702702702702703,
+    "RB1": 0.08108108108108109,
+    "RB2": 0.04504504504504504,
+    "TE1": 0.3153153153153153,
+    "TE2": 0.05405405405405406,
+    "WR1": 0.23423423423423423,
+    "WR2": 0.13513513513513514,
+    "WR3": 0.09009009009009009
+   },
+   "unmapped_targets": 2
+  },
+  "NYJ": {
+   "nflverse_team": "NYJ",
+   "targets": 110,
+   "players": [
+    {
+     "gsis_id": "00-0037740",
+     "name": "Garrett Wilson",
+     "pbp_name": "G.Wilson",
+     "position": "WR",
+     "targets": 31,
+     "share": 0.2818181818181818,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0041032",
+     "name": "Kenyon Sadiq",
+     "pbp_name": "K.Sadiq",
+     "position": "TE",
+     "targets": 18,
+     "share": 0.16363636363636364,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0039890",
+     "name": "Adonai Mitchell",
+     "pbp_name": "A.Mitchell",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.13636363636363635,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0039451",
+     "name": "Isaiah Williams",
+     "pbp_name": "I.Williams",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.10909090909090909,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0038120",
+     "name": "Breece Hall",
+     "pbp_name": "B.Hall",
+     "position": "RB",
+     "targets": 10,
+     "share": 0.09090909090909091,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037805",
+     "name": "Jeremy Ruckert",
+     "pbp_name": "J.Ruckert",
+     "position": "TE",
+     "targets": 8,
+     "share": 0.07272727272727272,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0039794",
+     "name": "Braelon Allen",
+     "pbp_name": "B.Allen",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.06363636363636363,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040736",
+     "name": "Mason Taylor",
+     "pbp_name": "M.Taylor",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.02727272727272727,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0032385",
+     "name": "Sterling Shepard",
+     "pbp_name": "S.Shepard",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.01818181818181818,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0037755",
+     "name": "Jelani Woods",
+     "pbp_name": "J.Woods",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.01818181818181818,
+     "role": "TE4"
+    },
+    {
+     "gsis_id": "00-0041511",
+     "name": "Omar Cooper Jr.",
+     "pbp_name": "O.Cooper",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00909090909090909,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0040582",
+     "name": "Arian Smith",
+     "pbp_name": "A.Smith",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00909090909090909,
+     "role": "WR4"
+    }
+   ],
+   "depth_chart": {
+    "TE1": {
+     "name": "Mason Taylor",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Kenyon Sadiq",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Jeremy Ruckert",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Jelani Woods",
+     "rank": 3,
+     "side": 5
+    },
+    "FB1": {
+     "name": "Andrew Beck",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Breece Hall",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Braelon Allen",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Isaiah Davis",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Kene Nwangwu",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Geno Smith",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Cade Klubnik",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Garrett Wilson",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Adonai Mitchell",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Isaiah Williams",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Arian Smith",
+     "rank": 3,
+     "side": 3
+    }
+   },
+   "role_targets": {
+    "WR1": 31,
+    "TE2": 18,
+    "WR2": 15,
+    "WR3": 12,
+    "RB1": 10,
+    "TE3": 8,
+    "RB2": 7,
+    "TE1": 3,
+    "TE4": 2,
+    "WR4": 1
+   },
+   "role_shares": {
+    "RB1": 0.09090909090909091,
+    "RB2": 0.06363636363636363,
+    "TE1": 0.02727272727272727,
+    "TE2": 0.16363636363636364,
+    "TE3": 0.07272727272727272,
+    "TE4": 0.01818181818181818,
+    "WR1": 0.2818181818181818,
+    "WR2": 0.13636363636363635,
+    "WR3": 0.10909090909090909,
+    "WR4": 0.00909090909090909
+   },
+   "unmapped_targets": 3
+  },
+  "OAK": {
+   "nflverse_team": "LV",
+   "targets": 136,
+   "players": [
+    {
+     "gsis_id": "00-0039066",
+     "name": "Michael Mayer",
+     "pbp_name": "M.Mayer",
+     "position": "TE",
+     "targets": 24,
+     "share": 0.17647058823529413,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040122",
+     "name": "Ashton Jeanty",
+     "pbp_name": "A.Jeanty",
+     "position": "RB",
+     "targets": 24,
+     "share": 0.17647058823529413,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039338",
+     "name": "Brock Bowers",
+     "pbp_name": "B.Bowers",
+     "position": "TE",
+     "targets": 24,
+     "share": 0.17647058823529413,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0038563",
+     "name": "Tre Tucker",
+     "pbp_name": "T.Tucker",
+     "position": "WR",
+     "targets": 23,
+     "share": 0.16911764705882354,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0037291",
+     "name": "Jalen Nailor",
+     "pbp_name": "J.Nailor",
+     "position": "WR",
+     "targets": 11,
+     "share": 0.08088235294117647,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0035891",
+     "name": "Cody White",
+     "pbp_name": "C.White",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.07352941176470588,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0040729",
+     "name": "Jack Bech",
+     "pbp_name": "J.Bech",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.04411764705882353,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0040894",
+     "name": "Malik Benson",
+     "pbp_name": "M.Benson",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.029411764705882353,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0034365",
+     "name": "Ian Thomas",
+     "pbp_name": "I.Thomas",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.022058823529411766,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0037093",
+     "name": "Dareke Young",
+     "pbp_name": "D.Young",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.022058823529411766,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040878",
+     "name": "Mike Washington Jr.",
+     "pbp_name": "M.Washington",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.022058823529411766,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0037304",
+     "name": "Connor Heyward",
+     "pbp_name": "C.Heyward",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.007352941176470588,
+     "role": "FB1"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Connor Heyward",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Ashton Jeanty",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Mike Washington",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Dylan Laube",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Kirk Cousins",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Fernando Mendoza",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Aidan O'Connell",
+     "rank": 2,
+     "side": 1
+    },
+    "TE1": {
+     "name": "Brock Bowers",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Michael Mayer",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Ian Thomas",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Tre Tucker",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Jalen Nailor",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Malik Benson",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Dareke Young",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Jack Bech",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "TE2": 24,
+    "RB1": 24,
+    "TE1": 24,
+    "WR1": 23,
+    "WR2": 11,
+    "WR5": 6,
+    "WR3": 4,
+    "TE3": 3,
+    "WR4": 3,
+    "RB2": 3,
+    "FB1": 1
+   },
+   "role_shares": {
+    "FB1": 0.007352941176470588,
+    "RB1": 0.17647058823529413,
+    "RB2": 0.022058823529411766,
+    "TE1": 0.17647058823529413,
+    "TE2": 0.17647058823529413,
+    "TE3": 0.022058823529411766,
+    "WR1": 0.16911764705882354,
+    "WR2": 0.08088235294117647,
+    "WR3": 0.029411764705882353,
+    "WR4": 0.022058823529411766,
+    "WR5": 0.04411764705882353
+   },
+   "unmapped_targets": 10
+  },
+  "PHI": {
+   "nflverse_team": "PHI",
+   "targets": 106,
+   "players": [
+    {
+     "gsis_id": "00-0036912",
+     "name": "DeVonta Smith",
+     "pbp_name": "D.Smith",
+     "position": "WR",
+     "targets": 27,
+     "share": 0.25471698113207547,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038393",
+     "name": "Dontayvion Wicks",
+     "pbp_name": "D.Wicks",
+     "position": "WR",
+     "targets": 20,
+     "share": 0.18867924528301888,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040867",
+     "name": "Makai Lemon",
+     "pbp_name": "M.Lemon",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.14150943396226415,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040024",
+     "name": "Darius Cooper",
+     "pbp_name": "D.Cooper",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.09433962264150944,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0034844",
+     "name": "Saquon Barkley",
+     "pbp_name": "S.Barkley",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.0660377358490566,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0034351",
+     "name": "Dallas Goedert",
+     "pbp_name": "D.Goedert",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.0660377358490566,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039746",
+     "name": "Will Shipley",
+     "pbp_name": "W.Shipley",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.05660377358490566,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0030061",
+     "name": "Zach Ertz",
+     "pbp_name": "Z.Ertz",
+     "position": "TE",
+     "targets": 6,
+     "share": 0.05660377358490566,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038555",
+     "name": "Tank Bigsby",
+     "pbp_name": "T.Bigsby",
+     "position": "RB",
+     "targets": 4,
+     "share": 0.03773584905660377,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0033246",
+     "name": "Johnny Mundt",
+     "pbp_name": "J.Mundt",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.03773584905660377,
+     "role": "TE3"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Saquon Barkley",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Tank Bigsby",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Will Shipley",
+     "rank": 2,
+     "side": 2
+    },
+    "WR1": {
+     "name": "DeVonta Smith",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Dontayvion Wicks",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Makai Lemon",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Marquise Brown",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Darius Cooper",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Elijah Moore",
+     "rank": 5,
+     "side": 5
+    },
+    "WR7": {
+     "name": "Britain Covey",
+     "rank": 6,
+     "side": 6
+    },
+    "TE1": {
+     "name": "Dallas Goedert",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Zach Ertz",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Johnny Mundt",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "E.J. Jenkins",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Jalen Hurts",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Andy Dalton",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Tanner McKee",
+     "rank": 2,
+     "side": 1
+    },
+    "QB4": {
+     "name": "Cole Payton",
+     "rank": 3,
+     "side": 3
+    }
+   },
+   "role_targets": {
+    "WR1": 27,
+    "WR2": 20,
+    "WR3": 15,
+    "WR5": 10,
+    "RB1": 7,
+    "TE1": 7,
+    "RB3": 6,
+    "TE2": 6,
+    "RB2": 4,
+    "TE3": 4
+   },
+   "role_shares": {
+    "RB1": 0.0660377358490566,
+    "RB2": 0.03773584905660377,
+    "RB3": 0.05660377358490566,
+    "TE1": 0.0660377358490566,
+    "TE2": 0.05660377358490566,
+    "TE3": 0.03773584905660377,
+    "WR1": 0.25471698113207547,
+    "WR2": 0.18867924528301888,
+    "WR3": 0.14150943396226415,
+    "WR5": 0.09433962264150944
+   },
+   "unmapped_targets": 0
+  },
+  "PIT": {
+   "nflverse_team": "PIT",
+   "targets": 144,
+   "players": [
+    {
+     "gsis_id": "00-0035640",
+     "name": "DK Metcalf",
+     "pbp_name": "D.Metcalf",
+     "position": "WR",
+     "targets": 33,
+     "share": 0.22916666666666666,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0039739",
+     "name": "Roman Wilson",
+     "pbp_name": "R.Wilson",
+     "position": "WR",
+     "targets": 24,
+     "share": 0.16666666666666666,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0037228",
+     "name": "Jaylen Warren",
+     "pbp_name": "J.Warren",
+     "position": "RB",
+     "targets": 20,
+     "share": 0.1388888888888889,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0036894",
+     "name": "Pat Freiermuth",
+     "pbp_name": "P.Freiermuth",
+     "position": "TE",
+     "targets": 19,
+     "share": 0.13194444444444445,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0038558",
+     "name": "Darnell Washington",
+     "pbp_name": "D.Washington",
+     "position": "TE",
+     "targets": 13,
+     "share": 0.09027777777777778,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0036252",
+     "name": "Michael Pittman",
+     "pbp_name": "M.Pittman",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.08333333333333333,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0041489",
+     "name": "Germie Bernard",
+     "pbp_name": "G.Bernard",
+     "position": "WR",
+     "targets": 11,
+     "share": 0.0763888888888889,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0036139",
+     "name": "Rico Dowdle",
+     "pbp_name": "R.Dowdle",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.04861111111111111,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0036862",
+     "name": "Ben Skowronek",
+     "pbp_name": "B.Skowronek",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.027777777777777776,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0033757",
+     "name": "Robert Tonyan",
+     "pbp_name": "R.Tonyan",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.006944444444444444,
+     "role": "TE3"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Riley Nowakowski",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Jaylen Warren",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Rico Dowdle",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Eli Heidenreich",
+     "rank": 2,
+     "side": 2
+    },
+    "WR1": {
+     "name": "DK Metcalf",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Michael Pittman",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Roman Wilson",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Germie Bernard",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Ben Skowronek",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Kaden Wetjen",
+     "rank": 5,
+     "side": 5
+    },
+    "QB1": {
+     "name": "Aaron Rodgers",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Mason Rudolph",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Will Howard",
+     "rank": 2,
+     "side": 1
+    },
+    "QB4": {
+     "name": "Drew Allar",
+     "rank": 3,
+     "side": 3
+    },
+    "TE1": {
+     "name": "Darnell Washington",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Pat Freiermuth",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Robert Tonyan",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR1": 33,
+    "WR3": 24,
+    "RB1": 20,
+    "TE2": 19,
+    "TE1": 13,
+    "WR2": 12,
+    "WR4": 11,
+    "RB2": 7,
+    "WR5": 4,
+    "TE3": 1
+   },
+   "role_shares": {
+    "RB1": 0.1388888888888889,
+    "RB2": 0.04861111111111111,
+    "TE1": 0.09027777777777778,
+    "TE2": 0.13194444444444445,
+    "TE3": 0.006944444444444444,
+    "WR1": 0.22916666666666666,
+    "WR2": 0.08333333333333333,
+    "WR3": 0.16666666666666666,
+    "WR4": 0.0763888888888889,
+    "WR5": 0.027777777777777776
+   },
+   "unmapped_targets": 0
+  },
+  "SD": {
+   "nflverse_team": "LAC",
+   "targets": 117,
+   "players": [
+    {
+     "gsis_id": "00-0040727",
+     "name": "Tre Harris",
+     "pbp_name": "T.Harris",
+     "position": "WR",
+     "targets": 21,
+     "share": 0.1794871794871795,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0038544",
+     "name": "Quentin Johnston",
+     "pbp_name": "Q.Johnston",
+     "position": "WR",
+     "targets": 19,
+     "share": 0.1623931623931624,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0039915",
+     "name": "Ladd McConkey",
+     "pbp_name": "L.McConkey",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.1452991452991453,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0040189",
+     "name": "Oronde Gadsden II",
+     "pbp_name": "O.Gadsden",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.1282051282051282,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0038454",
+     "name": "Keaton Mitchell",
+     "pbp_name": "K.Mitchell",
+     "position": "RB",
+     "targets": 10,
+     "share": 0.08547008547008547,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0033885",
+     "name": "David Njoku",
+     "pbp_name": "D.Njoku",
+     "position": "TE",
+     "targets": 8,
+     "share": 0.06837606837606838,
+     "role": "TE4"
+    },
+    {
+     "gsis_id": "00-0039391",
+     "name": "Kimani Vidal",
+     "pbp_name": "K.Vidal",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.05128205128205128,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0040666",
+     "name": "Omarion Hampton",
+     "pbp_name": "O.Hampton",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.042735042735042736,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0035125",
+     "name": "Alec Ingold",
+     "pbp_name": "A.Ingold",
+     "position": "RB",
+     "targets": 4,
+     "share": 0.03418803418803419,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0038573",
+     "name": "Derius Davis",
+     "pbp_name": "D.Davis",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.02564102564102564,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0041550",
+     "name": "Brenen Thompson",
+     "pbp_name": "B.Thompson",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.02564102564102564,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0038046",
+     "name": "Charlie Kolar",
+     "pbp_name": "C.Kolar",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.02564102564102564,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0034272",
+     "name": "Marquez Valdes-Scantling",
+     "pbp_name": "M.Valdes-Scantling",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.017094017094017096,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0036355",
+     "name": "Justin Herbert",
+     "pbp_name": "J.Herbert",
+     "position": "QB",
+     "targets": 1,
+     "share": 0.008547008547008548,
+     "role": "QB1"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Alec Ingold",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Omarion Hampton",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Keaton Mitchell",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Kimani Vidal",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Charlie Kolar",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Hayden Rucci",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Oronde Gadsden",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "David Njoku",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Justin Herbert",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Trey Lance",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Ladd McConkey",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Quentin Johnston",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Tre Harris",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Brenen Thompson",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Derius Davis",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR3": 21,
+    "WR2": 19,
+    "WR1": 17,
+    "TE3": 15,
+    "RB2": 10,
+    "TE4": 8,
+    "RB3": 6,
+    "RB1": 5,
+    "FB1": 4,
+    "WR5": 3,
+    "WR4": 3,
+    "TE1": 3,
+    "QB1": 1
+   },
+   "role_shares": {
+    "FB1": 0.03418803418803419,
+    "QB1": 0.008547008547008548,
+    "RB1": 0.042735042735042736,
+    "RB2": 0.08547008547008547,
+    "RB3": 0.05128205128205128,
+    "TE1": 0.02564102564102564,
+    "TE3": 0.1282051282051282,
+    "TE4": 0.06837606837606838,
+    "WR1": 0.1452991452991453,
+    "WR2": 0.1623931623931624,
+    "WR3": 0.1794871794871795,
+    "WR4": 0.02564102564102564,
+    "WR5": 0.02564102564102564
+   },
+   "unmapped_targets": 2
+  },
+  "SEA": {
+   "nflverse_team": "SEA",
+   "targets": 115,
+   "players": [
+    {
+     "gsis_id": "00-0038543",
+     "name": "Jaxon Smith-Njigba",
+     "pbp_name": "J.Smith-Njigba",
+     "position": "WR",
+     "targets": 42,
+     "share": 0.3652173913043478,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0037545",
+     "name": "Rashid Shaheed",
+     "pbp_name": "R.Shaheed",
+     "position": "WR",
+     "targets": 15,
+     "share": 0.13043478260869565,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0039793",
+     "name": "AJ Barner",
+     "pbp_name": "A.Barner",
+     "position": "TE",
+     "targets": 15,
+     "share": 0.13043478260869565,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0033908",
+     "name": "Cooper Kupp",
+     "pbp_name": "C.Kupp",
+     "position": "WR",
+     "targets": 12,
+     "share": 0.10434782608695652,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039299",
+     "name": "George Holani",
+     "pbp_name": "G.Holani",
+     "position": "RB",
+     "targets": 8,
+     "share": 0.06956521739130435,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0041512",
+     "name": "Jadarian Price",
+     "pbp_name": "J.Price",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.06086956521739131,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0038797",
+     "name": "Emanuel Wilson",
+     "pbp_name": "E.Wilson",
+     "position": "RB",
+     "targets": 5,
+     "share": 0.043478260869565216,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0040648",
+     "name": "Tory Horton",
+     "pbp_name": "T.Horton",
+     "position": "WR",
+     "targets": 4,
+     "share": 0.034782608695652174,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0038488",
+     "name": "Brady Russell",
+     "pbp_name": "B.Russell",
+     "position": "RB",
+     "targets": 3,
+     "share": 0.02608695652173913,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0033576",
+     "name": "Eric Saubert",
+     "pbp_name": "E.Saubert",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.02608695652173913,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040739",
+     "name": "Elijah Arroyo",
+     "pbp_name": "E.Arroyo",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.008695652173913044,
+     "role": "TE3"
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Brady Russell",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Jadarian Price",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "George Holani",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Emanuel Wilson",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "AJ Barner",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Eric Saubert",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Elijah Arroyo",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Nick Kallerup",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Sam Darnold",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Drew Lock",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Jalen Milroe",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Jaxon Smith-Njigba",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Rashid Shaheed",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Cooper Kupp",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Tory Horton",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Montorie Foster",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 42,
+    "WR2": 15,
+    "TE1": 15,
+    "WR3": 12,
+    "RB2": 8,
+    "RB1": 7,
+    "RB3": 5,
+    "WR4": 4,
+    "FB1": 3,
+    "TE2": 3,
+    "TE3": 1
+   },
+   "role_shares": {
+    "FB1": 0.02608695652173913,
+    "RB1": 0.06086956521739131,
+    "RB2": 0.06956521739130435,
+    "RB3": 0.043478260869565216,
+    "TE1": 0.13043478260869565,
+    "TE2": 0.02608695652173913,
+    "TE3": 0.008695652173913044,
+    "WR1": 0.3652173913043478,
+    "WR2": 0.13043478260869565,
+    "WR3": 0.10434782608695652,
+    "WR4": 0.034782608695652174
+   },
+   "unmapped_targets": 0
+  },
+  "SF": {
+   "nflverse_team": "SF",
+   "targets": 110,
+   "players": [
+    {
+     "gsis_id": "00-0031408",
+     "name": "Mike Evans",
+     "pbp_name": "M.Evans",
+     "position": "WR",
+     "targets": 24,
+     "share": 0.21818181818181817,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0033288",
+     "name": "George Kittle",
+     "pbp_name": "G.Kittle",
+     "position": "TE",
+     "targets": 22,
+     "share": 0.2,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0033280",
+     "name": "Christian McCaffrey",
+     "pbp_name": "C.McCaffrey",
+     "position": "RB",
+     "targets": 22,
+     "share": 0.2,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0035719",
+     "name": "Deebo Samuel Sr.",
+     "pbp_name": "D.Samuel",
+     "position": "WR",
+     "targets": 17,
+     "share": 0.15454545454545454,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0032775",
+     "name": "Demarcus Robinson",
+     "pbp_name": "D.Robinson",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.05454545454545454,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0029892",
+     "name": "Kyle Juszczyk",
+     "pbp_name": "K.Juszczyk",
+     "position": "RB",
+     "targets": 6,
+     "share": 0.05454545454545454,
+     "role": "FB1"
+    },
+    {
+     "gsis_id": "00-0036887",
+     "name": "Luke Farrell",
+     "pbp_name": "L.Farrell",
+     "position": "TE",
+     "targets": 3,
+     "share": 0.02727272727272727,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0039365",
+     "name": "Jacob Cowing",
+     "pbp_name": "J.Cowing",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.02727272727272727,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0041052",
+     "name": "Kaelon Black",
+     "pbp_name": "K.Black",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.01818181818181818,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040172",
+     "name": "Jordan Watkins",
+     "pbp_name": "J.Watkins",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.01818181818181818,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0032701",
+     "name": "Jake Brendel",
+     "pbp_name": "J.Brendel",
+     "position": "OL",
+     "targets": 1,
+     "share": 0.00909090909090909,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0034854",
+     "name": "KhaDarel Hodge",
+     "pbp_name": "K.Hodge",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00909090909090909,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0031236",
+     "name": "Brandin Cooks",
+     "pbp_name": "B.Cooks",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00909090909090909,
+     "role": null
+    }
+   ],
+   "depth_chart": {
+    "FB1": {
+     "name": "Kyle Juszczyk",
+     "rank": 0,
+     "side": 2
+    },
+    "RB1": {
+     "name": "Christian McCaffrey",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Kaelon Black",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Jordan James",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Brock Purdy",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Mac Jones",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Kurtis Rourke",
+     "rank": 2,
+     "side": 1
+    },
+    "TE1": {
+     "name": "George Kittle",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Luke Farrell",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Brayden Willis",
+     "rank": 2,
+     "side": 1
+    },
+    "WR1": {
+     "name": "Mike Evans",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Deebo Samuel",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Jacob Cowing",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Jordan Watkins",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Demarcus Robinson",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 24,
+    "TE1": 22,
+    "RB1": 22,
+    "WR2": 17,
+    "WR5": 6,
+    "FB1": 6,
+    "TE2": 3,
+    "WR3": 3,
+    "RB2": 2,
+    "WR4": 2
+   },
+   "role_shares": {
+    "FB1": 0.05454545454545454,
+    "RB1": 0.2,
+    "RB2": 0.01818181818181818,
+    "TE1": 0.2,
+    "TE2": 0.02727272727272727,
+    "WR1": 0.21818181818181817,
+    "WR2": 0.15454545454545454,
+    "WR3": 0.02727272727272727,
+    "WR4": 0.01818181818181818,
+    "WR5": 0.05454545454545454
+   },
+   "unmapped_targets": 3
+  },
+  "STL": {
+   "nflverse_team": "LAR",
+   "targets": 156,
+   "players": [
+    {
+     "gsis_id": "00-0031381",
+     "name": "Davante Adams",
+     "pbp_name": "D.Adams",
+     "position": "WR",
+     "targets": 38,
+     "share": 0.24358974358974358,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0037840",
+     "name": "Kyren Williams",
+     "pbp_name": "K.Williams",
+     "position": "RB",
+     "targets": 25,
+     "share": 0.16025641025641027,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0039075",
+     "name": "Puka Nacua",
+     "pbp_name": "P.Nacua",
+     "position": "WR",
+     "targets": 21,
+     "share": 0.1346153846153846,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0033110",
+     "name": "Tyler Higbee",
+     "pbp_name": "T.Higbee",
+     "position": "TE",
+     "targets": 19,
+     "share": 0.12179487179487179,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0040590",
+     "name": "Konata Mumpfield",
+     "pbp_name": "K.Mumpfield",
+     "position": "WR",
+     "targets": 14,
+     "share": 0.08974358974358974,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0040737",
+     "name": "Terrance Ferguson",
+     "pbp_name": "T.Ferguson",
+     "position": "TE",
+     "targets": 12,
+     "share": 0.07692307692307693,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0039074",
+     "name": "Davis Allen",
+     "pbp_name": "D.Allen",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.04487179487179487,
+     "role": "TE4"
+    },
+    {
+     "gsis_id": "00-0039738",
+     "name": "Blake Corum",
+     "pbp_name": "B.Corum",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.04487179487179487,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0036244",
+     "name": "Colby Parkinson",
+     "pbp_name": "C.Parkinson",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.03205128205128205,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0039751",
+     "name": "Jordan Whittington",
+     "pbp_name": "J.Whittington",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.019230769230769232,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036849",
+     "name": "Tutu Atwell",
+     "pbp_name": "T.Atwell",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.019230769230769232,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0037557",
+     "name": "Ronnie Rivers",
+     "pbp_name": "R.Rivers",
+     "position": "RB",
+     "targets": 1,
+     "share": 0.00641025641025641,
+     "role": "RB3"
+    },
+    {
+     "gsis_id": "00-0038359",
+     "name": "Xavier Smith",
+     "pbp_name": "X.Smith",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.00641025641025641,
+     "role": "WR5"
+    }
+   ],
+   "depth_chart": {
+    "WR1": {
+     "name": "Puka Nacua",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Davante Adams",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Jordan Whittington",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Konata Mumpfield",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Xavier Smith",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Tutu Atwell",
+     "rank": 5,
+     "side": 5
+    },
+    "WR7": {
+     "name": "CJ Daniels",
+     "rank": 6,
+     "side": 6
+    },
+    "RB1": {
+     "name": "Kyren Williams",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Blake Corum",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Ronnie Rivers",
+     "rank": 2,
+     "side": 2
+    },
+    "TE1": {
+     "name": "Colby Parkinson",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Tyler Higbee",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Terrance Ferguson",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Davis Allen",
+     "rank": 3,
+     "side": 3
+    },
+    "TE5": {
+     "name": "Max Klare",
+     "rank": 4,
+     "side": 4
+    },
+    "QB1": {
+     "name": "Matthew Stafford",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Stetson Bennett",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Ty Simpson",
+     "rank": 2,
+     "side": 1
+    }
+   },
+   "role_targets": {
+    "WR2": 38,
+    "RB1": 25,
+    "WR1": 21,
+    "TE2": 19,
+    "WR4": 14,
+    "TE3": 12,
+    "TE4": 7,
+    "RB2": 7,
+    "TE1": 5,
+    "WR3": 3,
+    "WR6": 3,
+    "RB3": 1,
+    "WR5": 1
+   },
+   "role_shares": {
+    "RB1": 0.16025641025641027,
+    "RB2": 0.04487179487179487,
+    "RB3": 0.00641025641025641,
+    "TE1": 0.03205128205128205,
+    "TE2": 0.12179487179487179,
+    "TE3": 0.07692307692307693,
+    "TE4": 0.04487179487179487,
+    "WR1": 0.1346153846153846,
+    "WR2": 0.24358974358974358,
+    "WR3": 0.019230769230769232,
+    "WR4": 0.08974358974358974,
+    "WR5": 0.00641025641025641,
+    "WR6": 0.019230769230769232
+   },
+   "unmapped_targets": 0
+  },
+  "TB": {
+   "nflverse_team": "TB",
+   "targets": 121,
+   "players": [
+    {
+     "gsis_id": "00-0040129",
+     "name": "Emeka Egbuka",
+     "pbp_name": "E.Egbuka",
+     "position": "WR",
+     "targets": 24,
+     "share": 0.19834710743801653,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038129",
+     "name": "Cade Otton",
+     "pbp_name": "C.Otton",
+     "position": "TE",
+     "targets": 23,
+     "share": 0.19008264462809918,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0033921",
+     "name": "Chris Godwin Jr.",
+     "pbp_name": "C.Godwin",
+     "position": "WR",
+     "targets": 18,
+     "share": 0.1487603305785124,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0041048",
+     "name": "Ted Hurst III",
+     "pbp_name": "T.Hurst",
+     "position": "WR",
+     "targets": 16,
+     "share": 0.1322314049586777,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0039361",
+     "name": "Bucky Irving",
+     "pbp_name": "B.Irving",
+     "position": "RB",
+     "targets": 15,
+     "share": 0.12396694214876033,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0036919",
+     "name": "Kenny Gainwell",
+     "pbp_name": "K.Gainwell",
+     "position": "RB",
+     "targets": 12,
+     "share": 0.09917355371900827,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0040237",
+     "name": "Tez Johnson",
+     "pbp_name": "T.Johnson",
+     "position": "WR",
+     "targets": 9,
+     "share": 0.0743801652892562,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0039589",
+     "name": "Kameron Johnson",
+     "pbp_name": "K.Johnson",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.01652892561983471,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0039855",
+     "name": "Jalen McMillan",
+     "pbp_name": "J.McMillan",
+     "position": "WR",
+     "targets": 1,
+     "share": 0.008264462809917356,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0039050",
+     "name": "Payne Durham",
+     "pbp_name": "P.Durham",
+     "position": "TE",
+     "targets": 1,
+     "share": 0.008264462809917356,
+     "role": "TE2"
+    }
+   ],
+   "depth_chart": {
+    "RB1": {
+     "name": "Bucky Irving",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Kenny Gainwell",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Sean Tucker",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Baker Mayfield",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Jalon Daniels",
+     "rank": 1,
+     "side": 0
+    },
+    "TE1": {
+     "name": "Cade Otton",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Payne Durham",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Ko Kieft",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Bauer Sharp",
+     "rank": 3,
+     "side": 3
+    },
+    "WR1": {
+     "name": "Emeka Egbuka",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Chris Godwin",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Ted Hurst",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Tez Johnson",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Kameron Johnson",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Jalen McMillan",
+     "rank": 5,
+     "side": 5
+    }
+   },
+   "role_targets": {
+    "WR1": 24,
+    "TE1": 23,
+    "WR2": 18,
+    "WR3": 16,
+    "RB1": 15,
+    "RB2": 12,
+    "WR4": 9,
+    "WR5": 2,
+    "WR6": 1,
+    "TE2": 1
+   },
+   "role_shares": {
+    "RB1": 0.12396694214876033,
+    "RB2": 0.09917355371900827,
+    "TE1": 0.19008264462809918,
+    "TE2": 0.008264462809917356,
+    "WR1": 0.19834710743801653,
+    "WR2": 0.1487603305785124,
+    "WR3": 0.1322314049586777,
+    "WR4": 0.0743801652892562,
+    "WR5": 0.01652892561983471,
+    "WR6": 0.008264462809917356
+   },
+   "unmapped_targets": 0
+  },
+  "TEN": {
+   "nflverse_team": "TEN",
+   "targets": 108,
+   "players": [
+    {
+     "gsis_id": "00-0041438",
+     "name": "Carnell Tate",
+     "pbp_name": "C.Tate",
+     "position": "WR",
+     "targets": 32,
+     "share": 0.2962962962962963,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0038117",
+     "name": "Wan'Dale Robinson",
+     "pbp_name": "W.Robinson",
+     "position": "WR",
+     "targets": 23,
+     "share": 0.21296296296296297,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0040584",
+     "name": "Gunnar Helm",
+     "pbp_name": "G.Helm",
+     "position": "TE",
+     "targets": 12,
+     "share": 0.1111111111111111,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0035261",
+     "name": "Tony Pollard",
+     "pbp_name": "T.Pollard",
+     "position": "RB",
+     "targets": 11,
+     "share": 0.10185185185185185,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0040170",
+     "name": "Elic Ayomanor",
+     "pbp_name": "E.Ayomanor",
+     "position": "WR",
+     "targets": 10,
+     "share": 0.09259259259259259,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0039032",
+     "name": "Tyjae Spears",
+     "pbp_name": "T.Spears",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.06481481481481481,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0038115",
+     "name": "Daniel Bellinger",
+     "pbp_name": "D.Bellinger",
+     "position": "TE",
+     "targets": 5,
+     "share": 0.046296296296296294,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0034837",
+     "name": "Calvin Ridley",
+     "pbp_name": "C.Ridley",
+     "position": "WR",
+     "targets": 5,
+     "share": 0.046296296296296294,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0040705",
+     "name": "Chimere Dike",
+     "pbp_name": "C.Dike",
+     "position": "WR",
+     "targets": 3,
+     "share": 0.027777777777777776,
+     "role": "WR4"
+    }
+   ],
+   "depth_chart": {
+    "TE1": {
+     "name": "Gunnar Helm",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "Daniel Bellinger",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Kylen Granson",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "David Martin-Robinson",
+     "rank": 3,
+     "side": 3
+    },
+    "RB1": {
+     "name": "Tony Pollard",
+     "rank": 0,
+     "side": 1
+    },
+    "RB2": {
+     "name": "Tyjae Spears",
+     "rank": 1,
+     "side": 0
+    },
+    "RB3": {
+     "name": "Julius Chestnut",
+     "rank": 2,
+     "side": 2
+    },
+    "RB4": {
+     "name": "Nicholas Singleton",
+     "rank": 3,
+     "side": 3
+    },
+    "QB1": {
+     "name": "Cam Ward",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Mitchell Trubisky",
+     "rank": 1,
+     "side": 0
+    },
+    "WR1": {
+     "name": "Carnell Tate",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Wan'Dale Robinson",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Calvin Ridley",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Chimere Dike",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Elic Ayomanor",
+     "rank": 4,
+     "side": 4
+    }
+   },
+   "role_targets": {
+    "WR1": 32,
+    "WR2": 23,
+    "TE1": 12,
+    "RB1": 11,
+    "WR5": 10,
+    "RB2": 7,
+    "TE2": 5,
+    "WR3": 5,
+    "WR4": 3
+   },
+   "role_shares": {
+    "RB1": 0.10185185185185185,
+    "RB2": 0.06481481481481481,
+    "TE1": 0.1111111111111111,
+    "TE2": 0.046296296296296294,
+    "WR1": 0.2962962962962963,
+    "WR2": 0.21296296296296297,
+    "WR3": 0.046296296296296294,
+    "WR4": 0.027777777777777776,
+    "WR5": 0.09259259259259259
+   },
+   "unmapped_targets": 0
+  },
+  "WAS": {
+   "nflverse_team": "WAS",
+   "targets": 129,
+   "players": [
+    {
+     "gsis_id": "00-0031588",
+     "name": "Stefon Diggs",
+     "pbp_name": "S.Diggs",
+     "position": "WR",
+     "targets": 31,
+     "share": 0.24031007751937986,
+     "role": "WR2"
+    },
+    {
+     "gsis_id": "00-0035659",
+     "name": "Terry McLaurin",
+     "pbp_name": "T.McLaurin",
+     "position": "WR",
+     "targets": 22,
+     "share": 0.17054263565891473,
+     "role": "WR1"
+    },
+    {
+     "gsis_id": "00-0041040",
+     "name": "Antonio Williams",
+     "pbp_name": "A.Williams",
+     "position": "WR",
+     "targets": 19,
+     "share": 0.14728682170542637,
+     "role": "WR3"
+    },
+    {
+     "gsis_id": "00-0036626",
+     "name": "Dyami Brown",
+     "pbp_name": "D.Brown",
+     "position": "WR",
+     "targets": 13,
+     "share": 0.10077519379844961,
+     "role": "WR4"
+    },
+    {
+     "gsis_id": "00-0037256",
+     "name": "Rachaad White",
+     "pbp_name": "R.White",
+     "position": "RB",
+     "targets": 9,
+     "share": 0.06976744186046512,
+     "role": "RB2"
+    },
+    {
+     "gsis_id": "00-0037809",
+     "name": "Chig Okonkwo",
+     "pbp_name": "C.Okonkwo",
+     "position": "TE",
+     "targets": 7,
+     "share": 0.05426356589147287,
+     "role": "TE1"
+    },
+    {
+     "gsis_id": "00-0040242",
+     "name": "Jacory Croskey-Merritt",
+     "pbp_name": "J.Croskey-Merritt",
+     "position": "RB",
+     "targets": 7,
+     "share": 0.05426356589147287,
+     "role": "RB1"
+    },
+    {
+     "gsis_id": "00-0037742",
+     "name": "Treylon Burks",
+     "pbp_name": "T.Burks",
+     "position": "WR",
+     "targets": 6,
+     "share": 0.046511627906976744,
+     "role": "WR5"
+    },
+    {
+     "gsis_id": "00-0036628",
+     "name": "John Bates",
+     "pbp_name": "J.Bates",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.031007751937984496,
+     "role": "TE2"
+    },
+    {
+     "gsis_id": "00-0039686",
+     "name": "Colson Yankoff",
+     "pbp_name": "C.Yankoff",
+     "position": "TE",
+     "targets": 4,
+     "share": 0.031007751937984496,
+     "role": "TE4"
+    },
+    {
+     "gsis_id": "00-0040164",
+     "name": "Jaylin Lane",
+     "pbp_name": "J.Lane",
+     "position": "WR",
+     "targets": 2,
+     "share": 0.015503875968992248,
+     "role": "WR6"
+    },
+    {
+     "gsis_id": "00-0039912",
+     "name": "Ben Sinnott",
+     "pbp_name": "B.Sinnott",
+     "position": "TE",
+     "targets": 2,
+     "share": 0.015503875968992248,
+     "role": "TE3"
+    },
+    {
+     "gsis_id": "00-0033699",
+     "name": "Austin Ekeler",
+     "pbp_name": "A.Ekeler",
+     "position": "RB",
+     "targets": 2,
+     "share": 0.015503875968992248,
+     "role": null
+    },
+    {
+     "gsis_id": "00-0039913",
+     "name": "Brandon Coleman",
+     "pbp_name": "B.Coleman",
+     "position": "OL",
+     "targets": 1,
+     "share": 0.007751937984496124,
+     "role": null
+    }
+   ],
+   "depth_chart": {
+    "WR1": {
+     "name": "Terry McLaurin",
+     "rank": 0,
+     "side": 2
+    },
+    "WR2": {
+     "name": "Stefon Diggs",
+     "rank": 1,
+     "side": 0
+    },
+    "WR3": {
+     "name": "Antonio Williams",
+     "rank": 2,
+     "side": 1
+    },
+    "WR4": {
+     "name": "Dyami Brown",
+     "rank": 3,
+     "side": 3
+    },
+    "WR5": {
+     "name": "Treylon Burks",
+     "rank": 4,
+     "side": 4
+    },
+    "WR6": {
+     "name": "Jaylin Lane",
+     "rank": 5,
+     "side": 5
+    },
+    "WR7": {
+     "name": "Luke McCaffrey",
+     "rank": 6,
+     "side": 6
+    },
+    "RB1": {
+     "name": "Jacory Croskey-Merritt",
+     "rank": 0,
+     "side": 0
+    },
+    "RB2": {
+     "name": "Rachaad White",
+     "rank": 1,
+     "side": 1
+    },
+    "RB3": {
+     "name": "Kaytron Allen",
+     "rank": 2,
+     "side": 2
+    },
+    "QB1": {
+     "name": "Jayden Daniels",
+     "rank": 0,
+     "side": 2
+    },
+    "QB2": {
+     "name": "Marcus Mariota",
+     "rank": 1,
+     "side": 0
+    },
+    "QB3": {
+     "name": "Athan Kaliakmanis",
+     "rank": 2,
+     "side": 1
+    },
+    "TE1": {
+     "name": "Chig Okonkwo",
+     "rank": 0,
+     "side": 2
+    },
+    "TE2": {
+     "name": "John Bates",
+     "rank": 1,
+     "side": 0
+    },
+    "TE3": {
+     "name": "Ben Sinnott",
+     "rank": 2,
+     "side": 1
+    },
+    "TE4": {
+     "name": "Colson Yankoff",
+     "rank": 3,
+     "side": 3
+    }
+   },
+   "role_targets": {
+    "WR2": 31,
+    "WR1": 22,
+    "WR3": 19,
+    "WR4": 13,
+    "RB2": 9,
+    "TE1": 7,
+    "RB1": 7,
+    "WR5": 6,
+    "TE2": 4,
+    "TE4": 4,
+    "WR6": 2,
+    "TE3": 2
+   },
+   "role_shares": {
+    "RB1": 0.05426356589147287,
+    "RB2": 0.06976744186046512,
+    "TE1": 0.05426356589147287,
+    "TE2": 0.031007751937984496,
+    "TE3": 0.015503875968992248,
+    "TE4": 0.031007751937984496,
+    "WR1": 0.17054263565891473,
+    "WR2": 0.24031007751937986,
+    "WR3": 0.14728682170542637,
+    "WR4": 0.10077519379844961,
+    "WR5": 0.046511627906976744,
+    "WR6": 0.015503875968992248
+   },
+   "unmapped_targets": 3
+  }
+ }
+}

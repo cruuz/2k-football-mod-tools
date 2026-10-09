@@ -1,4 +1,12 @@
 """Focused replacement ownership, epoch, source pins and native pool boundaries."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import copy
 import datetime as dt
 import struct

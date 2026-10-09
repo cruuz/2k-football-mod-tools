@@ -378,6 +378,16 @@ def coach_entry(roster_cfg: dict, abbreviation: str, disc: str, nfl: Path | None
     return None
 
 
+def written_years_pro(row: dict) -> int:
+    """The record's years pro for an nflverse roster row.
+
+    nflverse ``years_exp`` counts completed seasons (a 2026 rookie is 0); the game's years pro counts the season in
+    progress too (a rookie stores 1 and the card prints R, a 2025 draftee stores 2). Writing ``years_exp`` as it came
+    made every 2026 draftee read 0, every 2025 draftee read R and every veteran one year low (Noah 2026-10-07, job f12).
+    """
+    return rr.years_pro_from_years_exp(row["years_exp"])
+
+
 def body_for(weight: int) -> int:
     return 0 if weight < 205 else 1 if weight < 280 else 2
 
@@ -481,6 +491,8 @@ def build(args) -> int:
     reference = rm.Reference.load()
     model_rows = []
     for r in rows:
+        # the ratings model's "years_pro" key means completed seasons (0 = rookie: draft-position prior), i.e. nflverse
+        # years_exp as it came; only the record write below converts to the game's convention (rookie = 1)
         model_rows.append({"position": r["game_position"], "gsis_id": r["gsis_id"], "weight": r["weight"],
                            "birth_date": r["birth_date"], "years_pro": r["years_exp"],
                            "draft_number": r.get("draft_number", ""), "depth": int(round(r["depth_rank_src"])) + 1,
@@ -557,7 +569,7 @@ def build(args) -> int:
             rec.set("birth_month", birth.month)
             rec.set("birth_day", birth.day)
             rec.set("birth_year", birth.year)
-        rec.set("years_pro", min(31, int(float(r["years_exp"] or 0))))
+        rec.set("years_pro", written_years_pro(r))
         for k, v in r["ratings"].items():
             rec.set(k, max(0, min(127, v)))
         rank = min(rank_of[idx], rr.DEPTH_ROW_CAP)

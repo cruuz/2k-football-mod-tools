@@ -47,7 +47,7 @@
     "coverage_slider": true,
     "scramble_tuning": true,
     "cpu_scrambles": "modern",
-    "cpu_money_downs": "modern",
+    "cpu_money_downs": "modern2",
     "zone_drop_cap": true,
     "deep_zone_facing": true,
     "deep_zone_bail": true,

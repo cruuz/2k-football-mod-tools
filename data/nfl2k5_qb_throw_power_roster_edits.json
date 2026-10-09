@@ -1,0 +1,11 @@
+{
+ "schema": "2k5_mod_studio_roster_edits/v1",
+ "name": "QB Throw Power +4 (b77 q1)",
+ "author": "b77 q1",
+ "edits": [],
+ "qb_throw_power": {
+  "add": 4,
+  "cap": 99,
+  "scope": "all"
+ }
+}

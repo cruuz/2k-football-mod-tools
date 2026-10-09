@@ -154,7 +154,7 @@ def free_agents(result,doc,ids,fa,out):
         born=dt.date.fromisoformat(r['birth_date']);yy=born.year%100
         first=r['football_name'] or r['first_name'];last=r['last_name']
         fields=dict(birth_month=born.month,birth_day=born.day,birth_year_low=yy&7,birth_year_high=yy>>3,
-            height=int(float(r['height'])),weight_raw=int(float(r['weight']))-150,years_pro=int(float(r['years_exp'])),
+            height=int(float(r['height'])),weight_raw=int(float(r['weight']))-150,years_pro=rr.years_pro_from_years_exp(r['years_exp']),
             position=POSITION[r['depth_chart_position']],jersey=int(float(r['jersey_number'] or 0)),
             contract_value=0,contract_remaining=0,contract_length=0,contract_bonus=0,contract_type=2,
             injured_reserve=0,photo_id=0,pbp_id=0,star_tag=0)

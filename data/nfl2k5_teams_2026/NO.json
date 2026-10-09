@@ -74,6 +74,272 @@
        40.125
       ],
       "width": 296.5
+     },
+     {
+      "polygon": [
+       [
+        174.5,
+        74.5
+       ],
+       [
+        187.5,
+        74.5
+       ],
+       [
+        187.5,
+        83.8
+       ],
+       [
+        181.0,
+        89.5
+       ],
+       [
+        174.5,
+        83.8
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        175.9,
+        75.9
+       ],
+       [
+        186.1,
+        75.9
+       ],
+       [
+        186.1,
+        83.8
+       ],
+       [
+        181.0,
+        87.68
+       ],
+       [
+        175.9,
+        83.8
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       177.5,
+       78.1,
+       178.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       178.5,
+       78.1,
+       179.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       179.5,
+       78.1,
+       180.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       177.5,
+       79.1,
+       178.5,
+       80.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       177.5,
+       80.1,
+       178.5,
+       81.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       178.5,
+       80.1,
+       179.5,
+       81.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       179.5,
+       80.1,
+       180.5,
+       81.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       177.5,
+       81.1,
+       178.5,
+       82.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       179.5,
+       81.1,
+       180.5,
+       82.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       177.5,
+       82.1,
+       178.5,
+       83.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       178.5,
+       82.1,
+       179.5,
+       83.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       179.5,
+       82.1,
+       180.5,
+       83.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       181.5,
+       78.1,
+       182.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       182.5,
+       78.1,
+       183.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       183.5,
+       78.1,
+       184.5,
+       79.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       181.5,
+       79.1,
+       182.5,
+       80.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       183.5,
+       79.1,
+       184.5,
+       80.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       181.5,
+       80.1,
+       182.5,
+       81.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       183.5,
+       80.1,
+       184.5,
+       81.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       181.5,
+       81.1,
+       182.5,
+       82.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       183.5,
+       81.1,
+       184.5,
+       82.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       181.5,
+       82.1,
+       182.5,
+       83.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       182.5,
+       82.1,
+       183.5,
+       83.1
+      ],
+      "colour": "gold"
+     },
+     {
+      "rect": [
+       183.5,
+       82.1,
+       184.5,
+       83.1
+      ],
+      "colour": "gold"
      }
     ]
    },
@@ -170,6 +436,272 @@
        40.125
       ],
       "width": 296.5
+     },
+     {
+      "polygon": [
+       [
+        174.5,
+        74.5
+       ],
+       [
+        187.5,
+        74.5
+       ],
+       [
+        187.5,
+        83.8
+       ],
+       [
+        181.0,
+        89.5
+       ],
+       [
+        174.5,
+        83.8
+       ]
+      ],
+      "colour": "gold"
+     },
+     {
+      "polygon": [
+       [
+        175.9,
+        75.9
+       ],
+       [
+        186.1,
+        75.9
+       ],
+       [
+        186.1,
+        83.8
+       ],
+       [
+        181.0,
+        87.68
+       ],
+       [
+        175.9,
+        83.8
+       ]
+      ],
+      "colour": "white"
+     },
+     {
+      "rect": [
+       177.5,
+       78.1,
+       178.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       178.5,
+       78.1,
+       179.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179.5,
+       78.1,
+       180.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       177.5,
+       79.1,
+       178.5,
+       80.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       177.5,
+       80.1,
+       178.5,
+       81.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       178.5,
+       80.1,
+       179.5,
+       81.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179.5,
+       80.1,
+       180.5,
+       81.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       177.5,
+       81.1,
+       178.5,
+       82.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179.5,
+       81.1,
+       180.5,
+       82.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       177.5,
+       82.1,
+       178.5,
+       83.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       178.5,
+       82.1,
+       179.5,
+       83.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179.5,
+       82.1,
+       180.5,
+       83.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       181.5,
+       78.1,
+       182.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       182.5,
+       78.1,
+       183.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       183.5,
+       78.1,
+       184.5,
+       79.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       181.5,
+       79.1,
+       182.5,
+       80.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       183.5,
+       79.1,
+       184.5,
+       80.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       181.5,
+       80.1,
+       182.5,
+       81.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       183.5,
+       80.1,
+       184.5,
+       81.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       181.5,
+       81.1,
+       182.5,
+       82.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       183.5,
+       81.1,
+       184.5,
+       82.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       181.5,
+       82.1,
+       182.5,
+       83.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       182.5,
+       82.1,
+       183.5,
+       83.1
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       183.5,
+       82.1,
+       184.5,
+       83.1
+      ],
+      "colour": "black"
      }
     ]
    },
@@ -638,5 +1170,19 @@
     ]
    }
   }
+ },
+ "u2c_b77": {
+  "job": "b77 u2c (sonnet-5.5), 2026-10-08",
+  "checked_against": "neworleanssaints.com 2026 game action galleries wk1 at DET (white), wk2 at BAL (black), wk3 vs LV (black), wk4 vs ATL",
+  "changes": {
+   "home.torso.decorations and away.torso.decorations (appended)": "60th-season patch on the wearer's left chest beside the NFL shield (gold shield, black field with gold 60 at home; white field with black 60 on the road): worn in every 2026 game photo (wk1 at DET, wk2 at BAL, wk3 vs LV). Drawn from rect and polygon items (13 x 15 px, a 3x5 pixel '60'); the club's patch text (EST. 1967) is too small to draw, estimate"
+  },
+  "unchanged_because_right": [
+   "black pants both kits",
+   "gold collar / black collar",
+   "numbers",
+   "helmet",
+   "fleur-de-lis sleeves"
+  ]
  }
 }

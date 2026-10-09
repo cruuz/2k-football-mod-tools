@@ -35,7 +35,7 @@
       "abbreviation": "CIN",
       "asset_code": "06",
       "city": "Cincinnati",
-      "csv_sha256": "9cd4f343905739c468c980cf384bafd63e22cb8605418980f2ebc9954f4702ac",
+      "csv_sha256": "23211f988adc97ea41c377f8c3c7bc2fe5f3f12e9d92ce42352dfdce0960a5db",
       "game_id": "2025_07_PIT_CIN",
       "jerseys_from_pbp": 31,
       "nflverse_team": "CIN",
@@ -46,7 +46,7 @@
           "added_from_season_roster": false,
           "college_basis": "not in the table (template keeps its own)",
           "gsis_id": "00-0026158",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": true,
           "index": 0,
           "jersey_source": "pbp",
@@ -77,7 +77,7 @@
           "added_from_season_roster": false,
           "college_basis": "main college table",
           "gsis_id": "00-0035100",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": false,
           "index": 1,
           "jersey_source": "roster",
@@ -1465,7 +1465,7 @@
           "added_from_season_roster": false,
           "college_basis": "main college table",
           "gsis_id": "00-0036854",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": true,
           "index": 51,
           "jersey_source": "pbp",
@@ -1493,7 +1493,7 @@
           "added_from_season_roster": false,
           "college_basis": "main college table",
           "gsis_id": "00-0039323",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": true,
           "index": 52,
           "jersey_source": "pbp",
@@ -1536,7 +1536,7 @@
       "abbreviation": "PIT",
       "asset_code": "22",
       "city": "Pittsburgh",
-      "csv_sha256": "0a5abc4ca06f2765e0ff95f6e8dfae9d5f8d761d9831eac0923b82fef7cb3b0c",
+      "csv_sha256": "518c1cdb418ce402f6cab0e4c42532c0dfa55c991d4eef9724649fe6a7e2521a",
       "game_id": "2025_07_PIT_CIN",
       "jerseys_from_pbp": 32,
       "nflverse_team": "PIT",
@@ -1547,7 +1547,7 @@
           "added_from_season_roster": false,
           "college_basis": "not in the table (template keeps its own)",
           "gsis_id": "00-0023459",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": true,
           "index": 0,
           "jersey_source": "pbp",
@@ -1577,7 +1577,7 @@
           "added_from_season_roster": false,
           "college_basis": "main college table",
           "gsis_id": "00-0034771",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": false,
           "index": 1,
           "jersey_source": "roster",
@@ -2995,7 +2995,7 @@
           "added_from_season_roster": false,
           "college_basis": "not in the table (template keeps its own)",
           "gsis_id": "00-0035821",
-          "hand_basis": "default right",
+          "hand_basis": "sourced (b77 a2 handedness)",
           "in_moment_game_pbp": true,
           "index": 52,
           "jersey_source": "pbp",
@@ -3334,8 +3334,8 @@
         "home": "bengals_2025",
         "user_side": "home",
         "kits": {
-          "away": 0,
-          "home": 0
+          "away": 4,
+          "home": 5
         },
         "sources": [
           "https://www.pro-football-reference.com/boxscores/202510160cin.htm",
@@ -3368,5 +3368,6 @@
         "evidence": "PFR indexed boxscore verifies date,venue,final score,scoring and QB totals. Full PFR request403; official NFL gamebook verifies starters,first scrimmage snap,weather,timeouts and drive. Ratings are estimates from the existing season model. Offline only."
       }
     ]
-  }
+  },
+  "years_pro_convention": "game_rookie_1"
 }

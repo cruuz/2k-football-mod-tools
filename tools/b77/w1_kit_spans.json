@@ -1,0 +1,2950 @@
+{
+ "schema": "b77/w1/kit-mud-spans/v1",
+ "rule": {
+  "mud": "wet_93",
+  "gain": 0.93,
+  "from_mode": "darken_60"
+ },
+ "spans": [
+  {
+   "selector": "00A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 83008,
+   "pack": 11,
+   "pack_offset": 146729072,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 137,
+   "before_sha256": "ae02de971a78b94379312dbafe7bf330ef4d6bca30cf47b9e9970efad8fbe590",
+   "after_sha256": "f4d1a6fb6f9068fcffc23201e740f2a94d3c1b4c44102abb2a6c98deaf74b1f4"
+  },
+  {
+   "selector": "00A0",
+   "chunk": 2,
+   "resource_offset": 83120,
+   "length": 84384,
+   "pack": 11,
+   "pack_offset": 146812080,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "c537cf1b77cd94a1d0704a678a66d3cd4f75744a5ce71ce6c41990aace5bb70c",
+   "after_sha256": "9c0307a93d7c7aa8f84ee83f4b6fd035ab80c4bf2bff4c7151b78c2619cdb56c"
+  },
+  {
+   "selector": "00A0",
+   "chunk": 3,
+   "resource_offset": 167504,
+   "length": 11568,
+   "pack": 11,
+   "pack_offset": 146896464,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "e0c93a32200460187ccfc8ee8384e02fca9c300e200499372a18ff4fdb3a3a82",
+   "after_sha256": "d02c703556e6032670c4261ccf043b332daf08acea1d739e2c6056005d53ade2"
+  },
+  {
+   "selector": "00H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 73568,
+   "pack": 9,
+   "pack_offset": 616712304,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "5de7768edd987e2ac5e1f7df46da40e096670d17ff1b99ca3f4cc89f1a7d119e",
+   "after_sha256": "74b1af4df0e4c3973a45b1db2c38a574bbc9e78fb13410acef851597b7f30a1a"
+  },
+  {
+   "selector": "00H0",
+   "chunk": 2,
+   "resource_offset": 73680,
+   "length": 84416,
+   "pack": 9,
+   "pack_offset": 616785872,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "d86e25364511b7dac44320742aae63e3cc1c412e11e807fb2ad898199337f0cf",
+   "after_sha256": "8a803fda9347519e2fa3944e366ff7240b32b2bb0976880484ed35fd29dc6d18"
+  },
+  {
+   "selector": "00H0",
+   "chunk": 3,
+   "resource_offset": 158096,
+   "length": 9808,
+   "pack": 9,
+   "pack_offset": 616870288,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 157,
+   "before_sha256": "f6a3b5d1ef3a9d95855f225d5282622a345cf04d96f92520e6c4fe88f1fc699d",
+   "after_sha256": "a8ce8ea88776cd8c88f9a35882c5283290575325e820174cc0560a1a1ccb95b8"
+  },
+  {
+   "selector": "01A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 74720,
+   "pack": 11,
+   "pack_offset": 160188528,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "47a89bc103f006ae8ada5b12175deff13700baf817d2d5003f8183bb0dd37d35",
+   "after_sha256": "d00b938bed42399e6df4e650dc85198909c750e06e1476276bd9f65f73d4d0f2"
+  },
+  {
+   "selector": "01A0",
+   "chunk": 2,
+   "resource_offset": 74832,
+   "length": 87568,
+   "pack": 11,
+   "pack_offset": 160263248,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "d66a54283ff44f2b721a23ebff8facb87877b4d05350ae25af4e8fd1010a48f9",
+   "after_sha256": "e7c06a51a760968858c39aee6b4ae0157ab3753af7422ab99062ceec6c7d59e5"
+  },
+  {
+   "selector": "01A0",
+   "chunk": 3,
+   "resource_offset": 162400,
+   "length": 12816,
+   "pack": 11,
+   "pack_offset": 160350816,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "b443b4256512ff66e56636df15b72f9a4ac049848cf4f243cb0981f168329887",
+   "after_sha256": "36d9a9108c0d400dbc20c89ce0c9dcf7e16d17ba4f186a2024ba80471847ca8c"
+  },
+  {
+   "selector": "01H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 82048,
+   "pack": 9,
+   "pack_offset": 630073456,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "6fa73bea8b6fe6cb7ddc82075e1a8a6b6cd15d5fe0c05824887821631372302c",
+   "after_sha256": "029254749c8a7896677a6266eadb9638f082166a36e36ebcd89d81980d93e866"
+  },
+  {
+   "selector": "01H0",
+   "chunk": 2,
+   "resource_offset": 82160,
+   "length": 87568,
+   "pack": 9,
+   "pack_offset": 630155504,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "3416891bd3aea3f3c5f165a71a1829f1ce608037656dc6c82f55d850bb6a7d2a",
+   "after_sha256": "63b9bfcdc1568b7f9ebeb2c55d20c1e4e6233bd40bece2549221fb5abd6ca14a"
+  },
+  {
+   "selector": "01H0",
+   "chunk": 3,
+   "resource_offset": 169728,
+   "length": 12816,
+   "pack": 9,
+   "pack_offset": 630243072,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "f8097c50e675a3e3bb621bb8e95accdbb06e593480ee50604a500e8f3ca6ed53",
+   "after_sha256": "ebe92916cf50ea61041333bceefb95f7c446ea14d0c3e38937417ca1915144a4"
+  },
+  {
+   "selector": "02A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 77632,
+   "pack": 11,
+   "pack_offset": 181321840,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "6bcc4d5e50ee20d0061a55cf259f9fd30372b574e2130cd5f5f35dc9006054a8",
+   "after_sha256": "b00a4db2bcb31deeebd5c0c89a2c2fa5ca7e0f1abd94ea7ec834dd7f8e227760"
+  },
+  {
+   "selector": "02A0",
+   "chunk": 2,
+   "resource_offset": 77744,
+   "length": 85472,
+   "pack": 11,
+   "pack_offset": 181399472,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "9f2fd21bcf8e3c4a5212306cddc3a7cbd450c134fe11e8b801129441ef94c2d6",
+   "after_sha256": "5252a1bc8a76db2038389a56cd1e9cac4029f95e764deb000c2b41bfdf2254f8"
+  },
+  {
+   "selector": "02A0",
+   "chunk": 3,
+   "resource_offset": 163216,
+   "length": 11056,
+   "pack": 11,
+   "pack_offset": 181484944,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "5d7e6e07732f6a5caac6a4d207a1eba6835800507028dd75618e6539fd4cc70a",
+   "after_sha256": "4e2555a1bedc9259ce3ead38f4cfbe35efaadc59790e1129ef7ecd2e50471652"
+  },
+  {
+   "selector": "02H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 65296,
+   "pack": 10,
+   "pack_offset": 16158832,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "9e0db31c4a6d079816f2604e8d95b9f15e97cd54da611155ab966696a28b8803",
+   "after_sha256": "40d9500d70eba5c26298cccd7f92b0bd0198902bed012cfbb41cb7c99032b974"
+  },
+  {
+   "selector": "02H0",
+   "chunk": 2,
+   "resource_offset": 65408,
+   "length": 85472,
+   "pack": 10,
+   "pack_offset": 16224128,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "f84508bf7d26ebe5bb6cdc6923824ea4e1c055858e78e610ec5ef9fe6d8f6249",
+   "after_sha256": "010305db12f2e2c8f57ff44ada1b176a338502fd7df85e7c9e701011b3a1e9c8"
+  },
+  {
+   "selector": "02H0",
+   "chunk": 3,
+   "resource_offset": 150880,
+   "length": 11088,
+   "pack": 10,
+   "pack_offset": 16309600,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0c7a7a517272952cfd2653128a64f483b87d0b8cb195ce13f697ad44c8869ff6",
+   "after_sha256": "dfcbd54b535d63d2b6fbe0b966d322af6e66650ab742d5cee39fccfc5c81ea44"
+  },
+  {
+   "selector": "03A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 74432,
+   "pack": 11,
+   "pack_offset": 187508848,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f5fd35e908e95eaa673d65a9ea6090dd37819db62bc696fcaa97f32ffb3250d0",
+   "after_sha256": "eee73ff288c8df2fe3ea82a0d10404bd3c579d174684d2e6abd45c03f8d1c06a"
+  },
+  {
+   "selector": "03A0",
+   "chunk": 2,
+   "resource_offset": 74544,
+   "length": 72256,
+   "pack": 11,
+   "pack_offset": 187583280,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "47c9a72b26b0767d2290ee1008a4446783b01f537b92d01845b784f3cb77d458",
+   "after_sha256": "56f3dfe3a753c516fec66c62b83e7f064d41fb8af9d1e829197467042a7cfeeb"
+  },
+  {
+   "selector": "03A0",
+   "chunk": 3,
+   "resource_offset": 146800,
+   "length": 11312,
+   "pack": 11,
+   "pack_offset": 187655536,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 166,
+   "before_sha256": "e7e7fd303059881352be3e35e427f13258f65700fcedced4148c935b82801538",
+   "after_sha256": "d6512ccfc40e0bbea39e845c18021a901c3ff06f09b03fa655aaef962c23081a"
+  },
+  {
+   "selector": "03H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 59952,
+   "pack": 10,
+   "pack_offset": 22298736,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "fd2f534a96dd45517ba0beda7737a3c23d4682f706c342c83f2b57f6b9385015",
+   "after_sha256": "32184d642bd24b469f7c80c0bba5154a080cc97ee575497218c4adb48dd8bb05"
+  },
+  {
+   "selector": "03H0",
+   "chunk": 2,
+   "resource_offset": 60064,
+   "length": 87392,
+   "pack": 10,
+   "pack_offset": 22358688,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "7e188e8415b15c5918d9316c7f4d6fb2ae3767587935a467c221bd83fbc3a138",
+   "after_sha256": "ce58cfae960abd6cc7c802247949b7033cdb8f675c70b9d2236ffdd0bc53110e"
+  },
+  {
+   "selector": "03H0",
+   "chunk": 3,
+   "resource_offset": 147456,
+   "length": 9344,
+   "pack": 10,
+   "pack_offset": 22446080,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 170,
+   "before_sha256": "f0c47ccc6dab38f7dd76eb2691e4cea8f2290890b191d85673b3b8a65cb7db05",
+   "after_sha256": "d70862f17c3ba1dac06afc69cd13c7779c9e01c37cb091be9bfa4be130edb71a"
+  },
+  {
+   "selector": "04A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79824,
+   "pack": 11,
+   "pack_offset": 202629232,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e2e959c8af080e5a1090f0af2eb4d79c9891dd69db5e82b8f0d7a1be1cdef4dd",
+   "after_sha256": "c186d3fd5038354a3db4c328fe9d478d6caa00fc5a30dcce480ab1b81356da05"
+  },
+  {
+   "selector": "04A0",
+   "chunk": 2,
+   "resource_offset": 79936,
+   "length": 91568,
+   "pack": 11,
+   "pack_offset": 202709056,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "6617f19fc6d1e4e17cbd8740a994a3a2decf7a928e5a8ddb3b1def60ffd8c560",
+   "after_sha256": "22be5acee7ed89a7fdfbd4031ded80b3c8d3506d1c532b92fc19cdf7db8fc943"
+  },
+  {
+   "selector": "04A0",
+   "chunk": 3,
+   "resource_offset": 171504,
+   "length": 11760,
+   "pack": 11,
+   "pack_offset": 202800624,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "dbeaf4fe34661658c87792097ca5cbaa9bd577d72ffe195cefe9b6bb6d09d99e",
+   "after_sha256": "604d2d19010dc1208015a03884c17ddbabe9d5d50dfd9cbb50b6cadaccb82d91"
+  },
+  {
+   "selector": "04H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 66480,
+   "pack": 10,
+   "pack_offset": 37374064,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "24b9b88adf3e84ae0bd65037606bd686844386421ca79a6fa96683e45f219287",
+   "after_sha256": "f65827b3d0e9c0604ea8d6c2ad2fc1b2632bf7ec714a5185abc7a4c2bcedaeb8"
+  },
+  {
+   "selector": "04H0",
+   "chunk": 2,
+   "resource_offset": 66592,
+   "length": 92656,
+   "pack": 10,
+   "pack_offset": 37440544,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "a103aa3f3b85b09f76c0da3a3849809c67d79215163cfb13fae9d9260b7e64f5",
+   "after_sha256": "905f6946a795dfca1f78d882da5f5015a34cba9d7ed24bed5ba33618cca11021"
+  },
+  {
+   "selector": "04H0",
+   "chunk": 3,
+   "resource_offset": 159248,
+   "length": 9744,
+   "pack": 10,
+   "pack_offset": 37533200,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "8098c5780ffc5c4929534121ae7fd58b5744d8d522a019d81b49f28e6599f758",
+   "after_sha256": "d84a08ab36fbc3b5ae812bd11a992c3c81a85db2c2859644bc1b1e42791ab8cc"
+  },
+  {
+   "selector": "05A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 84176,
+   "pack": 11,
+   "pack_offset": 207261808,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 137,
+   "before_sha256": "813d22522a27f19a073b95cb7f5699d4af308726a9c1c2399615ed939bdd0611",
+   "after_sha256": "819dc25f8005f3588460a7c1b00aedb5ac9a44eff3070599c87af849aa865a07"
+  },
+  {
+   "selector": "05A0",
+   "chunk": 2,
+   "resource_offset": 84288,
+   "length": 84480,
+   "pack": 11,
+   "pack_offset": 207345984,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "2744536f1029fe1d832aff76e5f64f3fea5629b28d90211b5e6910e8b9928d71",
+   "after_sha256": "8b10d54c58bf0ab3df09f176f3b5efce79c34a3e0d8c7ec8befa31fce09c4838"
+  },
+  {
+   "selector": "05A0",
+   "chunk": 3,
+   "resource_offset": 168768,
+   "length": 12160,
+   "pack": 11,
+   "pack_offset": 207430464,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0ca9821cf54420bbeaab4081adb02d821616a365e9d339ff0a32d8f93f03bbd5",
+   "after_sha256": "c0479dbf40f9bfe471ba222e2c874b5ada0e2af475abeb58c4b749405a33da37"
+  },
+  {
+   "selector": "05H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 61056,
+   "pack": 10,
+   "pack_offset": 41969776,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 205,
+   "before_sha256": "026c156171bd377142d02ffa16152563a433e39e30c194241ae6eaaca69dfce9",
+   "after_sha256": "b58eef7fff06a2f5ea735ccea3798a69f3098858ccdd1d8354b3d9a1022548fc"
+  },
+  {
+   "selector": "05H0",
+   "chunk": 2,
+   "resource_offset": 61168,
+   "length": 85568,
+   "pack": 10,
+   "pack_offset": 42030832,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "1ffb28f65defd8b2b587348b96f00ccedd3a8061229b64a75e89011643cb2cc1",
+   "after_sha256": "4d0cea898b2ea791a64edbd278595518f36960a3ddded0e4f925dc1835219f4f"
+  },
+  {
+   "selector": "05H0",
+   "chunk": 3,
+   "resource_offset": 146736,
+   "length": 10720,
+   "pack": 10,
+   "pack_offset": 42116400,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "d7e244af3d188509a41295090db8927e47109ff39233fbf9c439f71fd5cfe54a",
+   "after_sha256": "5129cf6de62776e167929c964bdd504f5d0592d90c865444e366926b514e81f9"
+  },
+  {
+   "selector": "06A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78768,
+   "pack": 11,
+   "pack_offset": 217862256,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "4dc60448b5d15ce6ae809ddc0f272c865d677f3cf4dcaf3dee3ab810bbfbf449",
+   "after_sha256": "2c7a24b817c1fd7e1821f4df225c1646925db844f6b06e92c0e8bfeebc98b70d"
+  },
+  {
+   "selector": "06A0",
+   "chunk": 2,
+   "resource_offset": 78880,
+   "length": 84480,
+   "pack": 11,
+   "pack_offset": 217941024,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 253,
+   "before_sha256": "3ba09a4e7a67d761d0ebaf2bdbf225dd26d62f8690ba7f3e7c429e1a1a32a5ab",
+   "after_sha256": "21141b25a7116d9449efab1a9da9a4b76836ab1a207d6feb209e08a808e9537e"
+  },
+  {
+   "selector": "06A0",
+   "chunk": 3,
+   "resource_offset": 163360,
+   "length": 13408,
+   "pack": 11,
+   "pack_offset": 218025504,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 202,
+   "before_sha256": "d204868e85db598f3daf0bd34b8dbd79909212270ba83eef8af474a2ef3c1125",
+   "after_sha256": "73c8eccf7730379f4938e55447d90f9ec428ce591d4b0870d7525443aa28c083"
+  },
+  {
+   "selector": "06H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78864,
+   "pack": 10,
+   "pack_offset": 52465776,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "e26d5a8f03db795fa7b4f9d894649e68a1387fbebef9d46611d2c5f5053ffc66",
+   "after_sha256": "9ffdfa1ea50584574d956e8d112452481bdd8eb9d40789b6cd24bdd4167c9388"
+  },
+  {
+   "selector": "06H0",
+   "chunk": 2,
+   "resource_offset": 78976,
+   "length": 90816,
+   "pack": 10,
+   "pack_offset": 52544640,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 253,
+   "before_sha256": "e290deb6c491728aabd1cd44e96fc9f2bef8ac6adb1c7c84583de23cfcf816e6",
+   "after_sha256": "40101d3d88fad0ff63f07e51b27c0638d813adb7933cbceed166c7139d2a82d6"
+  },
+  {
+   "selector": "06H0",
+   "chunk": 3,
+   "resource_offset": 169792,
+   "length": 14160,
+   "pack": 10,
+   "pack_offset": 52635456,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 251,
+   "before_sha256": "c08e5ee4757b6a360a8520ad69c989044fe1975d81ea6dfa5e3070418f51b4e2",
+   "after_sha256": "7d9a6e7481bf0b182697259d7532e0ae5ca5dd5aceaf796af326242d998e169a"
+  },
+  {
+   "selector": "07A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 82368,
+   "pack": 11,
+   "pack_offset": 230121584,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 248,
+   "before_sha256": "f2d7817369e22c9731cef230ffe850bff53a8b48b23b36717027aec3bb61237d",
+   "after_sha256": "0a42375f5e27f686693f981b010ce908940cf00eb9fd11a01ff7e8984c465a6e"
+  },
+  {
+   "selector": "07A0",
+   "chunk": 2,
+   "resource_offset": 82480,
+   "length": 86768,
+   "pack": 11,
+   "pack_offset": 230203952,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "805161e23f118353167810786af069a31f61fa0032b223599c4ea14b829b894c",
+   "after_sha256": "851e62e76efb1510ea1003e058719ef9ba5df5ba67990eee76734704bdbefb0b"
+  },
+  {
+   "selector": "07A0",
+   "chunk": 3,
+   "resource_offset": 169248,
+   "length": 13552,
+   "pack": 11,
+   "pack_offset": 230290720,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "0a3af3ac791a1af808e1e58371215689cc88cf2b9b7b25f29f3eb81f9c6335aa",
+   "after_sha256": "3f83698fe6b517862edc633dd934c410fa310c1f404cf5ef16af817854f83ac8"
+  },
+  {
+   "selector": "07H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 62144,
+   "pack": 10,
+   "pack_offset": 64634992,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "1c1113ae9f8c5487cf248509c29ac361e4d3c57c513a0919adfe1ef68a818cb8",
+   "after_sha256": "9e2d5d0d0f00755a38b72011529593d11481df747f6eae1c949fb077beb2196a"
+  },
+  {
+   "selector": "07H0",
+   "chunk": 2,
+   "resource_offset": 62256,
+   "length": 83200,
+   "pack": 10,
+   "pack_offset": 64697136,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 252,
+   "before_sha256": "1dcfc9d5f7db0811b85725b375e1782c32095ebcc68c2d93a4b16deb53c4f7c2",
+   "after_sha256": "52d77146024e9038d17b0e2e704225b7fe968694e361f13fe5806791165b2fb8"
+  },
+  {
+   "selector": "07H0",
+   "chunk": 3,
+   "resource_offset": 145456,
+   "length": 12384,
+   "pack": 10,
+   "pack_offset": 64780336,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f939c5660ed39a96d4196de8f8c2a5409013f35dde1dc4035410ad44aecef3ed",
+   "after_sha256": "89b18085f9ffcd95efa4af301c72b1ee3c09f7932dad6ff78be89adbff5f4447"
+  },
+  {
+   "selector": "08A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 77776,
+   "pack": 11,
+   "pack_offset": 245063792,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "406ec28edf56ebb9c6e0e6867433c81dde9f3c5d8c7ae13c1be22c26efd3f1fb",
+   "after_sha256": "6a7f979dd5651ad922e5c414f2e239e58e657c6dba8cea02cb35ebc0551817c0"
+  },
+  {
+   "selector": "08A0",
+   "chunk": 2,
+   "resource_offset": 77888,
+   "length": 88432,
+   "pack": 11,
+   "pack_offset": 245141568,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "97efe3489a72b861785556855264f8b6c1ed10d64bbf293eceff7992508d8835",
+   "after_sha256": "b3de8a2c839f4494be61f784cb09904baefedd58ca5c9096c72f447226e595fa"
+  },
+  {
+   "selector": "08A0",
+   "chunk": 3,
+   "resource_offset": 166320,
+   "length": 10464,
+   "pack": 11,
+   "pack_offset": 245230000,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 250,
+   "before_sha256": "970c13b5373205e59cec1be1cc1ae9a9813edca35a5f2f8529d5bf8efa9de92b",
+   "after_sha256": "aa0f6c7a3e5bfd6daaac8bcf2d787d0e07960afc6d79d7f9a5def6610062cc4b"
+  },
+  {
+   "selector": "08H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 63136,
+   "pack": 10,
+   "pack_offset": 79448176,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "98ced147219088f32f56f5193c2578a6e031d329434568eddc35aa9176e592fd",
+   "after_sha256": "1bf8fe525fdebc5e11b0dc8658ff325b51d9580aab59f508fa29bcfa306d84f2"
+  },
+  {
+   "selector": "08H0",
+   "chunk": 2,
+   "resource_offset": 63248,
+   "length": 82896,
+   "pack": 10,
+   "pack_offset": 79511312,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "67e6f24669d57130c9acc31febb7765578ee98b2a5ac9e7ecffa57286eae2ea2",
+   "after_sha256": "3ccd7c49f5613eda622de84c4c1898f5700b3fab2899c680e2557b7b30865ed9"
+  },
+  {
+   "selector": "08H0",
+   "chunk": 3,
+   "resource_offset": 146144,
+   "length": 7488,
+   "pack": 10,
+   "pack_offset": 79594208,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 242,
+   "before_sha256": "b287116918eda6193c2c0b2299554fa14fd248679138a558dad92c11a18f892b",
+   "after_sha256": "0dde168eeca9f0a0e35570c87d7fcc30edb5f068afe42e3fd003d98474d6a1cd"
+  },
+  {
+   "selector": "09A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79120,
+   "pack": 11,
+   "pack_offset": 255621232,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "56334a511bc511ab82bf067497a9ca8c9ba28ec4d463ac2a3e760d9e1024939a",
+   "after_sha256": "1fd436d64210f1f2ce4e909aa20b4da4aab48c792cc4b38abd1ffad275a18e74"
+  },
+  {
+   "selector": "09A0",
+   "chunk": 2,
+   "resource_offset": 79232,
+   "length": 87040,
+   "pack": 11,
+   "pack_offset": 255700352,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "255b2f656278b0b980a8b8e2cd6c95474cd15972d107bc676196915518d15340",
+   "after_sha256": "bae3952e16384abf2c789115d0e24455bc17118c3d27046f280177c550bfdae0"
+  },
+  {
+   "selector": "09A0",
+   "chunk": 3,
+   "resource_offset": 166272,
+   "length": 12336,
+   "pack": 11,
+   "pack_offset": 255787392,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 224,
+   "before_sha256": "39a6570fe76ac67c2e9239daffa6119c7e1285c0ead4c861caf118369bfef086",
+   "after_sha256": "bfd159e170230be4c1df74467cf25c42f2b487fb68982c2262c6de280951fe0a"
+  },
+  {
+   "selector": "09H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 74720,
+   "pack": 10,
+   "pack_offset": 89958512,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 197,
+   "before_sha256": "2c8e1b524cd3f919d242a3412044847fa9bd24d0d3522c90aafc6655bff0c588",
+   "after_sha256": "bfb35b1c7658971b60a39c9076c09a074cab72f1ec8dcb13aef9a3fd1566bd7e"
+  },
+  {
+   "selector": "09H0",
+   "chunk": 2,
+   "resource_offset": 74832,
+   "length": 87040,
+   "pack": 10,
+   "pack_offset": 90033232,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "18e2a9f7468c078b48adafddacbf31cb6f065a0f73241232f3c8689aba5c51ed",
+   "after_sha256": "3e83efd15d74256004a7064f69439c946479431382fbb4ae9112ff580f981f4d"
+  },
+  {
+   "selector": "09H0",
+   "chunk": 3,
+   "resource_offset": 161872,
+   "length": 11536,
+   "pack": 10,
+   "pack_offset": 90120272,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 225,
+   "before_sha256": "253c3b6c2c20a5f7ef3a3d0f92941fa752509205fb49b91dd773dedf2795ba1f",
+   "after_sha256": "e39a5136dfef0df7c7c8993f7e275bf4c51ae9f82e5df9794cd6f24761a1bac3"
+  },
+  {
+   "selector": "10A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 81664,
+   "pack": 11,
+   "pack_offset": 270590064,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "327a30f6e87c026225c3141ed79249707da201bd6885a28c6a606b406a4b3d4e",
+   "after_sha256": "7f52a943e3e40cc76b11fb6d6eeaa96c337166a3d989f46929cca35f2d3c78d1"
+  },
+  {
+   "selector": "10A0",
+   "chunk": 2,
+   "resource_offset": 81776,
+   "length": 83872,
+   "pack": 11,
+   "pack_offset": 270671728,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "8730e03468e94d7ac6105efda7edeadaf68b54d5498655a347a18db7a7abba10",
+   "after_sha256": "7de5c185ccb985a69cabe2980aca121f02f2c12b7de92a4ddb36992c99e19647"
+  },
+  {
+   "selector": "10A0",
+   "chunk": 3,
+   "resource_offset": 165648,
+   "length": 11536,
+   "pack": 11,
+   "pack_offset": 270755600,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 248,
+   "before_sha256": "48c8f7b3479a34a91549a22b24a29bc7f796448e39b0045f2009f9aac7714b11",
+   "after_sha256": "64735902f3d359874879c6fb67c80b9b0c3378b552e5712ba828ad252755003a"
+  },
+  {
+   "selector": "10H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 68432,
+   "pack": 10,
+   "pack_offset": 104845424,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "c17c1adf5276d3ffe6514c0fb05cc44cc8184b2579f3ba828bf03eb1388ab132",
+   "after_sha256": "f8521903c6c295d887ec6f862684ca473e18efce7e60d223a3466768259c618d"
+  },
+  {
+   "selector": "10H0",
+   "chunk": 2,
+   "resource_offset": 68544,
+   "length": 83872,
+   "pack": 10,
+   "pack_offset": 104913856,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "8730e03468e94d7ac6105efda7edeadaf68b54d5498655a347a18db7a7abba10",
+   "after_sha256": "7de5c185ccb985a69cabe2980aca121f02f2c12b7de92a4ddb36992c99e19647"
+  },
+  {
+   "selector": "10H0",
+   "chunk": 3,
+   "resource_offset": 152416,
+   "length": 10272,
+   "pack": 10,
+   "pack_offset": 104997728,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 251,
+   "before_sha256": "a874867b907d34c0c7085ef4b2a248b41b29cd85ca15b9343b6719293675fab3",
+   "after_sha256": "3648ba5a35650886e201e8e8b7a32e1a45e68d6069e2062c9c887ae4252949c4"
+  },
+  {
+   "selector": "11A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79872,
+   "pack": 11,
+   "pack_offset": 280948848,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "d39455f410924e95fb6fe081c9b87212b9555255e1bebefe713d4800eba80538",
+   "after_sha256": "39edf892fcbb4374adcb96659afacedccdba6772fee058fd8ea43543140483b4"
+  },
+  {
+   "selector": "11A0",
+   "chunk": 2,
+   "resource_offset": 79984,
+   "length": 86400,
+   "pack": 11,
+   "pack_offset": 281028720,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "a2a706bc1d3b57a652441d9e380bf6814c454fefc5dd5f466358a0052fdb4b1c",
+   "after_sha256": "827fd87e467be028e2d6ffd259bee3affdaf1a8fd658407bac8c04670e749b24"
+  },
+  {
+   "selector": "11A0",
+   "chunk": 3,
+   "resource_offset": 166384,
+   "length": 10464,
+   "pack": 11,
+   "pack_offset": 281115120,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 165,
+   "before_sha256": "75768574669521878e4e346007ac466d1026f5d9fbe444eb53348a82dba7bb48",
+   "after_sha256": "88d912691900af528a1de534d7394586ca964aa9984890d9f4d7e0a9dd266294"
+  },
+  {
+   "selector": "11H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 66624,
+   "pack": 10,
+   "pack_offset": 115153008,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "64c7205fb56edaad4875889f5f63fd7ff5c2856b4d7a6643a137d9f34ebd2e80",
+   "after_sha256": "b8796df1b6275d4aed2db00d9ffafe0a76f8e374b1c86009f060a865e316fdf1"
+  },
+  {
+   "selector": "11H0",
+   "chunk": 2,
+   "resource_offset": 66736,
+   "length": 86400,
+   "pack": 10,
+   "pack_offset": 115219632,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e6830954b447d238c66c190519c55d71ed5e83b0b6ec081066912ce7b4396bae",
+   "after_sha256": "ba99393104b19a0ee57ff2b79e89cd03c5ae37280660b1d23bd9b0b27f7d72ee"
+  },
+  {
+   "selector": "11H0",
+   "chunk": 3,
+   "resource_offset": 153136,
+   "length": 7104,
+   "pack": 10,
+   "pack_offset": 115306032,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 164,
+   "before_sha256": "ea5dd66aa8749f2ab9ea6445603e3d4e53fa5c04dcae20ede954194f3d6962f8",
+   "after_sha256": "f3bf2266f82b27007bbd38a77016b054e1915696ce928eba3c3f988556892187"
+  },
+  {
+   "selector": "12A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78128,
+   "pack": 11,
+   "pack_offset": 292839536,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "1592513a63abcbc017460b108de356875e31362df6a2651ca5a5a0290e6362cf",
+   "after_sha256": "231c120fd87a7232d77fa38f566fc1bfa22a7e18467c16e5f0ac75ea71020544"
+  },
+  {
+   "selector": "12A0",
+   "chunk": 2,
+   "resource_offset": 78240,
+   "length": 73024,
+   "pack": 11,
+   "pack_offset": 292917664,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "ea2d587d457a5d816b9dbc0055df0ce51994c407bad83799e82c178f6a46a58a",
+   "after_sha256": "06db82fec437c15940bca8bfd7082dfc110027ee694024bbafb89b0698d4811f"
+  },
+  {
+   "selector": "12A0",
+   "chunk": 3,
+   "resource_offset": 151264,
+   "length": 12416,
+   "pack": 11,
+   "pack_offset": 292990688,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 174,
+   "before_sha256": "b65534030b9862f1cb4b796ada254fd7d34333c61ae89d2298279d1a1fc98c83",
+   "after_sha256": "a92c7417bf61426f9cad608ea376f9c24e95d20713134ae6eb6dacb6b7ab7adf"
+  },
+  {
+   "selector": "12H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 63536,
+   "pack": 10,
+   "pack_offset": 126939248,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "e31f41cc3d9c4b3641bc3f2b250fad16a32b3991b6d398c7e101899a411ec5e4",
+   "after_sha256": "03eb802a570a931601587fb145cf5261bc110cdcb1f6040866712140cf222274"
+  },
+  {
+   "selector": "12H0",
+   "chunk": 2,
+   "resource_offset": 63648,
+   "length": 89472,
+   "pack": 10,
+   "pack_offset": 127002784,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "8af9a06ef11e279474eec3d51a9572a0712989ad6cb8037f6a946cdda5fb3134",
+   "after_sha256": "999ce983f2c2fb222f89ee2a9c2cf08d47f1aff47843de59b2759818abc05984"
+  },
+  {
+   "selector": "12H0",
+   "chunk": 3,
+   "resource_offset": 153120,
+   "length": 12272,
+   "pack": 10,
+   "pack_offset": 127092256,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 173,
+   "before_sha256": "4cde4a89a4f3b4f5015b5c7f7fe74233e9c2bcba3dc528f4f7eae106e8128de4",
+   "after_sha256": "2a76490a2a1ab61227300886a224bb08ddfee7cd91f44aa20b4f3b6b560b7538"
+  },
+  {
+   "selector": "13A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 84992,
+   "pack": 11,
+   "pack_offset": 303677552,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 187,
+   "before_sha256": "5d54f246c02afc1eacb8a91f5f29c48570f5ca8979b021657468937e03b0193d",
+   "after_sha256": "6a92cf5b9dd4ee21989a6b85398cd686fd14f13c218fdfc4bc2de2f7449918de"
+  },
+  {
+   "selector": "13A0",
+   "chunk": 2,
+   "resource_offset": 85104,
+   "length": 88416,
+   "pack": 11,
+   "pack_offset": 303762544,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "08c31b71eed8d5243042b52996ac908e16e779e7d42750b22c420c9e43894ac3",
+   "after_sha256": "8336c44b8ab5952946b7be2e174a0aeb495c3c895788e7711cd17e6720c42b33"
+  },
+  {
+   "selector": "13A0",
+   "chunk": 3,
+   "resource_offset": 173520,
+   "length": 11552,
+   "pack": 11,
+   "pack_offset": 303850960,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "4c89f4478255a0c6dfee6e527f53ea4deec0b3281afff7f4eb7ba144f002b03d",
+   "after_sha256": "a0be6fe41f3fe3cf9cfe3e251e4ae15548a0d2f3265aba80b921f4c8daab7d3e"
+  },
+  {
+   "selector": "13H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78496,
+   "pack": 10,
+   "pack_offset": 137730160,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9662b1f31f60971545560928ff9f8dd6ac3bc946b7446359abe3df685b5a761c",
+   "after_sha256": "17a7db072d57612de1be0f7c7a35678a1d3a71df14d307248b026a781b2422ed"
+  },
+  {
+   "selector": "13H0",
+   "chunk": 2,
+   "resource_offset": 78608,
+   "length": 86672,
+   "pack": 10,
+   "pack_offset": 137808656,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "d1d916169db581fe24443dac043c461cef8b4a1f530b714c464e21eacb291eff",
+   "after_sha256": "6328eb1e25b9587ec4f2cdd111cb8400a5c57dfb09642aeaa5da44c3a32accc8"
+  },
+  {
+   "selector": "13H0",
+   "chunk": 3,
+   "resource_offset": 165280,
+   "length": 11504,
+   "pack": 10,
+   "pack_offset": 137895328,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 250,
+   "before_sha256": "53782587ac3d96e204883b95fc0fd7dc6583e1976402486031e39ce15668b158",
+   "after_sha256": "3fb019d8a52b0005ebf0a29a20830a021cba6c5bdfbf01bb28716abf14206dbe"
+  },
+  {
+   "selector": "14A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78560,
+   "pack": 11,
+   "pack_offset": 312733808,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "21f5f9d3052e40f2ac57993d29f94484cc404fed5fa6de8cd5fe6d604c22de2c",
+   "after_sha256": "1f20595fc64c1dc5380ff573bd390120b46d5ac540bb80c479cd37d47d213310"
+  },
+  {
+   "selector": "14A0",
+   "chunk": 2,
+   "resource_offset": 78672,
+   "length": 76064,
+   "pack": 11,
+   "pack_offset": 312812368,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f61423637084bd908a27693d2696a961783125b58d6473f9604a46e902d643b2",
+   "after_sha256": "68d9944d4c3e4d43f2693fce91f86a55f8233a8175194196221a62293522d285"
+  },
+  {
+   "selector": "14A0",
+   "chunk": 3,
+   "resource_offset": 154736,
+   "length": 11232,
+   "pack": 11,
+   "pack_offset": 312888432,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "4c20dabea107dbc1fa732af4a1adac902696be87e3f4f10438f72b36b1051573",
+   "after_sha256": "23c43da6d047e648bf627228236f16b5afd687656421486ce36a42e212e186cd"
+  },
+  {
+   "selector": "14H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 65696,
+   "pack": 10,
+   "pack_offset": 146708592,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f3795f14f8651218098c628f1102fe9bddb3113fd6b5e19a2c846366752c20bb",
+   "after_sha256": "9c65d496c5a8be76da84a2ef5714d1a939c4c9b6629361669014bcb1de720331"
+  },
+  {
+   "selector": "14H0",
+   "chunk": 2,
+   "resource_offset": 65808,
+   "length": 83568,
+   "pack": 10,
+   "pack_offset": 146774288,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "dfe7f6907476e2f4905abe3dc7ab85c270d77bc97075b09fc1bf24ebe039074e",
+   "after_sha256": "daf664406d43f174fca73fb0f53af1319d5d9fab108bc8985c67b3051017a7ac"
+  },
+  {
+   "selector": "14H0",
+   "chunk": 3,
+   "resource_offset": 149376,
+   "length": 10736,
+   "pack": 10,
+   "pack_offset": 146857856,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b4c839289db2acf4f1a03f917a6d34b848669f0b890b628743972f22324d1307",
+   "after_sha256": "12d53d6fed27e714b9886e33b4a4312e1bc725bdcd04f744b27267c5b4340b19"
+  },
+  {
+   "selector": "15A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79984,
+   "pack": 11,
+   "pack_offset": 329646192,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "ca7825a0a19adec9bd6fb3cab7936df5a6718693fa6cbad27bb51d8c0ca62970",
+   "after_sha256": "c3659f351888aa7b0f84ba2052d81f6dc03ef4c3ff3f7c5b679cf137dbea3144"
+  },
+  {
+   "selector": "15A0",
+   "chunk": 2,
+   "resource_offset": 80096,
+   "length": 87504,
+   "pack": 11,
+   "pack_offset": 329726176,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "aab5c84964e1f30a8fae8c316bf09db6cf4f48fa4f8f52ed787b1d7ec7b02b15",
+   "after_sha256": "f44a6462f2f665b7b472e56ee49172458a50ed18f101acc93c6b856e6bbb8634"
+  },
+  {
+   "selector": "15A0",
+   "chunk": 3,
+   "resource_offset": 167600,
+   "length": 11520,
+   "pack": 11,
+   "pack_offset": 329813680,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 205,
+   "before_sha256": "b4842a4fc0d8d36ee178ff74b293751812fcb32cce24bb91d2654e6c8997dd1d",
+   "after_sha256": "6b25067bd996cb84944d35bc1d9717d6118e5ba6b3685d574aaa3d5d4a295abf"
+  },
+  {
+   "selector": "15H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 63856,
+   "pack": 10,
+   "pack_offset": 163471472,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "2e83e3707b7354cc2c65074c5ebda9aaa575405fb2f2951d72be987fed1a13ec",
+   "after_sha256": "908c5b7070b6cfc758423f4c30ad854d0ce26a7939daf65ef59f508a3def31fb"
+  },
+  {
+   "selector": "15H0",
+   "chunk": 2,
+   "resource_offset": 63968,
+   "length": 87504,
+   "pack": 10,
+   "pack_offset": 163535328,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "122e9bc5b204e4a5ad1bd6b14798cc256f42209ec3123f0825d346435062f331",
+   "after_sha256": "321b121050c0150a9cbbe663c7c07fefbc1d7862ef92ea54ee5d403f9f312c19"
+  },
+  {
+   "selector": "15H0",
+   "chunk": 3,
+   "resource_offset": 151472,
+   "length": 10368,
+   "pack": 10,
+   "pack_offset": 163622832,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 212,
+   "before_sha256": "8946165196b073a7d882bc4bc7c5c315c1d23d1fae35e84b4ca352fc887a10ac",
+   "after_sha256": "c6ece0901629a53094b07ebb8c725698367f4af9aa59911e1dfab99419a1e65b"
+  },
+  {
+   "selector": "16A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79824,
+   "pack": 11,
+   "pack_offset": 340144240,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 253,
+   "before_sha256": "8da9e72efa4d5d06bd5b867800f67ee89136e1576d7116f75a4c26052bc87b20",
+   "after_sha256": "4b250cf00ffc6854e3fe0ee474de6dea21af4e6fd2d6b77a0a68d270bed4c5a1"
+  },
+  {
+   "selector": "16A0",
+   "chunk": 2,
+   "resource_offset": 79936,
+   "length": 68048,
+   "pack": 11,
+   "pack_offset": 340224064,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "0a6df3dbfa62f6d4868fe05160cd4e1749c860aae5647e76e28474a83dcd16ad",
+   "after_sha256": "2b63bdd959c7a910129835e95335c498788e0baa2826809bfdbed1fa32ab1910"
+  },
+  {
+   "selector": "16A0",
+   "chunk": 3,
+   "resource_offset": 147984,
+   "length": 11408,
+   "pack": 11,
+   "pack_offset": 340292112,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0fab5c37fc2a6a1ddd6e4804330dfce4cf469047560e04b29a060674ceb7bc5d",
+   "after_sha256": "8bc7f06b898cc1765d12a6b2d472d194585bfe5b15e28e19ee87aca1bd0644bb"
+  },
+  {
+   "selector": "16H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 69760,
+   "pack": 10,
+   "pack_offset": 173860976,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "31f52a73a26f683cd4576a682c0eb33e873cfe0f96ba1e6b55e8b4a3ec19700f",
+   "after_sha256": "e846e90098f98a4c81d9e23163f2d13db320814c1108fd7cc4c336b424178756"
+  },
+  {
+   "selector": "16H0",
+   "chunk": 2,
+   "resource_offset": 69872,
+   "length": 92800,
+   "pack": 10,
+   "pack_offset": 173930736,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b741a8df41e914c02dfa82de2019e7fcd210a5aded260ee3e85d6e628094df1a",
+   "after_sha256": "87caca81106d28bbd39d64115b1bb8b2a9537392fb43f2c051a6d6a80b079b16"
+  },
+  {
+   "selector": "16H0",
+   "chunk": 3,
+   "resource_offset": 162672,
+   "length": 9776,
+   "pack": 10,
+   "pack_offset": 174023536,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "3bfa17932528eff6cfc817f5e830ad7b0257df7735d30407da7b07b08bf0d962",
+   "after_sha256": "a199bfea92452cec2ed887640dfa97f7f0bc9a5e78f46c04db302c00d8ae1629"
+  },
+  {
+   "selector": "17A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 77888,
+   "pack": 11,
+   "pack_offset": 358467696,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "55e5eab4c4785b4370c356773b3d53d51a9bbcb5cfaf675abaea55d3d5fd6310",
+   "after_sha256": "78fd771371a7583bd7edd9188043eaee0faa0ab6a4032a9de055365861815ccd"
+  },
+  {
+   "selector": "17A0",
+   "chunk": 2,
+   "resource_offset": 78000,
+   "length": 88832,
+   "pack": 11,
+   "pack_offset": 358545584,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "f06acc83e788d10380772cb33cf4fbb139a08419cf9362b44fc9a37a87a801a5",
+   "after_sha256": "07c88c87223b4abc6afe1e8fd8f0e4bea3ab70d272676d18af3641d9ac796a31"
+  },
+  {
+   "selector": "17A0",
+   "chunk": 3,
+   "resource_offset": 166832,
+   "length": 11232,
+   "pack": 11,
+   "pack_offset": 358634416,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "33d8241db8698bbd9dfa0c2cfced3e44f4c0254d510aa4607d0fc666f2f57e37",
+   "after_sha256": "e353b9ec9753d8af524dc43edbb41552587424741304e2475cacafc2964dda67"
+  },
+  {
+   "selector": "17H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 73568,
+   "pack": 10,
+   "pack_offset": 192145520,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b86bef5ce3ae12d2052a5a3ba0ba9bd6282b0472968bf9673d55fded2230f20c",
+   "after_sha256": "914d87959a78a1dbd65abcca48b265afbb9965a91c6c3238b0115129cb8e335d"
+  },
+  {
+   "selector": "17H0",
+   "chunk": 2,
+   "resource_offset": 73680,
+   "length": 88832,
+   "pack": 10,
+   "pack_offset": 192219088,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "f06acc83e788d10380772cb33cf4fbb139a08419cf9362b44fc9a37a87a801a5",
+   "after_sha256": "07c88c87223b4abc6afe1e8fd8f0e4bea3ab70d272676d18af3641d9ac796a31"
+  },
+  {
+   "selector": "17H0",
+   "chunk": 3,
+   "resource_offset": 162512,
+   "length": 9488,
+   "pack": 10,
+   "pack_offset": 192307920,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "20ab58e1eb732b5aab065c36ebfdd74aad0deb57b3740c8751a1523df387c8b1",
+   "after_sha256": "2b6008462566e98283285f9db507d47714318984e44baea3954aea5ad51fe02b"
+  },
+  {
+   "selector": "18A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 76672,
+   "pack": 11,
+   "pack_offset": 372076656,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "a8c6e0ccb2fbcf6a5f08fe591876e190fff7bdb710908a36363ac8e516167483",
+   "after_sha256": "4873474e757bc57b5af9733de256d7432ae94eef5f7eafa25835e4ac622c28f7"
+  },
+  {
+   "selector": "18A0",
+   "chunk": 2,
+   "resource_offset": 76784,
+   "length": 87936,
+   "pack": 11,
+   "pack_offset": 372153328,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b4adea5a3de62599f45d18b84b76f952c40f0af003570ac4a029db4e5a20770b",
+   "after_sha256": "d60864bbdc6591cf4238ded93623e958882f5495a6295ba92ccb28cedf4aae98"
+  },
+  {
+   "selector": "18A0",
+   "chunk": 3,
+   "resource_offset": 164720,
+   "length": 10464,
+   "pack": 11,
+   "pack_offset": 372241264,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 249,
+   "before_sha256": "7afc5bcdf623ff6cd6c9ecf6257ae9e8acf929a53d8ee9f4de1cf3bcef30db87",
+   "after_sha256": "e0809aa029f7eceb312b10782f844a1ca854f3a32b001fe7ba47bbd62336f0df"
+  },
+  {
+   "selector": "18H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 65312,
+   "pack": 10,
+   "pack_offset": 205500528,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "c4b335f896a90e4141e00f755d2bae20ece65f8eb60be1599ba49193748ae576",
+   "after_sha256": "18e0af76a12927f971e765e9a195da1e2ffc2cee84adb75d99cd54986f13bb0a"
+  },
+  {
+   "selector": "18H0",
+   "chunk": 2,
+   "resource_offset": 65424,
+   "length": 87936,
+   "pack": 10,
+   "pack_offset": 205565840,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9bfb9c86cd1e610c26adf6105d007f9133e008226ebae309a311aed642517cfc",
+   "after_sha256": "9161ad62fb68735a8bfb02264dfcfb28ba3cb21a993a5fc33b0fd5952bfc3a7f"
+  },
+  {
+   "selector": "18H0",
+   "chunk": 3,
+   "resource_offset": 153360,
+   "length": 8704,
+   "pack": 10,
+   "pack_offset": 205653776,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 160,
+   "before_sha256": "d92eb47e481ee5607eed4f6e6ee727e4a19fe802c6b05f4558b5dc56ab442aff",
+   "after_sha256": "0534dc4a22cecd04d87a040a0f34688085fcbc4014347f2d7d05e336cb9221b8"
+  },
+  {
+   "selector": "19A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78368,
+   "pack": 11,
+   "pack_offset": 383977584,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "2986ceda3d463ca8d3df48e5eb55bb249f3eebb02e71fb0c94c372866fbbef91",
+   "after_sha256": "77b00b797d8842244bd0fc2d9fae6d33f414433b69144a9d6da99d7554f74218"
+  },
+  {
+   "selector": "19A0",
+   "chunk": 2,
+   "resource_offset": 78480,
+   "length": 87344,
+   "pack": 11,
+   "pack_offset": 384055952,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "efc25a68390aaeae95483af1e08e0cc0b75ca0cff033e5843d97e8dc324fc17e",
+   "after_sha256": "4701a8b71ef8a423860e9eeaee7d10d73ca451c3f4b7092a8c43963899dae9f0"
+  },
+  {
+   "selector": "19A0",
+   "chunk": 3,
+   "resource_offset": 165824,
+   "length": 8240,
+   "pack": 11,
+   "pack_offset": 384143296,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 182,
+   "before_sha256": "c4e3274d855aef54dfbe51bcc75defb10d7a82bd7fa5664194d37b08d8338160",
+   "after_sha256": "a1431e43b87b0b789df4ec851932050165121abe2face96fdee299ffcf6a975b"
+  },
+  {
+   "selector": "19H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 68656,
+   "pack": 10,
+   "pack_offset": 217282672,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e1b4a067786703b8761f15f1fd00ab6beb6f1949a0fc9f10157a59ea3a81ec99",
+   "after_sha256": "e036b4f4ac34dbaf5755d519c3a06cf762b9d6b7fc4d30d56b11e7c6dd58c027"
+  },
+  {
+   "selector": "19H0",
+   "chunk": 2,
+   "resource_offset": 68768,
+   "length": 87344,
+   "pack": 10,
+   "pack_offset": 217351328,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f49b1c015d1b9104f185829690a2f12608835db6232b33fce88d78d71200eafa",
+   "after_sha256": "2f7a909582328a477664c7e78a040cb03db73173efd35b012079f8b3b1db5f1e"
+  },
+  {
+   "selector": "19H0",
+   "chunk": 3,
+   "resource_offset": 156112,
+   "length": 10960,
+   "pack": 10,
+   "pack_offset": 217438672,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 184,
+   "before_sha256": "47d013fc3b6b5d4984c19639013078a04fc4cfce7f574b1afc5424011cdebabe",
+   "after_sha256": "2180e7924ff2327920f4dc7c74b3c65d1136540e63cae7c80f94c3e7c376c68a"
+  },
+  {
+   "selector": "20A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 87968,
+   "pack": 11,
+   "pack_offset": 395882608,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 137,
+   "before_sha256": "bf7235d038be1627ff49d4ecfff69e734291a020981629feb34b63b18248df2a",
+   "after_sha256": "b7602bd4ea5b5d8f1b7e6bb9bd3e82215a9efb8db6af31d741d79b95fe75408a"
+  },
+  {
+   "selector": "20A0",
+   "chunk": 2,
+   "resource_offset": 88080,
+   "length": 92336,
+   "pack": 11,
+   "pack_offset": 395970576,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "79ac8d2d1bb3e301d38e4bffaea77a18ad0c6334a37c4a7129845a06f5ed765e",
+   "after_sha256": "3d21cf0d7a37050107abdc97f0970502232146854879540681771bf7bb3ae645"
+  },
+  {
+   "selector": "20A0",
+   "chunk": 3,
+   "resource_offset": 180416,
+   "length": 10464,
+   "pack": 11,
+   "pack_offset": 396062912,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 135,
+   "before_sha256": "b97bbf43e8ba5720e532c72e18967174c3c8e430bac38dc639e732e9f66426ed",
+   "after_sha256": "2bb94c636ed84cf34824ba6b00aed6484760cc1d502497415a3070d93bfcfa7f"
+  },
+  {
+   "selector": "20H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 66432,
+   "pack": 10,
+   "pack_offset": 229161072,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 209,
+   "before_sha256": "0b1212186a92e453fcfee96e95f5b7bea5f7c3bb72700518a4c61a9106ad8d8b",
+   "after_sha256": "44f661a93574bb77ae1d072f4eda72514371876322230895276c801b8bdde74d"
+  },
+  {
+   "selector": "20H0",
+   "chunk": 2,
+   "resource_offset": 66544,
+   "length": 92336,
+   "pack": 10,
+   "pack_offset": 229227504,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "79ac8d2d1bb3e301d38e4bffaea77a18ad0c6334a37c4a7129845a06f5ed765e",
+   "after_sha256": "3d21cf0d7a37050107abdc97f0970502232146854879540681771bf7bb3ae645"
+  },
+  {
+   "selector": "20H0",
+   "chunk": 3,
+   "resource_offset": 158880,
+   "length": 5680,
+   "pack": 10,
+   "pack_offset": 229319840,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 152,
+   "before_sha256": "adec3bf6979cb1558fdc4a5c999f8d588d10ad5b92376af6909ec96924c0d221",
+   "after_sha256": "ed6ba97b96ce74b1936955987c439ec6bb377b65512a4e24257004e717d16084"
+  },
+  {
+   "selector": "21A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78096,
+   "pack": 11,
+   "pack_offset": 403423344,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "fa739501ba3e347f8ca3d58d95c28707fbee36baf8e1d9b331fd5db5f7912e37",
+   "after_sha256": "505082c95532f5176aa6712cb42380a2633f1151863ce6ca5a68c97a796f8fa7"
+  },
+  {
+   "selector": "21A0",
+   "chunk": 2,
+   "resource_offset": 78208,
+   "length": 79168,
+   "pack": 11,
+   "pack_offset": 403501440,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "ff7f41fe1b47a9b4370706fd1894868c8840e708f87bb63c55fb374e59c85a54",
+   "after_sha256": "7bd21ab2f9ba2a0a57a4dcf5063bba35affa4566468baed37d68bf681486a08a"
+  },
+  {
+   "selector": "21A0",
+   "chunk": 3,
+   "resource_offset": 157376,
+   "length": 12352,
+   "pack": 11,
+   "pack_offset": 403580608,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "4358365a3acb71685c0035bc0e97734d4fb8a95be854d3fff56bb88f74fda3df",
+   "after_sha256": "cc155b60f717ed8f80b2e52eb9c1f079047451158f1493bde982e4f26452685e"
+  },
+  {
+   "selector": "21H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 63552,
+   "pack": 10,
+   "pack_offset": 236529776,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "c6ced583f41f52a69b73c386e4ac7fc2db74181e6fad768442dbdccbfbb2e62a",
+   "after_sha256": "e5fd5014da2dc807c61bf0727588ff751789074ef1b14e5039c7e90f02dc5754"
+  },
+  {
+   "selector": "21H0",
+   "chunk": 2,
+   "resource_offset": 63664,
+   "length": 85568,
+   "pack": 10,
+   "pack_offset": 236593328,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "952410bb50196edc1be501fdfdc060a6ee45b398514f047b6bc9fc35798f884c",
+   "after_sha256": "3c3630b379359abaf0cae160ebd96635ec78fd22f34fdcd33a7cee30d8749e71"
+  },
+  {
+   "selector": "21H0",
+   "chunk": 3,
+   "resource_offset": 149232,
+   "length": 10944,
+   "pack": 10,
+   "pack_offset": 236678896,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "dd0390c1a464737e390beef470c9ff7af7aa28fef9a7907f98acfb9d8b9dc5f2",
+   "after_sha256": "cf33da591735689d2642b6930e3d014cc41e5d9b245caa0ac30a407316f92745"
+  },
+  {
+   "selector": "22A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 81296,
+   "pack": 11,
+   "pack_offset": 426238064,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "cffbbd103aea32b825fb6bd2576b9259fcb5d95496b49b961a2e29401900b0f3",
+   "after_sha256": "66176514e41e25254f93fce312e8ebc588ae47dfb9d8fe10d33ee2d002b3bb64"
+  },
+  {
+   "selector": "22A0",
+   "chunk": 2,
+   "resource_offset": 81408,
+   "length": 77856,
+   "pack": 11,
+   "pack_offset": 426319360,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "c666ba7567ad1deb76b97f2591d18278131003da0a9335c47d93895d97024f09",
+   "after_sha256": "25f11027f5c732c7d351d668a660f8beb11cc0f3f34ee8cd00113d5a67b111a3"
+  },
+  {
+   "selector": "22A0",
+   "chunk": 3,
+   "resource_offset": 159264,
+   "length": 11344,
+   "pack": 11,
+   "pack_offset": 426397216,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 228,
+   "before_sha256": "ad7564bfe985410b71ef7513fefaa593e1667cf83cd8c230e8d5653fd3c0c0a6",
+   "after_sha256": "6affd26632e8fe7468f4c7f8ecaf8039c304ecd907cef1aa78d8e7b735c08aea"
+  },
+  {
+   "selector": "22H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 59280,
+   "pack": 10,
+   "pack_offset": 259231856,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "6b91fc8d7437e948a1e2727b8827e7a464c499279c999fe69764cd8c8d0df7ae",
+   "after_sha256": "adf83e3d59452dd8b0fc45615823f84e4b74ae1e93b5558c82e92d9668a39bda"
+  },
+  {
+   "selector": "22H0",
+   "chunk": 2,
+   "resource_offset": 59392,
+   "length": 77856,
+   "pack": 10,
+   "pack_offset": 259291136,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "c666ba7567ad1deb76b97f2591d18278131003da0a9335c47d93895d97024f09",
+   "after_sha256": "25f11027f5c732c7d351d668a660f8beb11cc0f3f34ee8cd00113d5a67b111a3"
+  },
+  {
+   "selector": "22H0",
+   "chunk": 3,
+   "resource_offset": 137248,
+   "length": 10736,
+   "pack": 10,
+   "pack_offset": 259368992,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 230,
+   "before_sha256": "145d0cb7aa26cc52207b190a5c1a6f1bfcb47c368f90c5f69aab7feaaf938455",
+   "after_sha256": "3f96b70aeb08409a7adfc8b2bd0fc6b1bcb26d533522d11390622469b773d7eb"
+  },
+  {
+   "selector": "23A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 80880,
+   "pack": 11,
+   "pack_offset": 434985072,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 246,
+   "before_sha256": "c5b4f5fdbe1be1e4f3279e5823bd5827057301ec81933ef9bb21b8babbbcc814",
+   "after_sha256": "00099fd4a7af21a69482f00dfc58a310cddaf1dd8240981089add427f4793ba1"
+  },
+  {
+   "selector": "23A0",
+   "chunk": 2,
+   "resource_offset": 80992,
+   "length": 85280,
+   "pack": 11,
+   "pack_offset": 435065952,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "043b0d9c54cb5dab17d47f42a60efbc8567f6a2f42a4ded142739d3b4a8d2f28",
+   "after_sha256": "f108570a939d96eff73ccccdc1423fe302c43914f44ea3d728700d5e5a2093e0"
+  },
+  {
+   "selector": "23A0",
+   "chunk": 3,
+   "resource_offset": 166272,
+   "length": 9744,
+   "pack": 11,
+   "pack_offset": 435151232,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 253,
+   "before_sha256": "bde538373446a998f9c86bf735fd56bb72f991a529305ef5909d96aefbd32eeb",
+   "after_sha256": "3547f39f7d7fbd36ab3b0725787c1ab82aaa9f3811c82e68ce3ba7d30d3a70fd"
+  },
+  {
+   "selector": "23A10",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 81216,
+   "pack": 11,
+   "pack_offset": 438044784,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0eccc5e348068e878ed4a5af5efc12715ba384dc352bd18f2843f9994e7f7aa4",
+   "after_sha256": "ad5cccb3f2c8d7aa85f0e688e03818bd9e513f70cb71c4f8610f4d335aaf80ec"
+  },
+  {
+   "selector": "23A10",
+   "chunk": 2,
+   "resource_offset": 81328,
+   "length": 70944,
+   "pack": 11,
+   "pack_offset": 438126000,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "a4e285be4fde729253702e1bbc28ddd157c81283c7b18be7f588eabc98695f11",
+   "after_sha256": "ad859c07ea394a5c540af304cf11583306ee2c9e3433204d86cd2f24990891b2"
+  },
+  {
+   "selector": "23A10",
+   "chunk": 3,
+   "resource_offset": 152272,
+   "length": 9680,
+   "pack": 11,
+   "pack_offset": 438196944,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 165,
+   "before_sha256": "4119fcd72766460b02dfb23cc5a0ed23343dd62ec17efe7dcddd9f7c0361d1ee",
+   "after_sha256": "622d59533042c3fad38225826ed6aa3cf81d16c0ed7bc63a9c446fbe0f47cf98"
+  },
+  {
+   "selector": "23A11",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 67312,
+   "pack": 11,
+   "pack_offset": 439574640,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 244,
+   "before_sha256": "a6050f1a120bf466c34aed3011290d303f37cb24343c4055fa21a3d3957dfddb",
+   "after_sha256": "1d91dc769cf177c27c40e92194df91ba0965052a3a4ae1b6f7e3d8a38902d633"
+  },
+  {
+   "selector": "23A11",
+   "chunk": 2,
+   "resource_offset": 67424,
+   "length": 74016,
+   "pack": 11,
+   "pack_offset": 439641952,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f4bcc7a6e3ec226018f312d7803f727cce2bb122aebb350e32ae1781ef10dd40",
+   "after_sha256": "9e065818d5e6f69070665b40c1ee3936a6169bb3f7d4a39601e420d17f0834d5"
+  },
+  {
+   "selector": "23A11",
+   "chunk": 3,
+   "resource_offset": 141440,
+   "length": 9744,
+   "pack": 11,
+   "pack_offset": 439715968,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "3154add4200937735cbcbb7ca1aaf5ddf2bbecca8070d0e02df1a339b3562c22",
+   "after_sha256": "ff67000abe46926311cc6460b7628ea5f21a4f0af118c1cb7196307fa409e570"
+  },
+  {
+   "selector": "23A12",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 70048,
+   "pack": 11,
+   "pack_offset": 441090160,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b55057f32e5a89520498347a38dd6d05cee78791434b6aedf9094f46623251e9",
+   "after_sha256": "9f12bd29a81ec7b7b7e053bb0601f725085e51e89a2892839368e8c16e30dbd6"
+  },
+  {
+   "selector": "23A12",
+   "chunk": 2,
+   "resource_offset": 70160,
+   "length": 69888,
+   "pack": 11,
+   "pack_offset": 441160208,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "008b990cdb7f5c2d74e25cb1dfaa099c214b9e1a3fbcb7de39cd4cf317bd5245",
+   "after_sha256": "45c5171c80cf5519ebf0a175615637e3f470566671e642257993f93cf2987389"
+  },
+  {
+   "selector": "23A12",
+   "chunk": 3,
+   "resource_offset": 140048,
+   "length": 10608,
+   "pack": 11,
+   "pack_offset": 441230096,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e0c571fbe348799fdebbca037a7a0a4f042833a75c22ed70985a4e0335a1575c",
+   "after_sha256": "5028f1119917da8cb67b0c02b12d5994defda8704f3b2398b6ff116f8f6a86d2"
+  },
+  {
+   "selector": "23H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 67312,
+   "pack": 10,
+   "pack_offset": 268013680,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "314a0ee294abb898bf8a0483c67df2e5a827be5ae94559d6a6c1603bac73ba19",
+   "after_sha256": "32aa3c368f34407e7b9423bc0564f9594e691943352fe9d3cd563273ea1a7e93"
+  },
+  {
+   "selector": "23H0",
+   "chunk": 2,
+   "resource_offset": 67424,
+   "length": 85280,
+   "pack": 10,
+   "pack_offset": 268080992,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "666d169debdec1ea5bf26f6c093d6f9ab7c5223fa0982ea8753f1f84c4ddf439",
+   "after_sha256": "f7dc56a8afe1c0ca00af6e9505a53ee19cec321fc3070734077a24a5c51ab772"
+  },
+  {
+   "selector": "23H0",
+   "chunk": 3,
+   "resource_offset": 152704,
+   "length": 9744,
+   "pack": 10,
+   "pack_offset": 268166272,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "851075f3108e05fb9ee24fb284d37ab347c393b06f9fa48dca069dd01f9ff37f",
+   "after_sha256": "aa356f81dced35d430ecac74a496ab9153bf21aaede8cf528054e2d7744a1e03"
+  },
+  {
+   "selector": "23H10",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 81216,
+   "pack": 10,
+   "pack_offset": 271040624,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0eccc5e348068e878ed4a5af5efc12715ba384dc352bd18f2843f9994e7f7aa4",
+   "after_sha256": "ad5cccb3f2c8d7aa85f0e688e03818bd9e513f70cb71c4f8610f4d335aaf80ec"
+  },
+  {
+   "selector": "23H10",
+   "chunk": 2,
+   "resource_offset": 81328,
+   "length": 70944,
+   "pack": 10,
+   "pack_offset": 271121840,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "a4e285be4fde729253702e1bbc28ddd157c81283c7b18be7f588eabc98695f11",
+   "after_sha256": "ad859c07ea394a5c540af304cf11583306ee2c9e3433204d86cd2f24990891b2"
+  },
+  {
+   "selector": "23H10",
+   "chunk": 3,
+   "resource_offset": 152272,
+   "length": 9680,
+   "pack": 10,
+   "pack_offset": 271192784,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 165,
+   "before_sha256": "4119fcd72766460b02dfb23cc5a0ed23343dd62ec17efe7dcddd9f7c0361d1ee",
+   "after_sha256": "622d59533042c3fad38225826ed6aa3cf81d16c0ed7bc63a9c446fbe0f47cf98"
+  },
+  {
+   "selector": "23H11",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 67312,
+   "pack": 10,
+   "pack_offset": 272570480,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 244,
+   "before_sha256": "a6050f1a120bf466c34aed3011290d303f37cb24343c4055fa21a3d3957dfddb",
+   "after_sha256": "1d91dc769cf177c27c40e92194df91ba0965052a3a4ae1b6f7e3d8a38902d633"
+  },
+  {
+   "selector": "23H11",
+   "chunk": 2,
+   "resource_offset": 67424,
+   "length": 74016,
+   "pack": 10,
+   "pack_offset": 272637792,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f4bcc7a6e3ec226018f312d7803f727cce2bb122aebb350e32ae1781ef10dd40",
+   "after_sha256": "9e065818d5e6f69070665b40c1ee3936a6169bb3f7d4a39601e420d17f0834d5"
+  },
+  {
+   "selector": "23H11",
+   "chunk": 3,
+   "resource_offset": 141440,
+   "length": 9744,
+   "pack": 10,
+   "pack_offset": 272711808,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "3154add4200937735cbcbb7ca1aaf5ddf2bbecca8070d0e02df1a339b3562c22",
+   "after_sha256": "ff67000abe46926311cc6460b7628ea5f21a4f0af118c1cb7196307fa409e570"
+  },
+  {
+   "selector": "23H12",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 70048,
+   "pack": 10,
+   "pack_offset": 274081904,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "b55057f32e5a89520498347a38dd6d05cee78791434b6aedf9094f46623251e9",
+   "after_sha256": "9f12bd29a81ec7b7b7e053bb0601f725085e51e89a2892839368e8c16e30dbd6"
+  },
+  {
+   "selector": "23H12",
+   "chunk": 2,
+   "resource_offset": 70160,
+   "length": 69888,
+   "pack": 10,
+   "pack_offset": 274151952,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "008b990cdb7f5c2d74e25cb1dfaa099c214b9e1a3fbcb7de39cd4cf317bd5245",
+   "after_sha256": "45c5171c80cf5519ebf0a175615637e3f470566671e642257993f93cf2987389"
+  },
+  {
+   "selector": "23H12",
+   "chunk": 3,
+   "resource_offset": 140048,
+   "length": 10608,
+   "pack": 10,
+   "pack_offset": 274221840,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e0c571fbe348799fdebbca037a7a0a4f042833a75c22ed70985a4e0335a1575c",
+   "after_sha256": "5028f1119917da8cb67b0c02b12d5994defda8704f3b2398b6ff116f8f6a86d2"
+  },
+  {
+   "selector": "24A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 83504,
+   "pack": 11,
+   "pack_offset": 454602864,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "0c1378e6d89ba61131862535890ec9e854c3a68f5f5ea17d6649a540b299e1eb",
+   "after_sha256": "aaa75c86c1089db03ea68ab84a903aa6e6c7185824a9dcc4dbc0f7194ffe35fc"
+  },
+  {
+   "selector": "24A0",
+   "chunk": 2,
+   "resource_offset": 83616,
+   "length": 77088,
+   "pack": 11,
+   "pack_offset": 454686368,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9aec5cbc9254eef43f85859fb0fd951e0db0cb8f61a2044d36e27ae1e0a0317f",
+   "after_sha256": "4063869f8af4a4a1dea1084c1f4fd6efba634ee8b5945d71760b12938a1e8918"
+  },
+  {
+   "selector": "24A0",
+   "chunk": 3,
+   "resource_offset": 160704,
+   "length": 10464,
+   "pack": 11,
+   "pack_offset": 454763456,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 156,
+   "before_sha256": "5d677e2e3015e39dae6214f43af78cb1e4aa3bad7d4eeaaca9900e4cead834dd",
+   "after_sha256": "2a26320defd2ec69567630702a90912f43ffb5b8651be92a92facac47bad5928"
+  },
+  {
+   "selector": "24H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 68464,
+   "pack": 10,
+   "pack_offset": 287567984,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9011cd4d8e8133bdef45795e2e8ad31f07afb39fe007c8c2ae18d19c983d6542",
+   "after_sha256": "bfc1451b977ea80d87009f4306e80891a9aa2345cff74f631b5fc123c95025a6"
+  },
+  {
+   "selector": "24H0",
+   "chunk": 2,
+   "resource_offset": 68576,
+   "length": 92224,
+   "pack": 10,
+   "pack_offset": 287636448,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "e26eef9a6408bacc23203077b2cb940522a995064e650f221c4341969750e5e5",
+   "after_sha256": "e92441e3b1b8f25a65e9861f6cb2ce8822cc5fda9f8fa7ab94a54f15cae3242a"
+  },
+  {
+   "selector": "24H0",
+   "chunk": 3,
+   "resource_offset": 160800,
+   "length": 8272,
+   "pack": 10,
+   "pack_offset": 287728672,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 155,
+   "before_sha256": "97ead39db45211d1a7d75c6f519b020787b785cc52ac97e87d191d81c9a58e3a",
+   "after_sha256": "cbe95b029ca713b61ab2a49e1c76e20ea37a28811c34a76e3ef1a8fd693aac27"
+  },
+  {
+   "selector": "25A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 84928,
+   "pack": 12,
+   "pack_offset": 14567536,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 236,
+   "before_sha256": "83de54e2ae2aa68ffdd5b328fbc2236ef9b95ad43a388f4f0d520999147edbcb",
+   "after_sha256": "b867bfb19fcda3ec6204c119cb58a40630290e11941ee03014873c5a2d31541a"
+  },
+  {
+   "selector": "25A0",
+   "chunk": 2,
+   "resource_offset": 85040,
+   "length": 79456,
+   "pack": 12,
+   "pack_offset": 14652464,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "381576f9dd03964094d0b9723987df4e464738e83dca0fac51e86e9c3aabe297",
+   "after_sha256": "09b7c9f038aca71e5265d691ffd49e4b33b7ec8c56e3495987df7997f7027524"
+  },
+  {
+   "selector": "25A0",
+   "chunk": 3,
+   "resource_offset": 164496,
+   "length": 11808,
+   "pack": 12,
+   "pack_offset": 14731920,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 169,
+   "before_sha256": "5608a035554b34298a29f8fe7752283e589fe2e37859d0f81aaeb3017a6a162a",
+   "after_sha256": "06e763fecfe5e33a1f3c97dbed2b3a92a58cac697790a6e8ef4c5a165be81041"
+  },
+  {
+   "selector": "25H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 66800,
+   "pack": 10,
+   "pack_offset": 305541232,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "83d9af58604f49a26873dbcc2b64855f9d401d5fbb44cb4a2f3be90e4189c6e9",
+   "after_sha256": "7c40426eda063edad812ff7054a93a558e9c773d1610d74177909eb6b3eae006"
+  },
+  {
+   "selector": "25H0",
+   "chunk": 2,
+   "resource_offset": 66912,
+   "length": 79456,
+   "pack": 10,
+   "pack_offset": 305608032,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "381576f9dd03964094d0b9723987df4e464738e83dca0fac51e86e9c3aabe297",
+   "after_sha256": "09b7c9f038aca71e5265d691ffd49e4b33b7ec8c56e3495987df7997f7027524"
+  },
+  {
+   "selector": "25H0",
+   "chunk": 3,
+   "resource_offset": 146368,
+   "length": 10848,
+   "pack": 10,
+   "pack_offset": 305687488,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 168,
+   "before_sha256": "77bbecbabbb15a35e602158dba59a727eab5d88ef78808999401f7e0995ad6b6",
+   "after_sha256": "09b24eba765dd17ed2519ee1cd864ed291a12aab9fab00f50e887c158cdbc875"
+  },
+  {
+   "selector": "26A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 79488,
+   "pack": 12,
+   "pack_offset": 26620016,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "8358868280766c354d9782cafbd3913e022936726d69f56d688763c12afbecc1",
+   "after_sha256": "30fd7320e6a1f6976171ce31f6447c798c1a9b496d9c40729eadcf37dc6849d8"
+  },
+  {
+   "selector": "26A0",
+   "chunk": 2,
+   "resource_offset": 79600,
+   "length": 77664,
+   "pack": 12,
+   "pack_offset": 26699504,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "9b72b303df01e5712ad097af0f8783955ca4de515d9171c821d33863029b0136",
+   "after_sha256": "218fbcc333e46d4ee6de558109d00aa994553c19b3816de5c2236ecca4ac8f9c"
+  },
+  {
+   "selector": "26A0",
+   "chunk": 3,
+   "resource_offset": 157264,
+   "length": 10320,
+   "pack": 12,
+   "pack_offset": 26777168,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "1bf6511838db9c62578801a5850d75ed062aa3b412101c9f92d8b70b9c520131",
+   "after_sha256": "9484716a99a515ad13ed97f3b6acd6cee7686f831b4ba395d90962e761760aa4"
+  },
+  {
+   "selector": "26H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 71056,
+   "pack": 11,
+   "pack_offset": 7174256,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "27cb91f9343eb8c98cb77969bc94fe32b0b82f57f00049e0ac9fdddb0f854ce7",
+   "after_sha256": "76a17da208fc9250e0c7b17e0d00734dbe9e2e11291c6c802695c9f2d70c9b47"
+  },
+  {
+   "selector": "26H0",
+   "chunk": 2,
+   "resource_offset": 71168,
+   "length": 87920,
+   "pack": 11,
+   "pack_offset": 7245312,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "9e33c618295258aaaaf40667477d3a498b25857977cb1001d0b774dc8a3fbcdc",
+   "after_sha256": "b20448e88a4a2429a729f2d274b681a846b1909d3b973c771302de13b3f64eaa"
+  },
+  {
+   "selector": "26H0",
+   "chunk": 3,
+   "resource_offset": 159088,
+   "length": 9680,
+   "pack": 11,
+   "pack_offset": 7333232,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "0eddb9a1bea75f861e9f82e34be09704d1f1b90f616ab2e6395578ab2609412d",
+   "after_sha256": "237c4a3ae2a29a9c434c8f5e07d63601099ccd7995ed5f720a473072482a0ec8"
+  },
+  {
+   "selector": "27A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 77424,
+   "pack": 12,
+   "pack_offset": 34195568,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "996a8c5fc81fd6b1d8002be1a225d7e1321018ec5d16c16aed719060b24c6e97",
+   "after_sha256": "1fcc5ad06385149b35a883e50eda11281132d08655e47c9ce8a19e936a67fc10"
+  },
+  {
+   "selector": "27A0",
+   "chunk": 2,
+   "resource_offset": 77536,
+   "length": 76384,
+   "pack": 12,
+   "pack_offset": 34272992,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "53698fecc194153b5b4f645dfd5f32af15e25ec67737d892e53997182a93e654",
+   "after_sha256": "5e8e7c0dea389be3ce3001472e23e21e377ade1c8e60a63dd85c1c828a39905c"
+  },
+  {
+   "selector": "27A0",
+   "chunk": 3,
+   "resource_offset": 153920,
+   "length": 11904,
+   "pack": 12,
+   "pack_offset": 34349376,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "dca03586a3c9d3bda28cb596b5e0b429b4831244d6542f6d30419feda12963f3",
+   "after_sha256": "4ebd4eee831bae540286b97948fb7d76d07cdf29537f67b283baefcf8d8e4a50"
+  },
+  {
+   "selector": "27H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 65776,
+   "pack": 11,
+   "pack_offset": 14723184,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "d6ed1edcc11b89461cc6754599f366491e50297a09bf7999d750fcd0914b764c",
+   "after_sha256": "2d5b010a93baea1442ef3ea2fdf2b7233c6bd3f3c9469a2b75e4d7d97ab5652b"
+  },
+  {
+   "selector": "27H0",
+   "chunk": 2,
+   "resource_offset": 65888,
+   "length": 76384,
+   "pack": 11,
+   "pack_offset": 14788960,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 254,
+   "before_sha256": "4a9f517f6ac32ba82fc4faacf8424c53bd3e0fb41b122d3bd31670d36f9644ac",
+   "after_sha256": "e5ca2ccb994f6c20af714bf5be27e39896c6904e45809c63cbf5925bb10f4ad4"
+  },
+  {
+   "selector": "27H0",
+   "chunk": 3,
+   "resource_offset": 142272,
+   "length": 10752,
+   "pack": 11,
+   "pack_offset": 14865344,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "3206e2a8a8581d7623cd77eee31fcb3c8eea3cd87ccf123849021537af4a4205",
+   "after_sha256": "419435f76fb1d076de7a78e23aa0a22e9fa178639e59350955b9591e9553d5db"
+  },
+  {
+   "selector": "28A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 75392,
+   "pack": 12,
+   "pack_offset": 46407792,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "419d62cb2d7cdb7519e6ec1bf3ef152496aadad30222290b21ccb37a5d85cff0",
+   "after_sha256": "0f5c51abb7b1c1b947e3f615022bbbe4ca5375e6b0c44cd58734b9c77b1373a8"
+  },
+  {
+   "selector": "28A0",
+   "chunk": 2,
+   "resource_offset": 75504,
+   "length": 76192,
+   "pack": 12,
+   "pack_offset": 46483184,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "011978c5d595d5a0d3765fa0c7d4d653d6f3adaa313e958278b48f1446490c80",
+   "after_sha256": "89539124534aeebecd504046ac668b74893b90c4108849d25a8f9c48e930edbc"
+  },
+  {
+   "selector": "28A0",
+   "chunk": 3,
+   "resource_offset": 151696,
+   "length": 11728,
+   "pack": 12,
+   "pack_offset": 46559376,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 182,
+   "before_sha256": "66e05f344c4ce0193e5a1b7f9afe8bc1cef9cc94eee66de7f89eeca75d6285c3",
+   "after_sha256": "db532cc35dc2e070f40db4626abd0cf288de22bdf302d9c9578f5295ba86489e"
+  },
+  {
+   "selector": "28H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 64416,
+   "pack": 11,
+   "pack_offset": 26929264,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "a35fec9d6419d8b3710ed8bd6ea1c4efc5bd4667b4a3909a914efd4f3a44ce14",
+   "after_sha256": "52d0a5604f4561d8dddee91838a1299ff30edb6ebe0c24171f26606cac7f2ec6"
+  },
+  {
+   "selector": "28H0",
+   "chunk": 2,
+   "resource_offset": 64528,
+   "length": 87488,
+   "pack": 11,
+   "pack_offset": 26993680,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9e45dcbb18a56e45939012cf64b09ea77fc7e2194d8ab271ed27a17b726fff39",
+   "after_sha256": "9f0ca4b01a37a8faa61136d9dc2d5e4335c55afb0ce9168faf3d8b98822ae4be"
+  },
+  {
+   "selector": "28H0",
+   "chunk": 3,
+   "resource_offset": 152016,
+   "length": 11152,
+   "pack": 11,
+   "pack_offset": 27081168,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 150,
+   "before_sha256": "b114f1575112128ab8c7dd9b003307fcb6adc79fe20a1850c32a0136c0578fbf",
+   "after_sha256": "1c2b7d9b4f0828439eafc3240d093ba86c7d8d3147b6c42f991f9465cf3b8161"
+  },
+  {
+   "selector": "29A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 76064,
+   "pack": 12,
+   "pack_offset": 59990128,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9bcf7ecba5abee3b2921d893bcb174309e474370851a7eecd840ba470e83bff6",
+   "after_sha256": "3870f91e50c7f57953e7898119797933e85437a3ef265a8774ba02a06aa7c6d2"
+  },
+  {
+   "selector": "29A0",
+   "chunk": 2,
+   "resource_offset": 76176,
+   "length": 81856,
+   "pack": 12,
+   "pack_offset": 60066192,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "d6e8a388cb5e5b94f7c2b9a82a23ba74dd74bbc7e3febad252c69fa632f41e7f",
+   "after_sha256": "9898593bfefd856c0bdedee4a308b610c1318db5f42dadbea8d79dfae99a5755"
+  },
+  {
+   "selector": "29A0",
+   "chunk": 3,
+   "resource_offset": 158032,
+   "length": 11616,
+   "pack": 12,
+   "pack_offset": 60148048,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 232,
+   "before_sha256": "e6a74ca773ee8b8d8754b008e78406aa9893ac3903af6bc962759d5429bc3ebd",
+   "after_sha256": "01cfa48b29e93a2e790e1311605577b58bf851149425af10fb0e5a994292e618"
+  },
+  {
+   "selector": "29H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 69024,
+   "pack": 11,
+   "pack_offset": 40480880,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 212,
+   "before_sha256": "01528c33981dd659aa0539f238f9f6564ca35b2cef441523d9d78cd6b9145ea3",
+   "after_sha256": "7648eecc80e2f9257e5c2c5499c2c3c5f748480a62ef26e4f74a0deb98c534d4"
+  },
+  {
+   "selector": "29H0",
+   "chunk": 2,
+   "resource_offset": 69136,
+   "length": 87856,
+   "pack": 11,
+   "pack_offset": 40549904,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "f137a6ae2f2f323b91902f7faf98391b3cfa50973bb4672bd84d35873e684fc1",
+   "after_sha256": "a84b9dd05f069a6441a99732e16406f1c7f9059dd8e67ed8444a3c6767782517"
+  },
+  {
+   "selector": "29H0",
+   "chunk": 3,
+   "resource_offset": 156992,
+   "length": 10512,
+   "pack": 11,
+   "pack_offset": 40637760,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 232,
+   "before_sha256": "aa0ad2857f28f26d2b57a72cfac0c46d46ed17ad38a6a8f7c68ec1f0c0be8d6c",
+   "after_sha256": "c1d393bf73c2ea3702e1409ecbc0c0b500590e255340043768beecc9e18f23ce"
+  },
+  {
+   "selector": "30A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 80144,
+   "pack": 12,
+   "pack_offset": 74950768,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "2aa22365bba1aabb93198112e2b9701bdd5e613443ff27c5c0ca7d841a8ffc76",
+   "after_sha256": "cc4d4df6a162dbec9ea24cd4f31e9c0a77c332ae9d11deaaa3257de036222e44"
+  },
+  {
+   "selector": "30A0",
+   "chunk": 2,
+   "resource_offset": 80256,
+   "length": 87216,
+   "pack": 12,
+   "pack_offset": 75030912,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "ef1e3184621d3139dbc1b021fa97295cd2958b49dd5d3b97f0f1fc1e91483813",
+   "after_sha256": "5141a80ee308f472e0b10bca3bf6940affb6df068201cdc85580b52e36a8a797"
+  },
+  {
+   "selector": "30A0",
+   "chunk": 3,
+   "resource_offset": 167472,
+   "length": 13232,
+   "pack": 12,
+   "pack_offset": 75118128,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "5ee1e52e90e1665a77c3971d3e64f81de99298be2b42999b8e0becc45bac0c17",
+   "after_sha256": "79076a7b7449e270ab2c0136cdd22ff65cc36b114755bf61a0c446ca73d81440"
+  },
+  {
+   "selector": "30H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 44192,
+   "pack": 11,
+   "pack_offset": 55545968,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "4f91851fe5105f3a3ab5cbeb1ad9df413eba572458a3f27680e019fdfb7cb0cb",
+   "after_sha256": "525fed6c8e19250d442bdfe7442e484a6929f1d7cf75c015a320d24280b134d4"
+  },
+  {
+   "selector": "30H0",
+   "chunk": 2,
+   "resource_offset": 44304,
+   "length": 86896,
+   "pack": 11,
+   "pack_offset": 55590160,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "23f9e10813cbceccfa25e25c684f9be38786249f565715974513d810d3a4490e",
+   "after_sha256": "ccf26d7e0f8dbc1ffb7ff9279e34a8390c8a22d08fb8d531c256db76f109882f"
+  },
+  {
+   "selector": "30H0",
+   "chunk": 3,
+   "resource_offset": 131200,
+   "length": 13840,
+   "pack": 11,
+   "pack_offset": 55677056,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "ff8494c441272696b650f983754ba054644b5cb768c4b6a8503c0c4bce391cae",
+   "after_sha256": "485155042e386fd43b467ac7e44a5ffa7ad78a8b762880ffd2b568a88cc81d3d"
+  },
+  {
+   "selector": "37A0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 78416,
+   "pack": 12,
+   "pack_offset": 90077296,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "9b0a0551ef131e82bb2414806116cac83bacd00c818d1814563bb5f3ddf7a1db",
+   "after_sha256": "ac930866d7b18670b3d88ea2b22a45954bf8acde84e3e75dc686cdf2d31f338b"
+  },
+  {
+   "selector": "37A0",
+   "chunk": 2,
+   "resource_offset": 78528,
+   "length": 75504,
+   "pack": 12,
+   "pack_offset": 90155712,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "1d24cb0c6b90c771c0962652f057ef30a7ee2416309fca4299422d7bb5b46967",
+   "after_sha256": "57326e55b55045546dd4c8ba5e4ce12645b670abaa359a185f43cab615e33971"
+  },
+  {
+   "selector": "37A0",
+   "chunk": 3,
+   "resource_offset": 154032,
+   "length": 10464,
+   "pack": 12,
+   "pack_offset": 90231216,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 224,
+   "before_sha256": "b211cfb339772c15a8e57c913644ab4f8889ececcdf41e123b0def395e836eb9",
+   "after_sha256": "82621c93a7ad46d2793d0b47206a5feaba31c625252118348a7eaeb7d419d44d"
+  },
+  {
+   "selector": "37H0",
+   "chunk": 1,
+   "resource_offset": 112,
+   "length": 64720,
+   "pack": 11,
+   "pack_offset": 70496368,
+   "textures": [
+    "jersey00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "11ac90c31b4cf1dce32cda9a9b658f7779af91bad0a0363e989eeb871327886a",
+   "after_sha256": "e6af6a0c78307f9498005418150ca8f0aadb89427cc4e95626ba082b3dc0cef5"
+  },
+  {
+   "selector": "37H0",
+   "chunk": 2,
+   "resource_offset": 64832,
+   "length": 86080,
+   "pack": 11,
+   "pack_offset": 70561088,
+   "textures": [
+    "pants00"
+   ],
+   "changed_entries": 255,
+   "before_sha256": "c0a10a5cd7544c1a60d6efb69b335ee1cc5f05b4133b2202714402fe8ebc8d6d",
+   "after_sha256": "3aac2cc7ad67a9f44eabc12689f969dfb2e04850ef896f9da74ee5344db95e54"
+  },
+  {
+   "selector": "37H0",
+   "chunk": 3,
+   "resource_offset": 150912,
+   "length": 6816,
+   "pack": 11,
+   "pack_offset": 70647168,
+   "textures": [
+    "sleeve00"
+   ],
+   "changed_entries": 256,
+   "before_sha256": "a1ae6a561e89d44067edf12bbe88cd547b46d7833a2da150cce0e268c5ab0e47",
+   "after_sha256": "0a66dd8af04f5dcd920606ca2b4c3dac9e9d2505f12ee65927a38b90cffc9cf8"
+  }
+ ]
+}

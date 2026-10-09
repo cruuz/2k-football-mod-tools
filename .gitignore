@@ -25,6 +25,10 @@ assets/
 # --- Ghidra / reverse-engineering heavy data -------------------------------
 ghidra_projects/
 research/
+!pb/research/
+pb/research/*
+!pb/research/targets_2026.py
+!pb/research/targets_2026.json
 tools/vendor/
 tools/ghidra-home/
 tools/__pycache__/

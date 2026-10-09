@@ -135,6 +135,33 @@ class ClimateTests(unittest.TestCase):
         self.assertEqual(self.draft.plan()["changes"], [])
         self.assertFalse(self.draft.undo())
 
+    def test_rain_share_and_cut_follow_temperature(self):
+        self.assertAlmostEqual(w.rain_share(80.0), 1.0)
+        self.assertAlmostEqual(w.rain_share(0.0), 0.0)
+        self.assertAlmostEqual(w.less_rain_percent(50.0, 80.0), 20.0)  # pure rain: 60 percent cut
+        self.assertEqual(w.less_rain_percent(40.0, 10.0), 40.0)       # pure snow: untouched
+        self.assertEqual(w.less_rain_percent(0.0, 80.0), 0.0)
+        shares = [w.rain_share(t) for t in range(0, 90, 5)]
+        self.assertEqual(shares, sorted(shares), "warmer cells never get a smaller rain share")
+        for t in range(0, 90, 5):
+            self.assertTrue(40.0 * (1 - w.RAIN_CUT) - 0.05 <= w.less_rain_percent(40.0, t) <= 40.0)
+
+    def test_less_rain_preset_skips_roofs_is_idempotent_and_undoes(self):
+        self.draft.set_value(5, 12, "precipitation_pct", 75)
+        previous = self.draft.plan()
+        self.draft.less_rain_preset()
+        once = self.draft.plan()
+        self.assertFalse(any(c["stadium_index"] == 1 for c in once["changes"]), "roofed row untouched")
+        self.assertTrue(all(c["field"] == "precipitation_pct" and c["after"] <= c["before"] for c in once["changes"]))
+        self.draft.less_rain_preset()
+        self.assertEqual(self.draft.plan(), once)
+        self.assertTrue(self.draft.undo())
+        self.assertEqual(self.draft.plan(), previous)
+        after, _ = w.apply(self.data, once)
+        w.verify(after, once, before=self.data)
+        fresh = w.WeatherDraft(self.data); fresh.less_rain_preset()
+        self.assertEqual(w.less_rain_plan(self.data), fresh.plan())
+
     def test_noop_has_no_undo_and_export_is_detached(self):
         self.draft.set_value(5, 12, "temperature_f", 50)
         self.assertFalse(self.draft.undo())
@@ -237,6 +264,27 @@ class RetailClimateTests(unittest.TestCase):
         draft.milder_outdoor_preset()
         after, _ = w.apply(data, draft.plan())
         w.verify(after, draft.plan(), before=data)
+
+    def test_real_resource_less_rain_lowers_outdoor_rain_and_keeps_snow_cells(self):
+        data = w.load_resource(RETAIL)
+        plan = w.less_rain_plan(data)
+        after, _ = w.apply(data, plan)
+        rows_before = {r["index"]: r for r in w.inspect_resource(data)["rows"]}
+        rows_after = {r["index"]: r for r in w.inspect_resource(after)["rows"]}
+        self.assertEqual(len(rows_before), 82)
+        changed = {(c["stadium_index"], c["month"]) for c in plan["changes"]}
+        for index, row in rows_before.items():
+            for slot, was in enumerate(row["months"]):
+                now = rows_after[index]["months"][slot]
+                for field in ("temperature_f", "wind_mph"):
+                    self.assertEqual(was[field], now[field])
+                if row["indoor"]:
+                    self.assertEqual(was["precipitation_pct"], now["precipitation_pct"])
+                else:
+                    self.assertLessEqual(now["precipitation_pct"], was["precipitation_pct"] + 1e-4)
+                    if w.rain_share(was["temperature_f"]) < 0.05:
+                        self.assertAlmostEqual(now["precipitation_pct"], was["precipitation_pct"], delta=0.06)
+        self.assertTrue(changed)
 
 
 if __name__ == "__main__":

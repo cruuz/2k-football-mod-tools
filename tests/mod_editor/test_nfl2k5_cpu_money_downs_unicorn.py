@@ -84,7 +84,10 @@ class NativeTests(unittest.TestCase):
         states = [dict(own_yard=50, distance=2), dict(own_yard=70, distance=2),
                   dict(own_yard=30, distance=7),
                   dict(own_yard=80, distance=2, quarter=4, seconds=100, score_margin=-3)]
-        expected = {"retail": [17, 19, 17, 19], "modern": [5, 5, 17, 19], "aggressive": [5, 5, 17, 19]}
+        # modern2: the machine's period length is zero, so the Q2 clock reads as 600 game seconds with the score tied; the
+        # nfl4th shift for a tied game inside field goal range then keeps the kick at the opponent 30 (own 70, 4th and 2)
+        expected = {"retail": [17, 19, 17, 19], "modern": [5, 5, 17, 19], "aggressive": [5, 5, 17, 19],
+                    "modern2": [5, 19, 17, 19]}
         rows = []
         for level in patch.LEVELS:
             m = self.machine(level)

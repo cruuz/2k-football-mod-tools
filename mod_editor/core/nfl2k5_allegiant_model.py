@@ -183,6 +183,9 @@ PARAMS = dict(
     roof=dict(eave=60.0, ring_top=66.0, ring_rho=0.82, crown=72.0, power=0.55, rings=6, points=72, depth=3.0),
     #: the black glass drum (the exterior photos): its height over the plaza and the white light lines round it
     facade=dict(base=8.0, lines=(16.0, 29.0, 42.0, 52.0)),
+    #: ALG pass 3 (DESIGN, the I-15 and exterior photos: the drum rounds over into the roof): the black glass leaves the
+    #: outline this far under the drum's top and meets the roof's skin this fraction of the way in
+    shoulder=dict(drop=12.0, inset=0.06),
     #: the lanai at the north end: the tall glass wall over the club tier facing the Strip, and the Al Davis torch (85 ft,
     #: Wikipedia) in front of it
     #: pass 2: the glass is the drum's north face (the North Entry photo: the curved glass in the black drum), along the
@@ -193,7 +196,7 @@ PARAMS = dict(
     lanai=dict(half_w=46.0, glass_w=100.0, glass_top=46.1, name_bottom=46.2, name_w=36.0, name_h=9.0),
     #: the torch's top 39.6 m on the field axis, 123 m north of midfield (a02's pose, where the ray through its top
     #: crosses x = 0; PROVED OFFLINE for the height, the depth rests on the torch standing on the axis)
-    torch=dict(top=39.6, z=-123.0, radius=2.6, flame=4.5, sides=10),
+    torch=dict(top=39.6, z=-123.0, radius=3.2, flame=3.5, sides=10),
     #: the boards (Sports Video Group, 2024-01-24: the south end's 12,250 sq ft primary board, the north end's two 5,978
     #: sq ft boards): the south board lies on the rays of the 2021 north-end photo's solved pose (a00; the painted-line
     #: fit agrees with the point fit within 1 m); at 12,250 sq ft it would stand at z 105, in front of the 2022 photo's
@@ -206,9 +209,29 @@ PARAMS = dict(
                 depth=3.0, sign_w=40.0, sign_h=4.2, south_wing=10.0, north_x=63.5, north_z=-97.6, north_bottom=37.0, north_yaw=42.0),
     #: the LED mesh on the east face toward I-15 (27,600 sq ft, 345 x 80 ft: Sports Video Group, Wikipedia)
     mesh=dict(w=105.0, h=24.0, y=16.0),
+    #: ALG pass 3 (DESIGN, the 2022 torch photo and the 2024 I-15 photo): the two small feed boards on the lanai deck
+    #: either side of the torch, the two panels at the header's ends, the light lines' swoop round the drum (metres up
+    #: and down, turns per lap), the LED wall's lens (its top and bottom at the ends, fractions of its height) and the
+    #: speaker clusters hung under the trusses
+    deck_boards=dict(x=39.0, w=12.0, h=6.6, lift=0.4, inset=4.0), header_panels=dict(x=43.0, w=6.4, h=6.4, lift=1.4),
+    swoop=dict(amp=(5.0, 8.0, 6.0, 3.0), turns=(1, 1, 2, 1), phase=(0.15, 0.55, 0.3, 0.8)),
+    mesh_lens=dict(top=0.6, bottom=0.04), name_east=dict(w=40.0, h=6.6, gap=2.0),
+    speakers=dict(at=((-42.0, -54.0), (42.0, -54.0), (-42.0, -18.0), (42.0, -18.0), (-42.0, 18.0), (42.0, 18.0),
+                      (-42.0, 54.0), (42.0, 54.0)), w=2.6, h=7.0, gap=0.6),
     lights=dict(every=2, w=4.4, h=2.2, drop=2.0),
     hills=dict(radius=3600.0, points=48),
+    #: ALG pass 1 (DESIGN after the 2022 photo looking north): the white trusses under the ETFE, 3.2 m deep, along the
+    #: field every 12 m across it and across it every 36 m, sampled every 10 m, stopping short of the dark ring
+    truss=dict(depth=3.2, bay_m=12.8, along_x=(-66.0, -54.0, -42.0, -30.0, -18.0, -6.0, 6.0, 18.0, 30.0, 42.0, 54.0, 66.0),
+               across_z=(-90.0, -54.0, -18.0, 18.0, 54.0, 90.0), reach=200.0, step=10.0, inset=0.02),
 )
+#: ALG pass 1: one repeat of the ETFE's plan texture (the steel grid) in metres
+ROOF_GRID_M = 24.0
+#: ALG pass 3: the share of the lanai's glass height the skyline's towers fill (lit at night; the sky above dims)
+SKYLINE_LIT = 0.6
+#: ALG pass 2: the torch's profile, (height fraction, radius over PARAMS torch radius) from the plinth up (DESIGN, the
+#: 2022 torch photo)
+TORCH_PROFILE = ((0.0, 0.62), (0.1, 0.42), (0.42, 0.32), (0.6, 0.55), (0.78, 0.86), (0.9, 0.92), (0.97, 0.7), (1.0, 0.3))
 
 
 def _side_blend(lp, key, p):
@@ -398,6 +421,8 @@ class Allegiant(sm.SoFi):
             self._bowl(loop[a:b + 1], secs[a:b + 1])
         self.prefix = "ag"
         self._roof()
+        self._trusses()
+        self._speakers()
         self._lights()
         self._lanai(loop, secs)
         self._torch(loop, secs)
@@ -596,17 +621,59 @@ class Allegiant(sm.SoFi):
                 ring_t.append((px, self.roof_top(px, pz), pz))
                 uv.append((math.atan2(z, x) * 7.0, f * 3.0))
             rows_u.append(ring_u); rows_t.append(ring_t); uvs.append(uv)
+        # the skin starts where the drum's rounded shoulder meets it (ALG pass 3), not on the outline
+        fi = self.p["shoulder"]["inset"]
+        rows_t[0] = [(x * (1 - fi), self.roof_top(x * (1 - fi), z * (1 - fi * 0.985)), z * (1 - fi * 0.985)) for x, z in E]
         self.roof_rows = rows_u
         self.ring_row = 2
         und = self.meshes.setdefault("ag_roof_under", Mesh("ag_roof_under"))
         # the ring is the dark steel structure with its rigs over the stands (the 2021 and 2022 photos: a black ring
         # round the bright ETFE, right over the lanai's header and the south board's name)
         und.grid("ag_roof_rim", rows_u[:3], uvs[:3], facing=down)
-        und.grid("ag_roof_under", rows_u[2:], uvs[2:], facing=down)
+        # the ETFE takes its texture on the plan (ALG pass 1): the steel grid runs along the field and across it, as the
+        # 2022 photo looking north shows, where the angle-and-ring mapping drew concentric rings
+        plan = [[(px / ROOF_GRID_M, pz / ROOF_GRID_M) for px, _y, pz in row] for row in rows_u[2:]]
+        und.grid("ag_roof_under", rows_u[2:], plan, facing=down)
         top = self.meshes.setdefault("ag_roof_top", Mesh("ag_roof_top"))
         ks = [0, 2] + list(range(4, len(fs), 2)) + ([len(fs) - 1] if (len(fs) - 1) % 2 else [])
         top.grid("ag_roof_top", [[r[j] for j in list(range(0, len(r), 2)) + [len(r) - 1]] for r in (rows_t[i] for i in ks)],
                  [[u[j] for j in list(range(0, len(u), 2)) + [len(u) - 1]] for u in (uvs[i] for i in ks)], facing=up)
+
+    def _trusses(self):
+        """ALG pass 1: the white roof trusses hanging under the ETFE (the 2022 Las Vegas Bowl photo: deep white trusses run
+        along the field toward the lanai, a few heavy ones across it). Each is a lattice web on the alpha ``ag_truss``,
+        one-sided, facing the field's centre line (every game camera sees it from that side)."""
+        q = self.p["truss"]
+        m = self.meshes.setdefault("ag_trusses", Mesh("ag_trusses"))
+        rr = self.p["roof"]["ring_rho"] - q["inset"]
+
+        def web(points, along, face):
+            top = [(x, self.roof_height(x, z) - 0.15, z) for x, z in points]
+            bot = [(x, y - q["depth"], z) for x, y, z in top]
+            u = [s / q["bay_m"] for s in along]
+            m.grid("ag_truss", [bot, top], [[(uu, 1.0) for uu in u], [(uu, 0.0) for uu in u]],
+                   facing=lambda p_, f=face: np.array(f, float))
+
+        span = np.arange(-q["reach"], q["reach"] + 0.01, q["step"])
+        for x in q["along_x"]:
+            zs = [float(z) for z in span if self._roof_rho(x, z) < rr]
+            if len(zs) >= 2:
+                web([(x, z) for z in zs], zs, (-math.copysign(1.0, x), 0.0, 0.0))
+        for z in q["across_z"]:
+            xs = [float(x) for x in span if self._roof_rho(x, z) < rr]
+            if len(xs) >= 2:
+                web([(x, z) for x in xs], xs, (0.0, 0.0, -math.copysign(1.0, z)))
+
+    def _speakers(self):
+        """ALG pass 3 (the 2022 photos): the grey speaker clusters hung from the trusses over the field's edges, a gap
+        under the trusses' bottom chord."""
+        q = self.p["speakers"]
+        m = self.meshes.setdefault("ag_speakers", Mesh("ag_speakers"))
+        bottom = self.p["truss"]["depth"] + 0.15 + q["gap"]
+        for x, z in q["at"]:
+            top = self.roof_height(x, z) - bottom
+            m.box("ag_concrete", np.array([x, top - q["h"] / 2, z]), ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+                  (q["w"] / 2, q["h"] / 2, q["w"] / 2), uvscale=0.25, bottom=True)
 
     def _lights(self):
         """Floodlights hung under the roof in a ring over the stands' front (the 2021 interiors: rows of lamps under the
@@ -658,6 +725,12 @@ class Allegiant(sm.SoFi):
         u = [(x - x0) / 10.0 for x, _z in arc]
         m.grid("LIGHT_ag_lanai", [[(x, y0, z) for x, z in arc], [(x, y1, z) for x, z in arc]],
                [[(uu, 1.0) for uu in u], [(uu, 0.0) for uu in u]], facing=inward)
+        # ALG pass 3: the Strip painted once across the glass, just behind it (the 3D towers are too far and small to
+        # read through the glass from the game cameras); a middle row lets the night light dim only the sky
+        su = [(x - x0) / (x1 - x0) for x, _z in arc]
+        ym = y0 + SKYLINE_LIT * (y1 - y0)
+        m.grid("LIGHT_ag_skyline", [[(x, y, z - 0.08) for x, z in arc] for y in (y0, ym, y1)],
+               [[(uu, v) for uu in su] for v in (1.0, 1.0 - SKYLINE_LIT, 0.0)], facing=inward)
         m.grid("ag_glass_out", [[(x, y0, z - 0.15) for x, z in arc], [(x, y1, z - 0.15) for x, z in arc]],
                [[(uu, 1.0) for uu in u], [(uu, 0.0) for uu in u]], facing=outward)
         m.grid("ag_black", [[(x, y1, z + 0.05) for x, z in arc], [(x, h, z + 0.05) for (x, z), h in zip(arc, hy)]],
@@ -683,8 +756,9 @@ class Allegiant(sm.SoFi):
         self.lanai = dict(x0=x0, x1=x1, z=zc, y0=y0, y1=y1, header=min(hy), roof=self.roof_height(0.0, zc) - 0.4, arc=arc)
 
     def _torch(self, loop, secs):
-        """The Al Davis memorial torch (85 ft, Wikipedia) on the lanai deck in front of the glass: a tall tapering black
-        column with its silver lines, its flame at the top."""
+        """The Al Davis memorial torch (85 ft, Wikipedia) on the lanai deck in front of the glass: black with its silver
+        lines, a slim stem rising from a plinth to the chalice that holds the flame (ALG pass 2, the 2022 torch photo: the
+        widest part high up, rounding in at the top)."""
         if not getattr(self, "lanai", None):
             return
         q = self.p["torch"]
@@ -694,15 +768,16 @@ class Allegiant(sm.SoFi):
         height = q["top"] - la["y0"]
         n = q["sides"]
         rows = []
-        for k, (h, r) in enumerate(((0.0, q["radius"] * 1.3), (0.25, q["radius"] * 0.8), (0.75, q["radius"] * 0.9),
-                                    (1.0, q["radius"] * 1.5))):
+        prof = TORCH_PROFILE
+        for h, f in prof:
+            r = q["radius"] * f
             rows.append([(c[0] + r * math.cos(2 * math.pi * j / n), c[1] + h * height, c[2] + r * math.sin(2 * math.pi * j / n))
                          for j in range(n + 1)])
-        uv = [[(j / n, 1.0 - k / 3) for j in range(n + 1)] for k in range(4)]
+        uv = [[(j / n, 1.0 - h) for j in range(n + 1)] for h, _f in prof]
         m.grid("ag_torch", rows, uv, facing=lambda p_, c=c: np.array([p_[0] - c[0], 0.0, p_[2] - c[2]]))
         top = c[1] + height
         for a in (0.0, math.pi / 2):
-            d = np.array([math.cos(a), 0.0, math.sin(a)]) * (q["radius"] * 1.2)
+            d = np.array([math.cos(a), 0.0, math.sin(a)]) * (q["radius"] * 0.7)
             m.quad("LIGHT_ag_flame", c + [0, top - c[1], 0] - d, c + [0, top - c[1], 0] + d,
                    c + [0, top - c[1] + q["flame"], 0] + d * 0.4, c + [0, top - c[1] + q["flame"], 0] - d * 0.4,
                    (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_: np.array([0.0, 0.0, 1.0]))
@@ -729,9 +804,9 @@ class Allegiant(sm.SoFi):
         uc = (u0 + u1) / 2
         return (uc - ww / 2, uc + ww / 2), (v0, v1)
 
-    def _board(self, m, c, face, W, H, feed=None, frames=None):
+    def _board(self, m, c, face, W, H, feed=None, frames=None, marker=True):
         """One board: the black housing, the live picture (over ``feed`` of its width between two stat panels, or all of
-        it), facing ``face``."""
+        it), facing ``face``; ``marker`` False leaves the retail jumbo markers to the main boards."""
         q = self.p["boards"]
         right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         hv = np.array([0.0, H, 0.0])
@@ -751,7 +826,8 @@ class Allegiant(sm.SoFi):
                 m.quad("LIGHT_ag_board_panel", pc - ph, pc + ph, pc + ph + hv, pc - ph + hv, (0, 1), (1, 1), (1, 0),
                        (0, 0), facing=lambda p_, f=face: f)
                 panels.append(pc)
-        self.markers["jumbo"].append(tuple(fc + hv / 2))
+        if marker:
+            self.markers["jumbo"].append(tuple(fc + hv / 2))
         if frames is not None:
             frames.append(dict(centre=c, right=right, face=face, width=W, height=H, panels=panels,
                                panel_w=W * (1.0 - feed) / 2 if feed else 0.0))
@@ -780,6 +856,27 @@ class Allegiant(sm.SoFi):
             # the picture's plane through the measured centre; the housing's centre half its depth behind it
             c = np.array([cx, q["north_bottom"], cz]) - face * (q["depth"] / 2 + 0.05)
             self._board(m, c, face, q["north_w"], q["north_h"])
+        self._lanai_boards(m)
+
+    def _lanai_boards(self, m):
+        """ALG pass 3 (the 2022 torch photo): the two small feed boards standing on the lanai deck either side of the
+        torch, facing the field, and the two lit panels at the ends of the header over the glass."""
+        la = getattr(self, "lanai", None)
+        if not la:
+            return
+        q, hp = self.p["deck_boards"], self.p["header_panels"]
+        ax, az = [a for a, _b in la["arc"]], [b for _a, b in la["arc"]]
+        face = np.array([0.0, 0.0, 1.0])
+        for s_ in (-1.0, 1.0):
+            x = s_ * q["x"]
+            c = np.array([x, la["y0"] + q["lift"], float(np.interp(x, ax, az)) + q["inset"]])
+            self._board(m, c, face, q["w"], q["h"], marker=False)
+            x = s_ * hp["x"]
+            z = float(np.interp(x, ax, az)) + 0.3
+            y = la["y1"] + hp["lift"]
+            hw = hp["w"] / 2
+            m.quad("LIGHT_ag_board_panel", (x - hw, y, z), (x + hw, y, z), (x + hw, y + hp["h"], z), (x - hw, y + hp["h"], z),
+                   (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_: np.array([0.0, 0.0, 1.0]))
 
     # -- the facade ---------------------------------------------------------------------------------------------------
     def _facade(self):
@@ -809,23 +906,45 @@ class Allegiant(sm.SoFi):
             run.append(j)
         if len(run) >= 2:
             runs.append((run, kinds[-1]))
+        sh = self.p["shoulder"]
+        y_sh = top_y - sh["drop"]
         for run, is_open in runs:
             if is_open:
-                bands = [(GRADE - 0.5, GRADE + q["base"], la["y0"]), (la["y1"], top_y)]
+                bands = [(GRADE - 0.5, GRADE + q["base"], la["y0"]), (la["y1"], y_sh)]
             else:
-                bands = [(GRADE - 0.5, GRADE + q["base"], top_y)]
+                bands = [(GRADE - 0.5, GRADE + q["base"], y_sh)]
             for ys in bands:
                 m.grid("ag_facade", [[(R[j][0], y, R[j][1]) for j in run] for y in ys],
                        [[(L[j] / 16.0, 1.0 if y < GRADE else vt(y)) for j in run] for y in ys], facing=outward)
+        # the rounded shoulder: from the outline up and in to the roof's skin, a middle row bowed out (ALG pass 3)
+        fi = sh["inset"] + 0.003
+
+        def shoulder_row(t):
+            k = fi * (1.0 - math.cos(t * math.pi / 2))
+            out = []
+            for x, z in R:
+                px, pz = x * (1 - k), z * (1 - k * 0.985)
+                y_end = self.roof_top(x * (1 - fi), z * (1 - fi * 0.985)) + 0.1
+                out.append((px, y_sh + (y_end - y_sh) * math.sin(t * math.pi / 2), pz))
+            return out
+        rows = [shoulder_row(t) for t in (0.0, 0.5, 1.0)]
+        m.grid("ag_facade", rows, [[(L[j] / 16.0, vt(min(y, top_y))) for j, (_x, y, _z) in enumerate(r)] for r in rows],
+               facing=outward)
         self.facade_opening = opening
+        # the white light lines swoop up and down round the drum (ALG pass 3, the I-15 and exterior photos: long curves,
+        # not level bands)
+        sw = self.p["swoop"]
         for run, is_open in runs:
-            R2 = [R[j] for j in run[::2]] + ([R[run[-1]]] if (len(run) - 1) % 2 else [])
+            J = run[::2] + ([run[-1]] if (len(run) - 1) % 2 else [])
+            R2 = [R[j] for j in J]
             L2 = np.concatenate([[0.0], np.cumsum([math.dist(a, b) for a, b in zip(R2[:-1], R2[1:])])])
-            for h in q["lines"]:
-                y = GRADE + h
-                if is_open and la["y0"] - 0.6 <= y <= la["y1"]:
+            for k, h in enumerate(q["lines"]):
+                ys = [GRADE + h + sw["amp"][k] * math.sin(2 * math.pi * (sw["turns"][k] * L[j] / L[-1] + sw["phase"][k]))
+                      for j in J]
+                if is_open and min(ys) <= la["y1"] and max(ys) + 0.6 >= la["y0"] - 0.6:
                     continue
-                m.grid("LIGHT_ag_lines", [[(x * 1.002, y, z * 1.002) for x, z in R2], [(x * 1.002, y + 0.6, z * 1.002) for x, z in R2]],
+                m.grid("LIGHT_ag_lines", [[(x * 1.002, y, z * 1.002) for (x, z), y in zip(R2, ys)],
+                                          [(x * 1.002, y + 0.6, z * 1.002) for (x, z), y in zip(R2, ys)]],
                        [[(s / 8.0, 1.0) for s in L2], [(s / 8.0, 0.0) for s in L2]], facing=outward)
         # the LED mesh on the east face (toward I-15), a lit band following the outline
         me = self.p["mesh"]
@@ -834,9 +953,16 @@ class Allegiant(sm.SoFi):
             run.sort(key=lambda p_: p_[1])
             Lr = np.concatenate([[0.0], np.cumsum([math.dist(a, b) for a, b in zip(run[:-1], run[1:])])])
             y0 = GRADE + me["y"]
-            # u runs from the south end of the band to its north end, as a reader on I-15 (east of it) sees it
-            m.grid("LIGHT_ag_mesh", [[(x * 1.004, y0, z) for x, z in run], [(x * 1.004, y0 + me["h"], z) for x, z in run]],
+            # u runs from the south end of the band to its north end, as a reader on I-15 (east of it) sees it; ALG pass
+            # 3: a lens, full height in the middle and narrowing to the ends (the 2024 I-15 photo)
+            ln = self.p["mesh_lens"]
+            bulge = [math.sqrt(math.sin(math.pi * s / Lr[-1])) for s in Lr]
+            lo = [y0 + me["h"] * ln["bottom"] * (1.0 - b) for b in bulge]
+            hi = [y0 + me["h"] * (ln["top"] + (1.0 - ln["top"]) * b) for b in bulge]
+            m.grid("LIGHT_ag_mesh", [[(x * 1.004, y, z) for (x, z), y in zip(run, lo)],
+                                     [(x * 1.004, y, z) for (x, z), y in zip(run, hi)]],
                    [[(1.0 - s / Lr[-1], 1.0) for s in Lr], [(1.0 - s / Lr[-1], 0.0) for s in Lr]], facing=outward)
+            self.mesh_top = max(hi)
         sg = self.meshes.setdefault("ag_signs", Mesh("ag_signs"))
         w, h = 56.0, 9.3
         # the name on the south face of the drum, and on the north over the lanai's glass (the header's outer face)
@@ -847,6 +973,16 @@ class Allegiant(sm.SoFi):
         right = np.cross(-face, (0.0, 1.0, 0.0)); right /= math.np_norm(right)
         sg.quad("ag_letters", c - right * w / 2, c + right * w / 2, c + right * w / 2 + [0, h, 0], c - right * w / 2 + [0, h, 0],
                 (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, f=face: f)
+        if getattr(self, "mesh_top", None) is not None:
+            # ALG pass 3: the name over the LED wall on the east face (the 2024 I-15 photo), on the outline 0.8 m out
+            ne = self.p["name_east"]
+            P_ = np.array([p_ for p_ in ring if p_[0] > 0 and abs(p_[1]) < 60.0]); P_ = P_[np.argsort(P_[:, 1])]
+            zs = np.linspace(ne["w"] / 2, -ne["w"] / 2, 9)
+            xs = [float(np.interp(z, P_[:, 1], P_[:, 0])) + 0.8 for z in zs]
+            yb = self.mesh_top + ne["gap"]
+            east = lambda p_: np.array([1.0, 0.0, 0.0])  # noqa: E731
+            sg.grid("ag_letters", [[(x, yb, z) for x, z in zip(xs, zs)], [(x, yb + ne["h"], z) for x, z in zip(xs, zs)]],
+                    [[(k / 8, 1.0) for k in range(9)], [(k / 8, 0.0) for k in range(9)]], facing=east)
         if la:
             # the name on the drum over the lanai's glass, following the outline's curve 0.6 m out
             P_ = np.array([p_ for p_ in ring if p_[1] < 0 and abs(p_[0]) < 40.0]); P_ = P_[np.argsort(P_[:, 0])]
@@ -969,8 +1105,9 @@ MATERIALS = {
     "LIGHT_ag_glass": ("LIGHT_ag_glass", CLASS_OPAQUE), "LIGHT_ag_concourse": ("LIGHT_ag_concourse", CLASS_OPAQUE),
     "ag_portal": ("ag_portal", CLASS_OPAQUE), "ag_dark": ("ag_dark", CLASS_OPAQUE), "ag_black": ("ag_black", CLASS_OPAQUE),
     "ag_roof_under": ("ag_roof_under", CLASS_OPAQUE), "ag_roof_top": ("ag_roof_top", CLASS_OPAQUE),
-    "ag_roof_rim": ("ag_roof_rim", CLASS_OPAQUE),
+    "ag_roof_rim": ("ag_roof_rim", CLASS_OPAQUE), "ag_truss": ("ag_truss", CLASS_ALPHA),
     "LIGHT_ag_lights": ("LIGHT_ag_lights", CLASS_OPAQUE), "LIGHT_ag_lanai": ("LIGHT_ag_lanai", CLASS_ALPHA),
+    "LIGHT_ag_skyline": ("LIGHT_ag_skyline", CLASS_OPAQUE),
     "ag_glass_out": ("ag_glass_out", CLASS_OPAQUE),
     "ag_torch": ("ag_torch", CLASS_OPAQUE), "LIGHT_ag_flame": ("LIGHT_ag_flame", CLASS_ALPHA),
     "LIGHT_ag_board_panel": ("LIGHT_ag_board_panel", CLASS_OPAQUE), "ag_letters": ("ag_letters", CLASS_ALPHA),
@@ -990,8 +1127,8 @@ BASE = {
     "LIGHT_ag_ribbon": (255, 255, 255), "LIGHT_ag_glass": (190, 186, 255), "LIGHT_ag_concourse": (214, 208, 255),
     "ag_portal": (160, 156, 150), "ag_dark": (190, 186, 180), "ag_black": (200, 196, 190),
     "ag_roof_under": (238, 226, 150), "ag_roof_top": (226, 208, 120), "LIGHT_ag_lights": (255, 255, 255),
-    "ag_roof_rim": (200, 196, 150),
-    "LIGHT_ag_lanai": (240, 226, 255), "ag_torch": (216, 210, 200), "LIGHT_ag_flame": (255, 255, 255),
+    "ag_roof_rim": (200, 196, 150), "ag_truss": (232, 220, 170),
+    "LIGHT_ag_lanai": (240, 226, 255), "LIGHT_ag_skyline": (232, 214, 255), "ag_torch": (216, 210, 200), "LIGHT_ag_flame": (255, 255, 255),
     "ag_glass_out": (214, 196, 120),
     "LIGHT_ag_board_panel": (255, 255, 255), "jumbo_tron": (255, 255, 255), "ag_letters": (255, 255, 255),
     "ag_facade": (200, 186, 110), "LIGHT_ag_lines": (240, 230, 255), "LIGHT_ag_mesh": (255, 255, 255),
@@ -1031,7 +1168,11 @@ def light(mat, P, N, tod, weather, outside=False, occlusion=None):
         return out
     base = BASE.get(mat, (200, 190, 150))[{"d": 0, "a": 1, "n": 2}[tod]]
     n = len(P)
-    if mat.startswith("LIGHT_") and tod == "n":
+    if mat == "LIGHT_ag_skyline" and tod == "n":
+        # the towers lit, the sky over them dark: the panel's top row (at the glass's top) dims, its lower rows stay lit
+        f = np.where(P[:, 1] >= PARAMS["lanai"]["glass_top"] - 1e-6, 0.18, 1.0)
+        base = 255
+    elif mat.startswith("LIGHT_") and tod == "n":
         f = np.full(n, 1.0)
         base = 255
     elif not outside:

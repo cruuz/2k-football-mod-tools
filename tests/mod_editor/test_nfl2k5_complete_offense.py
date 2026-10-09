@@ -18,6 +18,7 @@ from mod_editor.core import nfl2k5_playbook_inspector as insp
 from mod_editor.core import nfl2k5_play_library as lib
 from mod_editor.core import nfl2k5_complete_offense as full
 from pb.build_giants import build
+from pb.v2 import build as v2build
 
 PACK = ROOT/'data/playbooks/softdrink_giants_modern.2k5book'
 IMAGE = Path(os.environ.get('NFL2K5_RETAIL_IMAGE','/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso'))
@@ -71,11 +72,9 @@ class OfflineTests(unittest.TestCase):
             form = self.pack.formations_by_id[fid]
             for pid in menu:
                 play = by_id[pid]
-                self.assertNotIn(play.concept, ('RB Middle','Duo','Jet Sweep'))
-                if play.concept == 'End Around':
-                    carrier = int(play.assignments[0][-1][1][0])
-                    self.assertLess(form.slot_positions[carrier][0]*play.assignments[carrier][-1][1][1],0)
-                if play.concept == 'RB Slip':
+                self.assertNotIn(play.concept, ('RB Middle','Jet Sweep'))
+                # v2 End Arounds are the retail slot reverse; the handoff geometry is covered by the p13 linter.
+                if play.concept == 'RB Screen':
                     release = [ch for ch in play.assignments[1:6] if any(op==0x18 for op,_ in ch)]
                     self.assertEqual(len(release),3)
                     for ch in release:
@@ -115,10 +114,13 @@ class PipelineTests(unittest.TestCase):
             source.write_bytes(_build_synthetic_xbe())
             # This ordering fixture presents a synthetic XBE as a disc. The
             # final compaction/extent gates have separate real-XDVDFS tests.
+            # b77 E3: the early pack-fit check really compiles one team's offense and defense, which a
+            # synthetic XBE presented as a disc cannot give; its own tests (test_b77_e3_playbook_pack_fit) use real books.
             with patch.object(mod_build.tt,'is_disc_image',return_value=True), \
                  patch.object(mod_build.tt,'write_copy',side_effect=copy_with_ruling), \
                  patch.object(mod_build,'inspect',side_effect=inspect_real), \
                  patch.object(packs,'apply_packs_to_image',side_effect=apply), \
+                 patch.object(mod_build,'check_playbook_pack_fit',return_value=None), \
                  patch.object(mod_build,'_check_playbook_menus',side_effect=menus), \
                  patch.object(mod_build,'_check_playbook_scoring',side_effect=scoring), \
                  patch('mod_editor.core.xdvdfs_compact.finish_private',
@@ -159,7 +161,7 @@ class RetailTests(unittest.TestCase):
         cls.new=cls.compiled.replacement
 
     def test_generator_reproduces_shipped_recipe(self):
-        pack,_=build(self.raw)
+        pack,_=v2build.build_team(self.raw,'NYG')
         self.assertEqual(pack.dumps(),self.pack.dumps())
 
     def test_retained_semantics_counts_and_audibles(self):

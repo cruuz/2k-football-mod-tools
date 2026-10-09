@@ -1,0 +1,697 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "PIT",
+ "name": "Pittsburgh Steelers",
+ "asset_code": "22",
+ "season": 2026,
+ "status": "u3e alternate PIT:5 1933 gold throwback, authored by tools/b77/u3e_paint.py into slot 22H5/22A5 (1959-1960 Uniform)",
+ "sources": {
+  "alternate": "https://www.steelers.com/1933throwback/ ; https://news.sportslogos.net/2025/07/21/pittsburgh-steelers-reprise-1933-throwback-uniforms-with-new-gold-helmets/football/ ; steelers.com 1933 throwback photos (pit1933_*.jpg in the job refs)"
+ },
+ "albedo": {
+  "jersey_gold": "#F4B418",
+  "helmet_gold": "#F2B31A",
+  "khaki": "#BDAB82",
+  "black": "#101012",
+  "white": "#FFFFFF",
+  "retail_gold": "#F0A000",
+  "retail_splayer_black": "#101018"
+ },
+ "marks": {
+  "team_logo_full": "club_logo.png",
+  "steelmark_black": "steelmark_black.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "22H5",
+   "note": "1933 gold throwback: gold jersey with black chest stripes and chevron bands at the collar, black block numbers on a plain gold plate (single-colour numbers: the road slot stores 560 to 1,000 bytes per number), khaki pants, gold socks, matte yellow helmet with a black centre stripe, the Steelmark on the right side only and a grey facemask (back design and stripe pitch are estimates)",
+   "torso": {
+    "base_colour": "jersey_gold",
+    "neck_donor": "22H5",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "black",
+      "width": 3
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "black"
+    },
+    "decorations": [
+     {
+      "rect": [
+       166,
+       70,
+       171,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       153,
+       70,
+       158,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179,
+       70,
+       188,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       136,
+       70,
+       145,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       192,
+       70,
+       201,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       123,
+       70,
+       132,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       205,
+       70,
+       214,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       110,
+       70,
+       119,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       218,
+       70,
+       227,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       97,
+       70,
+       106,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       231,
+       70,
+       240,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       84,
+       70,
+       93,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       244,
+       70,
+       253,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       71,
+       70,
+       80,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        118,
+        8
+       ],
+       [
+        140,
+        8
+       ],
+       [
+        100,
+        70
+       ],
+       [
+        84,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        206,
+        8
+       ],
+       [
+        184,
+        8
+       ],
+       [
+        224,
+        70
+       ],
+       [
+        240,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        346,
+        12
+       ],
+       [
+        368,
+        12
+       ],
+       [
+        330,
+        70
+       ],
+       [
+        312,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        435,
+        12
+       ],
+       [
+        413,
+        12
+       ],
+       [
+        451,
+        70
+       ],
+       [
+        469,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       108,
+       84,
+       216,
+       148
+      ],
+      "colour": "jersey_gold",
+      "shade": false
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_gold",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "khaki",
+    "stripe": [
+     [
+      "khaki",
+      1
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "jersey_gold"
+   },
+   "digits": {
+    "glyph_donor": "22H5",
+    "fill": "black"
+   },
+   "arm_digits": {
+    "glyph_donor": "22H5",
+    "fill": "black"
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "22H5",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "retail_gold",
+    "shell": "helmet_gold",
+    "decorations": [
+     {
+      "mark": "team_logo_full",
+      "center": [
+       74,
+       76
+      ],
+      "width": 50,
+      "rotate": 180
+     }
+    ]
+   },
+   "card": {
+    "recolour": []
+   },
+   "copy_regions": [
+    {
+     "from": "22H0",
+     "files": [
+      "helmet_helmet00.png",
+      "helmet_helmet02.png"
+     ],
+     "box": [
+      188,
+      58,
+      256,
+      109
+     ]
+    }
+   ],
+   "splayer": {
+    "torso_donor": "22H5",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#101018",
+      "to": "jersey_gold",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_gold",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#101018",
+      "to": "jersey_gold",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_gold",
+      "region": "sleeve",
+      "tolerance": 0.3
+     }
+    ]
+   }
+  },
+  "away": {
+   "selector": "22A5",
+   "note": "1933 gold throwback: gold jersey with black chest stripes and chevron bands at the collar, black block numbers on a plain gold plate (single-colour numbers: the road slot stores 560 to 1,000 bytes per number), khaki pants, gold socks, matte yellow helmet with a black centre stripe, the Steelmark on the right side only and a grey facemask (back design and stripe pitch are estimates)",
+   "torso": {
+    "base_colour": "jersey_gold",
+    "neck_donor": "22A5",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "black",
+      "width": 3
+     }
+    ],
+    "sleeve_swooshes": {
+     "colour": "black"
+    },
+    "decorations": [
+     {
+      "rect": [
+       166,
+       70,
+       171,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       153,
+       70,
+       158,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       179,
+       70,
+       188,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       136,
+       70,
+       145,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       192,
+       70,
+       201,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       123,
+       70,
+       132,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       205,
+       70,
+       214,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       110,
+       70,
+       119,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       218,
+       70,
+       227,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       97,
+       70,
+       106,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       231,
+       70,
+       240,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       84,
+       70,
+       93,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       244,
+       70,
+       253,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       71,
+       70,
+       80,
+       250
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        118,
+        8
+       ],
+       [
+        140,
+        8
+       ],
+       [
+        100,
+        70
+       ],
+       [
+        84,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        206,
+        8
+       ],
+       [
+        184,
+        8
+       ],
+       [
+        224,
+        70
+       ],
+       [
+        240,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        346,
+        12
+       ],
+       [
+        368,
+        12
+       ],
+       [
+        330,
+        70
+       ],
+       [
+        312,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        435,
+        12
+       ],
+       [
+        413,
+        12
+       ],
+       [
+        451,
+        70
+       ],
+       [
+        469,
+        70
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "rect": [
+       108,
+       84,
+       216,
+       148
+      ],
+      "colour": "jersey_gold",
+      "shade": false
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_gold",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "khaki",
+    "stripe": [
+     [
+      "khaki",
+      1
+     ]
+    ],
+    "swoosh_colour": "black"
+   },
+   "socks": {
+    "colour": "jersey_gold"
+   },
+   "digits": {
+    "glyph_donor": "22A5",
+    "fill": "black"
+   },
+   "arm_digits": {
+    "glyph_donor": "22A5",
+    "fill": "black"
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "22A5",
+    "fill": "black"
+   },
+   "helmet": {
+    "shell_from": "retail_gold",
+    "shell": "helmet_gold",
+    "decorations": [
+     {
+      "mark": "team_logo_full",
+      "center": [
+       74,
+       76
+      ],
+      "width": 50,
+      "rotate": 180
+     }
+    ]
+   },
+   "card": {
+    "recolour": []
+   },
+   "copy_regions": [
+    {
+     "from": "22H0",
+     "files": [
+      "helmet_helmet00.png",
+      "helmet_helmet02.png"
+     ],
+     "box": [
+      188,
+      58,
+      256,
+      109
+     ]
+    }
+   ],
+   "splayer": {
+    "torso_donor": "22A5",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#101018",
+      "to": "jersey_gold",
+      "region": "torso",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_gold",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#101018",
+      "to": "jersey_gold",
+      "region": "sleeve",
+      "tolerance": 0.25
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_gold",
+      "region": "sleeve",
+      "tolerance": 0.3
+     }
+    ]
+   }
+  }
+ },
+ "uni_b77": {
+  "helmet": "Upper shell island requires the own full-colour mark rotated 180 degrees. u3e had painted it upright, which the native UVs inverted."
+ }
+}

@@ -104,9 +104,9 @@ BUDGET_LIMITS: Mapping[str, int] = {
 
 #: QB chain shape -> the class the header must carry (``nfl2k5_play_library``).
 SIGNATURE_CLASS: Mapping[str, str] = {
-    "pass": "pass", "pa_pass": "pass", "run": "run", "draw": "run", "qb_run": "run",
+    "pass": "pass", "pa_pass": "pass", "run": "run", "draw": "run", "qb_run": "run", "flea": "pass",
 }
-PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense")
+PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense", "flea")
 
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
@@ -167,6 +167,15 @@ class PackFormation:
     replace_name: str = ""
     category_index: int | None = None
     category_positions: tuple[int, ...] | None = None   # set when no stock group fields the mix
+    situation: tuple[int, int, int] | None = None        # CPU short/medium/long ratings (formation bits 21-29)
+    # b77 p6s (complete offense only): CPU personnel-group design. ``category_mask`` lists every
+    # personnel group (category index) the formation belongs to (aux+0x4C; the native category
+    # mean 0x208120 averages members, the formation lottery 0x2081B0 draws owners). ``category_code``
+    # is the group's lottery id (0..10, record byte +4 low six bits) and ``category_name`` its label;
+    # every formation naming the same group must agree on both.
+    category_mask: tuple[int, ...] | None = None
+    category_code: int | None = None
+    category_name: str | None = None
 
     def to_json(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -182,6 +191,14 @@ class PackFormation:
             out["category_index"] = self.category_index
         if self.category_positions is not None:
             out["category_positions"] = list(self.category_positions)
+        if self.situation is not None:
+            out["situation"] = list(self.situation)
+        if self.category_mask is not None:
+            out["category_mask"] = list(self.category_mask)
+        if self.category_code is not None:
+            out["category_code"] = self.category_code
+        if self.category_name is not None:
+            out["category_name"] = self.category_name
         return out
 
     @classmethod
@@ -190,7 +207,8 @@ class PackFormation:
         if not isinstance(value, Mapping):
             raise PlaybookPackError(f"{label} must be an object.")
         fields = {"id", "custom_name", "donor", "replace_index", "replace_name",
-                  "slot_positions", "position_codes", "category_index", "category_positions"}
+                  "slot_positions", "position_codes", "category_index", "category_positions", "situation",
+                  "category_mask", "category_code", "category_name"}
         extra = set(value) - fields
         if extra:
             raise PlaybookPackError(f"{label} has unsupported fields {sorted(extra)}.")
@@ -207,6 +225,11 @@ class PackFormation:
             _optional_index(value.get("category_index"), f"{label} personnel group",
                             maximum=CATEGORY_CAPACITY - 1),
             _optional_position_codes(value.get("category_positions"), f"{label} personnel codes"),
+            _situation(value.get("situation"), f"{label} ({pack_id}) situation ratings"),
+            _category_mask(value.get("category_mask"), f"{label} ({pack_id}) personnel groups"),
+            _optional_index(value.get("category_code"), f"{label} personnel group code", maximum=10),
+            (None if value.get("category_name") is None
+             else _name(value.get("category_name"), f"{label} ({pack_id}) personnel group name")),
         )
 
     def request_mapping(self, asset_id: str) -> dict[str, Any]:
@@ -222,7 +245,28 @@ class PackFormation:
             row["replace_index"] = self.replace_index
         if self.category_positions is not None:
             row["category_positions"] = list(self.category_positions)
+        if self.situation is not None:
+            row["situation"] = list(self.situation)
         return row
+
+
+def _category_mask(value: object, label: str) -> tuple[int, ...] | None:
+    if value is None:
+        return None
+    if (not isinstance(value, (list, tuple)) or not value
+            or any(type(v) is not int or not 0 <= v < CATEGORY_CAPACITY for v in value)
+            or list(value) != sorted(set(value))):
+        raise PlaybookPackError(f"{label} must be a sorted list of distinct personnel group indices.")
+    return tuple(value)
+
+
+def _situation(value: object, label: str) -> tuple[int, int, int] | None:
+    if value is None:
+        return None
+    if (not isinstance(value, (list, tuple)) or len(value) != 3
+            or any(type(v) is not int or not 0 <= v <= 7 for v in value)):
+        raise PlaybookPackError(f"{label} must be three whole numbers 0 through 7 (short, medium, long).")
+    return (value[0], value[1], value[2])
 
 
 @dataclass(frozen=True)
@@ -1072,6 +1116,7 @@ def check_pack(
             errors.append(
                 f"formation “{f.id}”: category_positions and position_codes disagree about who lines up"
             )
+    errors.extend(_defense_alignment_errors(pack, book, body))
     stages.append(CheckStage("legality", CHECK_ORDER[4][1], not errors,
                              errors=tuple(errors), notes=tuple(notes)))
 
@@ -1170,6 +1215,41 @@ def check_pack(
                                  errors=tuple(errors), notes=tuple(notes)))
 
     return PackCheck(tuple(stages), totals)
+
+
+def _defense_alignment_errors(pack: PlaybookPack, book: Nfl2k5Playbook | None, body: bytes | None) -> list[str]:
+    """Defensive formations must pass the alignment linter (beta 77, GOAL P5): 1.7 yd spacing, no standing
+    defender inside the tackles near the ball unless the look is a named Mug, a Mug never the only formation of
+    its personnel group, an edge on both sides of the line."""
+    from . import nfl2k5_defense_lint as dlint
+    rows = [f for f in pack.formations if f.position_codes and all(12 <= c & 31 <= 18 for c in f.position_codes)]
+    if not rows:
+        return []
+    per_category: dict[int | None, int] = {}
+    if book is not None and body is not None:   # a personnel group's size is only known with the book
+        for formation in book.formations:
+            rec = lib.formation_record(body, formation.index)
+            if 4 <= rec.type_code <= 7:
+                cat = lib.formation_category(body, formation.index)
+                per_category[cat] = per_category.get(cat, 0) + 1
+        for f in rows:
+            if f.replace_index is None:
+                per_category[f.category_index] = per_category.get(f.category_index, 0) + 1
+    errors = []
+    for f in rows:
+        stances = [3 if (c & 31) in (12, 13) else 1 for c in f.position_codes]
+        type_code = 5
+        if book is not None and body is not None and 0 <= f.donor.index < len(book.formations):
+            rec = lib.formation_record(body, f.donor.index)
+            stances = [slot.stance for slot in rec.slots]
+            type_code = rec.type_code
+        view = dlint.DefenseFormation(f.custom_name, f.slot_positions, f.position_codes, stances,
+                                      f.replace_index, f.category_index, type_code)
+        sole = bool(per_category) and per_category.get(f.category_index, 0) == 1
+        for finding in dlint.formation_findings(view, sole_in_category=sole):
+            if finding.severity == "error":
+                errors.append(f"formation “{f.custom_name}” ({f.id}): {finding.code}: {finding.message}")
+    return errors
 
 
 def _book_assignments(play: PackPlay, flags: int, body: bytes) -> tuple[list[tuple[int, list[bytes]]], str | None]:
@@ -2225,7 +2305,16 @@ def retarget_defense_pack(pack: PlaybookPack, team: str, book: Nfl2k5Playbook, b
     # reload is safe; automatic cross-book guesses are not an authoring contract.
     if team == pack.book.team and book_fingerprint(body) == pack.base.book_fingerprint:
         return pack, ()
-    raise PlaybookPackError("Custom defense source changed. Re-author against the target's native formation; automatic slot guesses are refused")
+    if team != pack.book.team:
+        why = f"it was authored for {pack.book.team}, not {team}"
+    else:
+        why = (f"{team}'s book is {book_fingerprint(body)[:12]}, the pack was authored on "
+               f"{pack.base.book_fingerprint[:12]}; a complete offense compiled by a different Studio "
+               "release changes the book even when no defense play moved")
+    raise PlaybookPackError(
+        f"Custom defense source changed ({pack.book.name!r}: {why}). Re-author against the target's native "
+        "formation, or regenerate the pack with the Studio release that compiled the offense; "
+        "automatic slot guesses are refused")
 
 
 def _option_intent(value):

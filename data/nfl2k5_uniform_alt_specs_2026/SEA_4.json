@@ -1,0 +1,565 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "SEA",
+ "name": "Seattle Seahawks",
+ "asset_code": "26",
+ "season": 2026,
+ "status": "u3e alternate SEA:4 primary combinations (navy jersey with wolf grey pants; all white), authored by tools/b77/u3e_paint.py into slot 26H4/26A4 (2003 Alternate 2)",
+ "sources": {
+  "home": "https://seahawks.com/news/seahawks-to-wear-college-navy-and-wolf-grey-uniforms-vs-cardinals-in-week-2",
+  "away": "https://seahawks.com/news/seahawks-to-wear-all-white-uniform-combination-in-week-3-at-commanders"
+ },
+ "albedo": {
+  "jersey_navy": "#0A2A4E",
+  "helmet_navy": "#0C2848",
+  "pants_navy": "#0C2A4C",
+  "navy": "#002244",
+  "green": "#69BE28",
+  "grey": "#A5ACAF",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "field_navy": "#0B2A4D",
+  "banner_navy": "#0A2A4E",
+  "retail_helmet_blue": "#22537F",
+  "retail_helmet_navy": "#07153C",
+  "retail_splayer_blue": "#225588",
+  "retail_splayer_navy": "#001144",
+  "retail_card_blue": "#1B4B73",
+  "retail_card_navy": "#112C45",
+  "retail_card_helmet_blue": "#225D91",
+  "retail_card_white": "#D9D7D4",
+  "wolf_grey": "#A5ACAF"
+ },
+ "marks": {
+  "club_logo": "club_logo_full.png",
+  "wordmark": "wordmark_line2_seahawks.png",
+  "wordmark_full": "wordmark_full.png",
+  "logo_L0_navy": "logo_L0_navy.png",
+  "logo_L1_grey": "logo_L1_grey.png",
+  "logo_L2_white": "logo_L2_white.png",
+  "logo_L3_green": "logo_L3_green.png",
+  "seattle": "wordmark_line1_seattle.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "26H4",
+   "note": "2026 College Navy jersey with Wolf Grey pants (week 2 at Arizona): the primary navy jersey and helmet; wolf grey pants with a navy stripe edged in green (stripe colours INFERRED: the club does not describe them)",
+   "torso": {
+    "base_colour": "jersey_navy",
+    "neck_donor": "26H4",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "green",
+      "width": 1.5
+     }
+    ],
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "white",
+     "center": [
+      198,
+      50
+     ],
+     "width": 24
+    },
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "rect": [
+       54,
+       4,
+       128,
+       22
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       194,
+       4,
+       268,
+       22
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       278,
+       6,
+       358,
+       20
+      ],
+      "colour": "grey"
+     },
+     {
+      "rect": [
+       420,
+       6,
+       504,
+       20
+      ],
+      "colour": "grey"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "jersey_navy",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "wolf_grey",
+    "stripe": [
+     [
+      "green",
+      1
+     ],
+     [
+      "jersey_navy",
+      5
+     ],
+     [
+      "green",
+      1
+     ]
+    ],
+    "swoosh_colour": "jersey_navy"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "26H4",
+    "fill": "grey",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf",
+    "outline": "green",
+    "outline_frac": 0.04
+   },
+   "helmet_digits": {
+    "glyph_donor": "26H4",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "nameplate": {
+    "glyph_donor": "26H4",
+    "fill": "grey",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "retail_helmet_blue",
+    "recolour": [
+     {
+      "from": "retail_helmet_navy",
+      "to": "navy"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0,
+     "facing": "front"
+    },
+    "decorations": [
+     {
+      "rect": [
+       100,
+       53,
+       147,
+       99
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       100,
+       158,
+       154,
+       205
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     }
+    ],
+    "atlas_decal": {
+     "mark": "club_logo",
+     "erase_boxes": {
+      "upper": [
+       25,
+       25,
+       158,
+       119
+      ],
+      "lower": [
+       25,
+       137,
+       158,
+       231
+      ]
+     },
+     "placements": {
+      "upper": {
+       "centre": [
+        103.0,
+        73.3
+       ],
+       "matrix": [
+        [
+         106.0,
+         9.9
+        ],
+        [
+         -21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        -1
+       ]
+      },
+      "lower": {
+       "centre": [
+        103.0,
+        182.7
+       ],
+       "matrix": [
+        [
+         106.0,
+         -9.9
+        ],
+        [
+         21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        1
+       ]
+      }
+     },
+     "protect": [
+      [
+       27,
+       87,
+       49,
+       97
+      ],
+      [
+       27,
+       159,
+       49,
+       169
+      ]
+     ],
+     "why": "UNI: numeric placement from PS2 atlas landmarks; own mark faces the front on both shell C sides. Replaces sh1 rear-facing 40 degree projection.",
+     "clear_crown": {
+      "families": [
+       "helmet00"
+      ],
+      "box": [
+       153,
+       0,
+       174,
+       214
+      ]
+     }
+    }
+   },
+   "splayer": {
+    "torso_donor": "26H4",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#E9EEF6",
+      "to": "jersey_navy",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#225588",
+      "to": "jersey_navy",
+      "region": "torso"
+     },
+     {
+      "from": "#225588",
+      "to": "jersey_navy",
+      "region": "sleeve"
+     },
+     {
+      "from": "#225588",
+      "to": "helmet_navy",
+      "region": "helmet"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "26A4",
+   "note": "2026 all-white (week 3 at Washington): the primary white jersey with white pants (stripe colours INFERRED)",
+   "torso": {
+    "base_colour": "white",
+    "neck_donor": "26A4",
+    "collar_shield": true,
+    "collar_trim": [
+     {
+      "colour": "jersey_navy",
+      "width": 1.5
+     }
+    ],
+    "chest_mark": {
+     "mark": "wordmark",
+     "colour": "navy",
+     "center": [
+      198,
+      50
+     ],
+     "width": 24
+    },
+    "sleeve_swooshes": {
+     "colour": "navy"
+    },
+    "decorations": [
+     {
+      "rect": [
+       54,
+       4,
+       128,
+       22
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       194,
+       4,
+       268,
+       22
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       278,
+       6,
+       358,
+       20
+      ],
+      "colour": "jersey_navy"
+     },
+     {
+      "rect": [
+       420,
+       6,
+       504,
+       20
+      ],
+      "colour": "jersey_navy"
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "white",
+    "stripes_from": null,
+    "decorations": []
+   },
+   "pants": {
+    "base_colour": "white",
+    "stripe": [
+     [
+      "green",
+      1
+     ],
+     [
+      "jersey_navy",
+      5
+     ],
+     [
+      "green",
+      1
+     ]
+    ],
+    "swoosh_colour": "jersey_navy"
+   },
+   "socks": {
+    "colour": "navy"
+   },
+   "digits": {
+    "glyph_donor": "26A4",
+    "fill": "jersey_navy",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf",
+    "outline": "green",
+    "outline_frac": 0.04
+   },
+   "helmet_digits": {
+    "glyph_donor": "26A4",
+    "fill": "white",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "nameplate": {
+    "glyph_donor": "26A4",
+    "fill": "jersey_navy",
+    "font": "/media/noah/Storage/.b76-research/u1/teams/_d8_fonts/sea_flat/NFL_Seattle_Seahawks_Flat[1].ttf"
+   },
+   "helmet": {
+    "shell": "helmet_navy",
+    "shell_from": "retail_helmet_blue",
+    "recolour": [
+     {
+      "from": "retail_helmet_navy",
+      "to": "navy"
+     }
+    ],
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.0,
+     "facing": "front"
+    },
+    "decorations": [
+     {
+      "rect": [
+       100,
+       53,
+       147,
+       99
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     },
+     {
+      "rect": [
+       100,
+       158,
+       154,
+       205
+      ],
+      "colour": "helmet_navy",
+      "shade": true
+     }
+    ],
+    "atlas_decal": {
+     "mark": "club_logo",
+     "erase_boxes": {
+      "upper": [
+       25,
+       25,
+       158,
+       119
+      ],
+      "lower": [
+       25,
+       137,
+       158,
+       231
+      ]
+     },
+     "placements": {
+      "upper": {
+       "centre": [
+        103.0,
+        73.3
+       ],
+       "matrix": [
+        [
+         106.0,
+         9.9
+        ],
+        [
+         -21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        -1
+       ]
+      },
+      "lower": {
+       "centre": [
+        103.0,
+        182.7
+       ],
+       "matrix": [
+        [
+         106.0,
+         -9.9
+        ],
+        [
+         21.8,
+         43.7
+        ]
+       ],
+       "flip": [
+        -1,
+        1
+       ]
+      }
+     },
+     "protect": [
+      [
+       27,
+       87,
+       49,
+       97
+      ],
+      [
+       27,
+       159,
+       49,
+       169
+      ]
+     ],
+     "why": "UNI: numeric placement from PS2 atlas landmarks; own mark faces the front on both shell C sides. Replaces sh1 rear-facing 40 degree projection.",
+     "clear_crown": {
+      "families": [
+       "helmet00"
+      ],
+      "box": [
+       153,
+       0,
+       174,
+       214
+      ]
+     }
+    }
+   },
+   "splayer": {
+    "torso_donor": "26A4",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#225588",
+      "to": "jersey_navy",
+      "region": "torso"
+     },
+     {
+      "from": "#225588",
+      "to": "jersey_navy",
+      "region": "sleeve"
+     },
+     {
+      "from": "#225588",
+      "to": "helmet_navy",
+      "region": "helmet"
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ },
+ "uni_b77": {
+  "helmet": "Replace sh1 side projection with measured native-atlas placement, using own artwork only."
+ }
+}

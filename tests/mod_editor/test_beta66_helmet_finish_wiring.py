@@ -150,6 +150,9 @@ class StudioMirrorTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_uniforms_and_build_combos_follow_each_other(self):
+        required_asset = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
         window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
         self.addCleanup(window.deleteLater)

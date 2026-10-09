@@ -37,12 +37,18 @@ loud rather than failing:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import contextlib
 import errno
 import importlib.abc
 import os
-from pathlib import Path
-import sys
 import tempfile
 from typing import Iterator
 import unittest
@@ -406,6 +412,27 @@ class FsyncFdTests(PlatformBranchedTestCase):
                     os.fsync(descriptor)
                 self.assertEqual(caught.exception.errno, errno.EBADF)
                 fsync_fd(descriptor, path=self.staged)
+        self.assertEqual(self.staged.read_bytes(), b"verified image")
+
+    def test_windows_reopens_when_the_crt_reports_eacces(self) -> None:
+        # b77-i2: Wine's CRT reports FlushFileBuffers' refusal of a read-only handle as EACCES, not EBADF.
+        self.require_windows_simulation()
+        with self._read_only_descriptor() as descriptor:
+            with simulated_windows():
+                real_fsync = os.fsync
+
+                def wine_fsync(fd: int) -> None:
+                    if fd == descriptor:
+                        raise OSError(errno.EACCES, "Permission denied")
+                    real_fsync(fd)
+
+                os.fsync = wine_fsync  # type: ignore[assignment]
+                try:
+                    fsync_fd(descriptor, path=self.staged)
+                    with self.assertRaises(DurabilityError):
+                        fsync_fd(descriptor)
+                finally:
+                    os.fsync = real_fsync  # type: ignore[assignment]
         self.assertEqual(self.staged.read_bytes(), b"verified image")
 
     def test_windows_still_refuses_a_swapped_file(self) -> None:

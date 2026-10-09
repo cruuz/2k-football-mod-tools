@@ -285,14 +285,21 @@ class FilePackTests(unittest.TestCase):
         with mock.patch.object(m, "_atomic_replace", side_effect=PermissionError("locked")):
             with self.assertRaises(PermissionError): m.apply(self.pack, self.base, out, overwrite=True)
         self.assertEqual(out.read_bytes(), b"preserved")
-        original = f._stamp
-        calls = []
-        def changed(stream):
-            stamp = original(stream)
-            calls.append(stamp)
-            return stamp if len(calls) == 1 else (*stamp[:-1], stamp[-1] + 1)
-        with mock.patch.object(f, "_stamp", side_effect=changed):
-            with self.assertRaises(m.ModpackError): m.apply(self.pack, self.base, out, overwrite=True)
+        # A source whose CONTENT changes mid-install is refused by the hashes and keeps the destination.
+        # (Beta 77 E1: moved file details alone are not a reason to refuse; see test_b77_e1_source_metadata_drift.py.)
+        with self.base.open("rb", buffering=0) as stream:
+            entry = xc.read_layout(stream).entries["same"]
+        required = sum(r["before"]["size"] for r in m.inspect(self.pack)["files"])
+        flipped = []
+        def flip_after_validation(stage, done, total):
+            if stage == "Checking clean game files" and done == required and not flipped:
+                flipped.append(True)
+                with self.base.open("r+b") as stream:
+                    stream.seek(entry.byte_offset + 2)
+                    stream.write(b"X")
+        with self.assertRaisesRegex(m.ModpackError, "SHA-256 differs"):
+            m.apply(self.pack, self.base, out, overwrite=True, progress=flip_after_validation)
+        self.assertTrue(flipped)
         self.assertEqual(out.read_bytes(), b"preserved")
         self.assertFalse(list(self.root.glob("*.part")))
 

@@ -14,8 +14,15 @@ and the personnel rows the book promises (mask at +0x7E04, row search
 
 from __future__ import annotations
 
-import os
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
+import os
 import struct
 import unittest
 from unittest import mock

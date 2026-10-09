@@ -227,7 +227,11 @@ class DefenseRetailTests(unittest.TestCase):
             partner = rec.slots[s].mirror_partner
             if partner < 11:
                 self.assertEqual(rec.slots[partner].mirror_partner, s)
-        self.assertEqual(positions[4:6], [(-76, 91), (76, 91)])
+        self.assertEqual(positions[4:6], [(-80, 100), (80, 100)])
+        from mod_editor.core import nfl2k5_defense_lint as dlint
+        view = dlint.DefenseFormation('Double A EXPERIMENTAL', positions, lib.category_positions(r[32:], 11),
+                                      [s.stance for s in rec.slots], fi, 11, rec.type_code)
+        self.assertEqual([f.code for f in dlint.formation_findings(view)], [])
 
     def test_spy_preserves_donor_operands_and_metadata_through_clone_mirror_pack_reload(self):
         r = self.resources['ATL']; b = self.books['ATL']; body = r[32:]

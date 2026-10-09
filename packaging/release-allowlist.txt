@@ -461,6 +461,7 @@ tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
 tools/make_app_icons.py
 tools/nfl2k5_career_stats.py
+tools/nfl2k5_honors.py
 tools/nfl2k5_depth_roles.py
 tools/nfl2k5_franchise_schedule_probe.py
 tools/nfl2k5_jersey_png_workflow.py
@@ -571,6 +572,7 @@ mod_editor/core/nfl2k5_elbow_options.py
 mod_editor/core/nfl2k5_lineman_rating.py
 mod_editor/core/nfl2k5_display_list_stability.py
 mod_editor/core/nfl2k5_resource_load_guard.py
+mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code.py
 mod_editor/core/nfl2k5_espn25_more_moments.py
@@ -579,11 +581,21 @@ mod_editor/core/nfl2k5_espn25_more_moments_code.py
 mod_editor/core/nfl2k5_moment_venues.py
 # Beta 76 e2 phase 2 (ig): the Anniversary stock books and era rules load with the Build plan
 mod_editor/core/nfl2k5_stock_books.py
+mod_editor/core/nfl2k5_moment_gun_weight.py
 mod_editor/core/nfl2k5_era_rules.py
 mod_editor/core/nfl2k5_era_rules_code.py
 mod_editor/core/nfl2k5_historic_styles.py
+mod_editor/core/nfl2k5_uniform_slots.py
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
+mod_editor/core/nfl2k5_letter_grades.py
+mod_editor/core/nfl2k5_letter_grades_code.py
+mod_editor/core/nfl2k5_letter_grades_progress.py
+mod_editor/core/nfl2k5_period_goalposts.py
+mod_editor/core/nfl2k5_honors.py
+mod_editor/core/nfl2k5_honors_code.py
+mod_editor/core/nfl2k5_honors_history.py
+data/nfl2k5_honors_2026.json
 mod_editor/core/nfl2k5_kickoff_blocking.py
 mod_editor/core/nfl2k5_widescreen_menus.py
 mod_editor/core/nfl2k5_team_logo_swap.py
@@ -591,8 +603,10 @@ mod_editor/core/nfl2k5_penalties.py
 mod_editor/core/nfl2k5_uniform_choice.py
 mod_editor/core/nfl2k5_franchise_practice.py
 mod_editor/core/nfl2k5_kick_laces.py
+mod_editor/core/nfl2k5_punter_holder.py
 mod_editor/core/nfl2k5_team_history.py
 mod_editor/core/nfl2k5_prospect_names.py
+mod_editor/core/nfl2k5_commentary_final.py
 mod_editor/core/nfl2k5_seven_on_seven.py
 mod_editor/core/nfl2k5_boot_logo.py
 mod_editor/core/nfl2k5_seven_on_seven_book.py
@@ -655,7 +669,9 @@ data/nfl2k5_espn25_moment_rosters/h-30-1986-browns-1.csv
 data/nfl2k5_espn25_moment_rosters/manifest.json
 data/nfl2k5_espn25_more_moments.json
 data/nfl2k5_moment_venues.json
+data/nfl2k5_moment_goalposts.json
 data/nfl2k5_stock_books.json
+data/nfl2k5_moment_playbook_eras.json
 data/nfl2k5_era_rules.json
 data/espn25_previews_2026.json
 data/nfl2k5_espn25_more_teams/teams.json
@@ -737,11 +753,16 @@ docs/mod_editor/playbook_packs.md
 docs/mod_editor/save_rost_codec.md
 docs/mod_editor/special_roles_audit.json
 mod_editor/core/nfl2k5_complete_offense.py
+mod_editor/core/nfl2k5_offense_concepts.py
+tests/mod_editor/test_nfl2k5_offense_concepts.py
 mod_editor/core/nfl2k5_play_intents.py
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/core/nfl2k5_play_scoring.py
 mod_editor/core/nfl2k5_play_scoring_pins.json
 mod_editor/core/nfl2k5_screen_authored_pins.py
+mod_editor/core/nfl2k5_playbook_lint.py
+tools/nfl2k5_playbook_lint.py
+tests/mod_editor/test_nfl2k5_playbook_lint.py
 mod_editor/gui/playbook_pack_dialog_qt.py
 mod_editor/gui/task_delivery.py
 mod_editor/gui/ux_text.py
@@ -926,6 +947,7 @@ mod_editor/core/nfl2k5_cpu_money_downs.py
 mod_editor/core/nfl2k5_cpu_money_downs_code.py
 docs/mod_editor/nfl2k5_cpu_money_downs_capability.json
 docs/mod_editor/nfl2k5_cpu_money_downs_replays.json
+docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json
 ASTRA_CPU_MONEY_DOWNS_REPORT.md
 mod_editor/core/nfl2k5_accelerated_clock.py
 mod_editor/core/nfl2k5_accelerated_clock_code.py
@@ -941,6 +963,7 @@ mod_editor/core/nfl2k5_playbook_pair_code.py
 docs/mod_editor/nfl2k5_playbook_pair_capability.json
 ASTRA_PLAYBOOK_PAIR_REPORT.md
 mod_editor/core/nfl2k5_match_coverage.py
+mod_editor/core/nfl2k5_defense_lint.py
 tools/nfl2k5_match_coverage.py
 data/playbooks/softdrink_match_coverage.2k5book
 ASTRA_MATCH_COVERAGE_REPORT.md
@@ -1187,6 +1210,11 @@ data/nfl2k5_kick_meter_2026/geometry.json
 data/nfl2k5_kick_meter_2026/meter128.png
 data/nfl2k5_kick_meter_2026/meter64.png
 tests/mod_editor/test_nfl2k5_kick_meter_2026.py
+# Beta 77 v1: modern goalposts (uprights 35 ft above the crossbar, every venue)
+mod_editor/core/nfl2k5_modern_goalposts.py
+data/nfl2k5_modern_goalposts_pins.json
+tests/mod_editor/test_nfl2k5_modern_goalposts.py
+tests/mod_editor/test_nfl2k5_period_goalposts.py
 mod_editor/core/nfl2k5_rules_patch.py
 mod_editor/core/nfl2k5_coin_defer.py
 mod_editor/core/nfl2k5_coin_defer_code.py
@@ -1387,6 +1415,7 @@ data/nfl2k5_allegiant_model/art/LIGHT_ag_lights.png
 data/nfl2k5_allegiant_model/art/LIGHT_ag_lines.png
 data/nfl2k5_allegiant_model/art/LIGHT_ag_mesh.png
 data/nfl2k5_allegiant_model/art/LIGHT_ag_ribbon.png
+data/nfl2k5_allegiant_model/art/LIGHT_ag_skyline.png
 data/nfl2k5_allegiant_model/art/LIGHT_ag_strip.png
 data/nfl2k5_allegiant_model/art/ag_asphalt.png
 data/nfl2k5_allegiant_model/art/ag_black.png
@@ -1409,6 +1438,7 @@ data/nfl2k5_allegiant_model/art/ag_seat_back.png
 data/nfl2k5_allegiant_model/art/ag_seat_front.png
 data/nfl2k5_allegiant_model/art/ag_seat_mid.png
 data/nfl2k5_allegiant_model/art/ag_torch.png
+data/nfl2k5_allegiant_model/art/ag_truss.png
 data/nfl2k5_allegiant_model/art/ag_wall.png
 data/nfl2k5_allegiant_model/art/field/ag_grass.png
 data/nfl2k5_allegiant_model/art/field/ag_grass_outside.png
@@ -2139,6 +2169,12 @@ tools/b765/s1_audit.py
 tools/b765/s1_render.py
 tests/mod_editor/test_b765_s1_geometry.py
 tests/mod_editor/test_b765_s1_repair.py
+tests/mod_editor/test_b77_g2_input_map.py
+tests/mod_editor/test_b77_g2_repair.py
+tests/mod_editor/test_b77_g2_star_gate.py
+tests/mod_editor/test_b77_g2_studio.py
+tests/nfl2k5_input_decode_machine.py
+tools/b77/g2_repair.py
 tests/mod_editor/test_b765_s1b_repair.py
 tests/mod_editor/test_b765_s1_audit.py
 tools/b765/s1_seams.py
@@ -2463,4 +2499,5 @@ tools/b765/s2_existing_field_pins.json
 packaging/requirements-field-authoring.txt
 
 # b765 integration: real historic/CAP vacancies with the dated 377-FA roster
+mod_editor/core/nfl2k5_qb_throw_power.py
 mod_editor/core/nfl2k5_spare_capacity.py

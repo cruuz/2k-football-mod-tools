@@ -1,0 +1,619 @@
+{
+ "team": "BAL",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Johnson/Payton heavy personnel blend",
+ "staff": "Declan Doyle",
+ "family": "power",
+ "feature": "TE1",
+ "key_players": "Derrick Henry; Mark Andrews; Lamar Jackson",
+ "depth_step": 2,
+ "tendencies": {
+  "shotgun_pct": 64.85,
+  "pistol_pct": 5.44,
+  "play_action_pct": 22.27,
+  "motion_pct": 53.87,
+  "personnel": {
+   "12": 336,
+   "11": 291,
+   "13": 52,
+   "21": 177,
+   "other": 10,
+   "14": 1,
+   "22": 81,
+   "23": 4,
+   "31": 3,
+   "20": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Weak I",
+   "Split Backs",
+   "Pistol Strong",
+   "Gun Doubles",
+   "Gun Trey",
+   "Gun Bunch",
+   "Singleback Doubles",
+   "Gun Doubles Tight"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Weak I",
+   "Pistol Strong",
+   "Split Backs",
+   "Ace Jumbo"
+  ]
+ },
+ "boost": {
+  "Counter": 4,
+  "Dagger": 2,
+  "Duo": 4,
+  "Iso": 2,
+  "PA Boot Leak": 1,
+  "PA Dagger": 2,
+  "Power": 3,
+  "QB Sneak": 1,
+  "Stick": 1,
+  "TE Screen": 1,
+  "Trap": 1,
+  "Y Cross": 1,
+  "Yankee": 1
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "I-Form Tight",
+   "concept": "Power",
+   "name": "Power Weak",
+   "overrides": {
+    "direction": "weak"
+   }
+  },
+  {
+   "formation": "Pistol Strong",
+   "concept": "Yankee",
+   "name": "Pistol Yankee",
+   "overrides": {
+    "routes": {
+     "S1": [
+      "route",
+      "Over",
+      10
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "QB Draw",
+   "name": "QB Power Draw",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Shallow Cross",
+   "name": "BAL Shallow Cross",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "B",
+     "S1",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Drive",
+   "name": "BAL Drive",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S3",
+     "W1",
+     "S2",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Bunch",
+   "concept": "Mesh",
+   "name": "BAL Mesh",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "B",
+     "S3",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Curl Flat",
+   "name": "BAL Curl Flat",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "S1",
+     "W1",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Hank",
+   "name": "BAL Hank",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S1",
+     "S2",
+     "B",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Comebacks",
+   "name": "BAL Comebacks",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S2",
+     "S1",
+     "B"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.baltimoreravens.com/news/ravens-name-declan-doyle-offensive-coordinator)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.17 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Straight": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Weak I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Pistol Strong": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "Shallow Cross",
+    "name": "BAL Shallow Cross",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "B",
+      "S1",
+      "W1"
+     ]
+    },
+    "reason": "targets SHALLOW CROSS/DRAG 9.0% (league 6.6)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Drive",
+    "name": "BAL Drive",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S3",
+      "W1",
+      "S2",
+      "B"
+     ]
+    },
+    "reason": "targets SHALLOW CROSS/DRAG 9.0% (league 6.6)"
+   },
+   {
+    "formation": "Gun Bunch",
+    "concept": "Mesh",
+    "name": "BAL Mesh",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "B",
+      "S3",
+      "W1"
+     ]
+    },
+    "reason": "targets SHALLOW CROSS/DRAG 9.0% (league 6.6)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Curl Flat",
+    "name": "BAL Curl Flat",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "S1",
+      "W1",
+      "W2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 20.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Hank",
+    "name": "BAL Hank",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S1",
+      "S2",
+      "B",
+      "W2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 20.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Comebacks",
+    "name": "BAL Comebacks",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S2",
+      "S1",
+      "B"
+     ]
+    },
+    "reason": "targets HITCH/CURL 20.6% (league 18.3)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 61.6%"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 36.0%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   4,
+   4,
+   4
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   0,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   2,
+   4
+  ],
+  "Gun Trey": [
+   1,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   2
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   3,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   3,
+   4,
+   0
+  ],
+  "Strong I": [
+   2,
+   4,
+   4
+  ],
+  "Heavy Wing": [
+   1,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   0,
+   2
+  ],
+  "Gun Split Backs": [
+   2,
+   3,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   4
+  ],
+  "Gun Y Trips": [
+   4,
+   2,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Weak I": [
+   2,
+   2,
+   4
+  ],
+  "Pistol Strong": [
+   2,
+   0,
+   2
+  ],
+  "Split Backs": [
+   3,
+   0,
+   4
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ]
+ }
+}

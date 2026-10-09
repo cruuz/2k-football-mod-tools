@@ -108,7 +108,8 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for _label, list_va, pointers in team_column.COLUMN_LISTS:
         off = CARD_RAW + (list_va + team_column.LIST_POINTERS_OFF - CARD_VA)
         buf[off: off + team_column.LIST_SLOTS * 4] = team_column.list_words(pointers, False)
-    for va, retail in ((team_column.HOOK_VA, team_column.RETAIL_HOOK), (team_column.CAVE_VA, team_column.RETAIL_CAVE)):
+    for va, retail in ((team_column.HOOK_VA, team_column.RETAIL_HOOK), (team_column.CAVE_VA, team_column.RETAIL_CAVE),
+                       (team_column.POST_HOOK_VA, team_column.RETAIL_POST_HOOK)):
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
     for _pos, struct_va, retail_bits in draft.ROOKIE_KEY_SITES:

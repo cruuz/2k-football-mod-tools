@@ -8,6 +8,7 @@ import copy
 import json
 import sys
 from .generate import ROOT,readcsv,dump
+from mod_editor.core import nfl2k5_roster_records as rr
 from tools.franchise_economy.contracts import fit_schedule,fit_minimum,charges,FIELDS
 from tools.franchise_economy.import_contracts import cap_schedule,normalize,read_pinned_parquet
 
@@ -41,7 +42,7 @@ def update(result,doc,fa,out,pins):
                 # Owen Pappoe has no active row in the current release. A prior
                 # observed deal cannot be silently relabeled as still current.
                 minimums=json.loads((ROOT/'data/nfl2k5_franchise_economy.json').read_text())['minimums']['dollars']
-                pro=min(p.record.values['years_pro'],7)
+                pro=min(rr.accrued_seasons(p.record.values['years_pro']),7)
                 fit=fit_schedule([minimums[pro]],opening_priority=True)
                 fallback=dict(evidence='DESIGN',rule='one-year active-roster CBA minimum',
                               experience_proxy=pro,reason=str(exc),previous_observed_expired=True)

@@ -132,7 +132,7 @@ class DigitDimensionsFollowTheReportTests(unittest.TestCase):
                     "asset_code": "28",
                     "clean_png": "sleeve.png",
                     "kind": "sleeve",
-                    "mud_mode": "darken_60",
+                    "mud_mode": "wet_93",
                     "mud_png": None,
                     "side": "H",
                     "variant": variant,

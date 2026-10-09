@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import os
 import pathlib
 import shutil
@@ -292,6 +293,10 @@ def main() -> int:
     parser.add_argument("--version", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--work", default=None)
+    parser.add_argument(
+        "--defer-runtime-check", action="store_true",
+        help="Assemble only; record the Windows execution check as pending for the release coordinator",
+    )
     args = parser.parse_args()
 
     repo = pathlib.Path(__file__).resolve().parents[2]
@@ -318,8 +323,15 @@ def main() -> int:
     sys.path.insert(0, str(repo / "packaging"))
     from runtime_dependencies import check_runtime_dependencies
     check_runtime_dependencies(app, work / "runtime")
-    from check_packaged_runtime import check_layout
-    check_layout(work)
+    check_receipt = work / "runtime-check.json"
+    if args.defer_runtime_check:
+        receipt = {"status": "pending", "reason": "Windows execution explicitly deferred",
+                   "product": args.product, "version": args.version}
+        print("      Windows execution check PENDING. Validate the finished Setup before publication.")
+    else:
+        from check_packaged_runtime import check_layout
+        receipt = {"status": "passed", "result": check_layout(work)}
+    check_receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     print("[3/4] icon")
     icon = build_icon(repo, product["icon"], work / f"{args.product}.ico")

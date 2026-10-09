@@ -42,6 +42,20 @@ SHAPE_SHA256 = "ab4df547810a558fd3563b6bf4187b88a03b02111437b35a1f37e726a68cf85f
 SOFI_SHAPE_SHA256 = "a4cfb9327f9ad9a3ecccf22d24ea9841467f040778e5dfe89cad2292b7a9ae49"
 
 
+# W1/W2 (beta 77): "make it rain less often". Retail rolls precipitation per game from the stadium row's percent
+# (precipitation iff 100 U <= percent) and decides rain or snow afterwards from the generated temperature (rain iff above
+# 35 F), so rain and snow share one roll. The retail percents put visible rain in about 24 percent of 2026 outdoor
+# games. The only real-world rate sourced here is PFF "The Factors" (2017): of 1,400 outdoor games from 2009 to 2017,
+# 229 (16.4 percent) had any rain at game time, 22 of them moderate (1.6 percent). Rain-dominant cells are cut by
+# RAIN_CUT x r^2, where r is the share of that cell's precipitation that falls as rain (baseline temperature plus the
+# retail time-of-day offsets at 0x4F6564, weighted by the 2026 schedule's day/afternoon/night mix). Pure rain cells lose
+# 60 percent, mixed cells less, snow cells nothing, domes nothing.
+RAIN_CUT = 0.6
+RAIN_LINE_F = 35.0
+TOD_OFFSETS_F = ((-5.0, 15.0), (-10.0, 10.0), (-20.0, 0.0))  # day, afternoon, night: baseline + [low, high)
+TOD_WEIGHTS = (0.55, 0.225, 0.225)  # 150 day, 61 afternoon, 61 night of the 272 games in data/nfl_2026_schedule.json
+
+
 class WeatherError(ValueError):
     pass
 
@@ -88,8 +102,28 @@ def scalar_bytes(field, value):
     return struct.pack("<f", value)
 
 
-def inspect_resource(data):
-    """Resolve the live ROST pool; tolerate relocations, never guess fixed offsets."""
+def rain_share(baseline_f):
+    """Share of this cell's precipitation that falls as rain (0 snow, 1 rain), averaged over time of day."""
+    total = 0.0
+    for (low, high), weight in zip(TOD_OFFSETS_F, TOD_WEIGHTS):
+        need = (RAIN_LINE_F - baseline_f - low) / (high - low)  # rain iff the uniform draw exceeds this
+        total += weight * min(1.0, max(0.0, 1.0 - need))
+    return total
+
+
+def less_rain_percent(percent, baseline_f):
+    """The precipitation percent after the rain cut; snow-dominant cells return unchanged."""
+    if percent <= 0:
+        return percent
+    share = rain_share(baseline_f)
+    return round(percent * (1.0 - RAIN_CUT * share * share), 1)
+
+
+def inspect_resource(data, *, strict=True):
+    """Resolve the live ROST pool; tolerate relocations, never guess fixed offsets.
+
+    strict=False skips only the retail stadium-shape pin, for a repair that must read a SOFTDRINK ROST whose stadium
+    rows were renamed (the repair pins its own owned floats instead)."""
     require(isinstance(data, bytes) and 0x40 <= len(data) <= MAX_RESOURCE, "Expected a bounded ROST resource")
     require(data[:4] == data[0x2C:0x30] == b"ROST", "Not a main ROST resource")
     require(struct.unpack_from("<II", data, 4) == (len(data)-32, len(data)-32) and
@@ -103,7 +137,7 @@ def inspect_resource(data):
             "Unsupported stadium table; expected 82 complete USA stadium rows")
     geometry = b"".join(data[o+24:o+40]+data[o+124:o+128]
                         for o in range(at, at+COUNT*STRIDE, STRIDE))
-    require(sha(geometry) in (SHAPE_SHA256, SOFI_SHAPE_SHA256),
+    require(not strict or sha(geometry) in (SHAPE_SHA256, SOFI_SHAPE_SHA256),
             "Stadium roof, identity or record layout changed; reopen the supported source")
     rows = []
     for index in range(count):
@@ -238,6 +272,25 @@ class WeatherDraft:
         if self._values != previous:
             self._undo.append(previous)
 
+    def less_rain_preset(self):
+        """Cut rain frequency toward the sourced real-world rate (see RAIN_CUT). Idempotent against the loaded source:
+        values are always computed from the source percent, never from an earlier draft value; roofed rows are skipped."""
+        previous, depth = self._values.copy(), len(self._undo)
+        try:
+            for row in self.catalog["rows"]:
+                if row["indoor"]:
+                    continue
+                for values in row["months"]:
+                    self.set_value(row["index"], values["month"], "precipitation_pct",
+                                   min(100, less_rain_percent(values["precipitation_pct"], values["temperature_f"])))
+        except BaseException:
+            self._values = previous
+            del self._undo[depth:]
+            raise
+        del self._undo[depth:]
+        if self._values != previous:
+            self._undo.append(previous)
+
     def undo(self):
         if not self._undo:
             return False
@@ -278,3 +331,28 @@ def apply_to_image(target, plan):
             require(archive.write(entry.virtual_offset, result) == len(result), "Short climate write")
         verify(archive.read(entry.virtual_offset, entry.size), plan, before=original)
     return receipt
+
+
+def less_rain_plan(resource):
+    """A saved-plan document (nfl2k5.weather.edits.v1) that applies the rain cut to every outdoor row of this ROST."""
+    draft = WeatherDraft(resource)
+    draft.less_rain_preset()
+    return draft.plan()
+
+
+def main(argv=None):
+    import argparse
+    parser = argparse.ArgumentParser(description="Author the less-frequent-rain climate plan (copy-only, no source writes).")
+    parser.add_argument("source", type=Path, help="supported USA disc image or extracted game folder")
+    parser.add_argument("plan", type=Path, help="new .json plan to write")
+    args = parser.parse_args(argv)
+    require(args.plan.suffix.lower() == ".json" and not args.plan.exists(), "Choose a new .json file for the plan")
+    plan = less_rain_plan(load_resource(args.source))
+    require(bool(plan["changes"]), "Nothing to change")
+    write_json(args.plan, plan)
+    print(f"{len(plan['changes'])} precipitation edits written to {args.plan}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

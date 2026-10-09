@@ -1,8 +1,15 @@
 """PROVED OFFLINE: native crash regression and both publication gates."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import copy
 from dataclasses import replace
 import os
-from pathlib import Path
 import struct
 from types import SimpleNamespace
 import unittest
@@ -46,9 +53,20 @@ class Native(unittest.TestCase):
         cls.fixed = cls.compiled.replacement
         cls.machine = scoring.NativeScorer(cls.xbe)
         body = cls.fixed[32:]
-        desc = ip.PLAY_BASE+153*96+12+10*8
-        chain = desc+struct.unpack_from('<i',body,desc)[0]-1
-        cls.node = next(chain+i*8 for i in range(body[desc-4]&15) if body[chain+i*8]==0x16)
+        # the first play and slot of the compiled book whose chain holds an 0x16 node (the v0.5 DAL book had it in play 153)
+        for play in range(154, 0, -1):
+            found = None
+            for slot in range(11):
+                desc = ip.PLAY_BASE+(play-1)*96+12+slot*8
+                chain = desc+struct.unpack_from('<i',body,desc)[0]-1
+                found = next((chain+i*8 for i in range(body[desc-4]&15) if body[chain+i*8]==0x16), None)
+                if found is not None:
+                    break
+            if found is not None:
+                cls.node, cls.play_index = found, play-1
+                break
+        else:
+            raise AssertionError('no 0x16 node in the first 154 plays')
 
     def corrupted(self, hole=10):
         raw = bytearray(self.fixed)
@@ -71,7 +89,7 @@ class Native(unittest.TestCase):
         m = self.machine
         m.m.mem_write(scoring.SOURCE,raw[32:])
         m.call(0x161e30,ecx=scoring.SOURCE,edx=0)
-        play = scoring.BOOK+ip.PLAY_BASE+153*96
+        play = scoring.BOOK+ip.PLAY_BASE+self.play_index*96
         self.assertEqual(m.call(0x1a9840,ecx=play),0)
         for context in range(4):
             with self.subTest(context=context), self.assertRaises(scoring.ScoringError):
@@ -89,10 +107,10 @@ class Native(unittest.TestCase):
                 decoded=9-hole if hole and context&2 else hole
                 with self.subTest(hole=hole,context=context):
                     if 0<=decoded<=8:
-                        m.call(0x2815f0,ecx=scoring.BOOK+ip.PLAY_BASE+153*96,edx=context)
+                        m.call(0x2815f0,ecx=scoring.BOOK+ip.PLAY_BASE+self.play_index*96,edx=context)
                     else:
                         with self.assertRaises(scoring.ScoringError):
-                            m.call(0x2815f0,ecx=scoring.BOOK+ip.PLAY_BASE+153*96,edx=context)
+                            m.call(0x2815f0,ecx=scoring.BOOK+ip.PLAY_BASE+self.play_index*96,edx=context)
 
     def test_pack_compiler_and_final_disc_gate_reject_post_writer_corruption(self):
         bad=self.corrupted()

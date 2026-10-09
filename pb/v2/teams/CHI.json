@@ -1,0 +1,716 @@
+{
+ "team": "CHI",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Johnson multiple gap and play action",
+ "staff": "Ben Johnson / Press Taylor",
+ "family": "power",
+ "feature": "TE1",
+ "key_players": "Colston Loveland; Rome Odunze",
+ "depth_step": 2,
+ "tendencies": {
+  "shotgun_pct": 51.82,
+  "pistol_pct": 2.1,
+  "play_action_pct": 31.52,
+  "motion_pct": 58.21,
+  "personnel": {
+   "11": 572,
+   "12": 356,
+   "other": 51,
+   "01": 19,
+   "02": 10,
+   "13": 87,
+   "03": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Ace Jumbo",
+   "Gun Trips",
+   "Gun Wing",
+   "Singleback Doubles",
+   "Gun Doubles",
+   "Singleback Ace",
+   "I-Form Pro",
+   "Pistol Doubles"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Ace Jumbo",
+   "Pistol Doubles",
+   "Gun Empty Y"
+  ]
+ },
+ "boost": {
+  "Counter": 4,
+  "Dagger": 2,
+  "Duo": 2,
+  "Iso": 2,
+  "PA Boot": 2,
+  "PA Boot Leak": 1,
+  "PA Dagger": 2,
+  "Power": 3,
+  "QB Sneak": 1,
+  "Stick": 1,
+  "TE Screen": 1,
+  "Trap": 1,
+  "Y Cross": 1,
+  "Yankee": 1
+ },
+ "preference_shift": {
+  "PA Boot": -1,
+  "PA Boot Leak": -1,
+  "Yankee": -1,
+  "PA Dagger": -1,
+  "PA Crossers": -1
+ },
+ "signature": [
+  {
+   "formation": "Ace Jumbo",
+   "concept": "PA Boot Leak",
+   "name": "Jumbo Leak",
+   "overrides": {}
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Shot",
+   "name": "PA Post Wheel",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Wheel",
+      2
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Y Trips",
+   "concept": "Y Cross",
+   "name": "Y Cross Sluggo",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Slant and Go",
+      1
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bench",
+   "name": "CHI Bench",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "S1",
+     "W1",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Wing",
+   "concept": "Comebacks",
+   "name": "CHI Comebacks",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "B",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Post Wheel",
+   "name": "CHI Post Wheel",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S1",
+     "W1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Double Post",
+   "name": "CHI Double Post",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S1",
+     "W1",
+     "B",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "PA Boot",
+   "name": "CHI PA Boot",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S1",
+     "W2",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Crossers",
+   "name": "CHI PA Crossers",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "Yankee",
+   "name": "CHI Yankee",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Shot",
+   "name": "CHI PA Shot",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Post Wheel",
+   "name": "CHI Post Wheel",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Stick Nod",
+   "name": "CHI Stick Nod",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "B",
+     "S3"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.chicagobears.com/news/press-taylor-excited-for-new-opportunity-as-bears-offensive-coordinator)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.65 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Empty Y": {
+   "own": "Straight",
+   "mask": [
+    "Straight"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Trips",
+    "concept": "Bench",
+    "name": "CHI Bench",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "S1",
+      "W1",
+      "B"
+     ]
+    },
+    "reason": "targets DEEP OUT 10.2% (league 7.4)"
+   },
+   {
+    "formation": "Gun Wing",
+    "concept": "Comebacks",
+    "name": "CHI Comebacks",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "targets DEEP OUT 10.2% (league 7.4)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Post Wheel",
+    "name": "CHI Post Wheel",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S1",
+      "W1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "targets POST 7.9% (league 5.7)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Double Post",
+    "name": "CHI Double Post",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S1",
+      "W1",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "targets POST 7.9% (league 5.7)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "PA Boot",
+    "name": "CHI PA Boot",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S1",
+      "W2",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "play_action_pct 31.4 (league 23.2)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Crossers",
+    "name": "CHI PA Crossers",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "play_action_pct 31.4 (league 23.2)"
+   },
+   {
+    "formation": "I-Form Pro",
+    "concept": "Yankee",
+    "name": "CHI Yankee",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "play_action_pct 31.4 (league 23.2)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Shot",
+    "name": "CHI PA Shot",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "adot 8.65 (league 7.8)"
+   },
+   {
+    "formation": "Pistol Doubles",
+    "concept": "Post Wheel",
+    "name": "CHI Post Wheel",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "adot 8.65 (league 7.8)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Stick Nod",
+    "name": "CHI Stick Nod",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "B",
+      "S3"
+     ]
+    },
+    "reason": "adot 8.65 (league 7.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 89.3%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   2,
+   2
+  ],
+  "Gun Trey": [
+   3,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   2,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   2
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   4,
+   4
+  ],
+  "Heavy Wing": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   2,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   1,
+   0,
+   4
+  ],
+  "Gun Y Trips": [
+   3,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   2,
+   4,
+   0
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Pistol Doubles": [
+   2,
+   4,
+   1
+  ],
+  "Gun Empty Y": [
+   3,
+   2,
+   2
+  ]
+ }
+}

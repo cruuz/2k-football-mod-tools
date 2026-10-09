@@ -14,7 +14,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-for candidate in (ROOT / "tests", ROOT / "tools"):
+for candidate in (ROOT / "tests", ROOT / "tools", ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
@@ -94,6 +94,9 @@ class CommentaryPanelTests(unittest.TestCase):
                 self.assertGreater(cs.snr_db(clip_pcm[skip:-skip], decoded[skip:len(clip_pcm) - skip]), 20.0)
 
     def test_studio_offers_the_tab(self) -> None:
+        required_asset = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         from mod_editor.gui.studio_qt import StudioMainWindow
 
         window = StudioMainWindow(eager_pages=True, )

@@ -1,0 +1,2924 @@
+{
+ "status": "PROVED OFFLINE",
+ "runtime_witness": false,
+ "generator": "pb/v2/build.py",
+ "scope": "retail instructions under Unicorn (scoring, menu walk); no gameplay",
+ "teams": {
+  "ARZ": {
+   "team": "ARZ",
+   "ok": true,
+   "pack_sha256": "2264ead8e00c5f9985acdca590c11c5a8037f4b12d70133feae321bdd32b02ab",
+   "compose": {
+    "team": "ARZ",
+    "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "474cf779a84f5521889ad23fdb8c8f1f6ac5924f343f74faaec2e5cc5abef18c",
+      "nodes": 1845,
+      "names": 5042,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "70b3827cbc0fbc4d93ac69bb3af37490aa4861744526f7d09dfc6f7deae043cd",
+      "nodes": 2241,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "8fb428d1867760f304279196b2c1bb2051f6b66482374b2fbae5c0c064575de1"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "30a39325fcfb0b5d235e8b73464172566d846dc591441258c91d87b18f8132d2"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "17d748f005efc87af66fd2ed60c602148e2d935c4eb17c1d8589254245490d05",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff"
+   },
+   "formations": 41,
+   "menu_entries": 426,
+   "unique_plays": 270,
+   "pages": 154,
+   "walks_ended": true,
+   "lint": {
+    "links": 266,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "45ddb7c5057116e46a5196a9c446f3c34ce06d3a1ca7b597ecd24d498e003173"
+  },
+  "ATL": {
+   "team": "ATL",
+   "ok": true,
+   "pack_sha256": "34cc7c6c30338e65d66c61b402733bf22fd93451a1820b69d92e78e5ee831bf5",
+   "compose": {
+    "team": "ATL",
+    "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "d88e99d61def798fa3134f53f55d2d1eac04915b0330808686bf0297794d789c",
+      "nodes": 1833,
+      "names": 4918,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "0f45c79a5844c19757f8915532fc1c27bd2711b02734f4f44e2e45e28e547e6c",
+      "nodes": 2273,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "e7eebedba89503cc43d0111faf7276d49154b3d67b34267c9ccf8ac64d59bd67"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "8848a621ba1ee51f365f932da7357550aef251b8bf12f80605b9a5336711f2ee"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "00a7c54ca5effc04c298222df0d6552e0d7ba8069bbd10f77e3c9d0217d389ac",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c"
+   },
+   "formations": 39,
+   "menu_entries": 389,
+   "unique_plays": 256,
+   "pages": 140,
+   "walks_ended": true,
+   "lint": {
+    "links": 227,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Pro",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "15362413a563a01e1189bd230e5e8685add6f673d76134197c2c659041de5a3e"
+  },
+  "BAL": {
+   "team": "BAL",
+   "ok": true,
+   "pack_sha256": "fbbccc7cac6540cf27a5e3f2702e3c547b1c6445f626254ab513c8fdca2cf6ce",
+   "compose": {
+    "team": "BAL",
+    "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "3dcf8ff1356b628f530b94246dfaf91863b280eee52b7cf83d859320c8c4019c",
+      "nodes": 1837,
+      "names": 5048,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "cafa32e6d351111f42bfd78bca9dfdf7bd79636deda5de2919c7d1eb1b4a0c7c",
+      "nodes": 2315,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "58ebcd8eaad6abd53d6ef803cee12d2a4c0e6d1b498cc0e7d78c6a171c66f2d4"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "b5b33e6ccf7cc09fcbb621fff2ae68cc25df39c7c47a30a41d040ed930940111"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "3ff57fd8e70840e1ae93b07685871e70d0d6435d01adb05cf991240e7e8a2bbc",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f",
+      "changed_bytes": 6
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f"
+   },
+   "formations": 42,
+   "menu_entries": 400,
+   "unique_plays": 263,
+   "pages": 144,
+   "walks_ended": true,
+   "lint": {
+    "links": 240,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 62,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Pro",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "db8ba1dade1831a40347da280114d3e3c965f1bee354f2f0b53ea8838ca7e7d2"
+  },
+  "BUF": {
+   "team": "BUF",
+   "ok": true,
+   "pack_sha256": "8df5b45705a0d41ad6ba0a5fd1b91211fbda8cf8e43274de606470213daa2c50",
+   "compose": {
+    "team": "BUF",
+    "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "e55b31015d36b9d3319bb4dcf48943f59682426ea7003244f2425816cf0b7210",
+      "nodes": 1907,
+      "names": 5230,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "69942c2d5f26b630fa6e892f2e38cce8f938d46d50aa4ccaf6136f073f571b5f",
+      "nodes": 2359,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "7239e95171a518760c3221f57cc9f61d20c4900ad9e16e2d9f20c9f044f7dddd"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "6988bb88bbfaaedacd81649ee1fd30409f805a555da03260627d948e99957f31"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "1874eaa36714c5ab752d500edeb894ff35bd297f7ba46cd16168748470e7406d",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152"
+   },
+   "formations": 46,
+   "menu_entries": 430,
+   "unique_plays": 270,
+   "pages": 153,
+   "walks_ended": true,
+   "lint": {
+    "links": 255,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 72,
+     "formations": 6
+    },
+    "retained_plays": 127,
+    "plays_differing": [],
+    "retained_formations": 19,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "b406361c0ed419770bff391785bd207395996ffbc4b618736601709e76f2a0d9"
+  },
+  "CAR": {
+   "team": "CAR",
+   "ok": true,
+   "pack_sha256": "4177fcf63e1636ecfd5353062e56129cea207412dd5745f44164593e648d288f",
+   "compose": {
+    "team": "CAR",
+    "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "b4b2b4925d5d9ff01c01c6cf0cffd165346bf24230477984aa43a1c6ab730970",
+      "nodes": 1857,
+      "names": 5062,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "042dd01c5d3b7b83b0c77de01c2133c5f0b9d6db6c93f4168166277c0c200694",
+      "nodes": 2301,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "da989112a60ea74164f809bb0f8122245c547eda8e65ee1ac8264e3a0e7f70d6"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "4efcd3adf62ae751bf090a291b7dccd7b25ec8441590a84f0d7a674e36e36da1"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "307ef05046b02201c1ae717915c73a6de112fc8aeda4142835fed03e373db8eb",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "962e759ad18e62e40552e25d0ce6208ed465462e4bf3b48491ba3509298a1e24",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "962e759ad18e62e40552e25d0ce6208ed465462e4bf3b48491ba3509298a1e24",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "962e759ad18e62e40552e25d0ce6208ed465462e4bf3b48491ba3509298a1e24"
+   },
+   "formations": 45,
+   "menu_entries": 441,
+   "unique_plays": 270,
+   "pages": 156,
+   "walks_ended": true,
+   "lint": {
+    "links": 272,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 62,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "93b277a2dbbe4402858b09f372c684c65e50f2cef6c44a5a4e973be51e315c67"
+  },
+  "CHI": {
+   "team": "CHI",
+   "ok": true,
+   "pack_sha256": "d778290293958b6ef7549b9815fbc56fa1494f9b6a0e67f6b58751d640f1eb9b",
+   "compose": {
+    "team": "CHI",
+    "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "c9dfb4671558b7766820e00122a22f688221852612a9be0b1d5d06e9f2b849da",
+      "nodes": 1924,
+      "names": 5006,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "37aaa902d06ad3805cf324658e38ef65f3cc6fb5771ff23d5656fed225512d5b",
+      "nodes": 2352,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "95ff58922e6e5be6e3a98d56d9743b89b4ff135c2aa2901f0f6a0710f1782c20"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "9a0aa8bf8823f61d63f0ecea2a222c7b595817754ecc922152e4c034a5940c59"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "861b0c394349f8160e00b8eec6409128010ef26bcfca57d53eb25ea6eded9fe5",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "9a9085d91c8a8c98b41923836a6f6375eafce18601d62a2e7155714384c12bea",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "9a9085d91c8a8c98b41923836a6f6375eafce18601d62a2e7155714384c12bea",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "9a9085d91c8a8c98b41923836a6f6375eafce18601d62a2e7155714384c12bea"
+   },
+   "formations": 41,
+   "menu_entries": 412,
+   "unique_plays": 268,
+   "pages": 148,
+   "walks_ended": true,
+   "lint": {
+    "links": 241,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "cfc873ae19635c19daa1c135cd491ca1dbdfa415088158d7cbcf0486d52666be"
+  },
+  "CIN": {
+   "team": "CIN",
+   "ok": true,
+   "pack_sha256": "d577f4e11e19f64f0d26dc472df5fe4e3d702694eb5c4e02ef0e239742d60df5",
+   "compose": {
+    "team": "CIN",
+    "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "f807dd309d5675ea13732e6a117434c0d58d353939e37462206419c1754a84b6",
+      "nodes": 1927,
+      "names": 5070,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "e354931c6abad1c63db3123f418166d3db81b0d3c6c3809516f204f9b11dc8d3",
+      "nodes": 2319,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "e117e79ee282840a843a7da22a8dad856d569b5d6d2604c801c2a60db86edd5f"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "8a7b5b210d492b423ab66d6440a6bbbe265b0a47081f2836dd185ddf16839802"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "c0cb76e6bdb5e58ef96e1625dc1dc5856fba8ffc5544a56f68046141cc4cb9cb",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7"
+   },
+   "formations": 44,
+   "menu_entries": 446,
+   "unique_plays": 270,
+   "pages": 162,
+   "walks_ended": true,
+   "lint": {
+    "links": 277,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 59,
+     "formations": 4
+    },
+    "retained_plays": 114,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 8,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "a5def4b187b6e68e833fa5640b7848b9055aa81e64e84641e3ce96f57213e600"
+  },
+  "CLE": {
+   "team": "CLE",
+   "ok": true,
+   "pack_sha256": "014489ff277de7c04986abf9f03209a66c64965127a08dc6f09fc3924afc7552",
+   "compose": {
+    "team": "CLE",
+    "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "9ba11a6562097b91c22a40d6da0176b70709d0b7d75b9124890b5e2549c11672",
+      "nodes": 1852,
+      "names": 4910,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "df35b689934f900242d233d7b144e2e4434fb31227bdd87809ed2a5dde240a7a",
+      "nodes": 2214,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "dcd9b5727591899c925eaad231842c2344bc66459bf32af93e91188c5a286f78"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "ff8062d48e458b87987e04b49d0ee5994ca82f043b62e635924f60e6cff2231b"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "0a7e4a614607c1078501f66bf3fb3323891d18598cd2d4f924c1d7b0ed04223f",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd"
+   },
+   "formations": 44,
+   "menu_entries": 428,
+   "unique_plays": 270,
+   "pages": 159,
+   "walks_ended": true,
+   "lint": {
+    "links": 276,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 60,
+     "formations": 4
+    },
+    "retained_plays": 117,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "9337e6d4647637b77e4ec722238ca180d1b15dc9ed42aa5708cc388b9984bb66"
+  },
+  "DAL": {
+   "team": "DAL",
+   "ok": true,
+   "pack_sha256": "d213cbff6b52a14d3ce6a584f767fc9a40184c02b4375bf03d9e28f69c93faf6",
+   "compose": {
+    "team": "DAL",
+    "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "ce7c0a141f27e6653d1dc4be40dde1e63ee909674f6b0fe130e7f563629da4e1",
+      "nodes": 1935,
+      "names": 5314,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "307bc548213ea0469b964dba233e70b86adc41c28182ef2a843cad69df600a74",
+      "nodes": 2453,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "af3ad9491b2e69e4aa0ecb6c34672567ff2f256c1b92446a82d00c717a7d72ab"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "99e64e3c233a9196c684e58ee5623aa54ff9c03512d0232700d9cea95e4f1efe"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "196cacb01fef5e38448fb1c177d3bd5be4d6dc5c38d191c951020451a6c00d44",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "30e7d59b713b1cc33925935dd7b774c6357b57be63d116700685e363ccece633",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "30e7d59b713b1cc33925935dd7b774c6357b57be63d116700685e363ccece633",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "30e7d59b713b1cc33925935dd7b774c6357b57be63d116700685e363ccece633"
+   },
+   "formations": 41,
+   "menu_entries": 401,
+   "unique_plays": 270,
+   "pages": 143,
+   "walks_ended": true,
+   "lint": {
+    "links": 225,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 76,
+     "formations": 5
+    },
+    "retained_plays": 131,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "317a2d34254cc9dcb61a8955456a9a845249bbf6167ebcba2790954cc49a6751"
+  },
+  "DEN": {
+   "team": "DEN",
+   "ok": true,
+   "pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
+   "compose": {
+    "team": "DEN",
+    "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "18d3fc6f95072e4543a1cf240706ebfc4679099208e320964bef88886cf708c3",
+      "nodes": 1814,
+      "names": 4846,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "b0f952c76dc0ba326618a0fb41bd615cb8c48e1a0a7b1cfc052ab62b268ec72d",
+      "nodes": 2222,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "6662d6b24e50ad7726ffa29139550d97feef4a54840f08e90c1bd9476d2e1e4a"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "eab3a82c3941a669a5288fef84539ea7800d59561a82e4e971ad8b81663be749"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "aac409c18d98834e2cac1f07ff5d02e0d549609dec9d2c6fecb244320cbe7308",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318"
+   },
+   "formations": 42,
+   "menu_entries": 435,
+   "unique_plays": 270,
+   "pages": 154,
+   "walks_ended": true,
+   "lint": {
+    "links": 240,
+    "findings": {
+     "DEF_MIDDLE_MUG": 1
+    },
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 6
+    },
+    "retained_plays": 120,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "d22dd185db1279fb9643a67d32ce8569bd89db38fdeb0d322d19bdfac17c59d3"
+  },
+  "DET": {
+   "team": "DET",
+   "ok": true,
+   "pack_sha256": "079df6e53e7553bd7dac3f2761cdf48d605c588e5986855672944a24c4e84d75",
+   "compose": {
+    "team": "DET",
+    "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "5129b60b74dc152bffceb6b3ed9a777452f2d8c73fea52d7ffd2b06b9c202a83",
+      "nodes": 1825,
+      "names": 5052,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "488368750921120dc626a8bc5e3616755d75306620e1a31e697cc686e18dfdcc",
+      "nodes": 2251,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "9d2f4b1845f7dd8a3232d9ad332788e99a79d1ff8e6fb67ca7e6dd1e316f2938"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "86056fba2970240ac31d6ac04491e68470f49a4bdbeb63543b0ad4418a672645"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "647805dbf4add468a79a1f9b3fb96d6ab539e6de743f78e13dae35f82ea9ec7a",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb"
+   },
+   "formations": 41,
+   "menu_entries": 399,
+   "unique_plays": 257,
+   "pages": 141,
+   "walks_ended": true,
+   "lint": {
+    "links": 234,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "9994380abeaadebf3a63abe7f56f006464a462188198b6b03df25eaafd14d360"
+  },
+  "GB": {
+   "team": "GB",
+   "ok": true,
+   "pack_sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0",
+   "compose": {
+    "team": "GB",
+    "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "08ad5f1689ce948f9168b6e3ab6e967a3531cf5896b7e1690cca0b099848ed67",
+      "nodes": 1864,
+      "names": 5178,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "c16620738b024fd32ae2193b5db2a431e88fe544d9c4b4072f539bce3b45dfa3",
+      "nodes": 2244,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "12baff63b240a9bf873ac27919f15f2df33193dee3d0077beb3120be13c03323"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "83b09cafe231ab237e513afb2ccdc61fb6eb08a0074eaf59215e6fd84edd8073"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "5e3a502006860963702c54a8623ca9ee254717d02e331da0a3c16f6facde8605",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437"
+   },
+   "formations": 48,
+   "menu_entries": 452,
+   "unique_plays": 266,
+   "pages": 161,
+   "walks_ended": true,
+   "lint": {
+    "links": 287,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 66,
+     "formations": 4
+    },
+    "retained_plays": 121,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Pro",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "2fd8d4eca42c034fc17c72f6b3a0f7703f3a7a37c19567f95aaa959236731b5d"
+  },
+  "HOU": {
+   "team": "HOU",
+   "ok": true,
+   "pack_sha256": "fba36fc3938afb712d7b27e7b5fefd2a1bb78d78e4dda391d602db702fe85202",
+   "compose": {
+    "team": "HOU",
+    "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "34dcbae26df285dcad64b3f6f3e9eacb48fc7473704cff2708446f30173b4be8",
+      "nodes": 1903,
+      "names": 5046,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "da90dbbf77fa7e49dba778dac29eef3c7c3842e2b47bdcc450d5676d72070906",
+      "nodes": 2285,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "3229abdeabd2d447f3629123580569b0253c9bcc7b77078fd6720e20c6a9cd48"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "8d923f5483a220765432ce3f753dad52a0ce97eb594ee2da0bb4953770fe09d6"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "015caacc2bdb39c5adf326ed340629579cc8675fc701dc9249862e87bbac709e",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a"
+   },
+   "formations": 40,
+   "menu_entries": 404,
+   "unique_plays": 270,
+   "pages": 145,
+   "walks_ended": true,
+   "lint": {
+    "links": 258,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 61,
+     "formations": 4
+    },
+    "retained_plays": 116,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "30e68c343b4649a7dc51c1adf51681988831c96be1d69cfedd6a3e1e0f8d38da"
+  },
+  "IND": {
+   "team": "IND",
+   "ok": true,
+   "pack_sha256": "7d4229ea711de97a9a7b71c0826177ff62aa973ab76db169dd561517a4f7011a",
+   "compose": {
+    "team": "IND",
+    "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "e6f44039a92be7c75270e5cfd9e7e5b4b84d3159c2dde48337c51727b76b71fb",
+      "nodes": 1871,
+      "names": 4960,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "9cd3b27c27c29520169be05f119232cdebf9e88cdf172b3c7602006ba530d314",
+      "nodes": 2251,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "f77ec1673caaba3a9210ff7e7b92740c4f1f96df73efd170b1642205472337ca"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "e2541f20f0777947efa511bc32955239fcd11f4abca006d8dfb3dbda5f0601d4"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "b4b618dbf3d112e8752771ab6bdc5fabee432674689baa3866afb68bb3cc4d9c",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
+      "changed_bytes": 6
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647"
+   },
+   "formations": 45,
+   "menu_entries": 434,
+   "unique_plays": 267,
+   "pages": 156,
+   "walks_ended": true,
+   "lint": {
+    "links": 263,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 62,
+     "formations": 4
+    },
+    "retained_plays": 117,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Straight",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 8,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "6ee9e0dce19a1c2a523c9a0c8b33dc6e657392c229a5edae47b1b2890733ea52"
+  },
+  "JAX": {
+   "team": "JAX",
+   "ok": true,
+   "pack_sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a",
+   "compose": {
+    "team": "JAX",
+    "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "4983db4f43f670d2b35424d557affa9d4b595bddc3599ae6fab14d0cf24b3ab8",
+      "nodes": 1932,
+      "names": 5190,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "f4863087eb6aa6aa6319cea37ef81e208bfb0e25c600bec6884bfa5752ca5be3",
+      "nodes": 2376,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "6a3359b3c10caaf957e060cd272b4e54ef5b0450738fbe29b067ab43be5d5325"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "64e3ee3d2f3322b934378c37ba3c92c553ff2b3671d0c148407c0f56d68b2d64"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "10472bdfddeacf492f24d27f41138815a6810c04599c32dd405d40489bb4757f",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "01b8ce8e9fef0ff66d7fe174169cb34fba2db27b8a910a8f01942db93298568a",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "01b8ce8e9fef0ff66d7fe174169cb34fba2db27b8a910a8f01942db93298568a",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "01b8ce8e9fef0ff66d7fe174169cb34fba2db27b8a910a8f01942db93298568a"
+   },
+   "formations": 41,
+   "menu_entries": 422,
+   "unique_plays": 270,
+   "pages": 152,
+   "walks_ended": true,
+   "lint": {
+    "links": 261,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 62,
+     "formations": 4
+    },
+    "retained_plays": 118,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Pro",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "8bd50970111c5e2b0be4bc3fe7550ee43c3bad6134f7064d8ee61cdb322fc79b"
+  },
+  "KC": {
+   "team": "KC",
+   "ok": true,
+   "pack_sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827",
+   "compose": {
+    "team": "KC",
+    "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "461d2c7414db3e7bbe1ec90e2f5fb317860069ca7ea41f46d90cc1e9bd9a0bd3",
+      "nodes": 1855,
+      "names": 4810,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "6ce9b45b2fe6dfca5367349a503ac6104a57b3a0af2e87f0f23328602fb40598",
+      "nodes": 2263,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "59fb29b5081c6711cd7a68211ca3c38db479e4a088c68b5e01bcc5fd50291e4d"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "c875b918b312b2170e984ceea1aa9b0563f7a60a3060b9c78f0791fc1132c875"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "ed5cd6ef962a8c7650efc71908252f9fe9db4d1e4c8637eb87268481848b2b95",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666"
+   },
+   "formations": 43,
+   "menu_entries": 457,
+   "unique_plays": 269,
+   "pages": 163,
+   "walks_ended": true,
+   "lint": {
+    "links": 260,
+    "findings": {
+     "DEF_MIDDLE_MUG": 1
+    },
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 6
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Pro",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "f9533a123c4bdfd01a32e08e56822c92b71dd97b74a0402d982eedc27dd43edf"
+  },
+  "MIA": {
+   "team": "MIA",
+   "ok": true,
+   "pack_sha256": "13991509bdcb25d3f3ec84bf23c750f71fbc32df7fc6320789039b5576c65b8d",
+   "compose": {
+    "team": "MIA",
+    "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "41cb662fe013857ce2e5c3ceed659d7abe8a97be2803f78f702161bbb4e7e515",
+      "nodes": 1988,
+      "names": 5310,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "23b7b65f9655e70bfbf92f07af03b76fd2f4d8038ab93e1a004973dbc5de0503",
+      "nodes": 2438,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "5e2e06499058f52fe32978161e41b7ee1b76b3a821aa9bb11baae1637b2b8b26"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "10dfd8c55b7197b8529847928b39ce665d21a855f0883b44243d8c8e52f030fd"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "309269ae43292450a52647491fdd7c1450a9f4157a9236ba95d4987427eebd67",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928",
+      "changed_bytes": 12
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928"
+   },
+   "formations": 43,
+   "menu_entries": 422,
+   "unique_plays": 261,
+   "pages": 149,
+   "walks_ended": true,
+   "lint": {
+    "links": 251,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 72,
+     "formations": 4
+    },
+    "retained_plays": 126,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 3,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Ace Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "5d2b6456f1a6b18bb8825be783bcf2667cea30e99799fc1d3e6403a7f87d797b"
+  },
+  "MIN": {
+   "team": "MIN",
+   "ok": true,
+   "pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
+   "compose": {
+    "team": "MIN",
+    "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "0cd91256a4f8e1b1fc113840883da73a48d2a8c8585e825507232cb8762b2a74",
+      "nodes": 1810,
+      "names": 5314,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "94ace5791e0d99f5b21a2d96e880196fd09fbf3a993630d7923b3227df8d6c64",
+      "nodes": 2248,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "94b0f9d77c05d4ad85cfed70442b1c14917d6efb54c81003ed8260496768084e"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "d49fe85340d7e25565bbf9b51de0c7830f2c1506ef3c69ca4826ded36d483eda"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "7bc59bfeaa50d494eb92a700698eec6260aca4ea9e66f99bd1ee516065d60ad5",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d",
+      "changed_bytes": 8
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d"
+   },
+   "formations": 47,
+   "menu_entries": 467,
+   "unique_plays": 270,
+   "pages": 165,
+   "walks_ended": true,
+   "lint": {
+    "links": 268,
+    "findings": {
+     "DEF_MIDDLE_MUG": 1
+    },
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 74,
+     "formations": 7
+    },
+    "retained_plays": 130,
+    "plays_differing": [],
+    "retained_formations": 19,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 8,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 25,
+      "name": "Ace H",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "4375f2bde29af541c8647108a5ef582549a83ffb43e32c9985a5cab0e51634b9"
+  },
+  "NE": {
+   "team": "NE",
+   "ok": true,
+   "pack_sha256": "7fc382cb6ef22fca85f73208548beff9705d4ad0c22849aec10cb4fc00e0e585",
+   "compose": {
+    "team": "NE",
+    "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "34f88560e08316b0b258d0621c45207cd83de2a809409b163b3dfcf7f98a8d6e",
+      "nodes": 1888,
+      "names": 5040,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "3d319f65d6961bd67cc48f558a94d6846f52cafe43e6e2f10ae745744ab89125",
+      "nodes": 2410,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "643cb9065b126f5a6cb9d8ac89aa471a7426c6b9260d77976a19aba71f747761"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "1a1d22d891b19413b4d200d252aaeb0d467e4e524ebddbddb167790e7a059bdd"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "13a68714243e3113866c1b9c0408150268b67daf84cb6716b8ed05d2289c1a6b",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d"
+   },
+   "formations": 42,
+   "menu_entries": 409,
+   "unique_plays": 250,
+   "pages": 144,
+   "walks_ended": true,
+   "lint": {
+    "links": 235,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 59,
+     "formations": 3
+    },
+    "retained_plays": 116,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "273046a3ae6b84353ae152efaf820a57e5ce01980dd752bfbe8c5554d69fa9e9"
+  },
+  "NO": {
+   "team": "NO",
+   "ok": true,
+   "pack_sha256": "ca64223909dd68b5a09595cf0e8a51d7c833c0638312c27d7f87c30f529f7349",
+   "compose": {
+    "team": "NO",
+    "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "eb06332a940dfadb139e97ce22342cbe8c3fdfef99017bb6476cdcc509a8694a",
+      "nodes": 1920,
+      "names": 5026,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "5de15c35bd4af843f2d32dbcf03e9d1a4f6ae3605b32356a5e1eb07b6d030e01",
+      "nodes": 2332,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "948f749d4503568f6aacbc1e75b26181a23de52affe947421c8ade0f82a73204"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "156d4ac271e1db3d1981650bae9c70d01f6979a07ac4cc2f1cd4a53a38c0549b"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "a3bfce48f2ed935c3247a516335b3028e2c160faf912dc615315f43a1bced3d0",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169"
+   },
+   "formations": 41,
+   "menu_entries": 415,
+   "unique_plays": 266,
+   "pages": 151,
+   "walks_ended": true,
+   "lint": {
+    "links": 253,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "fb3b658febf2e450d5f7d6cdb4b470fb47506c67aa8a90f96bd41cbda4e4c2ce"
+  },
+  "NYG": {
+   "team": "NYG",
+   "ok": true,
+   "pack_sha256": "5fe5244c54f83405fecc81ca7cd2f022c8522e162b414c305d4c26a084345621",
+   "compose": {
+    "team": "NYG",
+    "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "2cd930783135dfaff0c83d68e3452aed6c07716460fc5511285a2571960f3cf1",
+      "nodes": 1863,
+      "names": 5146,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "365f1e7866489e525791a766ef679de7e59200961121d2feecadc3eeb7950bad",
+      "nodes": 2321,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "f5cbeabe2f1c389a85891e34e7f2ba9396b7b5a61762701b405dc39659a37e8c"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "4ee4fcdd2ad01c0a4419d1b79b8c6cb53c141e066d53d0f4977fa930c8dde848"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "2eb74f81b487fd88034c4057f44d1934aa2d76ca147ccd2bb6323b3d66d80c65",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57"
+   },
+   "formations": 43,
+   "menu_entries": 447,
+   "unique_plays": 270,
+   "pages": 161,
+   "walks_ended": true,
+   "lint": {
+    "links": 272,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 65,
+     "formations": 4
+    },
+    "retained_plays": 122,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "c71eb8d1fed6f0378771f4b95d6e47170f20ce7b85bd040e291b4145864b1dfb"
+  },
+  "NYJ": {
+   "team": "NYJ",
+   "ok": true,
+   "pack_sha256": "5cbd3597cd68923d242655a53422caa32fbce55d60b5691482ac20f72ffe3c99",
+   "compose": {
+    "team": "NYJ",
+    "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "148c34fbf06e0b61c5d3b510e6c0b9957463e9a1ff893b5263a48726d37ae4af",
+      "nodes": 1951,
+      "names": 5408,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "b837a1b24d7bf55357a4980e02f8f15d14b7b4432b0fa1951570597f7320b31e",
+      "nodes": 2457,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "fa8d85fe49dcff570b19b9ff86c2a4de3d37aad785552bd9b0701a5a86ad1ade"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "787c501bac55378c442484fd08045e281276ce2ef6f511ef47355b4a671cac73"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "688258ed9ae7c623d4fdf85400222ec50b220ca1e707bcb4b4a944869663b665",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2"
+   },
+   "formations": 41,
+   "menu_entries": 421,
+   "unique_plays": 270,
+   "pages": 149,
+   "walks_ended": true,
+   "lint": {
+    "links": 246,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 74,
+     "formations": 5
+    },
+    "retained_plays": 129,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "92dd4ac3a9e2bab4ed6650de27b3343fdd12af97f079b4d6e3314f0938113849"
+  },
+  "OAK": {
+   "team": "OAK",
+   "ok": true,
+   "pack_sha256": "84d5401ecb5f3843083654333b1badc46cd05cf3d475f097925e4961428e0b7d",
+   "compose": {
+    "team": "OAK",
+    "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "bcb6b30e1546a73d786b02d8c410a42c6f2f1e57ebf04105d811e2e01fb3780c",
+      "nodes": 1909,
+      "names": 5360,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "56f970c18da73f2877279da645032509769bf919339240b8bee400821151cc90",
+      "nodes": 2331,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "a14c4cbc2b7969e0964793d8ca287688cfa8ed58fea3a22100854d1a638cf6f7"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "75a2cdf0848c75c081944c68a53015da97e425f551b8c0336dd61073e4bcc273"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "89f5f310b4246e1a59463ea05f93d0cc0092d98ece85a1ea17fe01fced2571b7",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "41b532ea2673eefc4820c2d687fdac1650fc99e00b49b2f1abf9c2076afdcfc7",
+      "changed_bytes": 3
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "41b532ea2673eefc4820c2d687fdac1650fc99e00b49b2f1abf9c2076afdcfc7",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "41b532ea2673eefc4820c2d687fdac1650fc99e00b49b2f1abf9c2076afdcfc7"
+   },
+   "formations": 43,
+   "menu_entries": 427,
+   "unique_plays": 270,
+   "pages": 153,
+   "walks_ended": true,
+   "lint": {
+    "links": 251,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 57,
+     "formations": 4
+    },
+    "retained_plays": 135,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 5,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "b3b84f2b2e36ddd69e9ee84060b0b208f4559559509d48fbeda2e488989af7b9"
+  },
+  "PHI": {
+   "team": "PHI",
+   "ok": true,
+   "pack_sha256": "d61766e467351379c85f22e9ed33f7101d2fc5e3d9c08d3d288bdddf56694d10",
+   "compose": {
+    "team": "PHI",
+    "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "d4fe1a1a6bfdfe8273e706774ce9fbbc9548b1ebe43040261142d51fa11ec86b",
+      "nodes": 1902,
+      "names": 5090,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "f30d3be1b94d7315e4ec813f398c0a4c497e7e3aefc1e14789734828d42ea61a",
+      "nodes": 2358,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "591413ad4930994a806835281a029b91a3df1bca494cfc2026aff2a2164f7d86"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "2abaf9c74cf02d8f146b12aec1fde626c1f57978c74034a47e9423f240ec5d23"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "9000bf8eaf8e048fd2ebf8ebf9f74f7a9c76bf51bbb59bd89d3e95702d16e84f",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "c11ea05254cc497b0b6c82bd524337680ee8b56e678552c2c4e2f4aca64ac14d",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "c11ea05254cc497b0b6c82bd524337680ee8b56e678552c2c4e2f4aca64ac14d",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "c11ea05254cc497b0b6c82bd524337680ee8b56e678552c2c4e2f4aca64ac14d"
+   },
+   "formations": 41,
+   "menu_entries": 423,
+   "unique_plays": 269,
+   "pages": 153,
+   "walks_ended": true,
+   "lint": {
+    "links": 247,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 66,
+     "formations": 4
+    },
+    "retained_plays": 123,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "9be0bf63de60cbc5aa961cae442d9c05a0a94c25912a8ffaf73327716e8dffb4"
+  },
+  "PIT": {
+   "team": "PIT",
+   "ok": true,
+   "pack_sha256": "4e321c1fcd7fe7dc41d45922040bb8217813b08c7139dc400d8ce21ed9071168",
+   "compose": {
+    "team": "PIT",
+    "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "82d1b1ea0ff46c28f55f70e7808aa72fca646502237541c3b64ab03514172f58",
+      "nodes": 1939,
+      "names": 5300,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "0a2b99598b357e0ee5cfae9fc3c53ec735fbedc17df2b44c3acd4671a28405f1",
+      "nodes": 2395,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "057faa3c5e6814c5a8f55ea6589c7c74f6d45c3809dfd9e30b3071c0f936de79"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "4319f97f5a81ff0e6eb07a47500eb51540af5daff25bf44bcf7b2a3f3b51fbb2"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "e427cbd10a7113f8a10ec74e751289b341ebed9a614259981d665345a5d4cbd9",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410"
+   },
+   "formations": 41,
+   "menu_entries": 381,
+   "unique_plays": 263,
+   "pages": 135,
+   "walks_ended": true,
+   "lint": {
+    "links": 229,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 70,
+     "formations": 4
+    },
+    "retained_plays": 125,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "ed01ebca7bd57809c01e843a826c1a59dce0ce0317b9cabe9b194305970dcc2f"
+  },
+  "SD": {
+   "team": "SD",
+   "ok": true,
+   "pack_sha256": "a6416f1e57f44192c91adc5f1c97bddc2f62dd097e40703dce97b232494d8cbe",
+   "compose": {
+    "team": "SD",
+    "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "e692d8ee3f55387961c085051c4b4ac98ae41735d381417b5e848bb427a7d0b5",
+      "nodes": 1932,
+      "names": 5326,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "fe3b67e248265474ee773371eba944fbf2d1a21af6a8eac11036db1a2fac7770",
+      "nodes": 2386,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "76dd0684d2f5894ec68cc65f105f499a08704c0585bd5977fb87848474c890f5"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "058a4906aa2b02fa1607a1a6dd8375552f5ec7bc104841c44fef985b56bddc37"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "47fb4798039dea597e412e3073a97ea861a8dc3be4f51d90a36c7dd2907ce352",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420"
+   },
+   "formations": 41,
+   "menu_entries": 387,
+   "unique_plays": 270,
+   "pages": 137,
+   "walks_ended": true,
+   "lint": {
+    "links": 229,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 72,
+     "formations": 4
+    },
+    "retained_plays": 127,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "739ba40caa808df142c24a177b4b04c78ff699f099a322283e41282ee4c384ac"
+  },
+  "SEA": {
+   "team": "SEA",
+   "ok": true,
+   "pack_sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157",
+   "compose": {
+    "team": "SEA",
+    "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "d2396e703b04d800e2e5667be17c87711aeb9e7bb009dbb48420447d89129889",
+      "nodes": 1862,
+      "names": 5012,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "b8ebafbc3a6ad6380d8122f436584ef3be0075c2771c67694a54ad5184a13015",
+      "nodes": 2290,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "0a72d034b99773996b37757a41be3ff85301a82b1f8d6b4e483e1c697fd64236"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "f6e3d0f54ba3cac7a55daf43fad2d35f96ee22caef7cb3976a55a00ddfe4af8d"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "2df821678549eb98302b0ad9c6f277b3ea758b2f17c8ef7022a3d388a13aa620",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933"
+   },
+   "formations": 43,
+   "menu_entries": 424,
+   "unique_plays": 270,
+   "pages": 152,
+   "walks_ended": true,
+   "lint": {
+    "links": 255,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 63,
+     "formations": 4
+    },
+    "retained_plays": 120,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "e6ce5a6470bd18c1302341949cb6fc9fb23abf16d5a00be01e455941465b9a05"
+  },
+  "SF": {
+   "team": "SF",
+   "ok": true,
+   "pack_sha256": "645a595b9c3554a4aebd4d8c5bd7a06c19b3ce658c1d08bc7263fe02e1cba650",
+   "compose": {
+    "team": "SF",
+    "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "739b3f9f08e201ff6a5ebc109b7c32887608e5c7dc2d00349b60ad1c8e24e9a5",
+      "nodes": 1814,
+      "names": 4916,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "6607e629fef21d8274d0825232a459e3c834d0595a48049db3305effff0e46e9",
+      "nodes": 2248,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "ebe1fc4ea2f63901873086fa20270d97aeef4b26319738d39a44e1d918acaad8"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "60abcd507f3d15e83459f19b12e4cac2cd7036dc01eb12dffd639f8a6f600fdd"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "5af5cba4acbc513a4d41bd64a293946520f443ada3f4c1f2cfbd30b54628d4ca",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd"
+   },
+   "formations": 39,
+   "menu_entries": 377,
+   "unique_plays": 251,
+   "pages": 136,
+   "walks_ended": true,
+   "lint": {
+    "links": 215,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 64,
+     "formations": 4
+    },
+    "retained_plays": 119,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "d889df7d12d94eab040db1f0c8533111553bca087d23ae614259a33add3c6c20"
+  },
+  "STL": {
+   "team": "STL",
+   "ok": true,
+   "pack_sha256": "ce87d2237e4336cfe3994079129c68b0af192921aeee72988ac4174247862061",
+   "compose": {
+    "team": "STL",
+    "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "0e3ea52c64401ca8046ece7df0275e302ff7dd17085e571629c0c94a015843e0",
+      "nodes": 1856,
+      "names": 5092,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "2d982de10aab275aa455a3a4094f79abc84f0aa9f25cc39779ffa379a57f8f5b",
+      "nodes": 2298,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "c795b076a1edaf465d6927069d7360b30f6a376aa54b77e138ad66fb514bc46e"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "00ca15ef78d0cfd87c889d051c56f070d6c60bad538a7da1986acf60b47c4700"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "4a03ac42e3bf59e01a7027f3e2cf7042294746a73696a9257becf661299ef0ba",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "02003b8abaee95a596eb5c675897d74d6b8ba1c90925ddd346c2132743c1c3db",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "02003b8abaee95a596eb5c675897d74d6b8ba1c90925ddd346c2132743c1c3db",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "02003b8abaee95a596eb5c675897d74d6b8ba1c90925ddd346c2132743c1c3db"
+   },
+   "formations": 45,
+   "menu_entries": 433,
+   "unique_plays": 270,
+   "pages": 154,
+   "walks_ended": true,
+   "lint": {
+    "links": 267,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 63,
+     "formations": 4
+    },
+    "retained_plays": 118,
+    "plays_differing": [],
+    "retained_formations": 17,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "0e168444ca99014843fac1e3528a1c0cbf0007d169ed8ac0f0e50ef07b37b043"
+  },
+  "TB": {
+   "team": "TB",
+   "ok": true,
+   "pack_sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1",
+   "compose": {
+    "team": "TB",
+    "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "eda30f28c6b8027d458c9246cbc245c90d2b6a87774b7227315b2bc238a94f84",
+      "nodes": 1802,
+      "names": 5030,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "abf805d73e1d0587ea893c54f42d48f14642d7241bf205dc7e2cbf80ae09b182",
+      "nodes": 2264,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "81d1949c7dc2c0920937b7ff166c800cf10a832ad22ec98fc1d3d7e22a69cefb"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "c5bccb3a2e2b902c0f8e70f4e6c993df26601bc377698582dede4c785ee8f027"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "ae8b908ca8799e65e2f0295a198eb21e68118429b6ae15cc973728fff256de41",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61",
+      "changed_bytes": 4
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61"
+   },
+   "formations": 50,
+   "menu_entries": 486,
+   "unique_plays": 261,
+   "pages": 173,
+   "walks_ended": true,
+   "lint": {
+    "links": 291,
+    "findings": {
+     "DEF_MIDDLE_MUG": 1
+    },
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 68,
+     "formations": 6
+    },
+    "retained_plays": 124,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Kings Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "5 Wide",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "788bbb88b2d5a20357aad648efc6ce96bc77d7ac994356c03d2654d68ef46978"
+  },
+  "TEN": {
+   "team": "TEN",
+   "ok": true,
+   "pack_sha256": "40d928443b74679d4ed0adc5ad3ed6068e207c9918b13046664f2c950c04d844",
+   "compose": {
+    "team": "TEN",
+    "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "ca0ee5323860db1dcf3657627b020cc93a1e324f264fc397b9a5b47d38ebd132",
+      "nodes": 1884,
+      "names": 5260,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "f7bf9c14a82714d194dece969792ba1eff8603023d8ea12ecd2c5cc4aafe9374",
+      "nodes": 2462,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "1dee73e8cab2196ceb102b420110d321ab8858cbe9bfbed20edd87a6c82aa05b"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "8a1159977197f755078170c5064a00a3338aa68833cd57f6bac0be8dbf54fe85"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "e3374157cb9095f261f170f733ffd64f6ba0cef31ca608611b802f66f92af67f",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
+      "changed_bytes": 11
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e"
+   },
+   "formations": 39,
+   "menu_entries": 379,
+   "unique_plays": 266,
+   "pages": 138,
+   "walks_ended": true,
+   "lint": {
+    "links": 214,
+    "findings": {},
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 72,
+     "formations": 5
+    },
+    "retained_plays": 127,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Kings Early",
+      "offense": true
+     },
+     {
+      "index": 6,
+      "name": "Ace Long",
+      "offense": true
+     },
+     {
+      "index": 7,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "11b5872902b7e4259fb3464228b8b1780e682bfe8a26e8b81bf99894bf2979e7"
+  },
+  "WAS": {
+   "team": "WAS",
+   "ok": true,
+   "pack_sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733",
+   "compose": {
+    "team": "WAS",
+    "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
+    "steps": [
+     {
+      "step": "complete_offense",
+      "sha256": "9dc42f6b1626a89bd94b3a6f64d8e1ab197d22fb49f1166d3e13243b4fc6befd",
+      "nodes": 1889,
+      "names": 5162,
+      "native_scoring": 0
+     },
+     {
+      "step": "defense",
+      "sha256": "0b678c2c90cae18a31ffd9eb27a252dfcdc8a2bfc32509717662de66d074ddf7",
+      "nodes": 2317,
+      "native_scoring": 0
+     },
+     {
+      "step": "position_pools",
+      "sha256": "bc1e589aa018994b7cdc3812a838b92c9f42d326b9d76663f35d740c7de9c77f"
+     },
+     {
+      "step": "kickoff_alignment",
+      "sha256": "137669fbce0372f2cba63c5a12ab2557353bebb2d715202cddd6d17686023159"
+     },
+     {
+      "step": "kickoff_returns",
+      "sha256": "d4a799f6b72b7ea5fc9694aab8f40c0ff2a462c8c070ef3808ef8d4c912284d1",
+      "status": "applied"
+     },
+     {
+      "step": "depth_roles",
+      "sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca",
+      "changed_bytes": 9
+     },
+     {
+      "step": "screen_timing",
+      "sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca",
+      "status": "applied",
+      "already_applied": true
+     }
+    ],
+    "final_sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca"
+   },
+   "formations": 43,
+   "menu_entries": 458,
+   "unique_plays": 268,
+   "pages": 165,
+   "walks_ended": true,
+   "lint": {
+    "links": 265,
+    "findings": {
+     "DEF_MIDDLE_MUG": 1
+    },
+    "offense_findings": 0
+   },
+   "preserved": {
+    "defense_owned": {
+     "plays": 72,
+     "formations": 6
+    },
+    "retained_plays": 129,
+    "plays_differing": [],
+    "retained_formations": 18,
+    "formations_differing": [],
+    "categories_differing": [
+     {
+      "index": 0,
+      "name": "Jacks",
+      "offense": true
+     },
+     {
+      "index": 2,
+      "name": "Ace",
+      "offense": true
+     },
+     {
+      "index": 5,
+      "name": "Kings Long",
+      "offense": true
+     }
+    ],
+    "defensive_categories_differing": []
+   },
+   "v05_entry_sha256": "96b162a3d9fb68c9758347a5cefa5448f46405d15e48703a471c89f782663890"
+  }
+ }
+}

@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
-import os
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
+import os
 from types import SimpleNamespace
 import tempfile
 import unittest
@@ -234,6 +241,9 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         self.facade = BrowseOnlyFacade()
         self.window = StudioMainWindow(eager_pages=True,
             facade=self.facade,

@@ -1,0 +1,1222 @@
+{
+ "schema": "nfl2k5_uniform_slots_2026/v1",
+ "source": "reports/u3_uniforms_2026/<TEAM>.json (b77 session; 164 sets, Sonnet-checked: CHECK.md)",
+ "rules": {
+  "slot_order": "least loss first: an era set that has a kept twin (or is the throwback's own original), then a retail 20xx Alternate, then an orphan kit, then a new index past the spare (append, phase 2); never a style a historic team, a moment or the m1 spare uses",
+  "kits": "a style has a home kit (h) and a road kit (a); one design goes in both unless the set is a home/road pair",
+  "labels": "a planned style reads '2026  Alternate n' (n in the order the game cycles); the Rams keep 1-3",
+  "tiers": "1 worn or planned in 2026; 2 in the 2026 closet but no 2026 game found; 3 a pants or socks combo of the primary set",
+  "build_types": "derive: the team's shipped 2026 kit recoloured (helmet, pants, socks, jersey base); modernize: the slot's own retail art (the same uniform) with the 2026 marks; new: a new design from photos"
+ },
+ "teams": {
+  "ARI": {
+   "assignments": [
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "All-black alternate",
+     "u3_set_index": 2,
+     "home_kit": "black jersey, black pants, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1 (retail 2003 red alternate)",
+     "status": "built",
+     "donor": "00H0 (2026 home art, recoloured red -> black)"
+    },
+    {
+     "style": 7,
+     "method": "repurpose",
+     "set": "Rivalries (sand and copper)",
+     "u3_set_index": 3,
+     "home_kit": "sand jersey and pants with the sandstorm texture, sand helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 2 (retail 2003 white alternate)",
+     "status": "built"
+    }
+   ],
+   "kept_free": [
+    8
+   ],
+   "notes": "8 (2004 Alternate 1, navy) stays retail; spare capacity for a later set."
+  },
+  "ATL": {
+   "assignments": [
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "1966-inspired throwback (red helmet, black jersey)",
+     "u3_set_index": 2,
+     "home_kit": "black jersey, white pants, red helmet",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "1966 - 1967 Uniform is this throwback's original and 8 (1968 - 1969) keeps a near twin",
+     "status": "built",
+     "donor": "01H9 itself (retail 1966-67 art) + 2026 marks"
+    }
+   ],
+   "kept_free": [
+    10,
+    11,
+    12,
+    13
+   ],
+   "notes": "10-13 (2004 Alternates 1-4) stay retail; capacity for more."
+  },
+  "BAL": {
+   "assignments": [
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "Darkness (all-black, matte black helmet)",
+     "u3_set_index": 2,
+     "home_kit": "black jersey, black pants, matte black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 is the 2004 black alternate",
+     "status": "built",
+     "donor": "02H0/02A0 2026 art recoloured to black"
+    },
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "Purple Rising (home) + White Noise (road)",
+     "u3_set_index": [
+      3,
+      4
+     ],
+     "home_kit": "purple jersey, purple pants, Purple Rising helmet",
+     "away_kit": "white jersey, white pants, Purple Rising helmet",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "1995 - 1996 Uniform is a near twin of 1 (1997 - 1999), which stays",
+     "status": "built",
+     "donor": "02H0 (purple) and 02A0 (white) 2026 art + the Purple Rising helmet"
+    }
+   ]
+  },
+  "BUF": {
+   "assignments": [
+    {
+     "style": 8,
+     "method": "repurpose",
+     "set": "Nickel City all-gray with The Charge helmet",
+     "u3_set_index": 2,
+     "home_kit": "gray jersey, gray pants, royal The Charge helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "Cold Front all-white Rivalries",
+     "u3_set_index": 3,
+     "home_kit": "white jersey (no red), white pants, white helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 2",
+     "status": "built"
+    },
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "Red alternate jersey (Week 18)",
+     "u3_set_index": 4,
+     "home_kit": "red jersey (helmet per the 2024 precedent: white; unconfirmed for 2026)",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "1984 - 1986 Uniform is a near twin of 2 (1987 - 2002, protected)",
+     "status": "built"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Red helmet with white uniform (Christmas)",
+     "u3_set_index": 5,
+     "style": 2,
+     "label": "1987 - 2002 Uniform",
+     "why": "the road kit 03a2 is the red-helmet white uniform (protected: 1990 Bills and moments)"
+    }
+   ]
+  },
+  "CAR": {
+   "assignments": [
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "Blue alternate jersey with the black alternate helmet",
+     "u3_set_index": [
+      1,
+      3
+     ],
+     "home_kit": "blue jersey, black pants, black socks, black helmet (2026 Week 1)",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1 is the 2003 blue alternate",
+     "status": "built",
+     "donor": "04H2 itself + the black helmet"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "All-blue Color Rush (2015)",
+     "u3_set_index": 4,
+     "why": "2026 use unknown; no free slot left (append index 4 if it returns)"
+    }
+   ]
+  },
+  "CHI": {
+   "assignments": [
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "Rivalries (Christmas Day vs GB)",
+     "u3_set_index": 2,
+     "home_kit": "navy jersey, orange pants, orange helmet, 1940s-style socks",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "Orange alternate with the orange helmet (2022-)",
+     "u3_set_index": 3,
+     "home_kit": "orange jersey, navy pants, orange helmet",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 2,
+     "slot_choice": "2004 Alternate 1 is the 2004 orange alternate",
+     "status": "planned",
+     "donor": "05H6 itself + the 2022 orange helmet (same shell as the Rivalries helmet)",
+     "u3a_note": "not built by u3a (2026-10-08): tier 2, the u3 data finds no 2026 use of the orange alternate and gives no jersey, pants, number or stripe details, so no look could be confirmed"
+    }
+   ],
+   "kept_free": [
+    5
+   ],
+   "not_assigned": [
+    {
+     "set": "All-navy Color Rush",
+     "u3_set_index": 4,
+     "why": "2026 use unknown; 5 (2003 Alternate 2) is kept free for it"
+    },
+    {
+     "set": "1936 centennial classic",
+     "u3_set_index": 5,
+     "why": "2026 use unknown"
+    },
+    {
+     "set": "Monsters of the Midway throwback",
+     "u3_set_index": 6,
+     "why": "no details or 2026 use found"
+    },
+    {
+     "set": "All-white kit (1995 design)",
+     "u3_set_index": 7,
+     "why": "2026 use unknown"
+    },
+    {
+     "set": "2025 memorial patches",
+     "u3_set_index": 8,
+     "why": "a patch and a decal, not a uniform set"
+    }
+   ]
+  },
+  "CIN": {
+   "assignments": [
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "White Bengal (all-white, white helmet)",
+     "u3_set_index": 3,
+     "home_kit": "white jersey (2021 road), white pants, white socks, white helmet with black stripes",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 2: both kits keep two-tone jersey-number budgets (1,072-2,128 bytes); style 4's road kit holds only one-colour numbers (624-976 bytes), which the 2026 numbers do not fit",
+     "status": "built",
+     "donor": "06A0 2026 road art; helmet orange -> white"
+    },
+    {
+     "style": 6,
+     "method": "enable_orphan",
+     "set": "Open in Orange (orange alternate)",
+     "u3_set_index": 2,
+     "home_kit": "orange jersey, white pants with orange stripes, orange socks, orange helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "retail orphan kit 6 (an orange set with art and no pair; two-tone number budgets in both kits)",
+     "status": "built",
+     "donor": "06H0 2026 art recoloured to the orange jersey"
+    }
+   ],
+   "kept_free": [
+    4
+   ],
+   "notes": "4 (2004 Alternate 1) stays retail; orphan 7 stays disabled (capacity for the All-orange set).",
+   "not_assigned": [
+    {
+     "set": "All-white Color Rush (2016 design)",
+     "u3_set_index": 4,
+     "why": "may be the same uniform as White Bengal (u3 check); not separate in 2026"
+    },
+    {
+     "set": "All-orange with orange pants (2024)",
+     "u3_set_index": 5,
+     "why": "2026 use unknown; orphan 7 can take it (enable_orphan)"
+    }
+   ]
+  },
+  "DAL": {
+   "assignments": [
+    {
+     "style": 7,
+     "method": "repurpose",
+     "set": "Arctic Cowboy Color Rush (all-white)",
+     "u3_set_index": 2,
+     "home_kit": "white jersey, white pants, white helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "1994 Alternate 1 (8 keeps the 1994 Thanksgiving double-star look)",
+     "status": "built",
+     "donor": "07A0 2026 art + white pants + white helmet"
+    },
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "1960s Classic (Thanksgiving throwback)",
+     "u3_set_index": 3,
+     "home_kit": "navy body, white shoulders and sleeves with stars, white pants, white helmet",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "2002 Alternate 1 is the 2002 version of this throwback; 6 (1960 - 1963) keeps the period look",
+     "status": "built",
+     "donor": "07H9 itself"
+    }
+   ],
+   "notes": "Dallas swaps letters (home loads the a kit); both kits of each style carry the same design, so the swap does not matter."
+  },
+  "DEN": {
+   "assignments": [
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "Midnight Navy (alternate)",
+     "u3_set_index": 2,
+     "home_kit": "navy jersey, navy pants, navy socks, the primary navy helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 2 is the 2003 navy set",
+     "status": "built"
+    },
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "Summit White helmet looks",
+     "u3_set_index": 4,
+     "home_kit": "Midnight Navy jersey with the Summit White helmet (Christmas Day)",
+     "away_kit": "all white with the Summit White helmet (Week 1)",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built",
+     "donor": "08A0 2026 art + white helmet; home from style 6 art"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Orange Crush throwback (1977-inspired)",
+     "u3_set_index": 3,
+     "style": 2,
+     "label": "1969 - 1973 Uniform",
+     "why": "the 1977 Broncos' look (protected: h-08-1977); 1 (1985 - 1996) also carries it"
+    }
+   ]
+  },
+  "DET": {
+   "assignments": [
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "Defend the Den (Rivalries)",
+     "u3_set_index": 2,
+     "home_kit": "pale gray-white jersey, Honolulu blue and black shoulders, italic numbers, matte Honolulu blue helmet with carbon-fibre stripes",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 2 (a 2004 silver set): the only free retail alternate with style-0-sized number budgets (7 and 8 hold about half)",
+     "status": "built"
+    },
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "Motor City Muscle (black alternate)",
+     "u3_set_index": 3,
+     "home_kit": "black jersey, black pants, matte metallic Honolulu blue helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 2,
+     "slot_choice": "1999 Uniform: a near twin of 1 (2000 - 2003), which stays; number budgets 0.85 of style 0",
+     "status": "built"
+    }
+   ],
+   "kept_free": [
+    7
+   ],
+   "already_in_game": [
+    {
+     "set": "Classic throwback (late-1950s homage)",
+     "u3_set_index": 4,
+     "style": 8,
+     "label": "2004  Alternate 1",
+     "why": "blue jersey, silver pants, silver logo-free helmet; 6 (1957 - 1965) is the period look"
+    }
+   ]
+  },
+  "GB": {
+   "assignments": [
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "Rivalries (vintage green, alabaster, gold)",
+     "u3_set_index": 2,
+     "home_kit": "desaturated green jersey, alabaster pants, matte alabaster helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "1923 Classic",
+     "u3_set_index": 3,
+     "home_kit": "navy jersey, tan pants, navy socks, distressed brown leather-look helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1",
+     "status": "built"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "All-white Color Rush",
+     "u3_set_index": 4,
+     "why": "not found in 2026 sources"
+    }
+   ]
+  },
+  "HOU": {
+   "assignments": [
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "Battle Red alternate (all-red)",
+     "u3_set_index": 2,
+     "home_kit": "Battle Red jersey, red pants, candy-red helmet",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 is the 2004 Battle Red alternate",
+     "status": "built",
+     "donor": "37H2 itself + the 2024 rebrand details"
+    },
+    {
+     "style": 3,
+     "method": "append",
+     "set": "H-Town Blue Color Rush",
+     "u3_set_index": 3,
+     "home_kit": "H-Town Blue jersey and pants, H-Town helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "no free retail slot left: 1 (2001 - 2002) is the only classic Texans look for current teams",
+     "status": "planned"
+    },
+    {
+     "style": 4,
+     "method": "append",
+     "set": "HOUSTON/US Rivalries (all-white)",
+     "u3_set_index": 4,
+     "home_kit": "Liberty White uniform, candy-paint white helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "as above",
+     "status": "planned"
+    }
+   ]
+  },
+  "IND": {
+   "assignments": [
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "White Out (all-white)",
+     "u3_set_index": 3,
+     "home_kit": "white jersey, white pants, the standard helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "1988 - 1991 Uniform: the same design as 1 (1995) and 5 (1968 - 1970), which stay; built first, so it reads 2026 Alternate 1",
+     "status": "built",
+     "donor": "11A0 2026 road art (all white) in both kits, so the Colts can wear white at home"
+    },
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "Anvil Strike (Rivalries)",
+     "u3_set_index": 2,
+     "home_kit": "anthracite jersey, gray pants, metallic blue helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "1987 Uniform: same design as 1 and 5",
+     "status": "built"
+    },
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "Indiana Nights (Color Rush, black helmet)",
+     "u3_set_index": 4,
+     "home_kit": "heather blue jersey and pants, black helmet with a heather blue stripe",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "1982 Uniform: same design as 1 and 5",
+     "status": "built"
+    }
+   ]
+  },
+  "JAX": {
+   "assignments": [
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "Bold City (Rivalries)",
+     "u3_set_index": 4,
+     "home_kit": "white jersey, black pants, white socks, glossy teal helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 4 (white jersey, black pants: the closest donor)",
+     "status": "built"
+    },
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "Black alternate",
+     "u3_set_index": 2,
+     "home_kit": "black jersey, black pants (2026 helmet unknown: the standard)",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 2,
+     "slot_choice": "2003 Alternate 3 is the 2003 black alternate",
+     "status": "built",
+     "donor": "12H0 2026 teal kit recoloured black (low confidence: no photo of the 2026 black alternate)"
+    }
+   ],
+   "kept_free": [
+    3,
+    4
+   ],
+   "already_in_game": [
+    {
+     "set": "Prowler throwback (teal, 1998-2008)",
+     "u3_set_index": 3,
+     "style": 1,
+     "label": "1995 - 2000 Uniform",
+     "why": "teal jersey, white pants, black helmet with the 1995 jaguar (protected: h-12-1999)"
+    }
+   ]
+  },
+  "KC": {
+   "assignments": [
+    {
+     "style": 7,
+     "method": "append",
+     "set": "Red-on-red",
+     "u3_set_index": 1,
+     "home_kit": "red jersey, red pants, red helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "every Chiefs style 0-6 is owned by history (historic teams, moments, the spare 6)",
+     "status": "planned",
+     "donor": "13H0 2026 art + red pants"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "Rivalries",
+     "u3_set_index": 3,
+     "why": "planned for 2027, not 2026"
+    }
+   ]
+  },
+  "LAC": {
+   "assignments": [
+    {
+     "style": 11,
+     "method": "repurpose",
+     "set": "Super Chargers (all-navy)",
+     "u3_set_index": 8,
+     "home_kit": "navy jersey, navy pants, navy socks, navy helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 is the 2004 navy alternate",
+     "status": "built"
+    },
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "Charger Power (gold jersey)",
+     "u3_set_index": 9,
+     "home_kit": "gold jersey, white pants, gold socks, white helmet with gold facemask",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 10,
+     "method": "repurpose",
+     "set": "Gold pants combos",
+     "u3_set_index": [
+      5
+     ],
+     "home_kit": "powder blue jersey, gold pants, powder blue socks (Wk 2, Wk 15)",
+     "away_kit": "white jersey, gold pants, powder blue socks (Wk 6, Wk 16)",
+     "build_type": "derive",
+     "tier": 3,
+     "slot_choice": "2003 Alternate 2 (the 2003 powder blue throwback; powder is the 2026 primary)",
+     "status": "built",
+     "donor": "24H0/24A0 2026 art + gold pants"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "Other primary pants and sock combos (powder or white pants, white or powder socks)",
+     "u3_set_index": [
+      2,
+      3,
+      4,
+      6,
+      7
+     ],
+     "why": "pants and sock variants of style 0; a style each would crowd the cycle"
+    }
+   ]
+  },
+  "LAR": {
+   "assignments": [
+    {
+     "style": 10,
+     "method": "authored",
+     "set": "Classic Sol",
+     "u3_set_index": 2,
+     "home_kit": "sol jersey, white pants, royal helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "u7 (beta 76)",
+     "status": "shipped"
+    },
+    {
+     "style": 11,
+     "method": "authored",
+     "set": "Fearsome White",
+     "u3_set_index": 3,
+     "home_kit": "white jersey and pants, royal helmet with white horns",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "u7",
+     "status": "shipped"
+    },
+    {
+     "style": 12,
+     "method": "authored",
+     "set": "Midnight Rivalry",
+     "u3_set_index": 4,
+     "home_kit": "midnight jersey and pants, midnight helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "u7",
+     "status": "shipped"
+    }
+   ],
+   "kept_free": [
+    7,
+    8,
+    9
+   ]
+  },
+  "LV": {
+   "assignments": [
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "White throwback (1970-style road)",
+     "u3_set_index": 2,
+     "home_kit": "white jersey with silver numbers outlined in black, silver pants, black socks",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 2,
+     "slot_choice": "2004 Alternate 1 (the 2004 silver set)",
+     "status": "built",
+     "donor": "20A0 2026 road art + silver number fill"
+    }
+   ]
+  },
+  "MIA": {
+   "assignments": [
+    {
+     "style": 10,
+     "method": "repurpose",
+     "set": "Rivalries (AFC East)",
+     "u3_set_index": 5,
+     "home_kit": "dark navy jersey with aqua and orange striping, dark pants, dark blue helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 3 is the 2004 navy alternate",
+     "status": "built"
+    }
+   ],
+   "kept_free": [
+    6,
+    7,
+    8
+   ],
+   "already_in_game": [
+    {
+     "set": "Aqua throwback (1970s)",
+     "u3_set_index": 3,
+     "style": 4,
+     "label": "1972 - 1973 Uniform",
+     "why": "protected (1972 Dolphins, moments); 5 (1971 - 1972) too"
+    },
+    {
+     "set": "All-white throwback",
+     "u3_set_index": 4,
+     "style": 9,
+     "label": "2004  Alternate 2",
+     "why": "white jersey and pants with the 1966-96 dolphin helmet"
+    },
+    {
+     "set": "Primetime aqua jersey",
+     "u3_set_index": 1,
+     "style": 0,
+     "label": "Current Uniform",
+     "why": "our 2026 home kit 14H0 is the aqua jersey (u3 says the 2026 primary home is white: a U2 check)"
+    }
+   ]
+  },
+  "MIN": {
+   "assignments": [
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "Winter Warrior (all-white)",
+     "u3_set_index": 5,
+     "home_kit": "white jersey, white pants, white helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1",
+     "status": "built",
+     "donor": "15A0 2026 art + white pants + white helmet"
+    },
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "Rivalries (deep purple, ivory, gold)",
+     "u3_set_index": 4,
+     "home_kit": "deep purple jersey, ivory and metallic gold trim",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 2 (the 2004 gold set)",
+     "status": "built"
+    },
+    {
+     "style": 8,
+     "method": "append",
+     "set": "Purple-on-Purple",
+     "u3_set_index": 3,
+     "home_kit": "purple jersey, purple pants, the primary helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "the free eras 1 and 2 hold about half of style 0's number budgets (the 2026 two-tone numbers would not fit their road kits); a new index past the spare 7 (phase 2)",
+     "status": "planned",
+     "donor": "15H0 2026 art + purple pants"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Classic (1960s and 1990s based)",
+     "u3_set_index": 2,
+     "style": 4,
+     "label": "1961 - 1962 Uniform",
+     "why": "purple jersey, white pants, purple helmet (protected: 1969 Vikings); 3 (1972 - 1973) too"
+    }
+   ]
+  },
+  "NE": {
+   "assignments": [
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "Nor'easter (Rivalries)",
+     "u3_set_index": 2,
+     "home_kit": "Storm Blue jersey with netting stripes, white pants, matte white helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "Pat Patriot red throwback",
+     "u3_set_index": 3,
+     "home_kit": "red jersey with the white and blue UCLA stripes, white pants, white helmet with Pat Patriot",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "1990 - 1992 Uniform is this throwback's original and 5 (1984 - 1987, protected) keeps the period look",
+     "status": "built",
+     "donor": "16H4 itself + 2026 marks"
+    }
+   ]
+  },
+  "NO": {
+   "assignments": [
+    {
+     "style": 8,
+     "method": "repurpose",
+     "set": "Gameday Gold",
+     "u3_set_index": 2,
+     "home_kit": "light gold jersey, black pants, black socks, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1 is the 2003 gold alternate",
+     "status": "built",
+     "donor": "17H8 itself + black helmet"
+    },
+    {
+     "style": 1,
+     "method": "repurpose",
+     "set": "All-white Color Rush with the white helmet",
+     "u3_set_index": 3,
+     "home_kit": "white jersey, white pants, white helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2001 - 2002 Uniform is a near twin of 2 (1999 - 2000, protected)",
+     "status": "built",
+     "donor": "17A0 2026 art + white pants + white helmet"
+    },
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "All-black alternate",
+     "u3_set_index": 5,
+     "home_kit": "black jersey, black pants (helmet unknown: the gold primary)",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "1993 - 1994 Uniform is a near twin of 7 (1967 - 1975), which stays",
+     "status": "built",
+     "donor": "17H0 2026 art + black pants"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "1967-style throwback",
+     "u3_set_index": 4,
+     "style": 7,
+     "label": "1967 - 1975 Uniform",
+     "why": "the 1967 original look"
+    }
+   ]
+  },
+  "NYG": {
+   "assignments": [
+    {
+     "style": 7,
+     "method": "repurpose",
+     "set": "Vintage White (Color Rush)",
+     "u3_set_index": 3,
+     "home_kit": "white jersey with navy and red trim, white pants, navy ny helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 (the 2004 red alternate)",
+     "status": "built"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Legacy Blue (1980s blue throwback)",
+     "u3_set_index": 2,
+     "style": 2,
+     "label": "1981 - 1999 Uniform",
+     "why": "protected (1986 and 1990 Giants); 3 (1976 - 1980) is a near twin"
+    }
+   ]
+  },
+  "NYJ": {
+   "assignments": [
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "Rivalries 'Gotham City Football Club'",
+     "u3_set_index": 5,
+     "home_kit": "dark Empire Green and black jersey, green pants, matte black helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 7,
+     "method": "enable_orphan",
+     "set": "White Out (white helmet, all-white)",
+     "u3_set_index": 2,
+     "home_kit": "white jersey, white pants, white socks, white helmet and facemask",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "retail kit 7 has art and no pair (a free slot that costs nothing)",
+     "status": "built",
+     "donor": "19A0 2026 road art + white pants + white helmet"
+    },
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "Legacy Black alternate",
+     "u3_set_index": 4,
+     "home_kit": "black jersey, black pants, matte black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 2,
+     "slot_choice": "1990 - 1993 Uniform: same green JETS-helmet era as 3 (1978 - 1985) and close to the 2026 Legacy primary",
+     "status": "built",
+     "donor": "19H0 2026 art recoloured to black"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Classic white throwback (2024)",
+     "u3_set_index": 3,
+     "style": 4,
+     "label": "1965 - 1968 Uniform",
+     "why": "white helmet with the oval JETS (protected: 1968 Jets); 1 (1993 - 1994) is a twin"
+    }
+   ]
+  },
+  "PHI": {
+   "assignments": [
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "Kelly Green throwback",
+     "u3_set_index": 3,
+     "home_kit": "kelly green jersey, silver pants, kelly green helmet with silver wings",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "1989 - 1999 Uniform is this throwback's original; 5 (1979 - 1980, protected) keeps a kelly set",
+     "status": "built",
+     "donor": "21H4 itself + 2026 marks"
+    },
+    {
+     "style": 13,
+     "method": "repurpose",
+     "set": "All-black",
+     "u3_set_index": 4,
+     "home_kit": "black jersey, black pants, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 is the 2004 black alternate",
+     "status": "built",
+     "donor": "21H0 2026 art recoloured to black + black helmet"
+    },
+    {
+     "style": 10,
+     "method": "repurpose",
+     "set": "White jersey with midnight green pants",
+     "u3_set_index": 2,
+     "home_kit": "white jersey, midnight green pants, standard helmet (2025 home mix)",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 3,
+     "slot_choice": "2000 Alternate 2 (the 2000 white alternate)",
+     "status": "built",
+     "donor": "21A0 2026 art + midnight green pants"
+    },
+    {
+     "style": 12,
+     "method": "repurpose",
+     "set": "Black helmet with white jersey and black pants",
+     "u3_set_index": 5,
+     "home_kit": "white jersey, black pants, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 2,
+     "slot_choice": "2003 Alternate 2",
+     "status": "built",
+     "donor": "21A0 2026 art + black pants + black helmet"
+    }
+   ],
+   "kept_free": [
+    11,
+    14
+   ],
+   "notes": "All 15 Eagles styles exist (no append); 9 is m1's spare."
+  },
+  "PIT": {
+   "assignments": [
+    {
+     "style": 5,
+     "method": "repurpose",
+     "set": "1933 gold throwback",
+     "u3_set_index": 2,
+     "home_kit": "gold jersey, beige pants, matte yellow helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "1959 - 1960 Uniform is a near twin of 4 (1961 - 1962), which stays; the gold helmet art is the closest donor",
+     "status": "built"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "Color Rush (black, gold numbers)",
+     "u3_set_index": 3,
+     "why": "2026 use unknown; no free slot without losing a distinct 1960s set (append 7 if it returns)"
+    }
+   ]
+  },
+  "SEA": {
+   "assignments": [
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "Rivalries (wolf grey, iridescent green)",
+     "u3_set_index": 4,
+     "home_kit": "wolf grey jersey and pants, iridescent green numbers and helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1",
+     "status": "built"
+    },
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "Primary combos: navy with wolf grey pants (home), all white (road)",
+     "u3_set_index": [
+      1,
+      2
+     ],
+     "home_kit": "College Navy jersey, Wolf Grey pants",
+     "away_kit": "white jersey, white pants",
+     "build_type": "derive",
+     "tier": 3,
+     "slot_choice": "2003 Alternate 2",
+     "status": "built",
+     "donor": "26H0/26A0 2026 art + pants"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "90s-era throwback",
+     "u3_set_index": 3,
+     "style": 1,
+     "label": "1983 - 2002 Uniform",
+     "why": "royal jersey, silver helmet (protected: 1984 and 1999 Seahawks, moments); 2 (1976 - 1982) is a twin"
+    }
+   ]
+  },
+  "SF": {
+   "assignments": [
+    {
+     "style": 7,
+     "method": "repurpose",
+     "set": "Black Rivalries 'For the Faithful'",
+     "u3_set_index": 4,
+     "home_kit": "black jersey, black pants, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 (a 2004 gold set)",
+     "status": "built"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Red 1994 throwback (home) and White 1994 throwback (road)",
+     "u3_set_index": [
+      2,
+      3
+     ],
+     "style": 2,
+     "label": "1993 - 1994 Uniform",
+     "why": "its home kit is the red 1994 throwback and its road kit the white one (protected: 1994 49ers)"
+    }
+   ]
+  },
+  "TB": {
+   "assignments": [
+    {
+     "style": 2,
+     "method": "repurpose",
+     "set": "White '76 jersey (creamsicle white, Bucco Bruce)",
+     "u3_set_index": 2,
+     "home_kit": "white creamsicle jersey, white pants, white Bucco Bruce helmet, striped socks",
+     "away_kit": "same design as home",
+     "build_type": "modernize",
+     "tier": 1,
+     "slot_choice": "1992 - 1996 Uniform is a twin of 3 (1976 - 1991, protected) and 1",
+     "status": "built",
+     "donor": "27A3 (the white creamsicle road kit) in both kits + 2026 marks"
+    },
+    {
+     "style": 6,
+     "method": "repurpose",
+     "set": "All-pewter Color Rush",
+     "u3_set_index": 3,
+     "home_kit": "pewter jersey, pewter pants, solid pewter socks",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 (a dark 2004 set)",
+     "status": "built",
+     "donor": "27H0 2026 art recoloured to pewter"
+    }
+   ],
+   "already_in_game": [
+    {
+     "set": "Orange creamsicle",
+     "u3_set_index": 4,
+     "style": 3,
+     "label": "1976 - 1991 Uniform",
+     "why": "orange home, white road (protected: 1979 Buccaneers)"
+    }
+   ]
+  },
+  "TEN": {
+   "assignments": [
+    {
+     "style": 7,
+     "method": "repurpose",
+     "set": "Music City Rivalries",
+     "u3_set_index": 2,
+     "home_kit": "navy jersey and pants, Titans Blue helmet",
+     "away_kit": "same design as home",
+     "build_type": "new",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 is a twin of 8 (2004 Alternate 2)",
+     "status": "built"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "Oilers-inspired throwback",
+     "u3_set_index": 3,
+     "why": "not planned for 2026; the Oilers eras 2, 3, 5 stay in the game"
+    }
+   ]
+  },
+  "WAS": {
+   "assignments": [
+    {
+     "style": 9,
+     "method": "repurpose",
+     "set": "Hail Raiser (all-black)",
+     "u3_set_index": 2,
+     "home_kit": "black jersey, black pants, black helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2004 Alternate 1 (the white 2004 set; number budgets equal to style 0, 8 holds 0.6)",
+     "status": "built",
+     "donor": "29H0 2026 art recoloured burgundy -> black"
+    }
+   ],
+   "kept_free": [
+    8
+   ]
+  },
+  "CLE": {
+   "assignments": [
+    {
+     "style": 3,
+     "method": "repurpose",
+     "set": "Alpha Dawg (all-brown)",
+     "u3_set_index": 2,
+     "home_kit": "brown jersey, brown pants, brown socks, matte brown helmet",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 1,
+     "slot_choice": "2003 Alternate 1 (the 2003 orange set)",
+     "status": "built",
+     "donor": "30H0 2026 art + brown pants + matte brown helmet"
+    },
+    {
+     "style": 4,
+     "method": "repurpose",
+     "set": "White throwback with the white helmet",
+     "u3_set_index": [
+      5,
+      4
+     ],
+     "home_kit": "white jersey, white pants, white helmet (1946 design)",
+     "away_kit": "same design as home",
+     "build_type": "derive",
+     "tier": 2,
+     "slot_choice": "2003 Alternate 2 (white jersey, the closest donor)",
+     "status": "built",
+     "donor": "30A0 2026 art + white pants + white helmet"
+    }
+   ],
+   "not_assigned": [
+    {
+     "set": "All-brown Color Rush with the orange helmet",
+     "u3_set_index": 3,
+     "why": "the Alpha Dawg style covers the all-brown look"
+    }
+   ]
+  }
+ }
+}
